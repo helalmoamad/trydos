@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart'
+    as inset_shadow;
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
@@ -18,8 +20,8 @@ class MyCachedNetworkImage extends StatelessWidget {
       this.ordinalHeight,
       this.ordinalwidth,
       this.logoTextHeight,
-        this.imageWidth,
-        this.imageHeight,
+      this.imageWidth,
+      this.imageHeight,
       required this.imageFit,
       this.imageBuilder,
       this.imageColor,
@@ -27,10 +29,14 @@ class MyCachedNetworkImage extends StatelessWidget {
       this.callWhenDisplayImage,
       this.callWhenLoadingImage,
       this.radius = 12,
+      this.innerShadowYOffset,
       this.withImageShadow = false,
+      this.withInnerShadow = false,
       required this.height,
       this.circleDimensions})
-      : super(key: key);
+      : super(key: key) {
+    currentUrl = imageUrl;
+  }
 
   final ValueNotifier<int> rebuildImage = ValueNotifier(0);
 
@@ -47,7 +53,9 @@ class MyCachedNetworkImage extends StatelessWidget {
   final double? logoTextHeight;
   final BoxFit imageFit;
   final double radius;
+  final double? innerShadowYOffset;
   final bool withImageShadow;
+  final bool withInnerShadow;
   final ImageWidgetBuilder? imageBuilder;
   final double? circleDimensions;
   final Color? imageColor;
@@ -56,33 +64,24 @@ class MyCachedNetworkImage extends StatelessWidget {
 
   final Widget? progressIndicatorBuilderWidget;
 
-  Widget getErrorImageWidget() {
-    return Center(
-        child: GestureDetector(
-      onTap: () async {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          currentUrl = '';
-          enable = true;
-          rebuildImage.value++;
-        });
-      },
-      child: Icon(Icons.refresh,
-          color: const Color(0xffff5f61), size: min(25, height)),
-    ));
-  }
-
   @override
   Widget build(BuildContext context) {
     List<String> list;
     String url = '';
-    list = imageUrl.split('upload');
+    list = currentUrl.split('upload');
 
     if (ordinalHeight != null && ordinalwidth != null) {
       url = ordinalwidth! >= ordinalHeight!
-          ? list[0] + 'upload/c_scale,h_${2 * (imageHeight ?? height).toInt()}' + list[1]
-          : list[0] + 'upload/c_scale,w_${2 * (imageWidth ?? width).toInt()}' + list[1];
+          ? list[0] +
+              'upload/c_scale,h_${2 * (imageHeight ?? height).toInt()}' +
+              list[1]
+          : list[0] +
+              'upload/c_scale,w_${2 * (imageWidth ?? width).toInt()}' +
+              list[1];
     } else {
-      url = list[0] + 'upload/c_scale,h_${2 * (imageHeight ?? height).toInt()}' + list[1];
+      url = list[0] +
+          'upload/c_scale,h_${2 * (imageHeight ?? height).toInt()}' +
+          list[1];
     }
 
     return ValueListenableBuilder<int>(
@@ -107,9 +106,9 @@ class MyCachedNetworkImage extends StatelessWidget {
                   imageUrl: url,
                   key: ValueKey(url),
                   fit: imageFit,
-                  width:  width,
+                  width: width,
                   color: imageColor,
-                  height:  height,
+                  height: height,
                   cacheManager: CustomCacheManager(),
                   progressIndicatorBuilder: (context, _, progress) {
                     callWhenLoadingImage?.call();
@@ -127,18 +126,36 @@ class MyCachedNetworkImage extends StatelessWidget {
                         callWhenDisplayImage?.call();
                         return ClipRRect(
                             child: Align(
-                          alignment: Alignment.center,
-                          child: Container(
-                            width: width,
-                            height: height,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(radius),
-                                image: DecorationImage(
-                                  image: image,
-                                  fit: imageFit,
-                                )),
-                          ),
-                        ));
+                                alignment: Alignment.center,
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                        width: width,
+                                        height: height,
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                            image: image,
+                                            fit: imageFit,
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(radius),
+                                        ),
+                                        ),
+                                   withInnerShadow ?  Container(
+                                      decoration: inset_shadow.BoxDecoration(
+                                        boxShadow: [
+                                          inset_shadow.BoxShadow(
+                                            offset:
+                                            Offset(0, innerShadowYOffset!),
+                                            blurRadius: 20,
+                                            color: Colors.white.withOpacity(0.7),
+                                            inset: true,
+                                          ),
+                                        ],
+                                      ),
+                                    ) : SizedBox.shrink()
+                                  ],
+                                )));
                       },
                   errorWidget: (context, url, error) {
                     if (enable) {
@@ -148,7 +165,22 @@ class MyCachedNetworkImage extends StatelessWidget {
                         rebuildImage.value++;
                       });
                     }
-                    return getErrorImageWidget();
+                    return InkWell(
+                      focusColor: Colors.transparent,
+                      splashColor: Colors.transparent,
+                      onTap: () async {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          currentUrl = '';
+                          enable = true;
+                          rebuildImage.value++;
+                        });
+                      },
+                      child: Center(
+                        child: Icon(Icons.refresh,
+                            color: const Color(0xffff5f61),
+                            size: min(25, height)),
+                      ),
+                    );
                   }));
         });
   }

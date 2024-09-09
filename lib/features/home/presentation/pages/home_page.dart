@@ -44,7 +44,7 @@ class _HomePageState extends State<HomePage> {
   double? _velocity;
   final ScrollController scrollController = ScrollController();
   Key reRenderingListViewKey = UniqueKey();
-
+  Map<String , int> lastIndexRequestedInEachMainCategoryForPrefetchBoutiques = {};
   @override
   void initState() {
     print(
@@ -67,7 +67,8 @@ class _HomePageState extends State<HomePage> {
     ));
     String selectedCategorySlug;
     scrollController.addListener(() {
-      print('Scroll position index: ${(scrollController.position.viewportDimension - 320) ~/ 235}');
+      print('lastIndexSeenByUser: ${(scrollController.position.pixels + scrollController.position.viewportDimension - 270) ~/ 235}');
+      int lastIndexSeenByUser = (scrollController.position.pixels + scrollController.position.viewportDimension - 270) ~/ 235 ;
       int currentSelectedMainCategoryTab = appBloc.state.tabIndex;
       if (currentSelectedMainCategoryTab == -1) {
         selectedCategorySlug = "Empty";
@@ -77,7 +78,13 @@ class _HomePageState extends State<HomePage> {
             '';
       }
       if (selectedCategorySlug == '') return;
-      prefetchBoutiques(selectedCategorySlug);
+      if(lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[selectedCategorySlug] == null){
+        lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[selectedCategorySlug] = -1;
+      }
+      if(lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[selectedCategorySlug] != lastIndexSeenByUser) {
+        lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[selectedCategorySlug] = lastIndexSeenByUser;
+        prefetchBoutiques(selectedCategorySlug);
+      }
       if (scrollController.offset >=
           (scrollController.position.maxScrollExtent * 0.7)) {
         print(
@@ -101,14 +108,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   prefetchBoutiques(String currentSlug){
+    print('rtrth5e445eh ${lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[currentSlug]}');
     for (int i = 0;
-    i <
-        min( (1.sh - 220 - 50 - 50) ~/ 235 + 1 , (homeBloc.state
-            .getHomeBoutiquesPaginationObjectByMainCategory[
-        currentSlug]
-            ?.items
-            .length ??
-            1000000));
+    i < (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[currentSlug] ?? 0);
     i++) {
       String slug = homeBloc.state
           .getHomeBoutiquesPaginationObjectByMainCategory[
@@ -218,51 +220,7 @@ class _HomePageState extends State<HomePage> {
             ),
             BlocBuilder<AppBloc, AppState>(
               builder: (context, appState) {
-                return BlocConsumer<HomeBloc, HomeState>(
-                  listener: (context, state) {
-                    String? currentSlug = appState.tabIndex != -1
-                        ? (state.mainCategoriesResponseModel?.data
-                                ?.mainCategories?[appState.tabIndex].slug ??
-                            "Empty")
-                        : "Empty";
-                    if (state
-                            .getHomeBoutiquesPaginationObjectByMainCategory[
-                                currentSlug]
-                            ?.paginationStatus ==
-                        PaginationStatus.success) {
-                      for (int i = 0;
-                          i <
-                              min( (1.sh - 220 - 50 - 50) ~/ 235 + 1 , (state
-                                      .getHomeBoutiquesPaginationObjectByMainCategory[
-                                          currentSlug]
-                                      ?.items
-                                      .length ??
-                                  1000000));
-                          i++) {
-                        String slug = state
-                            .getHomeBoutiquesPaginationObjectByMainCategory[
-                                currentSlug]!
-                            .items[i]
-                            .slug
-                            .toString();
-                        if (state.boutiquesThatDidPrefetch[slug] != true) {
-                          homeBloc.add(GetProductFiltersEvent(
-                              cashedOrginalBoutique: true,
-                              fromHomePageSearch: false,
-                              boutiqueSlug: slug,
-                              category: null,
-                              searchText: null));
-                          homeBloc.add(GetProductsWithFiltersEvent(
-                              cashedOrginalBoutique: true,
-                              boutiqueSlug: slug,
-                              fromSearch: false,
-                              category: null,
-                              searchText: null,
-                              offset: 1));
-                        }
-                      }
-                    }
-                  },
+                return BlocBuilder<HomeBloc, HomeState>(
                   buildWhen: (p, c) {
                     String? currentSlug = appState.tabIndex != -1
                         ? (c.mainCategoriesResponseModel?.data
