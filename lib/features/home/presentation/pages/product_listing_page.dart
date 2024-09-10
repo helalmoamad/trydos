@@ -1365,7 +1365,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                   ),
                                                 );
                                               }
-                                              print('fcfcfcfcfcsfasfafas1132132142141');
+                                              print(
+                                                  'fcfcfcfcfcsfasfafas1132132142141');
                                               // String key = (widget
                                               //             .boutiqueSlug ??
                                               //         '') +
@@ -1432,10 +1433,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                       !state
                                                           .cashedOrginalBoutique)) {
                                                 return ProductListingLoading(
-                                                key: TestVariables.kTestMode
-                                                ? Key(WidgetsKey
-                                                    .boutiqueProductListingLoadingKey)
-                                                    : null,
+                                                  key: TestVariables.kTestMode
+                                                      ? Key(WidgetsKey
+                                                          .boutiqueProductListingLoadingKey)
+                                                      : null,
                                                 );
                                               }
 

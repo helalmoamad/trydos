@@ -173,7 +173,6 @@ void main() {
       await tester.pumpAndSettle();
       await Future.delayed(const Duration(seconds: 1));
       ///////////////////////////////
-      // expect(appliedFiltersProductListingWidget, findsNothing);
 
       ////////// filter by brand until one product result //////
 

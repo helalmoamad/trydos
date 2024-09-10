@@ -8,7 +8,6 @@ import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import 'package:trydos/features/story/presentation/bloc/story_state.dart';
 import 'package:trydos/main.dart' as app;
-
 import '../shared/shared_scenarios.dart';
 
 void main() {
