@@ -121,8 +121,6 @@ import '../../features/home/domain/use_cases/get_allowed_country_usecase.dart'
     as _i318;
 import '../../features/home/domain/use_cases/get_cart_item_usecase.dart'
     as _i307;
-import '../../features/home/domain/use_cases/get_currency_for_country.dart'
-    as _i297;
 import '../../features/home/domain/use_cases/get_home_boutiqes_usecase.dart'
     as _i518;
 import '../../features/home/domain/use_cases/get_main_categories_usecase.dart'
@@ -260,8 +258,6 @@ Future<_i174.GetIt> $initGetIt(
       () => _i318.GetAllowedCountryUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i307.GetCartItemUseCase>(
       () => _i307.GetCartItemUseCase(gh<_i0.HomeRepository>()));
-  gh.factory<_i297.GetCurrencyForCountryUseCase>(
-      () => _i297.GetCurrencyForCountryUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i518.GetHomeBoutiqesUseCase>(
       () => _i518.GetHomeBoutiqesUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i158.GetMainCategoriesUseCase>(
@@ -287,10 +283,6 @@ Future<_i174.GetIt> $initGetIt(
       _i77.CommonUseRepositoryImpl(gh<_i672.CommonUseRemoteDataSource>()));
   gh.lazySingleton<_i1032.CallsRepository>(
       () => _i722.CallsRepositoryImpl(gh<_i1061.CallsRemoteDataSource>()));
-  gh.lazySingleton<_i420.ChatRepository>(
-      () => _i504.ChatRepositoryImpl(gh<_i375.ChatRemoteDataSource>()));
-  gh.factory<_i1043.UploadFileCloudinaryUseCase>(() =>
-      _i1043.UploadFileCloudinaryUseCase(gh<_i702.CommonUseRepository>()));
   gh.lazySingleton<_i801.HomeBloc>(() => _i801.HomeBloc(
         gh<_i158.GetMainCategoriesUseCase>(),
         gh<_i533.GetStoryForProductUseCase>(),
@@ -305,10 +297,13 @@ Future<_i174.GetIt> $initGetIt(
         gh<_i912.GetWidthAndHeightUseCase>(),
         gh<_i347.GetProductDetailWithoutRelatedProductsUseCase>(),
         gh<_i815.GetStartingSettingsUseCase>(),
-        gh<_i297.GetCurrencyForCountryUseCase>(),
         gh<_i397.GetProductsWithoutFiltersUseCase>(),
         gh<_i955.GetProductsWithFiltersUseCase>(),
       ));
+  gh.lazySingleton<_i420.ChatRepository>(
+      () => _i504.ChatRepositoryImpl(gh<_i375.ChatRemoteDataSource>()));
+  gh.factory<_i1043.UploadFileCloudinaryUseCase>(() =>
+      _i1043.UploadFileCloudinaryUseCase(gh<_i702.CommonUseRepository>()));
   gh.factory<_i589.CreateUserUseCase>(
       () => _i589.CreateUserUseCase(gh<_i420.ChatRepository>()));
   gh.factory<_i142.ChangeChatPropertyUseCase>(

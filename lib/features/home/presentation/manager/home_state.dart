@@ -4,7 +4,6 @@ import 'package:trydos/features/home/data/models/get_cart_item_model.dart'
     as cart;
 
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
-import 'package:trydos/features/home/data/models/get_currency_for_country.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart'
     as boutiques_model;
 
@@ -91,7 +90,6 @@ class HomeState {
     this.searchHistory,
     this.cashedOrginalBoutique = false,
     this.getAllowedCountriesModel,
-    this.getCurrencyForCountryModel,
     this.prefAppliedFilterForExtendFilter,
     this.ListitemForAddToCart,
     this.countOfProductExpectedByFiltering,
@@ -111,7 +109,6 @@ class HomeState {
   final Map<String, product.Products>? productITemForCart;
   final GetMainCategoriesStatus getMainCategoriesStatus;
   final List<ImageForAddToCart>? ListitemForAddToCart;
-  final GetCurrencyForCountryModel? getCurrencyForCountryModel;
   final GetAllowedCountriesModel? getAllowedCountriesModel;
   final Map<String, GetProductFiltersStatus> getProductFiltersStatus;
   final Map<String, PaginationModel<product.Products>?>
@@ -168,7 +165,6 @@ class HomeState {
       Map<String, Map<int, List<String>>>? addImagesToProductIdForCart,
       final List<ImageForAddToCart>? ListitemForAddToCart,
       final GetAllowedCountriesModel? getAllowedCountriesModel,
-      final GetCurrencyForCountryModel? getCurrencyForCountryModel,
       final GetCommentForProductStatus? getCommentForProductStatus,
       final GetCartItemsStatus? getCartItemsStatus,
       Map<int, int?>? currentStoryInEachCollection,
@@ -226,8 +222,6 @@ class HomeState {
       countOfProductExpectedByFiltering: countOfProductExpectedByFiltering ??
           this.countOfProductExpectedByFiltering,
       ListitemForAddToCart: ListitemForAddToCart ?? this.ListitemForAddToCart,
-      getCurrencyForCountryModel:
-          getCurrencyForCountryModel ?? this.getCurrencyForCountryModel,
       addImagesToProductIdForCart:
           addImagesToProductIdForCart ?? this.addImagesToProductIdForCart,
       cartCollection: cartCollection ?? this.cartCollection,

@@ -44,7 +44,9 @@ class _HomePageState extends State<HomePage> {
   double? _velocity;
   final ScrollController scrollController = ScrollController();
   Key reRenderingListViewKey = UniqueKey();
-  Map<String , int> lastIndexRequestedInEachMainCategoryForPrefetchBoutiques = {};
+  Map<String, int> lastIndexRequestedInEachMainCategoryForPrefetchBoutiques =
+      {};
+
   @override
   void initState() {
     print(
@@ -52,9 +54,6 @@ class _HomePageState extends State<HomePage> {
 
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
-    if (homeBloc.state.getCurrencyForCountryModel == null) {
-      homeBloc.add(GetCurrencyForCountryEvent());
-    }
     homeBloc.add(GetCartItemEvent());
     appBloc.add(ChangeIndexForSearch(0));
     homeBloc.add(ChangeAppliedFiltersEvent(
@@ -67,8 +66,12 @@ class _HomePageState extends State<HomePage> {
     ));
     String selectedCategorySlug;
     scrollController.addListener(() {
-      print('lastIndexSeenByUser: ${(scrollController.position.pixels + scrollController.position.viewportDimension - 270) ~/ 235}');
-      int lastIndexSeenByUser = (scrollController.position.pixels + scrollController.position.viewportDimension - 270) ~/ 235 ;
+      print(
+          'lastIndexSeenByUser: ${(scrollController.position.pixels + scrollController.position.viewportDimension - 270) ~/ 235}');
+      int lastIndexSeenByUser = (scrollController.position.pixels +
+              scrollController.position.viewportDimension -
+              270) ~/
+          235;
       int currentSelectedMainCategoryTab = appBloc.state.tabIndex;
       if (currentSelectedMainCategoryTab == -1) {
         selectedCategorySlug = "Empty";
@@ -78,11 +81,17 @@ class _HomePageState extends State<HomePage> {
             '';
       }
       if (selectedCategorySlug == '') return;
-      if(lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[selectedCategorySlug] == null){
-        lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[selectedCategorySlug] = -1;
+      if (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
+              selectedCategorySlug] ==
+          null) {
+        lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
+            selectedCategorySlug] = -1;
       }
-      if(lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[selectedCategorySlug] != lastIndexSeenByUser) {
-        lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[selectedCategorySlug] = lastIndexSeenByUser;
+      if (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
+              selectedCategorySlug] !=
+          lastIndexSeenByUser) {
+        lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
+            selectedCategorySlug] = lastIndexSeenByUser;
         prefetchBoutiques(selectedCategorySlug);
       }
       if (scrollController.offset >=
@@ -107,25 +116,29 @@ class _HomePageState extends State<HomePage> {
     super.initState();
   }
 
-  prefetchBoutiques(String currentSlug){
-    print('rtrth5e445eh ${lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[currentSlug]}');
+  prefetchBoutiques(String currentSlug) {
+    print(
+        'rtrth5e445eh ${lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[currentSlug]}');
     for (int i = 0;
-    i < (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[currentSlug] ?? 0);
-    i++) {
-      String slug = homeBloc.state
-          .getHomeBoutiquesPaginationObjectByMainCategory[
-      currentSlug]!
+        i <
+            (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
+                    currentSlug] ??
+                0);
+        i++) {
+      String slug = homeBloc
+          .state
+          .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]!
           .items[i]
           .slug
           .toString();
       if (homeBloc.state.boutiquesThatDidPrefetch[slug] != true) {
-        homeBloc.add(GetProductFiltersEvent(
+        homeBloc.add(GetProductFiltersWithoutCancelingPreviousEvents(
             cashedOrginalBoutique: true,
             fromHomePageSearch: false,
             boutiqueSlug: slug,
             category: null,
             searchText: null));
-        homeBloc.add(GetProductsWithFiltersEvent(
+        homeBloc.add(GetProductsWithFiltersEventWithoutCancelingPreviousEvents(
             cashedOrginalBoutique: true,
             boutiqueSlug: slug,
             fromSearch: false,
