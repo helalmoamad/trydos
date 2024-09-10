@@ -47,19 +47,16 @@ class CartPage2 extends StatelessWidget {
           buildWhen: (previous, current) =>
               previous.getCartItemsStatus != current.getCartItemsStatus ||
               previous.cartCollection!.values !=
-                  current.cartCollection!.values ||
-              previous.getCurrencyForCountryModel !=
-                  current.getCurrencyForCountryModel,
+                  current.cartCollection!.values ,
           builder: (context, state) {
             double totlaPrice = 0;
+            String? priceSymbol;
             state.cartCollection!.values.toList().forEach((element) {
               element.forEach((element) {
                 totlaPrice =
                     totlaPrice + element.offerPrice! * element.quantity!;
               });
             });
-            totlaPrice = totlaPrice *
-                state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!;
             if (state.getCartItemsStatus == GetCartItemsStatus.failure &&
                 (state.cartCollection == null ||
                     state.cartCollection!.isEmpty)) {
@@ -171,7 +168,7 @@ class CartPage2 extends StatelessWidget {
                                             height: 1.33),
                                   ),
                                   Text(
-                                    "${state.getCurrencyForCountryModel!.data!.currency!.symbol ?? ""}",
+                                    priceSymbol ?? '\$',
                                     style: context.textTheme.bodyMedium?.la
                                         .copyWith(
                                             fontSize: 13,
@@ -211,9 +208,6 @@ class CartPage2 extends StatelessWidget {
                                     price = price +
                                         element.offerPrice! * element.quantity!;
                                   });
-                                  price = price *
-                                      state.getCurrencyForCountryModel!.data!
-                                          .currency!.exchangeRate!;
                                   return Column(
                                     children: [
                                       InkWell(
@@ -304,7 +298,7 @@ class CartPage2 extends StatelessWidget {
                                                               height: 1.33),
                                                     ),
                                                     Text(
-                                                      " ${state.getCurrencyForCountryModel!.data!.currency!.symbol ?? ""}",
+                                                      priceSymbol ?? '\$',
                                                       style: context.textTheme
                                                           .bodyMedium?.la
                                                           .copyWith(
@@ -575,8 +569,8 @@ class CartPage2 extends StatelessWidget {
                                                                             Radius.circular(15))),
                                                                 child: Text(
                                                                   '''${!state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].size ?? "" : ""} \n '''
-                                                                  '''${(state.cartCollection![groupCartkeys[index]]![indexes].offerPrice! * state.cartCollection![groupCartkeys[index]]![indexes].quantity! * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} '''
-                                                                  '''${state.getCurrencyForCountryModel!.data!.currency!.symbol ?? ""}''',
+                                                                  '''${(state.cartCollection![groupCartkeys[index]]![indexes].offerPrice! * state.cartCollection![groupCartkeys[index]]![indexes].quantity!)} '''
+                                                                  '''${priceSymbol ?? '\$'}''',
                                                                   style: context
                                                                       .textTheme
                                                                       .bodyMedium
@@ -821,8 +815,8 @@ class CartPage2 extends StatelessWidget {
                                                               height: 45,
                                                               child: Text(
                                                                 '''${!state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].size ?? "" : ""} \n '''
-                                                                '''${(state.cartCollection![groupCartkeys[index]]![indexes].offerPrice! * state.cartCollection![groupCartkeys[index]]![indexes].quantity! * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} '''
-                                                                '''${state.getCurrencyForCountryModel!.data!.currency!.symbol ?? ""}''',
+                                                                '''${(state.cartCollection![groupCartkeys[index]]![indexes].offerPrice! * state.cartCollection![groupCartkeys[index]]![indexes].quantity! )} '''
+                                                                '''${priceSymbol ?? '\$'}''',
                                                                 style: context
                                                                     .textTheme
                                                                     .bodyMedium

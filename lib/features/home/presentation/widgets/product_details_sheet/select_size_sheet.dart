@@ -22,12 +22,15 @@ class SelectSizeContent extends StatefulWidget {
     required this.scrollController,
     required this.selectedColor,
     required this.sizes,
+    required this.productId,
     required this.addToBagButtonShapeNotifier,
     required this.sizeIsNotAvailableNotifier,
   });
 
   final ScrollController scrollController;
   final Color selectedColor;
+  final String productId;
+
   final List<String> sizes;
   final ValueNotifier<int> addToBagButtonShapeNotifier;
   final ValueNotifier<String?> sizeIsNotAvailableNotifier;
@@ -46,15 +49,16 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
-    if (widget.sizes.length > 0) {
-      homeBloc.add(AddCurrentColorSizeEvent(
-          choice_1: widget.sizes[widget.sizes.length ~/ 2]));
-    } else {
-      homeBloc.add(AddCurrentColorSizeEvent(choice_1: ""));
-    }
 
     currentIndexInSizes = ValueNotifier(0);
 
+    if (widget.sizes.length > 0) {
+      homeBloc.add(AddCurrentColorSizeEvent(
+          choice_1: widget.sizes[widget.sizes.length ~/ 2]));
+      currentIndexInSizes.value = widget.sizes.length ~/ 2;
+    } else {
+      homeBloc.add(AddCurrentColorSizeEvent(choice_1: ""));
+    }
     super.initState();
   }
 
@@ -68,10 +72,10 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
           p.cartCollection != c.cartCollection,
       builder: (context, state) {
         sizes = state.sizes ?? [];
-        currentIndexInSizes.value = currentIndexInSizes.value == 0 ? sizes.length ~/ 2 : currentIndexInSizes.value;
+
         if (sizes.length > 0) {
-          homeBloc.add(
-              AddCurrentColorSizeEvent(choice_1: sizes[currentIndexInSizes.value]));
+          homeBloc.add(AddCurrentColorSizeEvent(
+              choice_1: sizes[currentIndexInSizes.value]));
         } else {
           homeBloc.add(AddCurrentColorSizeEvent(choice_1: ""));
         }
@@ -179,7 +183,8 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                                         ? const Color(0xffFF5F61)
                                         : sizes[currentIndex] == 'XS'
                                             ? const Color(0xffFFAF5F)
-                                            : const Color(0xff505050),
+                                            : const Color.fromARGB(
+                                                255, 75, 61, 61),
                                   )),
                               Container(
                                 height: 70,

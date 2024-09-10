@@ -104,12 +104,12 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     isDependencyInitialized = true;
   }
   try {
-    Map remoteMessage = convert.jsonDecode(message.data['data']);
+    Map<String, dynamic> remoteMessage =
+        convert.jsonDecode(message.data['data']);
     if (remoteMessage['type'] == 'VideoCallEvent' ||
         remoteMessage['type'] == 'VoiceCallEvent') {
       String currentUuid = const Uuid().v4();
-      Map<String, dynamic> data =
-          convert.jsonDecode(remoteMessage['message'].toString());
+      Map<String, dynamic> data = remoteMessage;
       if (DateTime.now()
               .difference(HelperFunctions.getZonedDate(
                   DateTime.parse(data['created_at'])))
@@ -119,7 +119,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       }
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
-          error: '${remoteMessage['type']} background  ${data['message_id']}');
+          error: '${message.data['type']} background  ${data['message_id']}');
       GetIt.I<CallsBloc>()
           .add(UpdateCurrentActiveCallIdEvent(id: data["id"].toString()));
       FlutterCallkitIncoming.onEvent.listen((CallEvent? event) async {
@@ -149,8 +149,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
           isVideo: remoteMessage['type'] == 'VideoCallEvent');
     } else if (remoteMessage['type'] == 'RefuseCallEvent') {
       declineCallBecauseOfNotificationButton = true;
-      Map<String, dynamic> data =
-          convert.jsonDecode(remoteMessage['message'].toString());
+      Map<String, dynamic> data = remoteMessage;
 
       if (data['duration_in_seconds']!.toString().contains("-1")) {
         GetIt.I<CallsBloc>().add(IcreaseMissedCallEvent());
@@ -167,8 +166,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       GetIt.I<CallsBloc>().add(UserInteractWithCall(rejectIt: true));
     } else if (remoteMessage['type'] == 'AnswerCallEvent') {
       declineCallBecauseOfNotificationButton = true;
-      Map<String, dynamic> data =
-          convert.jsonDecode(remoteMessage['message'].toString());
+      Map<String, dynamic> data = remoteMessage;
       if (data['message_id'].toString() !=
               GetIt.I<CallsBloc>().state.currentActiveCallId &&
           GetIt.I<CallsBloc>().state.currentActiveCallId != '-1') {
@@ -186,13 +184,11 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       GetIt.I<PrefsRepository>()
           .setRemovedMessageFromBackground(message.data['data']);
     } else if (remoteMessage['type'] == 'ChannelUpdatedEvent') {
-      Map<String, dynamic> data =
-          convert.jsonDecode(message.data["data"].toString());
+      Map<String, dynamic> data = remoteMessage;
       GetIt.I<PrefsRepository>()
           .setMessageFromBackground(convert.jsonEncode(data['channel']));
-    } else if (message.data['type'] == 'ChannelDeletedEvent') {
-      Map<String, dynamic> data =
-          convert.jsonDecode(remoteMessage['message'].toString());
+    } else if (remoteMessage['type'] == 'ChannelDeletedEvent') {
+      Map<String, dynamic> data = remoteMessage;
       GetIt.I<PrefsRepository>()
           .setRemovedChatFromBackground(data['channel_id'].toString());
     } else {
