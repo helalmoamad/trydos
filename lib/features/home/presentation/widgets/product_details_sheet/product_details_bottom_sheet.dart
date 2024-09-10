@@ -301,7 +301,6 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                         .productItem.id
                                                         .toString()));
                                           },
-                                          onClickItem: (index) {},
                                           itemConfig: GalleryItemConfig(
                                               width: 70.w,
                                               height: 70.w,

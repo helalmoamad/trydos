@@ -127,23 +127,23 @@ class _ProductListingPageState extends State<ProductListingPage> {
     //     offset: 1,
     //   ));
     // }
-    if (!widget.fromSearch) {
-      homeBloc.add(GetProductFiltersEvent(
-          cashedOrginalBoutique: true,
-          fromHomePageSearch: widget.fromSearch,
-          boutiqueSlug: widget.boutiqueSlug,
-          category: widget.category,
-          searchText: widget.fromSearch ? widget.searchText : null));
-    }
-    if (!widget.fromSearch) {
-      homeBloc.add(GetProductsWithFiltersEvent(
-          cashedOrginalBoutique: !widget.fromSearch,
-          boutiqueSlug: widget.boutiqueSlug,
-          fromSearch: widget.fromSearch,
-          category: widget.category,
-          searchText: widget.fromSearch ? widget.searchText : null,
-          offset: 1));
-    }
+    // if (!widget.fromSearch) {
+    //   homeBloc.add(GetProductFiltersEvent(
+    //       cashedOrginalBoutique: true,
+    //       fromHomePageSearch: widget.fromSearch,
+    //       boutiqueSlug: widget.boutiqueSlug,
+    //       category: widget.category,
+    //       searchText: widget.fromSearch ? widget.searchText : null));
+    // }
+    // if (!widget.fromSearch) {
+    //   homeBloc.add(GetProductsWithFiltersEvent(
+    //       cashedOrginalBoutique: !widget.fromSearch,
+    //       boutiqueSlug: widget.boutiqueSlug,
+    //       fromSearch: widget.fromSearch,
+    //       category: widget.category,
+    //       searchText: widget.fromSearch ? widget.searchText : null,
+    //       offset: 1));
+    // }
     scrollController.addListener(() {
       if (filterPageExpanded.value) return;
       if (scrollController.position.pixels <= 80) {
@@ -950,42 +950,28 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                               right: 10,
                                                                                               left: 10,
                                                                                             ),
-                                                                                            child: Stack(
-                                                                                              children: [
-                                                                                                Container(
-                                                                                                  height: 135,
-                                                                                                  width: 1.sw,
-                                                                                                  decoration: BoxDecoration(
-                                                                                                    borderRadius: BorderRadius.circular(15.0),
-                                                                                                    border: Border.all(width: 0.5, color: const Color(0xfffafafa)),
-                                                                                                    boxShadow: [
-                                                                                                      BoxShadow(
-                                                                                                        color: const Color(0x33000000),
-                                                                                                        offset: Offset(0, 3),
-                                                                                                        blurRadius: 10,
-                                                                                                      ),
-                                                                                                    ],
+                                                                                            child: Container(
+                                                                                              height: 135,
+                                                                                              width: 1.sw,
+                                                                                              decoration: BoxDecoration(
+                                                                                                borderRadius: BorderRadius.circular(15.0),
+                                                                                                border: Border.all(width: 0.5, color: const Color(0xfffafafa)),
+                                                                                                boxShadow: [
+                                                                                                  BoxShadow(
+                                                                                                    color: const Color(0x33000000),
+                                                                                                    offset: Offset(0, 3),
+                                                                                                    blurRadius: 10,
                                                                                                   ),
-                                                                                                  child: ClipRRect(
-                                                                                                      borderRadius: BorderRadius.circular(15),
-                                                                                                      child: MyCachedNetworkImage(
-                                                                                                        imageUrl: widget.boutniqe!.banners![index].filePath!,
-                                                                                                        imageFit: BoxFit.cover,
-                                                                                                        width: 1.sw,
-                                                                                                        height: 155,
-                                                                                                      )),
-                                                                                                ),
-                                                                                                Container(
-                                                                                                  height: 155,
-                                                                                                  width: 1.sw,
-                                                                                                  decoration: BoxDecoration(
-                                                                                                    borderRadius: BorderRadius.circular(15.0),
-                                                                                                    boxShadow: [
-                                                                                                      BoxShadow(color: Colors.white.withOpacity(0.7), offset: Offset(0, 3), blurRadius: 6, inset: true),
-                                                                                                    ],
-                                                                                                  ),
-                                                                                                ),
-                                                                                              ],
+                                                                                                ],
+                                                                                              ),
+                                                                                              child: ClipRRect(
+                                                                                                  borderRadius: BorderRadius.circular(15),
+                                                                                                  child: MyCachedNetworkImage(
+                                                                                                    imageUrl: widget.boutniqe!.banners![index].filePath!,
+                                                                                                    imageFit: BoxFit.cover,
+                                                                                                    width: 1.sw,
+                                                                                                    height: 155,
+                                                                                                  )),
                                                                                             ),
                                                                                           );
                                                                                         },

@@ -67,11 +67,11 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
           p.sizes != c.sizes ||
           p.cartCollection != c.cartCollection,
       builder: (context, state) {
-        sizes = state.sizes ?? [" "];
-        currentIndexInSizes.value = sizes.length ~/ 2;
+        sizes = state.sizes ?? [];
+        currentIndexInSizes.value = currentIndexInSizes.value == 0 ? sizes.length ~/ 2 : currentIndexInSizes.value;
         if (sizes.length > 0) {
           homeBloc.add(
-              AddCurrentColorSizeEvent(choice_1: sizes[sizes.length ~/ 2]));
+              AddCurrentColorSizeEvent(choice_1: sizes[currentIndexInSizes.value]));
         } else {
           homeBloc.add(AddCurrentColorSizeEvent(choice_1: ""));
         }
@@ -246,10 +246,10 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                                   height: 80,
                                   enableInfiniteScroll: false,
                                   onPageChanged: (index, reason) {
+                                    currentIndexInSizes.value = index;
                                     homeBloc.add(AddCurrentColorSizeEvent(
                                         choice_1: sizes[index]));
                                     HapticFeedback.lightImpact();
-                                    currentIndexInSizes.value = index;
                                     if (sizes[index] == 'S') {
                                       widget.sizeIsNotAvailableNotifier.value =
                                           sizes[index];

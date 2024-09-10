@@ -64,22 +64,12 @@ class ProductListingImageWidget extends StatelessWidget {
                       imageHeight: imageHeight,
                       imageWidth: imageWidth,
                       imageFit: BoxFit.cover,
-                      height: height!),
-              //Image.asset(imageUrl , fit: BoxFit.cover, width: width, height: height,),
-              Container(
-                width: width,
-                height: height,
-                decoration: BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(
-                      offset: Offset(0, innerShadowYOffset),
-                      blurRadius: 6,
-                      color: Colors.white,
-                      inset: true,
-                    ),
-                  ],
-                ),
+                  innerShadowYOffset : innerShadowYOffset,
+                      withInnerShadow: true,
+                      height: height!
               ),
+              //Image.asset(imageUrl , fit: BoxFit.cover, width: width, height: height,),
+
             ],
           )),
     );
