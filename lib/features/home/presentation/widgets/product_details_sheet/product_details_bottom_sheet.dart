@@ -363,44 +363,15 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                           Stack(
                             alignment: Alignment.topCenter,
                             children: [
-                              BlocBuilder<HomeBloc, HomeState>(
-                                  buildWhen: (previous, current) =>
-                                      previous.getCurrencyForCountryModel !=
-                                      current.getCurrencyForCountryModel,
-                                  builder: (context, state) {
-                                    return ProductDetailsSheetHeader(
-                                      priceSymbol: state
-                                              .getCurrencyForCountryModel!
-                                              .data!
-                                              .currency!
-                                              .symbol ??
-                                          "",
-                                      decimalPoint: state.startingSetting
-                                              ?.decimalPointSetting ??
-                                          2,
-                                      addToBagButtonShapeNotifier:
-                                          widget.addToBagButtonShapeNotifier,
-                                      price: (widget.productItem.price! *
-                                              state
-                                                  .getCurrencyForCountryModel!
-                                                  .data!
-                                                  .currency!
-                                                  .exchangeRate!)
-                                          .toStringAsFixed(state.startingSetting
-                                                  ?.decimalPointSetting ??
-                                              2),
-                                      offerPrice: (widget
-                                                  .productItem.offerPrice! *
-                                              state
-                                                  .getCurrencyForCountryModel!
-                                                  .data!
-                                                  .currency!
-                                                  .exchangeRate!)
-                                          .toStringAsFixed(state.startingSetting
-                                                  ?.decimalPointSetting ??
-                                              2),
-                                    );
-                                  }),
+                              ProductDetailsSheetHeader(
+                                addToBagButtonShapeNotifier:
+                                    widget.addToBagButtonShapeNotifier,
+                                price: widget.productItem.price.toString(),
+                                offerPrice: widget
+                                            .productItem.offerPrice.toString() ,
+                                priceSymbol: (widget
+                                    .productItem.priceFormatted?.split(' ') ?? ['\$' , '\$'])[1],
+                              ),
                               currentTab != -1
                                   ? Positioned(
                                       top: 7,

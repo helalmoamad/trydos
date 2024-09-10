@@ -174,16 +174,11 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           ? null
           : GetAllowedCountriesModel.fromJson(
               json['getAllowedCountriesModel'] as Map<String, dynamic>),
-      getCurrencyForCountryModel: json['getCurrencyForCountryModel'] == null
-          ? null
-          : GetCurrencyForCountryModel.fromJson(
-              json['getCurrencyForCountryModel'] as Map<String, dynamic>),
       prefAppliedFilterForExtendFilter:
           json['prefAppliedFilterForExtendFilter'] == null
               ? null
-              : get_filters.Filter.fromJson(
-                  json['prefAppliedFilterForExtendFilter']
-                      as Map<String, dynamic>),
+              : get_filters.Filter.fromJson(json['prefAppliedFilterForExtendFilter']
+                  as Map<String, dynamic>),
       ListitemForAddToCart: (json['ListitemForAddToCart'] as List<dynamic>?)
           ?.map((e) => ImageForAddToCart.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -216,6 +211,11 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
                 (k, e) => MapEntry(k, (e as num).toInt()),
               ) ??
               const {},
+      boutiquesThatDidPrefetch:
+          (json['boutiquesThatDidPrefetch'] as Map<String, dynamic>?)?.map(
+                (k, e) => MapEntry(k, e as bool),
+              ) ??
+              const {},
       cachedProductWithoutRelatedProductsModel:
           (json['cachedProductWithoutRelatedProductsModel']
                       as Map<String, dynamic>?)
@@ -241,6 +241,7 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
     );
 
 Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
+      'boutiquesThatDidPrefetch': instance.boutiquesThatDidPrefetch,
       'getStartingSettingsStatus': _$GetStartingSettingsStatusEnumMap[
           instance.getStartingSettingsStatus]!,
       'currentSelectedColorForEveryProduct':
@@ -253,8 +254,6 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           _$GetMainCategoriesStatusEnumMap[instance.getMainCategoriesStatus]!,
       'ListitemForAddToCart':
           instance.ListitemForAddToCart?.map((e) => e.toJson()).toList(),
-      'getCurrencyForCountryModel':
-          instance.getCurrencyForCountryModel?.toJson(),
       'getAllowedCountriesModel': instance.getAllowedCountriesModel?.toJson(),
       'getProductFiltersStatus': instance.getProductFiltersStatus
           .map((k, e) => MapEntry(k, _$GetProductFiltersStatusEnumMap[e]!)),
