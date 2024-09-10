@@ -486,7 +486,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       }
 */
       reRequestTheseBoutiques[event.categorySlug] = true;
-      if(!event.getWithPagination){
+      if (!event.getWithPagination) {
         prefetchBoutiques(event.categorySlug);
       }
       emit(state.copyWith(
@@ -1027,19 +1027,20 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         .toJson();
   }
 
-  prefetchBoutiques(String currentSlug){
+  prefetchBoutiques(String currentSlug) {
     for (int i = 0;
-    i <
-        min( (1.sh - 220 - 50) ~/ 235 , (state
-            .getHomeBoutiquesPaginationObjectByMainCategory[
-        currentSlug]
-            ?.items
-            .length ??
-            1000000));
-    i++) {
+        i <
+            min(
+                (1.sh - 220 - 50) ~/ 235,
+                (state
+                        .getHomeBoutiquesPaginationObjectByMainCategory[
+                            currentSlug]
+                        ?.items
+                        .length ??
+                    1000000));
+        i++) {
       String slug = state
-          .getHomeBoutiquesPaginationObjectByMainCategory[
-      currentSlug]!
+          .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]!
           .items[i]
           .slug
           .toString();
@@ -1060,7 +1061,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       }
     }
   }
-
 
   FutureOr<void> _onGetProductFiltersEvent(
       GetProductFiltersEvent event, Emitter<HomeState> emit) async {

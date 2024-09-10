@@ -451,6 +451,8 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                 )
                               : currentTab == 3
                                   ? SelectSizeContent(
+                                      productId:
+                                          widget.productItem.id.toString(),
                                       sizes: widget.sizes,
                                       scrollController: controller,
                                       selectedColor: Colors.blue,
