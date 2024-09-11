@@ -47,6 +47,7 @@ import 'package:trydos/features/home/domain/use_cases/remove_item_from_cart_usec
 import 'package:trydos/features/home/domain/use_cases/update_item_from_cart_usecase.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
 import 'package:trydos/features/story/domain/useCases/get_width_and_height_usecase.dart';
+import 'package:trydos/features/story/presentation/bloc/story_state.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../common/helper/helper_functions.dart';
@@ -55,6 +56,7 @@ import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../main.dart';
 import '../../../chat/presentation/manager/chat_bloc.dart';
 import '../../../chat/presentation/manager/chat_event.dart';
+import '../../../story/presentation/bloc/story_bloc.dart';
 import '../../data/models/get_category_model.dart';
 import '../../domain/use_cases/add_item_to_cart_usecase.dart';
 import '../../domain/use_cases/get_stories_for_product_usecase.dart';
@@ -1203,13 +1205,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     for (int i = 0;
         i <
             min(
-                (1.sh - 220 - 50) ~/ 235,
+                (1.sh - (GetIt.I<StoryBloc>().state.getStoriesStatus != GetStoriesStatus.success ? 220 : 0) - 50) ~/ 235 + 1,
                 (state
                         .getHomeBoutiquesPaginationObjectByMainCategory[
                             currentSlug]
                         ?.items
                         .length ??
-                    1000000));
+                    -1));
         i++) {
       String slug = state
           .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]!
