@@ -62,7 +62,8 @@ void main() {
 
       final Finder categoriesProductListingFilterListWidget =
           find.byKey(Key(WidgetsKey.categoriesProductListingFilterListKey));
-      expect(categoriesProductListingFilterListWidget, findsOneWidget);
+      expect(categoriesProductListingFilterListWidget,
+          findsOneWidget); // Ensure categories filter widget is found.
       ///////////////////////////
       final Finder brandsProductListingFilterListWidget =
           find.byKey(Key(WidgetsKey.brandsProductListingFilterListKey));
