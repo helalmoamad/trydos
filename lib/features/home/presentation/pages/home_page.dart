@@ -26,6 +26,8 @@ import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../app/my_text_widget.dart';
+import '../../../story/presentation/bloc/story_bloc.dart';
+import '../../../story/presentation/bloc/story_state.dart';
 import '../../../story/presentation/widget/stories_list.dart';
 import '../manager/home_state.dart';
 import '../widgets/home_page_card2.dart';
@@ -66,13 +68,12 @@ class _HomePageState extends State<HomePage> {
     ));
     String selectedCategorySlug;
     scrollController.addListener(() {
-      print(
-          'lastIndexSeenByUser: ${(scrollController.position.pixels + scrollController.position.viewportDimension - 270) ~/ 235}');
       int lastIndexSeenByUser = (scrollController.position.pixels +
-              scrollController.position.viewportDimension -
-              270) ~/
+              scrollController.position.viewportDimension + 235) ~/
           235;
+
       int currentSelectedMainCategoryTab = appBloc.state.tabIndex;
+
       if (currentSelectedMainCategoryTab == -1) {
         selectedCategorySlug = "Empty";
       } else {
@@ -80,6 +81,7 @@ class _HomePageState extends State<HomePage> {
                 ?.mainCategories?[currentSelectedMainCategoryTab].slug ??
             '';
       }
+
       if (selectedCategorySlug == '') return;
       if (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
               selectedCategorySlug] ==
@@ -87,12 +89,15 @@ class _HomePageState extends State<HomePage> {
         lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
             selectedCategorySlug] = -1;
       }
+      print(
+          "........${lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[selectedCategorySlug]}/* ${lastIndexSeenByUser}*******************************************************************************");
+
       if (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
               selectedCategorySlug] !=
           lastIndexSeenByUser) {
+        prefetchBoutiques(selectedCategorySlug);
         lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
             selectedCategorySlug] = lastIndexSeenByUser;
-        prefetchBoutiques(selectedCategorySlug);
       }
       if (scrollController.offset >=
           (scrollController.position.maxScrollExtent * 0.7)) {

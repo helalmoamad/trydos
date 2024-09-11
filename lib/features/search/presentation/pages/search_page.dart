@@ -24,6 +24,8 @@ import 'package:trydos/features/search/presentation/widgets/search_circle_catego
 
 import 'package:trydos/features/search/presentation/widgets/trendig_section.dart';
 
+import '../../../../common/test_utils/test_var.dart';
+import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/data/model/pagination_model.dart';
 import '../../../../core/utils/theme_state.dart';
 
@@ -345,6 +347,10 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                   },
                                   child: Container(
                                     height: 65,
+                                    key: TestVariables.kTestMode
+                                        ? Key(WidgetsKey
+                                            .searchButtonInSearchPageKey)
+                                        : null,
                                     decoration: BoxDecoration(
                                         color: Color(0xffFF5F61),
                                         boxShadow: [

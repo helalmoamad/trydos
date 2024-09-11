@@ -121,7 +121,7 @@ class _TabsBarState extends State<TabsBar> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           AnimatedSearchBar(
-                            autoFocus: true,
+                            autoFocus: TestVariables.kTestMode ? false : true,
                             onFieldSubmitted: (text) {
                               if (text.replaceAll(" ", "").length > 2) {
                                 widget.buildSearchResult.value = text.length;
@@ -189,6 +189,9 @@ class _TabsBarState extends State<TabsBar> {
                               });
                             },
                             suffixWidget: Center(
+                              key: TestVariables.kTestMode
+                                  ? Key(WidgetsKey.homeSearchIconKey)
+                                  : null,
                               child: SvgPicture.asset(
                                 AppAssets.searchOutlinedSvg,
                                 height: 20,

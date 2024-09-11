@@ -625,6 +625,12 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                             return ValueListenableBuilder<bool>(
                                 valueListenable: visibleCountries,
                                 builder: (context, visible, _) {
+                                  if (visible) {
+                                    homeBloc.add(GetHomeBoutiqesEvent(
+                                        categorySlug: "Empty",
+                                        offset: "1",
+                                        getWithPagination: false));
+                                  }
                                   visible
                                       ? appBloc
                                           .add(HideBottomNavigationBar(false))
@@ -691,6 +697,13 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                       _prefsRepository
                                                           .setUserCountryIsAvailable(
                                                               1);
+                                                      homeBloc.add(
+                                                          GetHomeBoutiqesEvent(
+                                                              categorySlug:
+                                                                  "Empty",
+                                                              offset: "1",
+                                                              getWithPagination:
+                                                                  false));
                                                     } else {
                                                       showMessage(
                                                           "you have to choose a country",
