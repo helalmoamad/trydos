@@ -72,7 +72,9 @@ class _HomePageState extends State<HomePage> {
               scrollController.position.viewportDimension -
               270) ~/
           235;
+
       int currentSelectedMainCategoryTab = appBloc.state.tabIndex;
+
       if (currentSelectedMainCategoryTab == -1) {
         selectedCategorySlug = "Empty";
       } else {
@@ -80,6 +82,7 @@ class _HomePageState extends State<HomePage> {
                 ?.mainCategories?[currentSelectedMainCategoryTab].slug ??
             '';
       }
+
       if (selectedCategorySlug == '') return;
       if (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
               selectedCategorySlug] ==
@@ -87,12 +90,15 @@ class _HomePageState extends State<HomePage> {
         lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
             selectedCategorySlug] = -1;
       }
+      print(
+          "........${lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[selectedCategorySlug]}/* ${lastIndexSeenByUser}*******************************************************************************");
+
       if (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
               selectedCategorySlug] !=
           lastIndexSeenByUser) {
+        prefetchBoutiques(selectedCategorySlug);
         lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
             selectedCategorySlug] = lastIndexSeenByUser;
-        prefetchBoutiques(selectedCategorySlug);
       }
       if (scrollController.offset >=
           (scrollController.position.maxScrollExtent * 0.7)) {
