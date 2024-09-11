@@ -41,12 +41,12 @@ class _SplashPageState extends State<SplashPage> {
     authBloc = BlocProvider.of<AuthBloc>(context);
 
     homeBloc.add(GetMainCategoriesEvent());
-    homeBloc.add(GetHomeBoutiqesEvent(
-        categorySlug: "Empty", offset: "1", getWithPagination: false));
 
     appBloc.add(ChangeTab(-1));
 
     BlocProvider.of<StoryBloc>(context).add(GetStoryEvent());
+    homeBloc.add(GetHomeBoutiqesEvent(
+        categorySlug: "Empty", offset: "1", getWithPagination: false));
 
     checkAndNavigationCallingPage(context, fromTerminated: true,
         whereToNavigationAfterCheck: () {

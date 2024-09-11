@@ -81,7 +81,6 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
   int lastSectionDisplayed = 0;
   double? minPrice;
   double? maxPrice;
-  double exchangeRate = 0.0;
   String currencySymbol = '';
   late HomeBloc homeBloc;
   bool isExpanded = false;
@@ -217,8 +216,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
       // }
       if ((state.getProductFiltersModel[key]?.filters == null &&
               state.cashedOrginalBoutique &&
-              state.appliedFiltersByUser[key] == null) ||
-          state.getCurrencyForCountryModel == null) {
+              state.appliedFiltersByUser[key] == null)) {
         print('ssss ${state.choosedFiltersByUser}');
         return SizedBox.shrink();
       }
@@ -244,12 +242,9 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
           ? filter_model.Filter()
           : state.getProductFiltersModel[key]?.filters ?? filter_model.Filter();
       if (filters.prices != null) {
-        exchangeRate =
-            state.getCurrencyForCountryModel?.data?.currency?.exchangeRate ?? 1;
-        currencySymbol =
-            state.getCurrencyForCountryModel?.data?.currency?.symbol ?? '\$';
-        minPrice = filters.prices!.minPrice! * exchangeRate;
-        maxPrice = filters.prices!.maxPrice! * exchangeRate;
+        currencySymbol = '\$';
+        minPrice = filters.prices!.minPrice;
+        maxPrice = filters.prices!.maxPrice;
         lowerAndUpperPrices = ValueNotifier(Tuple2(minPrice!, maxPrice!));
       }
       int countOfFilters = 0;
@@ -602,8 +597,6 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                             ? null
                                                             : Key(WidgetsKey
                                                                 .pricesProductListingFilterListKey),
-                                                        exchangeRate:
-                                                            exchangeRate,
                                                         decimalPoint: state
                                                                 .startingSetting
                                                                 ?.decimalPointSetting ??
@@ -683,12 +676,10 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                   hideTitle: widget.hideTitle,
                   fromHomeSearch: widget.fromSearch,
                   searchText: widget.searchText,
-                  exchangeRate: exchangeRate,
                   maxPrice: maxPrice!,
                   minPrice: minPrice!,
                   lowerAndUpperBound: lowerAndUpperPrices!,
                   decimalPoint: state.startingSetting?.decimalPointSetting ?? 2,
-                  pricrRate: exchangeRate,
                   boutiqueSlug: widget.boutiqueSlug,
                   category: widget.category,
                   pricrSymbol: currencySymbol,
@@ -1270,12 +1261,9 @@ Widget choosedOrAppliedFiltersWidget({
         p.appliedFiltersByUser[key]?.filters !=
             c.appliedFiltersByUser[key]?.filters,
     builder: (context, state) {
-      double exchangeRate =
-          state.getCurrencyForCountryModel?.data?.currency?.exchangeRate ?? 1;
-      String currencySymbol =
-          state.getCurrencyForCountryModel?.data?.currency?.symbol ?? '\$';
       filter_model.Filter? filters;
       filter_model.Filter? filtersForSearchText;
+      String currencySymbol = '\$';
       if ((state.choosedFiltersByUser[key]?.filters?.searchText?.length ?? 0) >
           0) {
         filtersForSearchText = state.choosedFiltersByUser[key]?.filters;
@@ -2006,7 +1994,7 @@ Widget choosedOrAppliedFiltersWidget({
                       ),
                       MyTextWidget(
                         filters?.prices?.minPrice != null
-                            ? '${(filters?.prices!.minPrice ?? 1 * exchangeRate).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2).toString()} / '
+                            ? '${(filters?.prices!.minPrice ?? 1)} / '
                             : "",
                         maxLines: 1,
                         textAlign: TextAlign.center,
@@ -2017,7 +2005,7 @@ Widget choosedOrAppliedFiltersWidget({
                       ),
                       MyTextWidget(
                         filters?.prices?.maxPrice != null
-                            ? '${(filters!.prices!.maxPrice! * exchangeRate).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}'
+                            ? '${(filters!.prices!.maxPrice!)}'
                             : "",
                         maxLines: 1,
                         textAlign: TextAlign.center,
