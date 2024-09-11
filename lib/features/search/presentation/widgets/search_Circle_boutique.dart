@@ -13,6 +13,8 @@ import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 
 import '../../../../common/constant/design/assets_provider.dart';
+import '../../../../common/test_utils/test_var.dart';
+import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../app/my_text_widget.dart';
 import '../../../home/data/models/get_product_filters_model.dart';
 
@@ -100,6 +102,9 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                     ),
                     SizedBox(
                       height: 60,
+                      key: TestVariables.kTestMode
+                          ? Key(WidgetsKey.searchPageBoutiqueListKey)
+                          : null,
                       child: ScrollConfiguration(
                         behavior: CupertinoScrollBehavior(),
                         child: ListView.separated(
@@ -208,6 +213,10 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                                     ),
                                     Center(
                                         child: MyTextWidget(
+                                      key: TestVariables.kTestMode
+                                          ? Key(
+                                              '${WidgetsKey.searchPageBoutiqueNameKey}$index')
+                                          : null,
                                       filters.boutiques![index].name!,
                                       style: context.textTheme.titleLarge?.rq
                                           .copyWith(

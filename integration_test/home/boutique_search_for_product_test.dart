@@ -18,15 +18,22 @@ void main() {
   testWidgets(
     'Test search for product in boutique',
     (WidgetTester tester) async {
+      // Initialize the main application
       app.main();
       await tester.pumpAndSettle();
+      // Set test mode to true
       TestVariables.kTestMode = true;
+
       //////////// Register As Guest //////////////
+      // Simulate registering as a guest user using shared scenarios
       await SharedScenarios.registerGuest(tester: tester);
-      ////////////////////////////
+
+      // Define the Finder for the boutiques success status
       final Finder boutiquesSuccessStatus =
           find.byKey(Key(WidgetsKey.boutiquesSuccessStatusKey));
+
       /////////// Test Find Boutiques HomePageCard/////////////////
+      // Verify the presence of the Boutique HomePageCard widget
       await GlobalTestFunctions.findWidget(
         tester: tester,
         actual: boutiquesSuccessStatus,
@@ -34,37 +41,50 @@ void main() {
         successMessage: 'Find Boutiques HomePageCard2 Success',
         failedMessage: 'Find Boutiques HomePageCard2 failed',
       );
+
       ////////////////////////////
+      // Find the first boutique card
       final Finder boutiqueCard1 = find.byKey(
         Key('${WidgetsKey.boutiqueCardKey}0'),
       );
+
       ////////////////////////////
+      // Get the boutique ID from the widget and print it for debugging
       final boutiqueId1 =
           tester.widget<HomePageCard2>(boutiqueCard1).boutniqe.id!;
-      ////////////////////////////
       print('//////// boutiqueCard1  : $boutiqueId1 //////////');
+
       ////////////// Tap on first Boutique HomePageCard //////////////
+      // Tap on the first boutique card and wait for the UI to update
       await Future.delayed(const Duration(seconds: 2));
       await tester.tap(boutiqueCard1);
       await tester.pumpAndSettle();
+
       ///////////////////////////////
+      // Find the product list widget on the boutique page
       final Finder productsList = find.byKey(
         Key(WidgetsKey.productsListKey),
       );
+
       //////////////////////////
+      // Wait for the product list to appear
       await GlobalTestFunctions.waitFor(
         tester,
         productsList,
       );
+
       ///////////// find productsList //////////////
+      // Verify the presence of the product list widget
       await GlobalTestFunctions.findWidget(
         tester: tester,
         actual: productsList,
         withDelayAndPumpAndSettle: false,
-        successMessage: 'Find productsList  Success',
-        failedMessage: 'Find productsList  failed',
+        successMessage: 'Find productsList Success',
+        failedMessage: 'Find productsList failed',
       );
-      //////////// get first product name & id before search from productsList //////////////
+
+      //////////// Get first product name & ID before search //////////////
+      // Get the name and ID of the first product in the list before searching
       final productKey = Key('${WidgetsKey.productInBoutiqueListKey}0');
 
       String productNameBeforeSearch = tester
@@ -77,16 +97,22 @@ void main() {
           .productItem
           .id!
           .toString();
+
       ///////////////////////////
+      // Print the first product name for debugging
       await Future.delayed(const Duration(seconds: 2));
       debugPrint('productNameBeforeSearch : $productNameBeforeSearch');
+
       //////////// Tap to search /////////////
+      // Tap on the search icon to initiate the product search
       final Finder productListingSearchIcon = find.byKey(
         Key(WidgetsKey.productListingSearchIconKey),
       );
       await tester.tap(productListingSearchIcon);
       await tester.pumpAndSettle();
+
       //////////////////////////
+      // Verify the presence of the search input field
       final Finder productListingSearchInput = find.byKey(
         Key(WidgetsKey.productListingSearchInputKey),
       );
@@ -97,13 +123,18 @@ void main() {
         successMessage: 'Find productListingSearchInput Success',
         failedMessage: 'Find productListingSearchInput failed',
       );
-      /////////// get the first three char from the first product Name /////////////////
+
+      /////////// Enter the first three characters of the product name into the search field /////////////////
       String inputTextSearch = productNameBeforeSearch.substring(0, 3);
+
       ////////////////////////////
+      // Enter the search text and pump the widget tree
       await tester.enterText(productListingSearchInput, inputTextSearch);
       await tester.pump();
       await Future.delayed(const Duration(seconds: 1));
-      ///////////// test find loaging  ///////////////
+
+      ///////////// Test find loading ///////////////
+      // Verify that the loading indicator appears while searching
       final Finder boutiqueProductListingLoading = find.byKey(
         Key(WidgetsKey.boutiqueProductListingLoadingKey),
       );
@@ -115,14 +146,17 @@ void main() {
         failedMessage: 'Find boutiqueProductListingLoading failed',
       );
       await tester.pumpAndSettle();
-      //////////// Test search text equals search text in filter widget ////////////////
+
+      //////////// Test that the search text matches the input in the filter widget ////////////////
       final searchText = tester
           .widget<StackedFiltersList>(
               find.byKey(Key(WidgetsKey.productListFilterKey)))
           .searchText
           .toString();
       expect(searchText, equals(inputTextSearch));
-      //////////// get products ids after serach from productsList //////////////
+
+      //////////// Get product IDs after search from productsList //////////////
+      // Iterate through the products in the list after search and collect their IDs
       int productIndex2 = 0;
       List<String> productIdsAfterSearchList = [];
       while (true) {
@@ -142,19 +176,23 @@ void main() {
 
         productIndex2++;
       }
+
       ///////////////////////////
+      // Print the list of product IDs after the search for debugging
       await Future.delayed(const Duration(seconds: 2));
       debugPrint('productIdsAfterSearchList : $productIdsAfterSearchList');
-      ////////////// Test product ID before test in product IDs list after search /////////////
-      bool chackId = false;
+
+      ////////////// Test if the product ID before the search is still in the product list after search /////////////
+      bool checkId = false;
       for (String id in productIdsAfterSearchList) {
         if (id == productIdBeforeSearch) {
-          chackId = true;
+          checkId = true;
           break;
         }
       }
-      // Verify the result
-      expect(chackId, equals(true));
+
+      // Verify that the product ID before search exists in the list of product IDs after search
+      expect(checkId, equals(true));
     },
   );
 }
