@@ -162,6 +162,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                     });
                   }
                   if (url.toString().contains('end')) {
+                    print("54");
                     controller.stopLoading();
                     controller.dispose();
                     if (context.canPop() && context.widget is! SinglePageChat) {
