@@ -67,7 +67,8 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
     debugPrint("asdafsd{${widget.type}");
     debugPrint("asdafsd{${widget.action}");
     debugPrint("asdafsd{${widget.auth_token}");
-    Uri baseUrl = Uri.parse('https://trydos-git-development-yasseromranramaazcoms-projects.vercel.app');
+    Uri baseUrl = Uri.parse(
+        'https://trydos-git-development-yasseromranramaazcoms-projects.vercel.app');
     source = Uri(queryParameters: {
       'uid': widget.uId,
       'authToken': widget.auth_token,
@@ -99,6 +100,9 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
+      print(
+          "///////*************7777777777777777777777777///////////////////////////////////////////${error}");
+
       chatBloc.add(SendErrorChatToServerEvent(
           error: error.toString(), lastPage: "Agora_In_AppWeb_View"));
       GetIt.I<PrefsRepository>().saveRequestsData(
@@ -124,6 +128,8 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                 //   // controller.dispose();
                 // },
                 onReceivedHttpError: (controller, webResources, webErrors) {
+                  print(
+                      "*********************/////////////////////////////////////////////////${webErrors}");
                   // showMessage('Can\'t lunch call , please try again' , showInRelease: true);
                   // GetIt.I<CallsBloc>().add(RejectVideoCallEvent(
                   //     messageId: widget.messageId.toString()));
@@ -132,6 +138,9 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                   // Navigator.pop(context);
                 },
                 onUpdateVisitedHistory: (controller, url, isReload) {
+                  print(
+                      "/////////////////////////////////////////////////${url}");
+
                   log('ring? ${url?.queryParameters.containsKey('ring')}');
                   if (_audioPlayer.state == PlayerState.playing &&
                       widget.isReceivingCall &&
@@ -179,6 +188,9 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                 // },
                 initialUrlRequest: URLRequest(url: WebUri(source.toString())),
                 onPermissionRequest: (controller, request) async {
+                  print(
+                      "///////*************7777777777777777777777777////////////////////////////////////////44/");
+
                   final resources = <PermissionResourceType>[];
                   if (request.resources
                       .contains(PermissionResourceType.CAMERA)) {
@@ -215,6 +227,9 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                 },
 
                 onProgressChanged: (controller, progress) {
+                  print(
+                      "/////////////////////////////////////////////////${progress}");
+
                   setState(() {
                     loadingNotifier.value = progress;
                   });
@@ -223,6 +238,9 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
               ValueListenableBuilder<int>(
                   valueListenable: loadingNotifier,
                   builder: (context, progress, child) {
+                    print(
+                        "///////**********${progress}**4444444444444444*7777777777777777777777777/////////////////////////////////////////*************");
+
                     if (progress < 100)
                       return Center(child: CircularProgressIndicator());
                     if (timer == null && !widget.isReceivingCall) {

@@ -434,12 +434,14 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
               uId: prefsRepository.myChatId!.toString()),
         ));
       } else if (remoteMessage['type'] == 'VoiceCallEvent') {
+        print(remoteMessage);
         GetIt.I<PrefsRepository>().saveRequestsData(
             null, null, null, null, null, null, null,
             error: 'VoiceCallEvent ForeGround Message');
         Message? message;
         try {
           message = Message.fromJson(remoteMessage['message']);
+
           GetIt.I<CallsBloc>()
               .add(UpdateCurrentActiveCallIdEvent(id: message.id.toString()));
         } catch (e, st) {
