@@ -428,7 +428,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                 .hasReachedMax)) {
       return;
     }*/
-    print('scscscs ${event.categorySlug}');
     emit(state.copyWith(getHomeBoutiquesPaginationObjectByMainCategory:
         getHomeBoutiquesPaginationObjectByMainCategory.map((key, value) {
       if (key == event.categorySlug)
@@ -637,7 +636,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     String keyWithoutFilter = '${event.boutiqueSlug}' +
         '${(event.cashedOrginalBoutique) ? 'withoutFilter' : ""}' +
         '${(event.category ?? '')}';
-    print(keyWithoutFilter);
     String key = '${event.boutiqueSlug}' + '${(event.category ?? '')}';
     if (getProductListingWithFiltersPaginationModels[keyWithoutFilter] ==
         null) {
@@ -991,6 +989,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               Map.of(getProductListingWithFiltersPaginationModels),
           appliedFiltersByUser: Map.of(prevAppliedFiltersByUser)));
     }, (r) {
+
+      getProductListingWithFiltersPaginationModels =
+          Map.of(state.getProductListingWithFiltersPaginationModels);
       //  if (state.idForRequest == idForRequest || state.cashedOrginalBoutique) {
       isFailedTheFirstTime.remove('GetProductsWithFiltersEvent');
       try {
@@ -1035,6 +1036,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           countOfProductExpectedByFiltering: r.data!.totalSize,
           getProductFiltersModel: Map.of(data),
         ));
+
       } catch (e, st) {
         print(e);
         print(st);

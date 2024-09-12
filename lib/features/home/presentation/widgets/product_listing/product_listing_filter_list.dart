@@ -242,7 +242,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
           ? filter_model.Filter()
           : state.getProductFiltersModel[key]?.filters ?? filter_model.Filter();
       if (filters.prices != null) {
-        currencySymbol = '\$';
+        currencySymbol = (filters.prices!.minPriceFormatted?.split(' ') ?? ['\$' , '\$'])[1];
         minPrice = filters.prices!.minPrice;
         maxPrice = filters.prices!.maxPrice;
         lowerAndUpperPrices = ValueNotifier(Tuple2(minPrice!, maxPrice!));
@@ -1263,7 +1263,6 @@ Widget choosedOrAppliedFiltersWidget({
     builder: (context, state) {
       filter_model.Filter? filters;
       filter_model.Filter? filtersForSearchText;
-      String currencySymbol = '\$';
       if ((state.choosedFiltersByUser[key]?.filters?.searchText?.length ?? 0) >
           0) {
         filtersForSearchText = state.choosedFiltersByUser[key]?.filters;
@@ -1276,6 +1275,7 @@ Widget choosedOrAppliedFiltersWidget({
       } else {
         filters = state.appliedFiltersByUser[key]?.filters;
       }
+      String currencySymbol = (filters?.prices?.minPriceFormatted?.split(' ') ?? ['\$' , '\$'])[1];
       if (filters == null && (!fromSearch && lowerAndUpperPrices == null)) {
         return SizedBox.shrink();
       }
@@ -1299,7 +1299,6 @@ Widget choosedOrAppliedFiltersWidget({
           (filters?.attributes.isNullOrEmpty ?? true)) {
         return SizedBox.shrink();
       }
-      print(filters?.prices?.maxPrice);
       Widget widget = SizedBox(
         height: 20,
         width: 30,

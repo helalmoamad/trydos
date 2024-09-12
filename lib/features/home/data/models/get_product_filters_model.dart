@@ -391,11 +391,15 @@ class Prices {
   final double? minPrice;
   final double? maxPrice;
   final String? currencySymbol;
+  final String? minPriceFormatted;
+  final String? maxPriceFormatted;
   final List<PriceRange>? priceRanges;
 
   Prices({
     this.minPrice,
     this.maxPrice,
+    this.minPriceFormatted,
+    this.maxPriceFormatted,
     this.currencySymbol,
     this.priceRanges,
   });
@@ -403,12 +407,16 @@ class Prices {
   Prices copyWith({
     double? minPrice,
     double? maxPrice,
+    String? maxPriceFormatted,
+    String? minPriceFormatted,
     String? currencySymbol,
     List<PriceRange>? priceRanges,
   }) =>
       Prices(
         minPrice: minPrice ?? this.minPrice,
         maxPrice: maxPrice ?? this.maxPrice,
+        minPriceFormatted: minPriceFormatted ?? this.minPriceFormatted,
+        maxPriceFormatted: maxPriceFormatted ?? this.maxPriceFormatted,
         currencySymbol: currencySymbol ?? this.currencySymbol,
         priceRanges: priceRanges ?? this.priceRanges,
       );
@@ -417,6 +425,8 @@ class Prices {
         minPrice: json["min_price"].toDouble(),
         maxPrice: json["max_price"].toDouble(),
         currencySymbol: json["currency_symbol"],
+        maxPriceFormatted: json["max_price_formated"],
+        minPriceFormatted: json["min_price_formated"],
         priceRanges: json["priceRanges"] == null
             ? []
             : List<PriceRange>.from(
@@ -426,6 +436,8 @@ class Prices {
   Map<String, dynamic> toJson() => {
         "min_price": minPrice,
         "max_price": maxPrice,
+        "min_price_formated": minPriceFormatted,
+        "max_price_formated": maxPriceFormatted,
         "currency_symbol": currencySymbol,
         "priceRanges": priceRanges == null
             ? []
@@ -436,10 +448,14 @@ class Prices {
 class PriceRange {
   final double? minPrice;
   final double? maxPrice;
+  final String? minPriceFormatted;
+  final String? maxPriceFormatted;
   final String? text;
   final int? count;
 
   PriceRange({
+    this.maxPriceFormatted,
+    this.minPriceFormatted,
     this.minPrice,
     this.maxPrice,
     this.text,
@@ -448,6 +464,8 @@ class PriceRange {
 
   PriceRange copyWith({
     double? minPrice,
+    String? maxPriceFormatted,
+    String? minPriceFormatted,
     double? maxPrice,
     String? text,
     int? count,
@@ -455,6 +473,8 @@ class PriceRange {
       PriceRange(
         minPrice: minPrice ?? this.minPrice,
         maxPrice: maxPrice ?? this.maxPrice,
+        minPriceFormatted: minPriceFormatted ?? this.minPriceFormatted,
+        maxPriceFormatted: maxPriceFormatted ?? this.maxPriceFormatted,
         text: text ?? this.text,
         count: count ?? this.count,
       );
@@ -462,11 +482,15 @@ class PriceRange {
   factory PriceRange.fromJson(Map<String, dynamic> json) => PriceRange(
         minPrice: json["min_price"]?.toDouble(),
         maxPrice: json["max_price"]?.toDouble(),
+        maxPriceFormatted: json["max_price_formated"],
+        minPriceFormatted: json["min_price_formated"],
         text: json["text"],
         count: json["products_count"],
       );
 
   Map<String, dynamic> toJson() => {
+        "min_price_formated": minPriceFormatted,
+        "max_price_formated": maxPriceFormatted,
         "min_price": minPrice,
         "max_price": maxPrice,
         "text": text,

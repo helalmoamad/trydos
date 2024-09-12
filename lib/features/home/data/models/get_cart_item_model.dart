@@ -245,11 +245,12 @@ class Cart {
   final String? vendorName;
   final int? quantity;
   final double? price;
-
+  final String? priceFormatted;
   final double? offerPrice;
   final String? offerPriceFormatted;
   final int? tax;
   final double? discount;
+  final String? discountFormatted;
   final String? slug;
   final String? name;
   final int? countOfPieces;
@@ -275,11 +276,13 @@ class Cart {
     this.vendorName,
     this.quantity,
     this.price,
+    this.priceFormatted,
     this.offerPrice,
     this.offerPriceFormatted,
     this.tax,
     this.countOfPieces,
     this.discount,
+    this.discountFormatted,
     this.slug,
     this.name,
     this.shop,
@@ -306,6 +309,8 @@ class Cart {
     int? quantity,
     double? price,
     int? countOfPieces,
+    String? priceFormatted,
+    String? discountFormatted,
     double? offerPrice,
     String? offerPriceFormatted,
     int? tax,
@@ -328,6 +333,8 @@ class Cart {
         choices: choices ?? this.choices,
         image: image ?? this.image,
         variations: variations ?? this.variations,
+        priceFormatted: priceFormatted ?? this.priceFormatted,
+        discountFormatted: discountFormatted ?? this.discountFormatted,
         variant: variant ?? this.variant,
         availableQuantity: availableQuantity ?? this.availableQuantity,
         maxAllowedQty: maxAllowedQty ?? this.maxAllowedQty,
@@ -374,6 +381,8 @@ class Cart {
         price: json["price"].toDouble(),
         offerPrice: json["offer_price"]?.toDouble(),
         offerPriceFormatted: json["offer_price_formatted"],
+        priceFormatted: json["price_formatted"],
+        discountFormatted: json["discount_formatted"],
         tax: json["tax"],
         discount: json["discount"]?.toDouble(),
         slug: json["slug"],

@@ -172,29 +172,29 @@ class _HomePageState extends State<HomePage> {
         child: Padding(
       padding: HWEdgeInsets.symmetric(horizontal: 0.w),
       child: NotificationListener<ScrollUpdateNotification>(
-        onNotification: (notification) {
-          if (notification.metrics.axis == Axis.horizontal) return false;
-          final currentOffset = notification.metrics.pixels;
-          if (_previousOffset != null) {
-            final distance = (currentOffset - _previousOffset!).abs();
-            final time =
-                notification.dragDetails?.sourceTimeStamp?.inMilliseconds ??
-                    0.000001;
-            _velocity = distance / time;
-            if (scrollController.position.pixels <= 80) {
-              _previousOffset = currentOffset;
-              return true;
-            }
-            if (_velocity! <= (1.5e-8) && _velocity! >= (1.42e-8)) {
-              appBloc.add(ShowOrHideBars(true));
-            } else {
-              appBloc.add(ShowOrHideBars(false));
-            }
-          }
-          debugPrint(_velocity.toString());
-          _previousOffset = currentOffset;
-          return true;
-        },
+        // onNotification: (notification) {
+        //   if (notification.metrics.axis == Axis.horizontal) return false;
+        //   final currentOffset = notification.metrics.pixels;
+        //   if (_previousOffset != null) {
+        //     final distance = (currentOffset - _previousOffset!).abs();
+        //     final time =
+        //         notification.dragDetails?.sourceTimeStamp?.inMilliseconds ??
+        //             0.000001;
+        //     _velocity = distance / time;
+        //     if (scrollController.position.pixels <= 80) {
+        //       _previousOffset = currentOffset;
+        //       return true;
+        //     }
+        //     if (_velocity! <= (1.5e-8) && _velocity! >= (1.42e-8)) {
+        //       appBloc.add(ShowOrHideBars(true));
+        //     } else {
+        //       appBloc.add(ShowOrHideBars(false));
+        //     }
+        //   }
+        //   debugPrint(_velocity.toString());
+        //   _previousOffset = currentOffset;
+        //   return true;
+        // },
         child: CustomScrollView(
           controller: scrollController,
           physics: const ClampingScrollPhysics(),
