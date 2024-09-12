@@ -164,22 +164,25 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                               if (panelController.panelPosition != 1) {
                                 return false;
                               }
-                              if (offsetOfColorsGallerySlider == null) {
-                                final RenderBox renderBox =
-                                    colorsGallerySliderKey.currentContext!
-                                        .findRenderObject() as RenderBox;
-                                offsetOfColorsGallerySlider =
-                                    renderBox.localToGlobal(Offset.zero);
-                              }
-                              if (currentPosition.dx >=
-                                      offsetOfColorsGallerySlider!.dx &&
-                                  currentPosition.dx <=
-                                      (offsetOfColorsGallerySlider!.dx + 200) &&
-                                  currentPosition.dy >=
-                                      (288.h + (35.w + 10.h)) &&
-                                  currentPosition.dy <=
-                                      (288.h + (70.w + 70.w + 10.h))) {
-                                userWantToScrollHorizontally = true;
+                              if(gallery3dControllerForCircles != null) {
+                                if (offsetOfColorsGallerySlider == null) {
+                                  final RenderBox renderBox =
+                                  colorsGallerySliderKey.currentContext!
+                                      .findRenderObject() as RenderBox;
+                                  offsetOfColorsGallerySlider =
+                                      renderBox.localToGlobal(Offset.zero);
+                                }
+                                if (currentPosition.dx >=
+                                    offsetOfColorsGallerySlider!.dx &&
+                                    currentPosition.dx <=
+                                        (offsetOfColorsGallerySlider!.dx +
+                                            200) &&
+                                    currentPosition.dy >=
+                                        (288.h + (35.w + 10.h)) &&
+                                    currentPosition.dy <=
+                                        (288.h + (70.w + 70.w + 10.h))) {
+                                  userWantToScrollHorizontally = true;
+                                }
                               }
                               return userWantToScrollHorizontally;
                             }
@@ -356,7 +359,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                             );
                                           }),
                                     )
-                                  : SizedBox.shrink(),
+                                  : SizedBox(height: 70.w,),
                             ),
                             10.verticalSpace,
                           },

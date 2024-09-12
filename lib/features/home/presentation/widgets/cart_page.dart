@@ -97,7 +97,9 @@ class _CartPageState extends State<CartPage> {
                 visibleCollectionGroups = state.cartCollection!.keys.toList();
                 double totlaPrice = 0;
                 String? priceSymbol ;
+
                 state.cartCollection!.values.toList().forEach((element) {
+                  priceSymbol = (element.first.priceFormatted?.split(' ') ?? ['\$' , '\$'])[1];
                   element.forEach((element) {
                     totlaPrice =
                         totlaPrice + element.offerPrice! * element.quantity!;
