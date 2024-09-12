@@ -30,7 +30,7 @@ abstract class StoriesUrls {
   static Uri get baseUri => Uri.parse(_baseUrlDev);
   static set setBaseUrl(String url) => _baseUrlDev = url;
 
-  static String _baseUrlDev = 'https://stories_staging.antiksef.online';
+  static String _baseUrlDev = 'https://stories_staging.trydos.dev/';
   static const String _baseUrlDevWithHttp =
-      'http://stories_staging.antiksef.online';
+      'https://stories_staging.trydos.dev/';
 }
