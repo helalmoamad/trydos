@@ -96,4 +96,5 @@ class WidgetsKey {
   static const searchButtonInSearchPageKey = 'search_button_in_search_page_key';
   static const appliedFiltersBoutiqueNameKey =
       'applied_filters_boutique_name_key';
+  static const closeFilterPageKey = 'close_filter_page_key';
 }

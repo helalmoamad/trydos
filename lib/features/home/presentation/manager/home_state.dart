@@ -102,7 +102,7 @@ class HomeState {
     this.getHomeBoutiquesPaginationObjectByMainCategory = const {},
   });
 
-  final Map<String , bool> boutiquesThatDidPrefetch;
+  final Map<String, bool> boutiquesThatDidPrefetch;
   final GetStartingSettingsStatus getStartingSettingsStatus;
   final Map<String, int> currentSelectedColorForEveryProduct;
   final GetCommentForProductStatus getCommentForProductStatus;
@@ -118,6 +118,7 @@ class HomeState {
   final Map<String, get_filters.GetProductFiltersModel?> choosedFiltersByUser;
   int? selectedCollection;
   int currentPage;
+
   // String? idForRequest;
   List<String>? searchHistory;
   Map<String, Map<int, List<String>>> addImagesToProductIdForCart;
@@ -161,7 +162,7 @@ class HomeState {
       bool? cashedOrginalBoutique,
       // String? idForRequest,
       get_filters.Filter? prefAppliedFilterForExtendFilter,
-        final Map<String , bool>? boutiquesThatDidPrefetch,
+      final Map<String, bool>? boutiquesThatDidPrefetch,
       Map<String, Map<int, List<String>>>? addImagesToProductIdForCart,
       final List<ImageForAddToCart>? ListitemForAddToCart,
       final GetAllowedCountriesModel? getAllowedCountriesModel,
@@ -215,7 +216,8 @@ class HomeState {
       getCommentForProductModel:
           getCommentForProductModel ?? this.getCommentForProductModel,
       sizes: sizes ?? this.sizes,
-      boutiquesThatDidPrefetch: boutiquesThatDidPrefetch ?? this.boutiquesThatDidPrefetch,
+      boutiquesThatDidPrefetch:
+          boutiquesThatDidPrefetch ?? this.boutiquesThatDidPrefetch,
       // idForRequest: idForRequest ?? this.idForRequest,
       cashedOrginalBoutique:
           cashedOrginalBoutique ?? this.cashedOrginalBoutique,

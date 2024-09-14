@@ -483,6 +483,50 @@ void main() {
       );
 
       expect(filterIconButton, findsNothing);
+
+      ///////////////////  Test X button in filter page /////////////////////////////////////
+      await tester.tap(filterIconButton);
+      await tester.pumpAndSettle();
+      await Future.delayed(const Duration(seconds: 1));
+
+      await tester.tap(resetFiltersButtonWidget);
+
+      await tester.pumpAndSettle();
+
+      await Future.delayed(const Duration(seconds: 2));
+      /////////////// choose filter /////////////////////////////////////
+      await tester.tap(brandCircleFilterWidget);
+
+      await tester.pumpAndSettle();
+      await Future.delayed(const Duration(seconds: 2));
+      //////////////////////  Tap on close icon after filter ///////////////////////////////////////
+      final Finder closeFilterPageIcon = find.byKey(
+        Key(WidgetsKey.closeFilterPageKey),
+      );
+
+      expect(closeFilterPageIcon, findsOneWidget);
+
+      await tester.tap(closeFilterPageIcon);
+
+      await tester.pumpAndSettle();
+
+      await GlobalTestFunctions.findWidget(
+        tester: tester,
+        actual: productsList,
+        withDelayAndPumpAndSettle: false,
+        successMessage: 'Find productsList  Success',
+        failedMessage: 'Find productsList  failed',
+      );
+
+      await GlobalTestFunctions.findNoWidget(
+        tester: tester,
+        actual: appliedFiltersProductListingWidget,
+        withDelayAndPumpAndSettle: false,
+        successMessage: 'Find No Applied Filters Widget Success',
+        failedMessage: 'Find No Applied Filters Widget failed',
+      );
+
+      await Future.delayed(const Duration(seconds: 2));
     },
   );
 }

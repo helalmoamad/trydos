@@ -127,24 +127,24 @@ class _ProductListingPageState extends State<ProductListingPage> {
     //     offset: 1,
     //   ));
     // }
-    if(homeBloc.state.boutiquesThatDidPrefetch[widget.boutiqueSlug] != true) {
-      if (!widget.fromSearch) {
-        homeBloc.add(GetProductFiltersEvent(
-            cashedOrginalBoutique: true,
-            fromHomePageSearch: widget.fromSearch,
-            boutiqueSlug: widget.boutiqueSlug,
-            category: widget.category,
-            searchText: widget.fromSearch ? widget.searchText : null));
-      }
-      if (!widget.fromSearch) {
-        homeBloc.add(GetProductsWithFiltersEvent(
-            cashedOrginalBoutique: !widget.fromSearch,
-            boutiqueSlug: widget.boutiqueSlug,
-            fromSearch: widget.fromSearch,
-            category: widget.category,
-            searchText: widget.fromSearch ? widget.searchText : null,
-            offset: 1));
-      }
+    print(
+        '121212121 ${homeBloc.state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${(true) ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.items.length}');
+    if (!widget.fromSearch) {
+      homeBloc.add(GetProductFiltersEvent(
+          cashedOrginalBoutique: true,
+          fromHomePageSearch: widget.fromSearch,
+          boutiqueSlug: widget.boutiqueSlug,
+          category: widget.category,
+          searchText: widget.fromSearch ? widget.searchText : null));
+    }
+    if (!widget.fromSearch) {
+      homeBloc.add(GetProductsWithFiltersEvent(
+          cashedOrginalBoutique: !widget.fromSearch,
+          boutiqueSlug: widget.boutiqueSlug,
+          fromSearch: widget.fromSearch,
+          category: widget.category,
+          searchText: widget.fromSearch ? widget.searchText : null,
+          offset: 1));
     }
     scrollController.addListener(() {
       if (filterPageExpanded.value) return;
@@ -857,6 +857,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                           color: Color(0xff3C3C3C),
                                                                                         )
                                                                                       : SvgPicture.asset(
+                                                                                          key: TestVariables.kTestMode ? Key(WidgetsKey.closeFilterPageKey) : null,
                                                                                           AppAssets.closeSvg,
                                                                                           width: 15,
                                                                                           height: 15,
