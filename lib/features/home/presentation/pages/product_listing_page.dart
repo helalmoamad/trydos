@@ -836,7 +836,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                               onTap: () {
                                                                                 if (isExpanded) {
                                                                                   prefAppliedFilters = homeBloc.state.prefAppliedFilterForExtendFilter;
-                                                                                  controller.text = prefAppliedFilters!.searchText ?? "";
+                                                                                  controller.text = prefAppliedFilters?.searchText ?? "";
                                                                                   print(homeBloc.state.prefAppliedFilterForExtendFilter?.brands);
                                                                                   homeBloc.add(GetProductFiltersEvent(fromHomePageSearch: widget.fromSearch, cashedOrginalBoutique: false, boutiqueSlug: widget.boutiqueSlug, category: widget.category, searchText: widget.searchText, filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
                                                                                   homeBloc.add(ChangeAppliedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, filtersAppliedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));

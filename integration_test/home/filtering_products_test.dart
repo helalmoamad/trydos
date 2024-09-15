@@ -5,8 +5,11 @@ import 'package:integration_test/integration_test.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/common/test_utils/widgets_keys.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
+import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/home_page_card2.dart';
+import 'package:trydos/features/home/presentation/widgets/product_listing/categories_filter_list.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_item.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 import 'package:trydos/main.dart' as app;
@@ -18,7 +21,7 @@ void main() {
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
   testWidgets(
-    'Filter by cateory in product listing page , filter by brand in product listing page and return one product , filter with category and brand in filter page and return the same results',
+    'Filter by cateory in product listing page , filter by brand in product listing page and return one product , filter with category and brand in filter page and return the same results , Test X button in filter page , Test filter page applied Filters X button',
     (WidgetTester tester) async {
       app.main();
       await tester.pumpAndSettle();
@@ -40,6 +43,12 @@ void main() {
           find.widgetWithText(HomePageCard2, 'best saller');
       // Check if the Boutique with the text 'best saller' is found.
       expect(boutiqueBestSaller, findsOneWidget);
+
+      String boutiqueBestSellerSlug =
+          tester.widget<HomePageCard2>(boutiqueBestSaller).boutniqe.slug ?? '';
+
+      print(
+          '///////// boutique Slug : $boutiqueBestSellerSlug  ////////////////');
 
       await Future.delayed(const Duration(seconds: 2));
       await tester.tap(boutiqueBestSaller);
@@ -111,7 +120,7 @@ void main() {
       await tester.pumpAndSettle();
 
       HomeBloc homeBloc = GetIt.I<HomeBloc>();
-      final homeState = homeBloc.state;
+      HomeState homeState = homeBloc.state;
       expect(homeState.getProductListingWithFiltersPaginationModels, isNotNull);
       ////////////// get the category of the filtered products /////////////////////////////
       int productIndex1 = 0;
@@ -485,21 +494,25 @@ void main() {
       expect(filterIconButton, findsNothing);
 
       ///////////////////  Test X button in filter page /////////////////////////////////////
+      /////////////////////////////////////////////////////////////////////////
+      ///////////////////// close filter  /////////////////////////////
+      expect(appliedFiltersProductListingCloseButton, findsOneWidget);
+      await tester.tap(appliedFiltersProductListingCloseButton);
+      await tester.pumpAndSettle();
+      await Future.delayed(const Duration(seconds: 1));
+      /////////////////////////////////////////////////
+      expect(filterIconButton, findsOneWidget);
       await tester.tap(filterIconButton);
       await tester.pumpAndSettle();
       await Future.delayed(const Duration(seconds: 1));
 
-      await tester.tap(resetFiltersButtonWidget);
-
-      await tester.pumpAndSettle();
-
-      await Future.delayed(const Duration(seconds: 2));
       /////////////// choose filter /////////////////////////////////////
       await tester.tap(brandCircleFilterWidget);
 
       await tester.pumpAndSettle();
       await Future.delayed(const Duration(seconds: 2));
       //////////////////////  Tap on close icon after filter ///////////////////////////////////////
+
       final Finder closeFilterPageIcon = find.byKey(
         Key(WidgetsKey.closeFilterPageKey),
       );
@@ -525,6 +538,64 @@ void main() {
         successMessage: 'Find No Applied Filters Widget Success',
         failedMessage: 'Find No Applied Filters Widget failed',
       );
+
+      await Future.delayed(const Duration(seconds: 2));
+
+      ///////////////////  Test filter page applied Filters X button /////////////////////////////////////
+      /////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////
+      expect(filterIconButton, findsOneWidget);
+      await tester.tap(filterIconButton);
+      await tester.pumpAndSettle();
+      await Future.delayed(const Duration(seconds: 1));
+      ///////////  choose filter /////////////////
+      await tester.tap(brandCircleFilterWidget);
+
+      await tester.pumpAndSettle();
+      await Future.delayed(const Duration(seconds: 3));
+      /////////////////// close applied Filters  //////////////////////////////
+
+      final Finder appliedFiltersPageCloseButton = find.byKey(
+        Key(WidgetsKey.appliedFiltersPageCloseKey),
+      );
+      expect(appliedFiltersPageCloseButton, findsOneWidget);
+      await tester.tap(appliedFiltersPageCloseButton);
+      await tester.pumpAndSettle();
+      await Future.delayed(const Duration(seconds: 2));
+
+      ////////////////////////////
+      final Finder categoriesFilterListFinder =
+          find.byType(CategoriesFilterList);
+      expect(categoriesFilterListFinder, findsOneWidget);
+      String boutiqueSlug = tester
+          .widget<CategoriesFilterList>(categoriesFilterListFinder)
+          .boutiqueSlug;
+
+      String category = tester
+              .widget<CategoriesFilterList>(categoriesFilterListFinder)
+              .category ??
+          '';
+
+      String key2 = boutiqueSlug + (category);
+
+      homeState = homeBloc.state;
+
+      Filter? filters2 = homeState.getProductFiltersModel[key2]?.filters != null
+          ? homeState.getProductFiltersModel[key2]?.filters ?? Filter()
+          : Filter();
+
+      print(
+          'categories length : ${filters2.categories == null ? null : filters2.categories!.length}');
+
+      String boutiqueSlugInFilterData = filters2.boutiques?[0].slug ?? '';
+
+      print(
+          '////// boutiques length : ${filters2.boutiques?.length} /////////////////');
+
+      print(
+          '////// boutique Slug In Filter Data : $boutiqueSlugInFilterData /////////////////');
+
+      expect(boutiqueSlugInFilterData, equals(boutiqueBestSellerSlug));
 
       await Future.delayed(const Duration(seconds: 2));
     },
