@@ -1207,31 +1207,36 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         .toJson();
   }
 
-  prefetchBoutiques(String currentSlug) {
-    for (int i = 0;
-        i <
-            min(
-                (1.sh -
-                            (GetIt.I<StoryBloc>().state.getStoriesStatus !=
-                                    GetStoriesStatus.success
-                                ? 220
-                                : 0) -
-                            50) ~/
-                        235 +
-                    1,
-                (state
-                        .getHomeBoutiquesPaginationObjectByMainCategory[
-                            currentSlug]
-                        ?.items
-                        .length ??
-                    -1));
-        i++) {
+  void prefetchBoutiques(String currentSlug) {
+    int maxItemsVisible = (1.sh -
+                (GetIt.I<StoryBloc>().state.getStoriesStatus !=
+                        GetStoriesStatus.success
+                    ? 220
+                    : 0) -
+                50) ~/
+            235 +
+        1;
+    int boutiqueItemsCount = state
+            .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]
+            ?.items
+            .length ??
+        -1;
+
+    int itemsToPrefetch = min(maxItemsVisible, boutiqueItemsCount);
+
+    debugPrint(
+        '///////// Boutique items To Prefetch : $itemsToPrefetch /////////');
+
+    for (int i = 0; i < itemsToPrefetch; i++) {
       String slug = state
           .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]!
           .items[i]
           .slug
           .toString();
+
       if (state.boutiquesThatDidPrefetch[slug] != true) {
+        debugPrint('///////// Prefetch Boutique Slug : $slug /////////');
+
         add(GetProductFiltersWithoutCancelingPreviousEvents(
             cashedOrginalBoutique: true,
             fromHomePageSearch: false,
@@ -1245,6 +1250,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             category: null,
             searchText: null,
             offset: 1));
+      } else {
+        debugPrint('/////////Did Prefetch For Boutique Slug : $slug /////////');
       }
     }
   }

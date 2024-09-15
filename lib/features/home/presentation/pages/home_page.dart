@@ -69,7 +69,8 @@ class _HomePageState extends State<HomePage> {
     String selectedCategorySlug;
     scrollController.addListener(() {
       int lastIndexSeenByUser = (scrollController.position.pixels +
-              scrollController.position.viewportDimension + 235) ~/
+              scrollController.position.viewportDimension +
+              235) ~/
           235;
 
       int currentSelectedMainCategoryTab = appBloc.state.tabIndex;
@@ -124,6 +125,7 @@ class _HomePageState extends State<HomePage> {
   prefetchBoutiques(String currentSlug) {
     print(
         'rtrth5e445eh ${lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[currentSlug]}');
+
     for (int i = 0;
         i <
             (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
@@ -137,6 +139,8 @@ class _HomePageState extends State<HomePage> {
           .slug
           .toString();
       if (homeBloc.state.boutiquesThatDidPrefetch[slug] != true) {
+        debugPrint('///////// Prefetch Boutique Slug : $slug /////////');
+
         homeBloc.add(GetProductFiltersWithoutCancelingPreviousEvents(
             cashedOrginalBoutique: true,
             fromHomePageSearch: false,
@@ -150,6 +154,8 @@ class _HomePageState extends State<HomePage> {
             category: null,
             searchText: null,
             offset: 1));
+      } else {
+        debugPrint('/////////Did Prefetch For Boutique Slug : $slug /////////');
       }
     }
   }
