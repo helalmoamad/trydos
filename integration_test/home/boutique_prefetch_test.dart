@@ -60,6 +60,7 @@ void main() {
       }
       print(
           '////////// boutiquesSlugs length : ${boutiqueSlugs.length} /////////');
+      await Future.delayed(const Duration(seconds: 2));
       HomeBloc homeBloc = GetIt.I<HomeBloc>();
       HomeState homeState = homeBloc.state;
       ///////////////// check if visible boutiques are pre-fetched and enter each boutique  ////////////////
@@ -71,12 +72,12 @@ void main() {
         Finder boutiqueCardWidget =
             find.byKey(Key('${WidgetsKey.boutiqueCardKey}$i'));
 
-        Finder boutiqueProductListingLoadingWidget =
-            find.byKey(Key(WidgetsKey.boutiqueProductListingLoadingKey));
-
         await tester.tap(boutiqueCardWidget);
         await tester.pump();
-
+        await Future.delayed(const Duration(seconds: 2));
+        Finder boutiqueProductListingLoadingWidget =
+            find.byKey(Key(WidgetsKey.boutiqueProductListingLoadingKey));
+        // ///////////  no loading  /////////
         await GlobalTestFunctions.findNoWidget(
           tester: tester,
           actual: boutiqueProductListingLoadingWidget,
@@ -86,8 +87,18 @@ void main() {
           failedMessage:
               'Find No boutique Product Listing Loading Widget failed',
         );
+        // ///////////  test the data in state for filters and products  /////////
+        expect(
+            homeState.getProductListingWithFiltersPaginationModels, isNotNull);
 
-        final Finder productListFilterWidget =
+        expect(homeState.getProductListingWithFiltersPaginationModels,
+            isNot(equals({})));
+
+        expect(homeState.getProductFiltersModel, isNotNull);
+
+        expect(homeState.getProductFiltersModel, isNot(equals({})));
+        // ///////////  Find product List and filters  /////////
+        Finder productListFilterWidget =
             find.byKey(Key(WidgetsKey.productListFilterKey));
         ///////////////////////////////
         await GlobalTestFunctions.findWidget(
@@ -98,11 +109,26 @@ void main() {
           failedMessage: 'Find product List Filte Widget failed',
         );
         //////////////////////////////
+        final Finder productsList = find.byKey(
+          Key(WidgetsKey.productsListKey),
+        );
+        await GlobalTestFunctions.findWidget(
+          tester: tester,
+          actual: productsList,
+          withDelayAndPumpAndSettle: false,
+          successMessage: 'Find productsList  Success',
+          failedMessage: 'Find productsList  failed',
+        );
+        //////////////////////////////
         await tester.pumpAndSettle();
-
-        ///////////  test the data variable in state for filters and products  not null  /////////
+        await Future.delayed(const Duration(seconds: 2));
+        ////////////// Go Back ////////////////
+        Finder appBarGoBackArrow =
+            find.byKey(Key(WidgetsKey.appBarGoBackArrowKey));
+        await tester.tap(appBarGoBackArrow);
+        await tester.pumpAndSettle();
       }
-      ///////////////////////////////////
+      await Future.delayed(const Duration(seconds: 2));
     },
   );
 }
