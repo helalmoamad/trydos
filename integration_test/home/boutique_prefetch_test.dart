@@ -149,7 +149,7 @@ void main() {
       );
       //////////////////////////////////////////
       testWidgets(
-        'Test prefetch boutiques data when make scroll to home screen',
+        'Test prefetch boutiques data when make scroll to home screen , check no data will be fetched for preFetched boutiques',
         (WidgetTester tester) async {
           app.main();
           await tester.pumpAndSettle();
