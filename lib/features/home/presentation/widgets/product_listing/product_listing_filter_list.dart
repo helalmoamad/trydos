@@ -2069,6 +2069,8 @@ class FilterCircleWidget extends StatefulWidget {
       this.markWidth = 20,
       this.markHeight = 20,
       this.borderColor,
+      this.originalHeight,
+      this.originalWidth,
       this.expandStackedItemsFunction,
       required this.displayFilterMark});
 
@@ -2080,6 +2082,8 @@ class FilterCircleWidget extends StatefulWidget {
   final double paddingValue;
   final double height;
   final double markHeight;
+  final double? originalHeight;
+  final double? originalWidth;
   final bool withBackGroundShadow;
   final bool scale;
   final bool displayFilterMark;
@@ -2117,6 +2121,8 @@ class _FilterCircleWidgetState extends State<FilterCircleWidget> {
                           imageUrl: widget.imageUrl,
                           width: widget.width,
                           height: widget.height,
+                          originalWidth: widget.originalWidth,
+                          originalHeight: widget.originalHeight,
                           borderColor: widget.displayFilterMark
                               ? Color(0xffFF5F61)
                               : widget.borderColor,
@@ -2162,11 +2168,15 @@ class FilterImage extends StatelessWidget {
       required this.withInnerShadow,
       required this.withBackGroundShadow,
       this.borderColor,
+      this.originalHeight,
+      this.originalWidth,
       this.isSvg = false,
       required this.imageUrl});
 
   final double width;
   final double height;
+  final double? originalHeight;
+  final double? originalWidth;
   final bool isSvg;
   final bool withInnerShadow;
   final bool withBackGroundShadow;
@@ -2204,6 +2214,8 @@ class FilterImage extends StatelessWidget {
                       : MyCachedNetworkImage(
                           imageUrl: imageUrl,
                           width: width,
+                          ordinalHeight: originalHeight,
+                          ordinalwidth: originalWidth,
                           imageFit: BoxFit.cover,
                           height: height),
               //Image.asset(imageUrl , fit: BoxFit.cover, width: width, height: height,),

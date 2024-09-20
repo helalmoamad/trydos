@@ -36,6 +36,7 @@ import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/pages/home_page.dart';
 import 'package:trydos/main.dart';
 import 'package:trydos/routes/router.dart';
+import 'common/constant/design/assets_provider.dart';
 import 'common/test_utils/widgets_keys.dart';
 import 'features/app/app_widgets/tabs_bar.dart';
 import 'features/authentication/presentation/pages/first_registeration_page.dart';
@@ -50,12 +51,20 @@ import 'features/home/presentation/manager/home_state.dart';
 import 'features/home/presentation/widgets/cart_page.dart';
 
 Widget get logo {
-  debugPrint('deblogo');
   return Stack(
     alignment: Alignment.bottomCenter,
     children: [
-      logoText,
-      Transform.translate(offset: Offset(-108, 0), child: logoIcon)
+      SvgPicture.asset(
+        AppAssets.logoTextSvg,
+      ),
+      Transform.translate(
+          offset: Offset(-108, 0),
+          child: SvgPicture.asset(
+            AppAssets.logoActiveSvg,
+            width: 50,
+            height: 87,
+          )
+      )
     ],
   );
 }
@@ -540,6 +549,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   }
 
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
+
   @override
   Widget build(BuildContext context) {
     print("${_prefsRepository.language}" +
@@ -631,6 +641,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                     homeBloc.add(GetHomeBoutiqesEvent(
                                         categorySlug: "Empty",
                                         offset: "1",
+                                        context: context,
                                         getWithPagination: false));
                                   }
                                   visible
@@ -704,6 +715,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                               categorySlug:
                                                                   "Empty",
                                                               offset: "1",
+                                                              context: context,
                                                               getWithPagination:
                                                                   false));
                                                     } else {

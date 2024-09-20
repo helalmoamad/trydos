@@ -116,6 +116,8 @@ class CategoriesFilterList extends StatelessWidget {
                                         isSvg: false,
                                         width: 50,
                                         height: 50,
+                                  originalWidth: double.tryParse(filters.categories![index].subCategories![innerIndex].mostViewedProductThumbnail!.originalWidth.toString()),
+                                  originalHeight: double.tryParse(filters.categories![index].subCategories![innerIndex].mostViewedProductThumbnail!.originalHeight.toString()),
                                         categoryName: filters.categories![index]
                                             .subCategories![innerIndex].name
                                             .toString(),
@@ -319,6 +321,8 @@ class CategoriesFilterList extends StatelessWidget {
                                         isSvg: false,
                                         width: 70,
                                         height: 70,
+                                        originalWidth: double.tryParse(filters.categories![index].mostViewedProductThumbnail!.originalWidth.toString()),
+                                    originalHeight: double.tryParse(filters.categories![index].mostViewedProductThumbnail!.originalHeight.toString()),
                                         categoryName: filters
                                             .categories![index].name
                                             .toString(),

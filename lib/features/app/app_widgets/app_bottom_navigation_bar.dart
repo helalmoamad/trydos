@@ -236,9 +236,11 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                     if (context.canPop()) {
                       Navigator.of(context).pop();
                     }
-                    if(state.currentIndex != 0) {
+                    if (state.currentIndex != 0) {
                       homeBloc.add(GetHomeBoutiqesEvent(
-                          offset: '1', categorySlug: 'Empty'));
+                          context: context,
+                          offset: '1',
+                          categorySlug: 'Empty'));
                     }
                     appBloc.add(ChangeBasePage(0));
                     homeBloc.add(ResetAllSelectedAppliedFilterEvent());
@@ -246,7 +248,17 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      state.currentIndex == 0 ? activeLogo : inActiveLogo,
+                      state.currentIndex == 0
+                          ? SvgPicture.asset(
+                              AppAssets.logoActiveSvg,
+                              height: 30,
+                              width: 50,
+                            )
+                          : SvgPicture.asset(
+                              AppAssets.logoActiveSvg,
+                              height: 30,
+                              width: 50,
+                            ),
                       10.verticalSpace,
                       state.currentIndex == 0
                           ? SvgPicture.asset(
@@ -436,8 +448,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                         builder: (_) =>
                                                             EditUrlsPage()));
                                               },
-                                              child:
-                                              MyTextWidget('Edit Urls'),
+                                              child: MyTextWidget('Edit Urls'),
                                             ),
                                             LanguageDropdown(),
                                           ],

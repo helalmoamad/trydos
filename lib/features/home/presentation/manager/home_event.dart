@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
@@ -58,6 +59,7 @@ class GetProductFiltersWithoutCancelingPreviousEvents extends HomeEvent {
       {this.category,
       this.fromHomePageSearch = false,
       required this.boutiqueSlug,
+      required this.context,
       this.searchText,
       this.fromExpandPage = false,
       this.cashedOrginalBoutique = false,
@@ -70,7 +72,7 @@ class GetProductFiltersWithoutCancelingPreviousEvents extends HomeEvent {
   final String? searchText;
   final String? category;
   final bool forceUpdate;
-
+  final BuildContext context;
   final bool fromHomePageSearch;
   final bool fromExpandPage;
   final bool resetAppliesFilters;
@@ -108,9 +110,11 @@ class GetHomeBoutiqesEvent extends HomeEvent {
   final String offset;
   final bool getWithPagination;
   final String categorySlug;
+  final BuildContext context;
 
   const GetHomeBoutiqesEvent({
     required this.offset,
+    required this.context,
     this.getWithPagination = false,
     required this.categorySlug,
   }
@@ -205,12 +209,15 @@ class GetProductsWithFiltersEventWithoutCancelingPreviousEvents extends HomeEven
   final bool? fromChoosed;
   final bool getWithPagination;
   final bool resetChoosedFilters;
+  final BuildContext context;
+
 
   GetProductsWithFiltersEventWithoutCancelingPreviousEvents(
       {required this.boutiqueSlug,
         this.getWithPagination = false,
         this.resetChoosedFilters = true,
         this.searchText,
+        required this.context,
         this.cashedOrginalBoutique = false,
         this.fromChoosed = false,
         this.fromSearch,

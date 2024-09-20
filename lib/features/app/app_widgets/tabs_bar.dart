@@ -422,6 +422,7 @@ class _TabsBarState extends State<TabsBar> {
                                                   homeBloc.add(GetHomeBoutiqesEvent(
                                                       getWithPagination: false,
                                                       offset: "1",
+                                                      context: context,
                                                       categorySlug: homeState
                                                           .mainCategoriesResponseModel!
                                                           .data!
@@ -434,6 +435,7 @@ class _TabsBarState extends State<TabsBar> {
                                                       GetHomeBoutiqesEvent(
                                                           categorySlug: "Empty",
                                                           offset: "1",
+                                                          context: context,
                                                           getWithPagination:
                                                               false));
                                                 }

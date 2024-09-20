@@ -45,7 +45,7 @@ class _HomePageState extends State<HomePage> {
   double? _previousOffset;
   double? _velocity;
   final ScrollController scrollController = ScrollController();
-  Key reRenderingListViewKey = UniqueKey();
+  Map<String , Key> reRenderingListViewKey = {};
   Map<String, int> lastIndexRequestedInEachMainCategoryForPrefetchBoutiques =
       {};
 
@@ -69,7 +69,8 @@ class _HomePageState extends State<HomePage> {
     String selectedCategorySlug;
     scrollController.addListener(() {
       int lastIndexSeenByUser = (scrollController.position.pixels +
-              scrollController.position.viewportDimension + 235) ~/
+              scrollController.position.viewportDimension +
+              235) ~/
           235;
 
       int currentSelectedMainCategoryTab = appBloc.state.tabIndex;
@@ -111,6 +112,7 @@ class _HomePageState extends State<HomePage> {
                     selectedCategorySlug]!
                 .page
                 .toString(),
+            context: context,
             getWithPagination: true));
       }
       if (scrollController.position.pixels <= 80) {
@@ -126,9 +128,12 @@ class _HomePageState extends State<HomePage> {
         'rtrth5e445eh ${lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[currentSlug]}');
     for (int i = 0;
         i <
-            (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
+            min(homeBloc
+        .state
+            .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]!
+            .items.length , (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
                     currentSlug] ??
-                0);
+                0));
         i++) {
       String slug = homeBloc
           .state
@@ -140,10 +145,12 @@ class _HomePageState extends State<HomePage> {
         homeBloc.add(GetProductFiltersWithoutCancelingPreviousEvents(
             cashedOrginalBoutique: true,
             fromHomePageSearch: false,
+            context: context,
             boutiqueSlug: slug,
             category: null,
             searchText: null));
         homeBloc.add(GetProductsWithFiltersEventWithoutCancelingPreviousEvents(
+            context: context,
             cashedOrginalBoutique: true,
             boutiqueSlug: slug,
             fromSearch: false,
@@ -253,12 +260,14 @@ class _HomePageState extends State<HomePage> {
                             .getHomeBoutiquesPaginationObjectByMainCategory[
                                 currentSlug]
                             ?.paginationStatus;
-                    if (rebuild) {
-                      reRenderingListViewKey = UniqueKey();
+                    if (!p.reRequestTheseBoutiques.containsKey(currentSlug) && c.reRequestTheseBoutiques[currentSlug] == true) {
+                      print('buildddddddddddddddddddddddddd');
+                      reRenderingListViewKey[currentSlug] = UniqueKey();
                     }
                     return rebuild;
                   },
                   builder: (context, homeState) {
+                    print('reRenderingListViewKey $reRenderingListViewKey');
                     String? currentSlug = appState.tabIndex != -1
                         ? (homeState.mainCategoriesResponseModel?.data
                                 ?.mainCategories?[appState.tabIndex].slug ??
@@ -353,7 +362,7 @@ class _HomePageState extends State<HomePage> {
                     return sliverListSeparated(
                       key: TestVariables.kTestMode
                           ? Key(WidgetsKey.boutiquesSuccessStatusKey)
-                          : reRenderingListViewKey,
+                          : reRenderingListViewKey[currentSlug],
                       itemBuilder: (_, index) => Padding(
                           padding: HWEdgeInsets.symmetric(horizontal: 15.w),
                           child: HomePageCard2(
