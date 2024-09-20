@@ -146,9 +146,6 @@ class BasePage extends StatefulWidget {
 
 handleOpenChatPageFromNotificationInBackground(String? prevMessageId,
     {required Message message}) async {
-  print(
-      "-*******----------------*****************---------------***********---------");
-
   DealWithMessagesStoredFromBackground();
   DealWithChatsToDeleteFromBackground();
   DealWithChatsToEditStoredFromBackground();
@@ -388,6 +385,10 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
       print("//////////////////////////////////////////////${event.data}");
       if (remoteMessage['type'] == 'RefuseCallEvent') {
         Map<String, dynamic> data = remoteMessage;
+        print(remoteMessage);
+        print(
+            "*/*********************************************${remoteMessage["type"]}");
+
         GetIt.I<PrefsRepository>().saveRequestsData(
             null, null, null, null, null, null, null,
             error: 'RefuseCall for message ForeGround ${data['message_id']}');
@@ -515,6 +516,10 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
             data['last_message_id'],
             DateTime.parse(data['received_at'])));
       } else {
+        print(remoteMessage);
+        print(
+            "*/****************7777777777777*****************************${remoteMessage["message"]}");
+
         Message message = Message.fromJson(remoteMessage['message']);
         String prevMessageId = remoteMessage['prev_message_id'].toString();
         chatBloc.add(AddChannelToChannels(message: message));
@@ -632,7 +637,9 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                         categorySlug: "Empty",
                                         offset: "1",
                                         getWithPagination: false));
+                                    homeBloc.add(GetMainCategoriesEvent());
                                   }
+
                                   visible
                                       ? appBloc
                                           .add(HideBottomNavigationBar(false))
@@ -699,13 +706,6 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                       _prefsRepository
                                                           .setUserCountryIsAvailable(
                                                               1);
-                                                      homeBloc.add(
-                                                          GetHomeBoutiqesEvent(
-                                                              categorySlug:
-                                                                  "Empty",
-                                                              offset: "1",
-                                                              getWithPagination:
-                                                                  false));
                                                     } else {
                                                       showMessage(
                                                           "you have to choose a country",

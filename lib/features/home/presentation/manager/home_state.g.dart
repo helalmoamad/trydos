@@ -174,14 +174,19 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           ? null
           : GetAllowedCountriesModel.fromJson(
               json['getAllowedCountriesModel'] as Map<String, dynamic>),
+      currentIndexForMainCategoryEvent:
+          (json['currentIndexForMainCategoryEvent'] as num?)?.toInt() ?? 0,
       prefAppliedFilterForExtendFilter:
           json['prefAppliedFilterForExtendFilter'] == null
               ? null
-              : get_filters.Filter.fromJson(json['prefAppliedFilterForExtendFilter']
-                  as Map<String, dynamic>),
+              : get_filters.Filter.fromJson(
+                  json['prefAppliedFilterForExtendFilter']
+                      as Map<String, dynamic>),
       ListitemForAddToCart: (json['ListitemForAddToCart'] as List<dynamic>?)
           ?.map((e) => ImageForAddToCart.fromJson(e as Map<String, dynamic>))
           .toList(),
+      isExpandedForListingPage:
+          json['isExpandedForListingPage'] as bool? ?? false,
       countOfProductExpectedByFiltering:
           (json['countOfProductExpectedByFiltering'] as num?)?.toInt(),
       getCartItemsStatus: $enumDecodeNullable(
@@ -205,6 +210,31 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
                             Products.fromJson(value as Map<String, dynamic>))),
               ) ??
               const {},
+      getProductListingWithFiltersPaginationWithPrefetchModels:
+          (json['getProductListingWithFiltersPaginationWithPrefetchModels']
+                      as Map<String, dynamic>?)
+                  ?.map(
+                (k, e) => MapEntry(
+                    k,
+                    e == null
+                        ? null
+                        : PaginationModel<Products>.fromJson(
+                            e as Map<String, dynamic>,
+                            (value) => Products.fromJson(
+                                value as Map<String, dynamic>))),
+              ) ??
+              const {},
+      getProductFiltersWithPrefetchModel:
+          (json['getProductFiltersWithPrefetchModel'] as Map<String, dynamic>?)
+                  ?.map(
+                (k, e) => MapEntry(
+                    k,
+                    e == null
+                        ? null
+                        : get_filters.GetProductFiltersModel.fromJson(
+                            e as Map<String, dynamic>)),
+              ) ??
+              const {},
       currentSelectedColorForEveryProduct:
           (json['currentSelectedColorForEveryProduct'] as Map<String, dynamic>?)
                   ?.map(
@@ -213,6 +243,13 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               const {},
       boutiquesThatDidPrefetch:
           (json['boutiquesThatDidPrefetch'] as Map<String, dynamic>?)?.map(
+                (k, e) => MapEntry(k, e as bool),
+              ) ??
+              const {},
+      boutiquesForEveryMainCategoryThatDidPrefetch:
+          (json['boutiquesForEveryMainCategoryThatDidPrefetch']
+                      as Map<String, dynamic>?)
+                  ?.map(
                 (k, e) => MapEntry(k, e as bool),
               ) ??
               const {},
@@ -242,6 +279,8 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
 
 Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'boutiquesThatDidPrefetch': instance.boutiquesThatDidPrefetch,
+      'boutiquesForEveryMainCategoryThatDidPrefetch':
+          instance.boutiquesForEveryMainCategoryThatDidPrefetch,
       'getStartingSettingsStatus': _$GetStartingSettingsStatusEnumMap[
           instance.getStartingSettingsStatus]!,
       'currentSelectedColorForEveryProduct':
@@ -264,7 +303,17 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
               e?.toJson(
                 (value) => value.toJson(),
               ))),
+      'getProductListingWithFiltersPaginationWithPrefetchModels': instance
+          .getProductListingWithFiltersPaginationWithPrefetchModels
+          .map((k, e) => MapEntry(
+              k,
+              e?.toJson(
+                (value) => value.toJson(),
+              ))),
       'getProductFiltersModel': instance.getProductFiltersModel
+          .map((k, e) => MapEntry(k, e?.toJson())),
+      'getProductFiltersWithPrefetchModel': instance
+          .getProductFiltersWithPrefetchModel
           .map((k, e) => MapEntry(k, e?.toJson())),
       'appliedFiltersByUser':
           instance.appliedFiltersByUser.map((k, e) => MapEntry(k, e?.toJson())),
@@ -272,6 +321,7 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           instance.choosedFiltersByUser.map((k, e) => MapEntry(k, e?.toJson())),
       'selectedCollection': instance.selectedCollection,
       'currentPage': instance.currentPage,
+      'isExpandedForListingPage': instance.isExpandedForListingPage,
       'searchHistory': instance.searchHistory,
       'addImagesToProductIdForCart': instance.addImagesToProductIdForCart.map(
           (k, e) => MapEntry(k, e.map((k, e) => MapEntry(k.toString(), e)))),
@@ -321,6 +371,8 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'getProductDetailWithoutRelatedProductsModel':
           instance.getProductDetailWithoutRelatedProductsModel?.toJson(),
       'cashedOrginalBoutique': instance.cashedOrginalBoutique,
+      'currentIndexForMainCategoryEvent':
+          instance.currentIndexForMainCategoryEvent,
       'startingSetting': instance.startingSetting?.toJson(),
       'CurrentColorSizeForCart': instance.CurrentColorSizeForCart,
       'currentQuantityForCart': instance.currentQuantityForCart,

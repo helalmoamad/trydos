@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
 
 class CountryDropdown extends StatefulWidget {
   final List<Country> countries;
@@ -16,8 +19,10 @@ class CountryDropdown extends StatefulWidget {
 class _CountryDropdownState extends State<CountryDropdown> {
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
   String? selectedCountry;
+  late HomeBloc homeBloc;
   @override
   void initState() {
+    homeBloc = BlocProvider.of<HomeBloc>(context);
     super.initState();
   }
 
@@ -40,6 +45,9 @@ class _CountryDropdownState extends State<CountryDropdown> {
               selectedCountry = newValue;
               _prefsRepository.setUserChoosedCountryIso(newValue);
             });
+            homeBloc.add(GetHomeBoutiqesEvent(
+                categorySlug: "Empty", offset: "1", getWithPagination: false));
+            homeBloc.add(GetMainCategoriesEvent());
           },
           // buttonHeight: 40,
           // buttonWidth: 1.sw / 2,

@@ -428,6 +428,9 @@ class _TabsBarState extends State<TabsBar> {
                                                           .mainCategories![
                                                               index]
                                                           .slug!));
+                                                  homeBloc.add(
+                                                      ChangeCurrentIndexForMainCategoryEvent(
+                                                          index: index));
                                                 } else {
                                                   appBloc.add(ChangeTab(-1));
                                                   homeBloc.add(
@@ -436,6 +439,9 @@ class _TabsBarState extends State<TabsBar> {
                                                           offset: "1",
                                                           getWithPagination:
                                                               false));
+                                                  homeBloc.add(
+                                                      ChangeCurrentIndexForMainCategoryEvent(
+                                                          index: -1));
                                                 }
 
                                                 /* appBloc.add(ChangeTab(index));

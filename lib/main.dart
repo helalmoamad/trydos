@@ -109,7 +109,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     if (remoteMessage['type'] == 'VideoCallEvent' ||
         remoteMessage['type'] == 'VoiceCallEvent') {
       String currentUuid = const Uuid().v4();
-      Map<String, dynamic> data = remoteMessage;
+      Map<String, dynamic> data = remoteMessage["message"];
       if (DateTime.now()
               .difference(HelperFunctions.getZonedDate(
                   DateTime.parse(data['created_at'])))
@@ -192,6 +192,10 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       GetIt.I<PrefsRepository>()
           .setRemovedChatFromBackground(data['channel_id'].toString());
     } else {
+      print(remoteMessage);
+      print(
+          "*/*********************************************${remoteMessage['message']}");
+
       if (remoteMessage['message'] == null) return;
       Message myMessage = Message.fromJson(remoteMessage['message']);
       if (myMessage.senderUserId != GetIt.I<PrefsRepository>().myChatId) {

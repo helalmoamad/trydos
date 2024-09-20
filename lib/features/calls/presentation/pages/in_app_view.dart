@@ -28,13 +28,13 @@ class AgoraInAppWebView extends StatefulWidget {
 
   AgoraInAppWebView(
       {required this.messageId,
-        required this.action,
-        required this.type,
-        required this.channelId,
-        required this.auth_token,
-        required this.uId,
-        this.isReceivingCall = true,
-        super.key});
+      required this.action,
+      required this.type,
+      required this.channelId,
+      required this.auth_token,
+      required this.uId,
+      this.isReceivingCall = true,
+      super.key});
 
   @override
   State<AgoraInAppWebView> createState() => _AgoraInAppWebViewState();
@@ -67,8 +67,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
     debugPrint("asdafsd{${widget.type}");
     debugPrint("asdafsd{${widget.action}");
     debugPrint("asdafsd{${widget.auth_token}");
-    Uri baseUrl = Uri.parse(
-        'https://trydos-git-development-yasseromranramaazcoms-projects.vercel.app');
+    Uri baseUrl = Uri.parse('https://trydos-front.vercel.app');
     source = Uri(queryParameters: {
       'uid': widget.uId,
       'authToken': widget.auth_token,
@@ -203,7 +202,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                   if (request.resources
                       .contains(PermissionResourceType.MICROPHONE)) {
                     final microphoneStatus =
-                    await Permission.microphone.request();
+                        await Permission.microphone.request();
                     if (!microphoneStatus.isDenied) {
                       resources.add(PermissionResourceType.MICROPHONE);
                     }
@@ -213,7 +212,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                       .contains(PermissionResourceType.CAMERA_AND_MICROPHONE)) {
                     final cameraStatus = await Permission.camera.request();
                     final microphoneStatus =
-                    await Permission.microphone.request();
+                        await Permission.microphone.request();
                     if (!cameraStatus.isDenied && !microphoneStatus.isDenied) {
                       resources
                           .add(PermissionResourceType.CAMERA_AND_MICROPHONE);
