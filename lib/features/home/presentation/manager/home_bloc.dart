@@ -14,6 +14,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/common/helper/show_message.dart';
+import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
@@ -237,7 +238,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       isFailedTheFirstTime.remove('GetStartingSettingsEvent');
       // if (r.data!.startingSetting!.smartLook ?? false) {
       //   Logger(printer: PrettyPrinter(methodCount: 0)).i('SMARTLOOK STARTED!');
-      initializeSmartLook();
+
+      // initializeSmartLook();
+
       // }
       emit(state.copyWith(
           startingSetting: r.data!.startingSetting,
@@ -887,7 +890,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     getProductListingWithFiltersPaginationModels =
     Map.of(state.getProductListingWithFiltersPaginationModels);
     Map<String, bool> boutiquesThatDidPrefetch =
-    Map.of(state.boutiquesThatDidPrefetch);
+        Map.of(state.boutiquesThatDidPrefetch);
     String keyWithoutFilter = '${event.boutiqueSlug}' +
         '${(event.cashedOrginalBoutique) ? 'withoutFilter' : ""}' +
         '${(event.category ?? '')}';
@@ -1254,34 +1257,36 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         .toJson();
   }
 
-  prefetchBoutiques(String currentSlug, BuildContext context) {
-    for (int i = 0;
-    i <
-        min(
-            (1.sh -
-                (GetIt
-                    .I<StoryBloc>()
-                    .state
-                    .getStoriesStatus !=
-                    GetStoriesStatus.success
+  void prefetchBoutiques(String currentSlug , BuildContext context) {
+    int maxItemsVisible = (1.sh -
+                (GetIt.I<StoryBloc>().state.getStoriesStatus !=
+                        GetStoriesStatus.success
                     ? 220
                     : 0) -
                 50) ~/
-                235 +
-                1,
-            (state
-                .getHomeBoutiquesPaginationObjectByMainCategory[
-            currentSlug]
-                ?.items
-                .length ??
-                -1));
-    i++) {
+            235 +
+        1;
+    int boutiqueItemsCount = state
+            .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]
+            ?.items
+            .length ??
+        -1;
+
+    int itemsToPrefetch = min(maxItemsVisible, boutiqueItemsCount);
+
+    debugPrint(
+        '///////// Boutique items To Prefetch : $itemsToPrefetch /////////');
+
+    for (int i = 0; i < itemsToPrefetch; i++) {
       String slug = state
           .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]!
           .items[i]
           .slug
           .toString();
+
       if (state.boutiquesThatDidPrefetch[slug] != true) {
+        debugPrint('///////// Prefetch Boutique Slug : $slug /////////');
+
         add(GetProductFiltersWithoutCancelingPreviousEvents(
             cashedOrginalBoutique: true,
             fromHomePageSearch: false,
@@ -1297,6 +1302,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             category: null,
             searchText: null,
             offset: 1));
+      } else {
+        debugPrint('/////////Did Prefetch For Boutique Slug : $slug /////////');
       }
     }
   }
@@ -1442,6 +1449,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     Map<String, bool> boutiquesThatDidPrefetch =
     Map.of(state.boutiquesThatDidPrefetch);
     boutiquesThatDidPrefetch[key] = true;
+    ///// for test /////
+    TestVariables.getProductFiltersForBoutiqueFlag.putIfAbsent(key, () => true);
+    print(
+        '/////////  Product Filters For Boutique Flag ${TestVariables.getProductFiltersForBoutiqueFlag} //////////////');
+    //////////////////////////////////
     Map<String, GetProductFiltersStatus> statuses =
     Map.of(state.getProductFiltersStatus);
     statuses[key] = GetProductFiltersStatus.loading;

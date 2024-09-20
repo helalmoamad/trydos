@@ -126,6 +126,7 @@ class _HomePageState extends State<HomePage> {
   prefetchBoutiques(String currentSlug) {
     print(
         'rtrth5e445eh ${lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[currentSlug]}');
+
     for (int i = 0;
         i <
             min(homeBloc
@@ -142,6 +143,8 @@ class _HomePageState extends State<HomePage> {
           .slug
           .toString();
       if (homeBloc.state.boutiquesThatDidPrefetch[slug] != true) {
+        debugPrint('///////// Prefetch Boutique Slug : $slug /////////');
+
         homeBloc.add(GetProductFiltersWithoutCancelingPreviousEvents(
             cashedOrginalBoutique: true,
             fromHomePageSearch: false,
@@ -157,6 +160,8 @@ class _HomePageState extends State<HomePage> {
             category: null,
             searchText: null,
             offset: 1));
+      } else {
+        debugPrint('/////////Did Prefetch For Boutique Slug : $slug /////////');
       }
     }
   }
