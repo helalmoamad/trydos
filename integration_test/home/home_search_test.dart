@@ -139,14 +139,9 @@ void main() {
       final Finder searchButtonInSearchPageKey =
           find.byKey(Key(WidgetsKey.searchButtonInSearchPageKey));
       final Finder scrollableFinder = find.byType(SearchPage);
-      // Scroll until  is visible
-      if (!tester.any(searchButtonInSearchPageKey)) {
-        await tester.scrollUntilVisible(
-          searchButtonInSearchPageKey,
-          300.0, // This is the scroll increment, adjust as necessary
-          scrollable: scrollableFinder, // Find the scrollable widget
-        );
-      }
+
+      await tester.drag(scrollableFinder, const Offset(0, 2000));
+      await tester.pumpAndSettle();
 
       expect(searchButtonInSearchPageKey, findsOneWidget);
 

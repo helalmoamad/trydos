@@ -315,7 +315,7 @@ class CategoriesFilterList extends StatelessWidget {
                                         key: TestVariables.kTestMode == false
                                             ? null
                                             : Key(
-                                                '${WidgetsKey.categoryCircleProductListingFilterKey}$index'),
+                                                '${WidgetsKey.categoryCircleWithSubProductListingFilterKey}$index'),
                                         isSvg: false,
                                         width: 70,
                                         height: 70,
@@ -493,6 +493,10 @@ class CategoriesFilterList extends StatelessWidget {
               return filters.categories![index].mostViewedProductThumbnail !=
                       null
                   ? FilterCircleWidget(
+                      key: TestVariables.kTestMode == false
+                          ? null
+                          : Key(
+                              '${WidgetsKey.categoryCircleWithOutSubProductListingFilterKey}$index'),
                       isSvg: false,
                       width: 65,
                       height: 65,

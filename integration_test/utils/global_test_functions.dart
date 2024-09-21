@@ -97,4 +97,41 @@ class GlobalTestFunctions {
     await tester.enterText(otpItem6, number);
     await tester.pumpAndSettle();
   }
+
+  static Future<void> scrollAndTest({
+    required WidgetTester tester,
+    required int index,
+    required String widgetKey,
+    required Finder widgetToScroll,
+    required Function() operations,
+  }) async {
+    while (true) {
+      Finder finderWidget = find.byKey(Key('$widgetKey$index'));
+
+      try {
+        expect(finderWidget, findsOneWidget);
+
+        print('find index : $index');
+
+        operations();
+
+        index++;
+      } catch (e) {
+        // If the item isn't found, try scrolling to the right
+        try {
+          await tester.drag(widgetToScroll,
+              const Offset(0, -400)); // Scroll buttom by 400 pixels
+          await tester.pumpAndSettle();
+
+          print('scroll for $index');
+          expect(finderWidget, findsOneWidget);
+          print('find index after scroll : $index');
+        } catch (scrollError) {
+          // If the scroll fails, we have reached the end of the list
+          print('scroll fails, we have reached the end of the list');
+          break;
+        }
+      }
+    }
+  }
 }

@@ -68,8 +68,11 @@ class WidgetsKey {
   static const colorsProductListingFilterListKey = 'colors_filter_list_key';
   static const pricesProductListingFilterListKey = 'prices_filter_list_key';
 
-  static const categoryCircleProductListingFilterKey =
-      'category_circle_filter_key';
+  static const categoryCircleWithOutSubProductListingFilterKey =
+      'category_circle_without_sub_filter_key';
+  static const categoryCircleWithSubProductListingFilterKey =
+      'category_circle_with_sub_filter_key';
+
   static const brandCircleProductListingFilterKey = 'brand_circle_filter_key';
   static const brandProductListingFilterNameKey = 'brand_filter_name_key';
 
@@ -101,4 +104,6 @@ class WidgetsKey {
   static const appliedFiltersPageCloseKey = 'applied_filters_page_close_key';
 
   static const homepageScrollKey = 'applied_filters_page_close_key';
+  static const filterPageScrollKey = 'filter_page_scroll_key';
+  static const productListingScrollKey = 'product_listing_scroll_key';
 }

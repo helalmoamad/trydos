@@ -351,6 +351,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                         ?.totalSize,
                                 builder: (context, state) {
                                   return CustomScrollView(
+                                      key: TestVariables.kTestMode
+                                          ? Key(WidgetsKey.productListingScrollKey )
+                                          : null,
+                                         
                                       controller: scrollController,
                                       physics: state.getProductFiltersModel[key]
                                                       ?.filters?.totalSize ==
