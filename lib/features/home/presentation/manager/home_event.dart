@@ -121,39 +121,15 @@ class GetHomeBoutiqesEvent extends HomeEvent {
   // final bool getWithPagination;
   final String offset;
   final bool getWithPagination;
-
+  final bool getWithPrefetchForBoutiques;
   final String categorySlug;
   final BuildContext context;
 
   const GetHomeBoutiqesEvent({
     required this.offset,
     required this.context,
+    this.getWithPrefetchForBoutiques = false,
     this.getWithPagination = false,
-    required this.categorySlug,
-  }
-      //  {this.getWithPagination = false}
-      );
-
-  @override
-  // TODO: implement props
-  List<Object?> get props => [];
-}
-
-class GetHomeBoutiquesPrefetchEvent extends HomeEvent {
-  // final bool getWithPagination;
-  final String offset;
-  final bool getWithScroll;
-  final bool getWithPrefetchForMainCategory;
-  final String categorySlug;
-  final int indexCategorySlug;
-  final BuildContext context;
-
-  const GetHomeBoutiquesPrefetchEvent({
-    required this.offset,
-    required this.context,
-    this.getWithScroll = false,
-    this.indexCategorySlug = 0,
-    this.getWithPrefetchForMainCategory = false,
     required this.categorySlug,
   }
       //  {this.getWithPagination = false}

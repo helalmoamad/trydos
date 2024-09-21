@@ -647,11 +647,13 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                 builder: (context, visible, _) {
                                   if (visible) {
                                     homeBloc.add(GetHomeBoutiqesEvent(
+                                        getWithPrefetchForBoutiques: true,
                                         categorySlug: "Empty",
                                         offset: "1",
                                         context: context,
                                         getWithPagination: false));
-                                    homeBloc.add(GetMainCategoriesEvent(context: context));
+                                    homeBloc.add(GetMainCategoriesEvent(
+                                        context: context));
                                   }
 
                                   visible
