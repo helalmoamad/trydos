@@ -117,7 +117,11 @@ void main() {
 
       String boutiqueId = filters.boutiques![index].id.toString();
 
+      String boutiqueBestSellerSlug = filters.boutiques![index].slug.toString();
+
       print('////////////// Boutique ID : $boutiqueId //////////////');
+      print(
+          '///////// boutique Slug : $boutiqueBestSellerSlug  ////////////////');
 
       //////////////////////////////////////////////////
 
@@ -210,6 +214,16 @@ void main() {
       print('is belong to boutique : $check');
 
       expect(check, isTrue);
+
+      String boutiqueSlugInFilterData = filters2.boutiques?[0].slug ?? '';
+
+      print(
+          '////// boutiques length : ${filters2.boutiques?.length} /////////////////');
+
+      print(
+          '////// boutique Slug In Filter Data : $boutiqueSlugInFilterData /////////////////');
+
+      expect(boutiqueSlugInFilterData, equals(boutiqueBestSellerSlug));
 
       await Future.delayed(const Duration(seconds: 2));
     },

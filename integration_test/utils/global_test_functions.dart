@@ -34,8 +34,7 @@ class GlobalTestFunctions {
           findsOneWidget);
       debugPrint(successMessage);
     } catch (e) {
-      print('//////// $failedMessage Failure: //////////\n $e');
-      rethrow;
+      fail('//////// $failedMessage Failure: //////////\n $e');
     }
     if (withDelayAndPumpAndSettle) {
       await tester.pumpAndSettle();
@@ -58,8 +57,7 @@ class GlobalTestFunctions {
           widgetType == null ? actual : find.byType(widgetType), findsNothing);
       debugPrint(successMessage);
     } catch (e) {
-      print('//////// $failedMessage Failure: //////////\n $e');
-      rethrow;
+      fail('//////// $failedMessage Failure: //////////\n $e');
     }
     if (withDelayAndPumpAndSettle) {
       await tester.pumpAndSettle();

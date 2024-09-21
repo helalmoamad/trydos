@@ -1,3 +1,5 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 extension ScopeApi on String {
   String get _api => 'api';
 
@@ -70,7 +72,7 @@ abstract class MarketUrls {
 
   static set setBaseUrl(String url) => _baseUrlDev = url;
 
-  static String _baseUrlDev = 'https://market_under_dev_backend.trydos.dev';
+  static String _baseUrlDev = dotenv.env['MARKET_URL']!;
   static const String _baseUrlDevWithHttp =
       'http://market_under_dev_backend.trydos.dev';
 }

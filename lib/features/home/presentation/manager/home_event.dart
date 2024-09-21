@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
@@ -63,6 +64,7 @@ class GetProductWithFiltersWithoutCancelingPreviousEvents extends HomeEvent {
       {this.category,
       this.fromHomePageSearch = false,
       required this.boutiqueSlug,
+      required this.context,
       this.getWithoutFilter = false,
       this.indexOfCategory = 0,
       this.searchText,
@@ -80,6 +82,7 @@ class GetProductWithFiltersWithoutCancelingPreviousEvents extends HomeEvent {
   final String? category;
   final int indexOfCategory;
   final bool forceUpdate;
+  final BuildContext context;
   final List<String> categorySlugs;
   final bool fromHomePageSearch;
   final bool fromExpandPage;
@@ -119,9 +122,11 @@ class GetHomeBoutiqesEvent extends HomeEvent {
   final bool getWithPagination;
 
   final String categorySlug;
+  final BuildContext context;
 
   const GetHomeBoutiqesEvent({
     required this.offset,
+    required this.context,
     this.getWithPagination = false,
     required this.categorySlug,
   }
@@ -243,9 +248,23 @@ class ChangeAppliedFiltersEvent extends HomeEvent {
   final bool? fromChoosed;
   final bool getWithPagination;
   final bool resetChoosedFilters;
+  final BuildContext context;
+
 
   GetProductsWithFiltersEventWithoutCancelingPreviousEvents(
       {required this.boutiqueSlug,
+<<<<<<< HEAD
+        this.getWithPagination = false,
+        this.resetChoosedFilters = true,
+        this.searchText,
+        required this.context,
+        this.cashedOrginalBoutique = false,
+        this.fromChoosed = false,
+        this.fromSearch,
+        required this.offset,
+        this.limit,
+        this.category});
+=======
       required this.categorySlugs,
       this.getWithPagination = false,
       this.getWithoutFilter = false,
@@ -258,6 +277,7 @@ class ChangeAppliedFiltersEvent extends HomeEvent {
       required this.offset,
       this.limit,
       this.category});
+>>>>>>> e9ace2fcd5f824e8024831de1c589822f30cc111
 
   @override
   // TODO: implement props
@@ -611,3 +631,14 @@ class GetProductFiltersWithPrefetchForFiveFiltersEvent extends HomeEvent {
         boutiqueSlug,
       ];
 }
+
+
+
+
+
+
+
+
+
+
+
