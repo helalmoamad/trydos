@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -48,38 +46,13 @@ class TabsBar extends StatefulWidget {
 
 class _TabsBarState extends State<TabsBar> {
   late AppBloc appBloc;
-  final ScrollController scrollController = ScrollController();
   late HomeBloc homeBloc;
 
   @override
   void initState() {
-    homeBloc = BlocProvider.of<HomeBloc>(context);
-    List<String>? categorySlugs = [];
-    homeBloc.state.mainCategoriesResponseModel?.data?.mainCategories?.forEach(
-      (element) {
-        categorySlugs.add(element.slug!);
-      },
-    );
-    scrollController.addListener(() {
-      double index = scrollController.position.pixels;
-      int startIndex = math.min(categorySlugs.length, (1.sw - 40) ~/ 40);
-      print(index);
-
-      if (homeBloc.state.boutiquesForEveryMainCategoryThatDidPrefetch[
-              categorySlugs[(index) ~/ 36 + startIndex]] !=
-          true) {
-        homeBloc.add(GetHomeBoutiquesPrefetchEvent(
-          getWithPrefetchForMainCategory: true,
-          getWithScroll: false,
-          categorySlug: categorySlugs[(index) ~/ 36 + startIndex],
-          offset: "1",
-        ));
-      }
-    });
-
     widget.appearTrendingAndHistory.value = true;
     appBloc = BlocProvider.of<AppBloc>(context);
-
+    homeBloc = BlocProvider.of<HomeBloc>(context);
     super.initState();
   }
 
@@ -130,7 +103,7 @@ class _TabsBarState extends State<TabsBar> {
               }
               return Container(
                   width: 1.sw,
-                  height: 50,
+                  height: 40,
                   padding: EdgeInsets.all(4.r),
                   decoration: BoxDecoration(
                     color: colorScheme.white,
@@ -143,85 +116,167 @@ class _TabsBarState extends State<TabsBar> {
                     ],
                   ),
                   child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            AnimatedSearchBar(
-                              autoFocus: TestVariables.kTestMode ? false : true,
-                              onFieldSubmitted: (text) {
-                                if (text.replaceAll(" ", "").length > 2) {
-                                  widget.buildSearchResult.value = text.length;
-                                  widget.appearTrendingAndHistory.value = true;
-
-                                  homeBloc.add(AddSearchTextToHistoryEvent(
-                                      searchTitle: text));
-                                }
-                              },
-                              width: 1.sw,
-                              height: 40,
-                              onClickClose: () {
-                                if (widget.controller.text.length > 0) {
-                                  Filter filters = homeBloc
-                                          .state
-                                          .choosedFiltersByUser['search']
-                                          ?.filters ??
-                                      Filter();
-                                  Filter appliedFilters = homeBloc
-                                          .state
-                                          .appliedFiltersByUser['search']
-                                          ?.filters ??
-                                      Filter();
-                                  homeBloc.add(ChangeAppliedFiltersEvent(
-                                    boutiqueSlug: 'search',
-                                    filtersAppliedByUser:
-                                        GetProductFiltersModel(
-                                            filters: appliedFilters
-                                                .copyWithSaveOtherField(
-                                      prices: appliedFilters.prices,
-                                      searchText: null,
-                                    )),
-                                  ));
-                                  homeBloc.add(ChangeSelectedFiltersEvent(
-                                    boutiqueSlug: 'search',
-                                    fromHomePageSearch: true,
-                                    filtersChoosedByUser:
-                                        GetProductFiltersModel(
-                                            filters:
-                                                filters.copyWithSaveOtherField(
-                                                    prices: filters.prices,
-                                                    searchText: null)),
-                                  ));
-                                  widget.buildSearchResult.value = 0;
-                                  widget.controller.clear();
-                                  resetSearchAfterSearchingWhileRemoveSearch =
-                                      false;
-                                  widget.appearTrendingAndHistory.value = true;
-                                  return true;
-                                } else {
-                                  appBloc.add(ChangeBasePage(0));
-                                  homeBloc.add(
-                                      ResetAllSelectedAppliedFilterEvent());
-                                  appBloc.add(HideBottomNavigationBar(false));
-                                }
-                                return false;
-                              },
-                              textController: widget.controller,
-                              focusNode: focusNode,
-                              onSuffixTap: () {
-                                appBloc.add(ChangeIndexForSearch(2));
-                                widget.buildSearchResult.value = 1;
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          AnimatedSearchBar(
+                            autoFocus: TestVariables.kTestMode ? false : true,
+                            onFieldSubmitted: (text) {
+                              if (text.replaceAll(" ", "").length > 2) {
+                                widget.buildSearchResult.value = text.length;
                                 widget.appearTrendingAndHistory.value = true;
 
-                                Future.delayed(Duration(milliseconds: 300), () {
-                                  appBloc.add(ChangeBasePage(4));
-                                  appBloc.add(HideBottomNavigationBar(true));
-                                });
-                              },
-                              suffixWidget: Center(
-                                key: TestVariables.kTestMode
-                                    ? Key(WidgetsKey.homeSearchIconKey)
-                                    : null,
+                                homeBloc.add(AddSearchTextToHistoryEvent(
+                                    searchTitle: text));
+                              }
+                            },
+                            width: 1.sw,
+                            height: 40,
+                            onClickClose: () {
+                              if (widget.controller.text.length > 0) {
+                                Filter filters = homeBloc
+                                        .state
+                                        .choosedFiltersByUser['search']
+                                        ?.filters ??
+                                    Filter();
+                                Filter appliedFilters = homeBloc
+                                        .state
+                                        .appliedFiltersByUser['search']
+                                        ?.filters ??
+                                    Filter();
+                                homeBloc.add(ChangeAppliedFiltersEvent(
+                                  boutiqueSlug: 'search',
+                                  filtersAppliedByUser: GetProductFiltersModel(
+                                      filters:
+                                          appliedFilters.copyWithSaveOtherField(
+                                    prices: appliedFilters.prices,
+                                    searchText: null,
+                                  )),
+                                ));
+                                homeBloc.add(ChangeSelectedFiltersEvent(
+                                  boutiqueSlug: 'search',
+                                  fromHomePageSearch: true,
+                                  filtersChoosedByUser: GetProductFiltersModel(
+                                      filters: filters.copyWithSaveOtherField(
+                                          prices: filters.prices,
+                                          searchText: null)),
+                                ));
+                                widget.buildSearchResult.value = 0;
+                                widget.controller.clear();
+                                resetSearchAfterSearchingWhileRemoveSearch =
+                                    false;
+                                widget.appearTrendingAndHistory.value = true;
+                                return true;
+                              } else {
+                                appBloc.add(ChangeBasePage(0));
+                                homeBloc
+                                    .add(ResetAllSelectedAppliedFilterEvent());
+                                appBloc.add(HideBottomNavigationBar(false));
+                              }
+                              return false;
+                            },
+                            textController: widget.controller,
+                            focusNode: focusNode,
+                            onSuffixTap: () {
+                              appBloc.add(ChangeIndexForSearch(2));
+                              widget.buildSearchResult.value = 1;
+                              widget.appearTrendingAndHistory.value = true;
+
+                              Future.delayed(Duration(milliseconds: 300), () {
+                                appBloc.add(ChangeBasePage(4));
+                                appBloc.add(HideBottomNavigationBar(true));
+                              });
+                            },
+                            suffixWidget: Center(
+                              key: TestVariables.kTestMode
+                                  ? Key(WidgetsKey.homeSearchIconKey)
+                                  : null,
+                              child: SvgPicture.asset(
+                                AppAssets.searchOutlinedSvg,
+                                height: 20,
+                                width: 40,
+                                color: Color(0xff388CFF),
+                              ),
+                            ),
+                            prefixWidget: Padding(
+                              padding: const EdgeInsets.only(
+                                  right: 15, top: 10, bottom: 10),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  SvgPicture.asset(
+                                    AppAssets.realCameraSvg,
+                                    height: 20,
+                                    width: 20,
+                                  ),
+                                  SvgPicture.asset(
+                                    AppAssets.microphoneSvg,
+                                    height: 20,
+                                    width: 20,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            animationDurationInMilli: 400,
+                            searchDecoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: focusNode.hasFocus
+                                        ? Color(0xffE6E6E6)
+                                        : Color(0xffF8F8F8),
+                                    width: 0.4),
+                                borderRadius:
+                                    BorderRadius.circular(kbrBorderTextField),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: focusNode.hasFocus
+                                        ? Color(0xffE6E6E6)
+                                        : Color(0xffF8F8F8),
+                                    width: 0.4),
+                                borderRadius:
+                                    BorderRadius.circular(kbrBorderTextField),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: focusNode.hasFocus
+                                        ? Color(0xffE6E6E6)
+                                        : Color(0xffF8F8F8),
+                                    width: 0.4),
+                                borderRadius:
+                                    BorderRadius.circular(kbrBorderTextField),
+                              ),
+                              disabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: focusNode.hasFocus
+                                        ? Color(0xffE6E6E6)
+                                        : Color(0xffF8F8F8),
+                                    width: 0.4),
+                                borderRadius:
+                                    BorderRadius.circular(kbrBorderTextField),
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: context.colorScheme.error,
+                                    width: 0.4),
+                                borderRadius:
+                                    BorderRadius.circular(kbrBorderTextField),
+                              ),
+                              focusedErrorBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: context.colorScheme.error,
+                                    width: 0.4),
+                                borderRadius:
+                                    BorderRadius.circular(kbrBorderTextField),
+                              ),
+                              filled: true,
+                              fillColor: focusNode.hasFocus
+                                  ? colorScheme.white
+                                  : Color(0xffF8F8F8),
+                              prefixIcon: Padding(
+                                padding:
+                                    const EdgeInsets.only(top: 12, bottom: 12),
                                 child: SvgPicture.asset(
                                   AppAssets.searchOutlinedSvg,
                                   height: 20,
@@ -229,7 +284,7 @@ class _TabsBarState extends State<TabsBar> {
                                   color: Color(0xff388CFF),
                                 ),
                               ),
-                              prefixWidget: Padding(
+                              suffixIcon: Padding(
                                 padding: const EdgeInsets.only(
                                     right: 15, top: 10, bottom: 10),
                                 child: Row(
@@ -240,6 +295,9 @@ class _TabsBarState extends State<TabsBar> {
                                       height: 20,
                                       width: 20,
                                     ),
+                                    SizedBox(
+                                      width: 20,
+                                    ),
                                     SvgPicture.asset(
                                       AppAssets.microphoneSvg,
                                       height: 20,
@@ -248,204 +306,102 @@ class _TabsBarState extends State<TabsBar> {
                                   ],
                                 ),
                               ),
-                              animationDurationInMilli: 400,
-                              searchDecoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: focusNode.hasFocus
-                                          ? Color(0xffE6E6E6)
-                                          : Color(0xffF8F8F8),
-                                      width: 0.4),
-                                  borderRadius:
-                                      BorderRadius.circular(kbrBorderTextField),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: focusNode.hasFocus
-                                          ? Color(0xffE6E6E6)
-                                          : Color(0xffF8F8F8),
-                                      width: 0.4),
-                                  borderRadius:
-                                      BorderRadius.circular(kbrBorderTextField),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: focusNode.hasFocus
-                                          ? Color(0xffE6E6E6)
-                                          : Color(0xffF8F8F8),
-                                      width: 0.4),
-                                  borderRadius:
-                                      BorderRadius.circular(kbrBorderTextField),
-                                ),
-                                disabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: focusNode.hasFocus
-                                          ? Color(0xffE6E6E6)
-                                          : Color(0xffF8F8F8),
-                                      width: 0.4),
-                                  borderRadius:
-                                      BorderRadius.circular(kbrBorderTextField),
-                                ),
-                                errorBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: context.colorScheme.error,
-                                      width: 0.4),
-                                  borderRadius:
-                                      BorderRadius.circular(kbrBorderTextField),
-                                ),
-                                focusedErrorBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: context.colorScheme.error,
-                                      width: 0.4),
-                                  borderRadius:
-                                      BorderRadius.circular(kbrBorderTextField),
-                                ),
-                                filled: true,
-                                fillColor: focusNode.hasFocus
-                                    ? colorScheme.white
-                                    : Color(0xffF8F8F8),
-                                prefixIcon: Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 12, bottom: 12),
-                                  child: SvgPicture.asset(
-                                    AppAssets.searchOutlinedSvg,
-                                    height: 20,
-                                    width: 40,
-                                    color: Color(0xff388CFF),
-                                  ),
-                                ),
-                                suffixIcon: Padding(
-                                  padding: const EdgeInsets.only(
-                                      right: 15, top: 10, bottom: 10),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      SvgPicture.asset(
-                                        AppAssets.realCameraSvg,
-                                        height: 20,
-                                        width: 20,
-                                      ),
-                                      SizedBox(
-                                        width: 20,
-                                      ),
-                                      SvgPicture.asset(
-                                        AppAssets.microphoneSvg,
-                                        height: 20,
-                                        width: 20,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                //context.colorScheme.white,
-                                contentPadding: HWEdgeInsetsDirectional.only(
-                                    start: 20, end: 10, bottom: 12, top: 12),
-                                hintText: 'Search',
-                                hintStyle: context.textTheme.bodyMedium?.lq
-                                    .copyWith(color: Color(0xffC4C2C2)),
-                                labelStyle: context.textTheme.titleLarge
-                                    ?.copyWith(color: context.colorScheme.hint),
-                              ),
-                              onChanged: (String text) {
-                                if (text.length > 2) {
-                                  resetSearchAfterSearchingWhileRemoveSearch =
-                                      true;
-                                  Filter filters = homeBloc
-                                          .state
-                                          .choosedFiltersByUser['search']
-                                          ?.filters ??
-                                      Filter();
-
-                                  homeBloc.add(GetProductsWithFiltersEvent(
-                                      fromChoosed: true,
-                                      offset: 1,
-                                      boutiqueSlug: 'search',
-                                      resetChoosedFilters: false,
-                                      fromSearch: true,
-                                      searchText: text));
-                                  homeBloc.add(ChangeSelectedFiltersEvent(
-                                    boutiqueSlug: 'search',
-                                    requestToUpdateFilters: true,
-                                    fromHomePageSearch: true,
-                                    filtersChoosedByUser:
-                                        GetProductFiltersModel(
-                                            filters:
-                                                filters.copyWithSaveOtherField(
-                                      prices: filters.prices,
-                                      searchText: text,
-                                    )),
-                                  ));
-
-                                  widget.buildSearchResult.value = text.length;
-                                }
-                                if (text.length < 3) {
-                                  Filter filters = homeBloc
-                                          .state
-                                          .choosedFiltersByUser['search']
-                                          ?.filters ??
-                                      Filter();
-                                  homeBloc.add(ChangeSelectedFiltersEvent(
-                                    boutiqueSlug: 'search',
-                                    requestToUpdateFilters: false,
-                                    fromHomePageSearch: true,
-                                    filtersChoosedByUser:
-                                        GetProductFiltersModel(
-                                            filters:
-                                                filters.copyWithSaveOtherField(
-                                      prices: filters.prices,
-                                      searchText: null,
-                                    )),
-                                  ));
-                                }
-                                if (text.length < 1 &&
-                                    resetSearchAfterSearchingWhileRemoveSearch) {
-                                  resetSearchAfterSearchingWhileRemoveSearch =
-                                      false;
-                                  Filter filters = homeBloc
-                                          .state
-                                          .choosedFiltersByUser['search']
-                                          ?.filters ??
-                                      Filter();
-                                  homeBloc.add(ChangeSelectedFiltersEvent(
-                                    boutiqueSlug: 'search',
-                                    requestToUpdateFilters: true,
-                                    fromHomePageSearch: true,
-                                    filtersChoosedByUser:
-                                        GetProductFiltersModel(
-                                            filters:
-                                                filters.copyWithSaveOtherField(
-                                      prices: filters.prices,
-                                      searchText: null,
-                                    )),
-                                  ));
-                                }
-                              },
-                              hideTrendingAndHistory:
-                                  widget.appearTrendingAndHistory,
+                              //context.colorScheme.white,
+                              contentPadding: HWEdgeInsetsDirectional.only(
+                                  start: 20, end: 10, bottom: 12, top: 12),
+                              hintText: 'Search',
+                              hintStyle: context.textTheme.bodyMedium?.lq
+                                  .copyWith(color: Color(0xffC4C2C2)),
+                              labelStyle: context.textTheme.titleLarge
+                                  ?.copyWith(color: context.colorScheme.hint),
                             ),
-                            BlocBuilder<AppBloc, AppState>(
-                              buildWhen: (p, c) =>
-                                  p.currentIndex != c.currentIndex,
-                              builder: (context, state) {
-                                if (state.currentIndex != 4) {
-                                  return Container(
-                                    padding: EdgeInsets.only(
-                                      left: 15,
-                                    ),
-                                    width: 1.sw - 40,
-                                    height: 80,
-                                    child: ListView.builder(
-                                      controller: scrollController,
-                                      key: TestVariables.kTestMode
-                                          ? Key(WidgetsKey.mainCategoriesTabKey)
-                                          : null,
-                                      scrollDirection: Axis.horizontal,
-                                      itemCount: (homeState
-                                              .mainCategoriesResponseModel
-                                              ?.data
-                                              ?.mainCategories
-                                              ?.length ??
+                            onChanged: (String text) {
+                              if (text.length > 2) {
+                                resetSearchAfterSearchingWhileRemoveSearch =
+                                    true;
+                                Filter filters = homeBloc
+                                        .state
+                                        .choosedFiltersByUser['search']
+                                        ?.filters ??
+                                    Filter();
+
+                                homeBloc.add(GetProductsWithFiltersEvent(
+                                    fromChoosed: true,
+                                    offset: 1,
+                                    boutiqueSlug: 'search',
+                                    resetChoosedFilters: false,
+                                    fromSearch: true,
+                                    searchText: text));
+                                homeBloc.add(ChangeSelectedFiltersEvent(
+                                  boutiqueSlug: 'search',
+                                  requestToUpdateFilters: true,
+                                  fromHomePageSearch: true,
+                                  filtersChoosedByUser: GetProductFiltersModel(
+                                      filters: filters.copyWithSaveOtherField(
+                                    prices: filters.prices,
+                                    searchText: text,
+                                  )),
+                                ));
+
+                                widget.buildSearchResult.value = text.length;
+                              }
+                              if (text.length < 3) {
+                                Filter filters = homeBloc
+                                        .state
+                                        .choosedFiltersByUser['search']
+                                        ?.filters ??
+                                    Filter();
+                                homeBloc.add(ChangeSelectedFiltersEvent(
+                                  boutiqueSlug: 'search',
+                                  requestToUpdateFilters: false,
+                                  fromHomePageSearch: true,
+                                  filtersChoosedByUser: GetProductFiltersModel(
+                                      filters: filters.copyWithSaveOtherField(
+                                    prices: filters.prices,
+                                    searchText: null,
+                                  )),
+                                ));
+                              }
+                              if (text.length < 1 &&
+                                  resetSearchAfterSearchingWhileRemoveSearch) {
+                                resetSearchAfterSearchingWhileRemoveSearch =
+                                    false;
+                                Filter filters = homeBloc
+                                        .state
+                                        .choosedFiltersByUser['search']
+                                        ?.filters ??
+                                    Filter();
+                                homeBloc.add(ChangeSelectedFiltersEvent(
+                                  boutiqueSlug: 'search',
+                                  requestToUpdateFilters: true,
+                                  fromHomePageSearch: true,
+                                  filtersChoosedByUser: GetProductFiltersModel(
+                                      filters: filters.copyWithSaveOtherField(
+                                    prices: filters.prices,
+                                    searchText: null,
+                                  )),
+                                ));
+                              }
+                            },
+                            hideTrendingAndHistory:
+                                widget.appearTrendingAndHistory,
+                          ),
+                          BlocBuilder<AppBloc, AppState>(
+                            buildWhen: (p, c) =>
+                                p.currentIndex != c.currentIndex,
+                            builder: (context, state) {
+                              if (state.currentIndex != 4) {
+                                return Row(
+                                    key: TestVariables.kTestMode
+                                        ? Key(WidgetsKey.mainCategoriesTabKey)
+                                        : null,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: List.generate(
+                                      (homeState.mainCategoriesResponseModel
+                                              ?.data?.mainCategories?.length ??
                                           0),
-                                      itemBuilder: (context, index) {
+                                      (index) {
                                         MainCategory mainCategory = homeState
                                             .mainCategoriesResponseModel!
                                             .data!
@@ -489,20 +445,20 @@ class _TabsBarState extends State<TabsBar> {
                                                 }
 
                                                 /* appBloc.add(ChangeTab(index));
-                                                          BlocProvider.of<HomeBloc>(context).add(
-                                                                        GetHomeSectionsEvent(
-                                                                            mainCategory.slug.toString()));*/
+                                                        BlocProvider.of<HomeBloc>(context).add(
+                                                                      GetHomeSectionsEvent(
+                                                                          mainCategory.slug.toString()));*/
 
                                                 /*   homeBloc.add(
-                                                  GetProductsWithoutFiltersEvent(
-                                                      offset: 1,
-                                                      category: homeState
-                                                          .mainCategoriesResponseModel!
-                                                          .data!
-                                                          .mainCategories![index]
-                                                          .slug!,
-                                                      selectedProssesType:
-                                                          'category'));*/
+                                                GetProductsWithoutFiltersEvent(
+                                                    offset: 1,
+                                                    category: homeState
+                                                        .mainCategoriesResponseModel!
+                                                        .data!
+                                                        .mainCategories![index]
+                                                        .slug!,
+                                                    selectedProssesType:
+                                                        'category'));*/
                                               },
                                               child: Column(
                                                 crossAxisAlignment:
@@ -576,13 +532,13 @@ class _TabsBarState extends State<TabsBar> {
                                               ),
                                             ));
                                       },
-                                    ),
-                                  );
-                                }
-                                return SizedBox.shrink();
-                              },
-                            )
-                          ])));
+                                    ));
+                              }
+                              return SizedBox.shrink();
+                            },
+                          )
+                        ]),
+                  ));
             }));
   }
 }
