@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:fast_cached_network_image/fast_cached_network_image.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -109,7 +111,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     if (remoteMessage['type'] == 'VideoCallEvent' ||
         remoteMessage['type'] == 'VoiceCallEvent') {
       String currentUuid = const Uuid().v4();
-      Map<String, dynamic> data = remoteMessage;
+      Map<String, dynamic> data = remoteMessage["message"];
       if (DateTime.now()
               .difference(HelperFunctions.getZonedDate(
                   DateTime.parse(data['created_at'])))
@@ -192,6 +194,10 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       GetIt.I<PrefsRepository>()
           .setRemovedChatFromBackground(data['channel_id'].toString());
     } else {
+      print(remoteMessage);
+      print(
+          "*/*********************************************${remoteMessage['message']}");
+
       if (remoteMessage['message'] == null) return;
       Message myMessage = Message.fromJson(remoteMessage['message']);
       if (myMessage.senderUserId != GetIt.I<PrefsRepository>().myChatId) {
@@ -235,6 +241,8 @@ void main() async {
   HttpOverrides.global = MyHttpOverrides();
   await Future.wait([
     EasyLocalization.ensureInitialized(),
+    initFastCachedNetworkPackage(),
+    dotenv.load(fileName: ".env"),
     configureDependencies(),
     NotificationProcess().init(),
   ]);
@@ -255,8 +263,7 @@ void main() async {
   GetIt.I<AuthBloc>().add(GetUserCountryEvent());
   await SentryFlutter.init(
     (options) {
-      options.dsn =
-          'https://ad0f2690f29bfa3976bce811f74e1458@o4507561512337408.ingest.de.sentry.io/4507564752699472';
+      options.dsn = dotenv.env['SENTRY_DNS'];
       options.tracesSampleRate = 1.0;
     },
     appRunner: () => runApp(DefaultAssetBundle(
@@ -277,4 +284,8 @@ fetchServersUrlsFromSharedPreference() async {
   if (GetIt.I<PrefsRepository>().getStoryUrl != null) {
     StoriesUrls.setBaseUrl = GetIt.I<PrefsRepository>().getStoryUrl!;
   }
+}
+
+Future<void> initFastCachedNetworkPackage() async {
+  await FastCachedImageConfig.init(clearCacheAfter: const Duration(days: 30));
 }

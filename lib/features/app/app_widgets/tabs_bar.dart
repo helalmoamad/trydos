@@ -77,7 +77,7 @@ class _TabsBarState extends State<TabsBar> {
               if (homeState.mainCategoriesResponseModel == null) {
                 return Container(
                   width: 1.sw,
-                  height: 55.h,
+                  height: 60.h,
                   padding: EdgeInsets.all(4.r),
                   decoration: BoxDecoration(
                     color: colorScheme.white,
@@ -103,7 +103,7 @@ class _TabsBarState extends State<TabsBar> {
               }
               return Container(
                   width: 1.sw,
-                  height: 40,
+                  height: 40 + 5.h,
                   padding: EdgeInsets.all(4.r),
                   decoration: BoxDecoration(
                     color: colorScheme.white,
@@ -422,20 +422,28 @@ class _TabsBarState extends State<TabsBar> {
                                                   homeBloc.add(GetHomeBoutiqesEvent(
                                                       getWithPagination: false,
                                                       offset: "1",
+                                                      context: context,
                                                       categorySlug: homeState
                                                           .mainCategoriesResponseModel!
                                                           .data!
                                                           .mainCategories![
                                                               index]
                                                           .slug!));
+                                                  homeBloc.add(
+                                                      ChangeCurrentIndexForMainCategoryEvent(
+                                                          index: index));
                                                 } else {
                                                   appBloc.add(ChangeTab(-1));
                                                   homeBloc.add(
                                                       GetHomeBoutiqesEvent(
                                                           categorySlug: "Empty",
                                                           offset: "1",
+                                                          context: context,
                                                           getWithPagination:
                                                               false));
+                                                  homeBloc.add(
+                                                      ChangeCurrentIndexForMainCategoryEvent(
+                                                          index: -1));
                                                 }
 
                                                 /* appBloc.add(ChangeTab(index));

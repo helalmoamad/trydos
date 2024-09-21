@@ -61,6 +61,8 @@ class ProductListingImageWidget extends StatelessWidget {
                   : MyCachedNetworkImage(
                       imageUrl: imageUrl,
                       width: width!,
+                      ordinalwidth: orginalWidth,
+                      ordinalHeight: orginalHeight,
                       imageHeight: imageHeight,
                       imageWidth: imageWidth,
                       imageFit: BoxFit.cover,

@@ -27,6 +27,8 @@ abstract class BaseApi<T> with HandlingExceptionRequest {
         ..['lang'] = LanguageService.languageCode == 'ar'
             ? 'ar'
             : LanguageService.languageCode;
+      headers = client.options.headers
+        ..['original_user_id'] = GetIt.I<PrefsRepository>().myMarketId;
       headers.addAll({
         'User-Agent': 'device OS:' +
             (Platform.isAndroid ? 'Android' : 'IOS') +

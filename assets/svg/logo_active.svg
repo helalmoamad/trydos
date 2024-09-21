@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="59" height="93.473" viewBox="0 0 59 93.473">
+  <defs>
+    <linearGradient id="linear-gradient" x1="0.5" y1="0.543" x2="0.5" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#f53c3c"/>
+      <stop offset="1" stop-color="#ff9696"/>
+    </linearGradient>
+    <filter id="Path_21332" x="0" y="0" width="59" height="59" filterUnits="userSpaceOnUse">
+      <feOffset dy="3" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="1.5" result="blur"/>
+      <feFlood flood-opacity="0.2"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="Path_21301" x="36.5" y="77.473" width="16" height="16" filterUnits="userSpaceOnUse">
+      <feOffset dy="2" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="1" result="blur-2"/>
+      <feFlood flood-opacity="0.2"/>
+      <feComposite operator="in" in2="blur-2"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="Path_21301-2" x="36.5" y="77.473" width="16" height="16" filterUnits="userSpaceOnUse">
+      <feOffset dy="3" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="2" result="blur-3"/>
+      <feFlood flood-color="#fff" flood-opacity="0.302" result="color"/>
+      <feComposite operator="out" in="SourceGraphic" in2="blur-3"/>
+      <feComposite operator="in" in="color"/>
+      <feComposite operator="in" in2="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="Group_10896" data-name="Group 10896" transform="translate(-77.5 -390.5)">
+    <g transform="matrix(1, 0, 0, 1, 77.5, 390.5)" filter="url(#Path_21332)">
+      <path id="Path_21332-2" data-name="Path 21332" d="M25,0A25,25,0,1,0,50,25,25,25,0,0,0,25,0Z" transform="translate(4.5 1.5)" fill="url(#linear-gradient)"/>
+    </g>
+    <g id="Group_10820" data-name="Group 10820">
+      <path id="Path_21306" data-name="Path 21306" d="M9.981,3a18.842,18.842,0,0,1-1.973-.107.289.289,0,0,1-.227-.325A.268.268,0,0,1,8.052,2.3a18.422,18.422,0,0,0,1.929.1A18.209,18.209,0,0,0,12,2.285a.267.267,0,0,1,.272.271.29.29,0,0,1-.225.326A18.626,18.626,0,0,1,9.981,3Zm-5.89-.875a.21.21,0,0,1-.056-.008A37.45,37.45,0,0,1,.171.8.317.317,0,0,1,.013.425.243.243,0,0,1,.328.234a37.021,37.021,0,0,0,3.819,1.3.306.306,0,0,1,.187.36A.264.264,0,0,1,4.092,2.125ZM15.95,2.067a.263.263,0,0,1-.242-.228.308.308,0,0,1,.182-.364A26.56,26.56,0,0,0,19.658.021a.238.238,0,0,1,.324.169.323.323,0,0,1-.14.389,27,27,0,0,1-3.831,1.479A.211.211,0,0,1,15.95,2.067Z" transform="translate(109.819 448.973) rotate(70)"/>
+      <g data-type="innerShadowGroup">
+        <g transform="matrix(1, 0, 0, 1, 77.5, 390.5)" filter="url(#Path_21301)">
+          <path id="Path_21301-3" data-name="Path 21301" d="M5,10a5,5,0,1,1,5-5A5,5,0,0,1,5,10Z" transform="translate(39.5 78.47)"/>
+        </g>
+        <g transform="matrix(1, 0, 0, 1, 77.5, 390.5)" filter="url(#Path_21301-2)">
+          <path id="Path_21301-4" data-name="Path 21301" d="M5,10a5,5,0,1,1,5-5A5,5,0,0,1,5,10Z" transform="translate(39.5 78.47)" fill="#0"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

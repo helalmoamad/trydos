@@ -1,3 +1,5 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 extension ScopeApi on String {
   String get _api => 'api';
 
@@ -111,7 +113,7 @@ abstract class ChatUrls {
   static Uri get baseUri => Uri.parse(_baseUrlDev);
   static set setBaseUrl(String url) => _baseUrlDev = url;
 
-  static String _baseUrlDev = 'https://chating_staging_trydos.trydos.dev';
+  static String _baseUrlDev = dotenv.env['CHAT_URL']!;
   static const String _baseUrlDevWithHttp =
       'http://chating_staging_trydos.trydos.dev';
 }
