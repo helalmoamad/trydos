@@ -52,10 +52,11 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
 
     currentIndexInSizes = ValueNotifier(0);
 
-    if (widget.sizes.length > 0) {
+    if ((homeBloc.state.sizes?.length ?? 0) > 0) {
+      int firstSizeSelected = (homeBloc.state.sizes?.length ?? 0) ~/ 2;
       homeBloc.add(AddCurrentColorSizeEvent(
-          choice_1: widget.sizes[widget.sizes.length ~/ 2]));
-      currentIndexInSizes.value = widget.sizes.length ~/ 2;
+          choice_1: homeBloc.state.sizes?[firstSizeSelected]));
+      currentIndexInSizes.value = firstSizeSelected;
     } else {
       homeBloc.add(AddCurrentColorSizeEvent(choice_1: ""));
     }

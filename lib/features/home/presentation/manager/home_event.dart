@@ -30,17 +30,22 @@ class GetProductFiltersEvent extends HomeEvent {
   const GetProductFiltersEvent(
       {this.category,
       this.fromHomePageSearch = false,
+      this.getWithoutFilter = false,
       required this.boutiqueSlug,
       this.searchText,
       this.fromExpandPage = false,
       this.cashedOrginalBoutique = false,
+      this.getProductsFilterPreFetch = false,
       this.forceUpdate = false,
       this.resetAppliesFilters = false,
       this.filtersChoosedByUser});
 
   final String boutiqueSlug;
+
   final bool cashedOrginalBoutique;
+  final bool getProductsFilterPreFetch;
   final String? searchText;
+  final bool getWithoutFilter;
   final String? category;
   final bool forceUpdate;
 
@@ -54,13 +59,16 @@ class GetProductFiltersEvent extends HomeEvent {
   List<Object?> get props => [category, boutiqueSlug, forceUpdate];
 }
 
-class GetProductFiltersWithoutCancelingPreviousEvents extends HomeEvent {
-  const GetProductFiltersWithoutCancelingPreviousEvents(
+class GetProductWithFiltersWithoutCancelingPreviousEvents extends HomeEvent {
+  const GetProductWithFiltersWithoutCancelingPreviousEvents(
       {this.category,
       this.fromHomePageSearch = false,
       required this.boutiqueSlug,
       required this.context,
+      this.getWithoutFilter = false,
+      this.indexOfCategory = 0,
       this.searchText,
+      required this.categorySlugs,
       this.fromExpandPage = false,
       this.cashedOrginalBoutique = false,
       this.forceUpdate = false,
@@ -69,10 +77,13 @@ class GetProductFiltersWithoutCancelingPreviousEvents extends HomeEvent {
 
   final String boutiqueSlug;
   final bool cashedOrginalBoutique;
+  final bool getWithoutFilter;
   final String? searchText;
   final String? category;
+  final int indexOfCategory;
   final bool forceUpdate;
   final BuildContext context;
+  final List<String> categorySlugs;
   final bool fromHomePageSearch;
   final bool fromExpandPage;
   final bool resetAppliesFilters;
@@ -109,6 +120,7 @@ class GetHomeBoutiqesEvent extends HomeEvent {
   // final bool getWithPagination;
   final String offset;
   final bool getWithPagination;
+
   final String categorySlug;
   final BuildContext context;
 
@@ -116,6 +128,29 @@ class GetHomeBoutiqesEvent extends HomeEvent {
     required this.offset,
     required this.context,
     this.getWithPagination = false,
+    required this.categorySlug,
+  }
+      //  {this.getWithPagination = false}
+      );
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+}
+
+class GetHomeBoutiquesPrefetchEvent extends HomeEvent {
+  // final bool getWithPagination;
+  final String offset;
+  final bool getWithPagination;
+  final bool getWithPrefetchForMainCategory;
+  final List<String> categorySlug;
+  final int indexCategorySlug;
+
+  const GetHomeBoutiquesPrefetchEvent({
+    required this.offset,
+    this.getWithPagination = false,
+    this.indexCategorySlug = 0,
+    this.getWithPrefetchForMainCategory = false,
     required this.categorySlug,
   }
       //  {this.getWithPagination = false}
@@ -198,11 +233,15 @@ class ChangeAppliedFiltersEvent extends HomeEvent {
       [filtersAppliedByUser, boutiqueSlug, resetAppliedFilters, category];
 }
 
-class GetProductsWithFiltersEventWithoutCancelingPreviousEvents extends HomeEvent {
+/*class GetProductsWithFiltersEventWithoutCancelingPreviousEvents
+    extends HomeEvent {
   final String? category;
+  final bool getWithoutFilter;
   final String? searchText;
   final int offset;
+  final List<String> categorySlugs;
   final int? limit;
+  final int? indexOfCategory;
   final String boutiqueSlug;
   final bool cashedOrginalBoutique;
   final bool? fromSearch;
@@ -214,6 +253,7 @@ class GetProductsWithFiltersEventWithoutCancelingPreviousEvents extends HomeEven
 
   GetProductsWithFiltersEventWithoutCancelingPreviousEvents(
       {required this.boutiqueSlug,
+<<<<<<< HEAD
         this.getWithPagination = false,
         this.resetChoosedFilters = true,
         this.searchText,
@@ -224,17 +264,32 @@ class GetProductsWithFiltersEventWithoutCancelingPreviousEvents extends HomeEven
         required this.offset,
         this.limit,
         this.category});
+=======
+      required this.categorySlugs,
+      this.getWithPagination = false,
+      this.getWithoutFilter = false,
+      this.resetChoosedFilters = true,
+      this.searchText,
+      this.indexOfCategory = 0,
+      this.cashedOrginalBoutique = false,
+      this.fromChoosed = false,
+      this.fromSearch,
+      required this.offset,
+      this.limit,
+      this.category});
+>>>>>>> e9ace2fcd5f824e8024831de1c589822f30cc111
 
   @override
   // TODO: implement props
   List<Object?> get props =>
       [category, getWithPagination, searchText, offset, limit, boutiqueSlug];
 }
-
+*/
 class GetProductsWithFiltersEvent extends HomeEvent {
   final String? category;
   final String? searchText;
   final int offset;
+  final bool getWithoutFilter;
   final int? limit;
   final String boutiqueSlug;
   final bool cashedOrginalBoutique;
@@ -246,6 +301,7 @@ class GetProductsWithFiltersEvent extends HomeEvent {
   GetProductsWithFiltersEvent(
       {required this.boutiqueSlug,
       this.getWithPagination = false,
+      this.getWithoutFilter = false,
       this.resetChoosedFilters = true,
       this.searchText,
       this.cashedOrginalBoutique = false,
@@ -379,7 +435,6 @@ class AddProductItemForCartEvent extends HomeEvent {
   List<Object?> get props => [];
 }
 
-
 class RemoveItemFormCartEvent extends HomeEvent {
   final String boutiqueId;
   final String itemId;
@@ -481,6 +536,24 @@ class RemoveSearchTextfromHistoryEvent extends HomeEvent {
   List<Object?> get props => [];
 }
 
+class AddIsExpandedForLidtingPageEvent extends HomeEvent {
+  final bool isExpandedForLidting;
+
+  AddIsExpandedForLidtingPageEvent({required this.isExpandedForLidting});
+
+  @override
+  List<Object?> get props => [];
+}
+
+class ChangeCurrentIndexForMainCategoryEvent extends HomeEvent {
+  final int index;
+
+  ChangeCurrentIndexForMainCategoryEvent({this.index = 0});
+
+  @override
+  List<Object?> get props => [];
+}
+
 /*class GetBrandEvent extends HomeEvent {
   GetBrandEvent();
 
@@ -515,3 +588,57 @@ class UpdateListOfItemForAddToCartEvent extends HomeEvent {
   @override
   List<Object?> get props => [];
 }
+
+class GetProductsWithFiltersWithPrefetchForFiveFiltersEvent extends HomeEvent {
+  final String? category;
+  final String filterSlug;
+  final String filterType;
+  final Attribute? attribute;
+  final String boutiqueSlug;
+
+  GetProductsWithFiltersWithPrefetchForFiveFiltersEvent(
+      {required this.boutiqueSlug,
+      required this.filterType,
+      this.attribute,
+      required this.filterSlug,
+      this.category});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [category, boutiqueSlug, filterSlug];
+}
+
+class GetProductFiltersWithPrefetchForFiveFiltersEvent extends HomeEvent {
+  const GetProductFiltersWithPrefetchForFiveFiltersEvent({
+    this.category,
+    required this.filterSlug,
+    this.attribute,
+    required this.filterType,
+    required this.boutiqueSlug,
+  });
+
+  final String boutiqueSlug;
+  final String filterType;
+  final Attribute? attribute;
+  final String filterSlug;
+  final String? category;
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [
+        category,
+        filterSlug,
+        boutiqueSlug,
+      ];
+}
+
+
+
+
+
+
+
+
+
+
+

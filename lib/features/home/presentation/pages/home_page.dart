@@ -51,9 +51,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    print(
-        "11122222222223333333333335555555556///////////**************----------------------------********************************//////////////////");
-
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
     homeBloc.add(GetCartItemEvent());
@@ -90,9 +87,6 @@ class _HomePageState extends State<HomePage> {
         lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
             selectedCategorySlug] = -1;
       }
-      print(
-          "........${lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[selectedCategorySlug]}/* ${lastIndexSeenByUser}*******************************************************************************");
-
       if (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
               selectedCategorySlug] !=
           lastIndexSeenByUser) {
@@ -102,8 +96,6 @@ class _HomePageState extends State<HomePage> {
       }
       if (scrollController.offset >=
           (scrollController.position.maxScrollExtent * 0.7)) {
-        print(
-            "/********************************************************************************");
         homeBloc.add(GetHomeBoutiqesEvent(
             categorySlug: selectedCategorySlug,
             offset: homeBloc
@@ -124,17 +116,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   prefetchBoutiques(String currentSlug) {
-    print(
-        'rtrth5e445eh ${lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[currentSlug]}');
 
     for (int i = 0;
         i <
-            min(homeBloc
-        .state
-            .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]!
-            .items.length , (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
+             (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
                     currentSlug] ??
-                0));
+                0);
         i++) {
       String slug = homeBloc
           .state
@@ -145,21 +132,28 @@ class _HomePageState extends State<HomePage> {
       if (homeBloc.state.boutiquesThatDidPrefetch[slug] != true) {
         debugPrint('///////// Prefetch Boutique Slug : $slug /////////');
 
-        homeBloc.add(GetProductFiltersWithoutCancelingPreviousEvents(
+        List<String> categorySlugs = [];
+
+        homeBloc
+            .state
+            .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]!
+            .items[i]
+            .childCategoriesForProductIds
+            ?.forEach(
+              (element) {
+            categorySlugs.add(element.categorySlug ?? "");
+          },
+        );
+
+        homeBloc.add(GetProductWithFiltersWithoutCancelingPreviousEvents(
+            getWithoutFilter: true,
+            context: context,
+            categorySlugs: categorySlugs,
             cashedOrginalBoutique: true,
             fromHomePageSearch: false,
-            context: context,
             boutiqueSlug: slug,
             category: null,
             searchText: null));
-        homeBloc.add(GetProductsWithFiltersEventWithoutCancelingPreviousEvents(
-            context: context,
-            cashedOrginalBoutique: true,
-            boutiqueSlug: slug,
-            fromSearch: false,
-            category: null,
-            searchText: null,
-            offset: 1));
       } else {
         debugPrint('/////////Did Prefetch For Boutique Slug : $slug /////////');
       }
@@ -257,47 +251,52 @@ class _HomePageState extends State<HomePage> {
                                 ?.mainCategories?[appState.tabIndex].slug ??
                             "Empty")
                         : "Empty";
-                    bool rebuild = p
-                            .getHomeBoutiquesPaginationObjectByMainCategory[
-                                currentSlug]
-                            ?.paginationStatus !=
-                        c
-                            .getHomeBoutiquesPaginationObjectByMainCategory[
-                                currentSlug]
-                            ?.paginationStatus;
+                    bool rebuild = (p
+                                .getHomeBoutiquesPaginationObjectByMainCategory[
+                                    currentSlug]
+                                ?.paginationStatus !=
+                            c
+                                .getHomeBoutiquesPaginationObjectByMainCategory[
+                                    currentSlug]
+                                ?.paginationStatus ||
+                        p.currentIndexForMainCategoryEvent !=
+                            c.currentIndexForMainCategoryEvent);
                     if (!p.reRequestTheseBoutiques.containsKey(currentSlug) && c.reRequestTheseBoutiques[currentSlug] == true) {
-                      print('buildddddddddddddddddddddddddd');
                       reRenderingListViewKey[currentSlug] = UniqueKey();
                     }
                     return rebuild;
                   },
                   builder: (context, homeState) {
-                    print('reRenderingListViewKey $reRenderingListViewKey');
                     String? currentSlug = appState.tabIndex != -1
                         ? (homeState.mainCategoriesResponseModel?.data
                                 ?.mainCategories?[appState.tabIndex].slug ??
                             "Empty")
                         : "Empty";
-                    if (homeState.getHomeBoutiquesPaginationObjectByMainCategory[
-                                currentSlug] ==
-                            null ||
-                        ((homeState
-                                        .getHomeBoutiquesPaginationObjectByMainCategory[
-                                            currentSlug]
-                                        ?.paginationStatus ==
-                                    PaginationStatus.loading ||
-                                homeState
-                                        .getHomeBoutiquesPaginationObjectByMainCategory[
-                                            currentSlug]
-                                        ?.paginationStatus ==
-                                    PaginationStatus.initial) &&
-                            (homeState
-                                        .getHomeBoutiquesPaginationObjectByMainCategory[
-                                            currentSlug]
-                                        ?.items
-                                        .length ??
-                                    0) ==
-                                0)) {
+                    print(currentSlug);
+
+                    if (homeState.boutiquesForEveryMainCategoryThatDidPrefetch[
+                                currentSlug] !=
+                            true &&
+                        (homeState.getHomeBoutiquesPaginationObjectByMainCategory[
+                                    currentSlug] ==
+                                null ||
+                            ((homeState
+                                            .getHomeBoutiquesPaginationObjectByMainCategory[
+                                                currentSlug]
+                                            ?.paginationStatus ==
+                                        PaginationStatus.loading ||
+                                    homeState
+                                            .getHomeBoutiquesPaginationObjectByMainCategory[
+                                                currentSlug]
+                                            ?.paginationStatus ==
+                                        PaginationStatus.initial) &&
+                                (homeState
+                                            .getHomeBoutiquesPaginationObjectByMainCategory[
+                                                currentSlug]
+                                            ?.items
+                                            .length ??
+                                        0) ==
+                                    0))) {
                       return sliverListSeparated(
                           key: TestVariables.kTestMode
                               ? Key(WidgetsKey.boutiquesFailureStatusKey)

@@ -196,7 +196,7 @@ class CustomCacheManager extends CacheManager {
   CustomCacheManager._()
       : super(Config(
           key,
-          maxNrOfCacheObjects: 400,
+          maxNrOfCacheObjects: 600,
           stalePeriod: const Duration(days: 30),
         ));
 }
@@ -223,5 +223,6 @@ String addSuitableWidthAndHeightToImage(
         'upload/c_scale,h_${2 * height.toInt()}' +
         list[1];
   }
+  print('sffffwwfwf $url');
   return url;
 }

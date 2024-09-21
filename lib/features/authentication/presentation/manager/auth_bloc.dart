@@ -291,6 +291,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           _prefsRepository.setMyMarketName(r.data!.user!.name!);
         }
         _prefsRepository.setMarketToken(r.data!.token!);
+        _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
         print(
             "*****************************-----------------------------${r.data!.token!}");
         _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
@@ -346,11 +347,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }, (r) {
       print(
           "87777777777777777777777777777777777777777777777777777777${r.data!.user!.name}77777777777777777777777${r.data!.user!.id!}");
-      _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
+
       if ((r.data!.user!.name?.replaceAll(' ', '') ?? '') != '') {
         _prefsRepository.setMyMarketName(r.data!.user!.name!);
       }
       _prefsRepository.setMarketToken(r.data!.token!);
+      _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
       print(
           ".................................*****************************-----------------------------${r.data!.token!}");
 
@@ -405,8 +407,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }, (r) {
       isFailedTheFirstTime.remove('RegisterGuestEvent');
       _prefsRepository.setMarketToken(r.data!.token!);
-      print(
-          "////////////////////*****************************-----------------------------${r.data!.token!}");
+      _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
 
       emit(state.copyWith(
           registerGuestStatus: RegisterGuestStatus.success,
@@ -532,6 +533,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       isFailedTheFirstTime.remove('UpdateStoriesUserEvent');
       _prefsRepository.setMyStoriesName(event.name);
       _prefsRepository.setMyMarketName(event.name);
+
       GetIt.I<StoryBloc>()
           .add(UpdateNameForUserInCollectionIfExistEvent(name: event.name));
 

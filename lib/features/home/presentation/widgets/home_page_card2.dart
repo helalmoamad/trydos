@@ -302,23 +302,23 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                   viewportFraction: 0.90,
                                 )))
                         : Stack(
-                          children: [
-                            Container(
-                              height: 135,
-                              width: 1.sw,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15.0),
-                                border: Border.all(
-                                    width: 0.5,
-                                    color: const Color(0xfffafafa)),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color(0x33000000),
-                                    offset: Offset(0, 3),
-                                    blurRadius: 10,
-                                  ),
-                                ],
-                              ),
+                            children: [
+                              Container(
+                                height: 135,
+                                width: 1.sw,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  border: Border.all(
+                                      width: 0.5,
+                                      color: const Color(0xfffafafa)),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(0x33000000),
+                                      offset: Offset(0, 3),
+                                      blurRadius: 10,
+                                    ),
+                                  ],
+                                ),
                               child: ClipRRect(
                                   borderRadius: BorderRadius.circular(15),
                                   child:
@@ -535,8 +535,9 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                                       .boutniqe
                                                       .banners![0]
                                                       .filePath!,
-                                                  boutiqueIcon: widget
-                                                      .boutniqe.icon!.filePath!,
+                                                  boutiqueIcon: widget.boutniqe
+                                                          .icon?.filePath ??
+                                                      "",
                                                 ));
                                           },
                                           child: ProductItemCircle(

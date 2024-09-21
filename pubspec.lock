@@ -22,14 +22,6 @@ packages:
     description: dart
     source: sdk
     version: "0.3.2"
-  adobe_xd:
-    dependency: "direct main"
-    description:
-      name: adobe_xd
-      sha256: "5d84fef3ded20dc0f4efe34e8bd4c0462d2d1539b5826a18f4247ddbf915ad44"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.1"
   analyzer:
     dependency: transitive
     description:
@@ -246,6 +238,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
+  cached_network_svg_image:
+    dependency: "direct main"
+    description:
+      name: cached_network_svg_image
+      sha256: a819160d2f53598b4ad41be57add30ef453f4e6a37596b1a3a7d138716545d94
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   camera:
     dependency: "direct main"
     description:
@@ -726,11 +726,10 @@ packages:
   flutter_carousel_slider:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "8674bfc111e82b1f69e50cc556b19c8004864865"
-      url: "https://helalmohamad@bitbucket.org/trydos/flutter_carousel_slider-1.1.0.git"
-    source: git
+      name: flutter_carousel_slider
+      sha256: "4cd0691b98ebbf8b40361e01779b3a211002c963d3709630e775fba699d3b821"
+      url: "https://pub.dev"
+    source: hosted
     version: "1.1.0"
   flutter_countdown_timer:
     dependency: "direct main"
@@ -764,11 +763,10 @@ packages:
   flutter_gallery_3d:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "99a87a4c9b5b8ac9bd2433e102b8e4132ac6ea05"
-      url: "https://helalmohamad@bitbucket.org/trydos/flutter_gallery_3d-1.1.1.git"
-    source: git
+      name: flutter_gallery_3d
+      sha256: "1c8b5d15c4e8ab653558e2c73f7291bb7367c860749b721bcc8d625a920c5c34"
+      url: "https://pub.dev"
+    source: hosted
     version: "1.1.1"
   flutter_html:
     dependency: "direct main"
@@ -947,10 +945,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_svg
-      sha256: "6ff9fa12892ae074092de2fa6a9938fb21dbabfdaa2ff57dc697ff912fc8d4b2"
+      sha256: "7b4ca6cf3304575fe9c8ec64813c8d02ee41d2afe60bcfe0678bcb5375d596a2"
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.6"
+    version: "2.0.10+1"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -1366,12 +1364,11 @@ packages:
   overscroll_pop:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "3bcac982fdb3333af6c846d83170cdd8fa190e87"
-      url: "https://helalmohamad@bitbucket.org/trydos/overscroll_pop-0.1.0.git"
-    source: git
-    version: "0.1.0"
+      name: overscroll_pop
+      sha256: "2304ad974aa5c2310f6bd7b2f1e8aad40a19e3a0cfd6ecf5e53a498c0ae2e891"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.1"
   package_config:
     dependency: transitive
     description:
@@ -1748,6 +1745,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
+  simple_shadow:
+    dependency: "direct main"
+    description:
+      name: simple_shadow
+      sha256: "0c0872b2baffaf12fc91416643785a88081120bac61d704f3f9dbd7e712360fa"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.1"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -1756,11 +1761,10 @@ packages:
   sliding_up_panel:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "40dfb3cc000fbe8cd97f2c4cdb6b04b784c94620"
-      url: "https://helalmohamad@bitbucket.org/trydos/sliding_up_panel-2.0.0-1.git"
-    source: git
+      name: sliding_up_panel
+      sha256: "578e90956a6212d1e406373250b2436a0f3afece29aee3c24c8360094d6cf968"
+      url: "https://pub.dev"
+    source: hosted
     version: "2.0.0+1"
   source_gen:
     dependency: transitive
@@ -2018,6 +2022,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.5.0"
+  vector_graphics:
+    dependency: transitive
+    description:
+      name: vector_graphics
+      sha256: "32c3c684e02f9bc0afb0ae0aa653337a2fe022e8ab064bcd7ffda27a74e288e3"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.11+1"
+  vector_graphics_codec:
+    dependency: transitive
+    description:
+      name: vector_graphics_codec
+      sha256: c86987475f162fadff579e7320c7ddda04cd2fdeffbe1129227a85d9ac9e03da
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.11+1"
+  vector_graphics_compiler:
+    dependency: transitive
+    description:
+      name: vector_graphics_compiler
+      sha256: "12faff3f73b1741a36ca7e31b292ddeb629af819ca9efe9953b70bd63fc8cd81"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.11+1"
   vector_math:
     dependency: transitive
     description:
@@ -2078,10 +2106,10 @@ packages:
     dependency: transitive
     description:
       name: vm_service
-      sha256: "5c5f338a667b4c644744b661f309fb8080bb94b18a7e91ef1dbd343bed00ed6d"
+      sha256: f652077d0bdf60abe4c1f6377448e8655008eef28f128bc023f7b5e8dfeb48fc
       url: "https://pub.dev"
     source: hosted
-    version: "14.2.5"
+    version: "14.2.4"
   watcher:
     dependency: transitive
     description:

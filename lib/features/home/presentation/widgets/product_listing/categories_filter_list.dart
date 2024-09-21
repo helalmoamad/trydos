@@ -19,6 +19,7 @@ class CategoriesFilterList extends StatelessWidget {
       required this.expandingFiltersStack,
       required this.workWithChoosedFilter,
       required this.boutiqueSlug,
+      required this.filterss,
       this.category,
       required this.scaleTheTopItemInFiltersStack,
       this.fromSearch = false,
@@ -28,6 +29,7 @@ class CategoriesFilterList extends StatelessWidget {
   final ValueNotifier<bool> scaleTheTopItemInFiltersStack;
   final bool workWithChoosedFilter;
   final bool fromSearch;
+  final Filter filterss;
   final TextEditingController? controller;
   final String boutiqueSlug;
   final String? category;
@@ -35,12 +37,11 @@ class CategoriesFilterList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     HomeBloc homeBloc = BlocProvider.of<HomeBloc>(context);
+
     String key = boutiqueSlug + (category ?? '');
     return BlocBuilder<HomeBloc, HomeState>(
       builder: (context, state) {
-        Filter filters = state.getProductFiltersModel[key]?.filters != null
-            ? state.getProductFiltersModel[key]?.filters ?? Filter()
-            : Filter();
+        Filter filters = filterss;
         Filter? choosedFilters = state.choosedFiltersByUser[key]?.filters;
         Filter? appliedFilters = state.appliedFiltersByUser[key]?.filters;
         print(filters.categories?.length ?? 0);

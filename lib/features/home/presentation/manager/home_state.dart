@@ -1,3 +1,4 @@
+import 'package:dartz/dartz.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart'
@@ -90,19 +91,25 @@ class HomeState {
     this.searchHistory,
     this.cashedOrginalBoutique = false,
     this.getAllowedCountriesModel,
+    this.currentIndexForMainCategoryEvent = 0,
     this.prefAppliedFilterForExtendFilter,
     this.ListitemForAddToCart,
+    this.isExpandedForListingPage = false,
     this.countOfProductExpectedByFiltering,
     this.getCartItemsStatus = GetCartItemsStatus.init,
     this.getProductDetailWithoutRelatedProductsModel,
     this.getProductListingPaginationWithoutFiltersModel = const {},
+    this.getProductListingWithFiltersPaginationWithPrefetchModels = const {},
+    this.getProductFiltersWithPrefetchModel = const {},
     this.currentSelectedColorForEveryProduct = const {},
     this.boutiquesThatDidPrefetch = const {},
+    this.boutiquesForEveryMainCategoryThatDidPrefetch = const {},
     this.cachedProductWithoutRelatedProductsModel = const {},
     this.getHomeBoutiquesPaginationObjectByMainCategory = const {},
   });
 
   final Map<String, bool> boutiquesThatDidPrefetch;
+  final Map<String, bool> boutiquesForEveryMainCategoryThatDidPrefetch;
   final GetStartingSettingsStatus getStartingSettingsStatus;
   final Map<String, int> currentSelectedColorForEveryProduct;
   final GetCommentForProductStatus getCommentForProductStatus;
@@ -113,11 +120,16 @@ class HomeState {
   final Map<String, GetProductFiltersStatus> getProductFiltersStatus;
   final Map<String, PaginationModel<product.Products>?>
       getProductListingWithFiltersPaginationModels;
+  final Map<String, PaginationModel<product.Products>?>
+      getProductListingWithFiltersPaginationWithPrefetchModels;
   final Map<String, get_filters.GetProductFiltersModel?> getProductFiltersModel;
+  final Map<String, get_filters.GetProductFiltersModel?>
+      getProductFiltersWithPrefetchModel;
   final Map<String, get_filters.GetProductFiltersModel?> appliedFiltersByUser;
   final Map<String, get_filters.GetProductFiltersModel?> choosedFiltersByUser;
   int? selectedCollection;
   int currentPage;
+  bool? isExpandedForListingPage;
 
   // String? idForRequest;
   List<String>? searchHistory;
@@ -125,6 +137,7 @@ class HomeState {
   Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>?
       productStatus;
   Map<String, List<cart.Cart>>? cartCollection;
+
   final Map<String, bool> reRequestTheseBoutiques;
   final Map<String, bool> reRequestTheseProductListingInBoutiques;
   final Map<String, bool> reRequestProductWithFilters;
@@ -149,6 +162,7 @@ class HomeState {
   final GetProductDetailWithoutRelatedProductsModel?
       getProductDetailWithoutRelatedProductsModel;
   bool cashedOrginalBoutique;
+  int currentIndexForMainCategoryEvent;
   final StartingSetting? startingSetting;
   Map<String, String>? CurrentColorSizeForCart;
   Map<String, List<int>>? currentQuantityForCart;
@@ -158,14 +172,20 @@ class HomeState {
   HomeState copyWith(
       {final GetStartingSettingsStatus? getStartingSettingsStatus,
       final GetMainCategoriesStatus? getMainCategoriesStatus,
+      final Map<String, get_filters.GetProductFiltersModel?>?
+          getProductFiltersWithPrefetchModel,
       int? totalProductNumber,
       bool? cashedOrginalBoutique,
+      bool? isExpandedForLidtingPage,
       // String? idForRequest,
       get_filters.Filter? prefAppliedFilterForExtendFilter,
       final Map<String, bool>? boutiquesThatDidPrefetch,
+      final Map<String, bool>? boutiquesForEveryMainCategoryThatDidPrefetch,
       Map<String, Map<int, List<String>>>? addImagesToProductIdForCart,
       final List<ImageForAddToCart>? ListitemForAddToCart,
       final GetAllowedCountriesModel? getAllowedCountriesModel,
+      final Map<String, PaginationModel<product.Products>?>?
+          getProductListingWithFiltersPaginationWithPrefetchModels,
       final GetCommentForProductStatus? getCommentForProductStatus,
       final GetCartItemsStatus? getCartItemsStatus,
       Map<int, int?>? currentStoryInEachCollection,
@@ -173,6 +193,7 @@ class HomeState {
           getProductDetailWithoutRelatedProductsModel,
       int? selectedCollection,
       List<String>? sizes,
+      int? currentIndexForMainCategoryEvent,
       List<String>? searchHistory,
       Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>?
           productStatus,
@@ -213,6 +234,9 @@ class HomeState {
       final Map<String, GetCommentForProductModel>?
           getCommentForProductModel}) {
     return HomeState(
+      boutiquesForEveryMainCategoryThatDidPrefetch:
+          boutiquesForEveryMainCategoryThatDidPrefetch ??
+              this.boutiquesForEveryMainCategoryThatDidPrefetch,
       getCommentForProductModel:
           getCommentForProductModel ?? this.getCommentForProductModel,
       sizes: sizes ?? this.sizes,
@@ -221,6 +245,8 @@ class HomeState {
       // idForRequest: idForRequest ?? this.idForRequest,
       cashedOrginalBoutique:
           cashedOrginalBoutique ?? this.cashedOrginalBoutique,
+      isExpandedForListingPage:
+          isExpandedForLidtingPage ?? this.isExpandedForListingPage,
       countOfProductExpectedByFiltering: countOfProductExpectedByFiltering ??
           this.countOfProductExpectedByFiltering,
       ListitemForAddToCart: ListitemForAddToCart ?? this.ListitemForAddToCart,
@@ -234,8 +260,15 @@ class HomeState {
               this.getProductListingWithFiltersPaginationModels,
       prefAppliedFilterForExtendFilter: prefAppliedFilterForExtendFilter ??
           this.prefAppliedFilterForExtendFilter,
+      getProductFiltersWithPrefetchModel: getProductFiltersWithPrefetchModel ??
+          this.getProductFiltersWithPrefetchModel,
+      getProductListingWithFiltersPaginationWithPrefetchModels:
+          getProductListingWithFiltersPaginationWithPrefetchModels ??
+              this.getProductListingWithFiltersPaginationWithPrefetchModels,
       currentQuantityForCart:
           currentQuantityForCart ?? this.currentQuantityForCart,
+      currentIndexForMainCategoryEvent: currentIndexForMainCategoryEvent ??
+          this.currentIndexForMainCategoryEvent,
       productITemForCart: productITemForCart ?? this.productITemForCart,
       CurrentColorSizeForCart:
           CurrentColorSizeForCart ?? this.CurrentColorSizeForCart,

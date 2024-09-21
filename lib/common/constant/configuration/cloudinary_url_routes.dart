@@ -1,6 +1,8 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 extension ScopeApi on String {
-  String get _version =>'v1_1';
-  String get _cloudinaryName => 'djooohujg';
+  String get _version => dotenv.env['CLOUDINARY_VERSION']!;
+  String get _cloudinaryName => dotenv.env['CLOUDINARY_NAME']!;
 
   String noScope() => '$_version/$_cloudinaryName/$this';
 }
@@ -10,8 +12,8 @@ abstract class CloudinaryEndPoints {
 }
 
 abstract class CloudinaryUrls {
-  static final String _baseUri = 'https://api.cloudinary.com';
-  static final String _loadPreset = 'v4h8xqns';
+  static final String _baseUri = dotenv.env['CLOUDINARY_URL']!;
+  static final String _loadPreset = dotenv.env['CLOUDINARY_LOAD_PRESET']!;
 
   static Uri get baseUri => Uri.parse(_baseUri);
 

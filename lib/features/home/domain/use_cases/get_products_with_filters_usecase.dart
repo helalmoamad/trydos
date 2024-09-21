@@ -31,6 +31,7 @@ class GetProductsWithFiltersParams {
   final String? searchText;
   final int? offset;
   final int? limit;
+  final String? scroll_id;
   final String? boutiqueSlug;
   final List<String>? boutiqueSlugs;
   final List<String>? categorySlugs;
@@ -42,6 +43,7 @@ class GetProductsWithFiltersParams {
       this.attributes,
       this.categories,
       this.colors,
+      this.scroll_id,
       this.boutiqueSlug,
       this.searchText,
       this.offset,
@@ -60,6 +62,7 @@ class GetProductsWithFiltersParams {
         "search_text": searchText,
         "offset": offset,
         "limit": limit,
+        "scroll_id": scroll_id,
         "boutique_slug": boutiqueSlug,
         "boutique_slugs": boutiqueSlugs.toString(),
         "category_slugs": categorySlugs.toString(),
