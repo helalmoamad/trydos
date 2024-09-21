@@ -19,11 +19,12 @@ class GetStartingSettingsEvent extends HomeEvent {
 }
 
 class GetMainCategoriesEvent extends HomeEvent {
-  const GetMainCategoriesEvent();
+  const GetMainCategoriesEvent({required this.context});
 
+  final BuildContext context;
   @override
   // TODO: implement props
-  List<Object?> get props => [];
+  List<Object?> get props => [context];
 }
 
 class GetProductFiltersEvent extends HomeEvent {
@@ -141,14 +142,16 @@ class GetHomeBoutiqesEvent extends HomeEvent {
 class GetHomeBoutiquesPrefetchEvent extends HomeEvent {
   // final bool getWithPagination;
   final String offset;
-  final bool getWithPagination;
+  final bool getWithScroll;
   final bool getWithPrefetchForMainCategory;
-  final List<String> categorySlug;
+  final String categorySlug;
   final int indexCategorySlug;
+  final BuildContext context;
 
   const GetHomeBoutiquesPrefetchEvent({
     required this.offset,
-    this.getWithPagination = false,
+    required this.context,
+    this.getWithScroll = false,
     this.indexCategorySlug = 0,
     this.getWithPrefetchForMainCategory = false,
     required this.categorySlug,
@@ -631,14 +634,3 @@ class GetProductFiltersWithPrefetchForFiveFiltersEvent extends HomeEvent {
         boutiqueSlug,
       ];
 }
-
-
-
-
-
-
-
-
-
-
-
