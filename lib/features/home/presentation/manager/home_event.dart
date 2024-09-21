@@ -141,14 +141,14 @@ class GetHomeBoutiqesEvent extends HomeEvent {
 class GetHomeBoutiquesPrefetchEvent extends HomeEvent {
   // final bool getWithPagination;
   final String offset;
-  final bool getWithPagination;
+  final bool getWithScroll;
   final bool getWithPrefetchForMainCategory;
-  final List<String> categorySlug;
+  final String categorySlug;
   final int indexCategorySlug;
 
   const GetHomeBoutiquesPrefetchEvent({
     required this.offset,
-    this.getWithPagination = false,
+    this.getWithScroll = false,
     this.indexCategorySlug = 0,
     this.getWithPrefetchForMainCategory = false,
     required this.categorySlug,
@@ -631,14 +631,3 @@ class GetProductFiltersWithPrefetchForFiveFiltersEvent extends HomeEvent {
         boutiqueSlug,
       ];
 }
-
-
-
-
-
-
-
-
-
-
-
