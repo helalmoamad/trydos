@@ -15,7 +15,7 @@ void main() {
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
   testWidgets(
-    'Test get main categories api ,get story api , get boutiques api , get starting settings apis , get Allowed Countries api , get User Country api , are requested when home page is oppened',
+    'Test get main categories api ,get story api , get boutiques api , get starting settings apis , get Allowed Countries api , get User Country api , are requested for one time when home page is oppened',
     (WidgetTester tester) async {
       app.main();
       await tester.pumpAndSettle();
@@ -25,29 +25,47 @@ void main() {
       await SharedScenarios.registerGuest(tester: tester);
       ////////////////////////////
       await tester.pumpAndSettle();
-      /////////// check by flag if apis are requested  /////////////////
+      /////////// check by flag if apis are requested for one time /////////////////
+      print(
+          '///// getMainCategoriesFlag count : ${TestVariables.getMainCategoriesRequestCountFlag} ////////////////////');
+      print(
+          '///// getStoriesFlag count : ${TestVariables.getStoriesRequestCountFlag} ////////////////////');
+      print(
+          '///// getBoutiquesFlag count : ${TestVariables.getBoutiquesRequestCountFlag} ////////////////////');
+      print(
+          '///// getStartingSettingsFlag count : ${TestVariables.getStartingSettingsRequestCountFlag} ////////////////////');
+      print(
+          '///// getAllowedCountriesFlag count : ${TestVariables.getAllowedCountriesRequestCountFlag} ////////////////////');
+      print(
+          '///// getUserCountryFlag count : ${TestVariables.getUserCountryRequestCountFlag} ////////////////////');
 
       expect(TestVariables.getMainCategoriesFlag, isTrue);
+      expect(TestVariables.getMainCategoriesRequestCountFlag, equals(1));
 
       ///
 
       expect(TestVariables.getStoriesFlag, isTrue);
+      expect(TestVariables.getStoriesRequestCountFlag, equals(1));
 
       ///
 
       expect(TestVariables.getBoutiquesFlag, isTrue);
+      expect(TestVariables.getBoutiquesRequestCountFlag, equals(1));
 
       ///
 
       expect(TestVariables.getStartingSettingsFlag, isTrue);
+      expect(TestVariables.getStartingSettingsRequestCountFlag, equals(1));
 
       ///
 
       expect(TestVariables.getAllowedCountriesFlag, isTrue);
+      expect(TestVariables.getAllowedCountriesRequestCountFlag, equals(1));
 
       ///
 
       expect(TestVariables.getUserCountryFlag, isTrue);
+      expect(TestVariables.getUserCountryRequestCountFlag, equals(1));
 
       ///////////////// test the state of getting apis  /////////////////////////////
 
