@@ -647,13 +647,11 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                 builder: (context, visible, _) {
                                   if (visible) {
                                     homeBloc.add(GetHomeBoutiqesEvent(
-                                        getWithPrefetch: true,
                                         categorySlug: "Empty",
                                         offset: "1",
                                         context: context,
                                         getWithPagination: false));
-                                    homeBloc.add(GetMainCategoriesEvent(
-                                        context: context));
+                                    homeBloc.add(GetMainCategoriesEvent());
                                   }
 
                                   visible
@@ -761,7 +759,6 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                               0 ||
                                                       state.currentIndex == 4) {
                                                     return TabsBar(
-                                                      context: context,
                                                       controller: controller,
                                                       buildSearchResult:
                                                           buildSearchResult,

@@ -97,7 +97,6 @@ class _HomePageState extends State<HomePage> {
       if (scrollController.offset >=
           (scrollController.position.maxScrollExtent * 0.7)) {
         homeBloc.add(GetHomeBoutiqesEvent(
-            getWithPrefetch: true,
             categorySlug: selectedCategorySlug,
             offset: homeBloc
                 .state
