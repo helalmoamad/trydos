@@ -6,7 +6,6 @@ import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/common/test_utils/widgets_keys.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
-import 'package:trydos/features/home/presentation/pages/home_page.dart';
 import 'package:trydos/features/home/presentation/widgets/home_page_card2.dart';
 import 'package:trydos/main.dart' as app;
 import '../shared/shared_scenarios.dart';
@@ -24,7 +23,10 @@ void main() {
     Finder boutiqueCardWidget =
         find.byKey(Key('${WidgetsKey.boutiqueCardKey}$boutiqueIndex'));
 
-    await tester.tap(boutiqueCardWidget);
+    Offset topLeft = tester.getTopLeft(boutiqueCardWidget);
+
+    await tester.tapAt(topLeft);
+
     await tester.pump();
     await Future.delayed(const Duration(seconds: 2));
     Finder boutiqueProductListingLoadingWidget =
@@ -149,7 +151,7 @@ void main() {
       );
       //////////////////////////////////////////
       testWidgets(
-        'Test prefetch boutiques data when make scroll to home screen , check no data will be fetched for preFetched boutiques',
+        'Test prefetch for all boutiques data when make scroll to home screen , check no data will be fetched again for preFetched boutiques',
         (WidgetTester tester) async {
           app.main();
           await tester.pumpAndSettle();
@@ -168,10 +170,10 @@ void main() {
           );
 
           ////////////////// Scroll until find not pre-fetched boutique  ////////////////////////////////\
-          bool isFound = false;
+
           int index = 0;
           String slug = '';
-          Finder homePage = find.byType(HomePage);
+          Finder homeScroll = find.byKey(Key(WidgetsKey.homepageScrollKey));
 
           HomeBloc homeBloc = GetIt.I<HomeBloc>();
           HomeState homeState = homeBloc.state;
@@ -183,14 +185,12 @@ void main() {
               .toList();
           ;
 
-          int preFetchedSlugsCount = preFetchedSlugs.length;
-
           print(
               '////// preFetchedSlugs /////// $preFetchedSlugs ///////////////');
 
           ////////// scroll to the slug after preFetchedSlugs to check if preFetched after scrolling //////////////////
 
-          while (!isFound) {
+          while (true) {
             Finder boutiqueCardWidget =
                 find.byKey(Key('${WidgetsKey.boutiqueCardKey}$index'));
 
@@ -204,19 +204,27 @@ void main() {
                       .boutniqe
                       .slug ??
                   '';
+              //////////////// check if  prefetched ///////////////////////////
+              homeState = homeBloc.state;
 
-              if (index == preFetchedSlugsCount + 1) {
-                print('find slug with index : $index');
-                isFound = true;
-                break; // Exit the loop if the desired item is found
-              } else {
-                print('not find slug with index : $index ');
-                index++;
-              }
+              bool check = homeState.boutiquesThatDidPrefetch[slug] == true;
+
+              expect(check, isTrue);
+
+              await Future.delayed(const Duration(seconds: 1));
+              ////////////////////////////
+              await enterBoutiqueAndCheckIfPreFetched(
+                tester: tester,
+                boutiqueIndex: index,
+                homeState: homeState,
+              );
+              await Future.delayed(const Duration(seconds: 2));
+
+              index++;
             } catch (e) {
               // If the item isn't found, try scrolling to the right
               try {
-                await tester.drag(homePage,
+                await tester.drag(homeScroll,
                     const Offset(0, -400)); // Scroll buttom by 400 pixels
                 await tester.pumpAndSettle();
 
@@ -225,28 +233,13 @@ void main() {
                 print('find index after scroll : $index');
               } catch (scrollError) {
                 // If the scroll fails, we have reached the end of the list
-                fail('Reached the end of the list without finding the item');
+                print('scroll fails, we have reached the end of the list');
+                break;
               }
             }
           }
           await tester.pumpAndSettle();
-          expect(isFound, isTrue);
 
-          print('slug is : $slug with index $index');
-          //////////////// check if  prefetched ///////////////////////////
-          homeState = homeBloc.state;
-
-          bool check = homeState.boutiquesThatDidPrefetch[slug] == true;
-
-          expect(check, isTrue);
-
-          await Future.delayed(const Duration(seconds: 2));
-          ////////////////////////////
-          await enterBoutiqueAndCheckIfPreFetched(
-            tester: tester,
-            boutiqueIndex: index,
-            homeState: homeState,
-          );
           await Future.delayed(const Duration(seconds: 2));
           ////////// Test if scrolling up no data will be fetched for preFetched boutiques //////////////////
           print(
@@ -255,20 +248,23 @@ void main() {
           TestVariables.getProductFiltersForBoutiqueFlag
               .updateAll((key, value) => false);
           //////////////// Scroll to start ////////////////////////
-          homePage = find.byType(HomePage);
+
+          Finder boutiqueCardWidget =
+              find.byKey(Key('${WidgetsKey.boutiqueCardKey}0'));
+
+          homeScroll = find.byKey(Key(WidgetsKey.homepageScrollKey));
+
+          expect(homeScroll, findsOneWidget);
 
           while (true) {
-            await tester.drag(homePage, const Offset(0, 300));
-
-            await tester.pumpAndSettle();
-
-            Finder boutiqueCardWidget =
-                find.byKey(Key('${WidgetsKey.boutiqueCardKey}0'));
-
             try {
               expect(boutiqueCardWidget, findsOneWidget);
+              print('//// Find start boutiqueCardKey  /////');
               break;
             } catch (e) {
+              await tester.drag(homeScroll, const Offset(0, 300));
+              print('//// scroll up  /////');
+              await tester.pumpAndSettle();
               continue;
             }
           }
@@ -276,7 +272,7 @@ void main() {
           //////////////// check no data will be fetched for preFetched boutiques ////////////////////////
 
           print(
-              '/////////  Product Filters For Boutique Flage ${TestVariables.getProductFiltersForBoutiqueFlag} //////////////');
+              '/////////  Product Filters For Boutique Flage after scrolling up ${TestVariables.getProductFiltersForBoutiqueFlag} //////////////');
 
           bool allFalse = TestVariables.getProductFiltersForBoutiqueFlag.values
               .every((value) => value == false);

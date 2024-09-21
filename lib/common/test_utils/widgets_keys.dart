@@ -99,4 +99,6 @@ class WidgetsKey {
   static const closeFilterPageKey = 'close_filter_page_key';
 
   static const appliedFiltersPageCloseKey = 'applied_filters_page_close_key';
+
+  static const homepageScrollKey = 'applied_filters_page_close_key';
 }
