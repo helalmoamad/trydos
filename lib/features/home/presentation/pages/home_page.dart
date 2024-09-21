@@ -45,7 +45,7 @@ class _HomePageState extends State<HomePage> {
   double? _previousOffset;
   double? _velocity;
   final ScrollController scrollController = ScrollController();
-  Map<String , Key> reRenderingListViewKey = {};
+  Map<String, Key> reRenderingListViewKey = {};
   Map<String, int> lastIndexRequestedInEachMainCategoryForPrefetchBoutiques =
       {};
 
@@ -97,6 +97,7 @@ class _HomePageState extends State<HomePage> {
       if (scrollController.offset >=
           (scrollController.position.maxScrollExtent * 0.7)) {
         homeBloc.add(GetHomeBoutiqesEvent(
+            getWithPrefetch: true,
             categorySlug: selectedCategorySlug,
             offset: homeBloc
                 .state
@@ -116,10 +117,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   prefetchBoutiques(String currentSlug) {
-
     for (int i = 0;
         i <
-             (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
+            (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
                     currentSlug] ??
                 0);
         i++) {
@@ -140,7 +140,7 @@ class _HomePageState extends State<HomePage> {
             .items[i]
             .childCategoriesForProductIds
             ?.forEach(
-              (element) {
+          (element) {
             categorySlugs.add(element.categorySlug ?? "");
           },
         );
@@ -261,7 +261,8 @@ class _HomePageState extends State<HomePage> {
                                 ?.paginationStatus ||
                         p.currentIndexForMainCategoryEvent !=
                             c.currentIndexForMainCategoryEvent);
-                    if (!p.reRequestTheseBoutiques.containsKey(currentSlug) && c.reRequestTheseBoutiques[currentSlug] == true) {
+                    if (!p.reRequestTheseBoutiques.containsKey(currentSlug) &&
+                        c.reRequestTheseBoutiques[currentSlug] == true) {
                       reRenderingListViewKey[currentSlug] = UniqueKey();
                     }
                     return rebuild;

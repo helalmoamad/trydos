@@ -19,7 +19,9 @@ class GetStartingSettingsEvent extends HomeEvent {
 }
 
 class GetMainCategoriesEvent extends HomeEvent {
-  const GetMainCategoriesEvent();
+  final BuildContext context;
+
+  const GetMainCategoriesEvent({required this.context});
 
   @override
   // TODO: implement props
@@ -120,6 +122,7 @@ class GetHomeBoutiqesEvent extends HomeEvent {
   // final bool getWithPagination;
   final String offset;
   final bool getWithPagination;
+  final bool getWithPrefetch;
 
   final String categorySlug;
   final BuildContext context;
@@ -127,6 +130,7 @@ class GetHomeBoutiqesEvent extends HomeEvent {
   const GetHomeBoutiqesEvent({
     required this.offset,
     required this.context,
+    this.getWithPrefetch = false,
     this.getWithPagination = false,
     required this.categorySlug,
   }

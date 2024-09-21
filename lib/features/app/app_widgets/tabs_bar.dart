@@ -37,10 +37,12 @@ class TabsBar extends StatefulWidget {
     required this.buildSearchResult,
     required this.appearTrendingAndHistory,
     required this.controller,
+    this.context,
   }) : super(key: key);
   final ValueNotifier<int> buildSearchResult;
   final ValueNotifier<bool> appearTrendingAndHistory;
   final TextEditingController controller;
+  final BuildContext? context;
 
   @override
   State<TabsBar> createState() => _TabsBarState();
@@ -67,9 +69,10 @@ class _TabsBarState extends State<TabsBar> {
       if (homeBloc.state.boutiquesForEveryMainCategoryThatDidPrefetch[
               categorySlugs[(index) ~/ 36 + startIndex]] !=
           true) {
-        homeBloc.add(GetHomeBoutiquesPrefetchEvent(
-          getWithPrefetchForMainCategory: true,
-          getWithScroll: false,
+        homeBloc.add(GetHomeBoutiqesEvent(
+          context: context,
+          getWithPagination: false,
+          getWithPrefetch: false,
           categorySlug: categorySlugs[(index) ~/ 36 + startIndex],
           offset: "1",
         ));
@@ -463,6 +466,7 @@ class _TabsBarState extends State<TabsBar> {
                                                     index) {
                                                   appBloc.add(ChangeTab(index));
                                                   homeBloc.add(GetHomeBoutiqesEvent(
+                                                      getWithPrefetch: true,
                                                       getWithPagination: false,
                                                       offset: "1",
                                                       categorySlug: homeState
@@ -479,6 +483,7 @@ class _TabsBarState extends State<TabsBar> {
                                                   appBloc.add(ChangeTab(-1));
                                                   homeBloc.add(
                                                       GetHomeBoutiqesEvent(
+                                                          getWithPrefetch: true,
                                                           context: context,
                                                           categorySlug: "Empty",
                                                           offset: "1",

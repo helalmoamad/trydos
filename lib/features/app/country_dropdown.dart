@@ -46,9 +46,12 @@ class _CountryDropdownState extends State<CountryDropdown> {
               _prefsRepository.setUserChoosedCountryIso(newValue);
             });
             homeBloc.add(GetHomeBoutiqesEvent(
-              context: context,
-                categorySlug: "Empty", offset: "1", getWithPagination: false));
-            homeBloc.add(GetMainCategoriesEvent());
+                context: context,
+                getWithPrefetch: true,
+                categorySlug: "Empty",
+                offset: "1",
+                getWithPagination: false));
+            homeBloc.add(GetMainCategoriesEvent(context: context));
           },
           // buttonHeight: 40,
           // buttonWidth: 1.sw / 2,
