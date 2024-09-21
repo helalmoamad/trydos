@@ -45,7 +45,7 @@ class _HomePageState extends State<HomePage> {
   double? _previousOffset;
   double? _velocity;
   final ScrollController scrollController = ScrollController();
-  Key reRenderingListViewKey = UniqueKey();
+  Map<String , Key> reRenderingListViewKey = {};
   Map<String, int> lastIndexRequestedInEachMainCategoryForPrefetchBoutiques =
       {};
 
@@ -104,6 +104,7 @@ class _HomePageState extends State<HomePage> {
                     selectedCategorySlug]!
                 .page
                 .toString(),
+            context: context,
             getWithPagination: true));
       }
       if (scrollController.position.pixels <= 80) {
@@ -115,19 +116,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   prefetchBoutiques(String currentSlug) {
+
     for (int i = 0;
         i <
-            min(
-                (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
-                        currentSlug] ??
-                    0),
-                homeBloc
-                        .state
-                        .getHomeBoutiquesPaginationObjectByMainCategory[
-                            currentSlug]!
-                        .items
-                        .length -
-                    1);
+             (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
+                    currentSlug] ??
+                0);
         i++) {
       String slug = homeBloc
           .state
@@ -135,27 +129,34 @@ class _HomePageState extends State<HomePage> {
           .items[i]
           .slug
           .toString();
-      List<String> categorySlugs = [];
+      if (homeBloc.state.boutiquesThatDidPrefetch[slug] != true) {
+        debugPrint('///////// Prefetch Boutique Slug : $slug /////////');
 
-      homeBloc
-          .state
-          .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]!
-          .items[i]
-          .childCategoriesForProductIds
-          ?.forEach(
-        (element) {
-          categorySlugs.add(element.categorySlug ?? "");
-        },
-      );
+        List<String> categorySlugs = [];
 
-      homeBloc.add(GetProductWithFiltersWithoutCancelingPreviousEvents(
-          getWithoutFilter: true,
-          categorySlugs: categorySlugs,
-          cashedOrginalBoutique: true,
-          fromHomePageSearch: false,
-          boutiqueSlug: slug,
-          category: null,
-          searchText: null));
+        homeBloc
+            .state
+            .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]!
+            .items[i]
+            .childCategoriesForProductIds
+            ?.forEach(
+              (element) {
+            categorySlugs.add(element.categorySlug ?? "");
+          },
+        );
+
+        homeBloc.add(GetProductWithFiltersWithoutCancelingPreviousEvents(
+            getWithoutFilter: true,
+            context: context,
+            categorySlugs: categorySlugs,
+            cashedOrginalBoutique: true,
+            fromHomePageSearch: false,
+            boutiqueSlug: slug,
+            category: null,
+            searchText: null));
+      } else {
+        debugPrint('/////////Did Prefetch For Boutique Slug : $slug /////////');
+      }
     }
   }
 
@@ -260,15 +261,12 @@ class _HomePageState extends State<HomePage> {
                                 ?.paginationStatus ||
                         p.currentIndexForMainCategoryEvent !=
                             c.currentIndexForMainCategoryEvent);
-                    if (rebuild) {
-                      reRenderingListViewKey = UniqueKey();
+                    if (!p.reRequestTheseBoutiques.containsKey(currentSlug) && c.reRequestTheseBoutiques[currentSlug] == true) {
+                      reRenderingListViewKey[currentSlug] = UniqueKey();
                     }
                     return rebuild;
                   },
                   builder: (context, homeState) {
-                    print(
-                        homeState.boutiquesForEveryMainCategoryThatDidPrefetch);
-
                     String? currentSlug = appState.tabIndex != -1
                         ? (homeState.mainCategoriesResponseModel?.data
                                 ?.mainCategories?[appState.tabIndex].slug ??
@@ -368,7 +366,7 @@ class _HomePageState extends State<HomePage> {
                     return sliverListSeparated(
                       key: TestVariables.kTestMode
                           ? Key(WidgetsKey.boutiquesSuccessStatusKey)
-                          : reRenderingListViewKey,
+                          : reRenderingListViewKey[currentSlug],
                       itemBuilder: (_, index) => Padding(
                           padding: HWEdgeInsets.symmetric(horizontal: 15.w),
                           child: HomePageCard2(

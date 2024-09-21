@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui' as ui;
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:fast_cached_network_image/fast_cached_network_image.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart' as cupertino;
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
@@ -20,6 +21,7 @@ import 'package:trydos/features/home/presentation/pages/product_listing_page.dar
 import 'package:trydos/service/language_service.dart';
 import '../../../app/my_text_widget.dart';
 import '../../../app/svg_network_widget.dart';
+import '../../../app/trydos_shimmer_loading.dart';
 
 class HomePageCard2 extends cupertino.StatefulWidget {
   HomePageCard2(
@@ -109,6 +111,19 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                     child: ValueListenableBuilder<int>(
                         valueListenable: changeBackgroundBlurImage,
                         builder: (context, index, _) {
+                          // return FastCachedImage(url: widget.boutniqe.banners![index].filePath!,width: 1.sw,
+                          //   fit: cupertino.BoxFit.cover,
+                          //   fadeInDuration: Duration.zero,
+                          //   loadingBuilder: (context , data){
+                          //   return TrydosShimmerLoading(
+                          //     width: 1.sw,
+                          //     height: 235,
+                          //     logoTextHeight: 14,
+                          //     logoTextWidth: 48.w,
+                          //   );
+                          //   },
+                          //   key: ValueKey(widget.boutniqe.banners![index].filePath!),
+                          //   height: 235,);
                           return MyCachedNetworkImage(
                             imageFit: cupertino.BoxFit.cover,
                             imageUrl: widget.boutniqe.banners![index].filePath!,
@@ -226,7 +241,23 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                           child: ClipRRect(
                                               borderRadius:
                                                   BorderRadius.circular(15),
-                                              child: MyCachedNetworkImage(
+                                              child:
+                                              // FastCachedImage(url: widget.boutniqe.banners![index].filePath!,width: 1.sw,
+                                              //   fit: cupertino.BoxFit.cover,
+                                              //   fadeInDuration: Duration.zero,
+                                              //   key: ValueKey(widget.boutniqe.banners![index].filePath!),
+                                              //   height: 155,
+                                              //   loadingBuilder: (context , data){
+                                              //     return TrydosShimmerLoading(
+                                              //       width: 1.sw,
+                                              //       height: 155,
+                                              //       logoTextHeight: 14,
+                                              //       logoTextWidth: 48.w,
+                                              //     );
+                                              //   },
+                                              // )
+
+                                              MyCachedNetworkImage(
                                                 imageUrl: widget.boutniqe
                                                     .banners![index].filePath!,
                                                 imageFit: BoxFit.cover,
@@ -234,7 +265,8 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                                 innerShadowYOffset: 3,
                                                 withInnerShadow: true,
                                                 height: 155,
-                                              )),
+                                              )
+                                          ),
                                         ),
                                         // Container(
                                         //   height: 155,
@@ -287,36 +319,52 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                     ),
                                   ],
                                 ),
-                                child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(15),
-                                    child: MyCachedNetworkImage(
-                                      imageUrl:
-                                          widget.boutniqe.banners![0].filePath!,
-                                      imageFit: BoxFit.cover,
-                                      width: 1.sw,
-                                      withInnerShadow: true,
-                                      innerShadowYOffset: 3,
-                                      height: 135,
-                                    )),
+                              child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(15),
+                                  child:
+                                  // FastCachedImage(url: widget.boutniqe.banners![0].filePath!,width: 1.sw,
+                                  //   fit: cupertino.BoxFit.cover,
+                                  //   fadeInDuration: Duration.zero,
+                                  //   key: ValueKey(widget.boutniqe.banners![0].filePath!),
+                                  //   height: 155,
+                                  //   loadingBuilder: (context , data){
+                                  //     return TrydosShimmerLoading(
+                                  //       width: 1.sw,
+                                  //       height: 155,
+                                  //       logoTextHeight: 14,
+                                  //       logoTextWidth: 48.w,
+                                  //     );
+                                  //   },
+                                  // )
+                                  MyCachedNetworkImage(
+                                    imageUrl:
+                                        widget.boutniqe.banners![0].filePath!,
+                                    imageFit: BoxFit.cover,
+                                    width: 1.sw,
+                                    withInnerShadow: true,
+                                    innerShadowYOffset: 3,
+                                    height: 135,
+                                  )
                               ),
-                              // Container(
-                              //   height: 135,
-                              //   width: 1.sw,
-                              //   decoration: BoxDecoration(
-                              //     borderRadius:
-                              //         BorderRadius.circular(15.0),
-                              //     boxShadow: [
-                              //       BoxShadow(
-                              //           color: Colors.white
-                              //               .withOpacity(0.7),
-                              //           offset: Offset(0, 3),
-                              //           blurRadius: 6,
-                              //           inset: true),
-                              //     ],
-                              //   ),
-                              // ),
-                            ],
-                          ),
+                            ),
+                            // Container(
+                            //   height: 135,
+                            //   width: 1.sw,
+                            //   decoration: BoxDecoration(
+                            //     borderRadius:
+                            //         BorderRadius.circular(15.0),
+                            //     boxShadow: [
+                            //       BoxShadow(
+                            //           color: Colors.white
+                            //               .withOpacity(0.7),
+                            //           offset: Offset(0, 3),
+                            //           blurRadius: 6,
+                            //           inset: true),
+                            //     ],
+                            //   ),
+                            // ),
+                          ],
+                        ),
                   )
                 ],
               )),
@@ -605,11 +653,28 @@ class ProductItemCircle extends StatelessWidget {
                   ),
                   child: ClipRRect(
                       borderRadius: BorderRadius.circular(180),
-                      child: MyCachedNetworkImage(
+                      child:
+                      // FastCachedImage(url: imageUrl,width: 40.w,
+                      //   fit: cupertino.BoxFit.cover,
+                      //   key: ValueKey(imageUrl),
+                      //   height: 40.w,
+                      //   fadeInDuration: Duration.zero,
+                      //   loadingBuilder: (context , data){
+                      //     return TrydosShimmerLoading(
+                      //       width: 40.w,
+                      //       height: 40.w,
+                      //       logoTextHeight: 14,
+                      //       logoTextWidth: 48.w,
+                      //     );
+                      //   },
+                      // )
+
+                      MyCachedNetworkImage(
                           imageUrl: imageUrl,
                           width: 40.w,
                           imageFit: cupertino.BoxFit.cover,
-                          height: 40.w)),
+                          height: 40.w)
+                  ),
                 ),
                 Container(
                   height: 40.w,

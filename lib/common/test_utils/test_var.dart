@@ -7,4 +7,6 @@ class TestVariables {
   static bool getStartingSettingsFlag = false;
   static bool getAllowedCountriesFlag = false;
   static bool getUserCountryFlag = false;
+
+  static Map<String, bool> getProductFiltersForBoutiqueFlag = {};
 }

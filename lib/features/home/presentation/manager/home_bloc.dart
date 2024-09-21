@@ -2,8 +2,10 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_smartlook/flutter_smartlook.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -55,6 +57,7 @@ import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/data/model/pagination_model.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../main.dart';
+import '../../../app/my_cached_network_image.dart';
 import '../../../chat/presentation/manager/chat_bloc.dart';
 import '../../../chat/presentation/manager/chat_event.dart';
 import '../../../story/presentation/bloc/story_bloc.dart';
@@ -318,7 +321,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   initializeSmartLook() async {
     String deviceId = (await HelperFunctions.getDeviceId()).toString();
     await smartLook.preferences
-        .setProjectKey('c8c465313d257c63e0a282ba9856a427973888fe');
+        .setProjectKey(dotenv.env['SMART_LOOK_KEY']!);
     await smartLook.preferences.setFrameRate(2);
     await smartLook.user.setIdentifier(deviceId);
     await smartLook.user
@@ -479,6 +482,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       if (!isFailedTheFirstTime.contains('GetHomeBoutiqesEvent')) {
         add(GetHomeBoutiqesEvent(
             offset: event.offset,
+            context: event.context,
             getWithPagination: event.getWithPagination,
             categorySlug: event.categorySlug));
         isFailedTheFirstTime.add('GetHomeBoutiqesEvent');
@@ -519,7 +523,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 */
       reRequestTheseBoutiques[event.categorySlug] = true;
       if (!event.getWithPagination) {
-        prefetchBoutiques(event.categorySlug);
+        prefetchBoutiques(event.categorySlug, event.context);
       }
       emit(state.copyWith(
           reRequestTheseBoutiques: Map.of(reRequestTheseBoutiques),
@@ -1087,49 +1091,54 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         .toJson();
   }
 
-  prefetchBoutiques(String currentSlug) {
-    print(
-        "******************-11111111111111111111111111111111---///////////////////////////////////////////////////////");
-    for (int i = 0;
-        i <
-            min(
-                (1.sh -
-                            (GetIt.I<StoryBloc>().state.getStoriesStatus !=
-                                    GetStoriesStatus.success
-                                ? 220
-                                : 0) -
-                            50) ~/
-                        235 +
-                    1,
-                (state
-                        .getHomeBoutiquesPaginationObjectByMainCategory[
-                            currentSlug]
-                        ?.items
-                        .length ??
-                    -1));
-        i++) {
-      String slug = state
-          .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]!
-          .items[i]
-          .slug
-          .toString();
-      List<String> categorySlugs = [];
-      state.getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]!
-          .items[i].childCategoriesForProductIds
-          ?.forEach(
-        (element) {
-          categorySlugs.add(element.categorySlug ?? "");
-        },
-      );
+  prefetchBoutiques(String currentSlug, BuildContext context) {
+    int maxItemsVisible = (1.sh -
+                (GetIt.I<StoryBloc>().state.getStoriesStatus !=
+                        GetStoriesStatus.success
+                    ? 220
+                    : 0) -
+                50) ~/
+            235 +
+        1;
+    int boutiqueItemsCount = state
+            .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]
+            ?.items
+            .length ??
+        -1;
 
-      add(GetProductWithFiltersWithoutCancelingPreviousEvents(
-          categorySlugs: categorySlugs,
-          cashedOrginalBoutique: true,
-          fromHomePageSearch: false,
-          boutiqueSlug: slug,
-          category: null,
-          searchText: null));
-    }
+    int itemsToPrefetch = min(maxItemsVisible, boutiqueItemsCount);
+
+    debugPrint(
+        '///////// Boutique items To Prefetch : $itemsToPrefetch /////////');
+try {
+  for (int i = 0; i < itemsToPrefetch; i++) {
+    String slug = state
+        .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]!
+        .items[i]
+        .slug
+        .toString();
+    List<String> categorySlugs = [];
+    state.getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]!
+        .items[i].childCategoriesForProductIds
+        ?.forEach(
+          (element) {
+        categorySlugs.add(element.categorySlug ?? "");
+      },
+    );
+
+    add(GetProductWithFiltersWithoutCancelingPreviousEvents(
+        categorySlugs: categorySlugs,
+        context: context,
+        cashedOrginalBoutique: true,
+        fromHomePageSearch: false,
+        boutiqueSlug: slug,
+        category: null,
+        searchText: null));
+  }
+}catch(e,st){
+  print(e);
+  print(st);
+}
   }
 
   PrefetchProductsForFirstFiveFilter(
@@ -1396,6 +1405,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           event.categorySlugs.length > 0) {
         add(GetProductWithFiltersWithoutCancelingPreviousEvents(
             getWithoutFilter: true,
+            context: event.context,
             categorySlugs: event.categorySlugs,
             cashedOrginalBoutique: true,
             fromHomePageSearch: false,
@@ -1422,6 +1432,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           event.categorySlugs.length > 0) {
         add(GetProductWithFiltersWithoutCancelingPreviousEvents(
             getWithoutFilter: true,
+            context: event.context,
             categorySlugs: event.categorySlugs,
             cashedOrginalBoutique: true,
             fromHomePageSearch: false,
@@ -1518,6 +1529,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           "${event.category}")) {
         add(GetProductWithFiltersWithoutCancelingPreviousEvents(
             categorySlugs: event.categorySlugs,
+            context: event.context,
             cashedOrginalBoutique: true,
             fromHomePageSearch: false,
             boutiqueSlug: event.boutiqueSlug,
@@ -1528,6 +1540,65 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             "${event.categorySlugs[event.indexOfCategory]}");
       }
     }, (r) async {
+      r.data?.products?.forEach((product) {
+        product.syncColorImages?.forEach((image) {
+          if (!image.images.isNullOrEmpty) {
+            image.images?.forEach((image) {
+              prefetchImages(image.filePath!, event.context,
+                  height: 290,
+                  width: 200,
+                  ordinalWidth: double.tryParse(image.originalWidth.toString()),
+                  ordinalHeight:
+                      double.tryParse(image.originalHeight.toString()));
+            });
+          }
+        });
+
+        product.syncColorImages?.forEach((image) {
+          if (!image.images.isNullOrEmpty) {
+            prefetchImages(image.images![0].filePath!, event.context,
+                height: 40,
+                width: 40,
+                ordinalWidth:
+                    double.tryParse(image.images![0].originalWidth.toString()),
+                ordinalHeight: double.tryParse(
+                    image.images![0].originalHeight.toString()));
+          }
+        });
+
+        product.images?.forEach((image) {
+          prefetchImages(image.filePath!, event.context,
+              width: 200, // the width of the image in the ui
+              height: 290, // the height of the image in the ui
+              ordinalWidth: double.tryParse(image.originalWidth.toString()),
+              ordinalHeight: double.tryParse(image.originalHeight.toString()));
+        });
+      });
+      r.data?.categories?.forEach((category) {
+        prefetchImages(
+            category.mostViewedProductThumbnail!.filePath!, event.context,
+            height: 70,
+            width: 70,
+            ordinalWidth: double.tryParse(
+                category.mostViewedProductThumbnail!.originalWidth.toString()),
+            ordinalHeight: double.tryParse(category
+                .mostViewedProductThumbnail!.originalHeight
+                .toString()));
+        category.subCategories?.forEach((sub) {
+          prefetchImages(
+              sub.mostViewedProductThumbnail!.filePath!, event.context,
+              height: 50,
+              width: 50,
+              ordinalWidth: double.tryParse(
+                  sub.mostViewedProductThumbnail!.originalWidth.toString()),
+              ordinalHeight: double.tryParse(
+                  sub.mostViewedProductThumbnail!.originalHeight.toString()));
+        });
+      });
+      r.data?.brands?.forEach((brand) {
+        prefetchSvgImages(brand.icon!.filePath.toString() , event.context);
+      });
+
       Map<String, GetProductFiltersStatus> statuses =
           Map.of(state.getProductFiltersStatus);
 
@@ -1629,6 +1700,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           add(GetProductWithFiltersWithoutCancelingPreviousEvents(
               getWithoutFilter: true,
               categorySlugs: event.categorySlugs,
+              context: event.context,
               cashedOrginalBoutique: true,
               fromHomePageSearch: false,
               boutiqueSlug: event.boutiqueSlug,
@@ -2825,4 +2897,31 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       }
     });*/
   }
+}
+
+prefetchImages(String imageUrl, BuildContext context,
+    {double? ordinalHeight,
+    double? ordinalWidth,
+    required double width,
+    required double height}) async {
+  String url = addSuitableWidthAndHeightToImage(
+      imageUrl: imageUrl,
+      width: width,
+      height: height,
+      ordinalHeight: ordinalHeight,
+      ordinalWidth: ordinalWidth);
+  print('imageUrlimageUrl $imageUrl');
+
+  precacheImage(
+      CachedNetworkImageProvider(url, cacheManager: CustomCacheManager()),
+      context);
+}
+
+prefetchSvgImages(
+  String imageUrl,
+    BuildContext context,
+) {
+  precacheImage(
+      CachedNetworkImageProvider(imageUrl, cacheManager: CustomCacheManager()),
+      context);
 }

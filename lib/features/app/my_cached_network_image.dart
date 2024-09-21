@@ -66,23 +66,12 @@ class MyCachedNetworkImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<String> list;
-    String url = '';
-    list = currentUrl.split('upload');
-
-    if (ordinalHeight != null && ordinalwidth != null) {
-      url = ordinalwidth! >= ordinalHeight!
-          ? list[0] +
-              'upload/c_scale,h_${2 * (imageHeight ?? height).toInt()}' +
-              list[1]
-          : list[0] +
-              'upload/c_scale,w_${2 * (imageWidth ?? width).toInt()}' +
-              list[1];
-    } else {
-      url = list[0] +
-          'upload/c_scale,h_${2 * (imageHeight ?? height).toInt()}' +
-          list[1];
-    }
+    String url = addSuitableWidthAndHeightToImage(
+        imageUrl: currentUrl,
+        ordinalWidth: ordinalwidth,
+        ordinalHeight: ordinalHeight,
+        height: (imageHeight ?? height),
+        width: (imageWidth ?? width));
 
     return ValueListenableBuilder<int>(
         valueListenable: rebuildImage,
@@ -109,7 +98,11 @@ class MyCachedNetworkImage extends StatelessWidget {
                   width: width,
                   color: imageColor,
                   height: height,
+                  fadeInDuration: Duration(milliseconds: 0),
+                  fadeOutDuration: Duration(milliseconds: 0),
+                  //cacheKey: CustomCacheManager.key,
                   cacheManager: CustomCacheManager(),
+
                   progressIndicatorBuilder: (context, _, progress) {
                     callWhenLoadingImage?.call();
                     return progressIndicatorBuilderWidget ??
@@ -130,30 +123,34 @@ class MyCachedNetworkImage extends StatelessWidget {
                                 child: Stack(
                                   children: [
                                     Container(
-                                        width: width,
-                                        height: height,
-                                        decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                            image: image,
-                                            fit: imageFit,
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(radius),
+                                      width: width,
+                                      height: height,
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          image: image,
+                                          fit: imageFit,
                                         ),
-                                        ),
-                                   withInnerShadow ?  Container(
-                                      decoration: inset_shadow.BoxDecoration(
-                                        boxShadow: [
-                                          inset_shadow.BoxShadow(
-                                            offset:
-                                            Offset(0, innerShadowYOffset!),
-                                            blurRadius: 20,
-                                            color: Colors.white.withOpacity(0.7),
-                                            inset: true,
-                                          ),
-                                        ],
+                                        borderRadius:
+                                            BorderRadius.circular(radius),
                                       ),
-                                    ) : SizedBox.shrink()
+                                    ),
+                                    withInnerShadow
+                                        ? Container(
+                                            decoration:
+                                                inset_shadow.BoxDecoration(
+                                              boxShadow: [
+                                                inset_shadow.BoxShadow(
+                                                  offset: Offset(
+                                                      0, innerShadowYOffset!),
+                                                  blurRadius: 20,
+                                                  color: Colors.white
+                                                      .withOpacity(0.7),
+                                                  inset: true,
+                                                ),
+                                              ],
+                                            ),
+                                          )
+                                        : SizedBox.shrink()
                                   ],
                                 )));
                       },
@@ -199,7 +196,33 @@ class CustomCacheManager extends CacheManager {
   CustomCacheManager._()
       : super(Config(
           key,
-          maxNrOfCacheObjects: 200,
+          maxNrOfCacheObjects: 600,
           stalePeriod: const Duration(days: 30),
         ));
+}
+
+String addSuitableWidthAndHeightToImage(
+    {required String imageUrl,
+    double? ordinalHeight,
+    double? ordinalWidth,
+    required double width,
+      required double height}) {
+  List<String> list;
+  String url = '';
+  list = imageUrl.split('upload');
+  if (ordinalHeight != null && ordinalWidth != null) {
+    url = ordinalWidth >= ordinalHeight
+        ? list[0] +
+            'upload/c_scale,h_${2 * height.toInt()}' +
+            list[1]
+        : list[0] +
+            'upload/c_scale,w_${2 * width.toInt()}' +
+            list[1];
+  } else {
+    url = list[0] +
+        'upload/c_scale,h_${2 * height.toInt()}' +
+        list[1];
+  }
+  print('sffffwwfwf $url');
+  return url;
 }

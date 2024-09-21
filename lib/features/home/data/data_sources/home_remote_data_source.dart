@@ -262,7 +262,6 @@ class HomeRemoteDatasource {
     return getSearchResult();
   }*/
 
-
   Future<GetAllowedCountriesModel> getAllowedCountries() {
     ///// for test /////
     TestVariables.getAllowedCountriesFlag = true;

@@ -1,3 +1,5 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 extension ScopeApi on String {
   String get _api => 'api';
 
@@ -30,7 +32,7 @@ abstract class StoriesUrls {
   static Uri get baseUri => Uri.parse(_baseUrlDev);
   static set setBaseUrl(String url) => _baseUrlDev = url;
 
-  static String _baseUrlDev = 'https://stories_staging.trydos.dev/';
+  static String _baseUrlDev = dotenv.env['STORY_URL']!;
   static const String _baseUrlDevWithHttp =
       'https://stories_staging.trydos.dev/';
 }
