@@ -70,6 +70,7 @@ class _TabsBarState extends State<TabsBar> {
         homeBloc.add(GetHomeBoutiquesPrefetchEvent(
           getWithPrefetchForMainCategory: true,
           getWithScroll: false,
+          context: context,
           categorySlug: categorySlugs[(index) ~/ 36 + startIndex],
           offset: "1",
         ));
