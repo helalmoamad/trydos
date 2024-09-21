@@ -652,7 +652,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                         offset: "1",
                                         context: context,
                                         getWithPagination: false));
-                                    homeBloc.add(GetMainCategoriesEvent());
+                                    homeBloc.add(GetMainCategoriesEvent(context: context));
                                   }
 
                                   visible

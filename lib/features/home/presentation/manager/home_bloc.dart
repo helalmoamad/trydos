@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_smartlook/flutter_smartlook.dart';
+import 'package:flutter_svg_image/flutter_svg_image.dart';
+import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -273,7 +275,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
     response.fold((l) {
       if (!isFailedTheFirstTime.contains('GetMainCategoriesEvent')) {
-        add(GetMainCategoriesEvent());
+        add(GetMainCategoriesEvent(context: event.context));
         isFailedTheFirstTime.add('GetMainCategoriesEvent');
       }
       emit(state.copyWith(
@@ -306,6 +308,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             add(GetHomeBoutiquesPrefetchEvent(
               getWithPrefetchForMainCategory: true,
               getWithScroll: false,
+              context: event.context,
               categorySlug: categorySlugs[i],
               offset: "1",
             ));
@@ -530,9 +533,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       }
 */
       reRequestTheseBoutiques[event.categorySlug] = true;
-      if (!event.getWithPagination) {
-        prefetchBoutiques(event.categorySlug, event.context);
-      }
       emit(state.copyWith(
           reRequestTheseBoutiques: Map.of(reRequestTheseBoutiques),
           getHomeBoutiquesPaginationObjectByMainCategory:
@@ -1702,7 +1702,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           //removeAlreadyChoosedFilters(r, filters),
         ));
         print(
-            "******************--------------//////////////////**********&${state.getProductListingWithFiltersPaginationModels[keyWithoutFilter]?.items?.length}----///////////////////////////////////////////////////////");
+            "******************--------------//////////////////**********&${state.getProductListingWithFiltersPaginationModels[keyWithoutFilter]?.items.length}----///////////////////////////////////////////////////////");
         if (event.indexOfCategory < event.categorySlugs.length &&
             event.categorySlugs.length > 0) {
           add(GetProductWithFiltersWithoutCancelingPreviousEvents(
@@ -2489,13 +2489,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     if (boutiquesForEveryMainCategoryThatDidPrefetch[event.categorySlug] ==
         null) {
       boutiquesForEveryMainCategoryThatDidPrefetch
-          .addAll({event.categorySlug!: false});
+          .addAll({event.categorySlug: false});
     }
     if (boutiquesForEveryMainCategoryThatDidPrefetch[event.categorySlug] ==
         true) {
       return;
     }
-    boutiquesForEveryMainCategoryThatDidPrefetch[event.categorySlug!] = true;
+    boutiquesForEveryMainCategoryThatDidPrefetch[event.categorySlug] = true;
 
     emit(state.copyWith(
         boutiquesForEveryMainCategoryThatDidPrefetch:
@@ -2503,12 +2503,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
     if (getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug] ==
         null) {
-      getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug!] =
+      getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug] =
           const PaginationModel<Boutique>.init();
     }
 
     final response = await getHomeBoutiqesUseCase(GetHomeBoutiqesParams(
-        offset: event.offset, categorySlug: event.categorySlug!));
+        offset: event.offset, categorySlug: event.categorySlug));
 
     response.fold((l) {
       Map<String, PaginationModel<Boutique>>
@@ -2524,6 +2524,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           .contains('GetHomeBoutiqesEvent' + "${event.categorySlug}")) {
         add(GetHomeBoutiquesPrefetchEvent(
           offset: event.offset,
+          context: event.context,
           categorySlug: event.categorySlug,
           indexCategorySlug: event.indexCategorySlug,
           getWithScroll: event.getWithScroll,
@@ -2821,8 +2822,13 @@ prefetchImages(String imageUrl, BuildContext context,
 prefetchSvgImages(
   String imageUrl,
   BuildContext context,
-) {
+) async{
+
   precacheImage(
-      CachedNetworkImageProvider(imageUrl, cacheManager: CustomCacheManager()),
+      SvgImage.cachedNetwork(
+        imageUrl,
+        cacheManager: CustomCacheManager(),
+      ),
       context);
 }
+
