@@ -303,7 +303,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                   categorySlugs[i]] !=
               true) {
             add(GetHomeBoutiqesEvent(
-              getWithPrefetchForBoutiques: false,
+              getWithPrefetchForBoutiques: true,
               context: event.context,
               categorySlug: categorySlugs[i],
               offset: "1",
@@ -523,13 +523,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       if (state.getMainCategoriesStatus == GetMainCategoriesStatus.success) {
         requestAPIAfterHome();
       }
+      getHomeBoutiquesPaginationObjectByMainCategory = Map.of(state.getHomeBoutiquesPaginationObjectByMainCategory);
       List<Boutique> boutiques = List.of(
           getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!
               .items);
 
-      if (!event.getWithPagination && event.getWithPrefetchForBoutiques) {
-        prefetchBoutiques(event.categorySlug, event.context);
-      }
       emit(state.copyWith(getHomeBoutiquesPaginationObjectByMainCategory:
           getHomeBoutiquesPaginationObjectByMainCategory.map((key, value) {
         if (key == event.categorySlug) {
@@ -552,6 +550,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           return MapEntry(key, value);
         }
       })));
+      if (!event.getWithPagination && event.getWithPrefetchForBoutiques) {
+        prefetchBoutiques(event.categorySlug, event.context);
+      }
     });
   }
 
@@ -1446,7 +1447,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                 : event.categorySlugs[event.indexOfCategory],
             searchText: null));
       }
-      return;
     }
     List<filters_model.Attribute>? attribute;
     try {
@@ -1599,7 +1599,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         });
       });
       r.data?.brands?.forEach((brand) {
-        prefetchSvgImages(brand.icon!.filePath.toString(), event.context);
+        prefetchSvgImages(brand.icon!.filePath.toString(), event.context , ordinalWidth: double.tryParse(
+            brand.icon!.originalWidth.toString()),
+            ordinalHeight: double.tryParse(
+                brand.icon!.originalHeight.toString()));
       });
 
       Map<String, GetProductFiltersStatus> statuses =
@@ -2691,7 +2694,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 }
 
 prefetchImages(String imageUrl, BuildContext context,
-    {double? ordinalHeight,
+    {
+      double? ordinalHeight,
     double? ordinalWidth,
     required double width,
     required double height}) async {
@@ -2701,7 +2705,6 @@ prefetchImages(String imageUrl, BuildContext context,
       height: height,
       ordinalHeight: ordinalHeight,
       ordinalWidth: ordinalWidth);
-  print('imageUrlimageUrl $imageUrl');
 
   precacheImage(
       CachedNetworkImageProvider(url, cacheManager: CustomCacheManager()),
@@ -2711,10 +2714,16 @@ prefetchImages(String imageUrl, BuildContext context,
 prefetchSvgImages(
   String imageUrl,
   BuildContext context,
+{
+  double? ordinalHeight,
+  double? ordinalWidth,
+}
 ) async {
   precacheImage(
       SvgImage.cachedNetwork(
         imageUrl,
+        width: ordinalWidth,
+        height: ordinalHeight,
         cacheManager: CustomCacheManager(),
       ),
       context);

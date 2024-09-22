@@ -35,6 +35,8 @@ class _SvgNetworkWidgetState extends State<SvgNetworkWidget> {
 
       image: SvgImage.cachedNetwork(
         widget.svgUrl,
+        height: widget.height,
+        width: widget.width,
         cacheManager: CustomCacheManager(),
       ),
     );
