@@ -273,8 +273,6 @@ class _HomePageState extends State<HomePage> {
                                 ?.mainCategories?[appState.tabIndex].slug ??
                             "Empty")
                         : "Empty";
-                    print(currentSlug);
-
                     if (homeState.boutiquesForEveryMainCategoryThatDidPrefetch[
                                 currentSlug] !=
                             true &&
