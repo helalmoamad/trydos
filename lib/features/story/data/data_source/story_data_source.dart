@@ -56,6 +56,7 @@ class StoriesDataSource {
   Future<GetStoriesModel> getStories() {
     ///// for test /////
     TestVariables.getStoriesFlag = true;
+    TestVariables.getStoriesRequestCountFlag++;
     ////////////////////
     GetClient<GetStoriesModel> getStories = GetClient<GetStoriesModel>(
       serverName: ServerName.stories,
