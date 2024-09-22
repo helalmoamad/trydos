@@ -26,6 +26,7 @@ class HomeRemoteDatasource {
   Future<StartingSettingsResponseModel> getStartingSettings() {
     ///// for test /////
     TestVariables.getStartingSettingsFlag = true;
+    TestVariables.getStartingSettingsRequestCountFlag++;
     ////////////////////
     GetClient<StartingSettingsResponseModel> getStartingSettings =
         GetClient<StartingSettingsResponseModel>(
@@ -133,6 +134,7 @@ class HomeRemoteDatasource {
   Future<MainCategoriesResponseModel> getMainCategories() {
     ///// for test /////
     TestVariables.getMainCategoriesFlag = true;
+    TestVariables.getMainCategoriesRequestCountFlag++;
     ////////////////////
     GetClient<MainCategoriesResponseModel> getMainCategories =
         GetClient<MainCategoriesResponseModel>(
@@ -193,6 +195,7 @@ class HomeRemoteDatasource {
   Future<GetHomeBoutiquesModel> getHomeBoutiques(Map<String, dynamic> params) {
     ///// for test /////
     TestVariables.getBoutiquesFlag = true;
+    TestVariables.getBoutiquesRequestCountFlag++;
     ////////////////////
     GetClient<GetHomeBoutiquesModel> getHomeBoutiques =
         GetClient<GetHomeBoutiquesModel>(
@@ -265,6 +268,7 @@ class HomeRemoteDatasource {
   Future<GetAllowedCountriesModel> getAllowedCountries() {
     ///// for test /////
     TestVariables.getAllowedCountriesFlag = true;
+    TestVariables.getAllowedCountriesRequestCountFlag++;
     ////////////////////
     GetClient<GetAllowedCountriesModel> verifyOtpSignIn =
         GetClient<GetAllowedCountriesModel>(

@@ -46,9 +46,11 @@ class _AppElevatedButtonState extends ThemeState<AppElevatedButton> {
 
   bool get absorbing => widget.onDisabled != null ? false : widget.isLoading;
 
-  CrossFadeState get crossFadeState => widget.isLoading ? CrossFadeState.showSecond : CrossFadeState.showFirst;
+  CrossFadeState get crossFadeState =>
+      widget.isLoading ? CrossFadeState.showSecond : CrossFadeState.showFirst;
 
-  Function()? get onTap => widget.isLoading ? widget.onDisabled : widget.onPressed;
+  Function()? get onTap =>
+      widget.isLoading ? widget.onDisabled : widget.onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +129,6 @@ class _AppElevatedButtonState extends ThemeState<AppElevatedButton> {
     final loadingElevatedTheme = ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         shape: defaultElevatedTheme.style?.shape?.resolve({}),
-
       ),
     );
 

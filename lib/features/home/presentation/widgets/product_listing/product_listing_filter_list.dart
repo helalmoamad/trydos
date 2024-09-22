@@ -582,6 +582,9 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                       },
                  */
                         ScrollConfiguration(
+    key: TestVariables.kTestMode
+    ? Key(WidgetsKey.filterPageScrollKey)
+        : null,
                           behavior: CupertinoScrollBehavior(),
                           child: Expanded(
                             child: InViewNotifierList(
