@@ -569,7 +569,7 @@ void main() {
       while (!reachedEnd) {
         try {
           Key productKey =
-              Key('${WidgetsKey.productInBoutiqueListKey}$productIndex2');
+              Key('${WidgetsKey.productInBoutiqueListKey}$productIndex4');
           ///////////////////////
           String productBoutBrandName = tester
               .widget<ProductItem>(find.byKey(productKey))
