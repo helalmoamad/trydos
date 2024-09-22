@@ -166,12 +166,11 @@ void main() {
       Finder productListingScroll =
           find.byKey(Key(WidgetsKey.productListingScrollKey));
 
-      await GlobalTestFunctions.scrollAndTest(
-        tester: tester,
-        index: productIndex1,
-        widgetKey: WidgetsKey.productInBoutiqueListKey,
-        widgetToScroll: productListingScroll,
-        operations: () {
+      bool reachedEnd = false;
+      //////////////////// Scroll and test ////////////////////////////////////
+      /////////////////////////////////
+      while (!reachedEnd) {
+        try {
           Finder productWidget = find.byKey(
               Key('${WidgetsKey.productInBoutiqueListKey}$productIndex1'));
           //////////////////////////////////
@@ -194,8 +193,30 @@ void main() {
           print('productBoutCategory first : $productBoutCategoryName');
 
           expect(productBoutCategoryName, equals(categoryName));
-        },
-      );
+        } catch (e) {
+          reachedEnd = true;
+          fail(e.toString());
+        }
+        productIndex1++;
+        // Try to scroll until the next product card becomes visible
+        Finder finderWidget = find
+            .byKey(Key('${WidgetsKey.productInBoutiqueListKey}$productIndex1'));
+        if (finderWidget.evaluate().isEmpty) {
+          try {
+            await tester.drag(productListingScroll, const Offset(0, -400));
+            await tester.pumpAndSettle();
+            print('scroll for $productIndex1');
+            expect(finderWidget, findsOneWidget);
+            print('find index after scroll : $productIndex1');
+          } catch (e) {
+            // If the scroll fails, we have reached the end of the list
+            print('scroll fails, we have reached the end of the list');
+            reachedEnd = true;
+          }
+        } else {
+          print('find index without scroll : $productIndex1');
+        }
+      }
 
       print('first Products Category : $productsCategoryAfterFilter');
 
@@ -254,12 +275,11 @@ void main() {
       productListingScroll =
           find.byKey(Key(WidgetsKey.productListingScrollKey));
 
-      await GlobalTestFunctions.scrollAndTest(
-        tester: tester,
-        index: productIndex2,
-        widgetKey: WidgetsKey.productInBoutiqueListKey,
-        widgetToScroll: productListingScroll,
-        operations: () {
+      reachedEnd = false;
+      //////////////////// Scroll and test ////////////////////////////////////
+      /////////////////////////////////
+      while (!reachedEnd) {
+        try {
           Key productKey =
               Key('${WidgetsKey.productInBoutiqueListKey}$productIndex2');
           ///////////////////////
@@ -281,8 +301,30 @@ void main() {
           print('productBoutBrandName  : $productBoutBrandName');
 
           expect(productBoutBrandName, equals(brandName));
-        },
-      );
+        } catch (e) {
+          reachedEnd = true;
+          fail(e.toString());
+        }
+        productIndex2++;
+        // Try to scroll until the next product card becomes visible
+        Finder finderWidget = find
+            .byKey(Key('${WidgetsKey.productInBoutiqueListKey}$productIndex2'));
+        if (finderWidget.evaluate().isEmpty) {
+          try {
+            await tester.drag(productListingScroll, const Offset(0, -400));
+            await tester.pumpAndSettle();
+            print('scroll for $productIndex2');
+            expect(finderWidget, findsOneWidget);
+            print('find index after scroll : $productIndex2');
+          } catch (e) {
+            // If the scroll fails, we have reached the end of the list
+            print('scroll fails, we have reached the end of the list');
+            reachedEnd = true;
+          }
+        } else {
+          print('find index without scroll : $productIndex2');
+        }
+      }
 
       print('first Products Category : $productsBrandAfterFilter');
       expect(productsBrandAfterFilter.length, equals(1));
@@ -413,14 +455,13 @@ void main() {
       productListingScroll =
           find.byKey(Key(WidgetsKey.productListingScrollKey));
 
-      await GlobalTestFunctions.scrollAndTest(
-        tester: tester,
-        index: productIndex3,
-        widgetKey: WidgetsKey.productInBoutiqueListKey,
-        widgetToScroll: productListingScroll,
-        operations: () {
+      reachedEnd = false;
+      //////////////////// Scroll and test ////////////////////////////////////
+      /////////////////////////////////
+      while (!reachedEnd) {
+        try {
           Key productKey =
-              Key('${WidgetsKey.productInBoutiqueListKey}$productIndex2');
+              Key('${WidgetsKey.productInBoutiqueListKey}$productIndex3');
           ///////////////////////
           String productBoutCategoryName = tester
               .widget<ProductItem>(find.byKey(productKey))
@@ -442,8 +483,30 @@ void main() {
           expect(productBoutCategoryName, equals(categoryName));
 
           expect(productName, equals(productsNameAfterFilter[productIndex3]));
-        },
-      );
+        } catch (e) {
+          reachedEnd = true;
+          fail(e.toString());
+        }
+        productIndex3++;
+        // Try to scroll until the next product card becomes visible
+        Finder finderWidget = find
+            .byKey(Key('${WidgetsKey.productInBoutiqueListKey}$productIndex3'));
+        if (finderWidget.evaluate().isEmpty) {
+          try {
+            await tester.drag(productListingScroll, const Offset(0, -400));
+            await tester.pumpAndSettle();
+            print('scroll for $productIndex3');
+            expect(finderWidget, findsOneWidget);
+            print('find index after scroll : $productIndex3');
+          } catch (e) {
+            // If the scroll fails, we have reached the end of the list
+            print('scroll fails, we have reached the end of the list');
+            reachedEnd = true;
+          }
+        } else {
+          print('find index without scroll : $productIndex3');
+        }
+      }
 
       print('first Products Category 2 : $productsCategoryAfterFilter2');
 
@@ -500,12 +563,11 @@ void main() {
       productListingScroll =
           find.byKey(Key(WidgetsKey.productListingScrollKey));
 
-      await GlobalTestFunctions.scrollAndTest(
-        tester: tester,
-        index: productIndex4,
-        widgetKey: WidgetsKey.productInBoutiqueListKey,
-        widgetToScroll: productListingScroll,
-        operations: () {
+      reachedEnd = false;
+      //////////////////// Scroll and test ////////////////////////////////////
+      /////////////////////////////////
+      while (!reachedEnd) {
+        try {
           Key productKey =
               Key('${WidgetsKey.productInBoutiqueListKey}$productIndex2');
           ///////////////////////
@@ -529,8 +591,30 @@ void main() {
           expect(productBoutBrandName, equals(brandName));
 
           expect(productName, equals(productBrandFilterName));
-        },
-      );
+        } catch (e) {
+          reachedEnd = true;
+          fail(e.toString());
+        }
+        productIndex4++;
+        // Try to scroll until the next product card becomes visible
+        Finder finderWidget = find
+            .byKey(Key('${WidgetsKey.productInBoutiqueListKey}$productIndex4'));
+        if (finderWidget.evaluate().isEmpty) {
+          try {
+            await tester.drag(productListingScroll, const Offset(0, -400));
+            await tester.pumpAndSettle();
+            print('scroll for $productIndex4');
+            expect(finderWidget, findsOneWidget);
+            print('find index after scroll : $productIndex4');
+          } catch (e) {
+            // If the scroll fails, we have reached the end of the list
+            print('scroll fails, we have reached the end of the list');
+            reachedEnd = true;
+          }
+        } else {
+          print('find index without scroll : $productIndex4');
+        }
+      }
 
       print('first Products Category : $productsBrandAfterFilter2');
       expect(productsBrandAfterFilter2.length, equals(1));

@@ -98,39 +98,41 @@ class GlobalTestFunctions {
     await tester.pumpAndSettle();
   }
 
-  static Future<void> scrollAndTest({
+  static Future<void> scrollAndTes({
     required WidgetTester tester,
     required int index,
     required String widgetKey,
     required Finder widgetToScroll,
     required Function() operations,
   }) async {
-    while (true) {
-      Finder finderWidget = find.byKey(Key('$widgetKey$index'));
+    bool reachedEnd = false;
 
+    while (!reachedEnd) {
       try {
-        expect(finderWidget, findsOneWidget);
-
-        print('find index : $index');
-
         operations();
-
-        index++;
       } catch (e) {
-        // If the item isn't found, try scrolling to the right
-        try {
-          await tester.drag(widgetToScroll,
-              const Offset(0, -400)); // Scroll buttom by 400 pixels
-          await tester.pumpAndSettle();
+        reachedEnd = true;
+        fail(e.toString());
+      }
 
+      index++;
+
+      // Try to scroll until the next product card becomes visible
+      Finder finderWidget = find.byKey(Key('$widgetKey$index'));
+      if (finderWidget.evaluate().isEmpty) {
+        try {
+          await tester.drag(widgetToScroll, const Offset(0, -400));
+          await tester.pumpAndSettle();
           print('scroll for $index');
           expect(finderWidget, findsOneWidget);
           print('find index after scroll : $index');
-        } catch (scrollError) {
+        } catch (e) {
           // If the scroll fails, we have reached the end of the list
           print('scroll fails, we have reached the end of the list');
-          break;
+          reachedEnd = true;
         }
+      } else {
+        print('find index without scroll : $index');
       }
     }
   }

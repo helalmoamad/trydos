@@ -169,8 +169,6 @@ void main() {
             failedMessage: 'Find Boutiques HomePageCard2 failed',
           );
 
-          ////////////////// Scroll until find not pre-fetched boutique  ////////////////////////////////\
-
           int index = 0;
           String slug = '';
           Finder homeScroll = find.byKey(Key(WidgetsKey.homepageScrollKey));
@@ -242,6 +240,7 @@ void main() {
 
           await Future.delayed(const Duration(seconds: 2));
           ////////// Test if scrolling up no data will be fetched for preFetched boutiques //////////////////
+          //////////////////////////////////////////////////////
           print(
               '/////////  Product Filters For Boutique Flage ${TestVariables.getProductFiltersForBoutiqueFlag} //////////////');
 
