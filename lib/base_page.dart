@@ -67,8 +67,7 @@ Widget get logo {
             child: SvgPicture.asset(
               AppAssets.logoActiveSvg,
             ),
-          )
-      )
+          ))
     ],
   );
 }
@@ -559,6 +558,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
 
+  bool requestMainCategoriesDone = false;
   @override
   Widget build(BuildContext context) {
     print("${_prefsRepository.language}" +
@@ -646,13 +646,16 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                             return ValueListenableBuilder<bool>(
                                 valueListenable: visibleCountries,
                                 builder: (context, visible, _) {
-                                  if (visible) {
-                                    homeBloc.add(GetHomeBoutiqesEvent(
-                                        categorySlug: "Empty",
-                                        offset: "1",
-                                        context: context,
-                                        getWithPagination: false));
-                                    homeBloc.add(GetMainCategoriesEvent(context: context));
+                                  if (visible && !requestMainCategoriesDone) {
+                                    requestMainCategoriesDone = true;
+                                    // homeBloc.add(GetHomeBoutiqesEvent(
+                                    //     getWithPrefetchForBoutiques: true,
+                                    //     categorySlug: "Empty",
+                                    //     offset: "1",
+                                    //     context: context,
+                                    //     getWithPagination: false));
+                                    homeBloc.add(GetMainCategoriesEvent(
+                                        context: context));
                                   }
 
                                   visible

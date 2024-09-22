@@ -81,6 +81,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                     }
                     if (state.currentIndex != 0) {
                       homeBloc.add(GetHomeBoutiqesEvent(
+                          getWithPrefetchForBoutiques: false,
                           context: context,
                           offset: '1',
                           categorySlug: 'Empty'));
