@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:cached_network_svg_image/cached_network_svg_image.dart';
 import 'package:flutter_svg_image/flutter_svg_image.dart';
 
 import 'my_cached_network_image.dart';
@@ -35,16 +33,10 @@ class _SvgNetworkWidgetState extends State<SvgNetworkWidget> {
 
       image: SvgImage.cachedNetwork(
         widget.svgUrl,
+        height: widget.height,
+        width: widget.width,
         cacheManager: CustomCacheManager(),
       ),
-    );
-    return CachedNetworkSVGImage(
-      widget.svgUrl,
-      height: widget.height,
-      width: widget.width,
-      color: widget.color,
-      cacheManager: CustomCacheManager(),
-      fadeDuration: Duration.zero,
     );
   }
 }

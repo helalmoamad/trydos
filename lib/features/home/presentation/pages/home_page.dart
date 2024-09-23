@@ -202,6 +202,9 @@ class _HomePageState extends State<HomePage> {
         //   return true;
         // },
         child: CustomScrollView(
+          key: TestVariables.kTestMode
+              ? Key(WidgetsKey.homepageScrollKey)
+              : null,
           controller: scrollController,
           physics: const ClampingScrollPhysics(),
           scrollBehavior: const CupertinoScrollBehavior(),
@@ -273,8 +276,6 @@ class _HomePageState extends State<HomePage> {
                                 ?.mainCategories?[appState.tabIndex].slug ??
                             "Empty")
                         : "Empty";
-                    print(currentSlug);
-
                     if (homeState.boutiquesForEveryMainCategoryThatDidPrefetch[
                                 currentSlug] !=
                             true &&

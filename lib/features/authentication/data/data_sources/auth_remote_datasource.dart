@@ -120,6 +120,7 @@ class AuthRemoteDatasource {
   Future<GetUserCountryResponseModel> getUserCountry() {
     ///// for test /////
     TestVariables.getUserCountryFlag = true;
+    TestVariables.getUserCountryRequestCountFlag++;
     ////////////////////
     GetClient<GetUserCountryResponseModel> getUserCountry =
         GetClient<GetUserCountryResponseModel>(

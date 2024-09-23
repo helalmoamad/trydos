@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/common/test_utils/widgets_keys.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
@@ -60,6 +61,9 @@ void main() {
         failedMessage: 'Find searchPageBoutiqueListWidget failed',
       );
 
+      print(
+          '/////////// laingqqq  ${HelperFunctions.getInitLocale()} ///////////////');
+
       bool isFound = false;
       int index = 0;
       while (!isFound) {
@@ -78,7 +82,7 @@ void main() {
               .toString();
 
           // Check if the boutique name is 'best saller'
-          if (name == 'best saller') {
+          if (name == 'best saller test') {
             print('find best saller : $index');
             isFound = true;
             break; // Exit the loop if the desired item is found
@@ -89,8 +93,13 @@ void main() {
         } catch (e) {
           // If the item isn't found, try scrolling to the right
           try {
+            double leftOrRight =
+                HelperFunctions.getInitLocale().toString().contains('en')
+                    ? -200
+                    : 200;
+
             await tester.drag(searchPageBoutiqueListWidget,
-                const Offset(200, 0)); // Scroll right by 200 pixels
+                Offset(leftOrRight, 0)); // Scroll right by 200 pixels
             await tester.pumpAndSettle();
 
             print('scroll for $index');
@@ -139,14 +148,9 @@ void main() {
       final Finder searchButtonInSearchPageKey =
           find.byKey(Key(WidgetsKey.searchButtonInSearchPageKey));
       final Finder scrollableFinder = find.byType(SearchPage);
-      // Scroll until  is visible
-      if (!tester.any(searchButtonInSearchPageKey)) {
-        await tester.scrollUntilVisible(
-          searchButtonInSearchPageKey,
-          300.0, // This is the scroll increment, adjust as necessary
-          scrollable: scrollableFinder, // Find the scrollable widget
-        );
-      }
+
+      await tester.drag(scrollableFinder, const Offset(0, 2000));
+      await tester.pumpAndSettle();
 
       expect(searchButtonInSearchPageKey, findsOneWidget);
 

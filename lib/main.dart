@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:fast_cached_network_image/fast_cached_network_image.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -241,7 +240,6 @@ void main() async {
   HttpOverrides.global = MyHttpOverrides();
   await Future.wait([
     EasyLocalization.ensureInitialized(),
-    initFastCachedNetworkPackage(),
     dotenv.load(fileName: ".env"),
     configureDependencies(),
     NotificationProcess().init(),
@@ -286,6 +284,3 @@ fetchServersUrlsFromSharedPreference() async {
   }
 }
 
-Future<void> initFastCachedNetworkPackage() async {
-  await FastCachedImageConfig.init(clearCacheAfter: const Duration(days: 30));
-}
