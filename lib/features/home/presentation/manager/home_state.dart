@@ -5,6 +5,7 @@ import 'package:trydos/features/home/data/models/get_cart_item_model.dart'
     as cart;
 
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
+import 'package:trydos/features/home/data/models/get_currency_for_country_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart'
     as boutiques_model;
 
@@ -95,6 +96,7 @@ class HomeState {
     this.prefAppliedFilterForExtendFilter,
     this.ListitemForAddToCart,
     this.isExpandedForListingPage = false,
+    this.getCurrencyForCountryModel,
     this.countOfProductExpectedByFiltering,
     this.getCartItemsStatus = GetCartItemsStatus.init,
     this.getProductDetailWithoutRelatedProductsModel,
@@ -116,6 +118,7 @@ class HomeState {
   final Map<String, product.Products>? productITemForCart;
   final GetMainCategoriesStatus getMainCategoriesStatus;
   final List<ImageForAddToCart>? ListitemForAddToCart;
+  final GetCurrencyForCountryModel? getCurrencyForCountryModel;
   final GetAllowedCountriesModel? getAllowedCountriesModel;
   final Map<String, GetProductFiltersStatus> getProductFiltersStatus;
   final Map<String, PaginationModel<product.Products>?>
@@ -184,6 +187,7 @@ class HomeState {
       Map<String, Map<int, List<String>>>? addImagesToProductIdForCart,
       final List<ImageForAddToCart>? ListitemForAddToCart,
       final GetAllowedCountriesModel? getAllowedCountriesModel,
+      final GetCurrencyForCountryModel? getCurrencyForCountryModel,
       final Map<String, PaginationModel<product.Products>?>?
           getProductListingWithFiltersPaginationWithPrefetchModels,
       final GetCommentForProductStatus? getCommentForProductStatus,
@@ -239,6 +243,8 @@ class HomeState {
               this.boutiquesForEveryMainCategoryThatDidPrefetch,
       getCommentForProductModel:
           getCommentForProductModel ?? this.getCommentForProductModel,
+      getCurrencyForCountryModel:
+          getCurrencyForCountryModel ?? this.getCurrencyForCountryModel,
       sizes: sizes ?? this.sizes,
       boutiquesThatDidPrefetch:
           boutiquesThatDidPrefetch ?? this.boutiquesThatDidPrefetch,

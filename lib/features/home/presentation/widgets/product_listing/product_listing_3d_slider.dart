@@ -99,7 +99,8 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
   late HomeBloc homeBloc;
   late int prevIndexInSecondSlider;
   int slideModeIndex = 0;
-  final CarouselSliderController carouselController = CarouselSliderController();
+  final CarouselSliderController carouselController =
+      CarouselSliderController();
   List<productListingModel.SyncColorImage>? syncColorImageList;
 
   @override
@@ -589,7 +590,8 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                                   .colorName
                                                   .toString(),
                                           textAlign: TextAlign.center,
-                                          style: textTheme.titleMedium?.mq.copyWith(
+                                          style: textTheme.titleMedium?.mq
+                                              .copyWith(
                                             color: Color(int.parse(
                                                 '0xff${widget.productItem.colors![currentIndex % widget.productItem.colors!.length].color!.substring(1)}')),
                                           ),
@@ -835,7 +837,8 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     MyTextWidget('1',
-                                        style: textTheme.titleSmall?.mq.copyWith(
+                                        style:
+                                            textTheme.titleSmall?.mq.copyWith(
                                           color: Color(0xff5d5d5d),
                                         )),
                                     const SizedBox(
@@ -899,60 +902,92 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                       width: 225,
                       child: Padding(
                         padding: const EdgeInsets.only(left: 20, right: 22),
-                        child: Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.spaceAround,
-                          children: [
-                            Row(
-                              children: [
-                                MyTextWidget(
-                                  (widget.productItem.price)
-                                      .toString(),
-                                  style: textTheme.titleMedium?.lq.copyWith(
-                                    color: Color(0xff3c3c3c),
-                                    decoration:
-                                        TextDecoration.lineThrough,
-                                    height: 0,
+                        child: BlocBuilder<HomeBloc, HomeState>(
+                            buildWhen: (previous, current) =>
+                                previous.getCurrencyForCountryModel !=
+                                current.getCurrencyForCountryModel,
+                            builder: (context, state) {
+                              return Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  Row(
+                                    children: [
+                                      MyTextWidget(
+                                        (widget.productItem.price! *
+                                                state
+                                                    .getCurrencyForCountryModel!
+                                                    .data!
+                                                    .currency!
+                                                    .exchangeRate!)
+                                            .toStringAsFixed(state
+                                                    .startingSetting
+                                                    ?.decimalPointSetting ??
+                                                2)
+                                            .toString(),
+                                        style:
+                                            textTheme.titleMedium?.lq.copyWith(
+                                          color: Color(0xff3c3c3c),
+                                          decoration:
+                                              TextDecoration.lineThrough,
+                                          height: 0,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 2,
+                                      ),
+                                      MyTextWidget(
+                                        (widget.productItem.offerPrice! *
+                                                state
+                                                    .getCurrencyForCountryModel!
+                                                    .data!
+                                                    .currency!
+                                                    .exchangeRate!)
+                                            .toStringAsFixed(state
+                                                    .startingSetting
+                                                    ?.decimalPointSetting ??
+                                                2)
+                                            .toString(),
+                                        style:
+                                            textTheme.titleMedium?.bq.copyWith(
+                                          color: Color(0xff3c3c3c),
+                                          height: 0,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 2,
+                                      ),
+                                      MyTextWidget(state
+                                              .getCurrencyForCountryModel!
+                                              .data!
+                                              .currency!
+                                              .symbol ??
+                                          "")
+                                    ],
                                   ),
-                                ),
-                                SizedBox(
-                                  width: 2,
-                                ),
-                                MyTextWidget(
-                                  (widget.productItem.offerPrice)
-                                      .toString(),
-                                  style: textTheme.titleMedium?.bq.copyWith(
-                                    color: Color(0xff3c3c3c),
-                                    height: 0,
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 2,
-                                ),
-                                MyTextWidget((widget.productItem.priceFormatted?.split(' ') ?? ['\$' , '\$'])[1])
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                MyTextWidget(
-                                  'Buy',
-                                  style: textTheme.titleSmall?.lq.copyWith(
-                                    color: Color(0xff414141),
-                                    height: 1.4,
-                                  ),
-                                ),
-                                const SizedBox(
-                                  width: 2,
-                                ),
-                                SvgPicture.asset(
-                                  AppAssets.bagSvg,
-                                  height: 15,
-                                  width: 15,
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
+                                  Row(
+                                    children: [
+                                      MyTextWidget(
+                                        'Buy',
+                                        style:
+                                            textTheme.titleSmall?.lq.copyWith(
+                                          color: Color(0xff414141),
+                                          height: 1.4,
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        width: 2,
+                                      ),
+                                      SvgPicture.asset(
+                                        AppAssets.bagSvg,
+                                        height: 15,
+                                        width: 15,
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              );
+                            }),
                       ),
                     ),
                   ],

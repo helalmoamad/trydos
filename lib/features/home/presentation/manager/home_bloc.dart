@@ -38,6 +38,7 @@ import 'package:trydos/features/home/domain/use_cases/get_allowed_country_usecas
 import 'package:trydos/features/home/domain/use_cases/get_brand_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_cart_item_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_category_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/get_currency_for_country_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_home_boutiqes_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_home_sections_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_main_categories_usecase.dart';
@@ -57,6 +58,7 @@ import 'package:uuid/uuid.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/data/model/pagination_model.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
+import 'package:trydos/features/home/data/models/get_currency_for_country_model.dart';
 import '../../../../main.dart';
 import '../../../app/my_cached_network_image.dart';
 import '../../../chat/presentation/manager/chat_bloc.dart';
@@ -92,6 +94,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.addItemToCartUseCase,
     this.getCommentForProductUseCase,
     this.getHomeBoutiqesUseCase,
+    this.getCurrencyForCountryUseCase,
     this.getProductFiltersUseCase,
     this.getAllowedCountryUseCase,
     this.getWidthAndHeightUseCase,
@@ -191,6 +194,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<GetProductsWithoutFiltersEvent>(
       _onGetProductsWithoutFiltersEvent,
     );
+    on<GetCurrencyForCountryEvent>(
+      _onGetCurrencyForCountryEvent,
+    );
     on<GetStoryForProductEvent>(_onGetStoryEvent,
         transformer: throttleDroppable(Duration(seconds: 5)));
     on<AddProductItemForCartEvent>(
@@ -232,6 +238,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final GetProductsWithoutFiltersUseCase getProductsWithoutFiltersUseCase;
   final AddItemToCartUseCase addItemToCartUseCase;
   final UpdateItemInCartUseCase updateItemInCartUseCase;
+  final GetCurrencyForCountryUseCase getCurrencyForCountryUseCase;
   final GetAllowedCountryUseCase getAllowedCountryUseCase;
 
   final Smartlook smartLook = Smartlook.instance;
@@ -310,6 +317,18 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           }
         }
       });
+    });
+  }
+
+  Future<void> _onGetCurrencyForCountryEvent(
+      GetCurrencyForCountryEvent event, Emitter<HomeState> emit) async {
+    final response = await getCurrencyForCountryUseCase(NoParams());
+    response.fold((l) {
+      add(GetCurrencyForCountryEvent());
+    }, (r) {
+      emit(state.copyWith(
+        getCurrencyForCountryModel: r,
+      ));
     });
   }
 
@@ -522,7 +541,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       if (state.getMainCategoriesStatus == GetMainCategoriesStatus.success) {
         requestAPIAfterHome();
       }
-      getHomeBoutiquesPaginationObjectByMainCategory = Map.of(state.getHomeBoutiquesPaginationObjectByMainCategory);
+      getHomeBoutiquesPaginationObjectByMainCategory =
+          Map.of(state.getHomeBoutiquesPaginationObjectByMainCategory);
       List<Boutique> boutiques = List.of(
           getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!
               .items);
@@ -1598,10 +1618,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         });
       });
       r.data?.brands?.forEach((brand) {
-        prefetchSvgImages(brand.icon!.filePath.toString(), event.context , ordinalWidth: double.tryParse(
-            brand.icon!.originalWidth.toString()),
-            ordinalHeight: double.tryParse(
-                brand.icon!.originalHeight.toString()));
+        prefetchSvgImages(brand.icon!.filePath.toString(), event.context,
+            ordinalWidth: double.tryParse(brand.icon!.originalWidth.toString()),
+            ordinalHeight:
+                double.tryParse(brand.icon!.originalHeight.toString()));
       });
 
       Map<String, GetProductFiltersStatus> statuses =
@@ -2693,8 +2713,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 }
 
 prefetchImages(String imageUrl, BuildContext context,
-    {
-      double? ordinalHeight,
+    {double? ordinalHeight,
     double? ordinalWidth,
     required double width,
     required double height}) async {
@@ -2712,12 +2731,10 @@ prefetchImages(String imageUrl, BuildContext context,
 
 prefetchSvgImages(
   String imageUrl,
-  BuildContext context,
-{
+  BuildContext context, {
   double? ordinalHeight,
   double? ordinalWidth,
-}
-) async {
+}) async {
   precacheImage(
       SvgImage.cachedNetwork(
         imageUrl,

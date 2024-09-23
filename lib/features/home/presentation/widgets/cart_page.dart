@@ -65,8 +65,10 @@ class _CartPageState extends State<CartPage> {
             body: BlocBuilder<HomeBloc, HomeState>(
               buildWhen: (previous, current) =>
                   previous.getCartItemsStatus != current.getCartItemsStatus ||
+                  previous.getCurrencyForCountryModel !=
+                      current.getCurrencyForCountryModel ||
                   previous.cartCollection!.values !=
-                      current.cartCollection!.values ,
+                      current.cartCollection!.values,
               builder: (context, state) {
                 if (state.getCartItemsStatus == GetCartItemsStatus.failure &&
                     (state.cartCollection == null ||
@@ -96,15 +98,21 @@ class _CartPageState extends State<CartPage> {
                 groupCartkeys = state.cartCollection!.keys.toList();
                 visibleCollectionGroups = state.cartCollection!.keys.toList();
                 double totlaPrice = 0;
-                String? priceSymbol ;
+                String? priceSymbol;
 
                 state.cartCollection!.values.toList().forEach((element) {
-                  priceSymbol = (element.first.priceFormatted?.split(' ') ?? ['\$' , '\$'])[1];
+                  priceSymbol = state
+                          .getCurrencyForCountryModel!.data!.currency!.symbol ??
+                      "";
+                  //(element.first.priceFormatted?.split(' ') ?? ['\$' , '\$'])[1];
                   element.forEach((element) {
                     totlaPrice =
                         totlaPrice + element.offerPrice! * element.quantity!;
                   });
                 });
+                totlaPrice = totlaPrice *
+                    state.getCurrencyForCountryModel!.data!.currency!
+                        .exchangeRate!;
                 return ValueListenableBuilder<bool>(
                     valueListenable: changeCartCollections,
                     builder: (context, visible, _child) {
@@ -206,7 +214,7 @@ class _CartPageState extends State<CartPage> {
                                                 height: 1.33),
                                       ),
                                       Text(
-                                        "$totlaPrice",
+                                        "${totlaPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}",
                                         style: context.textTheme.bodyMedium?.mr
                                             .copyWith(
                                                 fontSize: 13,
@@ -249,6 +257,9 @@ class _CartPageState extends State<CartPage> {
                                     price = price +
                                         element.offerPrice! * element.quantity!;
                                   });
+                                  price = price *
+                                      state.getCurrencyForCountryModel!.data!
+                                          .currency!.exchangeRate!;
                                   return Column(
                                     children: [
                                       InkWell(
@@ -287,13 +298,22 @@ class _CartPageState extends State<CartPage> {
                                                   width: 40,
                                                   child: SvgNetworkWidget(
                                                     svgUrl: state
-                                                            .cartCollection!
-                                                            .values
-                                                            .toList()[index][0]
-                                                            .boutique!
-                                                            .icon!
-                                                            .filePath ??
-                                                        "",
+                                                                .cartCollection!
+                                                                .values
+                                                                .toList()[index]
+                                                                    [0]
+                                                                .boutique!
+                                                                .icon !=
+                                                            null
+                                                        ? state.cartCollection!
+                                                                .values
+                                                                .toList()[index]
+                                                                    [0]
+                                                                .boutique!
+                                                                .icon!
+                                                                .filePath ??
+                                                            ""
+                                                        : "",
                                                     height: 30,
                                                   ),
                                                 ),
@@ -328,7 +348,7 @@ class _CartPageState extends State<CartPage> {
                                                               height: 1.33),
                                                     ),
                                                     Text(
-                                                      " $price",
+                                                      " ${price.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}",
                                                       style: context.textTheme
                                                           .bodyMedium?.mr
                                                           .copyWith(
@@ -824,7 +844,12 @@ class _CartPageState extends State<CartPage> {
                                                                 children: [
                                                                   Text(
                                                                     (state.cartCollection![groupCartkeys[index]]![indexes].price! *
-                                                                            quantity).toString(),
+                                                                            state
+                                                                                .getCurrencyForCountryModel!.data!.currency!.exchangeRate! *
+                                                                            quantity)
+                                                                        .toStringAsFixed(
+                                                                            state.startingSetting?.decimalPointSetting ??
+                                                                                2),
                                                                     style: context.textTheme.bodyMedium?.ra.copyWith(
                                                                         decorationColor:
                                                                             Color(
@@ -840,7 +865,7 @@ class _CartPageState extends State<CartPage> {
                                                                     width: 5,
                                                                   ),
                                                                   Text(
-                                                                      "${(state.cartCollection![groupCartkeys[index]]![indexes].offerPrice! * quantity)} ",
+                                                                      "${(state.cartCollection![groupCartkeys[index]]![indexes].offerPrice! * quantity * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} ",
                                                                       style: context
                                                                           .textTheme
                                                                           .bodyMedium
@@ -854,7 +879,8 @@ class _CartPageState extends State<CartPage> {
                                                                             0xff505050),
                                                                       )),
                                                                   Text(
-                                                                    priceSymbol ?? '\$',
+                                                                    priceSymbol ??
+                                                                        '\$',
                                                                     style: context
                                                                         .textTheme
                                                                         .bodyMedium
