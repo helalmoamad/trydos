@@ -121,6 +121,8 @@ import '../../features/home/domain/use_cases/get_allowed_country_usecase.dart'
     as _i318;
 import '../../features/home/domain/use_cases/get_cart_item_usecase.dart'
     as _i307;
+import '../../features/home/domain/use_cases/get_currency_for_country_usecase.dart'
+    as _i762;
 import '../../features/home/domain/use_cases/get_home_boutiqes_usecase.dart'
     as _i518;
 import '../../features/home/domain/use_cases/get_main_categories_usecase.dart'
@@ -204,10 +206,6 @@ Future<_i174.GetIt> $initGetIt(
       () => _i213.StoryRepositoryImpl(gh<_i777.StoriesDataSource>()));
   gh.lazySingleton<_i0.HomeRepository>(
       () => _i437.HomeRepositoryImpl(gh<_i350.HomeRemoteDatasource>()));
-  gh.singleton<_i361.Dio>(() => appModule.dio(
-        gh<_i361.BaseOptions>(),
-        gh<_i974.Logger>(),
-      ));
   gh.lazySingleton<_i742.AuthRepository>(
       () => _i317.AuthRepositoryImpl(gh<_i539.AuthRemoteDatasource>()));
   gh.factory<_i737.AddStoryToOurServerUseCase>(
@@ -220,6 +218,10 @@ Future<_i174.GetIt> $initGetIt(
       () => _i4.IncreaseViewersUseCase(gh<_i505.StoryRepository>()));
   gh.factory<_i290.UploadStoryUseCase>(
       () => _i290.UploadStoryUseCase(gh<_i505.StoryRepository>()));
+  gh.singleton<_i361.Dio>(() => appModule.dio(
+        gh<_i361.BaseOptions>(),
+        gh<_i974.Logger>(),
+      ));
   gh.factory<_i260.DeleteFcmUseCase>(
       () => _i260.DeleteFcmUseCase(gh<_i742.AuthRepository>()));
   gh.factory<_i862.GetCustomerInfoUseCase>(
@@ -258,6 +260,8 @@ Future<_i174.GetIt> $initGetIt(
       () => _i318.GetAllowedCountryUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i307.GetCartItemUseCase>(
       () => _i307.GetCartItemUseCase(gh<_i0.HomeRepository>()));
+  gh.factory<_i762.GetCurrencyForCountryUseCase>(
+      () => _i762.GetCurrencyForCountryUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i518.GetHomeBoutiqesUseCase>(
       () => _i518.GetHomeBoutiqesUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i158.GetMainCategoriesUseCase>(
@@ -281,8 +285,6 @@ Future<_i174.GetIt> $initGetIt(
       () => _i802.UpdateItemInCartUseCase(gh<_i0.HomeRepository>()));
   gh.lazySingleton<_i702.CommonUseRepository>(() =>
       _i77.CommonUseRepositoryImpl(gh<_i672.CommonUseRemoteDataSource>()));
-  gh.lazySingleton<_i1032.CallsRepository>(
-      () => _i722.CallsRepositoryImpl(gh<_i1061.CallsRemoteDataSource>()));
   gh.lazySingleton<_i801.HomeBloc>(() => _i801.HomeBloc(
         gh<_i158.GetMainCategoriesUseCase>(),
         gh<_i533.GetStoryForProductUseCase>(),
@@ -292,6 +294,7 @@ Future<_i174.GetIt> $initGetIt(
         gh<_i1035.AddItemToCartUseCase>(),
         gh<_i939.GetCommentForProductUseCase>(),
         gh<_i518.GetHomeBoutiqesUseCase>(),
+        gh<_i762.GetCurrencyForCountryUseCase>(),
         gh<_i290.GetProductFiltersUseCase>(),
         gh<_i318.GetAllowedCountryUseCase>(),
         gh<_i912.GetWidthAndHeightUseCase>(),
@@ -300,6 +303,8 @@ Future<_i174.GetIt> $initGetIt(
         gh<_i397.GetProductsWithoutFiltersUseCase>(),
         gh<_i955.GetProductsWithFiltersUseCase>(),
       ));
+  gh.lazySingleton<_i1032.CallsRepository>(
+      () => _i722.CallsRepositoryImpl(gh<_i1061.CallsRemoteDataSource>()));
   gh.lazySingleton<_i420.ChatRepository>(
       () => _i504.ChatRepositoryImpl(gh<_i375.ChatRemoteDataSource>()));
   gh.factory<_i1043.UploadFileCloudinaryUseCase>(() =>

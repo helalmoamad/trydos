@@ -38,6 +38,7 @@ import 'package:trydos/features/home/domain/use_cases/get_allowed_country_usecas
 import 'package:trydos/features/home/domain/use_cases/get_brand_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_cart_item_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_category_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/get_currency_for_country_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_home_boutiqes_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_home_sections_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_main_categories_usecase.dart';
@@ -57,6 +58,7 @@ import 'package:uuid/uuid.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/data/model/pagination_model.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
+import 'package:trydos/features/home/data/models/get_currency_for_country_model.dart';
 import '../../../../main.dart';
 import '../../../app/my_cached_network_image.dart';
 import '../../../chat/presentation/manager/chat_bloc.dart';
@@ -92,6 +94,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.addItemToCartUseCase,
     this.getCommentForProductUseCase,
     this.getHomeBoutiqesUseCase,
+    this.getCurrencyForCountryUseCase,
     this.getProductFiltersUseCase,
     this.getAllowedCountryUseCase,
     this.getWidthAndHeightUseCase,
@@ -191,6 +194,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<GetProductsWithoutFiltersEvent>(
       _onGetProductsWithoutFiltersEvent,
     );
+    on<GetCurrencyForCountryEvent>(
+      _onGetCurrencyForCountryEvent,
+    );
     on<GetStoryForProductEvent>(_onGetStoryEvent,
         transformer: throttleDroppable(Duration(seconds: 5)));
     on<AddProductItemForCartEvent>(
@@ -212,6 +218,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     );
   }
 
+  Map<String , bool> boutiquesThatEnablesToRequestItsProductsUsingFiveFilters = {};
+
   final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   final GetStartingSettingsUseCase getStartingSettingsUseCase;
   final GetWidthAndHeightUseCase getWidthAndHeightUseCase;
@@ -232,6 +240,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final GetProductsWithoutFiltersUseCase getProductsWithoutFiltersUseCase;
   final AddItemToCartUseCase addItemToCartUseCase;
   final UpdateItemInCartUseCase updateItemInCartUseCase;
+  final GetCurrencyForCountryUseCase getCurrencyForCountryUseCase;
   final GetAllowedCountryUseCase getAllowedCountryUseCase;
 
   final Smartlook smartLook = Smartlook.instance;
@@ -310,6 +319,18 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           }
         }
       });
+    });
+  }
+
+  Future<void> _onGetCurrencyForCountryEvent(
+      GetCurrencyForCountryEvent event, Emitter<HomeState> emit) async {
+    final response = await getCurrencyForCountryUseCase(NoParams());
+    response.fold((l) {
+      add(GetCurrencyForCountryEvent());
+    }, (r) {
+      emit(state.copyWith(
+        getCurrencyForCountryModel: r,
+      ));
     });
   }
 
@@ -522,7 +543,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       if (state.getMainCategoriesStatus == GetMainCategoriesStatus.success) {
         requestAPIAfterHome();
       }
-      getHomeBoutiquesPaginationObjectByMainCategory = Map.of(state.getHomeBoutiquesPaginationObjectByMainCategory);
+      getHomeBoutiquesPaginationObjectByMainCategory =
+          Map.of(state.getHomeBoutiquesPaginationObjectByMainCategory);
       List<Boutique> boutiques = List.of(
           getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!
               .items);
@@ -862,6 +884,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               Map.of(getProductListingWithFiltersPaginationModels),
           appliedFiltersByUser: Map.of(prevAppliedFiltersByUser)));
     }, (r) {
+
+
       Map<String, PaginationModel<product.Products>?>
           getProductListingWithFiltersPaginationModels =
           Map.of(state.getProductListingWithFiltersPaginationModels);
@@ -908,6 +932,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         /* getProductListingWithFiltersPaginationModels.removeWhere((key,
                   value) =>
               !(key.contains(idForRequest) || key.contains('withoutFilter')));*/
+
         emit(state.copyWith(
           getProductListingWithFiltersPaginationModels:
               Map.of(getProductListingWithFiltersPaginationModels),
@@ -1121,13 +1146,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             .slug
             .toString();
         List<String> categorySlugs = [];
-        state.getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]!
-            .items[i].childCategoriesForProductIds
-            ?.forEach(
-          (element) {
-            categorySlugs.add(element.categorySlug ?? "");
-          },
-        );
+        // state.getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]!
+        //     .items[i].childCategoriesForProductIds
+        //     ?.forEach(
+        //   (element) {
+        //     categorySlugs.add(element.categorySlug ?? "");
+        //   },
+        // );
 
         add(GetProductWithFiltersWithoutCancelingPreviousEvents(
             categorySlugs: categorySlugs,
@@ -1368,7 +1393,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       try {
         statuses[key] = GetProductFiltersStatus.success;
         Map<String, filters_model.GetProductFiltersModel?> data =
-            state.getProductFiltersModel;
+            Map.of(state.getProductFiltersModel);
         List<filters_model.PriceRange> ranges =
             r.filters!.prices?.priceRanges ?? [];
         ranges.removeWhere((element) => element.count == 0);
@@ -1403,24 +1428,24 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     if (boutiquesThatDidPrefetch[key] == null) {
       boutiquesThatDidPrefetch.addAll({key: false});
     }
-    if (boutiquesThatDidPrefetch[key] == true) {
-      if (event.indexOfCategory < event.categorySlugs.length &&
-          event.categorySlugs.length > 0) {
-        add(GetProductWithFiltersWithoutCancelingPreviousEvents(
-            getWithoutFilter: true,
-            context: event.context,
-            categorySlugs: event.categorySlugs,
-            cashedOrginalBoutique: true,
-            fromHomePageSearch: false,
-            boutiqueSlug: event.boutiqueSlug,
-            indexOfCategory: event.indexOfCategory + 1,
-            category: event.category == null
-                ? event.categorySlugs[0]
-                : event.categorySlugs[event.indexOfCategory],
-            searchText: null));
-      }
-      return;
-    }
+    // if (boutiquesThatDidPrefetch[key] == true) {
+    //   if (event.indexOfCategory < event.categorySlugs.length &&
+    //       event.categorySlugs.length > 0) {
+    //     add(GetProductWithFiltersWithoutCancelingPreviousEvents(
+    //         getWithoutFilter: true,
+    //         context: event.context,
+    //         categorySlugs: event.categorySlugs,
+    //         cashedOrginalBoutique: true,
+    //         fromHomePageSearch: false,
+    //         boutiqueSlug: event.boutiqueSlug,
+    //         indexOfCategory: event.indexOfCategory + 1,
+    //         category: event.category == null
+    //             ? event.categorySlugs[0]
+    //             : event.categorySlugs[event.indexOfCategory],
+    //         searchText: null));
+    //   }
+    //   return;
+    // }
 
     boutiquesThatDidPrefetch[key] = true;
 
@@ -1430,23 +1455,23 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         event.filtersChoosedByUser?.filters ?? filters_model.Filter();
     Map<String, filters_model.GetProductFiltersModel?> data =
         state.getProductFiltersModel;
-    if ((data[key]?.filters?.totalSize ?? 0) > 0) {
-      if (event.indexOfCategory < event.categorySlugs.length &&
-          event.categorySlugs.length > 0) {
-        add(GetProductWithFiltersWithoutCancelingPreviousEvents(
-            getWithoutFilter: true,
-            context: event.context,
-            categorySlugs: event.categorySlugs,
-            cashedOrginalBoutique: true,
-            fromHomePageSearch: false,
-            boutiqueSlug: event.boutiqueSlug,
-            indexOfCategory: event.indexOfCategory + 1,
-            category: event.category == null
-                ? event.categorySlugs[0]
-                : event.categorySlugs[event.indexOfCategory],
-            searchText: null));
-      }
-    }
+    // if ((data[key]?.filters?.totalSize ?? 0) > 0) {
+    //   if (event.indexOfCategory < event.categorySlugs.length &&
+    //       event.categorySlugs.length > 0) {
+    //     add(GetProductWithFiltersWithoutCancelingPreviousEvents(
+    //         getWithoutFilter: true,
+    //         context: event.context,
+    //         categorySlugs: event.categorySlugs,
+    //         cashedOrginalBoutique: true,
+    //         fromHomePageSearch: false,
+    //         boutiqueSlug: event.boutiqueSlug,
+    //         indexOfCategory: event.indexOfCategory + 1,
+    //         category: event.category == null
+    //             ? event.categorySlugs[0]
+    //             : event.categorySlugs[event.indexOfCategory],
+    //         searchText: null));
+    //   }
+    // }
     List<filters_model.Attribute>? attribute;
     try {
       attribute = filters.attributes.isNullOrEmpty
@@ -1542,66 +1567,119 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             "${event.categorySlugs[event.indexOfCategory]}");
       }
     }, (r) async {
+      List<String> cachedLinksOfImages = [];
+      String url, url2;
       r.data?.products?.forEach((product) {
         product.syncColorImages?.forEach((image) {
           if (!image.images.isNullOrEmpty) {
             image.images?.forEach((image) {
-              prefetchImages(image.filePath!, event.context,
-                  height: 290,
+              url = addSuitableWidthAndHeightToImage(
+                  imageUrl: image.filePath!,
                   width: 200,
+                  // the width of the image in the ui
+                  height: 290,
+                  // the height of the image in the ui
                   ordinalWidth: double.tryParse(image.originalWidth.toString()),
                   ordinalHeight:
                       double.tryParse(image.originalHeight.toString()));
+               url2 = addSuitableWidthAndHeightToImage(
+                  imageUrl: image.filePath!,
+                  width: 320,
+                  // the width of the image in the ui
+                  height: 464,
+                  // the height of the image in the ui
+                  ordinalWidth: double.tryParse(image.originalWidth.toString()),
+                  ordinalHeight:
+                      double.tryParse(image.originalHeight.toString()));
+              cachedLinksOfImages.add(url);
+              cachedLinksOfImages.add(url2);
+              prefetchImages(url, event.context);
+              prefetchImages(
+                url2,
+                event.context,
+              );
             });
           }
         });
 
         product.syncColorImages?.forEach((image) {
           if (!image.images.isNullOrEmpty) {
-            prefetchImages(image.images![0].filePath!, event.context,
-                height: 40,
+            url = addSuitableWidthAndHeightToImage(
+                imageUrl: image.images![0].filePath!,
                 width: 40,
+                // the width of the image in the ui
+                height: 40,
+                // the height of the image in the ui
                 ordinalWidth:
                     double.tryParse(image.images![0].originalWidth.toString()),
                 ordinalHeight: double.tryParse(
                     image.images![0].originalHeight.toString()));
+            prefetchImages(
+              url,
+              event.context,
+            );
           }
         });
-
         product.images?.forEach((image) {
-          prefetchImages(image.filePath!, event.context,
-              width: 200, // the width of the image in the ui
-              height: 290, // the height of the image in the ui
+          url = addSuitableWidthAndHeightToImage(
+              imageUrl: image.filePath!,
+              width: 200,
+              // the width of the image in the ui
+              height: 290,
+              // the height of the image in the ui
               ordinalWidth: double.tryParse(image.originalWidth.toString()),
               ordinalHeight: double.tryParse(image.originalHeight.toString()));
+          url2 = addSuitableWidthAndHeightToImage(
+              imageUrl: image.filePath!,
+              width: 320,
+              // the width of the image in the ui
+              height: 464,
+              // the height of the image in the ui
+              ordinalWidth: double.tryParse(image.originalWidth.toString()),
+              ordinalHeight: double.tryParse(image.originalHeight.toString()));
+          if (!cachedLinksOfImages.contains(url)) {
+            prefetchImages(url, event.context);
+          }
+          if (!cachedLinksOfImages.contains(url2)) {
+            prefetchImages(url2, event.context);
+          }
         });
       });
       r.data?.categories?.forEach((category) {
-        prefetchImages(
-            category.mostViewedProductThumbnail!.filePath!, event.context,
-            height: 70,
+        url = addSuitableWidthAndHeightToImage(
+            imageUrl: category.mostViewedProductThumbnail!.filePath!,
             width: 70,
+            // the width of the image in the ui
+            height: 70,
+            // the height of the image in the ui
             ordinalWidth: double.tryParse(
                 category.mostViewedProductThumbnail!.originalWidth.toString()),
             ordinalHeight: double.tryParse(category
                 .mostViewedProductThumbnail!.originalHeight
                 .toString()));
+        prefetchImages(url, event.context);
         category.subCategories?.forEach((sub) {
-          prefetchImages(
-              sub.mostViewedProductThumbnail!.filePath!, event.context,
-              height: 50,
+          url = addSuitableWidthAndHeightToImage(
+              imageUrl: sub.mostViewedProductThumbnail!.filePath!,
               width: 50,
+              // the width of the image in the ui
+              height: 50,
+              // the height of the image in the ui
               ordinalWidth: double.tryParse(
                   sub.mostViewedProductThumbnail!.originalWidth.toString()),
               ordinalHeight: double.tryParse(
                   sub.mostViewedProductThumbnail!.originalHeight.toString()));
+          prefetchImages(
+            url,
+            event.context,
+          );
         });
       });
       r.data?.brands?.forEach((brand) {
-        prefetchSvgImages(brand.icon!.filePath.toString(), event.context , ordinalWidth: double.tryParse(
-            brand.icon!.originalWidth.toString()),
-            ordinalHeight: double.tryParse(
-                brand.icon!.originalHeight.toString()));
+        prefetchSvgImages(brand.icon!.filePath.toString(), event.context,
+            ordinalWidth: double.tryParse(brand.icon!.originalWidth.toString()),
+            ordinalHeight:
+                double.tryParse(brand.icon!.originalHeight.toString()));
       });
 
       Map<String, GetProductFiltersStatus> statuses =
@@ -1651,12 +1729,15 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           boutiquesThatDidPrefetch: boutiquesThatDidPrefetch,
           getProductFiltersModel: Map.of(data)));
 
-      Future.delayed(Duration(seconds: 5), () {
-        PrefetchProductsForFirstFiveFilter(
-            filter: data[key]?.filters,
-            boutiqueSlug: event.boutiqueSlug,
-            categorySlug: event.category);
-      });
+      if(boutiquesThatEnablesToRequestItsProductsUsingFiveFilters[key] == true) {
+        boutiquesThatEnablesToRequestItsProductsUsingFiveFilters[key] = false;
+        Future.delayed(Duration(seconds: 5), () {
+          PrefetchProductsForFirstFiveFilter(
+              filter: data[key]?.filters,
+              boutiqueSlug: event.boutiqueSlug,
+              categorySlug: event.category);
+        });
+      }
       if (state.getProductFiltersStatus[key] ==
               GetProductFiltersStatus.success ||
           state.getProductFiltersStatus[key] ==
@@ -2692,19 +2773,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   }
 }
 
-prefetchImages(String imageUrl, BuildContext context,
-    {
-      double? ordinalHeight,
-    double? ordinalWidth,
-    required double width,
-    required double height}) async {
-  String url = addSuitableWidthAndHeightToImage(
-      imageUrl: imageUrl,
-      width: width,
-      height: height,
-      ordinalHeight: ordinalHeight,
-      ordinalWidth: ordinalWidth);
-
+prefetchImages(String url, BuildContext context) async {
+  print('imagessssssssssssss $url');
   precacheImage(
       CachedNetworkImageProvider(url, cacheManager: CustomCacheManager()),
       context);
@@ -2712,17 +2782,13 @@ prefetchImages(String imageUrl, BuildContext context,
 
 prefetchSvgImages(
   String imageUrl,
-  BuildContext context,
-{
+  BuildContext context, {
   double? ordinalHeight,
   double? ordinalWidth,
-}
-) async {
+}) async {
   precacheImage(
       SvgImage.cachedNetwork(
         imageUrl,
-        width: ordinalWidth,
-        height: ordinalHeight,
         cacheManager: CustomCacheManager(),
       ),
       context);

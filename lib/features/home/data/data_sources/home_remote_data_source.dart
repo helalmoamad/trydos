@@ -14,6 +14,7 @@ import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart'
 import '../../../../common/constant/configuration/market_url_routes.dart';
 import '../../../../common/constant/configuration/stories_url_routes.dart';
 import '../../../../core/api/client_config.dart';
+import 'package:trydos/features/home/data/models/get_currency_for_country_model.dart';
 import '../../../../core/api/methods/detect_server.dart';
 import '../../../../core/api/methods/post.dart';
 import '../models/get_product_detail_without_related_products_model.dart';
@@ -147,6 +148,20 @@ class HomeRemoteDatasource {
       ),
     );
     return getMainCategories();
+  }
+
+  Future<GetCurrencyForCountryModel> getCurrencyForCountry() {
+    GetClient<GetCurrencyForCountryModel> getCurrencyForCountry =
+        GetClient<GetCurrencyForCountryModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<GetCurrencyForCountryModel>(
+        endpoint: MarketEndPoints.getCurrencyEP,
+        response: ResponseValue<GetCurrencyForCountryModel>(
+            fromJson: (response) =>
+                GetCurrencyForCountryModel.fromJson(response)),
+      ),
+    );
+    return getCurrencyForCountry();
   }
 
   Future<GetProductFiltersModel> getProductFilters(

@@ -46,20 +46,26 @@ class CartPage2 extends StatelessWidget {
       child: Scaffold(
         body: BlocBuilder<HomeBloc, HomeState>(
           buildWhen: (previous, current) =>
-          previous.getCartItemsStatus != current.getCartItemsStatus ||
+              previous.getCartItemsStatus != current.getCartItemsStatus ||
               previous.cartCollection!.values !=
-                  current.cartCollection!.values,
+                  current.cartCollection!.values ||
+              previous.getCurrencyForCountryModel !=
+                  current.getCurrencyForCountryModel,
           builder: (context, state) {
             double totlaPrice = 0;
             String? priceSymbol;
             state.cartCollection!.values.toList().forEach((element) {
               priceSymbol =
-              (element.first.priceFormatted?.split(' ') ?? ['\$', '\$'])[1];
+                  state.getCurrencyForCountryModel!.data!.currency!.symbol ??
+                      "";
+              //  (element.first.priceFormatted?.split(' ') ?? ['\$', '\$'])[1];
               element.forEach((element) {
                 totlaPrice =
                     totlaPrice + element.offerPrice! * element.quantity!;
               });
             });
+            totlaPrice = totlaPrice *
+                state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!;
             if (state.getCartItemsStatus == GetCartItemsStatus.failure &&
                 (state.cartCollection == null ||
                     state.cartCollection!.isEmpty)) {
@@ -121,10 +127,10 @@ class CartPage2 extends StatelessWidget {
                                       "      Your Shopping Bag",
                                       style: context.textTheme.bodyMedium?.ra
                                           .copyWith(
-                                          color: const Color(0xff505050),
-                                          letterSpacing: 0.18,
-                                          fontSize: 13,
-                                          height: 1.33),
+                                              color: const Color(0xff505050),
+                                              letterSpacing: 0.18,
+                                              fontSize: 13,
+                                              height: 1.33),
                                     ),
                                     Spacer(),
                                     SvgPicture.asset(
@@ -148,38 +154,36 @@ class CartPage2 extends StatelessWidget {
                                   Text(" ${state.cartCollection!.length} ",
                                       style: context.textTheme.bodyMedium?.mr
                                           .copyWith(
-                                          fontSize: 13,
-                                          color: const Color(0xff5D5C5D),
-                                          letterSpacing: 0.18,
-                                          height: 1.33)),
+                                              fontSize: 13,
+                                              color: const Color(0xff5D5C5D),
+                                              letterSpacing: 0.18,
+                                              height: 1.33)),
                                   Text(
                                     "item ",
                                     style: context.textTheme.bodyMedium?.la
                                         .copyWith(
-                                        fontSize: 13,
-                                        color: const Color(0xff8D8D8D),
-                                        letterSpacing: 0.18,
-                                        height: 1.33),
+                                            fontSize: 13,
+                                            color: const Color(0xff8D8D8D),
+                                            letterSpacing: 0.18,
+                                            height: 1.33),
                                   ),
                                   Text(
-                                    "${totlaPrice.toStringAsFixed(
-                                        state.startingSetting
-                                            ?.decimalPointSetting ?? 2)} ",
+                                    "${totlaPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} ",
                                     style: context.textTheme.bodyMedium?.mr
                                         .copyWith(
-                                        fontSize: 13,
-                                        color: const Color(0xff5D5C5D),
-                                        letterSpacing: 0.18,
-                                        height: 1.33),
+                                            fontSize: 13,
+                                            color: const Color(0xff5D5C5D),
+                                            letterSpacing: 0.18,
+                                            height: 1.33),
                                   ),
                                   Text(
                                     priceSymbol ?? '\$',
                                     style: context.textTheme.bodyMedium?.la
                                         .copyWith(
-                                        fontSize: 13,
-                                        color: const Color(0xff8D8D8D),
-                                        letterSpacing: 0.18,
-                                        height: 1.33),
+                                            fontSize: 13,
+                                            color: const Color(0xff8D8D8D),
+                                            letterSpacing: 0.18,
+                                            height: 1.33),
                                   ),
                                 ],
                               ),
@@ -213,18 +217,21 @@ class CartPage2 extends StatelessWidget {
                                     price = price +
                                         element.offerPrice! * element.quantity!;
                                   });
+                                  price = price *
+                                      state.getCurrencyForCountryModel!.data!
+                                          .currency!.exchangeRate!;
                                   return Column(
                                     children: [
                                       InkWell(
                                         onTap: () {
                                           tapIndex = index;
                                           if (visibleCollectionGroups.any(
-                                                  (element) =>
-                                              element ==
+                                              (element) =>
+                                                  element ==
                                                   groupCartkeys[tapIndex!])) {
                                             visibleCollectionGroups.removeWhere(
-                                                    (element) =>
-                                                element ==
+                                                (element) =>
+                                                    element ==
                                                     groupCartkeys[tapIndex!]);
                                           } else {
                                             visibleCollectionGroups
@@ -232,7 +239,7 @@ class CartPage2 extends StatelessWidget {
                                           }
 
                                           changeCartCollections.value =
-                                          !changeCartCollections.value;
+                                              !changeCartCollections.value;
                                         },
                                         child: Container(
                                             padding: EdgeInsets.symmetric(
@@ -241,7 +248,7 @@ class CartPage2 extends StatelessWidget {
                                                 top: 10, bottom: 0),
                                             decoration: BoxDecoration(
                                                 borderRadius:
-                                                BorderRadius.circular(20),
+                                                    BorderRadius.circular(20),
                                                 color: Color(0xffF8F8F8)),
                                             height: 48.h,
                                             child: Row(
@@ -250,12 +257,12 @@ class CartPage2 extends StatelessWidget {
                                                   height: 15,
                                                   child: SvgNetworkWidget(
                                                     svgUrl: state
-                                                        .cartCollection!
-                                                        .values
-                                                        .toList()[index][0]
-                                                        .boutique!
-                                                        .icon!
-                                                        .filePath ??
+                                                            .cartCollection!
+                                                            .values
+                                                            .toList()[index][0]
+                                                            .boutique!
+                                                            .icon!
+                                                            .filePath ??
                                                         "",
                                                     height: 30,
                                                   ),
@@ -263,63 +270,56 @@ class CartPage2 extends StatelessWidget {
                                                 Spacer(),
                                                 Row(
                                                   mainAxisAlignment:
-                                                  MainAxisAlignment.center,
+                                                      MainAxisAlignment.center,
                                                   children: [
                                                     SvgPicture.asset(
                                                         AppAssets.countItemSvg),
                                                     Text(
-                                                        "  ${state
-                                                            .cartCollection!
-                                                            .values
-                                                            .toList()[index]
-                                                            .length} ",
+                                                        "  ${state.cartCollection!.values.toList()[index].length} ",
                                                         style: context.textTheme
                                                             .bodyMedium?.mr
                                                             .copyWith(
-                                                            fontSize: 13,
-                                                            color: const Color(
-                                                                0xff5D5C5D),
-                                                            letterSpacing:
-                                                            0.18,
-                                                            height: 1.33)),
+                                                                fontSize: 13,
+                                                                color: const Color(
+                                                                    0xff5D5C5D),
+                                                                letterSpacing:
+                                                                    0.18,
+                                                                height: 1.33)),
                                                     Text(
                                                       "item ",
                                                       style: context.textTheme
                                                           .bodyMedium?.la
                                                           .copyWith(
-                                                          fontSize: 13,
-                                                          color: const Color(
-                                                              0xff8D8D8D),
-                                                          letterSpacing:
-                                                          0.18,
-                                                          height: 1.33),
+                                                              fontSize: 13,
+                                                              color: const Color(
+                                                                  0xff8D8D8D),
+                                                              letterSpacing:
+                                                                  0.18,
+                                                              height: 1.33),
                                                     ),
                                                     Text(
-                                                      " ${price.toStringAsFixed(
-                                                          state.startingSetting
-                                                              ?.decimalPointSetting ??
-                                                              2)}",
+                                                      " ${price.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}",
                                                       style: context.textTheme
                                                           .bodyMedium?.mr
                                                           .copyWith(
-                                                          fontSize: 13,
-                                                          color: const Color(
-                                                              0xff5D5C5D),
-                                                          letterSpacing:
-                                                          0.18,
-                                                          height: 1.33),
+                                                              fontSize: 13,
+                                                              color: const Color(
+                                                                  0xff5D5C5D),
+                                                              letterSpacing:
+                                                                  0.18,
+                                                              height: 1.33),
                                                     ),
                                                     Text(
                                                       priceSymbol ?? '\$',
                                                       style: context.textTheme
                                                           .bodyMedium?.la
                                                           .copyWith(
-                                                          fontSize: 13,
-                                                          color: const Color(
-                                                              0xff8D8D8D),
-                                                          letterSpacing:
-                                                          0.18,
-                                                          height: 1.33),
+                                                              fontSize: 13,
+                                                              color: const Color(
+                                                                  0xff8D8D8D),
+                                                              letterSpacing:
+                                                                  0.18,
+                                                              height: 1.33),
                                                     ),
                                                   ],
                                                 ),
@@ -330,790 +330,525 @@ class CartPage2 extends StatelessWidget {
                                         children: [
                                           visibleCollectionGroups.any(
                                                   (element) =>
-                                              element ==
-                                                  groupCartkeys[index])
+                                                      element ==
+                                                      groupCartkeys[index])
                                               ? Container(
-                                            alignment: Alignment.center,
-                                            margin:
-                                            EdgeInsets.only(top: 15),
-                                            decoration: BoxDecoration(
-                                                borderRadius:
-                                                BorderRadius.circular(
-                                                    15),
-                                                color: Color(0xffFEFEFE),
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                      offset:
-                                                      Offset(0, 5),
-                                                      spreadRadius: 15,
-                                                      color: Color(
-                                                          0xffF3F3F3),
-                                                      blurRadius: 15)
-                                                ]),
-                                            width: 1.sw,
-                                            height: 152,
-                                            child: ListView.builder(
-                                              scrollDirection:
-                                              Axis.horizontal,
-                                              padding:
-                                              EdgeInsets.only(top: 0),
-                                              itemCount: state
-                                                  .cartCollection![
-                                              groupCartkeys[
-                                              index]]!
-                                                  .length,
-                                              itemBuilder:
-                                                  (context, indexes) {
-                                                return InkWell(
-                                                  onDoubleTap: () {
-                                                    showDialog(
-                                                        context: context,
-                                                        builder:
-                                                            (BuildContext
-                                                        context) {
-                                                          return AlertDialog(
-                                                            title: MyTextWidget(
-                                                                "Change Quatity In Cart",
-                                                                textDirection:
-                                                                TextDirection
-                                                                    .ltr),
-                                                            actions: <Widget>[
-                                                              SingleChildScrollView(
-                                                                child:
-                                                                Column(
-                                                                  children: [
-                                                                    TextFormField(
-                                                                      inputFormatters: [
-                                                                        FilteringTextInputFormatter
-                                                                            .digitsOnly
-                                                                      ],
-                                                                      textAlign:
-                                                                      TextAlign
-                                                                          .center,
-                                                                      controller:
-                                                                      quantityController,
-                                                                      enabled:
-                                                                      true,
-                                                                      keyboardType:
-                                                                      TextInputType
-                                                                          .number,
+                                                  alignment: Alignment.center,
+                                                  margin:
+                                                      EdgeInsets.only(top: 15),
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              15),
+                                                      color: Color(0xffFEFEFE),
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                            offset:
+                                                                Offset(0, 5),
+                                                            spreadRadius: 15,
+                                                            color: Color(
+                                                                0xffF3F3F3),
+                                                            blurRadius: 15)
+                                                      ]),
+                                                  width: 1.sw,
+                                                  height: 152,
+                                                  child: ListView.builder(
+                                                    scrollDirection:
+                                                        Axis.horizontal,
+                                                    padding:
+                                                        EdgeInsets.only(top: 0),
+                                                    itemCount: state
+                                                        .cartCollection![
+                                                            groupCartkeys[
+                                                                index]]!
+                                                        .length,
+                                                    itemBuilder:
+                                                        (context, indexes) {
+                                                      return InkWell(
+                                                        onDoubleTap: () {
+                                                          showDialog(
+                                                              context: context,
+                                                              builder:
+                                                                  (BuildContext
+                                                                      context) {
+                                                                return AlertDialog(
+                                                                  title: MyTextWidget(
+                                                                      "Change Quatity In Cart",
+                                                                      textDirection:
+                                                                          TextDirection
+                                                                              .ltr),
+                                                                  actions: <Widget>[
+                                                                    SingleChildScrollView(
+                                                                      child:
+                                                                          Column(
+                                                                        children: [
+                                                                          TextFormField(
+                                                                            inputFormatters: [
+                                                                              FilteringTextInputFormatter.digitsOnly
+                                                                            ],
+                                                                            textAlign:
+                                                                                TextAlign.center,
+                                                                            controller:
+                                                                                quantityController,
+                                                                            enabled:
+                                                                                true,
+                                                                            keyboardType:
+                                                                                TextInputType.number,
+                                                                          ),
+                                                                          Row(
+                                                                            mainAxisAlignment:
+                                                                                MainAxisAlignment.spaceBetween,
+                                                                            children: [
+                                                                              AppElevatedButton(
+                                                                                onPressed: () {
+                                                                                  BlocProvider.of<HomeBloc>(context).add(UpdateItemInCartEvent(countOfPieces: state.cartCollection![groupCartkeys[index]]![indexes].countOfPieces, image: state.cartCollection![groupCartkeys[index]]![indexes].image ?? "", currentSize: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].size ?? "" : "", colorName: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].color ?? "" : "", productId: state.cartCollection![groupCartkeys[index]]![indexes].productId.toString(), quantity: int.tryParse(quantityController.text)!, cartId: state.cartCollection![groupCartkeys[index]]![indexes].id.toString(), boutiqueId: state.cartCollection![groupCartkeys[index]]![indexes].boutique!.id.toString()));
+                                                                                  Navigator.pop(context);
+                                                                                },
+                                                                                text: "Yes",
+                                                                              ),
+                                                                              AppElevatedButton(
+                                                                                onPressed: () {
+                                                                                  Navigator.pop(context);
+                                                                                },
+                                                                                text: 'Not Now',
+                                                                              ),
+                                                                            ],
+                                                                          ),
+                                                                        ],
+                                                                      ),
                                                                     ),
+                                                                  ],
+                                                                );
+                                                              });
+                                                        },
+                                                        onLongPress: () {
+                                                          showDialog(
+                                                              context: context,
+                                                              builder:
+                                                                  (BuildContext
+                                                                      context) {
+                                                                return AlertDialog(
+                                                                  title: MyTextWidget(
+                                                                      "Delete Item From Cart",
+                                                                      textDirection:
+                                                                          TextDirection
+                                                                              .ltr),
+                                                                  actions: <Widget>[
                                                                     Row(
                                                                       mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .spaceBetween,
+                                                                          MainAxisAlignment
+                                                                              .spaceBetween,
                                                                       children: [
                                                                         AppElevatedButton(
-                                                                          onPressed: () {
-                                                                            BlocProvider
-                                                                                .of<
-                                                                                HomeBloc>(
-                                                                                context)
-                                                                                .add(
-                                                                                UpdateItemInCartEvent(
-                                                                                    countOfPieces: state
-                                                                                        .cartCollection![groupCartkeys[index]]![indexes]
-                                                                                        .countOfPieces,
-                                                                                    image: state
-                                                                                        .cartCollection![groupCartkeys[index]]![indexes]
-                                                                                        .image ??
-                                                                                        "",
-                                                                                    currentSize: !state
-                                                                                        .cartCollection![groupCartkeys[index]]![indexes]
-                                                                                        .variations
-                                                                                        .isNullOrEmpty
-                                                                                        ? state
-                                                                                        .cartCollection![groupCartkeys[index]]![indexes]
-                                                                                        .variations![0]
-                                                                                        .size ??
-                                                                                        ""
-                                                                                        : "",
-                                                                                    colorName: !state
-                                                                                        .cartCollection![groupCartkeys[index]]![indexes]
-                                                                                        .variations
-                                                                                        .isNullOrEmpty
-                                                                                        ? state
-                                                                                        .cartCollection![groupCartkeys[index]]![indexes]
-                                                                                        .variations![0]
-                                                                                        .color ??
-                                                                                        ""
-                                                                                        : "",
-                                                                                    productId: state
-                                                                                        .cartCollection![groupCartkeys[index]]![indexes]
-                                                                                        .productId
-                                                                                        .toString(),
-                                                                                    quantity: int
-                                                                                        .tryParse(
-                                                                                        quantityController
-                                                                                            .text)!,
-                                                                                    cartId: state
-                                                                                        .cartCollection![groupCartkeys[index]]![indexes]
-                                                                                        .id
-                                                                                        .toString(),
-                                                                                    boutiqueId: state
-                                                                                        .cartCollection![groupCartkeys[index]]![indexes]
-                                                                                        .boutique!
-                                                                                        .id
-                                                                                        .toString()));
-                                                                            Navigator
-                                                                                .pop(
-                                                                                context);
+                                                                          onPressed:
+                                                                              () {
+                                                                            BlocProvider.of<HomeBloc>(context).add(RemoveItemFormCartEvent(
+                                                                                countOfPieces: state.cartCollection![groupCartkeys[index]]![indexes].countOfPieces,
+                                                                                image: state.cartCollection![groupCartkeys[index]]![indexes].image ?? '',
+                                                                                currentSize: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].size ?? "" : "",
+                                                                                ColoName: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].color ?? "" : "",
+                                                                                productId: state.cartCollection![groupCartkeys[index]]![indexes].productId.toString(),
+                                                                                itemId: state.cartCollection![groupCartkeys[index]]![indexes].id.toString(),
+                                                                                boutiqueId: state.cartCollection![groupCartkeys[index]]![indexes].boutique!.id.toString()));
+                                                                            Navigator.pop(context);
                                                                           },
-                                                                          text: "Yes",
+                                                                          text:
+                                                                              "Yes",
                                                                         ),
                                                                         AppElevatedButton(
-                                                                          onPressed: () {
-                                                                            Navigator
-                                                                                .pop(
-                                                                                context);
+                                                                          onPressed:
+                                                                              () {
+                                                                            Navigator.pop(context);
                                                                           },
-                                                                          text: 'Not Now',
+                                                                          text:
+                                                                              'Not Now',
                                                                         ),
                                                                       ],
                                                                     ),
                                                                   ],
+                                                                );
+                                                              });
+                                                        },
+                                                        onTap: () {
+                                                          HelperFunctions
+                                                              .slidingNavigation(
+                                                                  context,
+                                                                  ProductDetailsPage(
+                                                                    productItem: state.productITemForCart![state
+                                                                        .cartCollection![
+                                                                            groupCartkeys[index]]![
+                                                                            indexes]
+                                                                        .productId
+                                                                        .toString()]!,
+                                                                  ));
+                                                        },
+                                                        child: Stack(
+                                                          children: [
+                                                            Container(
+                                                              decoration: BoxDecoration(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              15)),
+                                                              margin: EdgeInsets
+                                                                  .symmetric(
+                                                                      horizontal:
+                                                                          2),
+                                                              child:
+                                                                  ProductDetailsImageWidget(
+                                                                withBackGroundShadow:
+                                                                    false,
+                                                                withInnerShadow:
+                                                                    false,
+                                                                width: 97.w,
+                                                                height: 142,
+                                                                imageUrl: state
+                                                                    .cartCollection![
+                                                                        groupCartkeys[
+                                                                            index]]![
+                                                                        indexes]
+                                                                    .image,
+                                                                radius: 15,
+                                                                imageFit: BoxFit
+                                                                    .cover,
+                                                              ),
+                                                            ),
+                                                            Positioned(
+                                                              child: Container(
+                                                                alignment:
+                                                                    Alignment
+                                                                        .center,
+                                                                width: 28,
+                                                                height: 28,
+                                                                decoration: BoxDecoration(
+                                                                    color: Color(
+                                                                        0xffFEFEFE),
+                                                                    border: Border.all(
+                                                                        width:
+                                                                            0.5,
+                                                                        color: Color(
+                                                                            0xff8D8D8D)),
+                                                                    borderRadius:
+                                                                        BorderRadiusDirectional.circular(
+                                                                            15)),
+                                                                child: Text(
+                                                                  "${state.cartCollection![groupCartkeys[index]]![indexes].quantity}",
+                                                                  style: context
+                                                                      .textTheme
+                                                                      .bodyMedium
+                                                                      ?.ra
+                                                                      .copyWith(
+                                                                    decorationColor:
+                                                                        Color(
+                                                                            0xff8D8D8D),
+                                                                    fontSize:
+                                                                        14,
+                                                                    color: Color(
+                                                                        0xff8D8D8D),
+                                                                  ),
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .center,
                                                                 ),
                                                               ),
-                                                            ],
-                                                          );
-                                                        });
-                                                  },
-                                                  onLongPress: () {
-                                                    showDialog(
-                                                        context: context,
-                                                        builder:
-                                                            (BuildContext
-                                                        context) {
-                                                          return AlertDialog(
-                                                            title: MyTextWidget(
-                                                                "Delete Item From Cart",
-                                                                textDirection:
-                                                                TextDirection
-                                                                    .ltr),
-                                                            actions: <Widget>[
-                                                              Row(
-                                                                mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .spaceBetween,
-                                                                children: [
-                                                                  AppElevatedButton(
-                                                                    onPressed:
-                                                                        () {
-                                                                      BlocProvider
-                                                                          .of<
-                                                                          HomeBloc>(
-                                                                          context)
-                                                                          .add(
-                                                                          RemoveItemFormCartEvent(
-                                                                              countOfPieces: state
-                                                                                  .cartCollection![groupCartkeys[index]]![indexes]
-                                                                                  .countOfPieces,
-                                                                              image: state
-                                                                                  .cartCollection![groupCartkeys[index]]![indexes]
-                                                                                  .image ??
-                                                                                  '',
-                                                                              currentSize: !state
-                                                                                  .cartCollection![groupCartkeys[index]]![indexes]
-                                                                                  .variations
-                                                                                  .isNullOrEmpty
-                                                                                  ? state
-                                                                                  .cartCollection![groupCartkeys[index]]![indexes]
-                                                                                  .variations![0]
-                                                                                  .size ??
-                                                                                  ""
-                                                                                  : "",
-                                                                              ColoName: !state
-                                                                                  .cartCollection![groupCartkeys[index]]![indexes]
-                                                                                  .variations
-                                                                                  .isNullOrEmpty
-                                                                                  ? state
-                                                                                  .cartCollection![groupCartkeys[index]]![indexes]
-                                                                                  .variations![0]
-                                                                                  .color ??
-                                                                                  ""
-                                                                                  : "",
-                                                                              productId: state
-                                                                                  .cartCollection![groupCartkeys[index]]![indexes]
-                                                                                  .productId
-                                                                                  .toString(),
-                                                                              itemId: state
-                                                                                  .cartCollection![groupCartkeys[index]]![indexes]
-                                                                                  .id
-                                                                                  .toString(),
-                                                                              boutiqueId: state
-                                                                                  .cartCollection![groupCartkeys[index]]![indexes]
-                                                                                  .boutique!
-                                                                                  .id
-                                                                                  .toString()));
-                                                                      Navigator
-                                                                          .pop(
-                                                                          context);
-                                                                    },
-                                                                    text:
-                                                                    "Yes",
+                                                              top: 3,
+                                                              left: 5,
+                                                            ),
+                                                            Positioned(
+                                                              child: Container(
+                                                                margin:
+                                                                    EdgeInsets
+                                                                        .all(2),
+                                                                alignment:
+                                                                    Alignment
+                                                                        .center,
+                                                                width: 97.w,
+                                                                height: 45,
+                                                                decoration: BoxDecoration(
+                                                                    shape: BoxShape
+                                                                        .rectangle,
+                                                                    color: Color
+                                                                        .fromRGBO(
+                                                                            0,
+                                                                            0,
+                                                                            0,
+                                                                            0.5),
+                                                                    borderRadius: BorderRadius.only(
+                                                                        bottomRight:
+                                                                            Radius.circular(
+                                                                                15),
+                                                                        bottomLeft:
+                                                                            Radius.circular(15))),
+                                                                child: Text(
+                                                                  '''${!state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].size ?? "" : ""} \n '''
+                                                                  '''${(state.cartCollection![groupCartkeys[index]]![indexes].offerPrice! * state.cartCollection![groupCartkeys[index]]![indexes].quantity! * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} '''
+                                                                  '''${priceSymbol ?? '\$'}''',
+                                                                  style: context
+                                                                      .textTheme
+                                                                      .bodyMedium
+                                                                      ?.ra
+                                                                      .copyWith(
+                                                                    decorationColor:
+                                                                        Color(
+                                                                            0xffFEFEFE),
+                                                                    fontSize:
+                                                                        12,
+                                                                    color: Color(
+                                                                        0xffFEFEFE),
                                                                   ),
-                                                                  AppElevatedButton(
-                                                                    onPressed:
-                                                                        () {
-                                                                      Navigator
-                                                                          .pop(
-                                                                          context);
-                                                                    },
-                                                                    text:
-                                                                    'Not Now',
-                                                                  ),
-                                                                ],
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .center,
+                                                                ),
                                                               ),
-                                                            ],
-                                                          );
-                                                        });
-                                                  },
-                                                  onTap: () {
-                                                    HelperFunctions
-                                                        .slidingNavigation(
-                                                        context,
-                                                        ProductDetailsPage(
-                                                          productItem: state
-                                                              .productITemForCart![state
-                                                              .cartCollection![
-                                                          groupCartkeys[index]]![
-                                                          indexes]
-                                                              .productId
-                                                              .toString()]!,
-                                                        ));
-                                                  },
-                                                  child: Stack(
-                                                    children: [
-                                                      Container(
-                                                        decoration: BoxDecoration(
-                                                            borderRadius:
-                                                            BorderRadius
-                                                                .circular(
-                                                                15)),
-                                                        margin: EdgeInsets
-                                                            .symmetric(
-                                                            horizontal:
-                                                            2),
-                                                        child:
-                                                        ProductDetailsImageWidget(
-                                                          withBackGroundShadow:
-                                                          false,
-                                                          withInnerShadow:
-                                                          false,
-                                                          width: 97.w,
-                                                          height: 142,
-                                                          imageUrl: state
-                                                              .cartCollection![
-                                                          groupCartkeys[
-                                                          index]]![
-                                                          indexes]
-                                                              .image,
-                                                          radius: 15,
-                                                          imageFit: BoxFit
-                                                              .cover,
-                                                        ),
-                                                      ),
-                                                      Positioned(
-                                                        child: Container(
-                                                          alignment:
-                                                          Alignment
-                                                              .center,
-                                                          width: 28,
-                                                          height: 28,
-                                                          decoration: BoxDecoration(
-                                                              color: Color(
-                                                                  0xffFEFEFE),
-                                                              border: Border
-                                                                  .all(
-                                                                  width:
-                                                                  0.5,
-                                                                  color: Color(
-                                                                      0xff8D8D8D)),
-                                                              borderRadius:
-                                                              BorderRadiusDirectional
-                                                                  .circular(
-                                                                  15)),
-                                                          child: Text(
-                                                            "${state
-                                                                .cartCollection![groupCartkeys[index]]![indexes]
-                                                                .quantity}",
-                                                            style: context
-                                                                .textTheme
-                                                                .bodyMedium
-                                                                ?.ra
-                                                                .copyWith(
-                                                              decorationColor:
-                                                              Color(
-                                                                  0xff8D8D8D),
-                                                              fontSize:
-                                                              14,
-                                                              color: Color(
-                                                                  0xff8D8D8D),
+                                                              top: 95,
                                                             ),
-                                                            textAlign:
-                                                            TextAlign
-                                                                .center,
-                                                          ),
+                                                          ],
                                                         ),
-                                                        top: 3,
-                                                        left: 5,
-                                                      ),
-                                                      Positioned(
-                                                        child: Container(
-                                                          margin:
-                                                          EdgeInsets
-                                                              .all(2),
-                                                          alignment:
-                                                          Alignment
-                                                              .center,
-                                                          width: 97.w,
-                                                          height: 45,
-                                                          decoration: BoxDecoration(
-                                                              shape: BoxShape
-                                                                  .rectangle,
-                                                              color: Color
-                                                                  .fromRGBO(
-                                                                  0,
-                                                                  0,
-                                                                  0,
-                                                                  0.5),
-                                                              borderRadius: BorderRadius
-                                                                  .only(
-                                                                  bottomRight:
-                                                                  Radius
-                                                                      .circular(
-                                                                      15),
-                                                                  bottomLeft:
-                                                                  Radius
-                                                                      .circular(
-                                                                      15))),
-                                                          child: Text(
-                                                            '''${!state
-                                                                .cartCollection![groupCartkeys[index]]![indexes]
-                                                                .variations
-                                                                .isNullOrEmpty
-                                                                ? state
-                                                                .cartCollection![groupCartkeys[index]]![indexes]
-                                                                .variations![0]
-                                                                .size ?? ""
-                                                                : ""} \n '''
-                                                                '''${(state
-                                                                .cartCollection![groupCartkeys[index]]![indexes]
-                                                                .offerPrice! *
-                                                                state
-                                                                    .cartCollection![groupCartkeys[index]]![indexes]
-                                                                    .quantity!)} '''
-                                                                '''${priceSymbol ??
-                                                                '\$'}''',
-                                                            style: context
-                                                                .textTheme
-                                                                .bodyMedium
-                                                                ?.ra
-                                                                .copyWith(
-                                                              decorationColor:
-                                                              Color(
-                                                                  0xffFEFEFE),
-                                                              fontSize:
-                                                              12,
-                                                              color: Color(
-                                                                  0xffFEFEFE),
-                                                            ),
-                                                            textAlign:
-                                                            TextAlign
-                                                                .center,
-                                                          ),
-                                                        ),
-                                                        top: 95,
-                                                      ),
-                                                    ],
+                                                      );
+                                                    },
                                                   ),
-                                                );
-                                              },
-                                            ),
-                                          )
+                                                )
                                               : SizedBox.shrink(),
                                           visibleCollectionGroups.any(
                                                   (element) =>
-                                              element ==
-                                                  groupCartkeys[index])
+                                                      element ==
+                                                      groupCartkeys[index])
                                               ? Container(
-                                              margin: EdgeInsets.only(
-                                                top: 10,
-                                              ),
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                  BorderRadius.circular(
-                                                      15),
-                                                  color: Color(0xffFEFEFE),
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                        offset:
-                                                        Offset(0, 5),
-                                                        spreadRadius: 15,
-                                                        color: Color(
-                                                            0xffF3F3F3),
-                                                        blurRadius: 15)
-                                                  ]),
-                                              width: 410.w,
-                                              height: 216,
-                                              alignment: Alignment.center,
-                                              child: ListView.builder(
-                                                  scrollDirection:
-                                                  Axis.horizontal,
-                                                  padding: EdgeInsets.only(
-                                                      top: 0),
-                                                  itemCount: state
-                                                      .cartCollection![
-                                                  groupCartkeys[
-                                                  index]]!
-                                                      .length,
-                                                  itemBuilder:
-                                                      (context, indexs) {
-                                                    return Column(
-                                                      crossAxisAlignment:
-                                                      CrossAxisAlignment
-                                                          .center,
-                                                      children: [
-                                                        InkWell(
-                                                          onDoubleTap: () {
-                                                            showDialog(
-                                                                context:
-                                                                context,
-                                                                builder:
-                                                                    (
-                                                                    BuildContext
-                                                                    context) {
-                                                                  return AlertDialog(
-                                                                    title: MyTextWidget(
-                                                                        "Change Quatity In Cart",
-                                                                        textDirection:
-                                                                        TextDirection
-                                                                            .ltr),
-                                                                    actions: <
-                                                                        Widget>[
-                                                                      SingleChildScrollView(
-                                                                        child:
-                                                                        Column(
-                                                                          children: [
-                                                                            TextFormField(
-                                                                              inputFormatters: [
-                                                                                FilteringTextInputFormatter
-                                                                                    .digitsOnly
-                                                                              ],
-                                                                              textAlign: TextAlign
-                                                                                  .center,
-                                                                              controller: quantityController,
-                                                                              enabled: true,
-                                                                              keyboardType: TextInputType
-                                                                                  .number,
-                                                                            ),
-                                                                            Row(
-                                                                              mainAxisAlignment: MainAxisAlignment
-                                                                                  .spaceBetween,
+                                                  margin: EdgeInsets.only(
+                                                    top: 10,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              15),
+                                                      color: Color(0xffFEFEFE),
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                            offset:
+                                                                Offset(0, 5),
+                                                            spreadRadius: 15,
+                                                            color: Color(
+                                                                0xffF3F3F3),
+                                                            blurRadius: 15)
+                                                      ]),
+                                                  width: 410.w,
+                                                  height: 216,
+                                                  alignment: Alignment.center,
+                                                  child: ListView.builder(
+                                                      scrollDirection:
+                                                          Axis.horizontal,
+                                                      padding: EdgeInsets.only(
+                                                          top: 0),
+                                                      itemCount: state
+                                                          .cartCollection![
+                                                              groupCartkeys[
+                                                                  index]]!
+                                                          .length,
+                                                      itemBuilder:
+                                                          (context, indexs) {
+                                                        return Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            InkWell(
+                                                              onDoubleTap: () {
+                                                                showDialog(
+                                                                    context:
+                                                                        context,
+                                                                    builder:
+                                                                        (BuildContext
+                                                                            context) {
+                                                                      return AlertDialog(
+                                                                        title: MyTextWidget(
+                                                                            "Change Quatity In Cart",
+                                                                            textDirection:
+                                                                                TextDirection.ltr),
+                                                                        actions: <Widget>[
+                                                                          SingleChildScrollView(
+                                                                            child:
+                                                                                Column(
                                                                               children: [
-                                                                                AppElevatedButton(
-                                                                                  onPressed: () {
-                                                                                    BlocProvider
-                                                                                        .of<
-                                                                                        HomeBloc>(
-                                                                                        context)
-                                                                                        .add(
-                                                                                        UpdateItemInCartEvent(
-                                                                                            countOfPieces: state
-                                                                                                .cartCollection![groupCartkeys[index]]![indexes]
-                                                                                                .countOfPieces,
-                                                                                            image: state
-                                                                                                .cartCollection![groupCartkeys[index]]![indexes]
-                                                                                                .image ??
-                                                                                                "",
-                                                                                            currentSize: !state
-                                                                                                .cartCollection![groupCartkeys[index]]![indexes]
-                                                                                                .variations
-                                                                                                .isNullOrEmpty
-                                                                                                ? state
-                                                                                                .cartCollection![groupCartkeys[index]]![indexes]
-                                                                                                .variations![0]
-                                                                                                .size ??
-                                                                                                ""
-                                                                                                : "",
-                                                                                            colorName: !state
-                                                                                                .cartCollection![groupCartkeys[index]]![indexes]
-                                                                                                .variations
-                                                                                                .isNullOrEmpty
-                                                                                                ? state
-                                                                                                .cartCollection![groupCartkeys[index]]![indexes]
-                                                                                                .variations![0]
-                                                                                                .color ??
-                                                                                                ""
-                                                                                                : "",
-                                                                                            productId: state
-                                                                                                .cartCollection![groupCartkeys[index]]![indexes]
-                                                                                                .productId
-                                                                                                .toString(),
-                                                                                            quantity: int
-                                                                                                .tryParse(
-                                                                                                quantityController
-                                                                                                    .text)!,
-                                                                                            cartId: state
-                                                                                                .cartCollection![groupCartkeys[index]]![indexs]
-                                                                                                .id
-                                                                                                .toString(),
-                                                                                            boutiqueId: state
-                                                                                                .cartCollection![groupCartkeys[index]]![indexes]
-                                                                                                .boutique!
-                                                                                                .id
-                                                                                                .toString()));
-                                                                                    Navigator
-                                                                                        .pop(
-                                                                                        context);
-                                                                                  },
-                                                                                  text: "Yes",
+                                                                                TextFormField(
+                                                                                  inputFormatters: [
+                                                                                    FilteringTextInputFormatter.digitsOnly
+                                                                                  ],
+                                                                                  textAlign: TextAlign.center,
+                                                                                  controller: quantityController,
+                                                                                  enabled: true,
+                                                                                  keyboardType: TextInputType.number,
                                                                                 ),
-                                                                                AppElevatedButton(
-                                                                                  onPressed: () {
-                                                                                    Navigator
-                                                                                        .pop(
-                                                                                        context);
-                                                                                  },
-                                                                                  text: 'Not Now',
+                                                                                Row(
+                                                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                  children: [
+                                                                                    AppElevatedButton(
+                                                                                      onPressed: () {
+                                                                                        BlocProvider.of<HomeBloc>(context).add(UpdateItemInCartEvent(countOfPieces: state.cartCollection![groupCartkeys[index]]![indexes].countOfPieces, image: state.cartCollection![groupCartkeys[index]]![indexes].image ?? "", currentSize: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].size ?? "" : "", colorName: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].color ?? "" : "", productId: state.cartCollection![groupCartkeys[index]]![indexes].productId.toString(), quantity: int.tryParse(quantityController.text)!, cartId: state.cartCollection![groupCartkeys[index]]![indexs].id.toString(), boutiqueId: state.cartCollection![groupCartkeys[index]]![indexes].boutique!.id.toString()));
+                                                                                        Navigator.pop(context);
+                                                                                      },
+                                                                                      text: "Yes",
+                                                                                    ),
+                                                                                    AppElevatedButton(
+                                                                                      onPressed: () {
+                                                                                        Navigator.pop(context);
+                                                                                      },
+                                                                                      text: 'Not Now',
+                                                                                    ),
+                                                                                  ],
                                                                                 ),
                                                                               ],
                                                                             ),
-                                                                          ],
-                                                                        ),
-                                                                      ),
-                                                                    ],
-                                                                  );
-                                                                });
-                                                          },
-                                                          onLongPress: () {
-                                                            showDialog(
-                                                                context:
-                                                                context,
-                                                                builder:
-                                                                    (
-                                                                    BuildContext
-                                                                    context) {
-                                                                  return AlertDialog(
-                                                                    title: MyTextWidget(
-                                                                        "Delete Item From Cart",
-                                                                        textDirection:
-                                                                        TextDirection
-                                                                            .ltr),
-                                                                    actions: <
-                                                                        Widget>[
-                                                                      Row(
-                                                                        mainAxisAlignment:
-                                                                        MainAxisAlignment
-                                                                            .spaceBetween,
-                                                                        children: [
-                                                                          AppElevatedButton(
-                                                                            onPressed: () {
-                                                                              BlocProvider
-                                                                                  .of<
-                                                                                  HomeBloc>(
-                                                                                  context)
-                                                                                  .add(
-                                                                                  RemoveItemFormCartEvent(
-                                                                                      countOfPieces: state
-                                                                                          .cartCollection![groupCartkeys[index]]![indexes]
-                                                                                          .countOfPieces,
-                                                                                      image: state
-                                                                                          .cartCollection![groupCartkeys[index]]![indexes]
-                                                                                          .image ??
-                                                                                          '',
-                                                                                      currentSize: !state
-                                                                                          .cartCollection![groupCartkeys[index]]![indexes]
-                                                                                          .variations
-                                                                                          .isNullOrEmpty
-                                                                                          ? state
-                                                                                          .cartCollection![groupCartkeys[index]]![indexes]
-                                                                                          .variations![0]
-                                                                                          .size ??
-                                                                                          ""
-                                                                                          : "",
-                                                                                      ColoName: !state
-                                                                                          .cartCollection![groupCartkeys[index]]![indexes]
-                                                                                          .variations
-                                                                                          .isNullOrEmpty
-                                                                                          ? state
-                                                                                          .cartCollection![groupCartkeys[index]]![indexes]
-                                                                                          .variations![0]
-                                                                                          .color ??
-                                                                                          ""
-                                                                                          : "",
-                                                                                      productId: state
-                                                                                          .cartCollection![groupCartkeys[index]]![indexes]
-                                                                                          .productId
-                                                                                          .toString(),
-                                                                                      itemId: state
-                                                                                          .cartCollection![groupCartkeys[index]]![indexes]
-                                                                                          .id
-                                                                                          .toString(),
-                                                                                      boutiqueId: state
-                                                                                          .cartCollection![groupCartkeys[index]]![indexes]
-                                                                                          .boutique!
-                                                                                          .id
-                                                                                          .toString()));
-                                                                              Navigator
-                                                                                  .pop(
-                                                                                  context);
-                                                                            },
-                                                                            text: "Yes",
-                                                                          ),
-                                                                          AppElevatedButton(
-                                                                            onPressed: () {
-                                                                              Navigator
-                                                                                  .pop(
-                                                                                  context);
-                                                                            },
-                                                                            text: 'Not Now',
                                                                           ),
                                                                         ],
+                                                                      );
+                                                                    });
+                                                              },
+                                                              onLongPress: () {
+                                                                showDialog(
+                                                                    context:
+                                                                        context,
+                                                                    builder:
+                                                                        (BuildContext
+                                                                            context) {
+                                                                      return AlertDialog(
+                                                                        title: MyTextWidget(
+                                                                            "Delete Item From Cart",
+                                                                            textDirection:
+                                                                                TextDirection.ltr),
+                                                                        actions: <Widget>[
+                                                                          Row(
+                                                                            mainAxisAlignment:
+                                                                                MainAxisAlignment.spaceBetween,
+                                                                            children: [
+                                                                              AppElevatedButton(
+                                                                                onPressed: () {
+                                                                                  BlocProvider.of<HomeBloc>(context).add(RemoveItemFormCartEvent(countOfPieces: state.cartCollection![groupCartkeys[index]]![indexes].countOfPieces, image: state.cartCollection![groupCartkeys[index]]![indexes].image ?? '', currentSize: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].size ?? "" : "", ColoName: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].color ?? "" : "", productId: state.cartCollection![groupCartkeys[index]]![indexes].productId.toString(), itemId: state.cartCollection![groupCartkeys[index]]![indexes].id.toString(), boutiqueId: state.cartCollection![groupCartkeys[index]]![indexes].boutique!.id.toString()));
+                                                                                  Navigator.pop(context);
+                                                                                },
+                                                                                text: "Yes",
+                                                                              ),
+                                                                              AppElevatedButton(
+                                                                                onPressed: () {
+                                                                                  Navigator.pop(context);
+                                                                                },
+                                                                                text: 'Not Now',
+                                                                              ),
+                                                                            ],
+                                                                          ),
+                                                                        ],
+                                                                      );
+                                                                    });
+                                                              },
+                                                              onTap: () {
+                                                                HelperFunctions
+                                                                    .slidingNavigation(
+                                                                        context,
+                                                                        ProductDetailsPage(
+                                                                          productItem: state.productITemForCart![state
+                                                                              .cartCollection![groupCartkeys[index]]![indexes]
+                                                                              .productId
+                                                                              .toString()]!,
+                                                                        ));
+                                                              },
+                                                              child: Stack(
+                                                                  children: [
+                                                                    Container(
+                                                                      alignment:
+                                                                          Alignment
+                                                                              .center,
+                                                                      padding: EdgeInsets.only(
+                                                                          left:
+                                                                              2,
+                                                                          right:
+                                                                              2),
+                                                                      child:
+                                                                          ProductDetailsImageWidget(
+                                                                        withBackGroundShadow:
+                                                                            false,
+                                                                        withInnerShadow:
+                                                                            false,
+                                                                        width:
+                                                                            97.w,
+                                                                        height:
+                                                                            142,
+                                                                        imageUrl: state
+                                                                            .cartCollection![groupCartkeys[index]]![indexes]
+                                                                            .image,
+                                                                        radius:
+                                                                            15,
+                                                                        imageFit:
+                                                                            BoxFit.cover,
                                                                       ),
-                                                                    ],
-                                                                  );
-                                                                });
-                                                          },
-                                                          onTap: () {
-                                                            HelperFunctions
-                                                                .slidingNavigation(
-                                                                context,
-                                                                ProductDetailsPage(
-                                                                  productItem: state
-                                                                      .productITemForCart![state
-                                                                      .cartCollection![groupCartkeys[index]]![indexes]
-                                                                      .productId
-                                                                      .toString()]!,
-                                                                ));
-                                                          },
-                                                          child: Stack(
-                                                              children: [
-                                                                Container(
-                                                                  alignment:
+                                                                    ),
+                                                                    Positioned(
+                                                                      child:
+                                                                          Container(
+                                                                        alignment:
+                                                                            Alignment.center,
+                                                                        width:
+                                                                            28,
+                                                                        height:
+                                                                            28,
+                                                                        decoration: BoxDecoration(
+                                                                            color:
+                                                                                Color(0xffFEFEFE),
+                                                                            border: Border.all(width: 0.5, color: Color(0xff8D8D8D)),
+                                                                            borderRadius: BorderRadiusDirectional.circular(20)),
+                                                                        child:
+                                                                            Text(
+                                                                          "${state.cartCollection![groupCartkeys[index]]![indexes].quantity}",
+                                                                          style: context
+                                                                              .textTheme
+                                                                              .bodyMedium
+                                                                              ?.ra
+                                                                              .copyWith(
+                                                                            decorationColor:
+                                                                                Color(0xff8D8D8D),
+                                                                            fontSize:
+                                                                                14,
+                                                                            color:
+                                                                                Color(0xff8D8D8D),
+                                                                          ),
+                                                                          textAlign:
+                                                                              TextAlign.center,
+                                                                        ),
+                                                                      ),
+                                                                      top: 3,
+                                                                      left: 5,
+                                                                    ),
+                                                                  ]),
+                                                            ),
+                                                            Container(
+                                                              alignment:
                                                                   Alignment
                                                                       .center,
-                                                                  padding: EdgeInsets
-                                                                      .only(
-                                                                      left:
-                                                                      2,
-                                                                      right:
-                                                                      2),
-                                                                  child:
-                                                                  ProductDetailsImageWidget(
-                                                                    withBackGroundShadow:
-                                                                    false,
-                                                                    withInnerShadow:
-                                                                    false,
-                                                                    width:
-                                                                    97.w,
-                                                                    height:
-                                                                    142,
-                                                                    imageUrl: state
-                                                                        .cartCollection![groupCartkeys[index]]![indexes]
-                                                                        .image,
-                                                                    radius:
-                                                                    15,
-                                                                    imageFit:
-                                                                    BoxFit
-                                                                        .cover,
-                                                                  ),
+                                                              width: 97.w,
+                                                              height: 45,
+                                                              child: Text(
+                                                                '''${!state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].size ?? "" : ""} \n '''
+                                                                '''${(state.cartCollection![groupCartkeys[index]]![indexes].offerPrice! * state.cartCollection![groupCartkeys[index]]![indexes].quantity! * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} '''
+                                                                '''${priceSymbol ?? '\$'}''',
+                                                                style: context
+                                                                    .textTheme
+                                                                    .bodyMedium
+                                                                    ?.ra
+                                                                    .copyWith(
+                                                                  decorationColor:
+                                                                      Color(
+                                                                          0xff505050),
+                                                                  fontSize: 12,
+                                                                  color: Color(
+                                                                      0xff505050),
                                                                 ),
-                                                                Positioned(
-                                                                  child:
-                                                                  Container(
-                                                                    alignment:
-                                                                    Alignment
+                                                                textAlign:
+                                                                    TextAlign
                                                                         .center,
-                                                                    width:
-                                                                    28,
-                                                                    height:
-                                                                    28,
-                                                                    decoration: BoxDecoration(
-                                                                        color:
-                                                                        Color(
-                                                                            0xffFEFEFE),
-                                                                        border: Border
-                                                                            .all(
-                                                                            width: 0.5,
-                                                                            color: Color(
-                                                                                0xff8D8D8D)),
-                                                                        borderRadius: BorderRadiusDirectional
-                                                                            .circular(
-                                                                            20)),
-                                                                    child:
-                                                                    Text(
-                                                                      "${state
-                                                                          .cartCollection![groupCartkeys[index]]![indexes]
-                                                                          .quantity}",
-                                                                      style: context
-                                                                          .textTheme
-                                                                          .bodyMedium
-                                                                          ?.ra
-                                                                          .copyWith(
-                                                                        decorationColor:
-                                                                        Color(
-                                                                            0xff8D8D8D),
-                                                                        fontSize:
-                                                                        14,
-                                                                        color:
-                                                                        Color(
-                                                                            0xff8D8D8D),
-                                                                      ),
-                                                                      textAlign:
-                                                                      TextAlign
-                                                                          .center,
-                                                                    ),
-                                                                  ),
-                                                                  top: 3,
-                                                                  left: 5,
-                                                                ),
-                                                              ]),
-                                                        ),
-                                                        Container(
-                                                          alignment:
-                                                          Alignment
-                                                              .center,
-                                                          width: 97.w,
-                                                          height: 45,
-                                                          child: Text(
-                                                            '''${!state
-                                                                .cartCollection![groupCartkeys[index]]![indexes]
-                                                                .variations
-                                                                .isNullOrEmpty
-                                                                ? state
-                                                                .cartCollection![groupCartkeys[index]]![indexes]
-                                                                .variations![0]
-                                                                .size ?? ""
-                                                                : ""} \n '''
-                                                                '''${(state
-                                                                .cartCollection![groupCartkeys[index]]![indexes]
-                                                                .offerPrice! *
-                                                                state
-                                                                    .cartCollection![groupCartkeys[index]]![indexes]
-                                                                    .quantity!)} '''
-                                                                '''${priceSymbol ??
-                                                                '\$'}''',
-                                                            style: context
-                                                                .textTheme
-                                                                .bodyMedium
-                                                                ?.ra
-                                                                .copyWith(
-                                                              decorationColor:
-                                                              Color(
-                                                                  0xff505050),
-                                                              fontSize: 12,
-                                                              color: Color(
-                                                                  0xff505050),
+                                                              ),
                                                             ),
-                                                            textAlign:
-                                                            TextAlign
-                                                                .center,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    );
-                                                  }))
+                                                          ],
+                                                        );
+                                                      }))
                                               : SizedBox.shrink()
                                         ],
                                       )
