@@ -41,7 +41,7 @@ class _SplashPageState extends State<SplashPage> {
     authBloc = BlocProvider.of<AuthBloc>(context);
 
     appBloc.add(ChangeTab(-1));
-    GetIt.I<HomeBloc>().add(GetAllowedCountriesEvent());
+
     BlocProvider.of<StoryBloc>(context).add(GetStoryEvent());
 
     checkAndNavigationCallingPage(context, fromTerminated: true,

@@ -352,7 +352,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
       ),
     );
     WidgetsBinding.instance.addObserver(this);
-
+    GetIt.I<HomeBloc>().add(GetAllowedCountriesEvent());
     chatBloc = BlocProvider.of<ChatBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
     appBloc = BlocProvider.of<AppBloc>(context);
@@ -656,7 +656,6 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                     //     getWithPagination: false));
                                     homeBloc.add(GetMainCategoriesEvent(
                                         context: context));
-                                    homeBloc.add(GetCurrencyForCountryEvent());
                                   }
 
                                   visible
