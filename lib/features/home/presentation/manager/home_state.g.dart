@@ -179,14 +179,17 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       prefAppliedFilterForExtendFilter:
           json['prefAppliedFilterForExtendFilter'] == null
               ? null
-              : get_filters.Filter.fromJson(
-                  json['prefAppliedFilterForExtendFilter']
-                      as Map<String, dynamic>),
+              : get_filters.Filter.fromJson(json['prefAppliedFilterForExtendFilter']
+                  as Map<String, dynamic>),
       ListitemForAddToCart: (json['ListitemForAddToCart'] as List<dynamic>?)
           ?.map((e) => ImageForAddToCart.fromJson(e as Map<String, dynamic>))
           .toList(),
       isExpandedForListingPage:
           json['isExpandedForListingPage'] as bool? ?? false,
+      getCurrencyForCountryModel: json['getCurrencyForCountryModel'] == null
+          ? null
+          : GetCurrencyForCountryModel.fromJson(
+              json['getCurrencyForCountryModel'] as Map<String, dynamic>),
       countOfProductExpectedByFiltering:
           (json['countOfProductExpectedByFiltering'] as num?)?.toInt(),
       getCartItemsStatus: $enumDecodeNullable(
@@ -293,6 +296,8 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           _$GetMainCategoriesStatusEnumMap[instance.getMainCategoriesStatus]!,
       'ListitemForAddToCart':
           instance.ListitemForAddToCart?.map((e) => e.toJson()).toList(),
+      'getCurrencyForCountryModel':
+          instance.getCurrencyForCountryModel?.toJson(),
       'getAllowedCountriesModel': instance.getAllowedCountriesModel?.toJson(),
       'getProductFiltersStatus': instance.getProductFiltersStatus
           .map((k, e) => MapEntry(k, _$GetProductFiltersStatusEnumMap[e]!)),
