@@ -20,7 +20,7 @@ import 'package:trydos/features/home/data/models/get_product_listing_without_fil
 import 'package:trydos/features/home/data/models/home_sections_response_model.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
 import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
-import 'package:trydos/features/home/data/models/get_currency_for_country_model.dart';
+
 import '../../../../core/api/handling_exception.dart';
 import '../../domain/repositories/home_repository.dart';
 import '../data_sources/home_remote_data_source.dart';
@@ -37,12 +37,6 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   @override
   Future<Either<Failure, StartingSettingsResponseModel>> getStartingSettings() {
     return handlingExceptionRequest(tryCall: dataSource.getStartingSettings);
-  }
-
-  @override
-  Future<Either<Failure, GetCurrencyForCountryModel>> getCurrencyForCountry() {
-    return handlingExceptionRequest(
-        tryCall: () => dataSource.getCurrencyForCountry());
   }
 
   @override
@@ -141,6 +135,7 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   Future<Either<Failure, GetCategoryModel>> getCategory() {
     return handlingExceptionRequest(tryCall: () => dataSource.getCategory());
   }*/
+
 
   /* Future<Either<Failure, SearchResultModel>> getSearchResult(
       Map<String, dynamic> params) {
