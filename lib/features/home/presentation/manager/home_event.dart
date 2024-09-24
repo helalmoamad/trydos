@@ -140,12 +140,6 @@ class GetHomeBoutiqesEvent extends HomeEvent {
   List<Object?> get props => [];
 }
 
-class GetCurrencyForCountryEvent extends HomeEvent {
-  GetCurrencyForCountryEvent();
-  @override
-  List<Object?> get props => [];
-}
-
 class GetProductDatailsWithoutRelatedProductsEvent extends HomeEvent {
   final String? productId;
 

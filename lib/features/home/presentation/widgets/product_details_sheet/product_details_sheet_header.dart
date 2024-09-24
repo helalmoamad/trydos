@@ -13,7 +13,6 @@ import '../../../../app/my_text_widget.dart';
 
 class ProductDetailsSheetHeader extends StatefulWidget {
   final String price;
-  final int decimalPoint;
   final String offerPrice;
   final String priceSymbol;
 
@@ -21,7 +20,6 @@ class ProductDetailsSheetHeader extends StatefulWidget {
     super.key,
     required this.addToBagButtonShapeNotifier,
     required this.offerPrice,
-    required this.decimalPoint,
     required this.priceSymbol,
     required this.price,
   });
@@ -113,8 +111,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       MyTextWidget(
-                        double.parse(widget.price)
-                            .toStringAsFixed(widget.decimalPoint),
+                        widget.price,
                         style: textTheme.headlineMedium?.rq.copyWith(
                           color: Color(0xffC4C2C2),
                           decoration: TextDecoration.lineThrough,
@@ -125,8 +122,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                         width: 5,
                       ),
                       MyTextWidget(
-                        double.parse(widget.offerPrice)
-                            .toStringAsFixed(widget.decimalPoint),
+                        widget.offerPrice,
                         style: textTheme.headlineMedium?.bq.copyWith(
                           color: Color(0xff505050),
                           height: 0,
@@ -154,8 +150,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                                     children: [
                                       MyTextWidget(
                                         'x$itemCount = ${itemCount * 70} ',
-                                        style:
-                                            textTheme.titleMedium?.bq.copyWith(
+                                        style: textTheme.titleMedium?.bq.copyWith(
                                           color: Color(0xff505050),
                                           height: 0,
                                         ),
