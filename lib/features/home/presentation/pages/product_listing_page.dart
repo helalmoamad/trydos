@@ -127,16 +127,27 @@ class _ProductListingPageState extends State<ProductListingPage> {
     //     offset: 1,
     //   ));
     // }
-    if (!widget.fromSearch) {
-      homeBloc.add(GetProductFiltersEvent(
-          getProductsFilterPreFetch: true,
-          getWithoutFilter: true,
-          cashedOrginalBoutique: true,
-          fromHomePageSearch: widget.fromSearch,
+    // if (!widget.fromSearch) {
+    //   homeBloc.add(GetProductFiltersEvent(
+    //       getProductsFilterPreFetch: true,
+    //       getWithoutFilter: true,
+    //       cashedOrginalBoutique: true,
+    //       fromHomePageSearch: widget.fromSearch,
+    //       boutiqueSlug: widget.boutiqueSlug,
+    //       category: widget.category,
+    //       searchText: widget.fromSearch ? widget.searchText : null));
+    // }
+    if(homeBloc.state.boutiquesThatDidPrefetch[key] == true && homeBloc.boutiquesThatEnablesToRequestItsProductsUsingFiveFilters[key] == null){
+      homeBloc.boutiquesThatEnablesToRequestItsProductsUsingFiveFilters[key] = true;
+      homeBloc.PrefetchProductsForFirstFiveFilter(
           boutiqueSlug: widget.boutiqueSlug,
-          category: widget.category,
-          searchText: widget.fromSearch ? widget.searchText : null));
+          categorySlug: widget.category,
+          filter: homeBloc.state.getProductFiltersModel[key]?.filters
+      );
+    } else if(homeBloc.state.boutiquesThatDidPrefetch[key] == null){
+      homeBloc.boutiquesThatEnablesToRequestItsProductsUsingFiveFilters[key] = true;
     }
+
     if (!widget.fromSearch) {
       homeBloc.add(GetProductsWithFiltersEvent(
           getWithoutFilter: true,
@@ -158,6 +169,19 @@ class _ProductListingPageState extends State<ProductListingPage> {
       // }
       if (setThisEnabledNotifier.value.item1 != -1) {
         setThisEnabledNotifier.value = Tuple2(-1, -1);
+      }
+      if (scrollController.offset >=
+          (scrollController.position.maxScrollExtent * 0.7)) {
+        homeBloc.add(GetProductsWithFiltersEvent(
+            getWithoutFilter: true,
+            limit: 10,
+            getWithPagination: true,
+            cashedOrginalBoutique: !widget.fromSearch,
+            boutiqueSlug: widget.boutiqueSlug,
+            fromSearch: widget.fromSearch,
+            category: widget.category,
+            searchText: widget.fromSearch ? widget.searchText : null,
+            offset: 1));
       }
     });
     super.initState();
@@ -210,14 +234,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
           prefAppliedFilters =
               homeBloc.state.prefAppliedFilterForExtendFilter ?? Filter();
 
-          homeBloc.add(GetProductFiltersEvent(
-              fromHomePageSearch: widget.fromSearch,
-              cashedOrginalBoutique: false,
-              boutiqueSlug: widget.boutiqueSlug,
-              category: widget.category,
-              searchText: widget.searchText,
-              filtersChoosedByUser:
-                  GetProductFiltersModel(filters: prefAppliedFilters)));
+          // homeBloc.add(GetProductFiltersEvent(
+          //     fromHomePageSearch: widget.fromSearch,
+          //     cashedOrginalBoutique: false,
+          //     boutiqueSlug: widget.boutiqueSlug,
+          //     category: widget.category,
+          //     searchText: widget.searchText,
+          //     filtersChoosedByUser:
+          //         GetProductFiltersModel(filters: prefAppliedFilters)));
           homeBloc.add(ChangeAppliedFiltersEvent(
               boutiqueSlug: widget.boutiqueSlug,
               category: widget.category,
@@ -1064,16 +1088,16 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                             .state
                                                                             .prefAppliedFilterForExtendFilter
                                                                             ?.brands);
-                                                                        homeBloc.add(GetProductFiltersEvent(
-                                                                            fromHomePageSearch: widget
-                                                                                .fromSearch,
-                                                                            cashedOrginalBoutique:
-                                                                                false,
-                                                                            boutiqueSlug:
-                                                                                widget.boutiqueSlug,
-                                                                            category: widget.category,
-                                                                            searchText: widget.searchText,
-                                                                            filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
+                                                                        // homeBloc.add(GetProductFiltersEvent(
+                                                                        //     fromHomePageSearch: widget
+                                                                        //         .fromSearch,
+                                                                        //     cashedOrginalBoutique:
+                                                                        //         false,
+                                                                        //     boutiqueSlug:
+                                                                        //         widget.boutiqueSlug,
+                                                                        //     category: widget.category,
+                                                                        //     searchText: widget.searchText,
+                                                                        //     filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
                                                                         homeBloc.add(ChangeAppliedFiltersEvent(
                                                                             boutiqueSlug:
                                                                                 widget.boutiqueSlug,
