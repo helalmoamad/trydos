@@ -5,6 +5,7 @@ import 'package:trydos/features/home/data/models/get_cart_item_model.dart'
     as cart;
 
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
+import 'package:trydos/features/home/data/models/get_currency_for_country_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart'
     as boutiques_model;
 
@@ -94,6 +95,7 @@ class HomeState {
     this.currentIndexForMainCategoryEvent = 0,
     this.prefAppliedFilterForExtendFilter,
     this.ListitemForAddToCart,
+    this.getCurrencyForCountryModel,
     this.isExpandedForListingPage = false,
     this.countOfProductExpectedByFiltering,
     this.getCartItemsStatus = GetCartItemsStatus.init,
@@ -120,6 +122,7 @@ class HomeState {
   final Map<String, GetProductFiltersStatus> getProductFiltersStatus;
   final Map<String, PaginationModel<product.Products>?>
       getProductListingWithFiltersPaginationModels;
+  final GetCurrencyForCountryModel? getCurrencyForCountryModel;
   final Map<String, PaginationModel<product.Products>?>
       getProductListingWithFiltersPaginationWithPrefetchModels;
   final Map<String, get_filters.GetProductFiltersModel?> getProductFiltersModel;
@@ -151,7 +154,7 @@ class HomeState {
       getHomeBoutiquesPaginationObjectByMainCategory;
   List<Story>? storiesForProduct;
   List<String>? sizes;
-  int? countOfProductExpectedByFiltering;
+  Map<String, int>? countOfProductExpectedByFiltering;
   get_filters.Filter? prefAppliedFilterForExtendFilter;
   final Map<String, PaginationModel<product.Products>>
       getProductListingPaginationWithoutFiltersModel;
@@ -174,7 +177,6 @@ class HomeState {
       final GetMainCategoriesStatus? getMainCategoriesStatus,
       final Map<String, get_filters.GetProductFiltersModel?>?
           getProductFiltersWithPrefetchModel,
-      int? totalProductNumber,
       bool? cashedOrginalBoutique,
       bool? isExpandedForLidtingPage,
       // String? idForRequest,
@@ -207,6 +209,7 @@ class HomeState {
       final Map<String, bool>? reRequestProductWithFilters,
       final GetProductListingStatus? getProductListingStatus,
       final StartingSetting? startingSetting,
+      final GetCurrencyForCountryModel? getCurrencyForCountryModel,
       final MainCategoriesResponseModel? mainCategoriesResponseModel,
       final Map<String, PaginationModel<boutiques_model.Boutique>>?
           getHomeBoutiquesPaginationObjectByMainCategory,
@@ -218,7 +221,7 @@ class HomeState {
           getProductDetailWithoutSimilarRelatedProductsStatus,
       final Map<String, int>? currentSelectedColorForEveryProduct,
       int? currentPage,
-      int? countOfProductExpectedByFiltering,
+      Map<String, int>? countOfProductExpectedByFiltering,
       List<Story>? storiesForProduct,
       final Map<String, GetProductFiltersStatus>? getProductFiltersStatus,
       final Map<String, PaginationModel<product.Products>?>?
@@ -260,6 +263,8 @@ class HomeState {
               this.getProductListingWithFiltersPaginationModels,
       prefAppliedFilterForExtendFilter: prefAppliedFilterForExtendFilter ??
           this.prefAppliedFilterForExtendFilter,
+      getCurrencyForCountryModel:
+          getCurrencyForCountryModel ?? this.getCurrencyForCountryModel,
       getProductFiltersWithPrefetchModel: getProductFiltersWithPrefetchModel ??
           this.getProductFiltersWithPrefetchModel,
       getProductListingWithFiltersPaginationWithPrefetchModels:

@@ -116,8 +116,8 @@ class _SearchPageState extends ThemeState<SearchPage> {
             return previous.searchHistory != current.searchHistory ||
                 previous.getProductFiltersStatus[key] !=
                     current.getProductFiltersStatus[key] ||
-                previous.countOfProductExpectedByFiltering !=
-                    current.countOfProductExpectedByFiltering ||
+                previous.countOfProductExpectedByFiltering?.values !=
+                    current.countOfProductExpectedByFiltering?.values ||
                 previous.getProductListingWithFiltersPaginationModels[key]
                         ?.paginationStatus !=
                     current.getProductListingWithFiltersPaginationModels[key]
@@ -383,10 +383,11 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                                             Color(0xffFEFEFE),
                                                         height: 23 / 18),
                                               ),
-                                              state.countOfProductExpectedByFiltering !=
+                                              state.countOfProductExpectedByFiltering?[
+                                                          'search'] !=
                                                       null
                                                   ? MyTextWidget(
-                                                      "(${state.countOfProductExpectedByFiltering} products)",
+                                                      "(${state.countOfProductExpectedByFiltering?['search']} products)",
                                                       style: textTheme
                                                           .bodyMedium?.rq
                                                           .copyWith(
