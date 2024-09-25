@@ -45,6 +45,7 @@ class _CountryDropdownState extends State<CountryDropdown> {
               selectedCountry = newValue;
               _prefsRepository.setUserChoosedCountryIso(newValue);
             });
+            homeBloc.add(GetCurrencyForCountryEvent());
           },
           // buttonHeight: 40,
           // buttonWidth: 1.sw / 2,

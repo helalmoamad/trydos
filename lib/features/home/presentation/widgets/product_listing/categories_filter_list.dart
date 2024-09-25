@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
+import 'package:trydos/core/utils/extensions/object.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
@@ -39,11 +40,22 @@ class CategoriesFilterList extends StatelessWidget {
     HomeBloc homeBloc = BlocProvider.of<HomeBloc>(context);
 
     String key = boutiqueSlug + (category ?? '');
+
     return BlocBuilder<HomeBloc, HomeState>(
+      buildWhen: (previous, current) =>
+          previous.appliedFiltersByUser[key] !=
+              current.appliedFiltersByUser[key] ||
+          previous.choosedFiltersByUser[key] !=
+              current.choosedFiltersByUser[key] ||
+          previous.isExpandedForListingPage !=
+              current.isExpandedForListingPage ||
+          previous.getProductFiltersStatus[key] !=
+              current.getProductFiltersStatus[key],
       builder: (context, state) {
         Filter filters = filterss;
         Filter? choosedFilters = state.choosedFiltersByUser[key]?.filters;
         Filter? appliedFilters = state.appliedFiltersByUser[key]?.filters;
+
         print(filters.categories?.length ?? 0);
 
         return ListView.builder(
@@ -52,6 +64,17 @@ class CategoriesFilterList extends StatelessWidget {
           shrinkWrap: true,
           itemCount: filters.categories?.length ?? 0,
           itemBuilder: (ctx, index) {
+            if (!workWithChoosedFilter
+                ? ((appliedFilters?.categories?.isNullOrEmpty ?? true)
+                    ? false
+                    : appliedFilters!.categories!.any((element) =>
+                        element.id == filters.categories![index].id))
+                : ((choosedFilters?.categories?.isNullOrEmpty ?? true)
+                    ? false
+                    : choosedFilters!.categories!.any((element) =>
+                        element.id == filters.categories![index].id))) {
+              expandingFiltersStack.value = index;
+            }
             bool isChildCategorySlug = false;
             if (!(filters.categories?[index].isSubCategory ?? false)) {
               filters.categories?[index].subCategories?.forEach((elements) {
@@ -98,15 +121,15 @@ class CategoriesFilterList extends StatelessWidget {
                                 curve: Curves.fastEaseInToSlowEaseOut,
                                 duration: Duration(milliseconds: 300),
                                 top: (currentExpandedIndex == index)
-                                    ? (70 - 50)
+                                    ? (70 - 40)
                                     : (70 - 50) / 2,
                                 end: (currentExpandedIndex == index)
-                                    ? innerIndex * 30
+                                    ? innerIndex * 40
                                     : innerIndex >=
                                             (filters.categories![index]
                                                     .subCategories!.length -
                                                 2)
-                                        ? (innerIndex - 1) * 3
+                                        ? (innerIndex - 1) * 2
                                         : 0,
                                 child: filters
                                             .categories![index]
@@ -117,8 +140,18 @@ class CategoriesFilterList extends StatelessWidget {
                                         isSvg: false,
                                         width: 50,
                                         height: 50,
-                                  originalWidth: double.tryParse(filters.categories![index].subCategories![innerIndex].mostViewedProductThumbnail!.originalWidth.toString()),
-                                  originalHeight: double.tryParse(filters.categories![index].subCategories![innerIndex].mostViewedProductThumbnail!.originalHeight.toString()),
+                                        originalWidth: double.tryParse(filters
+                                            .categories![index]
+                                            .subCategories![innerIndex]
+                                            .mostViewedProductThumbnail!
+                                            .originalWidth
+                                            .toString()),
+                                        originalHeight: double.tryParse(filters
+                                            .categories![index]
+                                            .subCategories![innerIndex]
+                                            .mostViewedProductThumbnail!
+                                            .originalHeight
+                                            .toString()),
                                         categoryName: filters.categories![index]
                                             .subCategories![innerIndex].name
                                             .toString(),
@@ -264,9 +297,6 @@ class CategoriesFilterList extends StatelessWidget {
                                             );
                                           }
                                           if (!workWithChoosedFilter) {
-                                            print(
-                                                "***************dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
-
                                             homeBloc
                                                 .add(ChangeAppliedFiltersEvent(
                                               category: category,
@@ -312,7 +342,8 @@ class CategoriesFilterList extends StatelessWidget {
                           ValueListenableBuilder<bool>(
                               valueListenable: scaleTheTopItemInFiltersStack,
                               builder: (context, scale, _) {
-                                return filters.categories![index].mostViewedProductThumbnail !=
+                                return filters.categories![index]
+                                            .mostViewedProductThumbnail !=
                                         null
                                     ? FilterCircleWidget(
                                         key: TestVariables.kTestMode == false
@@ -322,10 +353,17 @@ class CategoriesFilterList extends StatelessWidget {
                                         isSvg: false,
                                         width: 70,
                                         height: 70,
-                                        originalWidth: double.tryParse(filters.categories![index].mostViewedProductThumbnail!.originalWidth.toString()),
-                                    originalHeight: double.tryParse(filters.categories![index].mostViewedProductThumbnail!.originalHeight.toString()),
-                                        categoryName: filters
-                                            .categories![index].name
+                                        originalWidth: double.tryParse(filters
+                                            .categories![index]
+                                            .mostViewedProductThumbnail!
+                                            .originalWidth
+                                            .toString()),
+                                        originalHeight: double.tryParse(filters
+                                            .categories![index]
+                                            .mostViewedProductThumbnail!
+                                            .originalHeight
+                                            .toString()),
+                                        categoryName: filters.categories![index].name
                                             .toString(),
                                         imageUrl: filters
                                             .categories![index]
@@ -333,21 +371,9 @@ class CategoriesFilterList extends StatelessWidget {
                                             .filePath
                                             .toString(),
                                         scale: scale,
-                                        paddingValue: 0,
-                                        isExpanded:
-                                            (currentExpandedIndex == index),
-                                        displayFilterMark: (isChildCategorySlug ||
-                                            (!workWithChoosedFilter
-                                                ? ((appliedFilters?.categories?.isNullOrEmpty ?? true)
-                                                    ? false
-                                                    : appliedFilters!.categories!.any((element) =>
-                                                        element.id ==
-                                                        filters
-                                                            .categories![index]
-                                                            .id))
-                                                : ((choosedFilters?.categories?.isNullOrEmpty ?? true)
-                                                    ? false
-                                                    : choosedFilters!.categories!.any((element) => element.id == filters.categories![index].id)))),
+                                        paddingValue: 2,
+                                        isExpanded: (currentExpandedIndex == index),
+                                        displayFilterMark: (isChildCategorySlug || (!workWithChoosedFilter ? ((appliedFilters?.categories?.isNullOrEmpty ?? true) ? false : appliedFilters!.categories!.any((element) => element.id == filters.categories![index].id)) : ((choosedFilters?.categories?.isNullOrEmpty ?? true) ? false : choosedFilters!.categories!.any((element) => element.id == filters.categories![index].id)))),
                                         addOrRemoveSpecificFilter: (bool add) {
                                           if (appliedFilters?.categories ==
                                                   null &&
@@ -377,6 +403,8 @@ class CategoriesFilterList extends StatelessWidget {
                                                               .categories![
                                                                   index]
                                                               .id))) {
+                                            print(
+                                                "111111111111111111111111111111qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq");
                                             expandingFiltersStack.value = index;
                                           }
                                           scaleTheTopItemInFiltersStack.value =
@@ -569,9 +597,6 @@ class CategoriesFilterList extends StatelessWidget {
                           );
                         }
                         if (!workWithChoosedFilter) {
-                          print(
-                              "qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqdddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
-
                           homeBloc.add(ChangeAppliedFiltersEvent(
                             category: category,
                             boutiqueSlug: boutiqueSlug,

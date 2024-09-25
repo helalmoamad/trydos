@@ -227,9 +227,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                           child: ClipRRect(
                                               borderRadius:
                                                   BorderRadius.circular(15),
-                                              child:
-
-                                              MyCachedNetworkImage(
+                                              child: MyCachedNetworkImage(
                                                 imageUrl: widget.boutniqe
                                                     .banners![index].filePath!,
                                                 imageFit: BoxFit.cover,
@@ -237,8 +235,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                                 innerShadowYOffset: 3,
                                                 withInnerShadow: true,
                                                 height: 155,
-                                              )
-                                          ),
+                                              )),
                                         ),
                                         Container(
                                           height: 155,
@@ -291,38 +288,34 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                     ),
                                   ],
                                 ),
-                              child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(15),
-                                  child:
-                                  MyCachedNetworkImage(
-                                    imageUrl:
-                                        widget.boutniqe.banners![0].filePath!,
-                                    imageFit: BoxFit.cover,
-                                    width: 1.sw,
-                                    withInnerShadow: true,
-                                    innerShadowYOffset: 3,
-                                    height: 135,
-                                  )
+                                child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(15),
+                                    child: MyCachedNetworkImage(
+                                      imageUrl:
+                                          widget.boutniqe.banners![0].filePath!,
+                                      imageFit: BoxFit.cover,
+                                      width: 1.sw,
+                                      withInnerShadow: true,
+                                      innerShadowYOffset: 3,
+                                      height: 135,
+                                    )),
                               ),
-                            ),
-                            Container(
-                              height: 135,
-                              width: 1.sw,
-                              decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.circular(15.0),
-                                boxShadow: [
-                                  BoxShadow(
-                                      color: Colors.white
-                                          .withOpacity(0.7),
-                                      offset: Offset(0, 3),
-                                      blurRadius: 6,
-                                      inset: true),
-                                ],
+                              Container(
+                                height: 135,
+                                width: 1.sw,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  boxShadow: [
+                                    BoxShadow(
+                                        color: Colors.white.withOpacity(0.7),
+                                        offset: Offset(0, 3),
+                                        blurRadius: 6,
+                                        inset: true),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
+                            ],
+                          ),
                   )
                 ],
               )),
@@ -611,14 +604,11 @@ class ProductItemCircle extends StatelessWidget {
                   ),
                   child: ClipRRect(
                       borderRadius: BorderRadius.circular(180),
-                      child:
-
-                      MyCachedNetworkImage(
+                      child: MyCachedNetworkImage(
                           imageUrl: imageUrl,
                           width: 40.w,
                           imageFit: cupertino.BoxFit.cover,
-                          height: 40.w)
-                  ),
+                          height: 40.w)),
                 ),
                 Container(
                   height: 40.w,

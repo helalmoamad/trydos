@@ -164,16 +164,16 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                               if (panelController.panelPosition != 1) {
                                 return false;
                               }
-                              if(gallery3dControllerForCircles != null) {
+                              if (gallery3dControllerForCircles != null) {
                                 if (offsetOfColorsGallerySlider == null) {
                                   final RenderBox renderBox =
-                                  colorsGallerySliderKey.currentContext!
-                                      .findRenderObject() as RenderBox;
+                                      colorsGallerySliderKey.currentContext!
+                                          .findRenderObject() as RenderBox;
                                   offsetOfColorsGallerySlider =
                                       renderBox.localToGlobal(Offset.zero);
                                 }
                                 if (currentPosition.dx >=
-                                    offsetOfColorsGallerySlider!.dx &&
+                                        offsetOfColorsGallerySlider!.dx &&
                                     currentPosition.dx <=
                                         (offsetOfColorsGallerySlider!.dx +
                                             200) &&
@@ -339,10 +339,10 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                                   .length ~/
                                                               2)),
                                               child: ProductListingImageWidget(
-                                                orginalHeight:
-                                                    orginalHeight![index],
-                                                orginalWidth:
-                                                    orginalWidth![index],
+                                                // orginalHeight:
+                                                //     orginalHeight![index],
+                                                // orginalWidth:
+                                                //     orginalWidth![index],
                                                 width: 70.w,
                                                 height: 70.w,
                                                 imageWidth: 70,
@@ -359,22 +359,53 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                             );
                                           }),
                                     )
-                                  : SizedBox(height: 70.w,),
+                                  : SizedBox(
+                                      height: 70.w,
+                                    ),
                             ),
                             10.verticalSpace,
                           },
                           Stack(
                             alignment: Alignment.topCenter,
                             children: [
-                              ProductDetailsSheetHeader(
-                                addToBagButtonShapeNotifier:
-                                    widget.addToBagButtonShapeNotifier,
-                                price: widget.productItem.price.toString(),
-                                offerPrice: widget
-                                            .productItem.offerPrice.toString() ,
-                                priceSymbol: (widget
-                                    .productItem.priceFormatted?.split(' ') ?? ['\$' , '\$'])[1],
-                              ),
+                              BlocBuilder<HomeBloc, HomeState>(
+                                  buildWhen: (previous, current) =>
+                                      previous.getCurrencyForCountryModel !=
+                                      current.getCurrencyForCountryModel,
+                                  builder: (context, state) {
+                                    return ProductDetailsSheetHeader(
+                                      decimalPoint: state.startingSetting
+                                              ?.decimalPointSetting ??
+                                          2,
+                                      priceSymbol: state
+                                              .getCurrencyForCountryModel!
+                                              .data!
+                                              .currency!
+                                              .symbol ??
+                                          "",
+                                      addToBagButtonShapeNotifier:
+                                          widget.addToBagButtonShapeNotifier,
+                                      price: (widget.productItem.price! *
+                                              state
+                                                  .getCurrencyForCountryModel!
+                                                  .data!
+                                                  .currency!
+                                                  .exchangeRate!)
+                                          .toStringAsFixed(state.startingSetting
+                                                  ?.decimalPointSetting ??
+                                              2),
+                                      offerPrice: (widget
+                                                  .productItem.offerPrice! *
+                                              state
+                                                  .getCurrencyForCountryModel!
+                                                  .data!
+                                                  .currency!
+                                                  .exchangeRate!)
+                                          .toStringAsFixed(state.startingSetting
+                                                  ?.decimalPointSetting ??
+                                              2),
+                                    );
+                                  }),
                               currentTab != -1
                                   ? Positioned(
                                       top: 7,
