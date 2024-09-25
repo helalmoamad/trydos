@@ -524,6 +524,12 @@ class AddIsExpandedForLidtingPageEvent extends HomeEvent {
   List<Object?> get props => [];
 }
 
+class GetCurrencyForCountryEvent extends HomeEvent {
+  GetCurrencyForCountryEvent();
+  @override
+  List<Object?> get props => [];
+}
+
 class ChangeCurrentIndexForMainCategoryEvent extends HomeEvent {
   final int index;
 

@@ -218,7 +218,8 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                                       style:
                                           textTheme.headlineLarge?.bq.copyWith(
                                         height: 1.3,
-                                        fontSize: index != currentIndex
+                                        fontSize: 18.sp,
+                                        /*index != currentIndex
                                             ? index < currentIndex
                                                 ? max(
                                                     10.sp,
@@ -234,7 +235,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                                                                     currentIndex) *
                                                                 5)
                                                         .sp)
-                                            : 30.sp,
+                                            : 20.sp,*/
                                         color: index == currentIndex
                                             ? Colors.white
                                             : sizes[index] == 'S'
