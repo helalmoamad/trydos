@@ -339,10 +339,10 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                                   .length ~/
                                                               2)),
                                               child: ProductListingImageWidget(
-                                                orginalHeight:
-                                                    orginalHeight![index],
-                                                orginalWidth:
-                                                    orginalWidth![index],
+                                                // orginalHeight:
+                                                //     orginalHeight![index],
+                                                // orginalWidth:
+                                                //     orginalWidth![index],
                                                 width: 70.w,
                                                 height: 70.w,
                                                 imageWidth: 70,

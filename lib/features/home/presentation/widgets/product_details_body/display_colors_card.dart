@@ -340,6 +340,8 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                                                 ProductListingImageWidget(
                                                                               width: 40 - index * 5,
                                                                               height: 40 - index * 5,
+                                                                              imageWidth: 70,
+                                                                              imageHeight: 70,
                                                                               withBackGroundShadow: true,
                                                                               imageUrl: images[index],
                                                                               innerShadowYOffset: 4,
@@ -455,6 +457,8 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                                         width: 40,
                                                                         height:
                                                                             40,
+                                                                            imageWidth: 70,
+                                                                            imageHeight: 70,
                                                                         imageUrl:
                                                                             images[
                                                                                 index],
