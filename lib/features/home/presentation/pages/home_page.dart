@@ -1,10 +1,6 @@
-import 'dart:math';
-import 'dart:ui';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -26,8 +22,6 @@ import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../app/my_text_widget.dart';
-import '../../../story/presentation/bloc/story_bloc.dart';
-import '../../../story/presentation/bloc/story_state.dart';
 import '../../../story/presentation/widget/stories_list.dart';
 import '../manager/home_state.dart';
 import '../widgets/home_page_card2.dart';
@@ -42,8 +36,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late AppBloc appBloc;
   late HomeBloc homeBloc;
-  double? _previousOffset;
-  double? _velocity;
   final ScrollController scrollController = ScrollController();
   Key reRenderingListViewKey = UniqueKey();
   Map<String, int> lastIndexRequestedInEachMainCategoryForPrefetchBoutiques =
@@ -96,22 +88,24 @@ class _HomePageState extends State<HomePage> {
       if (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
               selectedCategorySlug] !=
           lastIndexSeenByUser) {
-        prefetchBoutiques(selectedCategorySlug);
+        // prefetchBoutiques(selectedCategorySlug);
         lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
             selectedCategorySlug] = lastIndexSeenByUser;
       }
       if (scrollController.offset >=
           (scrollController.position.maxScrollExtent * 0.7)) {
+        String offset = homeBloc
+            .state
+            .getHomeBoutiquesPaginationObjectByMainCategory[
+                selectedCategorySlug]!
+            .page
+            .toString();
+
         print(
-            "/********************************************************************************");
+            "/**********  pagination get boutiques offset : $offset ***************************");
         homeBloc.add(GetHomeBoutiqesEvent(
             categorySlug: selectedCategorySlug,
-            offset: homeBloc
-                .state
-                .getHomeBoutiquesPaginationObjectByMainCategory[
-                    selectedCategorySlug]!
-                .page
-                .toString(),
+            offset: offset,
             getWithPagination: true));
       }
       if (scrollController.position.pixels <= 80) {
@@ -122,43 +116,43 @@ class _HomePageState extends State<HomePage> {
     super.initState();
   }
 
-  prefetchBoutiques(String currentSlug) {
-    print(
-        'rtrth5e445eh ${lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[currentSlug]}');
+  // prefetchBoutiques(String currentSlug) {
+  //   print(
+  //       'rtrth5e445eh ${lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[currentSlug]}');
 
-    for (int i = 0;
-        i <
-            (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
-                    currentSlug] ??
-                0);
-        i++) {
-      String slug = homeBloc
-          .state
-          .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]!
-          .items[i]
-          .slug
-          .toString();
-      if (homeBloc.state.boutiquesThatDidPrefetch[slug] != true) {
-        debugPrint('///////// Prefetch Boutique Slug : $slug /////////');
+  //   for (int i = 0;
+  //       i <
+  //           (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
+  //                   currentSlug] ??
+  //               0);
+  //       i++) {
+  //     String slug = homeBloc
+  //         .state
+  //         .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]!
+  //         .items[i]
+  //         .slug
+  //         .toString();
+  //     if (homeBloc.state.boutiquesThatDidPrefetch[slug] != true) {
+  //       debugPrint('///////// Prefetch Boutique Slug : $slug /////////');
 
-        homeBloc.add(GetProductFiltersWithoutCancelingPreviousEvents(
-            cashedOrginalBoutique: true,
-            fromHomePageSearch: false,
-            boutiqueSlug: slug,
-            category: null,
-            searchText: null));
-        homeBloc.add(GetProductsWithFiltersEventWithoutCancelingPreviousEvents(
-            cashedOrginalBoutique: true,
-            boutiqueSlug: slug,
-            fromSearch: false,
-            category: null,
-            searchText: null,
-            offset: 1));
-      } else {
-        debugPrint('/////////Did Prefetch For Boutique Slug : $slug /////////');
-      }
-    }
-  }
+  //       homeBloc.add(GetProductFiltersWithoutCancelingPreviousEvents(
+  //           cashedOrginalBoutique: true,
+  //           fromHomePageSearch: false,
+  //           boutiqueSlug: slug,
+  //           category: null,
+  //           searchText: null));
+  //       homeBloc.add(GetProductsWithFiltersEventWithoutCancelingPreviousEvents(
+  //           cashedOrginalBoutique: true,
+  //           boutiqueSlug: slug,
+  //           fromSearch: false,
+  //           category: null,
+  //           searchText: null,
+  //           offset: 1));
+  //     } else {
+  //       debugPrint('/////////Did Prefetch For Boutique Slug : $slug /////////');
+  //     }
+  //   }
+  // }
 
   @override
   void dispose() {

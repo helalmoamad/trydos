@@ -9,6 +9,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:injectable/injectable.dart';
+import 'package:logger/logger.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
@@ -234,12 +235,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     }, (r) {
       apisMustNotToRequest.add('GetStartingSettingsEvent');
       isFailedTheFirstTime.remove('GetStartingSettingsEvent');
-      // if (r.data!.startingSetting!.smartLook ?? false) {
-      //   Logger(printer: PrettyPrinter(methodCount: 0)).i('SMARTLOOK STARTED!');
 
-      // initializeSmartLook();
+      if (r.data!.startingSetting!.smartLook ?? false) {
+        Logger(printer: PrettyPrinter(methodCount: 0)).i('SMARTLOOK STARTED!');
 
-      // }
+        initializeSmartLook();
+      }
       emit(state.copyWith(
           startingSetting: r.data!.startingSetting,
           getStartingSettingsStatus: GetStartingSettingsStatus.success));
@@ -462,6 +463,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         return MapEntry(key, value);
       })));
     }, (r) {
+      debugPrint(
+          '///// getHomeBoutiqesUseCase for categorySlug ${event.categorySlug} offset : ${event.offset}  //////////////////////////');
       isFailedTheFirstTime.remove('GetHomeBoutiqesEvent');
       if (state.getMainCategoriesStatus == GetMainCategoriesStatus.success) {
         requestAPIAfterHome();
@@ -490,7 +493,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 */
       reRequestTheseBoutiques[event.categorySlug] = true;
       if (!event.getWithPagination) {
-        prefetchBoutiques(event.categorySlug);
+        // prefetchBoutiques(event.categorySlug);
       }
       emit(state.copyWith(
           reRequestTheseBoutiques: Map.of(reRequestTheseBoutiques),
@@ -1208,54 +1211,54 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         .toJson();
   }
 
-  void prefetchBoutiques(String currentSlug) {
-    int maxItemsVisible = (1.sh -
-                (GetIt.I<StoryBloc>().state.getStoriesStatus !=
-                        GetStoriesStatus.success
-                    ? 220
-                    : 0) -
-                50) ~/
-            235 +
-        1;
-    int boutiqueItemsCount = state
-            .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]
-            ?.items
-            .length ??
-        -1;
+  // void prefetchBoutiques(String currentSlug) {
+  //   int maxItemsVisible = (1.sh -
+  //               (GetIt.I<StoryBloc>().state.getStoriesStatus !=
+  //                       GetStoriesStatus.success
+  //                   ? 220
+  //                   : 0) -
+  //               50) ~/
+  //           235 +
+  //       1;
+  //   int boutiqueItemsCount = state
+  //           .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]
+  //           ?.items
+  //           .length ??
+  //       -1;
 
-    int itemsToPrefetch = min(maxItemsVisible, boutiqueItemsCount);
+  //   int itemsToPrefetch = min(maxItemsVisible, boutiqueItemsCount);
 
-    debugPrint(
-        '///////// Boutique items To Prefetch : $itemsToPrefetch /////////');
+  //   debugPrint(
+  //       '///////// Boutique items To Prefetch : $itemsToPrefetch /////////');
 
-    for (int i = 0; i < itemsToPrefetch; i++) {
-      String slug = state
-          .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]!
-          .items[i]
-          .slug
-          .toString();
+  //   for (int i = 0; i < itemsToPrefetch; i++) {
+  //     String slug = state
+  //         .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]!
+  //         .items[i]
+  //         .slug
+  //         .toString();
 
-      if (state.boutiquesThatDidPrefetch[slug] != true) {
-        debugPrint('///////// Prefetch Boutique Slug : $slug /////////');
+  //     if (state.boutiquesThatDidPrefetch[slug] != true) {
+  //       debugPrint('///////// Prefetch Boutique Slug : $slug /////////');
 
-        add(GetProductFiltersWithoutCancelingPreviousEvents(
-            cashedOrginalBoutique: true,
-            fromHomePageSearch: false,
-            boutiqueSlug: slug,
-            category: null,
-            searchText: null));
-        add(GetProductsWithFiltersEventWithoutCancelingPreviousEvents(
-            cashedOrginalBoutique: true,
-            boutiqueSlug: slug,
-            fromSearch: false,
-            category: null,
-            searchText: null,
-            offset: 1));
-      } else {
-        debugPrint('/////////Did Prefetch For Boutique Slug : $slug /////////');
-      }
-    }
-  }
+  //       add(GetProductFiltersWithoutCancelingPreviousEvents(
+  //           cashedOrginalBoutique: true,
+  //           fromHomePageSearch: false,
+  //           boutiqueSlug: slug,
+  //           category: null,
+  //           searchText: null));
+  //       add(GetProductsWithFiltersEventWithoutCancelingPreviousEvents(
+  //           cashedOrginalBoutique: true,
+  //           boutiqueSlug: slug,
+  //           fromSearch: false,
+  //           category: null,
+  //           searchText: null,
+  //           offset: 1));
+  //     } else {
+  //       debugPrint('/////////Did Prefetch For Boutique Slug : $slug /////////');
+  //     }
+  //   }
+  // }
 
   FutureOr<void> _onGetProductFiltersEvent(
       GetProductFiltersEvent event, Emitter<HomeState> emit) async {

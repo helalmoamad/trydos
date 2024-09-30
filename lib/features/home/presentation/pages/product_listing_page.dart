@@ -1,10 +1,7 @@
 import 'dart:async';
 import 'package:carousel_slider/carousel_slider.dart';
-
 import 'package:firebase_analytics/firebase_analytics.dart';
-
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
-import 'package:flutter/material.dart' as icon;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -44,7 +41,6 @@ import '../manager/home_bloc.dart';
 import '../widgets/product_listing/product_item.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
-
 import '../widgets/product_listing/product_listing_filter_list.dart';
 import '../widgets/product_listing/product_listing_loading.dart';
 
@@ -91,7 +87,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
   Timer? timerForDisplayFilterSectionTitle;
   final GlobalKey htmlDescriptionKey = GlobalKey();
   final ValueNotifier<double> htmlDescriptionHeight = ValueNotifier(0);
-  double? _velocity;
   final ScrollController scrollController = ScrollController();
   final ValueNotifier<Tuple2<int, int>> setThisEnabledNotifier =
       ValueNotifier(Tuple2(-1, -1));
@@ -128,7 +123,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
     //   ));
     // }
     print(
-        '121212121 ${homeBloc.state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${(true) ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.items.length}');
+        '121212121 ${homeBloc.state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + 'withoutFilter' + '${(widget.category ?? '')}']?.items.length}');
     if (!widget.fromSearch) {
       homeBloc.add(GetProductFiltersEvent(
           cashedOrginalBoutique: true,
@@ -196,6 +191,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: () async {
         if (widget.fromSearch) {
@@ -307,11 +303,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                       displayBoutiqueIconInAppBar.value = false;
                     }
                     if (_previousOffset != null) {
-                      final distance = (currentOffset - _previousOffset!).abs();
-                      final time = notification
-                              .dragDetails?.sourceTimeStamp?.inMilliseconds ??
-                          0.000001;
-                      _velocity = distance / time;
+                      (currentOffset - _previousOffset!).abs();
                       if (scrollController.position.pixels <= 80) {
                         _previousOffset = currentOffset;
                         return true;
@@ -352,9 +344,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                 builder: (context, state) {
                                   return CustomScrollView(
                                       key: TestVariables.kTestMode
-                                          ? Key(WidgetsKey.productListingScrollKey )
+                                          ? Key(WidgetsKey
+                                              .productListingScrollKey)
                                           : null,
-                                         
                                       controller: scrollController,
                                       physics: state.getProductFiltersModel[key]
                                                       ?.filters?.totalSize ==

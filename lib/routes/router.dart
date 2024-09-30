@@ -89,7 +89,6 @@ class GRouter {
           }),
       GoRoute(
         path: _config.applicationRoutes.kRegistrationCompletedPage,
-
         pageBuilder: (BuildContext context, GoRouterState state) {
           return _builderPage(
             child: RegisterCompleted(
@@ -273,7 +272,7 @@ class GRouter {
   static Page<dynamic> _builderPage<T>(
       {required Widget child, required GoRouterState state}) {
     //if (Platform.isIOS) {
-      return MaterialPage<T>(child: child, key: state.pageKey);
+    return MaterialPage<T>(child: child, key: state.pageKey);
     // } else {
     //   return MaterialPage<T>(child: child, key: state.pageKey);
     // }
