@@ -50,6 +50,8 @@ enum GetCartItemsStatus { init, loading, success, failure }
 
 enum GetStoriesForProductStatus { init, loading, success, failure }
 
+enum SendRequestToGeminiStatus { init, loading, success, failure }
+
 enum GetHomeBoutiqesStatus { init, loading, success, failure }
 
 enum GetProductsWithoutFiltersStatus { init, loading, success, failure }
@@ -86,6 +88,7 @@ class HomeState {
     this.getProductListingWithFiltersPaginationModels = const {},
     this.getStoriesForProductStatus = GetStoriesForProductStatus.init,
     this.mainCategoriesResponseModel,
+    this.sendRequestToGeminiStatus = SendRequestToGeminiStatus.init,
     this.CurrentColorSizeForCart,
     this.currentQuantityForCart,
     this.addImagesToProductIdForCart = const {},
@@ -97,6 +100,7 @@ class HomeState {
     this.ListitemForAddToCart,
     this.getCurrencyForCountryModel,
     this.isExpandedForListingPage = false,
+    this.theReplyFromGemini,
     this.countOfProductExpectedByFiltering,
     this.getCartItemsStatus = GetCartItemsStatus.init,
     this.getProductDetailWithoutRelatedProductsModel,
@@ -125,6 +129,8 @@ class HomeState {
   final GetCurrencyForCountryModel? getCurrencyForCountryModel;
   final Map<String, PaginationModel<product.Products>?>
       getProductListingWithFiltersPaginationWithPrefetchModels;
+  final SendRequestToGeminiStatus sendRequestToGeminiStatus;
+
   final Map<String, get_filters.GetProductFiltersModel?> getProductFiltersModel;
   final Map<String, get_filters.GetProductFiltersModel?>
       getProductFiltersWithPrefetchModel;
@@ -146,7 +152,7 @@ class HomeState {
   final Map<String, bool> reRequestProductWithFilters;
   final GetProductDetailWithoutSimilarRelatedProductsStatus
       getProductDetailWithoutSimilarRelatedProductsStatus;
-
+  final String? theReplyFromGemini;
   final GetCartItemsStatus getCartItemsStatus;
   final GetProductListingStatus getProductListingStatus;
   GetStoriesForProductStatus getStoriesForProductStatus;
@@ -195,6 +201,7 @@ class HomeState {
           getProductDetailWithoutRelatedProductsModel,
       int? selectedCollection,
       List<String>? sizes,
+      final String? theReplyFromGemini,
       int? currentIndexForMainCategoryEvent,
       List<String>? searchHistory,
       Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>?
@@ -203,6 +210,7 @@ class HomeState {
       Map<String, List<cart.Cart>>? cartCollection,
       Map<String, String>? CurrentColorSizeForCart,
       final Map<String, bool>? reRequestTheseBoutiques,
+      final SendRequestToGeminiStatus? sendRequestToGeminiStatus,
       final Map<String, product.Products>? productITemForCart,
       final cart.GetCartShippingItemsModel? getCartShippingItemsModel,
       final Map<String, bool>? reRequestTheseProductListingInBoutiques,
@@ -250,6 +258,7 @@ class HomeState {
           cashedOrginalBoutique ?? this.cashedOrginalBoutique,
       isExpandedForListingPage:
           isExpandedForLidtingPage ?? this.isExpandedForListingPage,
+      theReplyFromGemini: theReplyFromGemini ?? this.theReplyFromGemini,
       countOfProductExpectedByFiltering: countOfProductExpectedByFiltering ??
           this.countOfProductExpectedByFiltering,
       ListitemForAddToCart: ListitemForAddToCart ?? this.ListitemForAddToCart,
@@ -258,6 +267,8 @@ class HomeState {
       cartCollection: cartCollection ?? this.cartCollection,
       getProductFiltersStatus:
           getProductFiltersStatus ?? this.getProductFiltersStatus,
+      sendRequestToGeminiStatus:
+          sendRequestToGeminiStatus ?? this.sendRequestToGeminiStatus,
       getProductListingWithFiltersPaginationModels:
           getProductListingWithFiltersPaginationModels ??
               this.getProductListingWithFiltersPaginationModels,

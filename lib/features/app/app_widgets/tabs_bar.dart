@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -6,18 +8,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gemini/flutter_gemini.dart' as geminis;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:mime/mime.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
+import 'package:trydos/features/app/app_widgets/gallery_and_camera_dialog_widget.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
+import 'package:trydos/service/language_service.dart';
+import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../../common/constant/design/assets_provider.dart';
 import '../../../common/constant/design/constant_design.dart';
 import '../../../common/test_utils/widgets_keys.dart';
@@ -50,9 +59,174 @@ class _TabsBarState extends State<TabsBar> {
   late AppBloc appBloc;
   late HomeBloc homeBloc;
   final ScrollController scrollController = ScrollController();
+  void SelecteImageForSearch() async {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return GalleryAndCameraDialogWidget(
+              onChooseFileFromGalleryAction: (AssetEntity? assetEntity) async {
+            if (assetEntity != null) {
+              File file = (await assetEntity.originFile)!;
+              String mimeStr = lookupMimeType(file.absolute.path) ?? '';
+              var fileType = mimeStr.split('/');
+
+              if (fileType[0] != 'image') {
+                Fluttertoast.showToast(
+                  fontSize: 18,
+                  timeInSecForIosWeb: 3,
+                  msg: "the video file is not supported",
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.TOP,
+                  backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                  textColor: Colors.white,
+                );
+                return;
+              }
+              final Uint8List imageBytes = file.readAsBytesSync();
+              final geminis.Gemini gemini = geminis.Gemini.instance;
+              homeBloc.add(ReplyFromGeminiEvent(
+                  sendRequestToGeminiStatus: SendRequestToGeminiStatus.loading,
+                  theReplyFromGemini: ""));
+
+              await gemini
+                  .textAndImage(
+                      text: LanguageService.languageCode == "ar"
+                          ? " حدد ماذا يوجد في هذه الصورة بكلمة واحدة فقط بصيغة المفرد الغائب الاجابة بالعربي"
+                          : "Identify what's in this picture with just one word in the singular absent answer in English",
+                      images: [
+                        imageBytes
+                      ])
+                  .then((value) => homeBloc.add(ReplyFromGeminiEvent(
+                      sendRequestToGeminiStatus:
+                          SendRequestToGeminiStatus.success,
+                      theReplyFromGemini:
+                          value?.content?.parts?[0].text?.split(".").first ??
+                              value?.content?.parts?[0].text ??
+                              "")))
+                  .onError(
+                    (error, stackTrace) {
+                      homeBloc.add(ReplyFromGeminiEvent(
+                          sendRequestToGeminiStatus:
+                              SendRequestToGeminiStatus.failure,
+                          theReplyFromGemini: ""));
+
+                      if (error.toString().contains("Failed host")) {
+                        Fluttertoast.showToast(
+                            fontSize: 18,
+                            timeInSecForIosWeb: 3,
+                            msg: "the internet is not available ",
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.TOP,
+                            backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                            textColor: Colors.white);
+                        return;
+                      }
+                      print("3333333333333333333333############${error}");
+                      Fluttertoast.showToast(
+                          msg: "this service is not available in your Country ",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.TOP,
+                          backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                          textColor: Colors.white,
+                          fontSize: 18,
+                          timeInSecForIosWeb: 3);
+                    },
+                  )
+                  .timeout(
+                      Duration(
+                        seconds: 20,
+                      ), onTimeout: () {
+                    gemini.cancelRequest();
+                    return homeBloc.add(ReplyFromGeminiEvent(
+                        sendRequestToGeminiStatus:
+                            SendRequestToGeminiStatus.failure,
+                        theReplyFromGemini: ""));
+                  });
+            }
+          }, onChooseFileFromCameraAction: (File? file) async {
+            if (file != null) {
+              String mimeStr = lookupMimeType(file.absolute.path) ?? '';
+              var fileType = mimeStr.split('/');
+              if (fileType[0] != 'image') {
+                Fluttertoast.showToast(
+                  fontSize: 18,
+                  timeInSecForIosWeb: 3,
+                  msg: "the video file is not supported",
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.TOP,
+                  backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                  textColor: Colors.white,
+                );
+                return;
+              }
+              final Uint8List imageBytes = file.readAsBytesSync();
+              final geminis.Gemini gemini = geminis.Gemini.instance;
+              homeBloc.add(ReplyFromGeminiEvent(
+                  sendRequestToGeminiStatus: SendRequestToGeminiStatus.loading,
+                  theReplyFromGemini: ""));
+              await gemini
+                  .textAndImage(
+                      text: LanguageService.languageCode == "ar"
+                          ? "اعطني كلمة واحد ماذا يوجد هذه الصورة"
+                          : "give me only word about what do you see in this image ",
+                      images: [
+                        imageBytes
+                      ])
+                  .then((value) => homeBloc.add(ReplyFromGeminiEvent(
+                      sendRequestToGeminiStatus:
+                          SendRequestToGeminiStatus.success,
+                      theReplyFromGemini:
+                          value?.content?.parts?[0].text?.split(".").first ??
+                              value?.content?.parts?[0].text ??
+                              "")))
+                  .onError((error, stackTrace) {
+                    print(
+                        "*******************************&%^&**(*&^%${error}#******************************TTTTTTTTTTTTTTTTTTTTTTtoo");
+
+                    homeBloc.add(ReplyFromGeminiEvent(
+                        sendRequestToGeminiStatus:
+                            SendRequestToGeminiStatus.failure,
+                        theReplyFromGemini: ""));
+
+                    if (error.toString().contains("Failed host")) {
+                      Fluttertoast.showToast(
+                          fontSize: 18,
+                          timeInSecForIosWeb: 3,
+                          msg: "the internet is not available ",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.TOP,
+                          backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                          textColor: Colors.white);
+                      return;
+                    }
+                    Fluttertoast.showToast(
+                        fontSize: 18,
+                        timeInSecForIosWeb: 1,
+                        msg: "this service is not available in your Country ",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.TOP,
+                        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                        textColor: Colors.white);
+                  })
+                  .timeout(
+                      Duration(
+                        seconds: 20,
+                      ), onTimeout: () {
+                    gemini.cancelRequest();
+                    return homeBloc.add(ReplyFromGeminiEvent(
+                        sendRequestToGeminiStatus:
+                            SendRequestToGeminiStatus.failure,
+                        theReplyFromGemini: ""));
+                  });
+            }
+          });
+        });
+  }
+
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
+
     List<String>? categorySlugs = [];
     homeBloc.state.mainCategoriesResponseModel?.data?.mainCategories?.forEach(
       (element) {
@@ -95,11 +269,45 @@ class _TabsBarState extends State<TabsBar> {
     return SafeArea(
         child: BlocBuilder<HomeBloc, HomeState>(
             buildWhen: (oldState, newState) =>
-                oldState.getMainCategoriesStatus ==
-                    GetMainCategoriesStatus.loading &&
-                newState.getMainCategoriesStatus ==
-                    GetMainCategoriesStatus.success,
+                (oldState.getMainCategoriesStatus ==
+                        GetMainCategoriesStatus.loading &&
+                    newState.getMainCategoriesStatus ==
+                        GetMainCategoriesStatus.success) ||
+                oldState.sendRequestToGeminiStatus !=
+                    newState.sendRequestToGeminiStatus ||
+                oldState.theReplyFromGemini != newState.theReplyFromGemini,
             builder: (context, homeState) {
+              print(
+                  "########################################11111122222222222222222222222222222222222222222222${homeState.sendRequestToGeminiStatus}");
+              if (homeState.theReplyFromGemini != "") {
+                widget.controller.text = homeState.theReplyFromGemini ?? "";
+                Filter filters = BlocProvider.of<HomeBloc>(context)
+                        .state
+                        .choosedFiltersByUser['search']
+                        ?.filters ??
+                    Filter();
+                BlocProvider.of<HomeBloc>(context)
+                    .add(ChangeAppliedFiltersEvent(
+                  boutiqueSlug: 'search',
+                  filtersAppliedByUser: GetProductFiltersModel(
+                      filters: filters.copyWithSaveOtherField(
+                    prices: filters.prices,
+                    searchText: homeState.theReplyFromGemini,
+                  )),
+                ));
+                BlocProvider.of<HomeBloc>(context).add(
+                    GetProductsWithFiltersEvent(
+                        offset: 1,
+                        boutiqueSlug: 'search',
+                        resetChoosedFilters: false,
+                        fromSearch: true,
+                        searchText: homeState.theReplyFromGemini));
+
+                BlocProvider.of<HomeBloc>(context).add(GetProductFiltersEvent(
+                    fromHomePageSearch: true,
+                    boutiqueSlug: 'search',
+                    searchText: homeState.theReplyFromGemini));
+              }
               if (homeState.mainCategoriesResponseModel == null) {
                 return Container(
                   width: 1.sw,
@@ -161,6 +369,9 @@ class _TabsBarState extends State<TabsBar> {
                               height: 40,
                               onClickClose: () {
                                 if (widget.controller.text.length > 0) {
+                                  homeBloc.add(ReplyFromGeminiEvent(
+                                      resetTheReply: true,
+                                      theReplyFromGemini: ""));
                                   Filter filters = homeBloc
                                           .state
                                           .choosedFiltersByUser['search']
@@ -234,10 +445,21 @@ class _TabsBarState extends State<TabsBar> {
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    SvgPicture.asset(
-                                      AppAssets.realCameraSvg,
-                                      height: 20,
-                                      width: 20,
+                                    InkWell(
+                                      onTap: () async {
+                                        SelecteImageForSearch();
+                                      },
+                                      child: homeState
+                                                  .sendRequestToGeminiStatus ==
+                                              SendRequestToGeminiStatus.loading
+                                          ? TrydosLoader(
+                                              size: 18,
+                                            )
+                                          : SvgPicture.asset(
+                                              AppAssets.realCameraSvg,
+                                              height: 20,
+                                              width: 20,
+                                            ),
                                     ),
                                     SvgPicture.asset(
                                       AppAssets.microphoneSvg,
@@ -319,10 +541,22 @@ class _TabsBarState extends State<TabsBar> {
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      SvgPicture.asset(
-                                        AppAssets.realCameraSvg,
-                                        height: 20,
-                                        width: 20,
+                                      InkWell(
+                                        onTap: () async {
+                                          SelecteImageForSearch();
+                                        },
+                                        child: homeState
+                                                    .sendRequestToGeminiStatus ==
+                                                SendRequestToGeminiStatus
+                                                    .loading
+                                            ? TrydosLoader(
+                                                size: 18,
+                                              )
+                                            : SvgPicture.asset(
+                                                AppAssets.realCameraSvg,
+                                                height: 20,
+                                                width: 20,
+                                              ),
                                       ),
                                       SizedBox(
                                         width: 20,
@@ -377,6 +611,9 @@ class _TabsBarState extends State<TabsBar> {
                                   widget.buildSearchResult.value = text.length;
                                 }
                                 if (text.length < 3) {
+                                  homeBloc.add(ReplyFromGeminiEvent(
+                                      resetTheReply: true,
+                                      theReplyFromGemini: ""));
                                   Filter filters = homeBloc
                                           .state
                                           .choosedFiltersByUser['search']
@@ -397,6 +634,9 @@ class _TabsBarState extends State<TabsBar> {
                                 }
                                 if (text.length < 1 &&
                                     resetSearchAfterSearchingWhileRemoveSearch) {
+                                  homeBloc.add(ReplyFromGeminiEvent(
+                                      resetTheReply: true,
+                                      theReplyFromGemini: ""));
                                   resetSearchAfterSearchingWhileRemoveSearch =
                                       false;
                                   Filter filters = homeBloc

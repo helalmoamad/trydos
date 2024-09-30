@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
+import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
 
 import '../../data/models/get_product_filters_model.dart';
@@ -526,6 +527,18 @@ class AddIsExpandedForLidtingPageEvent extends HomeEvent {
 
 class GetCurrencyForCountryEvent extends HomeEvent {
   GetCurrencyForCountryEvent();
+  @override
+  List<Object?> get props => [];
+}
+
+class ReplyFromGeminiEvent extends HomeEvent {
+  final String theReplyFromGemini;
+  final bool resetTheReply;
+  final SendRequestToGeminiStatus? sendRequestToGeminiStatus;
+  ReplyFromGeminiEvent(
+      {required this.theReplyFromGemini,
+      this.sendRequestToGeminiStatus,
+      this.resetTheReply = false});
   @override
   List<Object?> get props => [];
 }

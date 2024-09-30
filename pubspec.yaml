@@ -122,6 +122,8 @@ dependencies:
 
   local_hero: ^0.3.0
   flutter_html: ^3.0.0-beta.2
+  google_generative_ai: ^0.4.6
+  flutter_gemini: ^2.0.5
 dev_dependencies:
 
   flutter_test:

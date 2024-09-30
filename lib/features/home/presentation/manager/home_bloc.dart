@@ -49,6 +49,7 @@ import 'package:trydos/features/home/domain/use_cases/get_products_with_filters_
 
 import 'package:trydos/features/home/domain/use_cases/get_starting_settings_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/remove_item_from_cart_usecase.dart';
+
 import 'package:trydos/features/home/domain/use_cases/update_item_from_cart_usecase.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
 import 'package:trydos/features/story/domain/useCases/get_width_and_height_usecase.dart';
@@ -139,6 +140,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<GetProductFiltersEvent>(_onGetProductFiltersEvent,
         transformer: restartable());
     on<ChangeSelectedFiltersEvent>(_onChangeSelectedFiltersEvent);
+    on<ReplyFromGeminiEvent>(_onReplyFromGeminiEvent);
     on<ChangeAppliedFiltersEvent>(_onChangeAppliedFiltersEvent);
     on<AddSearchTextToHistoryEvent>(
       _onAddSearchTextToHistoryEvent,
@@ -217,9 +219,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     );
   }
 
-  Map<String , bool> boutiquesThatEnablesToRequestItsProductsUsingFiveFilters = {};
+  Map<String, bool> boutiquesThatEnablesToRequestItsProductsUsingFiveFilters =
+      {};
   final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   final GetStartingSettingsUseCase getStartingSettingsUseCase;
+
   final GetWidthAndHeightUseCase getWidthAndHeightUseCase;
   final GetHomeBoutiqesUseCase getHomeBoutiqesUseCase;
   final GetCartItemUseCase getCartItemUseCase;
@@ -268,6 +272,17 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           startingSetting: r.data!.startingSetting,
           getStartingSettingsStatus: GetStartingSettingsStatus.success));
     });
+  }
+
+  FutureOr<void> _onReplyFromGeminiEvent(
+      ReplyFromGeminiEvent event, Emitter<HomeState> emit) async {
+    if (event.sendRequestToGeminiStatus != null) {
+      emit(state.copyWith(
+          sendRequestToGeminiStatus: event.sendRequestToGeminiStatus));
+    }
+    emit(state.copyWith(
+        theReplyFromGemini:
+            !event.resetTheReply ? event.theReplyFromGemini : ""));
   }
 
   FutureOr<void> _onGetMainCategoriesEvent(
@@ -526,22 +541,29 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     }, (r) {
       String url = '';
       int numOfBanners = -1;
-      r.data?.boutiques?.forEach((boutique){
+      r.data?.boutiques?.forEach((boutique) {
         // boutique images
         numOfBanners = boutique.banners?.length ?? 0;
-        boutique.banners?.forEach((banner){
-          if(url == ''){
+        boutique.banners?.forEach((banner) {
+          if (url == '') {
             // background of boutique
-            url = addSuitableWidthAndHeightToImage(imageUrl: banner.filePath!, width: 1.sw, height: 235);
-            prefetchImages(url,event.context);
+            url = addSuitableWidthAndHeightToImage(
+                imageUrl: banner.filePath!, width: 1.sw, height: 235);
+            prefetchImages(url, event.context);
           }
-        url = addSuitableWidthAndHeightToImage(imageUrl: banner.filePath!, width: 1.sw, height: numOfBanners == 1 ? 135 : 155);
-        prefetchImages(url,event.context);
+          url = addSuitableWidthAndHeightToImage(
+              imageUrl: banner.filePath!,
+              width: 1.sw,
+              height: numOfBanners == 1 ? 135 : 155);
+          prefetchImages(url, event.context);
         });
 
         // boutique categories images
-        boutique.childCategoriesForProductIds?.forEach((category){
-          url = addSuitableWidthAndHeightToImage(imageUrl: category.mostViewedProductThumbnail!.filePath!, width: 40.w, height: 40.w);
+        boutique.childCategoriesForProductIds?.forEach((category) {
+          url = addSuitableWidthAndHeightToImage(
+              imageUrl: category.mostViewedProductThumbnail!.filePath!,
+              width: 40.w,
+              height: 40.w);
           prefetchImages(url, event.context);
         });
       });
@@ -1399,7 +1421,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       try {
         statuses[key] = GetProductFiltersStatus.success;
         Map<String, filters_model.GetProductFiltersModel?> data =
-        Map.of(state.getProductFiltersModel);
+            Map.of(state.getProductFiltersModel);
         List<filters_model.PriceRange> ranges =
             r.filters!.prices?.priceRanges ?? [];
         ranges.removeWhere((element) => element.count == 0);
@@ -1587,7 +1609,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                   // the height of the image in the ui
                   ordinalWidth: double.tryParse(image.originalWidth.toString()),
                   ordinalHeight:
-                  double.tryParse(image.originalHeight.toString()));
+                      double.tryParse(image.originalHeight.toString()));
               url2 = addSuitableWidthAndHeightToImage(
                   imageUrl: image.filePath!,
                   width: 320,
@@ -1596,7 +1618,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                   // the height of the image in the ui
                   ordinalWidth: double.tryParse(image.originalWidth.toString()),
                   ordinalHeight:
-                  double.tryParse(image.originalHeight.toString()));
+                      double.tryParse(image.originalHeight.toString()));
               cachedLinksOfImages.add(url);
               cachedLinksOfImages.add(url2);
               prefetchImages(url, event.context);
@@ -1617,7 +1639,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                 height: 40,
                 // the height of the image in the ui
                 ordinalWidth:
-                double.tryParse(image.images![0].originalWidth.toString()),
+                    double.tryParse(image.images![0].originalWidth.toString()),
                 ordinalHeight: double.tryParse(
                     image.images![0].originalHeight.toString()));
             prefetchImages(
@@ -1743,7 +1765,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       //       categorySlug: event.category);
       // });
 
-      if(boutiquesThatEnablesToRequestItsProductsUsingFiveFilters[key] == true) {
+      if (boutiquesThatEnablesToRequestItsProductsUsingFiveFilters[key] ==
+          true) {
         boutiquesThatEnablesToRequestItsProductsUsingFiveFilters[key] = false;
         Future.delayed(Duration(seconds: 5), () {
           PrefetchProductsForFirstFiveFilter(
@@ -2396,6 +2419,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     } else {
       appliedFilters[key] = event.filtersAppliedByUser;
     }
+    if (event.resetAppliedFilters) {
+      emit(state.copyWith(
+        theReplyFromGemini: "",
+      ));
+    }
     emit(state.copyWith(
       appliedFiltersByUser: Map.of(appliedFilters),
     ));
@@ -2425,6 +2453,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       choosedFilters[key] = null;
     } else {
       choosedFilters[key] = event.filtersChoosedByUser;
+    }
+    if (event.resetChoosedFilters) {
+      emit(state.copyWith(
+        theReplyFromGemini: "",
+      ));
     }
     emit(state.copyWith(
       choosedFiltersByUser: Map.of(choosedFilters),
@@ -2583,6 +2616,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     emit(state.copyWith(
         choosedFiltersByUser: {},
         appliedFiltersByUser: {},
+        theReplyFromGemini: "",
         prefAppliedFilterForExtendFilter: filters_model.Filter()));
   }
 

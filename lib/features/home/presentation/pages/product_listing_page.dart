@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:carousel_slider/carousel_slider.dart';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -106,6 +107,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
   Filter? prefAppliedFilters;
   @override
   void initState() {
+      Timeline.finishSync();
     itExpendForFirst = true;
     key = widget.boutiqueSlug + (widget.category ?? '');
     fromSearch = widget.fromSearch;

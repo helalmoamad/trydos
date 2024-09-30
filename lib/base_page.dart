@@ -561,8 +561,6 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   bool requestMainCategoriesDone = false;
   @override
   Widget build(BuildContext context) {
-    print("${_prefsRepository.language}" +
-        "5555555555555555555555555555555555555555555555555555555555555");
     FlutterError.onError = (FlutterErrorDetails error) {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,

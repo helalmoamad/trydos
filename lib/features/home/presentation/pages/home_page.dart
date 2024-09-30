@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:math';
 import 'dart:ui';
 import 'package:easy_localization/easy_localization.dart';
@@ -55,6 +56,7 @@ class _HomePageState extends State<HomePage> {
     homeBloc = BlocProvider.of<HomeBloc>(context);
     homeBloc.add(GetCartItemEvent());
     appBloc.add(ChangeIndexForSearch(0));
+
     homeBloc.add(ChangeAppliedFiltersEvent(
         boutiqueSlug: 'search',
         filtersAppliedByUser: null,
@@ -174,6 +176,7 @@ class _HomePageState extends State<HomePage> {
           null, null, null, null, null, null, null,
           error: error.toString());
     };
+    Timeline.startSync("start");
     return SafeArea(
         child: Padding(
       padding: HWEdgeInsets.symmetric(horizontal: 0.w),
@@ -388,6 +391,7 @@ class _HomePageState extends State<HomePage> {
                                     currentSlug]!
                                 .items[index],
                           )
+
                           //HomePageCard(showWhite: index % 2 == 0),
                           ),
                       separator: SizedBox(

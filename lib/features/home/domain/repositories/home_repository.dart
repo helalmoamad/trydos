@@ -49,6 +49,7 @@ abstract class HomeRepository {
   Future<Either<Failure, GetCurrencyForCountryModel>> getCurrencyForCountry();
   Future<Either<Failure, UpdateItemInCartModel>> UpdateItemToCart(
       Map<String, dynamic> params);
+
   Future<Either<Failure, bool>> removeItemToCart(Map<String, dynamic> params);
 
   /* Future<Either<Failure, SearchResultModel>> getSearchResult(

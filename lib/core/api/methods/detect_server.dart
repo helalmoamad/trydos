@@ -6,7 +6,7 @@ import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 
 import '../../../common/constant/configuration/stories_url_routes.dart';
 
-enum ServerName { chat, market, stories, location, cloudinary }
+enum ServerName { chat, market, stories, location, cloudinary, gemini }
 
 //todo make the return value dynamic to return the cloudinary as String
 Uri getBaseUriForSpecificServer(ServerName serverName) {
@@ -21,6 +21,8 @@ Uri getBaseUriForSpecificServer(ServerName serverName) {
       return Uri.parse('http://ip-api.com');
     case ServerName.cloudinary:
       return CloudinaryUrls.baseUri;
+    case ServerName.gemini:
+      return Uri.parse("https://api.gemini.com");
   }
 }
 
@@ -36,6 +38,8 @@ String? getServerToken(ServerName serverName) {
     case ServerName.location:
       return null;
     case ServerName.cloudinary:
+      return null;
+    case ServerName.gemini:
       return null;
   }
 }
