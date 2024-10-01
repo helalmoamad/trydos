@@ -261,7 +261,10 @@ void main() async {
   NotificationProcess().fcmToken();
   isDependencyInitialized = true;
   GetIt.I<AuthBloc>().add(GetUserCountryEvent());
-  gemini.Gemini.init(apiKey: "AIzaSyDIbGXVRlc6eT2E8TDZNFiB1OORZN9X6A8");
+
+  gemini.Gemini.init(
+    apiKey: "AIzaSyDP0q_EapML_zg4ibE_p1NbWNlUa2DjefI",
+  );
   gemini.Gemini.enableDebugging = true;
   await SentryFlutter.init(
     (options) {

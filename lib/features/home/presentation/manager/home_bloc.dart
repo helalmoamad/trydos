@@ -726,7 +726,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     Map<String, PaginationModel<product.Products>?>
         getProductListingWithFiltersPaginationModels =
         Map.of(state.getProductListingWithFiltersPaginationModels);
-
+    emit(state.copyWith(
+      cashedOrginalBoutique: event.cashedOrginalBoutique,
+      isGettingProductListingWithPagination: event.getWithPagination,
+    ));
     String keyWithoutFilter = '${event.boutiqueSlug}' +
         '${(event.cashedOrginalBoutique) ? 'withoutFilter' : ""}' +
         '${(event.category ?? '')}';
@@ -746,7 +749,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     }
     //emit(state.copyWith());
 
-    print('GetProductsWithFiltersEventGetProductsWithFiltersEventGetProductsWithFiltersEvent');
+    print(
+        'GetProductsWithFiltersEventGetProductsWithFiltersEventGetProductsWithFiltersEvent');
     /*Map<String, bool> reRequestProductWithFilters =
         Map.of(state.reRequestProductWithFilters);
     if (!reRequestProductWithFilters.containsKey(keyWithoutFilter)) {
@@ -812,9 +816,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     //       : [],
     // );
     if ((!(event.cashedOrginalBoutique &&
-        getProductListingWithFiltersPaginationModels[keyWithoutFilter]
-                ?.paginationStatus ==
-            PaginationStatus.success) || event.getWithPagination)) {
+            getProductListingWithFiltersPaginationModels[keyWithoutFilter]
+                    ?.paginationStatus ==
+                PaginationStatus.success) ||
+        event.getWithPagination)) {
       getProductListingWithFiltersPaginationModels[keyWithoutFilter] =
           getProductListingWithFiltersPaginationModels[keyWithoutFilter]!
               .copyWith(
@@ -844,8 +849,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     }
     print('9999999999999 ${state.hashCode}');
     emit(state.copyWith(
-      cashedOrginalBoutique: event.cashedOrginalBoutique,
-        isGettingProductListingWithPagination : event.getWithPagination,
       //  reRequestProductWithFilters: Map.of(reRequestProductWithFilters),
       getProductListingWithFiltersPaginationModels:
           Map.of(getProductListingWithFiltersPaginationModels),
@@ -877,7 +880,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                     ?.map((e) => '"${e.slug.toString()}"')
                     .toList()
                 : ['"${event.boutiqueSlug}"'],
-            offset: event.getWithPagination ? getProductListingWithFiltersPaginationModels[keyWithoutFilter]!.page : 1,
+            offset: event.getWithPagination
+                ? getProductListingWithFiltersPaginationModels[
+                        keyWithoutFilter]!
+                    .page
+                : 1,
             attributes: filters.attributes.isNullOrEmpty
                 ? null
                 : [
@@ -900,8 +907,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             searchText: filters.searchText ??
                 state.appliedFiltersByUser[key]?.filters?.searchText));
 
-    response.fold(
-            (l) {
+    response.fold((l) {
       Map<String, PaginationModel<product.Products>?>
           getProductListingWithFiltersPaginationModels =
           Map.of(state.getProductListingWithFiltersPaginationModels);
@@ -935,52 +941,53 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           Map.of(state.getProductListingWithFiltersPaginationModels);
       //  if (state.idForRequest == idForRequest || state.cashedOrginalBoutique) {
       isFailedTheFirstTime.remove('GetProductsWithFiltersEvent');
-        getProductListingWithFiltersPaginationModels[keyWithoutFilter] =
-            getProductListingWithFiltersPaginationModels[keyWithoutFilter]!
-                .copyWith(
-                    paginationStatus: PaginationStatus.success,
-                    page: event.getWithPagination
-                        ? getProductListingWithFiltersPaginationModels[
-                                    keyWithoutFilter]!
-                                .page +
-                            1
-                        : 2,
-                    hasReachedMax: (r.data!.products?.length ?? 0) < kPageSize,
-                    items: event.getWithPagination
-                        ? [
-                            ...getProductListingWithFiltersPaginationModels[
-                                    keyWithoutFilter]!
-                                .items,
-                            ...r.data!.products ?? []
-                          ]
-                        : r.data!.products);
+      getProductListingWithFiltersPaginationModels[keyWithoutFilter] =
+          getProductListingWithFiltersPaginationModels[keyWithoutFilter]!
+              .copyWith(
+                  paginationStatus: PaginationStatus.success,
+                  page: event.getWithPagination
+                      ? getProductListingWithFiltersPaginationModels[
+                                  keyWithoutFilter]!
+                              .page +
+                          1
+                      : 2,
+                  hasReachedMax: (r.data!.products?.length ?? 0) < kPageSize,
+                  items: event.getWithPagination
+                      ? [
+                          ...getProductListingWithFiltersPaginationModels[
+                                  keyWithoutFilter]!
+                              .items,
+                          ...r.data!.products ?? []
+                        ]
+                      : r.data!.products);
 
-        Map<String, filters_model.GetProductFiltersModel?> data =
-            Map.of(state.getProductFiltersModel);
-        List<filters_model.PriceRange> ranges =
-            r.data!.prices?.priceRanges ?? [];
-        ranges.removeWhere((element) => element.count == 0);
-        data[key] = filters_model.GetProductFiltersModel(
-            filters: filters_model.Filter(
-          totalSize: r.data?.totalSize,
-          boutiqueSlug: r.data?.boutiqueSlug,
-          brands: r.data!.brands,
-          attributes: r.data!.attributes,
-          prices: r.data!.prices?.copyWith(priceRanges: ranges),
-          boutiques: r.data!.boutiques,
-          colors: r.data!.colors,
-          searchText: filters.searchText,
-          categories: r.data!.categories,
-        ));
-        /* getProductListingWithFiltersPaginationModels.removeWhere((key,
+      Map<String, filters_model.GetProductFiltersModel?> data =
+          Map.of(state.getProductFiltersModel);
+      List<filters_model.PriceRange> ranges = r.data!.prices?.priceRanges ?? [];
+      ranges.removeWhere((element) => element.count == 0);
+      data[key] = filters_model.GetProductFiltersModel(
+          filters: filters_model.Filter(
+        totalSize: r.data?.totalSize,
+        boutiqueSlug: r.data?.boutiqueSlug,
+        brands: r.data!.brands,
+        attributes: r.data!.attributes,
+        prices: r.data!.prices?.copyWith(priceRanges: ranges),
+        boutiques: r.data!.boutiques,
+        colors: r.data!.colors,
+        searchText: filters.searchText,
+        categories: r.data!.categories,
+      ));
+      /* getProductListingWithFiltersPaginationModels.removeWhere((key,
                   value) =>
               !(key.contains(idForRequest) || key.contains('withoutFilter')));*/
-      print('kkkkkkkkkkk ${getProductListingWithFiltersPaginationModels['women-section-67withoutFilter']?.paginationStatus}');
+      print(
+          'kkkkkkkkkkk ${getProductListingWithFiltersPaginationModels['women-section-67withoutFilter']?.paginationStatus}');
       print('sssssssssss ${state.hashCode}');
-     emit(state.copyWith(
-        getProductListingWithFiltersPaginationModels: Map.of(getProductListingWithFiltersPaginationModels),
+      emit(state.copyWith(
+        getProductListingWithFiltersPaginationModels:
+            Map.of(getProductListingWithFiltersPaginationModels),
         countOfProductExpectedByFiltering:
-        Map.of({event.boutiqueSlug: r.data!.totalSize ?? 0}),
+            Map.of({event.boutiqueSlug: r.data!.totalSize ?? 0}),
         getProductFiltersModel: Map.of(data),
         // removeAlreadyChoosedFilters(
         //     filters_model.GetProductFiltersModel(
@@ -996,8 +1003,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       ));
       print('vvvvvvvvvvvvv ${state.hashCode}');
 
-        print('fuckkkkkkkkkk ${getProductListingWithFiltersPaginationModels[keyWithoutFilter]?.paginationStatus}');
-        print('fucششششششششششش ${state.getProductListingWithFiltersPaginationModels[keyWithoutFilter]?.paginationStatus}');
+      print(
+          'fuckkkkkkkkkk ${getProductListingWithFiltersPaginationModels[keyWithoutFilter]?.paginationStatus}');
+      print(
+          'fucششششششششششش ${state.getProductListingWithFiltersPaginationModels[keyWithoutFilter]?.paginationStatus}');
     });
   }
 

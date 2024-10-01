@@ -58,6 +58,8 @@ class TabsBar extends StatefulWidget {
 class _TabsBarState extends State<TabsBar> {
   late AppBloc appBloc;
   late HomeBloc homeBloc;
+  late final geminis.Gemini gemini;
+
   final ScrollController scrollController = ScrollController();
   void SelecteImageForSearch() async {
     showDialog(
@@ -83,7 +85,7 @@ class _TabsBarState extends State<TabsBar> {
                 return;
               }
               final Uint8List imageBytes = file.readAsBytesSync();
-              final geminis.Gemini gemini = geminis.Gemini.instance;
+
               homeBloc.add(ReplyFromGeminiEvent(
                   sendRequestToGeminiStatus: SendRequestToGeminiStatus.loading,
                   theReplyFromGemini: ""));
@@ -105,6 +107,8 @@ class _TabsBarState extends State<TabsBar> {
                               "")))
                   .onError(
                     (error, stackTrace) {
+                      print(
+                          "---------------------------------------${stackTrace}-----------------------------------${error}");
                       homeBloc.add(ReplyFromGeminiEvent(
                           sendRequestToGeminiStatus:
                               SendRequestToGeminiStatus.failure,
@@ -115,6 +119,19 @@ class _TabsBarState extends State<TabsBar> {
                             fontSize: 18,
                             timeInSecForIosWeb: 3,
                             msg: "the internet is not available ",
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.TOP,
+                            backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                            textColor: Colors.white);
+                        return;
+                      }
+                      if (error
+                          .toString()
+                          .contains("The request was manually cancelled")) {
+                        Fluttertoast.showToast(
+                            fontSize: 18,
+                            timeInSecForIosWeb: 3,
+                            msg: "time out ",
                             toastLength: Toast.LENGTH_SHORT,
                             gravity: ToastGravity.TOP,
                             backgroundColor: const Color.fromARGB(255, 0, 0, 0),
@@ -134,7 +151,7 @@ class _TabsBarState extends State<TabsBar> {
                   )
                   .timeout(
                       Duration(
-                        seconds: 20,
+                        seconds: 30,
                       ), onTimeout: () {
                     gemini.cancelRequest();
                     return homeBloc.add(ReplyFromGeminiEvent(
@@ -160,7 +177,7 @@ class _TabsBarState extends State<TabsBar> {
                 return;
               }
               final Uint8List imageBytes = file.readAsBytesSync();
-              final geminis.Gemini gemini = geminis.Gemini.instance;
+
               homeBloc.add(ReplyFromGeminiEvent(
                   sendRequestToGeminiStatus: SendRequestToGeminiStatus.loading,
                   theReplyFromGemini: ""));
@@ -181,7 +198,7 @@ class _TabsBarState extends State<TabsBar> {
                               "")))
                   .onError((error, stackTrace) {
                     print(
-                        "*******************************&%^&**(*&^%${error}#******************************TTTTTTTTTTTTTTTTTTTTTTtoo");
+                        "---------------------------------------${stackTrace}-----------------------------------${error}");
 
                     homeBloc.add(ReplyFromGeminiEvent(
                         sendRequestToGeminiStatus:
@@ -199,6 +216,20 @@ class _TabsBarState extends State<TabsBar> {
                           textColor: Colors.white);
                       return;
                     }
+
+                    if (error
+                        .toString()
+                        .contains("The request was manually cancelled")) {
+                      Fluttertoast.showToast(
+                          fontSize: 18,
+                          timeInSecForIosWeb: 3,
+                          msg: "time out ",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.TOP,
+                          backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                          textColor: Colors.white);
+                      return;
+                    }
                     Fluttertoast.showToast(
                         fontSize: 18,
                         timeInSecForIosWeb: 1,
@@ -210,7 +241,7 @@ class _TabsBarState extends State<TabsBar> {
                   })
                   .timeout(
                       Duration(
-                        seconds: 20,
+                        seconds: 30,
                       ), onTimeout: () {
                     gemini.cancelRequest();
                     return homeBloc.add(ReplyFromGeminiEvent(
@@ -226,7 +257,7 @@ class _TabsBarState extends State<TabsBar> {
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
-
+    gemini = geminis.Gemini.instance;
     List<String>? categorySlugs = [];
     homeBloc.state.mainCategoriesResponseModel?.data?.mainCategories?.forEach(
       (element) {
@@ -234,19 +265,25 @@ class _TabsBarState extends State<TabsBar> {
       },
     );
     scrollController.addListener(() {
-      if(categorySlugs.isEmpty){
-        homeBloc.state.mainCategoriesResponseModel?.data?.mainCategories?.forEach(
-              (element) {
+      if (categorySlugs.isEmpty) {
+        homeBloc.state.mainCategoriesResponseModel?.data?.mainCategories
+            ?.forEach(
+          (element) {
             categorySlugs.add(element.slug!);
           },
         );
-        if(categorySlugs.isEmpty) return ;
+        if (categorySlugs.isEmpty) return;
       }
-      int lastIndexSeenByUser = max(0 , (scrollController.position.pixels + scrollController.position.viewportDimension - 55) ~/ 40);
+      int lastIndexSeenByUser = max(
+          0,
+          (scrollController.position.pixels +
+                  scrollController.position.viewportDimension -
+                  55) ~/
+              40);
       lastIndexSeenByUser = min(categorySlugs.length - 1, lastIndexSeenByUser);
-      for(int i=0 ; i<= lastIndexSeenByUser; i++) {
-        if (homeBloc.state
-            .boutiquesForEveryMainCategoryThatDidPrefetch[categorySlugs[i]] !=
+      for (int i = 0; i <= lastIndexSeenByUser; i++) {
+        if (homeBloc.state.boutiquesForEveryMainCategoryThatDidPrefetch[
+                categorySlugs[i]] !=
             true) {
           homeBloc.add(GetHomeBoutiqesEvent(
             getWithPrefetchForBoutiques: false,
@@ -761,7 +798,8 @@ class _TabsBarState extends State<TabsBar> {
                                               child: Column(
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.center,
-                                                mainAxisAlignment: MainAxisAlignment.end,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.end,
                                                 children: [
                                                   BlocBuilder<AppBloc,
                                                       AppState>(
