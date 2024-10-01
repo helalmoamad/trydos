@@ -179,9 +179,8 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       prefAppliedFilterForExtendFilter:
           json['prefAppliedFilterForExtendFilter'] == null
               ? null
-              : get_filters.Filter.fromJson(
-                  json['prefAppliedFilterForExtendFilter']
-                      as Map<String, dynamic>),
+              : get_filters.Filter.fromJson(json['prefAppliedFilterForExtendFilter']
+                  as Map<String, dynamic>),
       ListitemForAddToCart: (json['ListitemForAddToCart'] as List<dynamic>?)
           ?.map((e) => ImageForAddToCart.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -191,6 +190,13 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               json['getCurrencyForCountryModel'] as Map<String, dynamic>),
       isExpandedForListingPage:
           json['isExpandedForListingPage'] as bool? ?? false,
+      isGettingProductListingWithPagination:
+          json['isGettingProductListingWithPagination'] as bool? ?? false,
+      countOfProductExpectedByFiltering:
+          (json['countOfProductExpectedByFiltering'] as Map<String, dynamic>?)
+              ?.map(
+        (k, e) => MapEntry(k, (e as num).toInt()),
+      ),
       getCartItemsStatus: $enumDecodeNullable(
               _$GetCartItemsStatusEnumMap, json['getCartItemsStatus']) ??
           GetCartItemsStatus.init,
@@ -326,6 +332,8 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'selectedCollection': instance.selectedCollection,
       'currentPage': instance.currentPage,
       'isExpandedForListingPage': instance.isExpandedForListingPage,
+      'isGettingProductListingWithPagination':
+          instance.isGettingProductListingWithPagination,
       'searchHistory': instance.searchHistory,
       'addImagesToProductIdForCart': instance.addImagesToProductIdForCart.map(
           (k, e) => MapEntry(k, e.map((k, e) => MapEntry(k.toString(), e)))),

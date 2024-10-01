@@ -1,4 +1,6 @@
 import 'package:dartz/dartz.dart';
+import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart'
@@ -57,8 +59,9 @@ enum GetProductsWithoutFiltersStatus { init, loading, success, failure }
 enum GetProductListingStatus { init, loading, success, failure }
 
 @JsonSerializable(explicitToJson: true)
-class HomeState {
-  HomeState({
+@immutable
+class HomeState{
+  const HomeState({
     this.storiesForProduct,
     this.getProductDetailWithoutSimilarRelatedProductsStatus =
         GetProductDetailWithoutSimilarRelatedProductsStatus.init,
@@ -97,6 +100,7 @@ class HomeState {
     this.ListitemForAddToCart,
     this.getCurrencyForCountryModel,
     this.isExpandedForListingPage = false,
+    this.isGettingProductListingWithPagination = false,
     this.countOfProductExpectedByFiltering,
     this.getCartItemsStatus = GetCartItemsStatus.init,
     this.getProductDetailWithoutRelatedProductsModel,
@@ -130,16 +134,17 @@ class HomeState {
       getProductFiltersWithPrefetchModel;
   final Map<String, get_filters.GetProductFiltersModel?> appliedFiltersByUser;
   final Map<String, get_filters.GetProductFiltersModel?> choosedFiltersByUser;
-  int? selectedCollection;
-  int currentPage;
-  bool? isExpandedForListingPage;
+  final int? selectedCollection;
+  final int currentPage;
+  final bool? isExpandedForListingPage;
+  final bool isGettingProductListingWithPagination;
 
   // String? idForRequest;
-  List<String>? searchHistory;
-  Map<String, Map<int, List<String>>> addImagesToProductIdForCart;
-  Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>?
+  final List<String>? searchHistory;
+  final Map<String, Map<int, List<String>>> addImagesToProductIdForCart;
+  final Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>?
       productStatus;
-  Map<String, List<cart.Cart>>? cartCollection;
+  final Map<String, List<cart.Cart>>? cartCollection;
 
   final Map<String, bool> reRequestTheseBoutiques;
   final Map<String, bool> reRequestTheseProductListingInBoutiques;
@@ -149,13 +154,13 @@ class HomeState {
 
   final GetCartItemsStatus getCartItemsStatus;
   final GetProductListingStatus getProductListingStatus;
-  GetStoriesForProductStatus getStoriesForProductStatus;
+  final GetStoriesForProductStatus getStoriesForProductStatus;
   final Map<String, PaginationModel<boutiques_model.Boutique>>
       getHomeBoutiquesPaginationObjectByMainCategory;
-  List<Story>? storiesForProduct;
-  List<String>? sizes;
-  Map<String, int>? countOfProductExpectedByFiltering;
-  get_filters.Filter? prefAppliedFilterForExtendFilter;
+  final List<Story>? storiesForProduct;
+  final List<String>? sizes;
+  final Map<String, int>? countOfProductExpectedByFiltering;
+  final get_filters.Filter? prefAppliedFilterForExtendFilter;
   final Map<String, PaginationModel<product.Products>>
       getProductListingPaginationWithoutFiltersModel;
   final cart.GetCartShippingItemsModel? getCartShippingItemsModel;
@@ -164,13 +169,65 @@ class HomeState {
   final MainCategoriesResponseModel? mainCategoriesResponseModel;
   final GetProductDetailWithoutRelatedProductsModel?
       getProductDetailWithoutRelatedProductsModel;
-  bool cashedOrginalBoutique;
-  int currentIndexForMainCategoryEvent;
+  final bool cashedOrginalBoutique;
+  final int currentIndexForMainCategoryEvent;
   final StartingSetting? startingSetting;
-  Map<String, String>? CurrentColorSizeForCart;
-  Map<String, List<int>>? currentQuantityForCart;
+  final Map<String, String>? CurrentColorSizeForCart;
+  final Map<String, List<int>>? currentQuantityForCart;
   final Map<String, GetProductDetailWithoutRelatedProductsModel>
       cachedProductWithoutRelatedProductsModel;
+
+  // @override
+  // List<Object?> get props => [
+  //   boutiquesThatDidPrefetch,
+  //   boutiquesForEveryMainCategoryThatDidPrefetch,
+  //   getStartingSettingsStatus,
+  //   currentSelectedColorForEveryProduct,
+  //   getCommentForProductStatus,
+  //   productITemForCart,
+  //   getMainCategoriesStatus,
+  //   ListitemForAddToCart,
+  //   getAllowedCountriesModel,
+  //   getProductFiltersStatus,
+  //   getProductListingWithFiltersPaginationModels,
+  //   getCurrencyForCountryModel,
+  //   getProductListingWithFiltersPaginationWithPrefetchModels,
+  //   getProductFiltersModel,
+  //   getProductFiltersWithPrefetchModel,
+  //   appliedFiltersByUser,
+  //   choosedFiltersByUser,
+  //   selectedCollection,
+  //   currentPage,
+  //   isExpandedForListingPage,
+  //   isGettingProductListingWithPagination,
+  //   searchHistory,
+  //   addImagesToProductIdForCart,
+  //   productStatus,
+  //   cartCollection,
+  //   reRequestTheseBoutiques,
+  //   reRequestTheseProductListingInBoutiques,
+  //   reRequestProductWithFilters,
+  //   getProductDetailWithoutSimilarRelatedProductsStatus,
+  //   getCartItemsStatus,
+  //   getProductListingStatus,
+  //   getStoriesForProductStatus,
+  //   getHomeBoutiquesPaginationObjectByMainCategory,
+  //   storiesForProduct,
+  //   sizes,
+  //   countOfProductExpectedByFiltering,
+  //   prefAppliedFilterForExtendFilter,
+  //   getProductListingPaginationWithoutFiltersModel,
+  //   getCartShippingItemsModel,
+  //   getCommentForProductModel,
+  //   mainCategoriesResponseModel,
+  //   getProductDetailWithoutRelatedProductsModel,
+  //   cashedOrginalBoutique,
+  //   currentIndexForMainCategoryEvent,
+  //   startingSetting,
+  //   CurrentColorSizeForCart,
+  //   currentQuantityForCart,
+  //   cachedProductWithoutRelatedProductsModel,
+  // ];
 
   HomeState copyWith(
       {final GetStartingSettingsStatus? getStartingSettingsStatus,
@@ -179,6 +236,7 @@ class HomeState {
           getProductFiltersWithPrefetchModel,
       bool? cashedOrginalBoutique,
       bool? isExpandedForLidtingPage,
+
       // String? idForRequest,
       get_filters.Filter? prefAppliedFilterForExtendFilter,
       final Map<String, bool>? boutiquesThatDidPrefetch,
@@ -189,6 +247,7 @@ class HomeState {
       final Map<String, PaginationModel<product.Products>?>?
           getProductListingWithFiltersPaginationWithPrefetchModels,
       final GetCommentForProductStatus? getCommentForProductStatus,
+      final bool? isGettingProductListingWithPagination,
       final GetCartItemsStatus? getCartItemsStatus,
       Map<int, int?>? currentStoryInEachCollection,
       final GetProductDetailWithoutRelatedProductsModel?
@@ -236,13 +295,16 @@ class HomeState {
           getProductListingPaginationWithoutFiltersModel,
       final Map<String, GetCommentForProductModel>?
           getCommentForProductModel}) {
-    return HomeState(
+    final x = HomeState(
       boutiquesForEveryMainCategoryThatDidPrefetch:
           boutiquesForEveryMainCategoryThatDidPrefetch ??
               this.boutiquesForEveryMainCategoryThatDidPrefetch,
       getCommentForProductModel:
           getCommentForProductModel ?? this.getCommentForProductModel,
       sizes: sizes ?? this.sizes,
+      isGettingProductListingWithPagination:
+          isGettingProductListingWithPagination ??
+              this.isGettingProductListingWithPagination,
       boutiquesThatDidPrefetch:
           boutiquesThatDidPrefetch ?? this.boutiquesThatDidPrefetch,
       // idForRequest: idForRequest ?? this.idForRequest,
@@ -330,10 +392,13 @@ class HomeState {
       getAllowedCountriesModel:
           getAllowedCountriesModel ?? this.getAllowedCountriesModel,
     );
+    print('8888888888 ${x.hashCode}');
+    return x;
   }
 
   factory HomeState.fromJson(Map<String, dynamic> data) =>
       _$HomeStateFromJson(data);
 
   Map<String, dynamic> toJson() => _$HomeStateToJson(this);
+
 }
