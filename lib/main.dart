@@ -16,6 +16,7 @@ import 'package:eraser/eraser.dart';
 import 'package:trydos/common/constant/configuration/chat_url_routes.dart';
 import 'package:trydos/common/constant/configuration/market_url_routes.dart';
 import 'package:trydos/common/constant/configuration/stories_url_routes.dart';
+import 'package:trydos/service/bloc_observer.dart';
 import 'package:uuid/uuid.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
@@ -259,6 +260,7 @@ void main() async {
   NotificationProcess().fcmToken();
   isDependencyInitialized = true;
   GetIt.I<AuthBloc>().add(GetUserCountryEvent());
+  Bloc.observer = AppBlocObserver();
   await SentryFlutter.init(
     (options) {
       options.dsn = dotenv.env['SENTRY_DNS'];

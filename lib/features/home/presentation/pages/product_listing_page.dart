@@ -166,10 +166,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
     }
     scrollController.addListener(() {
       if (homeBloc.state.isExpandedForListingPage ?? false) return;
-      if (scrollController.position.pixels <= 80) {
-        debugPrint(scrollController.position.pixels.toString());
-        appBloc.add(ShowOrHideBars(true));
-      }
+      // if (scrollController.position.pixels <= 80) {
+      //   debugPrint(scrollController.position.pixels.toString());
+      //   appBloc.add(ShowOrHideBars(true));
+      // }
       // else if(filterPageExpanded.value){
       //   scrollController.jumpTo(80);
       // }
@@ -178,10 +178,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
       }
       if (scrollController.offset >=
           (scrollController.position.maxScrollExtent * 0.7)) {
-        homeBloc.add(GetProductsWithFiltersEvent(
+        homeBloc.add(GetProductsWithFiltersUsingPaginationEvent(
             getWithoutFilter: true,
             limit: 10,
-            getWithPagination: true,
             cashedOrginalBoutique: !widget.fromSearch,
             boutiqueSlug: widget.boutiqueSlug,
             fromSearch: widget.fromSearch,
