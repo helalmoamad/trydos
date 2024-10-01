@@ -62,7 +62,7 @@ enum GetProductListingStatus { init, loading, success, failure }
 
 @JsonSerializable(explicitToJson: true)
 @immutable
-class HomeState {
+class HomeState extends Equatable {
   const HomeState({
     this.storiesForProduct,
     this.getProductDetailWithoutSimilarRelatedProductsStatus =
@@ -73,6 +73,7 @@ class HomeState {
     this.startingSetting,
     this.sizes = const [],
     this.isGettingProductListingWithPagination = false,
+    this.isGettingProductListingWithPaginationForAppearProduct = false,
     this.getProductFiltersStatus = const {},
     this.getProductFiltersModel = const {},
     this.choosedFiltersByUser = const {},
@@ -143,7 +144,9 @@ class HomeState {
   final int? selectedCollection;
   final int currentPage;
   final bool? isExpandedForListingPage;
+
   final bool isGettingProductListingWithPagination;
+  final bool isGettingProductListingWithPaginationForAppearProduct;
 
   // String? idForRequest;
   final List<String>? searchHistory;
@@ -158,6 +161,7 @@ class HomeState {
   final GetProductDetailWithoutSimilarRelatedProductsStatus
       getProductDetailWithoutSimilarRelatedProductsStatus;
   final String? theReplyFromGemini;
+
   final GetCartItemsStatus getCartItemsStatus;
   final GetProductListingStatus getProductListingStatus;
   final GetStoriesForProductStatus getStoriesForProductStatus;
@@ -183,57 +187,58 @@ class HomeState {
   final Map<String, GetProductDetailWithoutRelatedProductsModel>
       cachedProductWithoutRelatedProductsModel;
 
-  // @override
-  // List<Object?> get props => [
-  //   boutiquesThatDidPrefetch,
-  //   boutiquesForEveryMainCategoryThatDidPrefetch,
-  //   getStartingSettingsStatus,
-  //   currentSelectedColorForEveryProduct,
-  //   getCommentForProductStatus,
-  //   productITemForCart,
-  //   getMainCategoriesStatus,
-  //   ListitemForAddToCart,
-  //   getAllowedCountriesModel,
-  //   getProductFiltersStatus,
-  //   getProductListingWithFiltersPaginationModels,
-  //   getCurrencyForCountryModel,
-  //   getProductListingWithFiltersPaginationWithPrefetchModels,
-  //   getProductFiltersModel,
-  //   getProductFiltersWithPrefetchModel,
-  //   appliedFiltersByUser,
-  //   choosedFiltersByUser,
-  //   selectedCollection,
-  //   currentPage,
-  //   isExpandedForListingPage,
-  //   isGettingProductListingWithPagination,
-  //   searchHistory,
-  //   addImagesToProductIdForCart,
-  //   productStatus,
-  //   cartCollection,
-  //   reRequestTheseBoutiques,
-  //   reRequestTheseProductListingInBoutiques,
-  //   reRequestProductWithFilters,
-  //   getProductDetailWithoutSimilarRelatedProductsStatus,
-  //   getCartItemsStatus,
-  //   getProductListingStatus,
-  //   getStoriesForProductStatus,
-  //   getHomeBoutiquesPaginationObjectByMainCategory,
-  //   storiesForProduct,
-  //   sizes,
-  //   countOfProductExpectedByFiltering,
-  //   prefAppliedFilterForExtendFilter,
-  //   getProductListingPaginationWithoutFiltersModel,
-  //   getCartShippingItemsModel,
-  //   getCommentForProductModel,
-  //   mainCategoriesResponseModel,
-  //   getProductDetailWithoutRelatedProductsModel,
-  //   cashedOrginalBoutique,
-  //   currentIndexForMainCategoryEvent,
-  //   startingSetting,
-  //   CurrentColorSizeForCart,
-  //   currentQuantityForCart,
-  //   cachedProductWithoutRelatedProductsModel,
-  // ];
+  @override
+  List<Object?> get props => [
+        boutiquesThatDidPrefetch,
+        boutiquesForEveryMainCategoryThatDidPrefetch,
+        getStartingSettingsStatus,
+        currentSelectedColorForEveryProduct,
+        getCommentForProductStatus,
+        productITemForCart,
+        getMainCategoriesStatus,
+        ListitemForAddToCart,
+        getAllowedCountriesModel,
+        getProductFiltersStatus,
+        getProductListingWithFiltersPaginationModels,
+        getCurrencyForCountryModel,
+        getProductListingWithFiltersPaginationWithPrefetchModels,
+        getProductFiltersModel,
+        getProductFiltersWithPrefetchModel,
+        appliedFiltersByUser,
+        choosedFiltersByUser,
+        selectedCollection,
+        currentPage,
+        isExpandedForListingPage,
+        isGettingProductListingWithPagination,
+        isGettingProductListingWithPaginationForAppearProduct,
+        searchHistory,
+        addImagesToProductIdForCart,
+        productStatus,
+        cartCollection,
+        reRequestTheseBoutiques,
+        reRequestTheseProductListingInBoutiques,
+        reRequestProductWithFilters,
+        getProductDetailWithoutSimilarRelatedProductsStatus,
+        getCartItemsStatus,
+        getProductListingStatus,
+        getStoriesForProductStatus,
+        getHomeBoutiquesPaginationObjectByMainCategory,
+        storiesForProduct,
+        sizes,
+        countOfProductExpectedByFiltering,
+        prefAppliedFilterForExtendFilter,
+        getProductListingPaginationWithoutFiltersModel,
+        getCartShippingItemsModel,
+        getCommentForProductModel,
+        mainCategoriesResponseModel,
+        getProductDetailWithoutRelatedProductsModel,
+        cashedOrginalBoutique,
+        currentIndexForMainCategoryEvent,
+        startingSetting,
+        CurrentColorSizeForCart,
+        currentQuantityForCart,
+        cachedProductWithoutRelatedProductsModel,
+      ];
 
   HomeState copyWith(
       {final GetStartingSettingsStatus? getStartingSettingsStatus,
@@ -261,6 +266,7 @@ class HomeState {
       int? selectedCollection,
       List<String>? sizes,
       final String? theReplyFromGemini,
+      final bool? isGettingProductListingWithPaginationForAppearProduct,
       int? currentIndexForMainCategoryEvent,
       List<String>? searchHistory,
       Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>?
@@ -343,6 +349,9 @@ class HomeState {
       getProductListingWithFiltersPaginationWithPrefetchModels:
           getProductListingWithFiltersPaginationWithPrefetchModels ??
               this.getProductListingWithFiltersPaginationWithPrefetchModels,
+      isGettingProductListingWithPaginationForAppearProduct:
+          isGettingProductListingWithPaginationForAppearProduct ??
+              this.isGettingProductListingWithPaginationForAppearProduct,
       currentQuantityForCart:
           currentQuantityForCart ?? this.currentQuantityForCart,
       currentIndexForMainCategoryEvent: currentIndexForMainCategoryEvent ??

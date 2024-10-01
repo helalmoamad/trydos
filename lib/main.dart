@@ -17,6 +17,7 @@ import 'package:eraser/eraser.dart';
 import 'package:trydos/common/constant/configuration/chat_url_routes.dart';
 import 'package:trydos/common/constant/configuration/market_url_routes.dart';
 import 'package:trydos/common/constant/configuration/stories_url_routes.dart';
+import 'package:trydos/service/bloc_observer.dart';
 import 'package:uuid/uuid.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';

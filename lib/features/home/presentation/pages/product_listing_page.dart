@@ -174,10 +174,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
     }
     scrollController.addListener(() {
       if (homeBloc.state.isExpandedForListingPage ?? false) return;
-      if (scrollController.position.pixels <= 80) {
-        debugPrint(scrollController.position.pixels.toString());
-        appBloc.add(ShowOrHideBars(true));
-      }
+      // if (scrollController.position.pixels <= 80) {
+      //   debugPrint(scrollController.position.pixels.toString());
+      //   appBloc.add(ShowOrHideBars(true));
+      // }
       // else if(filterPageExpanded.value){
       //   scrollController.jumpTo(80);
       // }
@@ -186,16 +186,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
       }
       if (scrollController.offset >=
           (scrollController.position.maxScrollExtent * 0.7)) {
-        homeBloc.add(GetProductsWithFiltersEvent(
-            getWithoutFilter: true,
+        homeBloc.add(GetProductsWithFiltersUsingPaginationEvent(
             limit: 10,
-            getWithPagination: true,
             cashedOrginalBoutique: !widget.fromSearch,
             boutiqueSlug: widget.boutiqueSlug,
             fromSearch: widget.fromSearch,
             category: widget.category,
             searchText: widget.fromSearch ? widget.searchText : null,
-            offset: 1));
+            offset: 2));
       }
     });
     super.initState();
@@ -1801,6 +1799,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                 p.appliedFiltersByUser[key] !=
                                                     c.appliedFiltersByUser[
                                                         key] ||
+                                                p.isGettingProductListingWithPaginationForAppearProduct !=
+                                                    c
+                                                        .isGettingProductListingWithPaginationForAppearProduct ||
                                                 p
                                                         .getProductListingWithFiltersPaginationModels[
                                                             '${widget.boutiqueSlug}' +
@@ -1826,6 +1827,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                             //             ?.paginationStatus);
                                           },
                                           builder: (context, state) {
+                                            print(
+                                                "***************************************************${state.isGettingProductListingWithPaginationForAppearProduct}");
                                             isExpanded = state
                                                     .isExpandedForListingPage ??
                                                 false;
@@ -1834,11 +1837,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                 state.appliedFiltersByUser[key];
                                             String? currentAppliedFilterSllug =
                                                 "null";
-                                            print(
-                                                "******************${state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.paginationStatus}*************************************${state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']!.items.length}");
                                             if (!isExpanded &&
                                                     !state
-                                                        .isGettingProductListingWithPagination &&
+                                                        .isGettingProductListingWithPaginationForAppearProduct &&
                                                     (appliedFiltersByUser?.filters?.searchText?.length ?? 0) <
                                                         3 &&
                                                     ((appliedFiltersByUser?.filters?.categories?.length ?? 0) + (appliedFiltersByUser?.filters?.brands?.length ?? 0) + (appliedFiltersByUser?.filters?.colors?.length ?? 0) + (appliedFiltersByUser?.filters?.attributes?[0].options?.length ?? 0) == 1 &&
@@ -1848,7 +1849,20 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                 ?.prices
                                                                 ?.minPrice ==
                                                             null)) ||
-                                                ((appliedFiltersByUser?.filters?.categories?.length ?? 0) + (appliedFiltersByUser?.filters?.brands?.length ?? 0) + (appliedFiltersByUser?.filters?.colors?.length ?? 0) + (appliedFiltersByUser?.filters?.attributes?[0].options?.length ?? 0) == 0 &&
+                                                ((appliedFiltersByUser?.filters?.categories?.length ?? 0) +
+                                                            (appliedFiltersByUser
+                                                                    ?.filters
+                                                                    ?.brands
+                                                                    ?.length ??
+                                                                0) +
+                                                            (appliedFiltersByUser
+                                                                    ?.filters
+                                                                    ?.colors
+                                                                    ?.length ??
+                                                                0) +
+                                                            (appliedFiltersByUser?.filters?.attributes?[0].options?.length ??
+                                                                0) ==
+                                                        0 &&
                                                     !widget.fromSearch &&
                                                     !isExpanded &&
                                                     (appliedFiltersByUser
@@ -1910,18 +1924,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                     "null";
                                               }
                                             } else if ((!isExpanded &&
-                                                (appliedFiltersByUser?.filters?.searchText?.length ?? 0) <
-                                                    3 &&
-                                                ((appliedFiltersByUser?.filters?.categories?.length ?? 0) +
-                                                            (appliedFiltersByUser
-                                                                    ?.filters
-                                                                    ?.brands
-                                                                    ?.length ??
-                                                                0) +
-                                                            (appliedFiltersByUser?.filters?.colors?.length ?? 0) +
-                                                            (appliedFiltersByUser?.filters?.attributes?[0].options?.length ?? 0) ==
-                                                        0 &&
-                                                    (appliedFiltersByUser?.filters?.prices?.minPrice == null)))) {
+                                                !state.isGettingProductListingWithPaginationForAppearProduct &&
+                                                (appliedFiltersByUser?.filters?.searchText?.length ?? 0) < 3 &&
+                                                ((appliedFiltersByUser?.filters?.categories?.length ?? 0) + (appliedFiltersByUser?.filters?.brands?.length ?? 0) + (appliedFiltersByUser?.filters?.colors?.length ?? 0) + (appliedFiltersByUser?.filters?.attributes?[0].options?.length ?? 0) == 0 && (appliedFiltersByUser?.filters?.prices?.minPrice == null)))) {
                                               currentAppliedFilterSllug =
                                                   "Empty";
                                             }

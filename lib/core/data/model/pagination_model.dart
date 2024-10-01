@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'pagination_model.g.dart';
@@ -62,6 +63,7 @@ class PaginationModel<T> {
         other.page == page &&
         other.hasReachedMax == hasReachedMax;
   }
+
 
   @override
   int get hashCode =>
