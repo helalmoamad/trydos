@@ -197,6 +197,8 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               ?.map(
         (k, e) => MapEntry(k, (e as num).toInt()),
       ),
+      isGettingProductListingWithPagination:
+          json['isGettingProductListingWithPagination'] as bool? ?? false,
       getCartItemsStatus: $enumDecodeNullable(
               _$GetCartItemsStatusEnumMap, json['getCartItemsStatus']) ??
           GetCartItemsStatus.init,
@@ -332,6 +334,8 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'selectedCollection': instance.selectedCollection,
       'currentPage': instance.currentPage,
       'isExpandedForListingPage': instance.isExpandedForListingPage,
+      'isGettingProductListingWithPagination':
+          instance.isGettingProductListingWithPagination,
       'searchHistory': instance.searchHistory,
       'addImagesToProductIdForCart': instance.addImagesToProductIdForCart.map(
           (k, e) => MapEntry(k, e.map((k, e) => MapEntry(k.toString(), e)))),

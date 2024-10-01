@@ -198,6 +198,8 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                                                     imageFit: BoxFit.cover,
                                                     height: 40,
                                                     width: 100,
+                                              circleDimensions: 13,
+                                              logoTextHeight: 9,
                                                   )
                                                 : SizedBox.shrink(),
                                           ),

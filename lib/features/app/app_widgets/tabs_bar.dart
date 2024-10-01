@@ -234,19 +234,27 @@ class _TabsBarState extends State<TabsBar> {
       },
     );
     scrollController.addListener(() {
-      double index = scrollController.position.pixels;
-      int startIndex = min(categorySlugs.length, (1.sw - 40) ~/ 40);
-      print(index);
-
-      if (homeBloc.state.boutiquesForEveryMainCategoryThatDidPrefetch[
-              categorySlugs[(index) ~/ 36 + startIndex]] !=
-          true) {
-        homeBloc.add(GetHomeBoutiqesEvent(
-          getWithPrefetchForBoutiques: false,
-          context: context,
-          categorySlug: categorySlugs[(index) ~/ 36 + startIndex],
-          offset: "1",
-        ));
+      if(categorySlugs.isEmpty){
+        homeBloc.state.mainCategoriesResponseModel?.data?.mainCategories?.forEach(
+              (element) {
+            categorySlugs.add(element.slug!);
+          },
+        );
+        if(categorySlugs.isEmpty) return ;
+      }
+      int lastIndexSeenByUser = max(0 , (scrollController.position.pixels + scrollController.position.viewportDimension - 55) ~/ 40);
+      lastIndexSeenByUser = min(categorySlugs.length - 1, lastIndexSeenByUser);
+      for(int i=0 ; i<= lastIndexSeenByUser; i++) {
+        if (homeBloc.state
+            .boutiquesForEveryMainCategoryThatDidPrefetch[categorySlugs[i]] !=
+            true) {
+          homeBloc.add(GetHomeBoutiqesEvent(
+            getWithPrefetchForBoutiques: false,
+            context: context,
+            categorySlug: categorySlugs[i],
+            offset: "1",
+          ));
+        }
       }
     });
 
@@ -674,6 +682,9 @@ class _TabsBarState extends State<TabsBar> {
                                     height: 80,
                                     child: ListView.builder(
                                       controller: scrollController,
+                                      padding: EdgeInsets.only(
+                                        right: 15,
+                                      ),
                                       key: TestVariables.kTestMode
                                           ? Key(WidgetsKey.mainCategoriesTabKey)
                                           : null,
@@ -689,7 +700,6 @@ class _TabsBarState extends State<TabsBar> {
                                             .mainCategoriesResponseModel!
                                             .data!
                                             .mainCategories![index];
-                                        print('dsdsds ${mainCategory.name}');
                                         return Padding(
                                             padding:
                                                 HWEdgeInsetsDirectional.only(
@@ -751,6 +761,7 @@ class _TabsBarState extends State<TabsBar> {
                                               child: Column(
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.center,
+                                                mainAxisAlignment: MainAxisAlignment.end,
                                                 children: [
                                                   BlocBuilder<AppBloc,
                                                       AppState>(

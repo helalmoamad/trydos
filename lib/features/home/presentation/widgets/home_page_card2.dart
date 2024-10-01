@@ -58,24 +58,37 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
           splashColor: Colors.transparent,
           highlightColor: Colors.transparent,
           onTap: () async {
-            await FirebaseAnalytics.instance
-                .logEvent(name: 'button_clicked', parameters: {
-              "time_stamp": DateTime.now()
-                  .toUtc()
-                  .add(Duration(
-                      minutes: GetIt.I<PrefsRepository>().getdurtion ?? 0))
-                  .toString(),
-              "previous_event_button_name":
-                  GetIt.I<PrefsRepository>().currentEvent ?? " ",
-              "device_language": LanguageService.languageCode == 'ar'
-                  ? 'ae'
-                  : LanguageService.languageCode,
-              "country_name": GetIt.I<PrefsRepository>().countryIso,
-              'userID': prefsRepository.myMarketId.toString(),
-              'user_name': prefsRepository.myMarketName.toString(),
-              'clicked_button_name': 'i love you Ahmad',
-              "session_id": GetIt.I<PrefsRepository>().sessionId,
-            });
+            try {
+              await FirebaseAnalytics.instance
+                  .logEvent(name: 'button_clicked', parameters: {
+                "time_stamp": DateTime.now()
+                    .toUtc()
+                    .add(Duration(
+                    minutes: GetIt
+                        .I<PrefsRepository>()
+                        .getdurtion ?? 0))
+                    .toString(),
+                "previous_event_button_name":
+                GetIt
+                    .I<PrefsRepository>()
+                    .currentEvent ?? " ",
+                "device_language": LanguageService.languageCode == 'ar'
+                    ? 'ae'
+                    : LanguageService.languageCode,
+                "country_name": GetIt
+                    .I<PrefsRepository>()
+                    .countryIso,
+                'userID': prefsRepository.myMarketId.toString(),
+                'user_name': prefsRepository.myMarketName.toString(),
+                'clicked_button_name': 'i love you Ahmad',
+                "session_id": GetIt
+                    .I<PrefsRepository>()
+                    .sessionId,
+              });
+            }catch(e,st){
+              print(e);
+              print(st);
+            }
             await GetIt.I<PrefsRepository>().setCurrentEvent(
                 "i loveddsssssssssssssssssssssssssssssssssssssssss you Ahmad in past");
             HelperFunctions.slidingNavigation(
@@ -84,7 +97,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                   boutniqe: widget.boutniqe,
                   withSlidingImages: widget.withSlidingImages,
                   boutiqueSlug: widget.boutniqe.slug!,
-                  boutiqueDescription: widget.boutniqe.description!,
+                  boutiqueDescription: widget.boutniqe.description,
                   boutiqueFirstBanner: widget.boutniqe.banners![0].filePath!,
                   boutiqueIcon: widget.boutniqe.icon?.filePath!,
                 ));
@@ -174,7 +187,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                         ),
                         Html(
                           shrinkWrap: true,
-                          data: widget.boutniqe.description!,
+                          data: widget.boutniqe.description ?? '',
                           style: {
                             "body": Style(margin: Margins.all(0)),
                             "p": Style(
