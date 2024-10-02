@@ -725,8 +725,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         idForRequest: idForRequest,
       ));
     }*/
-    emit(state.copyWith(
-        isGettingProductListingWithPaginationForAppearProduct: false));
 
     Map<String, PaginationModel<product.Products>?>
         getProductListingWithFiltersPaginationModels =
@@ -840,6 +838,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     }
     emit(state.copyWith(
       cashedOrginalBoutique: event.cashedOrginalBoutique,
+        isGettingProductListingWithPaginationForAppearProduct: false,
       //  reRequestProductWithFilters: Map.of(reRequestProductWithFilters),
       getProductListingWithFiltersPaginationModels:
           Map.of(getProductListingWithFiltersPaginationModels),
@@ -983,10 +982,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   FutureOr<void> _onGetProductsWithFiltersUsingPaginationEvent(
       GetProductsWithFiltersUsingPaginationEvent event,
       Emitter<HomeState> emit) async {
-    emit(state.copyWith(
-        isGettingProductListingWithPaginationForAppearProduct: true));
-    print(
-        "***&${state.isGettingProductListingWithPaginationForAppearProduct}****************************//////////////////////////");
     if (state.isGettingProductListingWithPagination) return;
 
     Map<String, PaginationModel<product.Products>?>
@@ -1099,6 +1094,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     emit(state.copyWith(
       cashedOrginalBoutique: event.cashedOrginalBoutique,
       isGettingProductListingWithPagination: true,
+        isGettingProductListingWithPaginationForAppearProduct: true,
       //  reRequestProductWithFilters: Map.of(reRequestProductWithFilters),
       getProductListingWithFiltersPaginationModels:
           Map.of(getProductListingWithFiltersPaginationModels),
