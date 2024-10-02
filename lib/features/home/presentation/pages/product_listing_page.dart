@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:developer';
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:carousel_slider/carousel_slider.dart';
-
+import 'package:flutter_gemini/flutter_gemini.dart' as geminis;
 import 'package:firebase_analytics/firebase_analytics.dart';
 
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
@@ -10,7 +13,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
+import 'package:mime/mime.dart';
 import 'package:trydos/common/constant/design/constant_design.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
@@ -21,6 +26,7 @@ import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/features/app/animated_search_bar/animated_search_bar.dart';
+import 'package:trydos/features/app/app_widgets/gallery_and_camera_dialog_widget.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as filter_products;
@@ -29,10 +35,12 @@ import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import 'package:trydos/service/language_service.dart';
 import 'package:tuple/tuple.dart';
+import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/data/model/pagination_model.dart';
 import '../../../app/app_widgets/app_bottom_navigation_bar.dart';
+import '../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../app/blocs/app_bloc/app_event.dart';
 import '../../../app/blocs/app_bloc/app_state.dart';
@@ -104,8 +112,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
   bool itExpendForFirst = true;
   String key = '';
   Filter? prefAppliedFilters;
+
   @override
   void initState() {
+    Timeline.finishSync();
     itExpendForFirst = true;
     key = widget.boutiqueSlug + (widget.category ?? '');
     fromSearch = widget.fromSearch;
@@ -137,15 +147,19 @@ class _ProductListingPageState extends State<ProductListingPage> {
     //       category: widget.category,
     //       searchText: widget.fromSearch ? widget.searchText : null));
     // }
-    if(homeBloc.state.boutiquesThatDidPrefetch[key] == true && homeBloc.boutiquesThatEnablesToRequestItsProductsUsingFiveFilters[key] == null){
-      homeBloc.boutiquesThatEnablesToRequestItsProductsUsingFiveFilters[key] = true;
+    if (homeBloc.state.boutiquesThatDidPrefetch[key] == true &&
+        homeBloc.boutiquesThatEnablesToRequestItsProductsUsingFiveFilters[
+                key] ==
+            null) {
+      homeBloc.boutiquesThatEnablesToRequestItsProductsUsingFiveFilters[key] =
+          true;
       homeBloc.PrefetchProductsForFirstFiveFilter(
           boutiqueSlug: widget.boutiqueSlug,
           categorySlug: widget.category,
-          filter: homeBloc.state.getProductFiltersModel[key]?.filters
-      );
-    } else if(homeBloc.state.boutiquesThatDidPrefetch[key] == null){
-      homeBloc.boutiquesThatEnablesToRequestItsProductsUsingFiveFilters[key] = true;
+          filter: homeBloc.state.getProductFiltersModel[key]?.filters);
+    } else if (homeBloc.state.boutiquesThatDidPrefetch[key] == null) {
+      homeBloc.boutiquesThatEnablesToRequestItsProductsUsingFiveFilters[key] =
+          true;
     }
 
     if (!widget.fromSearch) {
@@ -160,10 +174,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
     }
     scrollController.addListener(() {
       if (homeBloc.state.isExpandedForListingPage ?? false) return;
-      if (scrollController.position.pixels <= 80) {
-        debugPrint(scrollController.position.pixels.toString());
-        appBloc.add(ShowOrHideBars(true));
-      }
+      // if (scrollController.position.pixels <= 80) {
+      //   debugPrint(scrollController.position.pixels.toString());
+      //   appBloc.add(ShowOrHideBars(true));
+      // }
       // else if(filterPageExpanded.value){
       //   scrollController.jumpTo(80);
       // }
@@ -172,16 +186,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
       }
       if (scrollController.offset >=
           (scrollController.position.maxScrollExtent * 0.7)) {
-        homeBloc.add(GetProductsWithFiltersEvent(
-            getWithoutFilter: true,
+        homeBloc.add(GetProductsWithFiltersUsingPaginationEvent(
             limit: 10,
-            getWithPagination: true,
             cashedOrginalBoutique: !widget.fromSearch,
             boutiqueSlug: widget.boutiqueSlug,
             fromSearch: widget.fromSearch,
             category: widget.category,
             searchText: widget.fromSearch ? widget.searchText : null,
-            offset: 1));
+            offset: 2));
       }
     });
     super.initState();
@@ -215,6 +227,196 @@ class _ProductListingPageState extends State<ProductListingPage> {
     if (context == null || htmlDescriptionHeight.value > 0) return;
     timer.cancel();
     htmlDescriptionHeight.value = context.size!.height;
+  }
+
+  void SelecteImageForSearch() async {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return GalleryAndCameraDialogWidget(
+              onChooseFileFromGalleryAction: (AssetEntity? assetEntity) async {
+            if (assetEntity != null) {
+              File file = (await assetEntity.originFile)!;
+              String mimeStr = lookupMimeType(file.absolute.path) ?? '';
+              var fileType = mimeStr.split('/');
+
+              if (fileType[0] != 'image') {
+                Fluttertoast.showToast(
+                  fontSize: 18,
+                  timeInSecForIosWeb: 3,
+                  msg: "the video file is not supported",
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.TOP,
+                  backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                  textColor: Colors.white,
+                );
+                return;
+              }
+              final Uint8List imageBytes = file.readAsBytesSync();
+              final geminis.Gemini gemini = geminis.Gemini.instance;
+              homeBloc.add(ReplyFromGeminiEvent(
+                  sendRequestToGeminiStatus: SendRequestToGeminiStatus.loading,
+                  theReplyFromGemini: ""));
+
+              await gemini
+                  .textAndImage(
+                      text: LanguageService.languageCode == "ar"
+                          ? " حدد ماذا يوجد في هذه الصورة بكلمة واحدة فقط بصيغة المفرد الغائب الاجابة بالعربي"
+                          : "Identify what's in this picture with just one word in the singular absent answer in English",
+                      images: [
+                        imageBytes
+                      ])
+                  .then((value) => homeBloc.add(ReplyFromGeminiEvent(
+                      sendRequestToGeminiStatus:
+                          SendRequestToGeminiStatus.success,
+                      theReplyFromGemini:
+                          value?.content?.parts?[0].text?.split(".").first ??
+                              value?.content?.parts?[0].text ??
+                              "")))
+                  .onError(
+                    (error, stackTrace) {
+                      homeBloc.add(ReplyFromGeminiEvent(
+                          sendRequestToGeminiStatus:
+                              SendRequestToGeminiStatus.failure,
+                          theReplyFromGemini: ""));
+
+                      if (error.toString().contains("Failed host")) {
+                        Fluttertoast.showToast(
+                            fontSize: 18,
+                            timeInSecForIosWeb: 3,
+                            msg: "the internet is not available ",
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.TOP,
+                            backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                            textColor: Colors.white);
+                        return;
+                      }
+                      if (error
+                          .toString()
+                          .contains("The request was manually cancelled")) {
+                        Fluttertoast.showToast(
+                            fontSize: 18,
+                            timeInSecForIosWeb: 3,
+                            msg: "time out ",
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.TOP,
+                            backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                            textColor: Colors.white);
+                        return;
+                      }
+                      print("3333333333333333333333############${error}");
+                      Fluttertoast.showToast(
+                          msg: "this service is not available in your Country ",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.TOP,
+                          backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                          textColor: Colors.white,
+                          fontSize: 18,
+                          timeInSecForIosWeb: 3);
+                    },
+                  )
+                  .timeout(
+                      Duration(
+                        seconds: 20,
+                      ), onTimeout: () {
+                    gemini.cancelRequest();
+                    return homeBloc.add(ReplyFromGeminiEvent(
+                        sendRequestToGeminiStatus:
+                            SendRequestToGeminiStatus.failure,
+                        theReplyFromGemini: ""));
+                  });
+            }
+          }, onChooseFileFromCameraAction: (File? file) async {
+            if (file != null) {
+              String mimeStr = lookupMimeType(file.absolute.path) ?? '';
+              var fileType = mimeStr.split('/');
+              if (fileType[0] != 'image') {
+                Fluttertoast.showToast(
+                  fontSize: 18,
+                  timeInSecForIosWeb: 3,
+                  msg: "the video file is not supported",
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.TOP,
+                  backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                  textColor: Colors.white,
+                );
+                return;
+              }
+              final Uint8List imageBytes = file.readAsBytesSync();
+              final geminis.Gemini gemini = geminis.Gemini.instance;
+              homeBloc.add(ReplyFromGeminiEvent(
+                  sendRequestToGeminiStatus: SendRequestToGeminiStatus.loading,
+                  theReplyFromGemini: ""));
+              await gemini
+                  .textAndImage(
+                      text: LanguageService.languageCode == "ar"
+                          ? "اعطني كلمة واحد ماذا يوجد هذه الصورة"
+                          : "give me only word about what do you see in this image ",
+                      images: [
+                        imageBytes
+                      ])
+                  .then((value) => homeBloc.add(ReplyFromGeminiEvent(
+                      sendRequestToGeminiStatus:
+                          SendRequestToGeminiStatus.success,
+                      theReplyFromGemini:
+                          value?.content?.parts?[0].text?.split(".").first ??
+                              value?.content?.parts?[0].text ??
+                              "")))
+                  .onError((error, stackTrace) {
+                    print(
+                        "*******************************&%^&**(*&^%${error}#******************************TTTTTTTTTTTTTTTTTTTTTTtoo");
+
+                    homeBloc.add(ReplyFromGeminiEvent(
+                        sendRequestToGeminiStatus:
+                            SendRequestToGeminiStatus.failure,
+                        theReplyFromGemini: ""));
+
+                    if (error.toString().contains("Failed host")) {
+                      Fluttertoast.showToast(
+                          fontSize: 18,
+                          timeInSecForIosWeb: 3,
+                          msg: "the internet is not available ",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.TOP,
+                          backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                          textColor: Colors.white);
+                      return;
+                    }
+                    if (error
+                        .toString()
+                        .contains("The request was manually cancelled")) {
+                      Fluttertoast.showToast(
+                          fontSize: 18,
+                          timeInSecForIosWeb: 3,
+                          msg: "time out ",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.TOP,
+                          backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                          textColor: Colors.white);
+                      return;
+                    }
+                    Fluttertoast.showToast(
+                        fontSize: 18,
+                        timeInSecForIosWeb: 1,
+                        msg: "this service is not available in your Country ",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.TOP,
+                        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                        textColor: Colors.white);
+                  })
+                  .timeout(
+                      Duration(
+                        seconds: 20,
+                      ), onTimeout: () {
+                    gemini.cancelRequest();
+                    return homeBloc.add(ReplyFromGeminiEvent(
+                        sendRequestToGeminiStatus:
+                            SendRequestToGeminiStatus.failure,
+                        theReplyFromGemini: ""));
+                  });
+            }
+          });
+        });
   }
 
   bool resetSearchAfterSearchingWhileRemoveSearch = false;
@@ -348,8 +550,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
                         return BlocBuilder<HomeBloc, HomeState>(
                           buildWhen: (p, c) =>
                               p.isExpandedForListingPage !=
-                              c.isExpandedForListingPage,
+                                  c.isExpandedForListingPage ||
+                              p.sendRequestToGeminiStatus !=
+                                  c.sendRequestToGeminiStatus,
                           builder: (context, state) {
+                            print(
+                                'statusssss ${state.getProductListingWithFiltersPaginationModels['women-section-67withoutFilter']?.paginationStatus}');
                             if (!(state.isExpandedForListingPage ?? false) &&
                                 !itExpendForFirst) {
                               homeBloc.add(GetProductsWithFiltersEvent(
@@ -630,13 +836,21 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                       MainAxisSize
                                                                           .min,
                                                                   children: [
-                                                                    SvgPicture
-                                                                        .asset(
-                                                                      AppAssets
-                                                                          .realCameraSvg,
-                                                                      height:
-                                                                          20,
-                                                                      width: 20,
+                                                                    InkWell(
+                                                                      onTap:
+                                                                          () async {
+                                                                        SelecteImageForSearch();
+                                                                      },
+                                                                      child: state.sendRequestToGeminiStatus ==
+                                                                              SendRequestToGeminiStatus.loading
+                                                                          ? TrydosLoader(
+                                                                              size: 18,
+                                                                            )
+                                                                          : SvgPicture.asset(
+                                                                              AppAssets.realCameraSvg,
+                                                                              height: 20,
+                                                                              width: 20,
+                                                                            ),
                                                                     ),
                                                                     SvgPicture
                                                                         .asset(
@@ -783,14 +997,21 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                         MainAxisSize
                                                                             .min,
                                                                     children: [
-                                                                      SvgPicture
-                                                                          .asset(
-                                                                        AppAssets
-                                                                            .realCameraSvg,
-                                                                        height:
-                                                                            20,
-                                                                        width:
-                                                                            20,
+                                                                      InkWell(
+                                                                        onTap:
+                                                                            () async {
+                                                                          SelecteImageForSearch();
+                                                                        },
+                                                                        child: state.sendRequestToGeminiStatus ==
+                                                                                SendRequestToGeminiStatus.loading
+                                                                            ? TrydosLoader(
+                                                                                size: 18,
+                                                                              )
+                                                                            : SvgPicture.asset(
+                                                                                AppAssets.realCameraSvg,
+                                                                                height: 20,
+                                                                                width: 20,
+                                                                              ),
                                                                       ),
                                                                       SizedBox(
                                                                         width:
@@ -1215,8 +1436,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                               htmlDescriptionKey,
                                                                           shrinkWrap:
                                                                               true,
-                                                                          data:
-                                                                              widget.boutiqueDescription,
+                                                                          data: widget.boutiqueDescription ??
+                                                                              '',
                                                                           style: {
                                                                             "body":
                                                                                 Style(margin: Margins.all(0)),
@@ -1569,12 +1790,18 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                 'withoutFilter' +
                                                                 '${(widget.category ?? '')}']
                                                         ?.paginationStatus ||
+                                                c.isGettingProductListingWithPagination !=
+                                                    p
+                                                        .isGettingProductListingWithPagination ||
                                                 p.isExpandedForListingPage !=
                                                     c
                                                         .isExpandedForListingPage ||
                                                 p.appliedFiltersByUser[key] !=
                                                     c.appliedFiltersByUser[
                                                         key] ||
+                                                p.isGettingProductListingWithPaginationForAppearProduct !=
+                                                    c
+                                                        .isGettingProductListingWithPaginationForAppearProduct ||
                                                 p
                                                         .getProductListingWithFiltersPaginationModels[
                                                             '${widget.boutiqueSlug}' +
@@ -1600,6 +1827,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                             //             ?.paginationStatus);
                                           },
                                           builder: (context, state) {
+                                            print(
+                                                "***************************************************${state.isGettingProductListingWithPaginationForAppearProduct}");
                                             isExpanded = state
                                                     .isExpandedForListingPage ??
                                                 false;
@@ -1609,6 +1838,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                             String? currentAppliedFilterSllug =
                                                 "null";
                                             if (!isExpanded &&
+                                                    !state
+                                                        .isGettingProductListingWithPaginationForAppearProduct &&
                                                     (appliedFiltersByUser?.filters?.searchText?.length ?? 0) <
                                                         3 &&
                                                     ((appliedFiltersByUser?.filters?.categories?.length ?? 0) + (appliedFiltersByUser?.filters?.brands?.length ?? 0) + (appliedFiltersByUser?.filters?.colors?.length ?? 0) + (appliedFiltersByUser?.filters?.attributes?[0].options?.length ?? 0) == 1 &&
@@ -1618,10 +1849,26 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                 ?.prices
                                                                 ?.minPrice ==
                                                             null)) ||
-                                                ((appliedFiltersByUser?.filters?.categories?.length ?? 0) + (appliedFiltersByUser?.filters?.brands?.length ?? 0) + (appliedFiltersByUser?.filters?.colors?.length ?? 0) + (appliedFiltersByUser?.filters?.attributes?[0].options?.length ?? 0) == 0 &&
+                                                ((appliedFiltersByUser?.filters?.categories?.length ?? 0) +
+                                                            (appliedFiltersByUser
+                                                                    ?.filters
+                                                                    ?.brands
+                                                                    ?.length ??
+                                                                0) +
+                                                            (appliedFiltersByUser
+                                                                    ?.filters
+                                                                    ?.colors
+                                                                    ?.length ??
+                                                                0) +
+                                                            (appliedFiltersByUser?.filters?.attributes?[0].options?.length ??
+                                                                0) ==
+                                                        0 &&
                                                     !widget.fromSearch &&
                                                     !isExpanded &&
-                                                    (appliedFiltersByUser?.filters?.prices?.minPrice !=
+                                                    (appliedFiltersByUser
+                                                            ?.filters
+                                                            ?.prices
+                                                            ?.minPrice !=
                                                         null))) {
                                               if ((appliedFiltersByUser
                                                           ?.filters
@@ -1677,22 +1924,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                     "null";
                                               }
                                             } else if ((!isExpanded &&
-                                                (appliedFiltersByUser?.filters?.searchText?.length ?? 0) <
-                                                    3 &&
-                                                ((appliedFiltersByUser?.filters?.categories?.length ?? 0) +
-                                                            (appliedFiltersByUser
-                                                                    ?.filters
-                                                                    ?.brands
-                                                                    ?.length ??
-                                                                0) +
-                                                            (appliedFiltersByUser
-                                                                    ?.filters
-                                                                    ?.colors
-                                                                    ?.length ??
-                                                                0) +
-                                                            (appliedFiltersByUser?.filters?.attributes?[0].options?.length ?? 0) ==
-                                                        0 &&
-                                                    (appliedFiltersByUser?.filters?.prices?.minPrice == null)))) {
+                                                !state.isGettingProductListingWithPaginationForAppearProduct &&
+                                                (appliedFiltersByUser?.filters?.searchText?.length ?? 0) < 3 &&
+                                                ((appliedFiltersByUser?.filters?.categories?.length ?? 0) + (appliedFiltersByUser?.filters?.brands?.length ?? 0) + (appliedFiltersByUser?.filters?.colors?.length ?? 0) + (appliedFiltersByUser?.filters?.attributes?[0].options?.length ?? 0) == 0 && (appliedFiltersByUser?.filters?.prices?.minPrice == null)))) {
                                               currentAppliedFilterSllug =
                                                   "Empty";
                                             }
@@ -2172,7 +2406,26 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               ),
                                             );
                                           },
-                                        )
+                                        ),
+                                  BlocBuilder<HomeBloc, HomeState>(
+                                      builder: (context, state) {
+                                    if (state
+                                                .getProductListingWithFiltersPaginationModels[
+                                                    '${widget.boutiqueSlug}' +
+                                                        '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
+                                                        '${(widget.category ?? '')}']
+                                                ?.paginationStatus ==
+                                            PaginationStatus.loading &&
+                                        state
+                                            .isGettingProductListingWithPagination) {
+                                      return SliverToBoxAdapter(
+                                        child: Center(
+                                          child: TrydosLoader(),
+                                        ),
+                                      );
+                                    }
+                                    return SliverToBoxAdapter();
+                                  })
                                 ]);
                           },
                         );

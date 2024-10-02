@@ -329,7 +329,6 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                     ));
                                     homeBloc.add(GetProductsWithFiltersEvent(
                                         offset: 1,
-                                        getWithPagination: false,
                                         boutiqueSlug: key,
                                         fromSearch: true,
                                         searchText: text));

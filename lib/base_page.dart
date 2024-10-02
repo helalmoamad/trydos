@@ -1,5 +1,6 @@
 import 'dart:convert' as convert;
 import 'dart:developer';
+import 'package:flutter_smartlook/flutter_smartlook.dart';
 import 'package:simple_shadow/simple_shadow.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -335,8 +336,12 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     }
   }
 
+  final Smartlook smartLook = Smartlook.instance;
+
+
   @override
   void dispose() {
+    smartLook.stop();
     WidgetsBinding.instance.removeObserver(this);
     FirebasePresence.disconnect();
     super.dispose();
@@ -561,8 +566,6 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   bool requestMainCategoriesDone = false;
   @override
   Widget build(BuildContext context) {
-    print("${_prefsRepository.language}" +
-        "5555555555555555555555555555555555555555555555555555555555555");
     FlutterError.onError = (FlutterErrorDetails error) {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,

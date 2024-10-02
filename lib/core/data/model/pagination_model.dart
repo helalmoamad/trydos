@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'pagination_model.g.dart';
@@ -52,4 +53,22 @@ class PaginationModel<T> {
 
   bool get isSuccess => paginationStatus == PaginationStatus.success;
 
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! PaginationModel<T>) return false;
+
+    return other.items == items &&
+        other.paginationStatus == paginationStatus &&
+        other.page == page &&
+        other.hasReachedMax == hasReachedMax;
+  }
+
+
+  @override
+  int get hashCode =>
+      items.hashCode ^
+      paginationStatus.hashCode ^
+      page.hashCode ^
+      hasReachedMax.hashCode;
 }

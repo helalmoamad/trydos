@@ -1,4 +1,6 @@
 import 'package:dartz/dartz.dart';
+import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart'
@@ -50,6 +52,8 @@ enum GetCartItemsStatus { init, loading, success, failure }
 
 enum GetStoriesForProductStatus { init, loading, success, failure }
 
+enum SendRequestToGeminiStatus { init, loading, success, failure }
+
 enum GetHomeBoutiqesStatus { init, loading, success, failure }
 
 enum GetProductsWithoutFiltersStatus { init, loading, success, failure }
@@ -57,8 +61,9 @@ enum GetProductsWithoutFiltersStatus { init, loading, success, failure }
 enum GetProductListingStatus { init, loading, success, failure }
 
 @JsonSerializable(explicitToJson: true)
-class HomeState {
-  HomeState({
+@immutable
+class HomeState extends Equatable {
+  const HomeState({
     this.storiesForProduct,
     this.getProductDetailWithoutSimilarRelatedProductsStatus =
         GetProductDetailWithoutSimilarRelatedProductsStatus.init,
@@ -67,12 +72,15 @@ class HomeState {
     this.getCommentForProductStatus = GetCommentForProductStatus.init,
     this.startingSetting,
     this.sizes = const [],
+    this.isGettingProductListingWithPagination = false,
+    this.isGettingProductListingWithPaginationForAppearProduct = false,
     this.getProductFiltersStatus = const {},
     this.getProductFiltersModel = const {},
     this.choosedFiltersByUser = const {},
     this.appliedFiltersByUser = const {},
     this.currentPage = 0,
     this.productStatus,
+    this.theReplyFromGemini,
     this.productITemForCart,
     this.getCartShippingItemsModel,
     this.reRequestTheseBoutiques = const {},
@@ -86,6 +94,7 @@ class HomeState {
     this.getProductListingWithFiltersPaginationModels = const {},
     this.getStoriesForProductStatus = GetStoriesForProductStatus.init,
     this.mainCategoriesResponseModel,
+    this.sendRequestToGeminiStatus = SendRequestToGeminiStatus.init,
     this.CurrentColorSizeForCart,
     this.currentQuantityForCart,
     this.addImagesToProductIdForCart = const {},
@@ -125,37 +134,43 @@ class HomeState {
   final GetCurrencyForCountryModel? getCurrencyForCountryModel;
   final Map<String, PaginationModel<product.Products>?>
       getProductListingWithFiltersPaginationWithPrefetchModels;
+  final SendRequestToGeminiStatus sendRequestToGeminiStatus;
+
   final Map<String, get_filters.GetProductFiltersModel?> getProductFiltersModel;
   final Map<String, get_filters.GetProductFiltersModel?>
       getProductFiltersWithPrefetchModel;
   final Map<String, get_filters.GetProductFiltersModel?> appliedFiltersByUser;
   final Map<String, get_filters.GetProductFiltersModel?> choosedFiltersByUser;
-  int? selectedCollection;
-  int currentPage;
-  bool? isExpandedForListingPage;
+  final int? selectedCollection;
+  final int currentPage;
+  final bool? isExpandedForListingPage;
+
+  final bool isGettingProductListingWithPagination;
+  final bool isGettingProductListingWithPaginationForAppearProduct;
 
   // String? idForRequest;
-  List<String>? searchHistory;
-  Map<String, Map<int, List<String>>> addImagesToProductIdForCart;
-  Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>?
+  final List<String>? searchHistory;
+  final Map<String, Map<int, List<String>>> addImagesToProductIdForCart;
+  final Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>?
       productStatus;
-  Map<String, List<cart.Cart>>? cartCollection;
+  final Map<String, List<cart.Cart>>? cartCollection;
 
   final Map<String, bool> reRequestTheseBoutiques;
   final Map<String, bool> reRequestTheseProductListingInBoutiques;
   final Map<String, bool> reRequestProductWithFilters;
   final GetProductDetailWithoutSimilarRelatedProductsStatus
       getProductDetailWithoutSimilarRelatedProductsStatus;
+  final String? theReplyFromGemini;
 
   final GetCartItemsStatus getCartItemsStatus;
   final GetProductListingStatus getProductListingStatus;
-  GetStoriesForProductStatus getStoriesForProductStatus;
+  final GetStoriesForProductStatus getStoriesForProductStatus;
   final Map<String, PaginationModel<boutiques_model.Boutique>>
       getHomeBoutiquesPaginationObjectByMainCategory;
-  List<Story>? storiesForProduct;
-  List<String>? sizes;
-  Map<String, int>? countOfProductExpectedByFiltering;
-  get_filters.Filter? prefAppliedFilterForExtendFilter;
+  final List<Story>? storiesForProduct;
+  final List<String>? sizes;
+  final Map<String, int>? countOfProductExpectedByFiltering;
+  final get_filters.Filter? prefAppliedFilterForExtendFilter;
   final Map<String, PaginationModel<product.Products>>
       getProductListingPaginationWithoutFiltersModel;
   final cart.GetCartShippingItemsModel? getCartShippingItemsModel;
@@ -164,13 +179,66 @@ class HomeState {
   final MainCategoriesResponseModel? mainCategoriesResponseModel;
   final GetProductDetailWithoutRelatedProductsModel?
       getProductDetailWithoutRelatedProductsModel;
-  bool cashedOrginalBoutique;
-  int currentIndexForMainCategoryEvent;
+  final bool cashedOrginalBoutique;
+  final int currentIndexForMainCategoryEvent;
   final StartingSetting? startingSetting;
-  Map<String, String>? CurrentColorSizeForCart;
-  Map<String, List<int>>? currentQuantityForCart;
+  final Map<String, String>? CurrentColorSizeForCart;
+  final Map<String, List<int>>? currentQuantityForCart;
   final Map<String, GetProductDetailWithoutRelatedProductsModel>
       cachedProductWithoutRelatedProductsModel;
+
+  @override
+  List<Object?> get props => [
+        boutiquesThatDidPrefetch,
+        boutiquesForEveryMainCategoryThatDidPrefetch,
+        getStartingSettingsStatus,
+        currentSelectedColorForEveryProduct,
+        getCommentForProductStatus,
+        productITemForCart,
+        getMainCategoriesStatus,
+        ListitemForAddToCart,
+        getAllowedCountriesModel,
+        getProductFiltersStatus,
+        getProductListingWithFiltersPaginationModels,
+        getCurrencyForCountryModel,
+        getProductListingWithFiltersPaginationWithPrefetchModels,
+        getProductFiltersModel,
+        getProductFiltersWithPrefetchModel,
+        appliedFiltersByUser,
+        choosedFiltersByUser,
+        selectedCollection,
+        currentPage,
+        isExpandedForListingPage,
+        isGettingProductListingWithPagination,
+        isGettingProductListingWithPaginationForAppearProduct,
+        searchHistory,
+        addImagesToProductIdForCart,
+        productStatus,
+        cartCollection,
+        reRequestTheseBoutiques,
+        reRequestTheseProductListingInBoutiques,
+        reRequestProductWithFilters,
+        getProductDetailWithoutSimilarRelatedProductsStatus,
+        getCartItemsStatus,
+        getProductListingStatus,
+        getStoriesForProductStatus,
+        getHomeBoutiquesPaginationObjectByMainCategory,
+        storiesForProduct,
+        sizes,
+        countOfProductExpectedByFiltering,
+        prefAppliedFilterForExtendFilter,
+        getProductListingPaginationWithoutFiltersModel,
+        getCartShippingItemsModel,
+        getCommentForProductModel,
+        mainCategoriesResponseModel,
+        getProductDetailWithoutRelatedProductsModel,
+        cashedOrginalBoutique,
+        currentIndexForMainCategoryEvent,
+        startingSetting,
+        CurrentColorSizeForCart,
+        currentQuantityForCart,
+        cachedProductWithoutRelatedProductsModel,
+      ];
 
   HomeState copyWith(
       {final GetStartingSettingsStatus? getStartingSettingsStatus,
@@ -179,6 +247,7 @@ class HomeState {
           getProductFiltersWithPrefetchModel,
       bool? cashedOrginalBoutique,
       bool? isExpandedForLidtingPage,
+
       // String? idForRequest,
       get_filters.Filter? prefAppliedFilterForExtendFilter,
       final Map<String, bool>? boutiquesThatDidPrefetch,
@@ -189,12 +258,15 @@ class HomeState {
       final Map<String, PaginationModel<product.Products>?>?
           getProductListingWithFiltersPaginationWithPrefetchModels,
       final GetCommentForProductStatus? getCommentForProductStatus,
+      final bool? isGettingProductListingWithPagination,
       final GetCartItemsStatus? getCartItemsStatus,
       Map<int, int?>? currentStoryInEachCollection,
       final GetProductDetailWithoutRelatedProductsModel?
           getProductDetailWithoutRelatedProductsModel,
       int? selectedCollection,
       List<String>? sizes,
+      final String? theReplyFromGemini,
+      final bool? isGettingProductListingWithPaginationForAppearProduct,
       int? currentIndexForMainCategoryEvent,
       List<String>? searchHistory,
       Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>?
@@ -203,6 +275,7 @@ class HomeState {
       Map<String, List<cart.Cart>>? cartCollection,
       Map<String, String>? CurrentColorSizeForCart,
       final Map<String, bool>? reRequestTheseBoutiques,
+      final SendRequestToGeminiStatus? sendRequestToGeminiStatus,
       final Map<String, product.Products>? productITemForCart,
       final cart.GetCartShippingItemsModel? getCartShippingItemsModel,
       final Map<String, bool>? reRequestTheseProductListingInBoutiques,
@@ -236,13 +309,16 @@ class HomeState {
           getProductListingPaginationWithoutFiltersModel,
       final Map<String, GetCommentForProductModel>?
           getCommentForProductModel}) {
-    return HomeState(
+    final x = HomeState(
       boutiquesForEveryMainCategoryThatDidPrefetch:
           boutiquesForEveryMainCategoryThatDidPrefetch ??
               this.boutiquesForEveryMainCategoryThatDidPrefetch,
       getCommentForProductModel:
           getCommentForProductModel ?? this.getCommentForProductModel,
       sizes: sizes ?? this.sizes,
+      isGettingProductListingWithPagination:
+          isGettingProductListingWithPagination ??
+              this.isGettingProductListingWithPagination,
       boutiquesThatDidPrefetch:
           boutiquesThatDidPrefetch ?? this.boutiquesThatDidPrefetch,
       // idForRequest: idForRequest ?? this.idForRequest,
@@ -250,6 +326,7 @@ class HomeState {
           cashedOrginalBoutique ?? this.cashedOrginalBoutique,
       isExpandedForListingPage:
           isExpandedForLidtingPage ?? this.isExpandedForListingPage,
+      theReplyFromGemini: theReplyFromGemini ?? this.theReplyFromGemini,
       countOfProductExpectedByFiltering: countOfProductExpectedByFiltering ??
           this.countOfProductExpectedByFiltering,
       ListitemForAddToCart: ListitemForAddToCart ?? this.ListitemForAddToCart,
@@ -258,6 +335,8 @@ class HomeState {
       cartCollection: cartCollection ?? this.cartCollection,
       getProductFiltersStatus:
           getProductFiltersStatus ?? this.getProductFiltersStatus,
+      sendRequestToGeminiStatus:
+          sendRequestToGeminiStatus ?? this.sendRequestToGeminiStatus,
       getProductListingWithFiltersPaginationModels:
           getProductListingWithFiltersPaginationModels ??
               this.getProductListingWithFiltersPaginationModels,
@@ -270,6 +349,9 @@ class HomeState {
       getProductListingWithFiltersPaginationWithPrefetchModels:
           getProductListingWithFiltersPaginationWithPrefetchModels ??
               this.getProductListingWithFiltersPaginationWithPrefetchModels,
+      isGettingProductListingWithPaginationForAppearProduct:
+          isGettingProductListingWithPaginationForAppearProduct ??
+              this.isGettingProductListingWithPaginationForAppearProduct,
       currentQuantityForCart:
           currentQuantityForCart ?? this.currentQuantityForCart,
       currentIndexForMainCategoryEvent: currentIndexForMainCategoryEvent ??
@@ -330,6 +412,8 @@ class HomeState {
       getAllowedCountriesModel:
           getAllowedCountriesModel ?? this.getAllowedCountriesModel,
     );
+    print('8888888888 ${x.hashCode}');
+    return x;
   }
 
   factory HomeState.fromJson(Map<String, dynamic> data) =>

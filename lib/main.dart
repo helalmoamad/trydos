@@ -11,12 +11,15 @@ import 'package:flutter_callkit_incoming/entities/call_kit_params.dart';
 import 'package:flutter_callkit_incoming/entities/ios_params.dart';
 import 'package:flutter_callkit_incoming/entities/notification_params.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
+import 'package:flutter_gemini/flutter_gemini.dart' as gemini;
 import 'package:get_it/get_it.dart';
 import 'package:eraser/eraser.dart';
 import 'package:trydos/common/constant/configuration/chat_url_routes.dart';
 import 'package:trydos/common/constant/configuration/market_url_routes.dart';
 import 'package:trydos/common/constant/configuration/stories_url_routes.dart';
+import 'package:trydos/service/bloc_observer.dart';
 import 'package:uuid/uuid.dart';
+import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -259,6 +262,11 @@ void main() async {
   NotificationProcess().fcmToken();
   isDependencyInitialized = true;
   GetIt.I<AuthBloc>().add(GetUserCountryEvent());
+
+  gemini.Gemini.init(
+    apiKey: "AIzaSyDP0q_EapML_zg4ibE_p1NbWNlUa2DjefI",
+  );
+  gemini.Gemini.enableDebugging = true;
   await SentryFlutter.init(
     (options) {
       options.dsn = dotenv.env['SENTRY_DNS'];
@@ -283,4 +291,3 @@ fetchServersUrlsFromSharedPreference() async {
     StoriesUrls.setBaseUrl = GetIt.I<PrefsRepository>().getStoryUrl!;
   }
 }
-

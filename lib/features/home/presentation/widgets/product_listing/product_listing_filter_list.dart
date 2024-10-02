@@ -1795,6 +1795,8 @@ Widget choosedOrAppliedFiltersWidget({
                                 imageFit: BoxFit.cover,
                                 height: 40,
                                 width: 60,
+                                circleDimensions: 8,
+                                logoTextHeight: 5,
                               ),
                               SizedBox(
                                 width: 5,
@@ -2351,15 +2353,18 @@ class _FilterCircleWidgetState extends State<FilterCircleWidget> {
                 ),
                 if (widget.isExpanded) ...{
                   SizedBox(height: 5),
-                  MyTextWidget(
+                  SizedBox(
+                    width: widget.width,
+                  child: MyTextWidget(
                     widget.categoryName,
+                    overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                     textAlign: TextAlign.center,
                     style: context.textTheme.titleMedium?.rq.copyWith(
                         color: Color(0xff8E8E8E),
                         letterSpacing: 0,
                         height: 1.25),
-                  ),
+                  ),),
                 }
               ],
             ),

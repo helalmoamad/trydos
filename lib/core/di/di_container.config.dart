@@ -16,6 +16,8 @@ import 'package:shared_preferences/shared_preferences.dart' as _i460;
 
 import '../../common/helper/firebase_analytics_sessions.dart' as _i824;
 import '../../features/app/blocs/app_bloc/app_bloc.dart' as _i721;
+import '../../features/app/blocs/pre_caching_image_bloc/pre_caching_image_bloc.dart'
+    as _i1026;
 import '../../features/app/blocs/sensitive_connectivity/sensitive_connectivity_bloc.dart'
     as _i274;
 import '../../features/authentication/data/data_sources/auth_remote_datasource.dart'
@@ -202,6 +204,8 @@ Future<_i174.GetIt> $initGetIt(
   );
   gh.lazySingleton<_i824.SessionManager>(() => _i824.SessionManager());
   gh.lazySingleton<_i721.AppBloc>(() => _i721.AppBloc());
+  gh.lazySingleton<_i1026.PreCachingImageBloc>(
+      () => _i1026.PreCachingImageBloc());
   gh.lazySingleton<_i505.StoryRepository>(
       () => _i213.StoryRepositoryImpl(gh<_i777.StoriesDataSource>()));
   gh.lazySingleton<_i0.HomeRepository>(

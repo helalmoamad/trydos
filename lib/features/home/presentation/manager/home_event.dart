@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
+import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
 
 import '../../data/models/get_product_filters_model.dart';
@@ -232,7 +233,7 @@ class ChangeAppliedFiltersEvent extends HomeEvent {
 
   GetProductsWithFiltersEventWithoutCancelingPreviousEvents(
       {required this.boutiqueSlug,
-<<<<<<< HEAD
+
         this.getWithPagination = false,
         this.resetChoosedFilters = true,
         this.searchText,
@@ -243,7 +244,7 @@ class ChangeAppliedFiltersEvent extends HomeEvent {
         required this.offset,
         this.limit,
         this.category});
-=======
+
       required this.categorySlugs,
       this.getWithPagination = false,
       this.getWithoutFilter = false,
@@ -256,7 +257,7 @@ class ChangeAppliedFiltersEvent extends HomeEvent {
       required this.offset,
       this.limit,
       this.category});
->>>>>>> e9ace2fcd5f824e8024831de1c589822f30cc111
+
 
   @override
   // TODO: implement props
@@ -264,6 +265,7 @@ class ChangeAppliedFiltersEvent extends HomeEvent {
       [category, getWithPagination, searchText, offset, limit, boutiqueSlug];
 }
 */
+
 class GetProductsWithFiltersEvent extends HomeEvent {
   final String? category;
   final String? searchText;
@@ -274,12 +276,10 @@ class GetProductsWithFiltersEvent extends HomeEvent {
   final bool cashedOrginalBoutique;
   final bool? fromSearch;
   final bool? fromChoosed;
-  final bool getWithPagination;
   final bool resetChoosedFilters;
 
   GetProductsWithFiltersEvent(
       {required this.boutiqueSlug,
-      this.getWithPagination = false,
       this.getWithoutFilter = false,
       this.resetChoosedFilters = true,
       this.searchText,
@@ -293,7 +293,37 @@ class GetProductsWithFiltersEvent extends HomeEvent {
   @override
   // TODO: implement props
   List<Object?> get props =>
-      [category, getWithPagination, searchText, offset, limit, boutiqueSlug];
+      [category, searchText, offset, limit, boutiqueSlug];
+}
+
+class GetProductsWithFiltersUsingPaginationEvent extends HomeEvent {
+  final String? category;
+  final String? searchText;
+  final int offset;
+  final bool getWithoutFilter;
+  final int? limit;
+  final String boutiqueSlug;
+  final bool cashedOrginalBoutique;
+  final bool? fromSearch;
+  final bool? fromChoosed;
+  final bool resetChoosedFilters;
+
+  GetProductsWithFiltersUsingPaginationEvent(
+      {required this.boutiqueSlug,
+      this.getWithoutFilter = false,
+      this.resetChoosedFilters = true,
+      this.searchText,
+      this.cashedOrginalBoutique = false,
+      this.fromChoosed = false,
+      this.fromSearch,
+      required this.offset,
+      this.limit,
+      this.category});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props =>
+      [category, searchText, offset, limit, boutiqueSlug];
 }
 
 class GetStoryForProductEvent extends HomeEvent {
@@ -526,6 +556,18 @@ class AddIsExpandedForLidtingPageEvent extends HomeEvent {
 
 class GetCurrencyForCountryEvent extends HomeEvent {
   GetCurrencyForCountryEvent();
+  @override
+  List<Object?> get props => [];
+}
+
+class ReplyFromGeminiEvent extends HomeEvent {
+  final String theReplyFromGemini;
+  final bool resetTheReply;
+  final SendRequestToGeminiStatus? sendRequestToGeminiStatus;
+  ReplyFromGeminiEvent(
+      {required this.theReplyFromGemini,
+      this.sendRequestToGeminiStatus,
+      this.resetTheReply = false});
   @override
   List<Object?> get props => [];
 }
