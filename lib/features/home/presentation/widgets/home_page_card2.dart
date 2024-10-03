@@ -10,6 +10,7 @@ import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
+import 'package:trydos/base_page.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
@@ -64,28 +65,20 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                 "time_stamp": DateTime.now()
                     .toUtc()
                     .add(Duration(
-                    minutes: GetIt
-                        .I<PrefsRepository>()
-                        .getdurtion ?? 0))
+                        minutes: GetIt.I<PrefsRepository>().getdurtion ?? 0))
                     .toString(),
                 "previous_event_button_name":
-                GetIt
-                    .I<PrefsRepository>()
-                    .currentEvent ?? " ",
+                    GetIt.I<PrefsRepository>().currentEvent ?? " ",
                 "device_language": LanguageService.languageCode == 'ar'
                     ? 'ae'
                     : LanguageService.languageCode,
-                "country_name": GetIt
-                    .I<PrefsRepository>()
-                    .countryIso,
+                "country_name": GetIt.I<PrefsRepository>().countryIso,
                 'userID': prefsRepository.myMarketId.toString(),
                 'user_name': prefsRepository.myMarketName.toString(),
                 'clicked_button_name': 'i love you Ahmad',
-                "session_id": GetIt
-                    .I<PrefsRepository>()
-                    .sessionId,
+                "session_id": GetIt.I<PrefsRepository>().sessionId,
               });
-            }catch(e,st){
+            } catch (e, st) {
               print(e);
               print(st);
             }
@@ -123,13 +116,17 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                     child: ValueListenableBuilder<int>(
                         valueListenable: changeBackgroundBlurImage,
                         builder: (context, index, _) {
-                          return MyCachedNetworkImage(
-                            imageFit: cupertino.BoxFit.cover,
-                            imageUrl: widget.boutniqe.banners![index].filePath!,
-                            width: 1.sw,
-                            radius: 15,
-                            height: 235,
-                          );
+                          print((widget.boutniqe.banners?.length ?? 0) > 0);
+                          return ((widget.boutniqe.banners?.length ?? 0) > 0)
+                              ? MyCachedNetworkImage(
+                                  imageFit: cupertino.BoxFit.cover,
+                                  imageUrl:
+                                      widget.boutniqe.banners![index].filePath!,
+                                  width: 1.sw,
+                                  radius: 15,
+                                  height: 235,
+                                )
+                              : cupertino.SizedBox.shrink();
                         })),
               ),
               Positioned.fill(
@@ -237,18 +234,24 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                               ),
                                             ],
                                           ),
-                                          child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(15),
-                                              child: MyCachedNetworkImage(
-                                                imageUrl: widget.boutniqe
-                                                    .banners![index].filePath!,
-                                                imageFit: BoxFit.cover,
-                                                width: 1.sw,
-                                                innerShadowYOffset: 3,
-                                                withInnerShadow: true,
-                                                height: 155,
-                                              )),
+                                          child: widget.boutniqe
+                                                      .banners?[index] ==
+                                                  null
+                                              ? ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(15),
+                                                  child: MyCachedNetworkImage(
+                                                    imageUrl: widget
+                                                        .boutniqe
+                                                        .banners![index]
+                                                        .filePath!,
+                                                    imageFit: BoxFit.cover,
+                                                    width: 1.sw,
+                                                    innerShadowYOffset: 3,
+                                                    withInnerShadow: true,
+                                                    height: 155,
+                                                  ))
+                                              : cupertino.SizedBox.shrink(),
                                         ),
                                         Container(
                                           height: 155,
@@ -303,15 +306,19 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                 ),
                                 child: ClipRRect(
                                     borderRadius: BorderRadius.circular(15),
-                                    child: MyCachedNetworkImage(
-                                      imageUrl:
-                                          widget.boutniqe.banners![0].filePath!,
-                                      imageFit: BoxFit.cover,
-                                      width: 1.sw,
-                                      withInnerShadow: true,
-                                      innerShadowYOffset: 3,
-                                      height: 135,
-                                    )),
+                                    child: ((widget.boutniqe.banners?.length ??
+                                                0) ==
+                                            0)
+                                        ? cupertino.SizedBox.shrink()
+                                        : MyCachedNetworkImage(
+                                            imageUrl: widget
+                                                .boutniqe.banners![0].filePath!,
+                                            imageFit: BoxFit.cover,
+                                            width: 1.sw,
+                                            withInnerShadow: true,
+                                            innerShadowYOffset: 3,
+                                            height: 135,
+                                          )),
                               ),
                               Container(
                                 height: 135,

@@ -165,6 +165,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<GetMainCategoriesEvent>(
       _onGetMainCategoriesEvent,
     );
+    on<IscashedOreiginBotiqueEvent>(
+      _onIscashedOreiginBotiqueEvent,
+    );
     on<AddItemToCartEvent>(
       _onAddItemToCartEvent,
     );
@@ -182,8 +185,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<GetProductsWithFiltersEvent>(_onGetProductsWithFiltersEvent,
         transformer: restartable());
     on<GetProductsWithFiltersUsingPaginationEvent>(
-      _onGetProductsWithFiltersUsingPaginationEvent,transformer: restartable()
-    );
+        _onGetProductsWithFiltersUsingPaginationEvent,
+        transformer: restartable());
 
     on<GetProductFiltersWithPrefetchForFiveFiltersEvent>(
       _onGetProductFiltersWithPrefetchForFiveFiltersEvent,
@@ -494,7 +497,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             .addAll({event.categorySlug: false});
       }
       if (boutiquesForEveryMainCategoryThatDidPrefetch[event.categorySlug] ==
-          true && event.offset == '1') {
+              true &&
+          event.offset == '1') {
         return;
       }
       boutiquesForEveryMainCategoryThatDidPrefetch[event.categorySlug] = true;
@@ -839,7 +843,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     }
     emit(state.copyWith(
       cashedOrginalBoutique: event.cashedOrginalBoutique,
-        isGettingProductListingWithPaginationForAppearProduct: event.getWithPagination,
+      isGettingProductListingWithPaginationForAppearProduct:
+          event.getWithPagination,
       isGettingProductListingWithPagination: event.getWithPagination,
       //  reRequestProductWithFilters: Map.of(reRequestProductWithFilters),
       getProductListingWithFiltersPaginationModels:
@@ -871,8 +876,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                     ?.map((e) => '"${e.slug.toString()}"')
                     .toList()
                 : ['"${event.boutiqueSlug}"'],
-            offset: !event.getWithPagination ? 1 :  getProductListingWithFiltersPaginationModels[keyWithoutFilter]!
-                .page,
+            offset: !event.getWithPagination
+                ? 1
+                : getProductListingWithFiltersPaginationModels[
+                        keyWithoutFilter]!
+                    .page,
             attributes: filters.attributes.isNullOrEmpty
                 ? null
                 : [
@@ -918,6 +926,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           getProductListingWithFiltersPaginationModels[keyWithoutFilter]!
               .copyWith(paginationStatus: PaginationStatus.failure);
       emit(state.copyWith(
+          isGettingProductListingWithPagination: false,
           choosedFiltersByUser: Map.of(prevChoosedFiltersByUser),
           getProductListingWithFiltersPaginationModels:
               Map.of(getProductListingWithFiltersPaginationModels),
@@ -932,8 +941,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             key: value!.copyWith(
                 paginationStatus: PaginationStatus.success,
                 page: event.getWithPagination ? value.page + 1 : 2,
-                hasReachedMax:  (r.data!.products?.length ?? 0) < kPageSize,
-                items: event.getWithPagination ? [...List.of(value.items), ...r.data!.products ?? []] : r.data!.products)
+                hasReachedMax: (r.data!.products?.length ?? 0) < kPageSize,
+                items: event.getWithPagination
+                    ? [...List.of(value.items), ...r.data!.products ?? []]
+                    : r.data!.products)
           });
           return;
         }
@@ -980,19 +991,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         //         )),
         //     filters),
       ));
-      print('vvvvvvvvvvvvv ${state.hashCode}');
-
-      print(
-          'fffffffffffff ${getProductListingWithFiltersPaginationModels[keyWithoutFilter]?.paginationStatus}');
-      print(
-          'fucششششششششششش ${state.getProductListingWithFiltersPaginationModels[keyWithoutFilter]?.paginationStatus}');
     });
   }
 
   FutureOr<void> _onGetProductsWithFiltersUsingPaginationEvent(
       GetProductsWithFiltersUsingPaginationEvent event,
       Emitter<HomeState> emit) async {
-
     Map<String, PaginationModel<product.Products>?>
         getProductListingWithFiltersPaginationModels =
         Map.of(state.getProductListingWithFiltersPaginationModels);
@@ -1007,12 +1011,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       getProductListingWithFiltersPaginationModels[keyWithoutFilter] =
           PaginationModel.init();
     }
-print('kpppppppppppp ${getProductListingWithFiltersPaginationModels[keyWithoutFilter]
-    ?.page}');
-    print('kpppppppppppp ${getProductListingWithFiltersPaginationModels[keyWithoutFilter]
-    ?.paginationStatus}');
-    print('kpppppppppppp ${getProductListingWithFiltersPaginationModels[keyWithoutFilter]
-        ?.hasReachedMax}');
+    print(
+        'kpppppppppppp ${getProductListingWithFiltersPaginationModels[keyWithoutFilter]?.page}');
+    print(
+        'kpppppppppppp ${getProductListingWithFiltersPaginationModels[keyWithoutFilter]?.paginationStatus}');
+    print(
+        'kpppppppppppp ${getProductListingWithFiltersPaginationModels[keyWithoutFilter]?.hasReachedMax}');
     if (getProductListingWithFiltersPaginationModels[keyWithoutFilter]
                 ?.paginationStatus ==
             PaginationStatus.loading ||
@@ -1254,7 +1258,6 @@ print('kpppppppppppp ${getProductListingWithFiltersPaginationModels[keyWithoutFi
         //         )),
         //     filters),
       ));
-
     });
   }
 
@@ -3039,6 +3042,11 @@ print('kpppppppppppp ${getProductListingWithFiltersPaginationModels[keyWithoutFi
         print(st);
       }
     });
+  }
+
+  FutureOr<void> _onIscashedOreiginBotiqueEvent(
+      IscashedOreiginBotiqueEvent event, Emitter<HomeState> emit) async {
+    emit(state.copyWith(cashedOrginalBoutique: event.iscashedOreiginBotique));
   }
 
   FutureOr<void> _onGetProductFiltersWithPrefetchForFiveFiltersEvent(

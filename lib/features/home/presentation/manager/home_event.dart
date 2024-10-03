@@ -295,7 +295,7 @@ class GetProductsWithFiltersEvent extends HomeEvent {
   @override
   // TODO: implement props
   List<Object?> get props =>
-      [category, searchText, offset, limit, getWithPagination , boutiqueSlug];
+      [category, searchText, offset, limit, getWithPagination, boutiqueSlug];
 }
 
 class GetProductsWithFiltersUsingPaginationEvent extends HomeEvent {
@@ -345,6 +345,15 @@ class LoadFailureEvent extends HomeEvent {
 
   @override
   List<Object?> get props => [collectionId];
+}
+
+class IscashedOreiginBotiqueEvent extends HomeEvent {
+  final bool iscashedOreiginBotique;
+
+  const IscashedOreiginBotiqueEvent({required this.iscashedOreiginBotique});
+
+  @override
+  List<Object?> get props => [iscashedOreiginBotique];
 }
 
 class AddSizesFotColorsEvent extends HomeEvent {

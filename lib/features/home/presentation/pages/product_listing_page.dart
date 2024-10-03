@@ -133,10 +133,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
         if (result.recognizedWords.replaceAll(" ", "").length > 2) {
           controller.text = result.recognizedWords;
           Filter filters = BlocProvider.of<HomeBloc>(context)
-              .state
-              .choosedFiltersByUser[
-          widget.boutiqueSlug + (widget.category ?? "")]
-              ?.filters ??
+                  .state
+                  .choosedFiltersByUser[
+                      widget.boutiqueSlug + (widget.category ?? "")]
+                  ?.filters ??
               Filter();
           BlocProvider.of<HomeBloc>(context).add(ChangeSelectedFiltersEvent(
               boutiqueSlug: widget.boutiqueSlug,
@@ -144,17 +144,17 @@ class _ProductListingPageState extends State<ProductListingPage> {
               fromHomePageSearch: true,
               filtersChoosedByUser: GetProductFiltersModel(
                   filters: filters.copyWithSaveOtherField(
-                    prices: filters.prices,
-                    searchText: result.recognizedWords,
-                  ))));
+                prices: filters.prices,
+                searchText: result.recognizedWords,
+              ))));
           BlocProvider.of<HomeBloc>(context).add(ChangeAppliedFiltersEvent(
             boutiqueSlug: widget.boutiqueSlug,
             category: widget.category,
             filtersAppliedByUser: GetProductFiltersModel(
                 filters: filters.copyWithSaveOtherField(
-                  prices: filters.prices,
-                  searchText: result.recognizedWords,
-                )),
+              prices: filters.prices,
+              searchText: result.recognizedWords,
+            )),
           ));
           BlocProvider.of<HomeBloc>(context).add(GetProductsWithFiltersEvent(
               offset: 1,
@@ -171,7 +171,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
     isRecordeForSearchWithMic.value = true;
     Future.delayed(
       Duration(seconds: 5),
-          () => isRecordeForSearchWithMic.value = false,
+      () => isRecordeForSearchWithMic.value = false,
     );
   }
 
@@ -257,24 +257,28 @@ class _ProductListingPageState extends State<ProductListingPage> {
       }
       if (scrollController.offset >=
           (scrollController.position.maxScrollExtent * 0.7)) {
-        if(homeBloc.state.isGettingProductListingWithPagination) return;
-        if (homeBloc.state.getProductListingWithFiltersPaginationModels[keyWithoutFilter]
-            ?.paginationStatus ==
-            PaginationStatus.loading ||
-            homeBloc.state.getProductListingWithFiltersPaginationModels[keyWithoutFilter]!
-                .hasReachedMax) {
+           if (homeBloc.state.isGettingProductListingWithPagination) return;
+
+        if (homeBloc
+            .state
+            .getProductListingWithFiltersPaginationModels[
+                '${widget.boutiqueSlug}' +
+                    ((homeBloc.state.cashedOrginalBoutique)
+                        ? 'withoutFilter'
+                        : "") +
+                    '${(widget.category ?? '')}']!
+            .hasReachedMax) {
           return;
         }
         homeBloc.add(GetProductsWithFiltersEvent(
             limit: 10,
             cashedOrginalBoutique: !widget.fromSearch,
             boutiqueSlug: widget.boutiqueSlug,
-            getWithPagination: true,
+            getWithPagination: homeBloc.state.cashedOrginalBoutique,
             fromSearch: widget.fromSearch,
             category: widget.category,
             searchText: widget.fromSearch ? widget.searchText : null,
-            offset: 2
-        ));
+            offset: 2));
       }
     });
     super.initState();
@@ -295,7 +299,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
         theReplyFromGemini: ""));
     super.dispose();
   }
-
 
   void postFrameCallback(timer) {
     var context = htmlDescriptionKey.currentContext;
@@ -1499,7 +1502,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                           30,
                                                                       child: Row(
                                                                           children: [
-                                                                            SizedBox(width: searchOpen ? 0 : !isExpanded ? 10.0 : 12.5),
+                                                                            SizedBox(
+                                                                                width: searchOpen
+                                                                                    ? 0
+                                                                                    : !isExpanded
+                                                                                        ? 10.0
+                                                                                        : 12.5),
                                                                             !isExpanded
                                                                                 ? SvgPicture.asset(
                                                                                     AppAssets.shareSvg,
@@ -1742,7 +1750,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                     c.cashedOrginalBoutique;
                                           },
                                           builder: (context, state) {
-
                                             String? currentAppliedFilterSllug =
                                                 "null";
                                             isExpanded = state
@@ -1939,7 +1946,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                       ? SliverToBoxAdapter()
                                       : BlocBuilder<HomeBloc, HomeState>(
                                           buildWhen: (p, c) {
-                                            bool rebuild =  p
+                                            bool rebuild = p
                                                         .getProductListingWithFiltersPaginationModels[
                                                             '${widget.boutiqueSlug}' +
                                                                 'withoutFilter' +
@@ -1950,7 +1957,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                             '${widget.boutiqueSlug}' +
                                                                 'withoutFilter' +
                                                                 '${(widget.category ?? '')}']
-                                                        ?.paginationStatus  ||
+                                                        ?.paginationStatus ||
                                                 p.isExpandedForListingPage !=
                                                     c
                                                         .isExpandedForListingPage ||
@@ -1963,21 +1970,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                 p.isGettingProductListingWithPagination !=
                                                     c
                                                         .isGettingProductListingWithPagination ||
-                                                p
-                                                        .getProductListingWithFiltersPaginationModels[
-                                                            '${widget.boutiqueSlug}' +
-                                                                '${(widget.category ?? '')}']
-                                                        ?.paginationStatus !=
-                                                    c
-                                                        .getProductListingWithFiltersPaginationModels[
-                                                            '${widget.boutiqueSlug}' +
-                                                                '${(widget.category ?? '')}']
+                                                p.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${(widget.category ?? '')}']?.paginationStatus !=
+                                                    c.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${(widget.category ?? '')}']
                                                         ?.paginationStatus ||
-                                                p.cashedOrginalBoutique !=
-                                                    c.cashedOrginalBoutique;
+                                                p.cashedOrginalBoutique != c.cashedOrginalBoutique;
 
                                             if (rebuild) {
-                                              gridViewKeyForRendering = UniqueKey();
+                                              gridViewKeyForRendering =
+                                                  UniqueKey();
                                             }
                                             return rebuild;
                                             // ||
@@ -1993,7 +1993,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                           },
                                           builder: (context, state) {
                                             print(
-                                                "***************************************************${state.isGettingProductListingWithPaginationForAppearProduct}");
+                                                "***************************************************${state.cashedOrginalBoutique}");
                                             isExpanded = state
                                                     .isExpandedForListingPage ??
                                                 false;
@@ -2094,161 +2094,161 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                 ((appliedFiltersByUser?.filters?.categories?.length ?? 0) + (appliedFiltersByUser?.filters?.brands?.length ?? 0) + (appliedFiltersByUser?.filters?.colors?.length ?? 0) + (appliedFiltersByUser?.filters?.attributes?[0].options?.length ?? 0) == 0 && (appliedFiltersByUser?.filters?.prices?.minPrice == null)))) {
                                               currentAppliedFilterSllug =
                                                   "Empty";
+                                              homeBloc.add(
+                                                  IscashedOreiginBotiqueEvent(
+                                                      iscashedOreiginBotique:
+                                                          true));
                                             }
-                                            print(
-                                                ("//////////////////////////////////////////////////////////${state.getProductListingWithFiltersPaginationWithPrefetchModels["${widget.boutiqueSlug}" + "${currentAppliedFilterSllug}" + "${widget.category ?? ""}"]?.paginationStatus}"));
-                                            if (state
-                                                    .getProductListingWithFiltersPaginationWithPrefetchModels[
+
+                                            List<filter_products.Products>
+                                                products = [];
+
+                                            if (state.getProductListingWithFiltersPaginationWithPrefetchModels[
                                                         "${widget.boutiqueSlug}" +
                                                             "${currentAppliedFilterSllug}" +
-                                                            "${widget.category ?? ""}"]
-                                                    ?.paginationStatus ==
-                                                PaginationStatus.success) {
-                                              print(
-                                                  "**********************************************************************************************");
-                                              List<filter_products.Products>
-                                                  products = [];
-
-                                              if (state.getProductListingWithFiltersPaginationWithPrefetchModels[
+                                                            "${widget.category ?? ""}"] !=
+                                                    null &&
+                                                (state
+                                                            .getProductListingWithFiltersPaginationWithPrefetchModels[
+                                                                "${widget.boutiqueSlug}" +
+                                                                    "${currentAppliedFilterSllug}" +
+                                                                    "${widget.category ?? ""}"]
+                                                            ?.items
+                                                            .length ??
+                                                        0) >
+                                                    0) {
+                                              products = state
+                                                  .getProductListingWithFiltersPaginationWithPrefetchModels[
                                                       "${widget.boutiqueSlug}" +
                                                           "${currentAppliedFilterSllug}" +
-                                                          "${widget.category ?? ""}"] !=
-                                                  null) {
-                                                products = state
-                                                    .getProductListingWithFiltersPaginationWithPrefetchModels[
-                                                        "${widget.boutiqueSlug}" +
-                                                            "${currentAppliedFilterSllug}" +
-                                                            "${widget.category ?? ""}"]!
-                                                    .items;
+                                                          "${widget.category ?? ""}"]!
+                                                  .items;
 
-                                                return SliverPadding(
-                                                  key: TestVariables.kTestMode
-                                                      ? Key(WidgetsKey
-                                                          .productsListKey)
-                                                      : gridViewKeyForRendering,
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 10),
-                                                  sliver: SliverGrid(
-                                                    gridDelegate:
-                                                        SliverGridDelegateWithFixedCrossAxisCount(
-                                                      crossAxisCount: 2,
-                                                      childAspectRatio:
-                                                          200.w / 350,
-                                                      crossAxisSpacing: 10,
-                                                      mainAxisSpacing: 15,
-                                                    ),
-                                                    delegate:
-                                                        SliverChildBuilderDelegate(
-                                                      childCount:
-                                                          products.length,
-                                                      (BuildContext context,
-                                                          int index) {
-                                                        return InkWell(
-                                                          onTap: () async {
-                                                            Future.delayed(
-                                                                Duration(
-                                                                    milliseconds:
-                                                                        100),
-                                                                () {
-                                                              print("${prefsRepository.myMarketId.toString()}" +
-                                                                  "55555555555555555555555555555555555555555");
-                                                              print("${prefsRepository.myMarketName.toString()}" +
-                                                                  "554${GetIt.I<PrefsRepository>().serverTime}4555554444${prefsRepository.countryIso.toString()}444444444${LanguageService.languageCode == 'ar' ? 'ae' : LanguageService.languageCode}444444444444${GetIt.I<PrefsRepository>().currentEvent}44444444444444444444444444445555555555555555555555");
-                                                            });
-                                                            await FirebaseAnalytics
-                                                                .instance
-                                                                .logEvent(
-                                                                    name:
-                                                                        'button_clicked',
-                                                                    parameters: {
-                                                                  "time_stamp": DateTime
-                                                                          .now()
-                                                                      .toUtc()
-                                                                      .add(Duration(
-                                                                          minutes:
-                                                                              GetIt.I<PrefsRepository>().getdurtion ?? 0))
-                                                                      .toString(),
-                                                                  "previous_event_button_name":
-                                                                      GetIt.I<PrefsRepository>()
-                                                                          .currentEvent,
-                                                                  "device_language": LanguageService
-                                                                              .languageCode ==
-                                                                          'ar'
-                                                                      ? 'ae'
-                                                                      : LanguageService
-                                                                          .languageCode,
-                                                                  "country_name":
-                                                                      GetIt.I<PrefsRepository>()
-                                                                          .countryIso,
-                                                                  'userID': prefsRepository
-                                                                      .myMarketId
-                                                                      .toString(),
-                                                                  'user_name':
-                                                                      prefsRepository
-                                                                          .myMarketName
-                                                                          .toString(),
-                                                                  'clicked_button_name':
-                                                                      'i love you Ahmad',
-                                                                  "session_id":
-                                                                      GetIt.I<PrefsRepository>()
-                                                                          .sessionId,
-                                                                });
-                                                            await GetIt.I<
-                                                                    PrefsRepository>()
-                                                                .setCurrentEvent(
-                                                                    "i loveddssssssssssss44444444444444444ssssssssssssss you Ahmad in past");
-
-                                                            // pushOverscrollRoute(
-                                                            //     context: context,
-                                                            //     transitionDuration : Duration(milliseconds : 250),
-                                                            //     reverseTransitionDuration : Duration(milliseconds : 400),
-                                                            //     child: ProductDetailsPage(
-                                                            //       productItem: state
-                                                            //           .getProductListingWithoutFiltersModel!
-                                                            //           .data!
-                                                            //           .products![index]
-                                                            //     ),
-                                                            //     workNormally: true,
-                                                            //     withRoundedCorners: true,
-                                                            //     isArabicLanguage: LanguageService.rtl,
-                                                            //     dragToPopDirection: DragToPopDirection.toBottom,
-                                                            //     scrollToPopOption: ScrollToPopOption.start,
-                                                            //     fullscreenDialog: true);
-                                                            Navigator.of(context).push(
-                                                                MaterialPageRoute(
-                                                                    builder:
-                                                                        (ctx) =>
-                                                                            ProductDetailsPage(
-                                                                              productItem: products[index],
-                                                                            )));
-                                                          },
-                                                          child: ProductItem(
-                                                            key: TestVariables
-                                                                    .kTestMode
-                                                                ? Key(
-                                                                    '${WidgetsKey.productInBoutiqueListKey}$index')
-                                                                : null,
-                                                            slidingModeItem:
-                                                                slidingMode,
-                                                            productItem:
-                                                                products[index],
-                                                            itemIndex: index,
-                                                            setThisEnabled: (int
-                                                                    index,
-                                                                int slideMode) {
-                                                              setThisEnabledNotifier
-                                                                      .value =
-                                                                  Tuple2(index,
-                                                                      slideMode);
-                                                            },
-                                                          ),
-                                                        );
-                                                      },
-                                                    ),
+                                              return SliverPadding(
+                                                key: TestVariables.kTestMode
+                                                    ? Key(WidgetsKey
+                                                        .productsListKey)
+                                                    : gridViewKeyForRendering,
+                                                padding: const EdgeInsets.only(
+                                                    top: 10),
+                                                sliver: SliverGrid(
+                                                  gridDelegate:
+                                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                                    crossAxisCount: 2,
+                                                    childAspectRatio:
+                                                        200.w / 350,
+                                                    crossAxisSpacing: 10,
+                                                    mainAxisSpacing: 15,
                                                   ),
-                                                );
-                                              }
+                                                  delegate:
+                                                      SliverChildBuilderDelegate(
+                                                    childCount: products.length,
+                                                    (BuildContext context,
+                                                        int index) {
+                                                      return InkWell(
+                                                        onTap: () async {
+                                                          Future.delayed(
+                                                              Duration(
+                                                                  milliseconds:
+                                                                      100), () {
+                                                            print("${prefsRepository.myMarketId.toString()}" +
+                                                                "55555555555555555555555555555555555555555");
+                                                            print("${prefsRepository.myMarketName.toString()}" +
+                                                                "554${GetIt.I<PrefsRepository>().serverTime}4555554444${prefsRepository.countryIso.toString()}444444444${LanguageService.languageCode == 'ar' ? 'ae' : LanguageService.languageCode}444444444444${GetIt.I<PrefsRepository>().currentEvent}44444444444444444444444444445555555555555555555555");
+                                                          });
+                                                          await FirebaseAnalytics
+                                                              .instance
+                                                              .logEvent(
+                                                                  name:
+                                                                      'button_clicked',
+                                                                  parameters: {
+                                                                "time_stamp": DateTime
+                                                                        .now()
+                                                                    .toUtc()
+                                                                    .add(Duration(
+                                                                        minutes:
+                                                                            GetIt.I<PrefsRepository>().getdurtion ??
+                                                                                0))
+                                                                    .toString(),
+                                                                "previous_event_button_name":
+                                                                    GetIt.I<PrefsRepository>()
+                                                                        .currentEvent,
+                                                                "device_language":
+                                                                    LanguageService.languageCode ==
+                                                                            'ar'
+                                                                        ? 'ae'
+                                                                        : LanguageService
+                                                                            .languageCode,
+                                                                "country_name":
+                                                                    GetIt.I<PrefsRepository>()
+                                                                        .countryIso,
+                                                                'userID': prefsRepository
+                                                                    .myMarketId
+                                                                    .toString(),
+                                                                'user_name':
+                                                                    prefsRepository
+                                                                        .myMarketName
+                                                                        .toString(),
+                                                                'clicked_button_name':
+                                                                    'i love you Ahmad',
+                                                                "session_id": GetIt.I<
+                                                                        PrefsRepository>()
+                                                                    .sessionId,
+                                                              });
+                                                          await GetIt.I<
+                                                                  PrefsRepository>()
+                                                              .setCurrentEvent(
+                                                                  "i loveddssssssssssss44444444444444444ssssssssssssss you Ahmad in past");
+
+                                                          // pushOverscrollRoute(
+                                                          //     context: context,
+                                                          //     transitionDuration : Duration(milliseconds : 250),
+                                                          //     reverseTransitionDuration : Duration(milliseconds : 400),
+                                                          //     child: ProductDetailsPage(
+                                                          //       productItem: state
+                                                          //           .getProductListingWithoutFiltersModel!
+                                                          //           .data!
+                                                          //           .products![index]
+                                                          //     ),
+                                                          //     workNormally: true,
+                                                          //     withRoundedCorners: true,
+                                                          //     isArabicLanguage: LanguageService.rtl,
+                                                          //     dragToPopDirection: DragToPopDirection.toBottom,
+                                                          //     scrollToPopOption: ScrollToPopOption.start,
+                                                          //     fullscreenDialog: true);
+                                                          Navigator.of(context).push(
+                                                              MaterialPageRoute(
+                                                                  builder: (ctx) =>
+                                                                      ProductDetailsPage(
+                                                                        productItem:
+                                                                            products[index],
+                                                                      )));
+                                                        },
+                                                        child: ProductItem(
+                                                          key: TestVariables
+                                                                  .kTestMode
+                                                              ? Key(
+                                                                  '${WidgetsKey.productInBoutiqueListKey}$index')
+                                                              : null,
+                                                          slidingModeItem:
+                                                              slidingMode,
+                                                          productItem:
+                                                              products[index],
+                                                          itemIndex: index,
+                                                          setThisEnabled: (int
+                                                                  index,
+                                                              int slideMode) {
+                                                            setThisEnabledNotifier
+                                                                    .value =
+                                                                Tuple2(index,
+                                                                    slideMode);
+                                                          },
+                                                        ),
+                                                      );
+                                                    },
+                                                  ),
+                                                ),
+                                              );
                                             }
 
                                             if (((state
@@ -2392,8 +2392,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               );
                                             }
 
-                                            List<filter_products.Products>
-                                                products = [];
+                                            products = [];
 
                                             if (state.getProductListingWithFiltersPaginationModels[
                                                     '${widget.boutiqueSlug}' +
@@ -2575,14 +2574,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                   BlocBuilder<HomeBloc, HomeState>(
                                       builder: (context, state) {
                                     if (state
-                                                .getProductListingWithFiltersPaginationModels[
-                                                    '${widget.boutiqueSlug}' +
-                                                        '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
-                                                        '${(widget.category ?? '')}']
-                                                ?.paginationStatus ==
-                                            PaginationStatus.loading &&
-                                        state
-                                            .isGettingProductListingWithPagination) {
+                                        .isGettingProductListingWithPagination) {
                                       return SliverToBoxAdapter(
                                         child: Center(
                                           child: TrydosLoader(),
