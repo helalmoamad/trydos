@@ -182,7 +182,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<GetProductsWithFiltersEvent>(_onGetProductsWithFiltersEvent,
         transformer: restartable());
     on<GetProductsWithFiltersUsingPaginationEvent>(
-      _onGetProductsWithFiltersUsingPaginationEvent,
+      _onGetProductsWithFiltersUsingPaginationEvent,transformer: restartable()
     );
 
     on<GetProductFiltersWithPrefetchForFiveFiltersEvent>(
@@ -283,8 +283,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       ReplyFromGeminiEvent event, Emitter<HomeState> emit) async {
     if (event.sendRequestToGeminiStatus != null) {
       emit(state.copyWith(
+          theReplyFromGemini:
+              !event.resetTheReply ? event.theReplyFromGemini : "",
           sendRequestToGeminiStatus: event.sendRequestToGeminiStatus));
     }
+
     emit(state.copyWith(
         theReplyFromGemini:
             !event.resetTheReply ? event.theReplyFromGemini : ""));
@@ -491,7 +494,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             .addAll({event.categorySlug: false});
       }
       if (boutiquesForEveryMainCategoryThatDidPrefetch[event.categorySlug] ==
-          true) {
+          true && event.offset == '1') {
         return;
       }
       boutiquesForEveryMainCategoryThatDidPrefetch[event.categorySlug] = true;
@@ -596,8 +599,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                               .page +
                           1
                       : 2,
-                  hasReachedMax:
-                      (r.data!.boutiques?.length ?? kPageSize) < kPageSize,
                   items: !event.getWithPagination
                       ? [...r.data!.boutiques ?? []]
                       : [...boutiques, ...r.data!.boutiques ?? []]));
@@ -805,10 +806,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     //         ]
     //       : [],
     // );
-    if ((!(event.cashedOrginalBoutique &&
+    if (!(event.cashedOrginalBoutique &&
         getProductListingWithFiltersPaginationModels[keyWithoutFilter]
                 ?.paginationStatus ==
-            PaginationStatus.success))) {
+            PaginationStatus.success)) {
       getProductListingWithFiltersPaginationModels[keyWithoutFilter] =
           getProductListingWithFiltersPaginationModels[keyWithoutFilter]!
               .copyWith(
@@ -838,7 +839,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     }
     emit(state.copyWith(
       cashedOrginalBoutique: event.cashedOrginalBoutique,
-        isGettingProductListingWithPaginationForAppearProduct: false,
+        isGettingProductListingWithPaginationForAppearProduct: event.getWithPagination,
+      isGettingProductListingWithPagination: event.getWithPagination,
       //  reRequestProductWithFilters: Map.of(reRequestProductWithFilters),
       getProductListingWithFiltersPaginationModels:
           Map.of(getProductListingWithFiltersPaginationModels),
@@ -869,7 +871,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                     ?.map((e) => '"${e.slug.toString()}"')
                     .toList()
                 : ['"${event.boutiqueSlug}"'],
-            offset: 1,
+            offset: !event.getWithPagination ? 1 :  getProductListingWithFiltersPaginationModels[keyWithoutFilter]!
+                .page,
             attributes: filters.attributes.isNullOrEmpty
                 ? null
                 : [
@@ -928,9 +931,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           getProductListingWithFiltersPaginationModels.addAll({
             key: value!.copyWith(
                 paginationStatus: PaginationStatus.success,
-                page: 2,
-                hasReachedMax: (r.data!.products?.length ?? 0) < kPageSize,
-                items: r.data!.products)
+                page: event.getWithPagination ? value.page + 1 : 2,
+                hasReachedMax:  (r.data!.products?.length ?? 0) < kPageSize,
+                items: event.getWithPagination ? [...List.of(value.items), ...r.data!.products ?? []] : r.data!.products)
           });
           return;
         }
@@ -964,6 +967,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         countOfProductExpectedByFiltering:
             Map.of({event.boutiqueSlug: r.data!.totalSize ?? 0}),
         getProductFiltersModel: Map.of(data),
+        isGettingProductListingWithPagination: false,
         // removeAlreadyChoosedFilters(
         //     filters_model.GetProductFiltersModel(
         //         filters: filters_model.Filter(
@@ -976,13 +980,18 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         //         )),
         //     filters),
       ));
+      print('vvvvvvvvvvvvv ${state.hashCode}');
+
+      print(
+          'fffffffffffff ${getProductListingWithFiltersPaginationModels[keyWithoutFilter]?.paginationStatus}');
+      print(
+          'fucششششششششششش ${state.getProductListingWithFiltersPaginationModels[keyWithoutFilter]?.paginationStatus}');
     });
   }
 
   FutureOr<void> _onGetProductsWithFiltersUsingPaginationEvent(
       GetProductsWithFiltersUsingPaginationEvent event,
       Emitter<HomeState> emit) async {
-    if (state.isGettingProductListingWithPagination) return;
 
     Map<String, PaginationModel<product.Products>?>
         getProductListingWithFiltersPaginationModels =
@@ -998,7 +1007,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       getProductListingWithFiltersPaginationModels[keyWithoutFilter] =
           PaginationModel.init();
     }
-
+print('kpppppppppppp ${getProductListingWithFiltersPaginationModels[keyWithoutFilter]
+    ?.page}');
+    print('kpppppppppppp ${getProductListingWithFiltersPaginationModels[keyWithoutFilter]
+    ?.paginationStatus}');
+    print('kpppppppppppp ${getProductListingWithFiltersPaginationModels[keyWithoutFilter]
+        ?.hasReachedMax}');
     if (getProductListingWithFiltersPaginationModels[keyWithoutFilter]
                 ?.paginationStatus ==
             PaginationStatus.loading ||
@@ -1094,7 +1108,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     emit(state.copyWith(
       cashedOrginalBoutique: event.cashedOrginalBoutique,
       isGettingProductListingWithPagination: true,
-        isGettingProductListingWithPaginationForAppearProduct: true,
+      isGettingProductListingWithPaginationForAppearProduct: true,
       //  reRequestProductWithFilters: Map.of(reRequestProductWithFilters),
       getProductListingWithFiltersPaginationModels:
           Map.of(getProductListingWithFiltersPaginationModels),
@@ -1240,12 +1254,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         //         )),
         //     filters),
       ));
-      print('vvvvvvvvvvvvv ${state.hashCode}');
 
-      print(
-          'fuckkkkkkkkkk ${getProductListingWithFiltersPaginationModels[keyWithoutFilter]?.paginationStatus}');
-      print(
-          'fucششششششششششش ${state.getProductListingWithFiltersPaginationModels[keyWithoutFilter]?.paginationStatus}');
     });
   }
 

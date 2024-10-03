@@ -49,6 +49,9 @@ import '../../../app/my_text_widget.dart';
 import '../../../app/svg_network_widget.dart';
 import '../../data/models/get_home_boutiqes_model.dart' as boutique;
 import '../manager/home_bloc.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+import 'package:speech_to_text/speech_to_text.dart';
 import '../widgets/product_listing/product_item.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
@@ -92,7 +95,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
   double? _previousOffset;
   final FocusNode focusNode = FocusNode();
   final ValueNotifier<int> expandingFiltersStack = ValueNotifier(-1);
-  final ValueNotifier<bool> hideTrendingAndHistory = ValueNotifier(false);
   final ValueNotifier<bool> searchVisible = ValueNotifier(true);
 
   final TextEditingController controller = TextEditingController();
@@ -109,15 +111,84 @@ class _ProductListingPageState extends State<ProductListingPage> {
   bool isExpanded = false;
   final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   bool? fromSearch;
+  SpeechToText _speechToText = SpeechToText();
+  final ValueNotifier<bool> isRecordeForSearchWithMic = ValueNotifier(false);
+  bool _speechEnabled = false;
+
   bool itExpendForFirst = true;
   String key = '';
+  String keyWithoutFilter = '';
   Filter? prefAppliedFilters;
+  Key gridViewKeyForRenderingForTheFiveFilters = UniqueKey();
+  Key gridViewKeyForRendering = UniqueKey();
+
+  void _initSpeech() async {
+    _speechEnabled = await _speechToText.initialize();
+  }
+
+  void _startListening() async {
+    await _speechToText.listen(
+      listenFor: Duration(seconds: 7),
+      onResult: (result) {
+        if (result.recognizedWords.replaceAll(" ", "").length > 2) {
+          controller.text = result.recognizedWords;
+          Filter filters = BlocProvider.of<HomeBloc>(context)
+              .state
+              .choosedFiltersByUser[
+          widget.boutiqueSlug + (widget.category ?? "")]
+              ?.filters ??
+              Filter();
+          BlocProvider.of<HomeBloc>(context).add(ChangeSelectedFiltersEvent(
+              boutiqueSlug: widget.boutiqueSlug,
+              category: widget.category,
+              fromHomePageSearch: true,
+              filtersChoosedByUser: GetProductFiltersModel(
+                  filters: filters.copyWithSaveOtherField(
+                    prices: filters.prices,
+                    searchText: result.recognizedWords,
+                  ))));
+          BlocProvider.of<HomeBloc>(context).add(ChangeAppliedFiltersEvent(
+            boutiqueSlug: widget.boutiqueSlug,
+            category: widget.category,
+            filtersAppliedByUser: GetProductFiltersModel(
+                filters: filters.copyWithSaveOtherField(
+                  prices: filters.prices,
+                  searchText: result.recognizedWords,
+                )),
+          ));
+          BlocProvider.of<HomeBloc>(context).add(GetProductsWithFiltersEvent(
+              offset: 1,
+              boutiqueSlug: widget.boutiqueSlug,
+              category: widget.category,
+              resetChoosedFilters: false,
+              fromSearch: true,
+              searchText: result.recognizedWords));
+          _stopListening();
+          return;
+        }
+      },
+    );
+    isRecordeForSearchWithMic.value = true;
+    Future.delayed(
+      Duration(seconds: 5),
+          () => isRecordeForSearchWithMic.value = false,
+    );
+  }
+
+  void _stopListening() async {
+    await _speechToText.stop();
+
+    isRecordeForSearchWithMic.value = false;
+  }
 
   @override
   void initState() {
-    Timeline.finishSync();
+    _initSpeech();
     itExpendForFirst = true;
     key = widget.boutiqueSlug + (widget.category ?? '');
+    keyWithoutFilter = '${widget.boutiqueSlug}' +
+        '${(!widget.fromSearch) ? 'withoutFilter' : ""}' +
+        '${(widget.category ?? '')}';
     fromSearch = widget.fromSearch;
     searchVisible.value = false;
     if ((widget.searchText?.length ?? 0) > 2) {
@@ -186,14 +257,24 @@ class _ProductListingPageState extends State<ProductListingPage> {
       }
       if (scrollController.offset >=
           (scrollController.position.maxScrollExtent * 0.7)) {
-        homeBloc.add(GetProductsWithFiltersUsingPaginationEvent(
+        if(homeBloc.state.isGettingProductListingWithPagination) return;
+        if (homeBloc.state.getProductListingWithFiltersPaginationModels[keyWithoutFilter]
+            ?.paginationStatus ==
+            PaginationStatus.loading ||
+            homeBloc.state.getProductListingWithFiltersPaginationModels[keyWithoutFilter]!
+                .hasReachedMax) {
+          return;
+        }
+        homeBloc.add(GetProductsWithFiltersEvent(
             limit: 10,
             cashedOrginalBoutique: !widget.fromSearch,
             boutiqueSlug: widget.boutiqueSlug,
+            getWithPagination: true,
             fromSearch: widget.fromSearch,
             category: widget.category,
             searchText: widget.fromSearch ? widget.searchText : null,
-            offset: 2));
+            offset: 2
+        ));
       }
     });
     super.initState();
@@ -205,22 +286,16 @@ class _ProductListingPageState extends State<ProductListingPage> {
     if (!widget.fromSearch) {
       appBloc.add(ChangeIndexForSearch(0));
     }
+    _speechToText.cancel();
     focusNode.dispose();
     appBloc.add(ShowOrHideBars(true));
     scrollController.dispose();
+    homeBloc.add(ReplyFromGeminiEvent(
+        sendRequestToGeminiStatus: SendRequestToGeminiStatus.success,
+        theReplyFromGemini: ""));
     super.dispose();
   }
 
-  @override
-  void didChangeDependencies() {
-    focusNode.addListener(() {
-      if (focusNode.hasFocus) {
-        hideTrendingAndHistory.value =
-            controller.text.length > 0 ? true : false;
-      }
-    });
-    super.didChangeDependencies();
-  }
 
   void postFrameCallback(timer) {
     var context = htmlDescriptionKey.currentContext;
@@ -425,6 +500,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
+        homeBloc.add(ReplyFromGeminiEvent(
+            sendRequestToGeminiStatus: SendRequestToGeminiStatus.success,
+            theReplyFromGemini: ""));
         if (widget.fromSearch) {
           widget.controllerFormSearchPage?.text = controller.text;
         }
@@ -552,8 +630,48 @@ class _ProductListingPageState extends State<ProductListingPage> {
                               p.isExpandedForListingPage !=
                                   c.isExpandedForListingPage ||
                               p.sendRequestToGeminiStatus !=
-                                  c.sendRequestToGeminiStatus,
+                                  c.sendRequestToGeminiStatus ||
+                              p.theReplyFromGemini != c.theReplyFromGemini,
                           builder: (context, state) {
+                            if (state.theReplyFromGemini != "") {
+                              controller.text = state.theReplyFromGemini ?? "";
+                              Filter filters =
+                                  BlocProvider.of<HomeBloc>(context)
+                                          .state
+                                          .choosedFiltersByUser['search']
+                                          ?.filters ??
+                                      Filter();
+                              BlocProvider.of<HomeBloc>(context).add(
+                                  ChangeSelectedFiltersEvent(
+                                      boutiqueSlug: widget.boutiqueSlug,
+                                      category: widget.category,
+                                      fromHomePageSearch: widget.fromSearch,
+                                      filtersChoosedByUser:
+                                          GetProductFiltersModel(
+                                              filters: filters
+                                                  .copyWithSaveOtherField(
+                                        prices: filters.prices,
+                                        searchText: state.theReplyFromGemini,
+                                      ))));
+                              BlocProvider.of<HomeBloc>(context)
+                                  .add(ChangeAppliedFiltersEvent(
+                                boutiqueSlug: widget.boutiqueSlug,
+                                category: widget.category,
+                                filtersAppliedByUser: GetProductFiltersModel(
+                                    filters: filters.copyWithSaveOtherField(
+                                  prices: filters.prices,
+                                  searchText: state.theReplyFromGemini,
+                                )),
+                              ));
+                              BlocProvider.of<HomeBloc>(context).add(
+                                  GetProductsWithFiltersEvent(
+                                      offset: 1,
+                                      boutiqueSlug: widget.boutiqueSlug,
+                                      category: widget.category,
+                                      resetChoosedFilters: false,
+                                      fromSearch: true,
+                                      searchText: state.theReplyFromGemini));
+                            }
                             print(
                                 'statusssss ${state.getProductListingWithFiltersPaginationModels['women-section-67withoutFilter']?.paginationStatus}');
                             if (!(state.isExpandedForListingPage ?? false) &&
@@ -596,6 +714,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                   child: TrydosAppBar(
                                                     appBarParams: AppBarParams(
                                                         onBack: () {
+                                                          homeBloc.add(ReplyFromGeminiEvent(
+                                                              sendRequestToGeminiStatus:
+                                                                  SendRequestToGeminiStatus
+                                                                      .success,
+                                                              theReplyFromGemini:
+                                                                  ""));
                                                           if (widget
                                                               .fromSearch) {
                                                             widget.controllerFormSearchPage
@@ -852,13 +976,36 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                               width: 20,
                                                                             ),
                                                                     ),
-                                                                    SvgPicture
-                                                                        .asset(
-                                                                      AppAssets
-                                                                          .microphoneSvg,
-                                                                      height:
-                                                                          20,
-                                                                      width: 20,
+                                                                    ValueListenableBuilder<
+                                                                        bool>(
+                                                                      valueListenable:
+                                                                          isRecordeForSearchWithMic,
+                                                                      builder: (context,
+                                                                          recordeForSearchWithMic,
+                                                                          _) {
+                                                                        return InkWell(
+                                                                          onTap:
+                                                                              () async {
+                                                                            final status =
+                                                                                await Permission.microphone.request();
+                                                                            if (status !=
+                                                                                PermissionStatus.granted) {
+                                                                              return;
+                                                                            }
+                                                                            _speechToText.isNotListening
+                                                                                ? _startListening()
+                                                                                : _stopListening();
+                                                                          },
+                                                                          child:
+                                                                              Container(
+                                                                            width:
+                                                                                20,
+                                                                            child: Icon(_speechToText.isNotListening || !recordeForSearchWithMic
+                                                                                ? Icons.mic_off
+                                                                                : Icons.mic),
+                                                                          ),
+                                                                        );
+                                                                      },
                                                                     ),
                                                                   ],
                                                                 ),
@@ -1017,14 +1164,29 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                         width:
                                                                             20,
                                                                       ),
-                                                                      SvgPicture
-                                                                          .asset(
-                                                                        AppAssets
-                                                                            .microphoneSvg,
-                                                                        height:
-                                                                            20,
-                                                                        width:
-                                                                            20,
+                                                                      ValueListenableBuilder<
+                                                                          bool>(
+                                                                        valueListenable:
+                                                                            isRecordeForSearchWithMic,
+                                                                        builder: (context,
+                                                                            recordeForSearchWithMic,
+                                                                            _) {
+                                                                          return InkWell(
+                                                                            onTap:
+                                                                                () async {
+                                                                              final status = await Permission.microphone.request();
+                                                                              if (status != PermissionStatus.granted) {
+                                                                                return;
+                                                                              }
+                                                                              _speechToText.isNotListening ? _startListening() : _stopListening();
+                                                                            },
+                                                                            child:
+                                                                                Container(
+                                                                              width: 20,
+                                                                              child: Icon(_speechToText.isNotListening || !recordeForSearchWithMic ? Icons.mic_off : Icons.mic),
+                                                                            ),
+                                                                          );
+                                                                        },
                                                                       ),
                                                                     ],
                                                                   ),
@@ -1194,8 +1356,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                   ));
                                                                 }
                                                               },
-                                                              hideTrendingAndHistory:
-                                                                  hideTrendingAndHistory,
                                                             ),
                                                           ),
                                                           AnimatedSize(
@@ -1339,7 +1499,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                           30,
                                                                       child: Row(
                                                                           children: [
-                                                                            SizedBox(width: !isExpanded ? 10.0 : 12.5),
+                                                                            SizedBox(width: searchOpen ? 0 : !isExpanded ? 10.0 : 12.5),
                                                                             !isExpanded
                                                                                 ? SvgPicture.asset(
                                                                                     AppAssets.shareSvg,
@@ -1582,6 +1742,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                     c.cashedOrginalBoutique;
                                           },
                                           builder: (context, state) {
+
                                             String? currentAppliedFilterSllug =
                                                 "null";
                                             isExpanded = state
@@ -1778,7 +1939,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                       ? SliverToBoxAdapter()
                                       : BlocBuilder<HomeBloc, HomeState>(
                                           buildWhen: (p, c) {
-                                            return p
+                                            bool rebuild =  p
                                                         .getProductListingWithFiltersPaginationModels[
                                                             '${widget.boutiqueSlug}' +
                                                                 'withoutFilter' +
@@ -1789,10 +1950,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                             '${widget.boutiqueSlug}' +
                                                                 'withoutFilter' +
                                                                 '${(widget.category ?? '')}']
-                                                        ?.paginationStatus ||
-                                                c.isGettingProductListingWithPagination !=
-                                                    p
-                                                        .isGettingProductListingWithPagination ||
+                                                        ?.paginationStatus  ||
                                                 p.isExpandedForListingPage !=
                                                     c
                                                         .isExpandedForListingPage ||
@@ -1802,6 +1960,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                 p.isGettingProductListingWithPaginationForAppearProduct !=
                                                     c
                                                         .isGettingProductListingWithPaginationForAppearProduct ||
+                                                p.isGettingProductListingWithPagination !=
+                                                    c
+                                                        .isGettingProductListingWithPagination ||
                                                 p
                                                         .getProductListingWithFiltersPaginationModels[
                                                             '${widget.boutiqueSlug}' +
@@ -1815,6 +1976,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                 p.cashedOrginalBoutique !=
                                                     c.cashedOrginalBoutique;
 
+                                            if (rebuild) {
+                                              gridViewKeyForRendering = UniqueKey();
+                                            }
+                                            return rebuild;
                                             // ||
                                             // (!widget.fromSearch &&
                                             //     p
@@ -1960,7 +2125,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                   key: TestVariables.kTestMode
                                                       ? Key(WidgetsKey
                                                           .productsListKey)
-                                                      : null,
+                                                      : gridViewKeyForRendering,
                                                   padding:
                                                       const EdgeInsets.only(
                                                           top: 10),
@@ -2282,7 +2447,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               key: TestVariables.kTestMode
                                                   ? Key(WidgetsKey
                                                       .productsListKey)
-                                                  : null,
+                                                  : gridViewKeyForRendering,
                                               padding: const EdgeInsets.only(
                                                   top: 10),
                                               sliver: SliverGrid(

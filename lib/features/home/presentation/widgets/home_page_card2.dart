@@ -494,7 +494,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                                           index]
                                                       .categorySlug,
                                                   boutiqueDescription: widget
-                                                      .boutniqe.description!,
+                                                      .boutniqe.description,
                                                   boutiqueFirstBanner: widget
                                                       .boutniqe
                                                       .banners![0]

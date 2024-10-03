@@ -2278,6 +2278,7 @@ class FilterCircleWidget extends StatefulWidget {
       this.withBackGroundShadow = true,
       this.paddingValue = 10,
       this.scale = false,
+      this.isTopItem = false,
       this.markWidth = 20,
       this.markHeight = 20,
       this.borderColor,
@@ -2286,6 +2287,7 @@ class FilterCircleWidget extends StatefulWidget {
       this.expandStackedItemsFunction,
       required this.displayFilterMark});
 
+  final bool isTopItem;
   final Color? borderColor;
   final bool isExpanded;
   final bool isSvg;
@@ -2351,7 +2353,7 @@ class _FilterCircleWidgetState extends State<FilterCircleWidget> {
                     ],
                   ),
                 ),
-                if (widget.isExpanded) ...{
+                if (widget.isExpanded || widget.isTopItem) ...{
                   SizedBox(height: 5),
                   SizedBox(
                     width: widget.width,

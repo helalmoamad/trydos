@@ -97,6 +97,8 @@ class _HomePageState extends State<HomePage> {
         lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
             selectedCategorySlug] = lastIndexSeenByUser;
       }
+      print(scrollController.offset);
+      print(scrollController.position.maxScrollExtent);
       if (scrollController.offset >=
           (scrollController.position.maxScrollExtent * 0.7)) {
         homeBloc.add(GetHomeBoutiqesEvent(
