@@ -283,8 +283,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       ReplyFromGeminiEvent event, Emitter<HomeState> emit) async {
     if (event.sendRequestToGeminiStatus != null) {
       emit(state.copyWith(
+          theReplyFromGemini:
+              !event.resetTheReply ? event.theReplyFromGemini : "",
           sendRequestToGeminiStatus: event.sendRequestToGeminiStatus));
     }
+
     emit(state.copyWith(
         theReplyFromGemini:
             !event.resetTheReply ? event.theReplyFromGemini : ""));
@@ -1105,7 +1108,7 @@ print('kpppppppppppp ${getProductListingWithFiltersPaginationModels[keyWithoutFi
     emit(state.copyWith(
       cashedOrginalBoutique: event.cashedOrginalBoutique,
       isGettingProductListingWithPagination: true,
-        isGettingProductListingWithPaginationForAppearProduct: true,
+      isGettingProductListingWithPaginationForAppearProduct: true,
       //  reRequestProductWithFilters: Map.of(reRequestProductWithFilters),
       getProductListingWithFiltersPaginationModels:
           Map.of(getProductListingWithFiltersPaginationModels),

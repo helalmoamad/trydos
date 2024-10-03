@@ -49,6 +49,9 @@ import '../../../app/my_text_widget.dart';
 import '../../../app/svg_network_widget.dart';
 import '../../data/models/get_home_boutiqes_model.dart' as boutique;
 import '../manager/home_bloc.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+import 'package:speech_to_text/speech_to_text.dart';
 import '../widgets/product_listing/product_item.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
@@ -108,14 +111,79 @@ class _ProductListingPageState extends State<ProductListingPage> {
   bool isExpanded = false;
   final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   bool? fromSearch;
+  SpeechToText _speechToText = SpeechToText();
+  final ValueNotifier<bool> isRecordeForSearchWithMic = ValueNotifier(false);
+  bool _speechEnabled = false;
+
   bool itExpendForFirst = true;
   String key = '';
   String keyWithoutFilter = '';
   Filter? prefAppliedFilters;
   Key gridViewKeyForRenderingForTheFiveFilters = UniqueKey();
   Key gridViewKeyForRendering = UniqueKey();
+
+  void _initSpeech() async {
+    _speechEnabled = await _speechToText.initialize();
+  }
+
+  void _startListening() async {
+    await _speechToText.listen(
+      listenFor: Duration(seconds: 7),
+      onResult: (result) {
+        if (result.recognizedWords.replaceAll(" ", "").length > 2) {
+          controller.text = result.recognizedWords;
+          Filter filters = BlocProvider.of<HomeBloc>(context)
+              .state
+              .choosedFiltersByUser[
+          widget.boutiqueSlug + (widget.category ?? "")]
+              ?.filters ??
+              Filter();
+          BlocProvider.of<HomeBloc>(context).add(ChangeSelectedFiltersEvent(
+              boutiqueSlug: widget.boutiqueSlug,
+              category: widget.category,
+              fromHomePageSearch: true,
+              filtersChoosedByUser: GetProductFiltersModel(
+                  filters: filters.copyWithSaveOtherField(
+                    prices: filters.prices,
+                    searchText: result.recognizedWords,
+                  ))));
+          BlocProvider.of<HomeBloc>(context).add(ChangeAppliedFiltersEvent(
+            boutiqueSlug: widget.boutiqueSlug,
+            category: widget.category,
+            filtersAppliedByUser: GetProductFiltersModel(
+                filters: filters.copyWithSaveOtherField(
+                  prices: filters.prices,
+                  searchText: result.recognizedWords,
+                )),
+          ));
+          BlocProvider.of<HomeBloc>(context).add(GetProductsWithFiltersEvent(
+              offset: 1,
+              boutiqueSlug: widget.boutiqueSlug,
+              category: widget.category,
+              resetChoosedFilters: false,
+              fromSearch: true,
+              searchText: result.recognizedWords));
+          _stopListening();
+          return;
+        }
+      },
+    );
+    isRecordeForSearchWithMic.value = true;
+    Future.delayed(
+      Duration(seconds: 5),
+          () => isRecordeForSearchWithMic.value = false,
+    );
+  }
+
+  void _stopListening() async {
+    await _speechToText.stop();
+
+    isRecordeForSearchWithMic.value = false;
+  }
+
   @override
   void initState() {
+    _initSpeech();
     itExpendForFirst = true;
     key = widget.boutiqueSlug + (widget.category ?? '');
     keyWithoutFilter = '${widget.boutiqueSlug}' +
@@ -218,9 +286,13 @@ class _ProductListingPageState extends State<ProductListingPage> {
     if (!widget.fromSearch) {
       appBloc.add(ChangeIndexForSearch(0));
     }
+    _speechToText.cancel();
     focusNode.dispose();
     appBloc.add(ShowOrHideBars(true));
     scrollController.dispose();
+    homeBloc.add(ReplyFromGeminiEvent(
+        sendRequestToGeminiStatus: SendRequestToGeminiStatus.success,
+        theReplyFromGemini: ""));
     super.dispose();
   }
 
@@ -428,6 +500,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
+        homeBloc.add(ReplyFromGeminiEvent(
+            sendRequestToGeminiStatus: SendRequestToGeminiStatus.success,
+            theReplyFromGemini: ""));
         if (widget.fromSearch) {
           widget.controllerFormSearchPage?.text = controller.text;
         }
@@ -555,8 +630,48 @@ class _ProductListingPageState extends State<ProductListingPage> {
                               p.isExpandedForListingPage !=
                                   c.isExpandedForListingPage ||
                               p.sendRequestToGeminiStatus !=
-                                  c.sendRequestToGeminiStatus,
+                                  c.sendRequestToGeminiStatus ||
+                              p.theReplyFromGemini != c.theReplyFromGemini,
                           builder: (context, state) {
+                            if (state.theReplyFromGemini != "") {
+                              controller.text = state.theReplyFromGemini ?? "";
+                              Filter filters =
+                                  BlocProvider.of<HomeBloc>(context)
+                                          .state
+                                          .choosedFiltersByUser['search']
+                                          ?.filters ??
+                                      Filter();
+                              BlocProvider.of<HomeBloc>(context).add(
+                                  ChangeSelectedFiltersEvent(
+                                      boutiqueSlug: widget.boutiqueSlug,
+                                      category: widget.category,
+                                      fromHomePageSearch: widget.fromSearch,
+                                      filtersChoosedByUser:
+                                          GetProductFiltersModel(
+                                              filters: filters
+                                                  .copyWithSaveOtherField(
+                                        prices: filters.prices,
+                                        searchText: state.theReplyFromGemini,
+                                      ))));
+                              BlocProvider.of<HomeBloc>(context)
+                                  .add(ChangeAppliedFiltersEvent(
+                                boutiqueSlug: widget.boutiqueSlug,
+                                category: widget.category,
+                                filtersAppliedByUser: GetProductFiltersModel(
+                                    filters: filters.copyWithSaveOtherField(
+                                  prices: filters.prices,
+                                  searchText: state.theReplyFromGemini,
+                                )),
+                              ));
+                              BlocProvider.of<HomeBloc>(context).add(
+                                  GetProductsWithFiltersEvent(
+                                      offset: 1,
+                                      boutiqueSlug: widget.boutiqueSlug,
+                                      category: widget.category,
+                                      resetChoosedFilters: false,
+                                      fromSearch: true,
+                                      searchText: state.theReplyFromGemini));
+                            }
                             print(
                                 'statusssss ${state.getProductListingWithFiltersPaginationModels['women-section-67withoutFilter']?.paginationStatus}');
                             if (!(state.isExpandedForListingPage ?? false) &&
@@ -599,6 +714,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                   child: TrydosAppBar(
                                                     appBarParams: AppBarParams(
                                                         onBack: () {
+                                                          homeBloc.add(ReplyFromGeminiEvent(
+                                                              sendRequestToGeminiStatus:
+                                                                  SendRequestToGeminiStatus
+                                                                      .success,
+                                                              theReplyFromGemini:
+                                                                  ""));
                                                           if (widget
                                                               .fromSearch) {
                                                             widget.controllerFormSearchPage
@@ -855,13 +976,36 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                               width: 20,
                                                                             ),
                                                                     ),
-                                                                    SvgPicture
-                                                                        .asset(
-                                                                      AppAssets
-                                                                          .microphoneSvg,
-                                                                      height:
-                                                                          20,
-                                                                      width: 20,
+                                                                    ValueListenableBuilder<
+                                                                        bool>(
+                                                                      valueListenable:
+                                                                          isRecordeForSearchWithMic,
+                                                                      builder: (context,
+                                                                          recordeForSearchWithMic,
+                                                                          _) {
+                                                                        return InkWell(
+                                                                          onTap:
+                                                                              () async {
+                                                                            final status =
+                                                                                await Permission.microphone.request();
+                                                                            if (status !=
+                                                                                PermissionStatus.granted) {
+                                                                              return;
+                                                                            }
+                                                                            _speechToText.isNotListening
+                                                                                ? _startListening()
+                                                                                : _stopListening();
+                                                                          },
+                                                                          child:
+                                                                              Container(
+                                                                            width:
+                                                                                20,
+                                                                            child: Icon(_speechToText.isNotListening || !recordeForSearchWithMic
+                                                                                ? Icons.mic_off
+                                                                                : Icons.mic),
+                                                                          ),
+                                                                        );
+                                                                      },
                                                                     ),
                                                                   ],
                                                                 ),
@@ -1020,14 +1164,29 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                         width:
                                                                             20,
                                                                       ),
-                                                                      SvgPicture
-                                                                          .asset(
-                                                                        AppAssets
-                                                                            .microphoneSvg,
-                                                                        height:
-                                                                            20,
-                                                                        width:
-                                                                            20,
+                                                                      ValueListenableBuilder<
+                                                                          bool>(
+                                                                        valueListenable:
+                                                                            isRecordeForSearchWithMic,
+                                                                        builder: (context,
+                                                                            recordeForSearchWithMic,
+                                                                            _) {
+                                                                          return InkWell(
+                                                                            onTap:
+                                                                                () async {
+                                                                              final status = await Permission.microphone.request();
+                                                                              if (status != PermissionStatus.granted) {
+                                                                                return;
+                                                                              }
+                                                                              _speechToText.isNotListening ? _startListening() : _stopListening();
+                                                                            },
+                                                                            child:
+                                                                                Container(
+                                                                              width: 20,
+                                                                              child: Icon(_speechToText.isNotListening || !recordeForSearchWithMic ? Icons.mic_off : Icons.mic),
+                                                                            ),
+                                                                          );
+                                                                        },
                                                                       ),
                                                                     ],
                                                                   ),
