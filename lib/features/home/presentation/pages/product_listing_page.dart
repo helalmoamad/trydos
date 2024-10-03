@@ -92,7 +92,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
   double? _previousOffset;
   final FocusNode focusNode = FocusNode();
   final ValueNotifier<int> expandingFiltersStack = ValueNotifier(-1);
-  final ValueNotifier<bool> hideTrendingAndHistory = ValueNotifier(false);
   final ValueNotifier<bool> searchVisible = ValueNotifier(true);
 
   final TextEditingController controller = TextEditingController();
@@ -111,13 +110,17 @@ class _ProductListingPageState extends State<ProductListingPage> {
   bool? fromSearch;
   bool itExpendForFirst = true;
   String key = '';
+  String keyWithoutFilter = '';
   Filter? prefAppliedFilters;
-
+  Key gridViewKeyForRenderingForTheFiveFilters = UniqueKey();
+  Key gridViewKeyForRendering = UniqueKey();
   @override
   void initState() {
-    Timeline.finishSync();
     itExpendForFirst = true;
     key = widget.boutiqueSlug + (widget.category ?? '');
+    keyWithoutFilter = '${widget.boutiqueSlug}' +
+        '${(!widget.fromSearch) ? 'withoutFilter' : ""}' +
+        '${(widget.category ?? '')}';
     fromSearch = widget.fromSearch;
     searchVisible.value = false;
     if ((widget.searchText?.length ?? 0) > 2) {
@@ -186,14 +189,24 @@ class _ProductListingPageState extends State<ProductListingPage> {
       }
       if (scrollController.offset >=
           (scrollController.position.maxScrollExtent * 0.7)) {
-        homeBloc.add(GetProductsWithFiltersUsingPaginationEvent(
+        if(homeBloc.state.isGettingProductListingWithPagination) return;
+        if (homeBloc.state.getProductListingWithFiltersPaginationModels[keyWithoutFilter]
+            ?.paginationStatus ==
+            PaginationStatus.loading ||
+            homeBloc.state.getProductListingWithFiltersPaginationModels[keyWithoutFilter]!
+                .hasReachedMax) {
+          return;
+        }
+        homeBloc.add(GetProductsWithFiltersEvent(
             limit: 10,
             cashedOrginalBoutique: !widget.fromSearch,
             boutiqueSlug: widget.boutiqueSlug,
+            getWithPagination: true,
             fromSearch: widget.fromSearch,
             category: widget.category,
             searchText: widget.fromSearch ? widget.searchText : null,
-            offset: 2));
+            offset: 2
+        ));
       }
     });
     super.initState();
@@ -211,16 +224,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
     super.dispose();
   }
 
-  @override
-  void didChangeDependencies() {
-    focusNode.addListener(() {
-      if (focusNode.hasFocus) {
-        hideTrendingAndHistory.value =
-            controller.text.length > 0 ? true : false;
-      }
-    });
-    super.didChangeDependencies();
-  }
 
   void postFrameCallback(timer) {
     var context = htmlDescriptionKey.currentContext;
@@ -1194,8 +1197,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                   ));
                                                                 }
                                                               },
-                                                              hideTrendingAndHistory:
-                                                                  hideTrendingAndHistory,
                                                             ),
                                                           ),
                                                           AnimatedSize(
@@ -1339,7 +1340,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                           30,
                                                                       child: Row(
                                                                           children: [
-                                                                            SizedBox(width: !isExpanded ? 10.0 : 12.5),
+                                                                            SizedBox(width: searchOpen ? 0 : !isExpanded ? 10.0 : 12.5),
                                                                             !isExpanded
                                                                                 ? SvgPicture.asset(
                                                                                     AppAssets.shareSvg,
@@ -1582,6 +1583,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                     c.cashedOrginalBoutique;
                                           },
                                           builder: (context, state) {
+
                                             String? currentAppliedFilterSllug =
                                                 "null";
                                             isExpanded = state
@@ -1778,7 +1780,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                       ? SliverToBoxAdapter()
                                       : BlocBuilder<HomeBloc, HomeState>(
                                           buildWhen: (p, c) {
-                                            return p
+                                            bool rebuild =  p
                                                         .getProductListingWithFiltersPaginationModels[
                                                             '${widget.boutiqueSlug}' +
                                                                 'withoutFilter' +
@@ -1789,10 +1791,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                             '${widget.boutiqueSlug}' +
                                                                 'withoutFilter' +
                                                                 '${(widget.category ?? '')}']
-                                                        ?.paginationStatus ||
-                                                c.isGettingProductListingWithPagination !=
-                                                    p
-                                                        .isGettingProductListingWithPagination ||
+                                                        ?.paginationStatus  ||
                                                 p.isExpandedForListingPage !=
                                                     c
                                                         .isExpandedForListingPage ||
@@ -1802,6 +1801,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                 p.isGettingProductListingWithPaginationForAppearProduct !=
                                                     c
                                                         .isGettingProductListingWithPaginationForAppearProduct ||
+                                                p.isGettingProductListingWithPagination !=
+                                                    c
+                                                        .isGettingProductListingWithPagination ||
                                                 p
                                                         .getProductListingWithFiltersPaginationModels[
                                                             '${widget.boutiqueSlug}' +
@@ -1815,6 +1817,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                 p.cashedOrginalBoutique !=
                                                     c.cashedOrginalBoutique;
 
+                                            if (rebuild) {
+                                              gridViewKeyForRendering = UniqueKey();
+                                            }
+                                            return rebuild;
                                             // ||
                                             // (!widget.fromSearch &&
                                             //     p
@@ -1960,7 +1966,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                   key: TestVariables.kTestMode
                                                       ? Key(WidgetsKey
                                                           .productsListKey)
-                                                      : null,
+                                                      : gridViewKeyForRendering,
                                                   padding:
                                                       const EdgeInsets.only(
                                                           top: 10),
@@ -2282,7 +2288,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               key: TestVariables.kTestMode
                                                   ? Key(WidgetsKey
                                                       .productsListKey)
-                                                  : null,
+                                                  : gridViewKeyForRendering,
                                               padding: const EdgeInsets.only(
                                                   top: 10),
                                               sliver: SliverGrid(

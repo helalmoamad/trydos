@@ -121,16 +121,18 @@ class CategoriesFilterList extends StatelessWidget {
                                 curve: Curves.fastEaseInToSlowEaseOut,
                                 duration: Duration(milliseconds: 300),
                                 top: (currentExpandedIndex == index)
-                                    ? (70 - 40)
+                                    ? (70 - 50)
                                     : (70 - 50) / 2,
-                                end: (currentExpandedIndex == index)
-                                    ? innerIndex * 40
+                                end: currentExpandedIndex ==
+                                    index
+                                    ? innerIndex *
+                                    55
                                     : innerIndex >=
-                                            (filters.categories![index]
-                                                    .subCategories!.length -
-                                                2)
-                                        ? (innerIndex - 1) * 2
-                                        : 0,
+                                    (filters.categories![index].subCategories!.length -
+                                        2)
+                                    ? (innerIndex - 1) *
+                                    3
+                                    : 0,
                                 child: filters
                                             .categories![index]
                                             .subCategories![innerIndex]
@@ -353,6 +355,7 @@ class CategoriesFilterList extends StatelessWidget {
                                         isSvg: false,
                                         width: 70,
                                         height: 70,
+                                        isTopItem: true,
                                         originalWidth: double.tryParse(filters
                                             .categories![index]
                                             .mostViewedProductThumbnail!
