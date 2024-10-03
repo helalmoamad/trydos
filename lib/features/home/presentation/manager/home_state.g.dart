@@ -191,6 +191,14 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               json['getCurrencyForCountryModel'] as Map<String, dynamic>),
       isExpandedForListingPage:
           json['isExpandedForListingPage'] as bool? ?? false,
+      theReplyFromGemini: json['theReplyFromGemini'] as String?,
+      countOfProductExpectedByFiltering:
+          (json['countOfProductExpectedByFiltering'] as Map<String, dynamic>?)
+              ?.map(
+        (k, e) => MapEntry(k, (e as num).toInt()),
+      ),
+      isGettingProductListingWithPagination:
+          json['isGettingProductListingWithPagination'] as bool? ?? false,
       getCartItemsStatus: $enumDecodeNullable(
               _$GetCartItemsStatusEnumMap, json['getCartItemsStatus']) ??
           GetCartItemsStatus.init,
@@ -326,6 +334,8 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'selectedCollection': instance.selectedCollection,
       'currentPage': instance.currentPage,
       'isExpandedForListingPage': instance.isExpandedForListingPage,
+      'isGettingProductListingWithPagination':
+          instance.isGettingProductListingWithPagination,
       'searchHistory': instance.searchHistory,
       'addImagesToProductIdForCart': instance.addImagesToProductIdForCart.map(
           (k, e) => MapEntry(k, e.map((k, e) => MapEntry(k.toString(), e)))),
@@ -340,6 +350,7 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'getProductDetailWithoutSimilarRelatedProductsStatus':
           _$GetProductDetailWithoutSimilarRelatedProductsStatusEnumMap[
               instance.getProductDetailWithoutSimilarRelatedProductsStatus]!,
+      'theReplyFromGemini': instance.theReplyFromGemini,
       'getCartItemsStatus':
           _$GetCartItemsStatusEnumMap[instance.getCartItemsStatus]!,
       'getProductListingStatus':

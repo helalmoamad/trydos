@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'dart:ui' as ui;
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart' as cupertino;
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter/services.dart';
@@ -17,10 +16,8 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
-import 'package:trydos/service/language_service.dart';
 import '../../../app/my_text_widget.dart';
 import '../../../app/svg_network_widget.dart';
-import '../../../app/trydos_shimmer_loading.dart';
 
 class HomePageCard2 extends cupertino.StatefulWidget {
   HomePageCard2(
@@ -58,33 +55,38 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
           splashColor: Colors.transparent,
           highlightColor: Colors.transparent,
           onTap: () async {
-            await FirebaseAnalytics.instance
-                .logEvent(name: 'button_clicked', parameters: {
-              "time_stamp": DateTime.now()
-                  .toUtc()
-                  .add(Duration(
-                      minutes: GetIt.I<PrefsRepository>().getdurtion ?? 0))
-                  .toString(),
-              "previous_event_button_name":
-                  GetIt.I<PrefsRepository>().currentEvent ?? " ",
-              "device_language": LanguageService.languageCode == 'ar'
-                  ? 'ae'
-                  : LanguageService.languageCode,
-              "country_name": GetIt.I<PrefsRepository>().countryIso,
-              'userID': prefsRepository.myMarketId.toString(),
-              'user_name': prefsRepository.myMarketName.toString(),
-              'clicked_button_name': 'i love you Ahmad',
-              "session_id": GetIt.I<PrefsRepository>().sessionId,
-            });
-            await GetIt.I<PrefsRepository>().setCurrentEvent(
-                "i loveddsssssssssssssssssssssssssssssssssssssssss you Ahmad in past");
+            // try {
+            //   await FirebaseAnalytics.instance
+            //       .logEvent(name: 'button_clicked', parameters: {
+            //     "time_stamp": DateTime.now()
+            //         .toUtc()
+            //         .add(Duration(
+            //             minutes: GetIt.I<PrefsRepository>().getdurtion ?? 0))
+            //         .toString(),
+            //     "previous_event_button_name":
+            //         GetIt.I<PrefsRepository>().currentEvent ?? " ",
+            //     "device_language": LanguageService.languageCode == 'ar'
+            //         ? 'ae'
+            //         : LanguageService.languageCode,
+            //     "country_name": GetIt.I<PrefsRepository>().countryIso,
+            //     'userID': prefsRepository.myMarketId.toString(),
+            //     'user_name': prefsRepository.myMarketName.toString(),
+            //     'clicked_button_name': 'i love you Ahmad',
+            //     "session_id": GetIt.I<PrefsRepository>().sessionId,
+            //   });
+            // } catch (e, st) {
+            //   print(e);
+            //   print(st);
+            // }
+            // await GetIt.I<PrefsRepository>().setCurrentEvent(
+            //     "i loveddsssssssssssssssssssssssssssssssssssssssss you Ahmad in past");
             HelperFunctions.slidingNavigation(
                 context,
                 ProductListingPage(
                   boutniqe: widget.boutniqe,
                   withSlidingImages: widget.withSlidingImages,
                   boutiqueSlug: widget.boutniqe.slug!,
-                  boutiqueDescription: widget.boutniqe.description!,
+                  boutiqueDescription: widget.boutniqe.description,
                   boutiqueFirstBanner: widget.boutniqe.banners![0].filePath!,
                   boutiqueIcon: widget.boutniqe.icon?.filePath!,
                 ));
@@ -174,7 +176,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                         ),
                         Html(
                           shrinkWrap: true,
-                          data: widget.boutniqe.description!,
+                          data: widget.boutniqe.description ?? '',
                           style: {
                             "body": Style(margin: Margins.all(0)),
                             "p": Style(

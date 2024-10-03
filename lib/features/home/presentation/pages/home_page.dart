@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:math';
 import 'dart:ui';
 import 'package:easy_localization/easy_localization.dart';
@@ -15,6 +16,7 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/data/model/pagination_model.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
+import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
@@ -55,6 +57,7 @@ class _HomePageState extends State<HomePage> {
     homeBloc = BlocProvider.of<HomeBloc>(context);
     homeBloc.add(GetCartItemEvent());
     appBloc.add(ChangeIndexForSearch(0));
+
     homeBloc.add(ChangeAppliedFiltersEvent(
         boutiqueSlug: 'search',
         filtersAppliedByUser: null,
@@ -119,9 +122,9 @@ class _HomePageState extends State<HomePage> {
   prefetchBoutiques(String currentSlug) {
     for (int i = 0;
         i <
-            (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
+            min((lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
                     currentSlug] ??
-                0);
+                0), (homeBloc.state.getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]?.items.length ?? 0));
         i++) {
       String slug = homeBloc
           .state
@@ -174,6 +177,7 @@ class _HomePageState extends State<HomePage> {
           null, null, null, null, null, null, null,
           error: error.toString());
     };
+    Timeline.startSync("start");
     return SafeArea(
         child: Padding(
       padding: HWEdgeInsets.symmetric(horizontal: 0.w),
@@ -388,6 +392,7 @@ class _HomePageState extends State<HomePage> {
                                     currentSlug]!
                                 .items[index],
                           )
+
                           //HomePageCard(showWhite: index % 2 == 0),
                           ),
                       separator: SizedBox(
@@ -402,6 +407,52 @@ class _HomePageState extends State<HomePage> {
                     );
                   },
                 );
+              },
+            ),
+            SliverToBoxAdapter(
+              child: 20.verticalSpace,
+            ),
+            BlocBuilder<AppBloc, AppState>(
+              builder: (context, appState) {
+                return BlocBuilder<HomeBloc, HomeState>(
+                    buildWhen: (p, c) {
+                      String? currentSlug = appState.tabIndex != -1
+                          ? (c.mainCategoriesResponseModel?.data
+                                  ?.mainCategories?[appState.tabIndex].slug ??
+                              "Empty")
+                          : "Empty";
+                      bool rebuild = (
+                              p
+                                  .getHomeBoutiquesPaginationObjectByMainCategory[
+                                      currentSlug]
+                                  ?.paginationStatus != c
+                                  .getHomeBoutiquesPaginationObjectByMainCategory[
+                              currentSlug]
+                                  ?.paginationStatus ||
+                          p.currentIndexForMainCategoryEvent !=
+                              c.currentIndexForMainCategoryEvent);
+                      return rebuild;
+                    },
+                    builder: (context, state) {
+                      String? currentSlug = appState.tabIndex != -1
+                          ? (state.mainCategoriesResponseModel?.data
+                          ?.mainCategories?[appState.tabIndex].slug ??
+                          "Empty")
+                          : "Empty";
+                      if(((state
+                          .getHomeBoutiquesPaginationObjectByMainCategory[
+                      currentSlug]?.items.length ?? 0) != 0) && state
+                          .getHomeBoutiquesPaginationObjectByMainCategory[
+                      currentSlug]
+                          ?.paginationStatus == PaginationStatus.loading){
+                        return SliverToBoxAdapter(
+                          child: Center(
+                            child: TrydosLoader(),
+                          ),
+                        );
+                      }
+                      return SliverToBoxAdapter();
+                    });
               },
             ),
             SliverToBoxAdapter(

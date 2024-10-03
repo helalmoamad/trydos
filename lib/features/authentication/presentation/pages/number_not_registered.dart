@@ -1,5 +1,4 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,6 +13,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/authentication/presentation/widgets/adding_name.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/routes/router.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const.dart';
 
 import '../../../../base_page.dart';
 import '../../../../common/constant/design/assets_provider.dart';
@@ -21,6 +21,7 @@ import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../core/utils/theme_state.dart';
+import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/my_text_widget.dart';
 import '../manager/auth_bloc.dart';
 
@@ -35,14 +36,14 @@ class NumberNotRegistered extends StatefulWidget {
 
 class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Color(0xffFFF9F0),
       statusBarBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.dark,
     ));
-    FirebaseAnalytics.instance
-        .setCurrentScreen(screenName: "Number Not Registered Page");
+    await FirebaseAnalyticsService.logScreen(
+        screen: AnalyticsConst.numberNotRegisteredPage);
 
     super.didChangeDependencies();
   }

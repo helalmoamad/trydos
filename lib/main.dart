@@ -11,6 +11,7 @@ import 'package:flutter_callkit_incoming/entities/call_kit_params.dart';
 import 'package:flutter_callkit_incoming/entities/ios_params.dart';
 import 'package:flutter_callkit_incoming/entities/notification_params.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
+import 'package:flutter_gemini/flutter_gemini.dart' as gemini;
 import 'package:get_it/get_it.dart';
 import 'package:eraser/eraser.dart';
 import 'package:trydos/common/constant/configuration/chat_url_routes.dart';
@@ -143,6 +144,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
               //  messageId: data["message"]["id"].toString()));
             }
             break;
+          default:
+            break;
         }
         declineCallBecauseOfNotificationButton = false;
       });
@@ -252,13 +255,18 @@ void main() async {
   FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
   await FirebaseAnalytics.instance
       .setSessionTimeoutDuration(Duration(seconds: 20));
-  String SessionId = Uuid().v4();
-  GetIt.I<PrefsRepository>().setSessionId(SessionId);
+  String sessionId = Uuid().v4();
+  GetIt.I<PrefsRepository>().setSessionId(sessionId);
   GetIt.I<PrefsRepository>().setTimerForOtpRunning(false);
   fetchServersUrlsFromSharedPreference();
   NotificationProcess().fcmToken();
   isDependencyInitialized = true;
   GetIt.I<AuthBloc>().add(GetUserCountryEvent());
+
+  gemini.Gemini.init(
+    apiKey: "AIzaSyDP0q_EapML_zg4ibE_p1NbWNlUa2DjefI",
+  );
+  gemini.Gemini.enableDebugging = true;
   await SentryFlutter.init(
     (options) {
       options.dsn = dotenv.env['SENTRY_DNS'];
@@ -283,4 +291,3 @@ fetchServersUrlsFromSharedPreference() async {
     StoriesUrls.setBaseUrl = GetIt.I<PrefsRepository>().getStoryUrl!;
   }
 }
-

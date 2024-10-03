@@ -1,4 +1,3 @@
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,11 +9,13 @@ import 'package:trydos/base_page.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/authentication/presentation/widgets/create_account_section.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../common/helper/show_message.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../routes/router.dart';
+import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../manager/auth_bloc.dart';
 import '../widgets/welcome_section.dart';
 import 'package:trydos/features/authentication/presentation/widgets/insert_phone_tab.dart';
@@ -59,14 +60,15 @@ class _RegistrationPageState extends State<RegistrationPage>
   }
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Color(0xffFFFFFF),
       statusBarBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.dark,
     ));
-    FirebaseAnalytics.instance
-        .setCurrentScreen(screenName: "Registration Page");
+    await FirebaseAnalyticsService.logScreen(
+        screen: AnalyticsConst.registrationPage);
+
     super.didChangeDependencies();
   }
 
