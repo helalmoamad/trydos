@@ -36,7 +36,7 @@ class AnimatedSearchBar extends StatefulWidget {
   final FocusNode focusNode;
 
   final double? height;
-  final ValueNotifier<bool> hideTrendingAndHistory;
+  final ValueNotifier<bool>? hideTrendingAndHistory;
 
   const AnimatedSearchBar({
     Key? key,
@@ -88,22 +88,24 @@ class AnimatedSearchBar extends StatefulWidget {
     /// can add list of inputformatters to control the input
     this.inputFormatters,
     required this.onClickClose,
-    required this.hideTrendingAndHistory,
+    this.hideTrendingAndHistory,
   }) : super(key: key);
 
   @override
   _AnimatedSearchBarState createState() => _AnimatedSearchBarState();
 }
 
-///toggle - 0 => false or closed
-///toggle 1 => true or open
-int toggle = 0;
-
-/// * use this variable to check current text from OnChange
-String textFieldValue = '';
 
 class _AnimatedSearchBarState extends State<AnimatedSearchBar>
     with SingleTickerProviderStateMixin {
+
+  ///toggle - 0 => false or closed
+  ///toggle 1 => true or open
+  int toggle = 0;
+
+  /// * use this variable to check current text from OnChange
+  String textFieldValue = '';
+
   ///initializing the AnimationController
   late AnimationController _con;
   late FocusNode focusNode;
@@ -266,7 +268,7 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
                             ? SizedBox.shrink()
                             : InkWell(
                                 onTap: () {
-                                  widget.hideTrendingAndHistory.value = false;
+                                  widget.hideTrendingAndHistory?.value = false;
                                   bool stop = widget.onClickClose.call();
                                   if (stop) return;
                                   toggle = 0;
