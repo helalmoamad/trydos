@@ -201,6 +201,8 @@ class HomeState extends Equatable {
         getProductFiltersStatus,
         getProductListingWithFiltersPaginationModels,
         getCurrencyForCountryModel,
+        sendRequestToGeminiStatus,
+        theReplyFromGemini,
         getProductListingWithFiltersPaginationWithPrefetchModels,
         getProductFiltersModel,
         getProductFiltersWithPrefetchModel,

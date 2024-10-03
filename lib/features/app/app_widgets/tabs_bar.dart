@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+import 'package:permission_handler/permission_handler.dart';
 
+import 'package:speech_to_text/speech_to_text.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -49,6 +51,7 @@ class TabsBar extends StatefulWidget {
   }) : super(key: key);
   final ValueNotifier<int> buildSearchResult;
   final ValueNotifier<bool> appearTrendingAndHistory;
+
   final TextEditingController controller;
 
   @override
@@ -59,6 +62,66 @@ class _TabsBarState extends State<TabsBar> {
   late AppBloc appBloc;
   late HomeBloc homeBloc;
   late final geminis.Gemini gemini;
+  SpeechToText _speechToText = SpeechToText();
+  final ValueNotifier<bool> isRecordeForSearchWithMic = ValueNotifier(false);
+  bool _speechEnabled = false;
+
+  void _initSpeech() async {
+    _speechEnabled = await _speechToText.initialize();
+  }
+
+  void _startListening() async {
+    await _speechToText.listen(
+      listenFor: Duration(seconds: 7),
+      onResult: (result) async {
+        if (result.recognizedWords.replaceAll(" ", "").length > 2) {
+          widget.controller.text = result.recognizedWords;
+          Filter filters = BlocProvider.of<HomeBloc>(context)
+                  .state
+                  .choosedFiltersByUser['search']
+                  ?.filters ??
+              Filter();
+          BlocProvider.of<HomeBloc>(context).add(ChangeSelectedFiltersEvent(
+              boutiqueSlug: 'search',
+              fromHomePageSearch: true,
+              filtersChoosedByUser: GetProductFiltersModel(
+                  filters: filters.copyWithSaveOtherField(
+                prices: filters.prices,
+                searchText: result.recognizedWords,
+              ))));
+          BlocProvider.of<HomeBloc>(context).add(ChangeAppliedFiltersEvent(
+            boutiqueSlug: 'search',
+            filtersAppliedByUser: GetProductFiltersModel(
+                filters: filters.copyWithSaveOtherField(
+              prices: filters.prices,
+              searchText: result.recognizedWords,
+            )),
+          ));
+          BlocProvider.of<HomeBloc>(context).add(GetProductsWithFiltersEvent(
+              offset: 1,
+              boutiqueSlug: 'search',
+              resetChoosedFilters: false,
+              fromSearch: true,
+              searchText: result.recognizedWords));
+          _stopListening();
+
+          return;
+        }
+      },
+    );
+
+    isRecordeForSearchWithMic.value = true;
+    Future.delayed(
+      Duration(seconds: 5),
+      () => isRecordeForSearchWithMic.value = false,
+    );
+  }
+
+  void _stopListening() async {
+    await _speechToText.stop();
+
+    isRecordeForSearchWithMic.value = false;
+  }
 
   final ScrollController scrollController = ScrollController();
   void SelecteImageForSearch() async {
@@ -107,8 +170,6 @@ class _TabsBarState extends State<TabsBar> {
                               "")))
                   .onError(
                     (error, stackTrace) {
-                      print(
-                          "---------------------------------------${stackTrace}-----------------------------------${error}");
                       homeBloc.add(ReplyFromGeminiEvent(
                           sendRequestToGeminiStatus:
                               SendRequestToGeminiStatus.failure,
@@ -258,6 +319,8 @@ class _TabsBarState extends State<TabsBar> {
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
     gemini = geminis.Gemini.instance;
+    _initSpeech();
+    widget.controller.clear();
     List<String>? categorySlugs = [];
     homeBloc.state.mainCategoriesResponseModel?.data?.mainCategories?.forEach(
       (element) {
@@ -322,8 +385,6 @@ class _TabsBarState extends State<TabsBar> {
                     newState.sendRequestToGeminiStatus ||
                 oldState.theReplyFromGemini != newState.theReplyFromGemini,
             builder: (context, homeState) {
-              print(
-                  "########################################11111122222222222222222222222222222222222222222222${homeState.sendRequestToGeminiStatus}");
               if (homeState.theReplyFromGemini != "") {
                 widget.controller.text = homeState.theReplyFromGemini ?? "";
                 Filter filters = BlocProvider.of<HomeBloc>(context)
@@ -331,6 +392,15 @@ class _TabsBarState extends State<TabsBar> {
                         .choosedFiltersByUser['search']
                         ?.filters ??
                     Filter();
+                BlocProvider.of<HomeBloc>(context)
+                    .add(ChangeSelectedFiltersEvent(
+                        boutiqueSlug: 'search',
+                        fromHomePageSearch: true,
+                        filtersChoosedByUser: GetProductFiltersModel(
+                            filters: filters.copyWithSaveOtherField(
+                          prices: filters.prices,
+                          searchText: homeState.theReplyFromGemini,
+                        ))));
                 BlocProvider.of<HomeBloc>(context)
                     .add(ChangeAppliedFiltersEvent(
                   boutiqueSlug: 'search',
@@ -347,11 +417,6 @@ class _TabsBarState extends State<TabsBar> {
                         resetChoosedFilters: false,
                         fromSearch: true,
                         searchText: homeState.theReplyFromGemini));
-
-                BlocProvider.of<HomeBloc>(context).add(GetProductFiltersEvent(
-                    fromHomePageSearch: true,
-                    boutiqueSlug: 'search',
-                    searchText: homeState.theReplyFromGemini));
               }
               if (homeState.mainCategoriesResponseModel == null) {
                 return Container(
@@ -506,10 +571,36 @@ class _TabsBarState extends State<TabsBar> {
                                               width: 20,
                                             ),
                                     ),
-                                    SvgPicture.asset(
-                                      AppAssets.microphoneSvg,
-                                      height: 20,
-                                      width: 20,
+                                    ValueListenableBuilder<bool>(
+                                      valueListenable:
+                                          isRecordeForSearchWithMic,
+                                      builder: (context,
+                                          recordeForSearchWithMic, _) {
+                                        return InkWell(
+                                          onTap: () async {
+                                            final status = await Permission
+                                                .microphone
+                                                .request();
+                                            if (status !=
+                                                PermissionStatus.granted) {
+                                              return;
+                                            }
+                                            print(
+                                                "**************************************//////");
+                                            _speechToText.isNotListening
+                                                ? _startListening()
+                                                : _stopListening();
+                                          },
+                                          child: Container(
+                                            width: 20,
+                                            child: Icon(
+                                                _speechToText.isNotListening ||
+                                                        !recordeForSearchWithMic
+                                                    ? Icons.mic_off
+                                                    : Icons.mic),
+                                          ),
+                                        );
+                                      },
                                     ),
                                   ],
                                 ),
@@ -606,10 +697,36 @@ class _TabsBarState extends State<TabsBar> {
                                       SizedBox(
                                         width: 20,
                                       ),
-                                      SvgPicture.asset(
-                                        AppAssets.microphoneSvg,
-                                        height: 20,
-                                        width: 20,
+                                      ValueListenableBuilder<bool>(
+                                        valueListenable:
+                                            isRecordeForSearchWithMic,
+                                        builder: (context,
+                                            recordeForSearchWithMic, _) {
+                                          return InkWell(
+                                            onTap: () async {
+                                              final status = await Permission
+                                                  .microphone
+                                                  .request();
+                                              if (status !=
+                                                  PermissionStatus.granted) {
+                                                return;
+                                              }
+                                              print(
+                                                  "**************************************//////");
+                                              _speechToText.isNotListening
+                                                  ? _startListening()
+                                                  : _stopListening();
+                                            },
+                                            child: Container(
+                                              width: 20,
+                                              child: Icon(_speechToText
+                                                          .isNotListening ||
+                                                      !recordeForSearchWithMic
+                                                  ? Icons.mic_off
+                                                  : Icons.mic),
+                                            ),
+                                          );
+                                        },
                                       ),
                                     ],
                                   ),
