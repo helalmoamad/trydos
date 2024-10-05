@@ -1,5 +1,4 @@
 import 'dart:convert' as convert;
-import 'dart:developer';
 import 'package:flutter_smartlook/flutter_smartlook.dart';
 import 'package:simple_shadow/simple_shadow.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,8 +12,8 @@ import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/search/presentation/pages/search_page.dart';
+import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/local_notification_service.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -50,6 +49,7 @@ import 'features/chat/presentation/manager/chat_state.dart';
 import 'features/chat/presentation/utils/firebase_presence.dart';
 import 'features/home/presentation/manager/home_state.dart';
 import 'features/home/presentation/widgets/cart_page.dart';
+import 'service/firebase_analytics_service/analytics_const.dart';
 
 Widget get logo {
   return Stack(
@@ -338,7 +338,6 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 
   final Smartlook smartLook = Smartlook.instance;
 
-
   @override
   void dispose() {
     smartLook.stop();
@@ -385,13 +384,13 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   }
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Color(0xffFFFFFF),
       statusBarBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.dark,
     ));
-    FirebaseAnalytics.instance.setCurrentScreen(screenName: "Base Page");
+    await FirebaseAnalyticsService.logScreen(screen: AnalyticsConst.basePage);
     super.didChangeDependencies();
   }
 
@@ -434,7 +433,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
           message = Message.fromJson(remoteMessage['message']);
           GetIt.I<CallsBloc>()
               .add(UpdateCurrentActiveCallIdEvent(id: message.id.toString()));
-        } catch (e, st) {
+        } catch (e) {
           GetIt.I<PrefsRepository>().saveRequestsData(
               null, null, null, null, null, null, null,
               error: 'VideoCallEvent Error ${e.toString()}');
@@ -462,7 +461,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 
           GetIt.I<CallsBloc>()
               .add(UpdateCurrentActiveCallIdEvent(id: message.id.toString()));
-        } catch (e, st) {
+        } catch (e) {
           GetIt.I<PrefsRepository>().saveRequestsData(
               null, null, null, null, null, null, null,
               error: 'VoiceCallEvent Error ${e.toString()}');

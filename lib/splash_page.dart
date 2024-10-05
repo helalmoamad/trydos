@@ -1,6 +1,3 @@
-import 'dart:async';
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -13,14 +10,13 @@ import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/routes/router.dart';
-import 'common/helper/helper_functions.dart';
+import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 import 'core/domin/repositories/prefs_repository.dart';
 import 'features/app/blocs/app_bloc/app_event.dart';
 import 'features/calls/presentation/utils/bg_terminated_call_utils.dart';
-import 'features/chat/data/models/my_chats_response_model.dart';
 import 'features/home/presentation/manager/home_bloc.dart';
 import 'features/story/presentation/bloc/story_bloc.dart';
-import 'dart:convert' as convert;
+import 'service/firebase_analytics_service/analytics_const.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({Key? key}) : super(key: key);
@@ -54,8 +50,8 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   @override
-  void didChangeDependencies() {
-    FirebaseAnalytics.instance.logScreenView(screenName: "Splash Page");
+  void didChangeDependencies() async {
+    await FirebaseAnalyticsService.logScreen(screen: AnalyticsConst.splashPage);
     super.didChangeDependencies();
   }
 
@@ -68,7 +64,7 @@ class _SplashPageState extends State<SplashPage> {
       listenWhen: (p, c) =>
           p.chatToNavigateFromTerminated != c.chatToNavigateFromTerminated,
       child: Scaffold(
-          backgroundColor: context.colorScheme.background,
+          backgroundColor: context.colorScheme.surface,
           body: Center(child: logo)),
     );
   }
