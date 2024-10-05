@@ -274,7 +274,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       isFailedTheFirstTime.remove('GetStartingSettingsEvent');
       // if (r.data!.startingSetting!.smartLook ?? false) {
       //   Logger(printer: PrettyPrinter(methodCount: 0)).i('SMARTLOOK STARTED!');
-      initializeSmartLook();
+      // initializeSmartLook();
       // }
       emit(state.copyWith(
           startingSetting: r.data!.startingSetting,

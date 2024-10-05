@@ -17,9 +17,7 @@ import 'package:eraser/eraser.dart';
 import 'package:trydos/common/constant/configuration/chat_url_routes.dart';
 import 'package:trydos/common/constant/configuration/market_url_routes.dart';
 import 'package:trydos/common/constant/configuration/stories_url_routes.dart';
-import 'package:trydos/service/bloc_observer.dart';
 import 'package:uuid/uuid.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -146,6 +144,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
               //  messageId: data["message"]["id"].toString()));
             }
             break;
+          default:
+            break;
         }
         declineCallBecauseOfNotificationButton = false;
       });
@@ -255,8 +255,8 @@ void main() async {
   FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
   await FirebaseAnalytics.instance
       .setSessionTimeoutDuration(Duration(seconds: 20));
-  String SessionId = Uuid().v4();
-  GetIt.I<PrefsRepository>().setSessionId(SessionId);
+  String sessionId = Uuid().v4();
+  GetIt.I<PrefsRepository>().setSessionId(sessionId);
   GetIt.I<PrefsRepository>().setTimerForOtpRunning(false);
   fetchServersUrlsFromSharedPreference();
   NotificationProcess().fcmToken();

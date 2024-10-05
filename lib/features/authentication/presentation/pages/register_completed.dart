@@ -1,5 +1,4 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -12,6 +11,8 @@ import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../core/utils/theme_state.dart';
 import '../../../../routes/router.dart';
+import '../../../../service/firebase_analytics_service/analytics_const.dart';
+import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/my_text_widget.dart';
 
 class RegisterCompleted extends StatefulWidget {
@@ -29,14 +30,14 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
   }
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Color(0xffBCFFDF),
       statusBarBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.dark,
     ));
-    FirebaseAnalytics.instance
-        .setCurrentScreen(screenName: "Register Completed Page");
+    await FirebaseAnalyticsService.logScreen(
+        screen: AnalyticsConst.registerCompletedPage);
     super.didChangeDependencies();
   }
 

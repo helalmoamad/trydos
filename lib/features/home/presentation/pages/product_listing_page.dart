@@ -3,11 +3,9 @@ import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter_gemini/flutter_gemini.dart' as geminis;
 import 'package:firebase_analytics/firebase_analytics.dart';
-
+import 'package:flutter_gemini/flutter_gemini.dart' as geminis;
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
-import 'package:flutter/material.dart' as icon;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -39,6 +37,8 @@ import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/data/model/pagination_model.dart';
+import '../../../../service/firebase_analytics_service/analytics_const.dart';
+import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/app_widgets/app_bottom_navigation_bar.dart';
 import '../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
@@ -55,7 +55,8 @@ import 'package:speech_to_text/speech_to_text.dart';
 import '../widgets/product_listing/product_item.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
-
+import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
+    as productListingModel;
 import '../widgets/product_listing/product_listing_filter_list.dart';
 import '../widgets/product_listing/product_listing_loading.dart';
 
@@ -101,7 +102,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
   Timer? timerForDisplayFilterSectionTitle;
   final GlobalKey htmlDescriptionKey = GlobalKey();
   final ValueNotifier<double> htmlDescriptionHeight = ValueNotifier(0);
-  double? _velocity;
   final ScrollController scrollController = ScrollController();
   final ValueNotifier<Tuple2<int, int>> setThisEnabledNotifier =
   ValueNotifier(Tuple2(-1, -1));
@@ -607,11 +607,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
                       displayBoutiqueIconInAppBar.value = false;
                     }
                     if (_previousOffset != null) {
-                      final distance = (currentOffset - _previousOffset!).abs();
-                      final time = notification
-                          .dragDetails?.sourceTimeStamp?.inMilliseconds ??
-                          0.000001;
-                      _velocity = distance / time;
+                      // final distance = (currentOffset - _previousOffset!).abs();
+                      // final time = notification
+                      //     .dragDetails?.sourceTimeStamp?.inMilliseconds ??
+                      //     0.000001;
+                      // _velocity = distance / time;
+                      (currentOffset - _previousOffset!).abs();
                       if (scrollController.position.pixels <= 80) {
                         _previousOffset = currentOffset;
                         return true;
@@ -2649,6 +2650,111 @@ class _ProductListingPageState extends State<ProductListingPage> {
               )
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildProductList({
+    required List<productListingModel.Products> products,
+    required Tuple2<int, int> slidingMode,
+  }) {
+    return SliverPadding(
+      key: TestVariables.kTestMode ? Key(WidgetsKey.productsListKey) : null,
+      padding: const EdgeInsets.only(top: 10),
+      sliver: SliverGrid(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 200.w / 350,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 15,
+        ),
+        delegate: SliverChildBuilderDelegate(
+          childCount: products.length,
+          (BuildContext context, int index) {
+            return InkWell(
+              onTap: () async {
+                print(
+                    '/////////// Go to details  /////// ${products[index].categories?[0].name} ///////');
+                Future.delayed(
+                  Duration(milliseconds: 100),
+                );
+
+                await FirebaseAnalyticsService.logEventForViewedProducts(
+                  eventName: AnalyticsConst.viewedProducts,
+                  productId: products[index].id.toString(),
+                  productName: products[index].name.toString(),
+                  productCategoriesId: products[index]
+                      .categories
+                      ?.map(
+                        (e) => e.id.toString(),
+                      )
+                      .toList(),
+                );
+
+                // await FirebaseAnalytics
+                //     .instance
+                //     .logEvent(
+                //   name:
+                //       'button_clicked',
+                //   parameters: {
+                //     "time_stamp": DateTime
+                //             .now()
+                //         .toUtc()
+                //         .add(Duration(
+                //             minutes:
+                //                 GetIt.I<PrefsRepository>().getdurtion ??
+                //                     0))
+                //         .toString(),
+                //     "previous_event_button_name":
+                //         GetIt.I<PrefsRepository>()
+                //             .currentEvent,
+                //     "device_language":
+                //         LanguageService.languageCode ==
+                //                 'ar'
+                //             ? 'ae'
+                //             : LanguageService
+                //                 .languageCode,
+                //     "country_name":
+                //         GetIt.I<PrefsRepository>()
+                //             .countryIso,
+                //     'userID': prefsRepository
+                //         .myMarketId
+                //         .toString(),
+                //     'user_name':
+                //         prefsRepository
+                //             .myMarketName
+                //             .toString(),
+                //     'clicked_button_name':
+                //         'i love you Ahmad',
+                //     "session_id": GetIt.I<
+                //             PrefsRepository>()
+                //         .sessionId,
+                //   },
+                // );
+                // await GetIt.I<
+                //         PrefsRepository>()
+                //     .setCurrentEvent(
+                //         "i loveddssssssssssss44444444444444444ssssssssssssss you Ahmad in past");
+
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (ctx) => ProductDetailsPage(
+                          productItem: products[index],
+                        )));
+              },
+              child: ProductItem(
+                key: TestVariables.kTestMode
+                    ? Key('${WidgetsKey.productInBoutiqueListKey}$index')
+                    : null,
+                slidingModeItem: slidingMode,
+                productItem: products[index],
+                itemIndex: index,
+                setThisEnabled: (int index, int slideMode) {
+                  setThisEnabledNotifier.value = Tuple2(index, slideMode);
+                },
+              ),
+            );
+          },
         ),
       ),
     );
