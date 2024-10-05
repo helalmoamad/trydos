@@ -3,9 +3,7 @@ import 'dart:math';
 import 'dart:ui';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -28,8 +26,6 @@ import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../app/my_text_widget.dart';
-import '../../../story/presentation/bloc/story_bloc.dart';
-import '../../../story/presentation/bloc/story_state.dart';
 import '../../../story/presentation/widget/stories_list.dart';
 import '../manager/home_state.dart';
 import '../widgets/home_page_card2.dart';
@@ -44,8 +40,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late AppBloc appBloc;
   late HomeBloc homeBloc;
-  double? _previousOffset;
-  double? _velocity;
   final ScrollController scrollController = ScrollController();
   Map<String, Key> reRenderingListViewKey = {};
   Map<String, int> lastIndexRequestedInEachMainCategoryForPrefetchBoutiques =
@@ -93,12 +87,10 @@ class _HomePageState extends State<HomePage> {
       if (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
               selectedCategorySlug] !=
           lastIndexSeenByUser) {
-        prefetchBoutiques(selectedCategorySlug);
+        // prefetchBoutiques(selectedCategorySlug);
         lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
             selectedCategorySlug] = lastIndexSeenByUser;
       }
-      print(scrollController.offset);
-      print(scrollController.position.maxScrollExtent);
       if (scrollController.offset >=
           (scrollController.position.maxScrollExtent * 0.7)) {
         homeBloc.add(GetHomeBoutiqesEvent(
@@ -107,7 +99,7 @@ class _HomePageState extends State<HomePage> {
             offset: homeBloc
                 .state
                 .getHomeBoutiquesPaginationObjectByMainCategory[
-                    selectedCategorySlug]!
+            selectedCategorySlug]!
                 .page
                 .toString(),
             context: context,
@@ -123,11 +115,19 @@ class _HomePageState extends State<HomePage> {
 
   prefetchBoutiques(String currentSlug) {
     for (int i = 0;
-        i <
-            min((lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
-                    currentSlug] ??
-                0), (homeBloc.state.getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]?.items.length ?? 0));
-        i++) {
+    i <
+        min(
+            (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
+            currentSlug] ??
+                0),
+            (homeBloc
+                .state
+                .getHomeBoutiquesPaginationObjectByMainCategory[
+            currentSlug]
+                ?.items
+                .length ??
+                0));
+    i++) {
       String slug = homeBloc
           .state
           .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]!
@@ -145,7 +145,7 @@ class _HomePageState extends State<HomePage> {
             .items[i]
             .childCategoriesForProductIds
             ?.forEach(
-          (element) {
+              (element) {
             categorySlugs.add(element.categorySlug ?? "");
           },
         );
@@ -416,45 +416,49 @@ class _HomePageState extends State<HomePage> {
             ),
             BlocBuilder<AppBloc, AppState>(
               builder: (context, appState) {
-                return BlocBuilder<HomeBloc, HomeState>(
-                    buildWhen: (p, c) {
-                      String? currentSlug = appState.tabIndex != -1
-                          ? (c.mainCategoriesResponseModel?.data
-                                  ?.mainCategories?[appState.tabIndex].slug ??
-                              "Empty")
-                          : "Empty";
-                      bool rebuild = (
-                              p
+                return BlocBuilder<HomeBloc, HomeState>(buildWhen: (p, c) {
+                  String? currentSlug = appState.tabIndex != -1
+                      ? (c.mainCategoriesResponseModel?.data
+                              ?.mainCategories?[appState.tabIndex].slug ??
+                          "Empty")
+                      : "Empty";
+                  bool rebuild = (p
+                              .getHomeBoutiquesPaginationObjectByMainCategory[
+                                  currentSlug]
+                              ?.paginationStatus !=
+                          c
+                              .getHomeBoutiquesPaginationObjectByMainCategory[
+                                  currentSlug]
+                              ?.paginationStatus ||
+                      p.currentIndexForMainCategoryEvent !=
+                          c.currentIndexForMainCategoryEvent);
+                  return rebuild;
+                }, builder: (context, state) {
+                  String? currentSlug = appState.tabIndex != -1
+                      ? (state.mainCategoriesResponseModel?.data
+                              ?.mainCategories?[appState.tabIndex].slug ??
+                          "Empty")
+                      : "Empty";
+                  if (((state
                                   .getHomeBoutiquesPaginationObjectByMainCategory[
                                       currentSlug]
-                                  ?.paginationStatus != c
-                                  .getHomeBoutiquesPaginationObjectByMainCategory[
-                              currentSlug]
-                                  ?.paginationStatus ||
-                          p.currentIndexForMainCategoryEvent !=
-                              c.currentIndexForMainCategoryEvent);
-                      return rebuild;
-                    },
-                    builder: (context, state) {
-                      String? currentSlug = appState.tabIndex != -1
-                          ? (state.mainCategoriesResponseModel?.data
-                          ?.mainCategories?[appState.tabIndex].slug ??
-                          "Empty")
-                          : "Empty";
-                      if(((state
-                          .getHomeBoutiquesPaginationObjectByMainCategory[
-                      currentSlug]?.items.length ?? 0) != 0) && state
-                          .getHomeBoutiquesPaginationObjectByMainCategory[
-                      currentSlug]
-                          ?.paginationStatus == PaginationStatus.loading){
-                        return SliverToBoxAdapter(
-                          child: Center(
-                            child: TrydosLoader(),
-                          ),
-                        );
-                      }
-                      return SliverToBoxAdapter();
-                    });
+                                  ?.items
+                                  .length ??
+                              0) !=
+                          0) &&
+                      state
+                              .getHomeBoutiquesPaginationObjectByMainCategory[
+                                  currentSlug]
+                              ?.paginationStatus ==
+                          PaginationStatus.loading) {
+                    return SliverToBoxAdapter(
+                      child: Center(
+                        child: TrydosLoader(),
+                      ),
+                    );
+                  }
+                  return SliverToBoxAdapter();
+                });
               },
             ),
             SliverToBoxAdapter(

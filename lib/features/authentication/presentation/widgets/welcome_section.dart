@@ -1,6 +1,5 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,16 +9,18 @@ import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 import 'dart:ui' as ui;
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../routes/router.dart';
+import '../../../../service/firebase_analytics_service/analytics_const.dart';
 import '../../../app/my_text_widget.dart';
 import '../manager/auth_bloc.dart';
 
-class WelcomeSection extends StatelessWidget {
+class WelcomeSection extends StatefulWidget {
   WelcomeSection(
       {required this.goToCreateAccount,
       required this.goToLoginSection,
@@ -28,8 +29,23 @@ class WelcomeSection extends StatelessWidget {
   final void Function() goToCreateAccount;
   final void Function() goToLoginSection;
 
+  @override
+  State<WelcomeSection> createState() => _WelcomeSectionState();
+}
+
+class _WelcomeSectionState extends State<WelcomeSection> {
+  @override
+  void didChangeDependencies() async {
+    await FirebaseAnalyticsService.logScreen(
+        screen: AnalyticsConst.welcomePage);
+
+    super.didChangeDependencies();
+  }
+
   final ValueNotifier<int> clickButton = ValueNotifier(-1);
+
   final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
+
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
@@ -85,14 +101,14 @@ class WelcomeSection extends StatelessWidget {
                     "5555555444444444444444444444444444444444444444444444444444444445555555555555555555555");
 
                 clickButton.value = -1;
-                goToLoginSection.call();
+                widget.goToLoginSection.call();
               });
-              await FirebaseAnalytics.instance
-                  .logEvent(name: 'button_clicked', parameters: {
-                'userID': prefsRepository.myMarketId.toString(),
-                'user_name': prefsRepository.myMarketName.toString(),
-                'clicked_button_name': 'i have already account',
-              });
+              await FirebaseAnalyticsService.logEventForSession(
+                eventName: AnalyticsConst.buttonClicked,
+                userID: prefsRepository.myMarketId.toString(),
+                user_name: prefsRepository.myMarketName.toString(),
+                clickedButtonName: AnalyticsConst.haveAlreadyAccount,
+              );
             },
             child: ValueListenableBuilder<int>(
                 valueListenable: clickButton,
@@ -148,14 +164,14 @@ class WelcomeSection extends StatelessWidget {
               clickButton.value = 1;
               Future.delayed(Duration(milliseconds: 100), () {
                 clickButton.value = -1;
-                goToCreateAccount.call();
+                widget.goToCreateAccount.call();
               });
-              await FirebaseAnalytics.instance
-                  .logEvent(name: 'button_clicked', parameters: {
-                'userID': prefsRepository.myMarketId.toString(),
-                'user_name': prefsRepository.myMarketName.toString(),
-                'clicked_button_name': 'create new account',
-              });
+              await FirebaseAnalyticsService.logEventForSession(
+                eventName: AnalyticsConst.buttonClicked,
+                userID: prefsRepository.myMarketId.toString(),
+                user_name: prefsRepository.myMarketName.toString(),
+                clickedButtonName: AnalyticsConst.createNewAccount,
+              );
             },
             child: ValueListenableBuilder<int>(
                 valueListenable: clickButton,
@@ -213,12 +229,12 @@ class WelcomeSection extends StatelessWidget {
                 BlocProvider.of<AuthBloc>(context)
                     .add(RegisterGuestEvent(deviceId: deviceId!));
               }
-              await FirebaseAnalytics.instance
-                  .logEvent(name: 'button_clicked', parameters: {
-                'userID': prefsRepository.myMarketId.toString(),
-                'user_name': prefsRepository.myMarketName.toString(),
-                'clicked_button_name': 'Later, Take Look',
-              });
+              await FirebaseAnalyticsService.logEventForSession(
+                eventName: AnalyticsConst.buttonClicked,
+                userID: prefsRepository.myMarketId.toString(),
+                user_name: prefsRepository.myMarketName.toString(),
+                clickedButtonName: AnalyticsConst.laterTakeLook,
+              );
               context.go(GRouter.config.applicationRoutes.kBasePage);
             },
             child: Padding(

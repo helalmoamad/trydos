@@ -1,8 +1,5 @@
-import 'dart:io';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_analytics/observer.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -10,18 +7,14 @@ import 'package:trydos/features/authentication/presentation/pages/first_register
 import 'package:trydos/features/authentication/presentation/pages/login_successfully.dart';
 import 'package:trydos/features/authentication/presentation/pages/register_completed.dart';
 import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
-import 'package:trydos/features/story/presentation/pages/story_collection.dart';
 import 'package:trydos/splash_page.dart';
 import '../base_page.dart';
 import '../features/authentication/presentation/pages/already_exist_account.dart';
 import '../features/authentication/presentation/pages/number_not_registered.dart';
 import '../features/calls/presentation/pages/agora_webview.dart';
 import '../features/calls/presentation/pages/answer_call.dart';
-import '../features/calls/presentation/pages/room_call_page.dart';
 import '../features/chat/presentation/pages/chat_pages.dart';
 import '../features/chat/presentation/pages/contacts_page.dart';
-import '../features/home/presentation/pages/product_details_page.dart';
-import '../features/story/presentation/pages/story_collection_page_view.dart';
 import '../main.dart';
 import 'error_screen.dart';
 import 'router_config.dart';
@@ -89,7 +82,6 @@ class GRouter {
           }),
       GoRoute(
         path: _config.applicationRoutes.kRegistrationCompletedPage,
-
         pageBuilder: (BuildContext context, GoRouterState state) {
           return _builderPage(
             child: RegisterCompleted(
@@ -273,7 +265,7 @@ class GRouter {
   static Page<dynamic> _builderPage<T>(
       {required Widget child, required GoRouterState state}) {
     //if (Platform.isIOS) {
-      return MaterialPage<T>(child: child, key: state.pageKey);
+    return MaterialPage<T>(child: child, key: state.pageKey);
     // } else {
     //   return MaterialPage<T>(child: child, key: state.pageKey);
     // }
