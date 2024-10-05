@@ -47,9 +47,8 @@ void main() {
                 isTrue);
             debugPrint('otpRemainingTime start from 2 minutes success');
           } catch (e) {
-            debugPrint(
+            fail(
                 '//////// otpRemainingTime start from 2 minutes failed Failure: //////////\n $e');
-            rethrow;
           }
 
           await Future.delayed(const Duration(minutes: 2));

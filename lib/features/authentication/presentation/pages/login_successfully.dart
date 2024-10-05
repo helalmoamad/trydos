@@ -1,5 +1,4 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,13 +9,14 @@ import 'package:go_router/go_router.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-
+import 'package:trydos/service/firebase_analytics_service/analytics_const.dart';
 import '../../../../base_page.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../core/utils/theme_state.dart';
 import '../../../../routes/router.dart';
+import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/my_text_widget.dart';
 import '../manager/auth_bloc.dart';
 
@@ -31,14 +31,15 @@ class LoginSuccessfully extends StatefulWidget {
 
 class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Color(0xffE0FFEE),
       statusBarBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.light,
     ));
-    FirebaseAnalytics.instance
-        .setCurrentScreen(screenName: "Login Successfully Page");
+    await FirebaseAnalyticsService.logScreen(
+        screen: AnalyticsConst.loginSuccessfullyPage);
+
     Future.delayed(
       Duration(seconds: 1),
       () {
@@ -105,8 +106,10 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
                                 MyTextWidget(
                                   widget.phoneNumber,
                                   textAlign: TextAlign.start,
-                                  style: context.textTheme.titleMedium?.ra.copyWith(
-                                      color: Color(0xff8D8D8D), height: 1.25),
+                                  style: context.textTheme.titleMedium?.ra
+                                      .copyWith(
+                                          color: Color(0xff8D8D8D),
+                                          height: 1.25),
                                 ),
                               ],
                             ),
@@ -120,9 +123,10 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
                                     padding: HWEdgeInsets.only(left: 4.0),
                                     child: MyTextWidget(LocaleKeys.hello.tr(),
                                         textAlign: TextAlign.start,
-                                        style: textTheme.headlineMedium?.ba.copyWith(
-                                            color: Color(0xff5D5C5D),
-                                            height: 1.25)),
+                                        style: textTheme.headlineMedium?.ba
+                                            .copyWith(
+                                                color: Color(0xff5D5C5D),
+                                                height: 1.25)),
                                   ),
                                   17.verticalSpace,
                                   Column(
@@ -140,7 +144,8 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
                                                   state.marketUser!.name
                                                       .toString(),
                                               textAlign: TextAlign.start,
-                                              style: textTheme.headlineMedium?.la
+                                              style: textTheme
+                                                  .headlineMedium?.la
                                                   .copyWith(
                                                 color: Color(0xff5D5C5D),
                                                 letterSpacing: 0.3,
