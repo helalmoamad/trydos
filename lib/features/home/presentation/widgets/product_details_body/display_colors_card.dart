@@ -177,7 +177,7 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                     : (syncColorImageList!.length) <= 8
                         ? 0.55
                         : 0.4,
-                initialIndex: syncColorImageList!.length ~/ 4,
+                initialIndex: widget.currentColorForProduct,
                 primaryshiftingOffsetDivision: (syncColorImageList!.length) == 4
                     ? 4.5
                     : (syncColorImageList!.length) <= 8
@@ -353,8 +353,11 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                         : Material(
                                                             color: Colors
                                                                 .transparent,
-                                                            child: Directionality(
-                                                              textDirection: ui.TextDirection.ltr,
+                                                            child:
+                                                                Directionality(
+                                                              textDirection: ui
+                                                                  .TextDirection
+                                                                  .ltr,
                                                               child: Gallery3D(
                                                                   // key: ValueKey('gallery3dControllerForCircles${widget.itemIndex}'),
                                                                   controller:
@@ -400,39 +403,30 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                                             .position
                                                                             .pixels <
                                                                         (1.sh -
-                                                                            renderBox!
-                                                                                .localToGlobal(Offset
-                                                                                    .zero)
-                                                                                .dy +
+                                                                            renderBox!.localToGlobal(Offset.zero).dy +
                                                                             150 -
-                                                                            renderBox!
-                                                                                .size
-                                                                                .height)) {
+                                                                            renderBox!.size.height)) {
                                                                       widget.scrollController.animateTo(
                                                                           (1.sh -
-                                                                              renderBox!
-                                                                                  .localToGlobal(Offset
-                                                                                      .zero)
-                                                                                  .dy +
+                                                                              renderBox!.localToGlobal(Offset.zero).dy +
                                                                               150 -
-                                                                              renderBox!
-                                                                                  .size.height),
-                                                                          curve: Curves
-                                                                              .fastEaseInToSlowEaseOut,
-                                                                          duration:
-                                                                              const Duration(milliseconds: 300));
+                                                                              renderBox!.size.height),
+                                                                          curve: Curves.fastEaseInToSlowEaseOut,
+                                                                          duration: const Duration(milliseconds: 300));
                                                                     }
                                                                   },
                                                                   itemConfig: const GalleryItemConfig(
                                                                       width: 40,
-                                                                      height: 40,
-                                                                      radius: 180,
+                                                                      height:
+                                                                          40,
+                                                                      radius:
+                                                                          180,
                                                                       isShowTransformMask:
                                                                           false,
                                                                       shadows: [
                                                                         BoxShadow(
-                                                                          color: Color(
-                                                                              0x19000000),
+                                                                          color:
+                                                                              Color(0x19000000),
                                                                           offset: Offset(
                                                                               0,
                                                                               3),
@@ -444,32 +438,27 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                                       (context,
                                                                           index) {
                                                                     return Visibility(
-                                                                      visible: ((gallery3dControllerForCircles?.currentIndex ?? 0) < (syncColorImageList!.length ~/ 2) &&
-                                                                              index <
-                                                                                  (syncColorImageList!.length ~/
-                                                                                      2)) ||
-                                                                          (gallery3dControllerForCircles?.currentIndex ??
-                                                                                  0) >=
-                                                                              (syncColorImageList!.length ~/
-                                                                                  2),
+                                                                      visible: ((gallery3dControllerForCircles?.currentIndex ?? 0) < (syncColorImageList!.length ~/ 2) && index < (syncColorImageList!.length ~/ 2)) ||
+                                                                          (gallery3dControllerForCircles?.currentIndex ?? 0) >=
+                                                                              (syncColorImageList!.length ~/ 2),
                                                                       child:
                                                                           ProductListingImageWidget(
-                                                                        width: 40,
+                                                                        width:
+                                                                            40,
                                                                         height:
                                                                             40,
-                                                                            imageWidth: 70,
-                                                                            imageHeight: 70,
+                                                                        imageWidth:
+                                                                            70,
+                                                                        imageHeight:
+                                                                            70,
                                                                         imageUrl:
-                                                                            images[
-                                                                                index],
+                                                                            images[index],
                                                                         innerShadowYOffset:
                                                                             4,
                                                                         borderColor: index ==
                                                                                 currentIndexInSlider
-                                                                            ? Color(int.parse(
-                                                                                '0xff${widget.productItem.colors![currentIndexInSlider! % widget.productItem.colors!.length].color!.substring(1)}'))
-                                                                            : Colors
-                                                                                .white,
+                                                                            ? Color(int.parse('0xff${widget.productItem.colors![currentIndexInSlider! % widget.productItem.colors!.length].color!.substring(1)}'))
+                                                                            : Colors.white,
                                                                         circleShape:
                                                                             true,
                                                                       ),

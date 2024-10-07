@@ -56,6 +56,12 @@ enum SendRequestToGeminiStatus { init, loading, success, failure }
 
 enum GetHomeBoutiqesStatus { init, loading, success, failure }
 
+enum AddItemInCartStatus { init, loading, success, failure }
+
+enum UpdateItemInCartStatus { init, loading, success, failure }
+
+enum DeleteItemInCartStatus { init, loading, success, failure }
+
 enum GetProductsWithoutFiltersStatus { init, loading, success, failure }
 
 enum GetProductListingStatus { init, loading, success, failure }
@@ -65,6 +71,7 @@ enum GetProductListingStatus { init, loading, success, failure }
 class HomeState extends Equatable {
   const HomeState({
     this.storiesForProduct,
+    this.addItemInCartStatus,
     this.getProductDetailWithoutSimilarRelatedProductsStatus =
         GetProductDetailWithoutSimilarRelatedProductsStatus.init,
     this.getStartingSettingsStatus = GetStartingSettingsStatus.init,
@@ -72,6 +79,7 @@ class HomeState extends Equatable {
     this.getCommentForProductStatus = GetCommentForProductStatus.init,
     this.startingSetting,
     this.sizes = const [],
+    this.deleteItemInCartStatus,
     this.isGettingProductListingWithPagination = false,
     this.isGettingProductListingWithPaginationForAppearProduct = false,
     this.getProductFiltersStatus = const {},
@@ -80,6 +88,7 @@ class HomeState extends Equatable {
     this.appliedFiltersByUser = const {},
     this.currentPage = 0,
     this.productStatus,
+    this.updateItemInCartStatus,
     this.theReplyFromGemini,
     this.productITemForCart,
     this.getCartShippingItemsModel,
@@ -135,6 +144,9 @@ class HomeState extends Equatable {
   final Map<String, PaginationModel<product.Products>?>
       getProductListingWithFiltersPaginationWithPrefetchModels;
   final SendRequestToGeminiStatus sendRequestToGeminiStatus;
+  final AddItemInCartStatus? addItemInCartStatus;
+  final UpdateItemInCartStatus? updateItemInCartStatus;
+  final DeleteItemInCartStatus? deleteItemInCartStatus;
 
   final Map<String, get_filters.GetProductFiltersModel?> getProductFiltersModel;
   final Map<String, get_filters.GetProductFiltersModel?>
@@ -163,6 +175,7 @@ class HomeState extends Equatable {
   final String? theReplyFromGemini;
 
   final GetCartItemsStatus getCartItemsStatus;
+
   final GetProductListingStatus getProductListingStatus;
   final GetStoriesForProductStatus getStoriesForProductStatus;
   final Map<String, PaginationModel<boutiques_model.Boutique>>
@@ -235,6 +248,15 @@ class HomeState extends Equatable {
         getCommentForProductModel,
         mainCategoriesResponseModel,
         getProductDetailWithoutRelatedProductsModel,
+        updateItemInCartStatus,
+        addItemInCartStatus,
+        appliedFiltersByUser,
+        addImagesToProductIdForCart,
+        addItemInCartStatus,
+        deleteItemInCartStatus,
+        updateItemInCartStatus,
+        currentSelectedColorForEveryProduct,
+        selectedCollection,
         cashedOrginalBoutique,
         currentIndexForMainCategoryEvent,
         startingSetting,
@@ -246,6 +268,8 @@ class HomeState extends Equatable {
   HomeState copyWith(
       {final GetStartingSettingsStatus? getStartingSettingsStatus,
       final GetMainCategoriesStatus? getMainCategoriesStatus,
+      final AddItemInCartStatus? addItemInCartStatus,
+      final UpdateItemInCartStatus? updateItemInCartStatus,
       final Map<String, get_filters.GetProductFiltersModel?>?
           getProductFiltersWithPrefetchModel,
       bool? cashedOrginalBoutique,
@@ -295,6 +319,7 @@ class HomeState extends Equatable {
       GetStoriesForProductStatus? getStoriesForProductStatus,
       final GetProductDetailWithoutSimilarRelatedProductsStatus?
           getProductDetailWithoutSimilarRelatedProductsStatus,
+      final DeleteItemInCartStatus? deleteItemInCartStatus,
       final Map<String, int>? currentSelectedColorForEveryProduct,
       int? currentPage,
       Map<String, int>? countOfProductExpectedByFiltering,
@@ -318,6 +343,9 @@ class HomeState extends Equatable {
               this.boutiquesForEveryMainCategoryThatDidPrefetch,
       getCommentForProductModel:
           getCommentForProductModel ?? this.getCommentForProductModel,
+      updateItemInCartStatus:
+          updateItemInCartStatus ?? this.updateItemInCartStatus,
+
       sizes: sizes ?? this.sizes,
       isGettingProductListingWithPagination:
           isGettingProductListingWithPagination ??
@@ -338,13 +366,16 @@ class HomeState extends Equatable {
       cartCollection: cartCollection ?? this.cartCollection,
       getProductFiltersStatus:
           getProductFiltersStatus ?? this.getProductFiltersStatus,
+      addItemInCartStatus: addItemInCartStatus ?? this.addItemInCartStatus,
       sendRequestToGeminiStatus:
           sendRequestToGeminiStatus ?? this.sendRequestToGeminiStatus,
       getProductListingWithFiltersPaginationModels:
           getProductListingWithFiltersPaginationModels ??
               this.getProductListingWithFiltersPaginationModels,
+
       prefAppliedFilterForExtendFilter: prefAppliedFilterForExtendFilter ??
           this.prefAppliedFilterForExtendFilter,
+
       getCurrencyForCountryModel:
           getCurrencyForCountryModel ?? this.getCurrencyForCountryModel,
       getProductFiltersWithPrefetchModel: getProductFiltersWithPrefetchModel ??
@@ -408,6 +439,8 @@ class HomeState extends Equatable {
       cachedProductWithoutRelatedProductsModel:
           cachedProductWithoutRelatedProductsModel ??
               this.cachedProductWithoutRelatedProductsModel,
+      deleteItemInCartStatus:
+          deleteItemInCartStatus ?? this.deleteItemInCartStatus,
       getProductDetailWithoutRelatedProductsModel:
           getProductDetailWithoutRelatedProductsModel ??
               this.getProductDetailWithoutRelatedProductsModel,

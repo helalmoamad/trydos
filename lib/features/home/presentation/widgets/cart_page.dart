@@ -50,7 +50,7 @@ class _CartPageState extends State<CartPage> {
     appBloc = BlocProvider.of<AppBloc>(context);
 
     homeBloc = BlocProvider.of<HomeBloc>(context);
-
+    homeBloc.add(GetCartItemEvent());
     super.initState();
   }
 
@@ -67,9 +67,15 @@ class _CartPageState extends State<CartPage> {
                   previous.getCartItemsStatus != current.getCartItemsStatus ||
                   previous.getCurrencyForCountryModel !=
                       current.getCurrencyForCountryModel ||
-                  previous.cartCollection!.values !=
-                      current.cartCollection!.values,
+                  previous.deleteItemInCartStatus !=
+                      current.deleteItemInCartStatus ||
+                  previous.addItemInCartStatus != current.addItemInCartStatus ||
+                  previous.updateItemInCartStatus !=
+                      current.updateItemInCartStatus ||
+                  previous.cartCollection!.values.length !=
+                      current.cartCollection!.values.length,
               builder: (context, state) {
+                print(state.cartCollection?.keys.toList());
                 if (state.getCartItemsStatus == GetCartItemsStatus.failure &&
                     (state.cartCollection == null ||
                         state.cartCollection!.isEmpty)) {
@@ -546,6 +552,36 @@ class _CartPageState extends State<CartPage> {
                                                           });
                                                     },
                                                     onTap: () {
+                                                      int indexess = state
+                                                          .productITemForCart![
+                                                              state.cartCollection![groupCartkeys[index]]![indexes].productId
+                                                                  .toString()]!
+                                                          .syncColorImages!
+                                                          .indexOf(state
+                                                              .productITemForCart![
+                                                                  state.cartCollection![groupCartkeys[index]]![indexes].productId
+                                                                      .toString()]!
+                                                              .syncColorImages!
+                                                              .firstWhere((element) =>
+                                                                  element.colorName ==
+                                                                  (!state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty
+                                                                      ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].color ?? ""
+                                                                      : "")));
+                                                      if (index != -1) {
+                                                        BlocProvider.of<
+                                                                    HomeBloc>(
+                                                                context)
+                                                            .add(AddCurrentSelectedColorEvent(
+                                                                currentSelectedColor:
+                                                                    indexess,
+                                                                productId: state
+                                                                    .cartCollection![
+                                                                        groupCartkeys[
+                                                                            index]]![
+                                                                        indexes]
+                                                                    .productId
+                                                                    .toString()));
+                                                      }
                                                       HelperFunctions
                                                           .slidingNavigation(
                                                               context,
@@ -561,7 +597,7 @@ class _CartPageState extends State<CartPage> {
                                                     },
                                                     child: Container(
                                                       margin: EdgeInsets.only(
-                                                          bottom: index ==
+                                                          bottom: indexes ==
                                                                   state.cartCollection![groupCartkeys[index]]!
                                                                           .length -
                                                                       1 //length
@@ -945,7 +981,43 @@ class _CartPageState extends State<CartPage> {
                                                               ),
                                                               top: 5,
                                                               right: 5,
-                                                            )
+                                                            ),
+                                                            Positioned(
+                                                              child: Container(
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              15),
+                                                                  color: Color(
+                                                                      0x707070),
+                                                                ),
+                                                                width: 100.w,
+                                                                height: 40.h,
+                                                                child: Text(
+                                                                  " Out OF Stock",
+                                                                  style: context.textTheme.bodyMedium?.la.copyWith(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w100,
+                                                                      fontSize:
+                                                                          12,
+                                                                      color: const Color
+                                                                          .fromARGB(
+                                                                          255,
+                                                                          206,
+                                                                          9,
+                                                                          9),
+                                                                      letterSpacing:
+                                                                          0.18,
+                                                                      height:
+                                                                          1.33),
+                                                                ),
+                                                              ),
+                                                              top: 5,
+                                                              right: 20,
+                                                            ),
                                                           ],
                                                         ),
                                                       ),

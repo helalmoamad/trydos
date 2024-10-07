@@ -2478,7 +2478,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                     print("${prefsRepository.myMarketName.toString()}" +
                                                         "554${GetIt.I<PrefsRepository>().serverTime}4555554444${prefsRepository.countryIso.toString()}444444444${LanguageService.languageCode == 'ar' ? 'ae' : LanguageService.languageCode}444444444444${GetIt.I<PrefsRepository>().currentEvent}44444444444444444444444444445555555555555555555555");
                                                   });
-                                                  await FirebaseAnalytics
+                                               /*   await FirebaseAnalytics
                                                       .instance
                                                       .logEvent(
                                                       name:
@@ -2518,7 +2518,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                         "session_id": GetIt.I<
                                                             PrefsRepository>()
                                                             .sessionId,
-                                                      });
+                                                      });*/
                                                   await GetIt.I<
                                                       PrefsRepository>()
                                                       .setCurrentEvent(
