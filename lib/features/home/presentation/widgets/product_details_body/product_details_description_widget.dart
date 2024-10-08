@@ -32,7 +32,7 @@ class _ProductDetailsDescriptionWidgetState
 
   @override
   void initState() {
-    text = widget.description;
+    text = HtmlParser.parseHTML(widget.description).text;
     int index = 4 * ((1.sw.w - 40) ~/ 13.sp) - 12;
 
     if (text.length - 5 < index) {
@@ -58,30 +58,37 @@ class _ProductDetailsDescriptionWidgetState
               child: Column(
                 children: [
                   Html(
-                    data: readMore ? twoLines : text,
+                    shrinkWrap: true,
+                    data: text,
+                    style: {
+                      "body": Style(margin: Margins.all(0)),
+                      "p": Style(
+                        maxLines: readMore ? 2 : 12,
+                        margin: Margins.all(0),
+                      ),
+                    },
                   ),
-                  RichText(
-                      maxLines: readMore ? 2 : 12,
-                      overflow: TextOverflow.ellipsis,
-                      text: TextSpan(children: [
-                        readMores
-                            ? TextSpan(
-                                text: !readMore
-                                    ? LocaleKeys.read_less.tr()
-                                    : LocaleKeys.read_more.tr(),
-                                style: context.textTheme.titleLarge?.rq.copyWith(
-                                    height: 1.23,
-                                    color: Color(0xff388CFF),
-                                    fontSize: 13),
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = () {
-                                    readMoreNotifier.value =
-                                        !readMoreNotifier.value;
-                                  })
-                            : TextSpan(
-                                text: " ",
-                              )
-                      ]))
+                    RichText(
+                        overflow: TextOverflow.ellipsis,
+                        text: TextSpan(children: [
+                          readMores
+                              ? TextSpan(
+                              text: !readMore
+                                  ? LocaleKeys.read_less.tr()
+                                  : LocaleKeys.read_more.tr(),
+                              style: context.textTheme.titleLarge?.rq.copyWith(
+                                  height: 1.23,
+                                  color: Color(0xff388CFF),
+                                  fontSize: 13),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  readMoreNotifier.value =
+                                  !readMoreNotifier.value;
+                                })
+                              : TextSpan(
+                            text: " ",
+                          )
+                        ]))
                 ],
               )
 

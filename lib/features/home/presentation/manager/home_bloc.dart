@@ -1319,22 +1319,20 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   FutureOr<void> _onAddSizesFotColorsEvent(
       AddSizesFotColorsEvent event, Emitter<HomeState> emit) async {
-    ;
     List<String> sizes = [];
+    List<int> sizesQuantities = [];
 
-    emit(state.copyWith(sizes: sizes));
+    //emit(state.copyWith(sizes: sizes));
     if (event.variation != null) {
       event.variation!.forEach((element) {
-        if (element.type!.split("-")[0] == event.currentColorName &&
-            element.qty != null) {
-          if (element.qty! > 0 && element.type!.split("-").length > 1) {
-            sizes.add(element.type!.split("-")[1]);
-          }
+        if (element.type!.split("-")[0] == event.currentColorName || event.currentColorName == '') {
+            sizes.add(element.type!.split("-")[event.currentColorName == '' ? 0 : 1]);
+            sizesQuantities.add(element.qty ?? 0);
         }
       });
     }
 
-    emit(state.copyWith(sizes: sizes));
+    emit(state.copyWith(sizes: sizes , sizesQuantities : sizesQuantities));
   }
 
   FutureOr<void> _onGetProductDatailsWithoutRelatedProductsEvent(

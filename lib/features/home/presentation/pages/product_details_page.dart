@@ -161,11 +161,11 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
 
                   homeBloc.add(AddSizesFotColorsEvent(
                       currentColorName:
-                          !widget.productItem.syncColorImages.isNullOrEmpty
+                          !widget.productItem.colors.isNullOrEmpty
                               ? widget
                                       .productItem
-                                      .syncColorImages![currentSelectedColor]
-                                      .colorName ??
+                                      .colors![currentSelectedColor]
+                                      .name ??
                                   ""
                               : "",
                       variation: state.cachedProductWithoutRelatedProductsModel[
@@ -501,14 +501,11 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                       : "",
                   addToBagButtonShapeNotifier: addToBagButtonShapeNotifier,
                   sizes: state.sizes ?? [],
-                  currentColornum:
-                      !widget.productItem.syncColorImages.isNullOrEmpty &&
-                              !widget.productItem.syncColorImages![0].images
-                                  .isNullOrEmpty
-                          ? widget.productItem.colors![currentSelectedColor]
+                  sizesQuantities: state.sizesQuantities ?? [],
+                  currentColornum: widget.productItem.colors.isNullOrEmpty ? ''  :
+                       widget.productItem.colors![currentSelectedColor]
                                   .color ??
-                              ""
-                          : "",
+                              "",
                   boutiqueIcon: state.cachedProductWithoutRelatedProductsModel[
                               widget.productItem.id.toString()] !=
                           null
@@ -553,13 +550,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                               .id!
                           : 0
                       : 0,
-                  currentColorName: !widget
-                              .productItem.syncColorImages.isNullOrEmpty &&
-                          !widget.productItem.syncColorImages![0].images
-                              .isNullOrEmpty
-                      ? widget.productItem.colors![currentSelectedColor].name ??
-                          ""
-                      : "",
+                  currentColorName:  widget.productItem.colors.isNullOrEmpty ? ''  : widget.productItem.colors![currentSelectedColor].name ??
+                          "",
                   productItem: widget.productItem,
                   currentColor: currentSelectedColor,
                 );

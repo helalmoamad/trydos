@@ -14,13 +14,17 @@ class ProductDetailsImageWidget extends StatelessWidget {
       this.borderRadius,
       this.borderColor,
       this.imageFit,
+      this.imageHeight,
       this.orginalHeight,
+      this.imageWidth,
       this.orginalWidth,
       this.height,
       this.radius});
 
   final double? width;
   final double? height;
+  final double? imageWidth;
+  final double? imageHeight;
   final double? orginalWidth;
   final double? orginalHeight;
   final double? radius;
@@ -65,6 +69,8 @@ class ProductDetailsImageWidget extends StatelessWidget {
                       ordinalHeight: orginalHeight,
                       ordinalwidth: orginalWidth,
                       imageUrl: imageUrl!,
+                      imageWidth: imageWidth,
+                      imageHeight: imageHeight,
                       height: height ?? 464,
                       width: width ?? 320,
                       imageFit: imageFit ?? BoxFit.cover,
