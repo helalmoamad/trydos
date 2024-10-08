@@ -72,6 +72,7 @@ class HomeState extends Equatable {
     this.getCommentForProductStatus = GetCommentForProductStatus.init,
     this.startingSetting,
     this.sizes = const [],
+    this.sizesQuantities = const [],
     this.isGettingProductListingWithPagination = false,
     this.isGettingProductListingWithPaginationForAppearProduct = false,
     this.getProductFiltersStatus = const {},
@@ -169,6 +170,7 @@ class HomeState extends Equatable {
       getHomeBoutiquesPaginationObjectByMainCategory;
   final List<Story>? storiesForProduct;
   final List<String>? sizes;
+  final List<int>? sizesQuantities;
   final Map<String, int>? countOfProductExpectedByFiltering;
   final get_filters.Filter? prefAppliedFilterForExtendFilter;
   final Map<String, PaginationModel<product.Products>>
@@ -211,6 +213,7 @@ class HomeState extends Equatable {
         choosedFiltersByUser,
         selectedCollection,
         currentPage,
+    sizesQuantities,
         isExpandedForListingPage,
         isGettingProductListingWithPagination,
         isGettingProductListingWithPaginationForAppearProduct,
@@ -268,6 +271,7 @@ class HomeState extends Equatable {
           getProductDetailWithoutRelatedProductsModel,
       int? selectedCollection,
       List<String>? sizes,
+      List<int>? sizesQuantities,
       final String? theReplyFromGemini,
       final bool? isGettingProductListingWithPaginationForAppearProduct,
       int? currentIndexForMainCategoryEvent,
@@ -319,6 +323,7 @@ class HomeState extends Equatable {
       getCommentForProductModel:
           getCommentForProductModel ?? this.getCommentForProductModel,
       sizes: sizes ?? this.sizes,
+      sizesQuantities: sizesQuantities ?? this.sizesQuantities,
       isGettingProductListingWithPagination:
           isGettingProductListingWithPagination ??
               this.isGettingProductListingWithPagination,

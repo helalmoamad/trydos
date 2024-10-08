@@ -232,7 +232,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                             ],
                                           ),
                                           child: widget.boutniqe
-                                                      .banners?[index] ==
+                                                      .banners?[index] !=
                                                   null
                                               ? ClipRRect(
                                                   borderRadius:
