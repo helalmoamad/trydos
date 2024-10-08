@@ -383,11 +383,13 @@ class AddItemToCartEvent extends HomeEvent {
   final String? choice_1;
   final int? boutiqueId;
   final String colorName;
+  final bool fishAddAllTheItems;
   final Products products;
 
   AddItemToCartEvent(
       {this.quantity,
       this.boutiqueIcon,
+      this.fishAddAllTheItems = true,
       this.boutiqueId,
       required this.image,
       required this.countOfPieces,
@@ -482,6 +484,7 @@ class UpdateItemInCartEvent extends HomeEvent {
   final int quantity;
   final String currentSize;
   final String productId;
+  final bool fishAddAllTheItems;
   final String colorName;
   final String image;
   final String boutiqueId;
@@ -490,6 +493,7 @@ class UpdateItemInCartEvent extends HomeEvent {
   UpdateItemInCartEvent({
     required this.quantity,
     required this.colorName,
+    this.fishAddAllTheItems = true,
     required this.cartId,
     required this.image,
     required this.countOfPieces,
@@ -617,9 +621,11 @@ class UpdateListOfItemForAddToCartEvent extends HomeEvent {
   final ImageForAddToCart imageForAddToCart;
   final String operation;
   final String productId;
+  final bool resetTheList;
   UpdateListOfItemForAddToCartEvent({
     required this.imageForAddToCart,
     required this.operation,
+    this.resetTheList = false,
     required this.productId,
   });
 

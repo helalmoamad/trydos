@@ -161,11 +161,11 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
 
                   homeBloc.add(AddSizesFotColorsEvent(
                       currentColorName:
-                          !widget.productItem.syncColorImages.isNullOrEmpty
+                          !widget.productItem.colors.isNullOrEmpty
                               ? widget
                                       .productItem
-                                      .syncColorImages![currentSelectedColor]
-                                      .colorName ??
+                                      .colors![currentSelectedColor]
+                                      .name ??
                                   ""
                               : "",
                       variation: state.cachedProductWithoutRelatedProductsModel[
@@ -419,10 +419,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           DisplayColorsCard(
                             productItem: widget.productItem,
                             scrollController: scrollController,
-                            currentColorForProduct:
-                                state.currentSelectedColorForEveryProduct[
-                                        widget.productItem.id.toString()] ??
-                                    0,
+                            currentColorForProduct: currentSelectedColor,
                           ),
                           SizedBox(
                             height: 15,
@@ -441,10 +438,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         } else ...{
                           DisplaySizesCard(
                               productItem: widget.productItem,
-                              currentColorForProduct:
-                                  state.currentSelectedColorForEveryProduct[
-                                          widget.productItem.id.toString()] ??
-                                      0,
+                              currentColorForProduct: currentSelectedColor,
                               scrollController: scrollController,
                               variation: state
                                   .cachedProductWithoutRelatedProductsModel[
@@ -479,11 +473,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               )),
           BlocBuilder<HomeBloc, HomeState>(
               buildWhen: (previous, current) =>
-              previous.CurrentColorSizeForCart?["size"] != current.CurrentColorSizeForCart?["size"] ||
-                  previous.currentSelectedColorForEveryProduct[
-                          widget.productItem.id.toString()] !=
-                      current.currentSelectedColorForEveryProduct[
-                          widget.productItem.id.toString()] ||
+                  previous.CurrentColorSizeForCart?["size"] !=
+                      current.CurrentColorSizeForCart?["size"] ||
+                  previous.currentSelectedColorForEveryProduct !=
+                      current.currentSelectedColorForEveryProduct ||
                   previous.getProductDetailWithoutSimilarRelatedProductsStatus !=
                       current
                           .getProductDetailWithoutSimilarRelatedProductsStatus,
@@ -508,14 +501,11 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                       : "",
                   addToBagButtonShapeNotifier: addToBagButtonShapeNotifier,
                   sizes: state.sizes ?? [],
-                  currentColornum:
-                      !widget.productItem.syncColorImages.isNullOrEmpty &&
-                              !widget.productItem.syncColorImages![0].images
-                                  .isNullOrEmpty
-                          ? widget.productItem.colors![currentSelectedColor]
+                  sizesQuantities: state.sizesQuantities ?? [],
+                  currentColornum: widget.productItem.colors.isNullOrEmpty ? ''  :
+                       widget.productItem.colors![currentSelectedColor]
                                   .color ??
-                              ""
-                          : "",
+                              "",
                   boutiqueIcon: state.cachedProductWithoutRelatedProductsModel[
                               widget.productItem.id.toString()] !=
                           null
@@ -560,13 +550,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                               .id!
                           : 0
                       : 0,
-                  currentColorName: !widget
-                              .productItem.syncColorImages.isNullOrEmpty &&
-                          !widget.productItem.syncColorImages![0].images
-                              .isNullOrEmpty
-                      ? widget.productItem.colors![currentSelectedColor].name ??
-                          ""
-                      : "",
+                  currentColorName:  widget.productItem.colors.isNullOrEmpty ? ''  : widget.productItem.colors![currentSelectedColor].name ??
+                          "",
                   productItem: widget.productItem,
                   currentColor: currentSelectedColor,
                 );

@@ -43,12 +43,15 @@ class ProductDetailsBottomSheet extends StatefulWidget {
 
   final ValueNotifier<int> addToBagButtonShapeNotifier;
   final List<String> sizes;
+  final List<int> sizesQuantities;
+
   const ProductDetailsBottomSheet(
       {super.key,
       required this.productItem,
       required this.addToBagButtonShapeNotifier,
       required this.boutiqueIcon,
       required this.sizes,
+      required this.sizesQuantities,
       required this.countOfPieces,
       required this.currentSize,
       required this.currentColornum,
@@ -84,7 +87,9 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
-
+    int currentColor = homeBloc.state.currentSelectedColorForEveryProduct[
+            widget.productItem.id.toString()] ??
+        (widget.productItem.syncColorImages?.length ?? 0) ~/ 2;
     syncColorImageList = widget.productItem.syncColorImages ?? [];
     syncColorImageList.removeWhere((element) => element.images.isNullOrEmpty);
     syncColorImageList = [
@@ -110,7 +115,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                     : (syncColorImageList.length) <= 8
                         ? 0.55
                         : 0.4,
-                initialIndex: widget.currentColor,
+                initialIndex: currentColor,
                 primaryshiftingOffsetDivision: (syncColorImageList.length) == 4
                     ? 4.5
                     : (syncColorImageList.length) <= 8
@@ -197,6 +202,11 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                   : 433,
                       minHeight: 78,
                       onPanelClosed: () {
+                        homeBloc.add(UpdateListOfItemForAddToCartEvent(
+                            imageForAddToCart: ImageForAddToCart(),
+                            operation: "remove",
+                            productId: widget.productItem.id.toString(),
+                            resetTheList: true));
                         sizeIsNotAvailableNotifier.value = null;
                         firstOpenOfPanel = true;
                         denySlidingBackForSlidingUpPanels.value = false;
@@ -249,6 +259,30 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                           return ProductDetailsImageWidget(
                                             width: 198.w,
                                             height: 288.h,
+                                            imageWidth: 320,
+                                            imageHeight: 464,
+                                            orginalWidth: double.tryParse(
+                                                gallery3dControllerForCircles !=
+                                                        null
+                                                    ? orginalWidth![
+                                                            currentIndexInSlider]
+                                                        .toString()
+                                                    : widget
+                                                        .productItem
+                                                        .images![0]
+                                                        .originalWidth
+                                                        .toString()),
+                                            orginalHeight: double.tryParse(
+                                                gallery3dControllerForCircles !=
+                                                        null
+                                                    ? orginalHeight![
+                                                            currentIndexInSlider]
+                                                        .toString()
+                                                    : widget
+                                                        .productItem
+                                                        .images![0]
+                                                        .originalHeight
+                                                        .toString()),
                                             imageUrl:
                                                 gallery3dControllerForCircles !=
                                                         null
@@ -371,7 +405,17 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                               BlocBuilder<HomeBloc, HomeState>(
                                   buildWhen: (previous, current) =>
                                       previous.getCurrencyForCountryModel !=
-                                      current.getCurrencyForCountryModel,
+                                          current.getCurrencyForCountryModel ||
+                                      previous.CurrentColorSizeForCart?[
+                                              "size"] !=
+                                          current.CurrentColorSizeForCart?[
+                                              "size"] ||
+                                      previous.currentSelectedColorForEveryProduct !=
+                                          current
+                                              .currentSelectedColorForEveryProduct ||
+                                      previous.getProductDetailWithoutSimilarRelatedProductsStatus !=
+                                          current
+                                              .getProductDetailWithoutSimilarRelatedProductsStatus,
                                   builder: (context, state) {
                                     return ProductDetailsSheetHeader(
                                       decimalPoint: state.startingSetting
@@ -455,16 +499,42 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                   ),
                                 )
                               : currentTab == 3
-                                  ? SelectSizeContent(
-                                      productId:
-                                          widget.productItem.id.toString(),
-                                      sizes: widget.sizes,
-                                      scrollController: controller,
-                                      selectedColor: Colors.blue,
-                                      sizeIsNotAvailableNotifier:
-                                          sizeIsNotAvailableNotifier,
-                                      addToBagButtonShapeNotifier:
-                                          widget.addToBagButtonShapeNotifier,
+                                  ? BlocBuilder<HomeBloc, HomeState>(
+                                      buildWhen: (p, c) =>
+                                          p.currentSelectedColorForEveryProduct[
+                                              widget.productItem.id
+                                                  .toString()] !=
+                                          c.currentSelectedColorForEveryProduct[
+                                              widget.productItem.id.toString()],
+                                      builder: (context, state) {
+                                        return SelectSizeContent(
+                                          productId:
+                                              widget.productItem.id.toString(),
+                                          sizes: widget.sizes,
+                                          sizesQuantities: widget.sizesQuantities,
+                                          scrollController: controller,
+                                          selectedColorName: widget.productItem
+                                                  .colors.isNullOrEmpty
+                                              ? null
+                                              : widget
+                                                  .productItem
+                                                  .colors![state
+                                                          .currentSelectedColorForEveryProduct[
+                                                      widget.productItem.id
+                                                          .toString()]!]
+                                                  .name
+                                                  .toString(),
+                                          selectedColor: widget.productItem
+                                                  .colors.isNullOrEmpty
+                                              ? null
+                                              : Color(int.parse(
+                                                  '0xff${widget.productItem.colors![state.currentSelectedColorForEveryProduct[widget.productItem.id.toString()]!].color!.substring(1)}')),
+                                          sizeIsNotAvailableNotifier:
+                                              sizeIsNotAvailableNotifier,
+                                          addToBagButtonShapeNotifier: widget
+                                              .addToBagButtonShapeNotifier,
+                                        );
+                                      },
                                     )
                                   : const SizedBox.shrink(),
                         ],
@@ -556,7 +626,9 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                         clickOnComments: () {
                           panelController.open();
                           currentActiveTab.value = 0;
-                          pageController.jumpToPage(0);
+                          WidgetsBinding.instance.addPostFrameCallback((_){
+                            pageController.jumpToPage(0);
+                          });
                         },
                         clickOnFavorite: () {
                           currentActiveTab.value = -1;
@@ -564,12 +636,16 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                         clickOnMoreOptions: () {
                           panelController.open();
                           currentActiveTab.value = 2;
-                          pageController.jumpToPage(2);
+                          WidgetsBinding.instance.addPostFrameCallback((_){
+                            pageController.jumpToPage(2);
+                          });
                         },
                         clickOnShare: () {
                           panelController.open();
                           currentActiveTab.value = 1;
-                          pageController.jumpToPage(1);
+                          WidgetsBinding.instance.addPostFrameCallback((_){
+                            pageController.jumpToPage(1);
+                          });
                         },
                         currentActiveTab: currentActiveTab,
                         sizeIsNotAvailableNotifier: sizeIsNotAvailableNotifier,

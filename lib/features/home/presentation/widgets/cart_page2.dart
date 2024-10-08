@@ -49,6 +49,11 @@ class CartPage2 extends StatelessWidget {
               previous.getCartItemsStatus != current.getCartItemsStatus ||
               previous.getCurrencyForCountryModel !=
                   current.getCurrencyForCountryModel ||
+              previous.deleteItemInCartStatus !=
+                  current.deleteItemInCartStatus ||
+              previous.addItemInCartStatus != current.addItemInCartStatus ||
+              previous.updateItemInCartStatus !=
+                  current.updateItemInCartStatus ||
               previous.cartCollection!.values != current.cartCollection!.values,
           builder: (context, state) {
             double totlaPrice = 0;
@@ -486,6 +491,33 @@ class CartPage2 extends StatelessWidget {
                                                               });
                                                         },
                                                         onTap: () {
+                                                          int indexess = state
+                                                              .productITemForCart![state
+                                                                  .cartCollection![
+                                                                      groupCartkeys[index]]![
+                                                                      indexes]
+                                                                  .productId
+                                                                  .toString()]!
+                                                              .syncColorImages!
+                                                              .indexOf(state
+                                                                  .productITemForCart![state
+                                                                      .cartCollection![groupCartkeys[index]]![indexes]
+                                                                      .productId
+                                                                      .toString()]!
+                                                                  .syncColorImages!
+                                                                  .firstWhere((element) => element.colorName == (!state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].color ?? "" : "")));
+                                                          if (index != -1) {
+                                                            BlocProvider.of<HomeBloc>(context).add(AddCurrentSelectedColorEvent(
+                                                                currentSelectedColor:
+                                                                    indexess,
+                                                                productId: state
+                                                                    .cartCollection![
+                                                                        groupCartkeys[
+                                                                            index]]![
+                                                                        indexes]
+                                                                    .productId
+                                                                    .toString()));
+                                                          }
                                                           HelperFunctions
                                                               .slidingNavigation(
                                                                   context,
@@ -700,7 +732,7 @@ class CartPage2 extends StatelessWidget {
                                                                                   children: [
                                                                                     AppElevatedButton(
                                                                                       onPressed: () {
-                                                                                        BlocProvider.of<HomeBloc>(context).add(UpdateItemInCartEvent(countOfPieces: state.cartCollection![groupCartkeys[index]]![indexes].countOfPieces, image: state.cartCollection![groupCartkeys[index]]![indexes].image ?? "", currentSize: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].size ?? "" : "", colorName: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].color ?? "" : "", productId: state.cartCollection![groupCartkeys[index]]![indexes].productId.toString(), quantity: int.tryParse(quantityController.text)!, cartId: state.cartCollection![groupCartkeys[index]]![indexs].id.toString(), boutiqueId: state.cartCollection![groupCartkeys[index]]![indexes].boutique!.id.toString()));
+                                                                                        BlocProvider.of<HomeBloc>(context).add(UpdateItemInCartEvent(countOfPieces: state.cartCollection![groupCartkeys[index]]![indexs].countOfPieces, image: state.cartCollection![groupCartkeys[index]]![indexes].image ?? "", currentSize: !state.cartCollection![groupCartkeys[index]]![indexs].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexs].variations![0].size ?? "" : "", colorName: !state.cartCollection![groupCartkeys[index]]![indexs].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexs].variations![0].color ?? "" : "", productId: state.cartCollection![groupCartkeys[index]]![indexs].productId.toString(), quantity: int.tryParse(quantityController.text)!, cartId: state.cartCollection![groupCartkeys[index]]![indexs].id.toString(), boutiqueId: state.cartCollection![groupCartkeys[index]]![indexs].boutique!.id.toString()));
                                                                                         Navigator.pop(context);
                                                                                       },
                                                                                       text: "Yes",
@@ -739,7 +771,7 @@ class CartPage2 extends StatelessWidget {
                                                                             children: [
                                                                               AppElevatedButton(
                                                                                 onPressed: () {
-                                                                                  BlocProvider.of<HomeBloc>(context).add(RemoveItemFormCartEvent(countOfPieces: state.cartCollection![groupCartkeys[index]]![indexes].countOfPieces, image: state.cartCollection![groupCartkeys[index]]![indexes].image ?? '', currentSize: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].size ?? "" : "", ColoName: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].color ?? "" : "", productId: state.cartCollection![groupCartkeys[index]]![indexes].productId.toString(), itemId: state.cartCollection![groupCartkeys[index]]![indexes].id.toString(), boutiqueId: state.cartCollection![groupCartkeys[index]]![indexes].boutique!.id.toString()));
+                                                                                  BlocProvider.of<HomeBloc>(context).add(RemoveItemFormCartEvent(countOfPieces: state.cartCollection![groupCartkeys[index]]![indexs].countOfPieces, image: state.cartCollection![groupCartkeys[index]]![indexs].image ?? '', currentSize: !state.cartCollection![groupCartkeys[index]]![indexs].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexs].variations![0].size ?? "" : "", ColoName: !state.cartCollection![groupCartkeys[index]]![indexs].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexs].variations![0].color ?? "" : "", productId: state.cartCollection![groupCartkeys[index]]![indexs].productId.toString(), itemId: state.cartCollection![groupCartkeys[index]]![indexs].id.toString(), boutiqueId: state.cartCollection![groupCartkeys[index]]![indexs].boutique!.id.toString()));
                                                                                   Navigator.pop(context);
                                                                                 },
                                                                                 text: "Yes",
@@ -757,12 +789,39 @@ class CartPage2 extends StatelessWidget {
                                                                     });
                                                               },
                                                               onTap: () {
+                                                                int indexess = state
+                                                                    .productITemForCart![state
+                                                                        .cartCollection![
+                                                                            groupCartkeys[index]]![
+                                                                            indexs]
+                                                                        .productId
+                                                                        .toString()]!
+                                                                    .syncColorImages!
+                                                                    .indexOf(state
+                                                                        .productITemForCart![state
+                                                                            .cartCollection![groupCartkeys[index]]![indexs]
+                                                                            .productId
+                                                                            .toString()]!
+                                                                        .syncColorImages!
+                                                                        .firstWhere((element) => element.colorName == (!state.cartCollection![groupCartkeys[index]]![indexs].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexs].variations![0].color ?? "" : "")));
+                                                                if (index !=
+                                                                    -1) {
+                                                                  BlocProvider.of<HomeBloc>(context).add(AddCurrentSelectedColorEvent(
+                                                                      currentSelectedColor:
+                                                                          indexess,
+                                                                      productId: state
+                                                                          .cartCollection![
+                                                                              groupCartkeys[index]]![
+                                                                              indexs]
+                                                                          .productId
+                                                                          .toString()));
+                                                                }
                                                                 HelperFunctions
                                                                     .slidingNavigation(
                                                                         context,
                                                                         ProductDetailsPage(
                                                                           productItem: state.productITemForCart![state
-                                                                              .cartCollection![groupCartkeys[index]]![indexes]
+                                                                              .cartCollection![groupCartkeys[index]]![indexs]
                                                                               .productId
                                                                               .toString()]!,
                                                                         ));
@@ -789,7 +848,7 @@ class CartPage2 extends StatelessWidget {
                                                                         height:
                                                                             142,
                                                                         imageUrl: state
-                                                                            .cartCollection![groupCartkeys[index]]![indexes]
+                                                                            .cartCollection![groupCartkeys[index]]![indexs]
                                                                             .image,
                                                                         radius:
                                                                             15,
@@ -813,7 +872,7 @@ class CartPage2 extends StatelessWidget {
                                                                             borderRadius: BorderRadiusDirectional.circular(20)),
                                                                         child:
                                                                             Text(
-                                                                          "${state.cartCollection![groupCartkeys[index]]![indexes].quantity}",
+                                                                          "${state.cartCollection![groupCartkeys[index]]![indexs].quantity}",
                                                                           style: context
                                                                               .textTheme
                                                                               .bodyMedium
@@ -842,8 +901,8 @@ class CartPage2 extends StatelessWidget {
                                                               width: 97.w,
                                                               height: 45,
                                                               child: Text(
-                                                                '''${!state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].size ?? "" : ""} \n '''
-                                                                '''${(state.cartCollection![groupCartkeys[index]]![indexes].offerPrice! * state.cartCollection![groupCartkeys[index]]![indexes].quantity! * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} '''
+                                                                '''${!state.cartCollection![groupCartkeys[index]]![indexs].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexs].variations![0].size ?? "" : ""} \n '''
+                                                                '''${(state.cartCollection![groupCartkeys[index]]![indexs].offerPrice! * state.cartCollection![groupCartkeys[index]]![indexs].quantity! * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} '''
                                                                 '''${priceSymbol ?? '\$'}''',
                                                                 style: context
                                                                     .textTheme
