@@ -87,7 +87,9 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
-
+    int currentColor = homeBloc.state.currentSelectedColorForEveryProduct[
+            widget.productItem.id.toString()] ??
+        (widget.productItem.syncColorImages?.length ?? 0) ~/ 2;
     syncColorImageList = widget.productItem.syncColorImages ?? [];
     syncColorImageList.removeWhere((element) => element.images.isNullOrEmpty);
     syncColorImageList = [
@@ -113,7 +115,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                     : (syncColorImageList.length) <= 8
                         ? 0.55
                         : 0.4,
-                initialIndex: widget.currentColor,
+                initialIndex: currentColor,
                 primaryshiftingOffsetDivision: (syncColorImageList.length) == 4
                     ? 4.5
                     : (syncColorImageList.length) <= 8
@@ -200,6 +202,11 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                   : 433,
                       minHeight: 78,
                       onPanelClosed: () {
+                        homeBloc.add(UpdateListOfItemForAddToCartEvent(
+                            imageForAddToCart: ImageForAddToCart(),
+                            operation: "remove",
+                            productId: widget.productItem.id.toString(),
+                            resetTheList: true));
                         sizeIsNotAvailableNotifier.value = null;
                         firstOpenOfPanel = true;
                         denySlidingBackForSlidingUpPanels.value = false;
@@ -398,7 +405,17 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                               BlocBuilder<HomeBloc, HomeState>(
                                   buildWhen: (previous, current) =>
                                       previous.getCurrencyForCountryModel !=
-                                      current.getCurrencyForCountryModel,
+                                          current.getCurrencyForCountryModel ||
+                                      previous.CurrentColorSizeForCart?[
+                                              "size"] !=
+                                          current.CurrentColorSizeForCart?[
+                                              "size"] ||
+                                      previous.currentSelectedColorForEveryProduct !=
+                                          current
+                                              .currentSelectedColorForEveryProduct ||
+                                      previous.getProductDetailWithoutSimilarRelatedProductsStatus !=
+                                          current
+                                              .getProductDetailWithoutSimilarRelatedProductsStatus,
                                   builder: (context, state) {
                                     return ProductDetailsSheetHeader(
                                       decimalPoint: state.startingSetting

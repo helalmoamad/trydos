@@ -1424,7 +1424,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                 color: Color.fromARGB(255, 252, 243, 243),
                 border: Border(),
                 borderRadius: BorderRadius.circular(20.w)),
-            width: 240.w,
+            width: 300.w,
             height: 32.h,
             child: Row(
               children: [

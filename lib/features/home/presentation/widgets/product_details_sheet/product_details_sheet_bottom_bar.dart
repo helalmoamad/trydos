@@ -75,8 +75,6 @@ class _ProductDetailsSheetBottomBarState
 
   @override
   void initState() {
-    print(
-        "////////////////////******************************************/////////////////${widget.size}");
     widget.addToBagButtonShapeNotifier.value = 0;
     homeBloc = BlocProvider.of<HomeBloc>(context);
     animationController = AnimationController(
@@ -101,11 +99,13 @@ class _ProductDetailsSheetBottomBarState
   Widget build(BuildContext context) {
     return BlocBuilder<HomeBloc, HomeState>(
       buildWhen: (previous, current) =>
-          previous.addImagesToProductIdForCart !=
-              current.addImagesToProductIdForCart ||
+          previous.addImagesToProductIdForCart[widget.productId]?.length !=
+              current.addImagesToProductIdForCart[widget.productId]?.length ||
           previous.currentSelectedColorForEveryProduct[widget.productId] !=
               current.currentSelectedColorForEveryProduct[widget.productId] ||
           previous.productStatus != current.productStatus ||
+          previous.updateItemInCartStatus != current.updateItemInCartStatus ||
+          previous.addItemInCartStatus != current.addItemInCartStatus ||
           previous.ListitemForAddToCart != current.ListitemForAddToCart,
       builder: (context, state) {
         print(state.addImagesToProductIdForCart[widget.productId]);
@@ -171,7 +171,7 @@ class _ProductDetailsSheetBottomBarState
                                           },
                                           child: selectedSizeByUser == null
                                               ? BlocBuilder<HomeBloc,
-                                                  HomeState>(
+                                                      HomeState>(
                                                   buildWhen: (p, c) =>
                                                       p.productStatus?[
                                                           widget.productId] !=
@@ -195,10 +195,16 @@ class _ProductDetailsSheetBottomBarState
                                                             child: Container(
                                                               width: 97.w,
                                                               height: 60,
-                                                              decoration: BoxDecoration(
-                                                                  borderRadius: BorderRadius.circular(20),
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            20),
                                                                 color: Colors
-                                                                    .grey.shade300,),
+                                                                    .grey
+                                                                    .shade300,
+                                                              ),
                                                             ),
                                                           ),
                                                           Shimmer.fromColors(
@@ -219,14 +225,30 @@ class _ProductDetailsSheetBottomBarState
                                                     return GestureDetector(
                                                       onTapDown: (details) {
                                                         if (currentTab != 3) {
+                                                          homeBloc.add(UpdateListOfItemForAddToCartEvent(
+                                                              resetTheList:
+                                                                  true,
+                                                              imageForAddToCart:
+                                                                  imageForAddToCart,
+                                                              operation:
+                                                                  "remove",
+                                                              productId: widget
+                                                                  .productId));
                                                           print(
                                                               "11111111${state.productStatus![widget.productId]}1111111111111111111");
 
-                                                          widget.panelController
-                                                              .open();
-                                                          widget
-                                                              .currentActiveTab
-                                                              .value = 3;
+                                                          if (state.productStatus![
+                                                                  widget
+                                                                      .productId] ==
+                                                              GetProductDetailWithoutSimilarRelatedProductsStatus
+                                                                  .success) {
+                                                            widget
+                                                                .panelController
+                                                                .open();
+                                                            widget
+                                                                .currentActiveTab
+                                                                .value = 3;
+                                                          }
                                                         } else {
                                                           HapticFeedback
                                                               .lightImpact();
@@ -282,6 +304,15 @@ class _ProductDetailsSheetBottomBarState
                                                               widget
                                                                   .addToBagButtonShapeNotifier
                                                                   .value = 0;
+                                                              homeBloc.add(UpdateListOfItemForAddToCartEvent(
+                                                                  productId: widget
+                                                                      .productId,
+                                                                  resetTheList:
+                                                                      true,
+                                                                  imageForAddToCart:
+                                                                      imageForAddToCart,
+                                                                  operation:
+                                                                      "remove"));
                                                             }
                                                           } else {
                                                             animationController
@@ -424,13 +455,19 @@ class _ProductDetailsSheetBottomBarState
                                                                                           widget.colorNum == ""
                                                                                               ? SizedBox.shrink()
                                                                                               : MyTextWidget(
-                                                                                                  '${widget.colorName} ',
-                                                                                                  style: textTheme.titleMedium?.mq.copyWith(height: 15 / 12, color: Color(int.parse('0xff${widget.colorNum.substring(1)}'))),
+                                                                                                  'color ',
+                                                                                                  style: textTheme.titleMedium?.rq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
                                                                                                 ),
                                                                                           widget.colorNum == ""
                                                                                               ? SizedBox.shrink()
                                                                                               : MyTextWidget(
-                                                                                                  'color ',
+                                                                                                  '${widget.colorName} ',
+                                                                                                  style: textTheme.titleMedium?.mq.copyWith(height: 15 / 12, color: Color(int.parse('0xff${widget.colorNum.substring(1)}'))),
+                                                                                                ),
+                                                                                          widget.size == ""
+                                                                                              ? SizedBox.shrink()
+                                                                                              : MyTextWidget(
+                                                                                                  'size ',
                                                                                                   style: textTheme.titleMedium?.rq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
                                                                                                 ),
                                                                                           widget.size == ""
@@ -439,13 +476,7 @@ class _ProductDetailsSheetBottomBarState
                                                                                                   '${widget.size} ',
                                                                                                   style: textTheme.titleMedium?.mq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
                                                                                                 ),
-                                                                                          widget.size == ""
-                                                                                              ? SizedBox.shrink()
-                                                                                              : MyTextWidget(
-                                                                                                  'size',
-                                                                                                  style: textTheme.titleMedium?.rq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
-                                                                                                ),
-                                                                                        ],
+                                                                                        ].reversed.toList(),
                                                                                       )
                                                                                     }
                                                                                   ],
@@ -498,8 +529,7 @@ class _ProductDetailsSheetBottomBarState
                                                                     ));
                                                           }),
                                                     );
-                                                  },
-                                                )
+                                                  })
                                               : NotifyWhenQuantityAvailableButton(
                                                   unAvailableSize:
                                                       selectedSizeByUser,

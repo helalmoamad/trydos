@@ -419,10 +419,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           DisplayColorsCard(
                             productItem: widget.productItem,
                             scrollController: scrollController,
-                            currentColorForProduct:
-                                state.currentSelectedColorForEveryProduct[
-                                        widget.productItem.id.toString()] ??
-                                    0,
+                            currentColorForProduct: currentSelectedColor,
                           ),
                           SizedBox(
                             height: 15,
@@ -441,10 +438,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         } else ...{
                           DisplaySizesCard(
                               productItem: widget.productItem,
-                              currentColorForProduct:
-                                  state.currentSelectedColorForEveryProduct[
-                                          widget.productItem.id.toString()] ??
-                                      0,
+                              currentColorForProduct: currentSelectedColor,
                               scrollController: scrollController,
                               variation: state
                                   .cachedProductWithoutRelatedProductsModel[
@@ -479,11 +473,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               )),
           BlocBuilder<HomeBloc, HomeState>(
               buildWhen: (previous, current) =>
-              previous.CurrentColorSizeForCart?["size"] != current.CurrentColorSizeForCart?["size"] ||
-                  previous.currentSelectedColorForEveryProduct[
-                          widget.productItem.id.toString()] !=
-                      current.currentSelectedColorForEveryProduct[
-                          widget.productItem.id.toString()] ||
+                  previous.CurrentColorSizeForCart?["size"] !=
+                      current.CurrentColorSizeForCart?["size"] ||
+                  previous.currentSelectedColorForEveryProduct !=
+                      current.currentSelectedColorForEveryProduct ||
                   previous.getProductDetailWithoutSimilarRelatedProductsStatus !=
                       current
                           .getProductDetailWithoutSimilarRelatedProductsStatus,
