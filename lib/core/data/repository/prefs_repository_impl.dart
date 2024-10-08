@@ -438,7 +438,11 @@ class PrefsRepositoryImpl extends PrefsRepository {
   }
 
   @override
-  // TODO: implement serverTime
+  Future<bool> removeCurrentEvent() async {
+    return await _preferences.remove(PrefsKey.currentEvent);
+  }
+
+  @override
   String? get serverTime {
     return _preferences.getString("ServerTime");
   }
@@ -520,6 +524,7 @@ class PrefsRepositoryImpl extends PrefsRepository {
   @override
   Future<bool> setStoryUrl(String url) =>
       _preferences.setString(PrefsKey.storyUrl, url);
+
 // @override
 
 // List<Map<String,dynamic>> get localMessages {

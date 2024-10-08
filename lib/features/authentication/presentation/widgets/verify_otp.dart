@@ -21,6 +21,10 @@ import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/utils/form_state_mixin.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../routes/router.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_clicked_button_name.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
+import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/my_text_widget.dart';
 import '../manager/auth_bloc.dart';
 import 'dart:ui' as ui;
@@ -59,6 +63,15 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
     prefsRepository.setTimerForOtpRunning(false);
     checkOtp.value = 0;
     enabledResendNotifier.value = true;
+  }
+
+  @override
+  void didChangeDependencies() async {
+    FirebaseAnalyticsService.logScreen(
+      screen: AnalyticsScreensConst.verifyOtpScreen,
+    );
+
+    super.didChangeDependencies();
   }
 
   @override
@@ -524,12 +537,14 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                             checkOtp.value = 0;
                                           },
                                           checkOtp: () {
-                                            print('wwwwwwwwwwwwww');
-                                            print(
+                                            debugPrint('/// checkOtp //////');
+                                            debugPrint(
                                                 prefsRepository.verificationId);
                                             if (prefsRepository
                                                     .verificationId !=
                                                 null) {
+                                              debugPrint(
+                                                  '/// verificationId not null //////');
                                               String insertedCode =
                                                   form.controllers[0].text +
                                                       form.controllers[1].text +
@@ -538,6 +553,8 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                       form.controllers[4].text +
                                                       form.controllers[5].text;
                                               if (widget.fromLogin) {
+                                                debugPrint(
+                                                    '/// fromLogin //////');
                                                 authBloc.add(
                                                     VerifyOtpSignInEvent(
                                                         verificationId:
@@ -546,6 +563,16 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                         otp: insertedCode,
                                                         phone: widget
                                                             .phoneNumber));
+                                                /////////////////////////////////////
+                                                FirebaseAnalyticsService
+                                                    .logEventForSession(
+                                                  eventName:
+                                                      AnalyticsEventsConst
+                                                          .buttonClicked,
+                                                  clickedButtonName:
+                                                      AnalyticsClickedButtonNameConst
+                                                          .haveAlreadyAccountButton,
+                                                );
                                               } else {
                                                 authBloc.add(
                                                     VerifyOtpSignUpEvent(
@@ -555,6 +582,8 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                         otp: insertedCode));
                                               }
                                             } else {
+                                              debugPrint(
+                                                  '/// verificationId is null //////');
                                               showMessage(LocaleKeys
                                                   .please_wait_5_seconds
                                                   .tr());

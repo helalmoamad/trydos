@@ -11,8 +11,6 @@ import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../core/utils/theme_state.dart';
 import '../../../../routes/router.dart';
-import '../../../../service/firebase_analytics_service/analytics_const.dart';
-import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/my_text_widget.dart';
 
 class RegisterCompleted extends StatefulWidget {
@@ -36,8 +34,6 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
       statusBarBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.dark,
     ));
-    await FirebaseAnalyticsService.logScreen(
-        screen: AnalyticsConst.registerCompletedPage);
     super.didChangeDependencies();
   }
 

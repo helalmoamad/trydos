@@ -16,7 +16,7 @@ import 'features/app/blocs/app_bloc/app_event.dart';
 import 'features/calls/presentation/utils/bg_terminated_call_utils.dart';
 import 'features/home/presentation/manager/home_bloc.dart';
 import 'features/story/presentation/bloc/story_bloc.dart';
-import 'service/firebase_analytics_service/analytics_const.dart';
+import 'service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({Key? key}) : super(key: key);
@@ -51,7 +51,8 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   void didChangeDependencies() async {
-    await FirebaseAnalyticsService.logScreen(screen: AnalyticsConst.splashPage);
+    FirebaseAnalyticsService.logScreen(
+        screen: AnalyticsScreensConst.splashScreen);
     super.didChangeDependencies();
   }
 

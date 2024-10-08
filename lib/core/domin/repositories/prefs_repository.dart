@@ -1,7 +1,4 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 import '../../../features/chat/data/models/my_chats_response_model.dart';
 
@@ -102,6 +99,7 @@ abstract class PrefsRepository {
 
   Future<bool> setMyMarketName(String name);
   Future<bool> setCurrentEvent(String currentEvent);
+  Future<bool> removeCurrentEvent();
 
   Future<bool> setTheme(ThemeMode themeMode);
 

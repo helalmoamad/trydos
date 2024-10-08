@@ -13,15 +13,12 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/authentication/presentation/widgets/adding_name.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/routes/router.dart';
-import 'package:trydos/service/firebase_analytics_service/analytics_const.dart';
-
 import '../../../../base_page.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../core/utils/theme_state.dart';
-import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/my_text_widget.dart';
 import '../manager/auth_bloc.dart';
 
@@ -42,8 +39,6 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
       statusBarBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.dark,
     ));
-    await FirebaseAnalyticsService.logScreen(
-        screen: AnalyticsConst.numberNotRegisteredPage);
 
     super.didChangeDependencies();
   }

@@ -14,7 +14,6 @@ import 'package:injectable/injectable.dart' as _i526;
 import 'package:logger/logger.dart' as _i974;
 import 'package:shared_preferences/shared_preferences.dart' as _i460;
 
-import '../../common/helper/firebase_analytics_sessions.dart' as _i824;
 import '../../features/app/blocs/app_bloc/app_bloc.dart' as _i721;
 import '../../features/app/blocs/pre_caching_image_bloc/pre_caching_image_bloc.dart'
     as _i1026;
@@ -202,7 +201,7 @@ Future<_i174.GetIt> $initGetIt(
     () => appModule.prefsRepository,
     preResolve: true,
   );
-  gh.lazySingleton<_i824.SessionManager>(() => _i824.SessionManager());
+  // gh.lazySingleton<_i824.SessionManager>(() => _i824.SessionManager());
   gh.lazySingleton<_i721.AppBloc>(() => _i721.AppBloc());
   gh.lazySingleton<_i1026.PreCachingImageBloc>(
       () => _i1026.PreCachingImageBloc());

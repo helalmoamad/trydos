@@ -13,9 +13,13 @@ import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_clicked_button_name.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
+import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/my_text_widget.dart';
 
-class VerificationMethods extends StatelessWidget {
+class VerificationMethods extends StatefulWidget {
   VerificationMethods(
       {Key? key,
       required this.phoneNumber,
@@ -27,7 +31,23 @@ class VerificationMethods extends StatelessWidget {
   final void Function() onChooseWhatsapp;
   final void Function() onChooseSms;
   final void Function() goBackToPhone;
+
+  @override
+  State<VerificationMethods> createState() => _VerificationMethodsState();
+}
+
+class _VerificationMethodsState extends State<VerificationMethods> {
   final ValueNotifier<int> clickButton = ValueNotifier(-1);
+
+  @override
+  void didChangeDependencies() async {
+    FirebaseAnalyticsService.logScreen(
+      screen: AnalyticsScreensConst.verificationMethodsScreen,
+    );
+
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
@@ -67,13 +87,13 @@ class VerificationMethods extends StatelessWidget {
                         ),
                         5.horizontalSpace,
                         MyTextWidget(
-                          phoneNumber,
+                          widget.phoneNumber,
                           textAlign: TextAlign.start,
                           style: context.textTheme.titleMedium?.ra
                               .copyWith(color: Color(0xffC4C2C2), height: 1.25),
                         ),
                         InkWell(
-                          onTap: goBackToPhone,
+                          onTap: widget.goBackToPhone,
                           child: Row(
                             children: [
                               SizedBox(
@@ -134,8 +154,14 @@ class VerificationMethods extends StatelessWidget {
                         Duration(milliseconds: 100),
                         () {
                           clickButton.value = -1;
-                          onChooseWhatsapp.call();
+                          widget.onChooseWhatsapp.call();
                         },
+                      );
+                      ////////////////
+                      FirebaseAnalyticsService.logEventForSession(
+                        eventName: AnalyticsEventsConst.buttonClicked,
+                        clickedButtonName: AnalyticsClickedButtonNameConst
+                            .chooseWhatsappButton,
                       );
                     },
                     child: ValueListenableBuilder<int>(
@@ -191,8 +217,14 @@ class VerificationMethods extends StatelessWidget {
                         Duration(milliseconds: 100),
                         () {
                           clickButton.value = -1;
-                          onChooseSms.call();
+                          widget.onChooseSms.call();
                         },
+                      );
+                      ///////////////////
+                      FirebaseAnalyticsService.logEventForSession(
+                        eventName: AnalyticsEventsConst.buttonClicked,
+                        clickedButtonName:
+                            AnalyticsClickedButtonNameConst.chooseSmsButton,
                       );
                     },
                     child: ValueListenableBuilder<int>(
