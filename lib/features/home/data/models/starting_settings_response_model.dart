@@ -133,6 +133,7 @@ class StartingSetting {
   final bool? showButtonWhatsappCashOnDelivery;
   final bool? smartLook;
   final List<Language>? language;
+  final List<NotificationType>? notificationTypes;
   final List<CurrencyList>? currencyList;
   final String? telrSuccessUrl;
   final String? postPaySuccessUrl;
@@ -186,6 +187,7 @@ class StartingSetting {
     this.showSubCategoryTitle,
     this.enableInviteBanner,
     this.countries,
+    this.notificationTypes,
     this.defaultCountry,
     this.addressType,
     this.systemDefaultCurrency,
@@ -254,6 +256,7 @@ class StartingSetting {
     bool? showButtonWhatsappCashOnDelivery,
     bool? smartLook,
     List<Language>? language,
+    List<NotificationType>? notificationTypes,
     List<CurrencyList>? currencyList,
     String? telrSuccessUrl,
     String? postPaySuccessUrl,
@@ -314,6 +317,7 @@ class StartingSetting {
         showButtonWhatsappCashOnDelivery: showButtonWhatsappCashOnDelivery ?? this.showButtonWhatsappCashOnDelivery,
         smartLook: smartLook ?? this.smartLook,
         language: language ?? this.language,
+        notificationTypes: notificationTypes ?? this.notificationTypes,
         currencyList: currencyList ?? this.currencyList,
         telrSuccessUrl: telrSuccessUrl ?? this.telrSuccessUrl,
         postPaySuccessUrl: postPaySuccessUrl ?? this.postPaySuccessUrl,
@@ -375,6 +379,7 @@ class StartingSetting {
     showButtonWhatsappCashOnDelivery: json["show_button_whatsapp_cash_on_delivery"],
     smartLook: json["smart_look"],
     language: json["language"] == null ? [] : List<Language>.from(json["language"]!.map((x) => Language.fromJson(x))),
+    notificationTypes: json["notificationTypes"] == null ? [] : List<NotificationType>.from(json["notificationTypes"]!.map((x) => NotificationType.fromJson(x))),
     currencyList: json["currency_list"] == null ? [] : List<CurrencyList>.from(json["currency_list"]!.map((x) => CurrencyList.fromJson(x))),
     telrSuccessUrl: json["telr_success_url"],
     postPaySuccessUrl: json["post_pay_success_url"],
@@ -436,6 +441,7 @@ class StartingSetting {
     "show_button_whatsapp_cash_on_delivery": showButtonWhatsappCashOnDelivery,
     "smart_look": smartLook,
     "language": language == null ? [] : List<dynamic>.from(language!.map((x) => x.toJson())),
+    "notificationTypes": notificationTypes == null ? [] : List<dynamic>.from(notificationTypes!.map((x) => x.toJson())),
     "currency_list": currencyList == null ? [] : List<dynamic>.from(currencyList!.map((x) => x.toJson())),
     "telr_success_url": telrSuccessUrl,
     "post_pay_success_url": postPaySuccessUrl,
@@ -633,6 +639,35 @@ class Language {
 
   Map<String, dynamic> toJson() => {
     "code": code,
+    "name": name,
+  };
+}
+
+class NotificationType {
+  final int? id;
+  final String? name;
+
+  NotificationType({
+    this.id,
+    this.name,
+  });
+
+  NotificationType copyWith({
+    int ? id,
+    String? name,
+  }) =>
+      NotificationType(
+        id: id ?? this.id,
+        name: name ?? this.name,
+      );
+
+  factory NotificationType.fromJson(Map<String, dynamic> json) => NotificationType(
+    id: json["id"],
+    name: json["name"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
     "name": name,
   };
 }

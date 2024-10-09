@@ -69,9 +69,6 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
         "\n Status message: ${response.statusMessage}"
         "\n Data: ${response.data}",
       );
-      if(requestRoute.endsWith('filters')) {
-        log(response.data.toString());
-      }
     }
     handler.next(response);
   }

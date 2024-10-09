@@ -51,6 +51,7 @@ abstract class HomeRepository {
       Map<String, dynamic> params);
 
   Future<Either<Failure, bool>> removeItemToCart(Map<String, dynamic> params);
+  Future<Either<Failure, bool>> requestForNotificationWhenProductBecameAvailable(Map<String, dynamic> params);
 
   /* Future<Either<Failure, SearchResultModel>> getSearchResult(
       Map<String, dynamic> params);*/

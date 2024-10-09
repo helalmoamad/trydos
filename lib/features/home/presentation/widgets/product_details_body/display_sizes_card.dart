@@ -148,6 +148,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
       ...sizes ?? [],
       ...sizes ?? [],
     ];
+    int currentIndexOfSelectedSize = sizes!.indexWhere((size)=> size == BlocProvider.of<HomeBloc>(context).state.CurrentColorSizeForCart?['size']);
     widget.scrollController.addListener(changingModeListener);
     gallery3dControllerForCircles = sizes.isNullOrEmpty || sizes!.length < 3
         ? null
@@ -159,17 +160,21 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                 : (sizes!.length) <= 8
                     ? 0.55
                     : 0.4,
-            initialIndex: sizes!.length ~/ 4,
+            initialIndex: currentIndexOfSelectedSize == -1 ?  sizes!.length ~/ 4 : currentIndexOfSelectedSize,
             primaryshiftingOffsetDivision: (sizes!.length) == 4
                 ? 4.5
                 : (sizes!.length) <= 8
                     ? 2.5
                     : 1.6,
             scrollTime: 1);
-    if (sizes!.length <= 8) {
-      currentSelectedSizeIndex.value  = 0;
-    } else {
-      currentSelectedSizeIndex.value = sizes!.length ~/ 4;
+    if(currentIndexOfSelectedSize == -1) {
+      if (sizes!.length <= 8) {
+        currentSelectedSizeIndex.value = 0;
+      } else {
+        currentSelectedSizeIndex.value = sizes!.length ~/ 4;
+      }
+    }else{
+      currentSelectedSizeIndex.value = currentIndexOfSelectedSize;
     }
     super.initState();
   }
@@ -335,81 +340,91 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                                     8
                                                                 ? SizedBox(
                                                                     height: 40,
-                                                                    child: Row(
-                                                                      mainAxisSize:
-                                                                          MainAxisSize
-                                                                              .min,
-                                                                      crossAxisAlignment:
-                                                                          CrossAxisAlignment
-                                                                              .center,
-                                                                      children: List.generate(
-                                                                          sizes!.length ~/ 2,
-                                                                          (index) => GestureDetector(
-                                                                                  child: SizeItemWidget(
-                                                                                sizeName: sizes![index],
-                                                                                width: 40 - index * 5,
-                                                                                height: 40 - index * 5,
-                                                                                index: index,
-                                                                                currentIndex: currentSelectedSizeIndex.value,
-                                                                              ))),
+                                                                    child: ValueListenableBuilder<int>(
+                                                                      valueListenable: currentSelectedSizeIndex,
+                                                                      builder: (context ,  currentSelectedSize , _) {
+                                                                        return Row(
+                                                                          mainAxisSize:
+                                                                              MainAxisSize
+                                                                                  .min,
+                                                                          crossAxisAlignment:
+                                                                              CrossAxisAlignment
+                                                                                  .center,
+                                                                          children: List.generate(
+                                                                              sizes!.length ~/ 2,
+                                                                              (index) => GestureDetector(
+                                                                                      child: SizeItemWidget(
+                                                                                    sizeName: sizes![index],
+                                                                                    width: 40 - index * 5,
+                                                                                    height: 40 - index * 5,
+                                                                                    index: index,
+                                                                                    currentIndex: currentSelectedSize,
+                                                                                  ))),
+                                                                        );
+                                                                      }
                                                                     ))
                                                                 : Material(
                                                                     color: Colors
                                                                         .transparent,
                                                                     child: Directionality(
                                                                       textDirection: ui.TextDirection.ltr,
-                                                                      child: Gallery3D(
-                                                                          // key: ValueKey('gallery3dControllerForCircles${widget.itemIndex}'),
-                                                                          controller: gallery3dControllerForCircles!,
-                                                                          denyScrolling: true,
-                                                                          width: 190,
-                                                                          stopScrollingOnEdges: (double primaryDelta) {
-                                                                            return (primaryDelta <= 0 && gallery3dControllerForCircles!.currentIndex == (sizes!.length ~/ 2 - 1)) ||
-                                                                                (primaryDelta >= 0 && gallery3dControllerForCircles!.currentIndex == 0);
-                                                                          },
-                                                                          height: null,
-                                                                          changingPagesScrollOffset: 0.1,
-                                                                          isClip: false,
-                                                                          onItemChanged: (index) {
-                                                                            currentSelectedSizeIndex.value = index;
-                                                                          },
-                                                                          onClickItem: (index) {
-                                                                            WidgetsBinding
-                                                                                .instance
-                                                                                .addPostFrameCallback((timeStamp) {
-                                                                              prevModeForRunHero =
-                                                                                  1;
-                                                                            });
-                                                                            displayMode.value =
-                                                                                1;
-                                                                            if (widget.scrollController.position.pixels <
-                                                                                (1.sh - renderBox!.localToGlobal(Offset.zero).dy + 150 - renderBox!.size.height)) {
-                                                                              widget.scrollController.animateTo((1.sh - renderBox!.localToGlobal(Offset.zero).dy + 150 - renderBox!.size.height),
-                                                                                  curve: Curves.fastEaseInToSlowEaseOut,
-                                                                                  duration: const Duration(milliseconds: 300));
-                                                                            }
-                                                                          },
-                                                                          itemConfig: const GalleryItemConfig(
-                                                                            width:
-                                                                                40,
-                                                                            height:
-                                                                                40,
-                                                                            radius:
-                                                                                180,
-                                                                            isShowTransformMask:
-                                                                                false,
-                                                                          ),
-                                                                          itemBuilder: (context, index) {
-                                                                            return Visibility(
-                                                                                visible: ((gallery3dControllerForCircles?.currentIndex ?? 0) < (sizes!.length ~/ 2) && index < (sizes!.length ~/ 2)) || (gallery3dControllerForCircles?.currentIndex ?? 0) >= (sizes!.length ~/ 2),
-                                                                                child: SizeItemWidget(
-                                                                                  sizeName: sizes![index],
-                                                                                  width: 40,
-                                                                                  height: 40,
-                                                                                  index: index,
-                                                                                  currentIndex: currentSelectedSizeIndex.value,
-                                                                                ));
-                                                                          }),
+                                                                      child:  Gallery3D(
+                                                                              // key: ValueKey('gallery3dControllerForCircles${widget.itemIndex}'),
+                                                                              controller: gallery3dControllerForCircles!,
+                                                                              denyScrolling: true,
+                                                                              width: 190,
+                                                                              stopScrollingOnEdges: (double primaryDelta) {
+                                                                                return (primaryDelta <= 0 && gallery3dControllerForCircles!.currentIndex == (sizes!.length ~/ 2 - 1)) ||
+                                                                                    (primaryDelta >= 0 && gallery3dControllerForCircles!.currentIndex == 0);
+                                                                              },
+                                                                              height: null,
+                                                                              changingPagesScrollOffset: 0.1,
+                                                                              isClip: false,
+                                                                              onItemChanged: (index) {
+                                                                                currentSelectedSizeIndex.value = index;
+                                                                              },
+                                                                              onClickItem: (index) {
+                                                                                WidgetsBinding
+                                                                                    .instance
+                                                                                    .addPostFrameCallback((timeStamp) {
+                                                                                  prevModeForRunHero =
+                                                                                      1;
+                                                                                });
+                                                                                displayMode.value =
+                                                                                    1;
+                                                                                if (widget.scrollController.position.pixels <
+                                                                                    (1.sh - renderBox!.localToGlobal(Offset.zero).dy + 150 - renderBox!.size.height)) {
+                                                                                  widget.scrollController.animateTo((1.sh - renderBox!.localToGlobal(Offset.zero).dy + 150 - renderBox!.size.height),
+                                                                                      curve: Curves.fastEaseInToSlowEaseOut,
+                                                                                      duration: const Duration(milliseconds: 300));
+                                                                                }
+                                                                              },
+                                                                              itemConfig: const GalleryItemConfig(
+                                                                                width:
+                                                                                    40,
+                                                                                height:
+                                                                                    40,
+                                                                                radius:
+                                                                                    180,
+                                                                                isShowTransformMask:
+                                                                                    false,
+                                                                              ),
+                                                                              itemBuilder: (context, index) {
+                                                                                return ValueListenableBuilder<int>(
+                                                                                    valueListenable: currentSelectedSizeIndex,
+                                                                                    builder: (context , currentSelectedSize , _) {
+                                                                                      return Visibility(
+                                                                                    visible: ((gallery3dControllerForCircles?.currentIndex ?? 0) < (sizes!.length ~/ 2) && index < (sizes!.length ~/ 2)) || (gallery3dControllerForCircles?.currentIndex ?? 0) >= (sizes!.length ~/ 2),
+                                                                                    child: SizeItemWidget(
+                                                                                      sizeName: sizes![index],
+                                                                                      width: 40,
+                                                                                      height: 40,
+                                                                                      index: index,
+                                                                                      currentIndex: currentSelectedSize,
+                                                                                    ));
+                                                                              });
+                                                                        }
+                                                                      ),
                                                                     ),
                                                                   ),
                                                       ),

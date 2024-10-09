@@ -58,7 +58,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
     currentIndexInSizes = ValueNotifier(0);
 
     if ((homeBloc.state.sizes?.length ?? 0) > 0) {
-      int firstSizeSelected = (homeBloc.state.CurrentColorSizeForCart?['size'] ?? '') == '' ? (homeBloc.state.sizes?.length ?? 0) ~/ 2 :  homeBloc.state.sizes!.indexWhere((size)=> homeBloc.state.CurrentColorSizeForCart?['size'] == size);
+      int firstSizeSelected = max(0 , (homeBloc.state.CurrentColorSizeForCart?['size'] ?? '') == '' ? (homeBloc.state.sizes?.length ?? 0) ~/ 2 :  homeBloc.state.sizes!.indexWhere((size)=> homeBloc.state.CurrentColorSizeForCart?['size'] == size));
       homeBloc.add(AddCurrentColorSizeEvent(
           choice_1: homeBloc.state.sizes?[firstSizeSelected]));
       currentIndexInSizes.value = firstSizeSelected;

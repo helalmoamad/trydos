@@ -16,6 +16,7 @@ import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
+import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
@@ -530,9 +531,24 @@ class _ProductDetailsSheetBottomBarState
                                                           }),
                                                     );
                                                   })
-                                              : NotifyWhenQuantityAvailableButton(
-                                                  unAvailableSize:
-                                                      selectedSizeByUser,
+                                              : BlocBuilder<HomeBloc,
+                                                  HomeState>(
+                                                  buildWhen: (p, c) =>
+                                                      p.getStartingSettingsStatus !=
+                                                      c.getStartingSettingsStatus,
+                                                  builder: (context, state) {
+                                                    int notificationTypeId = state.startingSetting?.notificationTypes?.firstWhere((type)=> type.name == 'product availability',orElse: ()=> NotificationType(id: -1)).id ?? -1;
+
+                                                    return notificationTypeId == -1 ? SizedBox.shrink() : NotifyWhenQuantityAvailableButton(
+                                                      unAvailableSize:
+                                                          selectedSizeByUser,
+                                                      notificationTypeId : notificationTypeId,
+                                                      productId:
+                                                          widget.productId,
+                                                      selectedColorName:
+                                                          widget.colorName,
+                                                    );
+                                                  },
                                                 ),
                                         );
                                       });
