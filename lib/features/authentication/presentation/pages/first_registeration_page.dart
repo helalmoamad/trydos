@@ -9,7 +9,7 @@ import 'package:trydos/base_page.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/authentication/presentation/widgets/create_account_section.dart';
-import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_clicked_button_name.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../common/helper/show_message.dart';
@@ -141,8 +141,8 @@ class _RegistrationPageState extends State<RegistrationPage>
                               //////////////////////////
                               FirebaseAnalyticsService.logEventForSession(
                                 eventName: AnalyticsEventsConst.buttonClicked,
-                                clickedButtonName:
-                                    AnalyticsClickedButtonNameConst
+                                executedEventName:
+                                    AnalyticsExecutedEventNameConst
                                         .registerCancelButton,
                               );
                             },

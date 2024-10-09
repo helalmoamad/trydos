@@ -12,6 +12,8 @@ import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/search/presentation/pages/search_page.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/local_notification_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -48,6 +50,7 @@ import 'features/chat/presentation/manager/chat_state.dart';
 import 'features/chat/presentation/utils/firebase_presence.dart';
 import 'features/home/presentation/manager/home_state.dart';
 import 'features/home/presentation/widgets/cart_page.dart';
+import 'service/firebase_analytics_service/firebase_analytics_service.dart';
 
 Widget get logo {
   return Stack(
@@ -724,6 +727,16 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                       _prefsRepository
                                                           .setUserCountryIsAvailable(
                                                               1);
+                                                      ///////////////////
+                                                      FirebaseAnalyticsService
+                                                          .logEventForSession(
+                                                        eventName:
+                                                            AnalyticsEventsConst
+                                                                .buttonClicked,
+                                                        executedEventName:
+                                                            AnalyticsExecutedEventNameConst
+                                                                .chooseCountryAndContinueButton,
+                                                      );
                                                     } else {
                                                       showMessage(
                                                           "you have to choose a country",

@@ -13,7 +13,7 @@ import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
-import '../../../../service/firebase_analytics_service/analytics_const/analytics_clicked_button_name.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
@@ -160,7 +160,7 @@ class _VerificationMethodsState extends State<VerificationMethods> {
                       ////////////////
                       FirebaseAnalyticsService.logEventForSession(
                         eventName: AnalyticsEventsConst.buttonClicked,
-                        clickedButtonName: AnalyticsClickedButtonNameConst
+                        executedEventName: AnalyticsExecutedEventNameConst
                             .chooseWhatsappButton,
                       );
                     },
@@ -223,8 +223,8 @@ class _VerificationMethodsState extends State<VerificationMethods> {
                       ///////////////////
                       FirebaseAnalyticsService.logEventForSession(
                         eventName: AnalyticsEventsConst.buttonClicked,
-                        clickedButtonName:
-                            AnalyticsClickedButtonNameConst.chooseSmsButton,
+                        executedEventName:
+                            AnalyticsExecutedEventNameConst.chooseSmsButton,
                       );
                     },
                     child: ValueListenableBuilder<int>(

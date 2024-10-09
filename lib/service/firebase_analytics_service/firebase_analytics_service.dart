@@ -16,8 +16,7 @@ class FirebaseAnalyticsService {
     await FirebaseAnalytics.instance.logScreenView(
       screenName: screen,
       parameters: {
-        'user_id': GetIt.I<PrefsRepository>().myMarketId.toString(),
-        'user_name': GetIt.I<PrefsRepository>().myMarketName.toString(),
+        'user_id': GetIt.I<PrefsRepository>().myMarketId ?? 'empty',
         'session_id': GetIt.I<PrefsRepository>().sessionId.toString(),
         'time_stamp': DateTime.now()
             .toUtc()
@@ -34,23 +33,22 @@ class FirebaseAnalyticsService {
 
   static Future<void> logEventForSession({
     required String eventName,
-    required String clickedButtonName,
+    required String executedEventName,
     Map<String, String>? extraParams,
   }) async {
     try {
       await FirebaseAnalytics.instance.logEvent(
         name: eventName,
         parameters: {
-          'user_id': GetIt.I<PrefsRepository>().myMarketId.toString(),
-          'user_name': GetIt.I<PrefsRepository>().myMarketName.toString(),
+          'user_id': GetIt.I<PrefsRepository>().myMarketId ?? 'empty',
           'session_id': GetIt.I<PrefsRepository>().sessionId.toString(),
-          'clicked_button_name': clickedButtonName,
+          'executed_event_name': executedEventName,
           'time_stamp': DateTime.now()
               .toUtc()
               .add(
                   Duration(minutes: GetIt.I<PrefsRepository>().getdurtion ?? 0))
               .toString(),
-          'previous_event_button_name':
+          'previous_event_name':
               GetIt.I<PrefsRepository>().currentEvent.toString(),
           'device_language': LanguageService.languageCode == 'ar'
               ? 'ae'
@@ -60,7 +58,7 @@ class FirebaseAnalyticsService {
         },
       ).then(
         (value) async {
-          await GetIt.I<PrefsRepository>().setCurrentEvent(clickedButtonName);
+          await GetIt.I<PrefsRepository>().setCurrentEvent(executedEventName);
         },
       );
       ///////////////////////

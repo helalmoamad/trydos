@@ -9,7 +9,7 @@ import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_clicked_button_name.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
 import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 import 'dart:ui' as ui;
 import '../../../../common/test_utils/widgets_keys.dart';
@@ -107,8 +107,8 @@ class _WelcomeSectionState extends State<WelcomeSection> {
               });
               FirebaseAnalyticsService.logEventForSession(
                 eventName: AnalyticsEventsConst.buttonClicked,
-                clickedButtonName:
-                    AnalyticsClickedButtonNameConst.haveAlreadyAccountButton,
+                executedEventName:
+                    AnalyticsExecutedEventNameConst.haveAlreadyAccountButton,
               );
             },
             child: ValueListenableBuilder<int>(
@@ -169,8 +169,8 @@ class _WelcomeSectionState extends State<WelcomeSection> {
               });
               FirebaseAnalyticsService.logEventForSession(
                 eventName: AnalyticsEventsConst.buttonClicked,
-                clickedButtonName:
-                    AnalyticsClickedButtonNameConst.createNewAccountButton,
+                executedEventName:
+                    AnalyticsExecutedEventNameConst.createNewAccountButton,
               );
             },
             child: ValueListenableBuilder<int>(
@@ -238,8 +238,8 @@ class _WelcomeSectionState extends State<WelcomeSection> {
               //////////////////////////
               FirebaseAnalyticsService.logEventForSession(
                 eventName: AnalyticsEventsConst.buttonClicked,
-                clickedButtonName:
-                    AnalyticsClickedButtonNameConst.laterTakeLookButton,
+                executedEventName:
+                    AnalyticsExecutedEventNameConst.laterTakeLookButton,
               );
               //////////////////////////
             },

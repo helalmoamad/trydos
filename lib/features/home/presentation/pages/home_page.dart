@@ -25,6 +25,8 @@ import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
+import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/my_text_widget.dart';
 import '../../../story/presentation/widget/stories_list.dart';
 import '../manager/home_state.dart';
@@ -99,7 +101,7 @@ class _HomePageState extends State<HomePage> {
             offset: homeBloc
                 .state
                 .getHomeBoutiquesPaginationObjectByMainCategory[
-            selectedCategorySlug]!
+                    selectedCategorySlug]!
                 .page
                 .toString(),
             context: context,
@@ -115,19 +117,19 @@ class _HomePageState extends State<HomePage> {
 
   prefetchBoutiques(String currentSlug) {
     for (int i = 0;
-    i <
-        min(
-            (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
-            currentSlug] ??
-                0),
-            (homeBloc
-                .state
-                .getHomeBoutiquesPaginationObjectByMainCategory[
-            currentSlug]
-                ?.items
-                .length ??
-                0));
-    i++) {
+        i <
+            min(
+                (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
+                        currentSlug] ??
+                    0),
+                (homeBloc
+                        .state
+                        .getHomeBoutiquesPaginationObjectByMainCategory[
+                            currentSlug]
+                        ?.items
+                        .length ??
+                    0));
+        i++) {
       String slug = homeBloc
           .state
           .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]!
@@ -145,7 +147,7 @@ class _HomePageState extends State<HomePage> {
             .items[i]
             .childCategoriesForProductIds
             ?.forEach(
-              (element) {
+          (element) {
             categorySlugs.add(element.categorySlug ?? "");
           },
         );
@@ -169,6 +171,15 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     scrollController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() async {
+    FirebaseAnalyticsService.logScreen(
+      screen: AnalyticsScreensConst.homeScreen,
+    );
+
+    super.didChangeDependencies();
   }
 
   @override
