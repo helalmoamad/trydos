@@ -51,6 +51,7 @@ class Product {
   final bool? inStock;
   final List<Variation>? variation;
   final List<ChoiceOption>? choiceOptions;
+  final String? maxAllowedQty;
   final bool? hasDiscount;
   final bool? hasTax;
   final String? deliveryAt;
@@ -83,6 +84,7 @@ class Product {
     this.variation,
     this.choiceOptions,
     this.hasDiscount,
+    this.maxAllowedQty,
     this.hasTax,
     this.deliveryAt,
     this.tax,
@@ -129,6 +131,7 @@ class Product {
     bool? hasWholeSale,
     dynamic wholeSaleLink,
     int? viewsCount,
+    String? maxAllowedQty,
     List<DataDescriptor>? descriptors,
     List<Label>? labels,
     bool? isProductNotifiedForUser,
@@ -143,6 +146,7 @@ class Product {
         choiceOptions: choiceOptions ?? this.choiceOptions,
         hasDiscount: hasDiscount ?? this.hasDiscount,
         hasTax: hasTax ?? this.hasTax,
+        maxAllowedQty: maxAllowedQty ?? this.maxAllowedQty,
         deliveryAt: deliveryAt ?? this.deliveryAt,
         tax: tax ?? this.tax,
         unitPrice: unitPrice ?? this.unitPrice,
@@ -173,6 +177,7 @@ class Product {
         boutique: json["boutique"] == null
             ? null
             : BoutiqueForCart.fromJson(json["boutique"]),
+        maxAllowedQty: json["max_allowed_qty"].toString(),
         inStock: json["in_stock"],
         variation: json["variation"] == null
             ? []
@@ -231,6 +236,7 @@ class Product {
         "current_stock": currentStock,
         "count_of_pieces": countOfPieces,
         "Left_stock": leftStock,
+        "max_allowed_qty": maxAllowedQty,
         "reviews_count": reviewsCount,
         "seller_id": sellerId,
         "seller": seller?.toJson(),

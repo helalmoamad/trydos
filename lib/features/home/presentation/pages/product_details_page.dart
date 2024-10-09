@@ -160,14 +160,11 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                       (widget.productItem.syncColorImages?.length ?? 0) ~/ 2;
 
                   homeBloc.add(AddSizesFotColorsEvent(
-                      currentColorName:
-                          !widget.productItem.colors.isNullOrEmpty
-                              ? widget
-                                      .productItem
-                                      .colors![currentSelectedColor]
-                                      .name ??
-                                  ""
-                              : "",
+                      currentColorName: !widget.productItem.colors.isNullOrEmpty
+                          ? widget.productItem.colors![currentSelectedColor]
+                                  .name ??
+                              ""
+                          : "",
                       variation: state.cachedProductWithoutRelatedProductsModel[
                                   widget.productItem.id.toString()] !=
                               null
@@ -502,10 +499,11 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   addToBagButtonShapeNotifier: addToBagButtonShapeNotifier,
                   sizes: state.sizes ?? [],
                   sizesQuantities: state.sizesQuantities ?? [],
-                  currentColornum: widget.productItem.colors.isNullOrEmpty ? ''  :
-                       widget.productItem.colors![currentSelectedColor]
-                                  .color ??
-                              "",
+                  currentColornum: widget.productItem.colors.isNullOrEmpty
+                      ? ''
+                      : widget.productItem.colors![currentSelectedColor]
+                              .color ??
+                          "",
                   boutiqueIcon: state.cachedProductWithoutRelatedProductsModel[
                               widget.productItem.id.toString()] !=
                           null
@@ -550,10 +548,18 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                               .id!
                           : 0
                       : 0,
-                  currentColorName:  widget.productItem.colors.isNullOrEmpty ? ''  : widget.productItem.colors![currentSelectedColor].name ??
+                  currentColorName: widget.productItem.colors.isNullOrEmpty
+                      ? ''
+                      : widget.productItem.colors![currentSelectedColor].name ??
                           "",
                   productItem: widget.productItem,
                   currentColor: currentSelectedColor,
+                  maxAllowedToAddCart: state
+                          .cachedProductWithoutRelatedProductsModel[
+                              widget.productItem.id.toString()]
+                          ?.product
+                          ?.maxAllowedQty ??
+                      "0",
                 );
               }),
           SlidingUpPanelForBuyersCameraShots(

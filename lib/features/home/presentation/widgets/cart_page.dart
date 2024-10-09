@@ -154,9 +154,13 @@ class _CartPageState extends State<CartPage> {
                                                   ResetAllSelectedAppliedFilterEvent());
                                             }
                                           },
-                                          child: SvgPicture.asset(
-                                            AppAssets.backIconArrowSvg,
-                                            height: 20,
+                                          child: Container(
+                                            width: 40,
+                                            child: SvgPicture.asset(
+                                              AppAssets.backIconArrowSvg,
+                                              height: 20,
+                                              width: 50,
+                                            ),
                                           ),
                                         ),
                                         Spacer(),
@@ -478,7 +482,7 @@ class _CartPageState extends State<CartPage> {
                                                                           AppElevatedButton(
                                                                             onPressed:
                                                                                 () {
-                                                                              homeBloc.add(UpdateItemInCartEvent(countOfPieces: state.cartCollection![groupCartkeys[index]]![indexes].countOfPieces, currentSize: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].size ?? "" : "", colorName: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].color ?? "" : "", productId: state.cartCollection![groupCartkeys[index]]![indexes].productId.toString(), quantity: int.tryParse(quantityController.text)!, image: state.cartCollection?[groupCartkeys[index]]![indexes].image ?? "", cartId: state.cartCollection![groupCartkeys[index]]![indexes].id.toString(), boutiqueId: state.cartCollection![groupCartkeys[index]]![indexes].boutique!.id.toString()));
+                                                                              homeBloc.add(UpdateItemInCartEvent(maxAllowed: double.tryParse(state.cartCollection![groupCartkeys[index]]![indexes].maxAllowedQty ?? "0"), countOfPieces: state.cartCollection![groupCartkeys[index]]![indexes].countOfPieces, currentSize: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].size ?? "" : "", colorName: !state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].color ?? "" : "", productId: state.cartCollection![groupCartkeys[index]]![indexes].productId.toString(), quantity: int.tryParse(quantityController.text)!, image: state.cartCollection?[groupCartkeys[index]]![indexes].image ?? "", cartId: state.cartCollection![groupCartkeys[index]]![indexes].id.toString(), boutiqueId: state.cartCollection![groupCartkeys[index]]![indexes].boutique!.id.toString()));
                                                                               Navigator.pop(context);
                                                                             },
                                                                             text:
@@ -553,21 +557,24 @@ class _CartPageState extends State<CartPage> {
                                                     },
                                                     onTap: () {
                                                       int indexess = state
-                                                          .productITemForCart![
-                                                              state.cartCollection![groupCartkeys[index]]![indexes].productId
+                                                              .productITemForCart![state
+                                                                  .cartCollection![groupCartkeys[index]]![
+                                                                      indexes]
+                                                                  .productId
                                                                   .toString()]!
-                                                          .syncColorImages!
-                                                          .indexOf(state
+                                                              .syncColorImages
+                                                              .isNullOrEmpty
+                                                          ? -1
+                                                          : state
                                                               .productITemForCart![
                                                                   state.cartCollection![groupCartkeys[index]]![indexes].productId
                                                                       .toString()]!
                                                               .syncColorImages!
-                                                              .firstWhere((element) =>
-                                                                  element.colorName ==
-                                                                  (!state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty
-                                                                      ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].color ?? ""
-                                                                      : "")));
-                                                      if (index != -1) {
+                                                              .indexOf(state
+                                                                  .productITemForCart![state.cartCollection![groupCartkeys[index]]![indexes].productId.toString()]!
+                                                                  .syncColorImages!
+                                                                  .firstWhere((element) => element.colorName == (!state.cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? state.cartCollection![groupCartkeys[index]]![indexes].variations![0].color ?? "" : "")));
+                                                      if (indexess != -1) {
                                                         BlocProvider.of<
                                                                     HomeBloc>(
                                                                 context)
@@ -995,25 +1002,29 @@ class _CartPageState extends State<CartPage> {
                                                                 ),
                                                                 width: 100.w,
                                                                 height: 40.h,
-                                                                child: Text(
-                                                                  " Out OF Stock",
-                                                                  style: context.textTheme.bodyMedium?.la.copyWith(
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w100,
-                                                                      fontSize:
-                                                                          12,
-                                                                      color: const Color
-                                                                          .fromARGB(
-                                                                          255,
-                                                                          206,
-                                                                          9,
-                                                                          9),
-                                                                      letterSpacing:
-                                                                          0.18,
-                                                                      height:
-                                                                          1.33),
-                                                                ),
+                                                                child: (state.cartCollection![groupCartkeys[index]]![indexes].availableQuantity ??
+                                                                            0) <
+                                                                        (state.cartCollection![groupCartkeys[index]]![indexes].quantity ??
+                                                                            0)
+                                                                    ? Text(
+                                                                        " Out OF Stock",
+                                                                        style: context.textTheme.bodyMedium?.la.copyWith(
+                                                                            fontWeight: FontWeight
+                                                                                .w100,
+                                                                            fontSize:
+                                                                                12,
+                                                                            color: const Color.fromARGB(
+                                                                                255,
+                                                                                206,
+                                                                                9,
+                                                                                9),
+                                                                            letterSpacing:
+                                                                                0.18,
+                                                                            height:
+                                                                                1.33),
+                                                                      )
+                                                                    : SizedBox
+                                                                        .shrink(),
                                                               ),
                                                               top: 5,
                                                               right: 20,
