@@ -51,6 +51,7 @@ class Product {
   final bool? inStock;
   final List<Variation>? variation;
   final List<ChoiceOption>? choiceOptions;
+  final String? maxAllowedQty;
   final bool? hasDiscount;
   final bool? hasTax;
   final String? deliveryAt;
@@ -71,6 +72,7 @@ class Product {
   final int? viewsCount;
   final List<DataDescriptor>? descriptors;
   final List<Label>? labels;
+  final bool isProductNotifiedForUser;
   Product({
     this.id,
     this.description,
@@ -82,6 +84,7 @@ class Product {
     this.variation,
     this.choiceOptions,
     this.hasDiscount,
+    this.maxAllowedQty,
     this.hasTax,
     this.deliveryAt,
     this.tax,
@@ -99,6 +102,7 @@ class Product {
     this.wholeSaleLink,
     this.viewsCount,
     this.labels,
+    required this.isProductNotifiedForUser,
   });
 
   Product copyWith({
@@ -127,8 +131,10 @@ class Product {
     bool? hasWholeSale,
     dynamic wholeSaleLink,
     int? viewsCount,
+    String? maxAllowedQty,
     List<DataDescriptor>? descriptors,
     List<Label>? labels,
+    bool? isProductNotifiedForUser,
   }) =>
       Product(
         id: id ?? this.id,
@@ -140,6 +146,7 @@ class Product {
         choiceOptions: choiceOptions ?? this.choiceOptions,
         hasDiscount: hasDiscount ?? this.hasDiscount,
         hasTax: hasTax ?? this.hasTax,
+        maxAllowedQty: maxAllowedQty ?? this.maxAllowedQty,
         deliveryAt: deliveryAt ?? this.deliveryAt,
         tax: tax ?? this.tax,
         unitPrice: unitPrice ?? this.unitPrice,
@@ -158,6 +165,7 @@ class Product {
         viewsCount: viewsCount ?? this.viewsCount,
         descriptors: descriptors ?? this.descriptors,
         labels: labels ?? this.labels,
+        isProductNotifiedForUser: isProductNotifiedForUser ?? this.isProductNotifiedForUser,
       );
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
@@ -169,6 +177,7 @@ class Product {
         boutique: json["boutique"] == null
             ? null
             : BoutiqueForCart.fromJson(json["boutique"]),
+        maxAllowedQty: json["max_allowed_qty"].toString(),
         inStock: json["in_stock"],
         variation: json["variation"] == null
             ? []
@@ -203,6 +212,7 @@ class Product {
         labels: json["labels"] == null
             ? []
             : List<Label>.from(json["labels"]!.map((x) => Label.fromJson(x))),
+      isProductNotifiedForUser : json['is_product_notify_for_user'] ?? false
       );
 
   Map<String, dynamic> toJson() => {
@@ -226,6 +236,7 @@ class Product {
         "current_stock": currentStock,
         "count_of_pieces": countOfPieces,
         "Left_stock": leftStock,
+        "max_allowed_qty": maxAllowedQty,
         "reviews_count": reviewsCount,
         "seller_id": sellerId,
         "seller": seller?.toJson(),
@@ -242,6 +253,7 @@ class Product {
         "labels": labels == null
             ? []
             : List<dynamic>.from(labels!.map((x) => x.toJson())),
+    "is_product_notify_for_user" : isProductNotifiedForUser
       };
 }
 
@@ -503,6 +515,7 @@ class Shop {
 }
 
 class Variation {
+  final bool variantNotifyForUser;
   final String? type;
   final double? price;
   final String? priceFormated;
@@ -512,6 +525,7 @@ class Variation {
   final int? qty;
 
   Variation({
+    required this.variantNotifyForUser,
     this.type,
     this.price,
     this.priceFormated,
@@ -522,6 +536,7 @@ class Variation {
   });
 
   Variation copyWith({
+    bool? variantNotifyForUser,
     String? type,
     double? price,
     String? priceFormated,
@@ -531,6 +546,7 @@ class Variation {
     int? qty,
   }) =>
       Variation(
+        variantNotifyForUser: variantNotifyForUser ?? this.variantNotifyForUser,
         type: type ?? this.type,
         price: price ?? this.price,
         priceFormated: priceFormated ?? this.priceFormated,
@@ -541,6 +557,7 @@ class Variation {
       );
 
   factory Variation.fromJson(Map<String, dynamic> json) => Variation(
+    variantNotifyForUser: json["variant_notify_for_user"] ?? false,
         type: json["type"],
         price: json["price"]?.toDouble(),
         priceFormated: json["price_formated"],
@@ -551,6 +568,7 @@ class Variation {
       );
 
   Map<String, dynamic> toJson() => {
+        "variant_notify_for_user": variantNotifyForUser,
         "type": type,
         "price": price,
         "price_formated": priceFormated,

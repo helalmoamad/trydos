@@ -347,6 +347,19 @@ class LoadFailureEvent extends HomeEvent {
   List<Object?> get props => [collectionId];
 }
 
+class RequestForNotificationWhenProductBecameAvailableEvent extends HomeEvent {
+
+  final String productId;
+  final int notificationTypeId;
+  final String size;
+  final String selectedColorName;
+
+  RequestForNotificationWhenProductBecameAvailableEvent(this.productId, this.notificationTypeId, this.size , this.selectedColorName);
+
+  @override
+  List<Object?> get props => [productId , notificationTypeId , size , selectedColorName];
+}
+
 class IscashedOreiginBotiqueEvent extends HomeEvent {
   final bool iscashedOreiginBotique;
 
@@ -383,6 +396,7 @@ class AddItemToCartEvent extends HomeEvent {
   final String? choice_1;
   final int? boutiqueId;
   final String colorName;
+  final String? maxAllowed;
   final bool fishAddAllTheItems;
   final Products products;
 
@@ -391,6 +405,7 @@ class AddItemToCartEvent extends HomeEvent {
       this.boutiqueIcon,
       this.fishAddAllTheItems = true,
       this.boutiqueId,
+      required this.maxAllowed,
       required this.image,
       required this.countOfPieces,
       required this.colorName,
@@ -408,11 +423,16 @@ class AddMultiItemsToCartEvent extends HomeEvent {
   final String? boutiqueIcon;
 
   final int? boutiqueId;
+  final String? maxAllowed;
 
   final Products products;
 
   AddMultiItemsToCartEvent(
-      {this.id, this.boutiqueIcon, this.boutiqueId, required this.products});
+      {this.id,
+      this.boutiqueIcon,
+      required this.maxAllowed,
+      this.boutiqueId,
+      required this.products});
 
   @override
   List<Object?> get props => [];
@@ -489,6 +509,7 @@ class UpdateItemInCartEvent extends HomeEvent {
   final String image;
   final String boutiqueId;
   final int? countOfPieces;
+  final double? maxAllowed;
 
   UpdateItemInCartEvent({
     required this.quantity,
@@ -496,6 +517,7 @@ class UpdateItemInCartEvent extends HomeEvent {
     this.fishAddAllTheItems = true,
     required this.cartId,
     required this.image,
+    required this.maxAllowed,
     required this.countOfPieces,
     required this.currentSize,
     required this.productId,
