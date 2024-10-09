@@ -107,6 +107,7 @@ class Products {
   final String? name;
   final String? slug;
   final String? shareLink;
+  final String? maxAllowedQty;
   final String? details;
   final Thumbnail? thumbnail;
   final List<Thumbnail>? images;
@@ -134,6 +135,7 @@ class Products {
     this.shareLink,
     this.details,
     this.thumbnail,
+    this.maxAllowedQty,
     this.images,
     this.categories,
     this.category,
@@ -171,6 +173,7 @@ class Products {
     double? offerPrice,
     String? offerPriceFormatted,
     bool? isFavourite,
+    String? maxAllowedQty,
     bool? inStock,
     Rating? rating,
     dynamic flashDealDetails,
@@ -191,6 +194,7 @@ class Products {
         brand: brand ?? this.brand,
         colors: colors ?? this.colors,
         syncColorImages: syncColorImages ?? this.syncColorImages,
+        maxAllowedQty: maxAllowedQty ?? this.maxAllowedQty,
         price: price ?? this.price,
         priceFormatted: priceFormatted ?? this.priceFormatted,
         offerPrice: offerPrice ?? this.offerPrice,
@@ -236,6 +240,7 @@ class Products {
         price: json["price"].toDouble(),
         priceFormatted: json["price_formatted"],
         offerPrice: json["offer_price"].toDouble(),
+        maxAllowedQty: json["max_allowed_qty"],
         offerPriceFormatted: json["offer_price_formatted"],
         isFavourite: json["is_favourite"],
         inStock: json["in_stock"],
@@ -270,6 +275,7 @@ class Products {
         "price": price,
         "price_formatted": priceFormatted,
         "offer_price": offerPrice,
+        "max_allowed_qty": maxAllowedQty,
         "offer_price_formatted": offerPriceFormatted,
         "is_favourite": isFavourite,
         "in_stock": inStock,

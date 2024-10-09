@@ -106,9 +106,9 @@ class _ProductDetailsSheetBottomBarState
           previous.productStatus != current.productStatus ||
           previous.updateItemInCartStatus != current.updateItemInCartStatus ||
           previous.addItemInCartStatus != current.addItemInCartStatus ||
-          previous.ListitemForAddToCart != current.ListitemForAddToCart,
+          previous.ListitemForAddToCart?.length !=
+              current.ListitemForAddToCart?.length,
       builder: (context, state) {
-        print(state.addImagesToProductIdForCart[widget.productId]);
         List<String> allimages = [];
 
         // حلقات متداخلة للوصول إلى جميع القيم
@@ -170,70 +170,49 @@ class _ProductDetailsSheetBottomBarState
                                             );
                                           },
                                           child: selectedSizeByUser == null
-                                              ? BlocBuilder<HomeBloc,
-                                                      HomeState>(
-                                                  buildWhen: (p, c) =>
-                                                      p.productStatus?[
+                                              ? (state.productStatus?[
                                                           widget.productId] !=
-                                                      c.productStatus?[
-                                                          widget.productId],
-                                                  builder: (context, state) {
-                                                    if (state.productStatus![
-                                                            widget.productId] !=
-                                                        GetProductDetailWithoutSimilarRelatedProductsStatus
-                                                            .success) {
-                                                      return Stack(
-                                                        alignment:
-                                                            Alignment.center,
-                                                        children: [
-                                                          Shimmer.fromColors(
-                                                            baseColor: Colors
-                                                                .grey.shade300,
-                                                            highlightColor:
-                                                                Colors.grey
-                                                                    .shade100,
-                                                            child: Container(
-                                                              width: 97.w,
-                                                              height: 60,
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            20),
-                                                                color: Colors
-                                                                    .grey
-                                                                    .shade300,
-                                                              ),
+                                                      GetProductDetailWithoutSimilarRelatedProductsStatus
+                                                          .success)
+                                                  ? Stack(
+                                                      alignment:
+                                                          Alignment.center,
+                                                      children: [
+                                                        Shimmer.fromColors(
+                                                          baseColor: Colors
+                                                              .grey.shade300,
+                                                          highlightColor: Colors
+                                                              .grey.shade100,
+                                                          child: Container(
+                                                            width: 97.w,
+                                                            height: 60,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          20),
+                                                              color: Colors.grey
+                                                                  .shade300,
                                                             ),
                                                           ),
-                                                          Shimmer.fromColors(
-                                                            baseColor: Colors
-                                                                .grey.shade400,
-                                                            highlightColor:
-                                                                Colors.grey
-                                                                    .shade100,
-                                                            child: SvgPicture
-                                                                .asset(
-                                                              AppAssets.bagSvg,
-                                                              height: 30.h,
-                                                            ),
+                                                        ),
+                                                        Shimmer.fromColors(
+                                                          baseColor: Colors
+                                                              .grey.shade400,
+                                                          highlightColor: Colors
+                                                              .grey.shade100,
+                                                          child:
+                                                              SvgPicture.asset(
+                                                            AppAssets.bagSvg,
+                                                            height: 30.h,
                                                           ),
-                                                        ],
-                                                      );
-                                                    }
-                                                    return GestureDetector(
+                                                        ),
+                                                      ],
+                                                    )
+                                                  : GestureDetector(
                                                       onTapDown: (details) {
                                                         if (currentTab != 3) {
-                                                          homeBloc.add(UpdateListOfItemForAddToCartEvent(
-                                                              resetTheList:
-                                                                  true,
-                                                              imageForAddToCart:
-                                                                  imageForAddToCart,
-                                                              operation:
-                                                                  "remove",
-                                                              productId: widget
-                                                                  .productId));
                                                           print(
                                                               "11111111${state.productStatus![widget.productId]}1111111111111111111");
 
@@ -528,8 +507,7 @@ class _ProductDetailsSheetBottomBarState
                                                                       ),
                                                                     ));
                                                           }),
-                                                    );
-                                                  })
+                                                    )
                                               : NotifyWhenQuantityAvailableButton(
                                                   unAvailableSize:
                                                       selectedSizeByUser,

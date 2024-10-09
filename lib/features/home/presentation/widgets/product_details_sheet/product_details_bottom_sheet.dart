@@ -40,7 +40,7 @@ class ProductDetailsBottomSheet extends StatefulWidget {
   final String currentColornum;
   final String currentSize;
   final int countOfPieces;
-
+  final String maxAllowedToAddCart;
   final ValueNotifier<int> addToBagButtonShapeNotifier;
   final List<String> sizes;
   final List<int> sizesQuantities;
@@ -51,6 +51,7 @@ class ProductDetailsBottomSheet extends StatefulWidget {
       required this.addToBagButtonShapeNotifier,
       required this.boutiqueIcon,
       required this.sizes,
+      required this.maxAllowedToAddCart,
       required this.sizesQuantities,
       required this.countOfPieces,
       required this.currentSize,
@@ -511,7 +512,8 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                           productId:
                                               widget.productItem.id.toString(),
                                           sizes: widget.sizes,
-                                          sizesQuantities: widget.sizesQuantities,
+                                          sizesQuantities:
+                                              widget.sizesQuantities,
                                           scrollController: controller,
                                           selectedColorName: widget.productItem
                                                   .colors.isNullOrEmpty
@@ -614,6 +616,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                     "",
                         onFinishBuying: (quantity) {
                           homeBloc.add(AddMultiItemsToCartEvent(
+                              maxAllowed: widget.maxAllowedToAddCart,
                               boutiqueIcon: widget.boutiqueIcon,
                               boutiqueId: widget.boutiqueId,
                               products: widget.productItem,
@@ -626,7 +629,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                         clickOnComments: () {
                           panelController.open();
                           currentActiveTab.value = 0;
-                          WidgetsBinding.instance.addPostFrameCallback((_){
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
                             pageController.jumpToPage(0);
                           });
                         },
@@ -636,14 +639,14 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                         clickOnMoreOptions: () {
                           panelController.open();
                           currentActiveTab.value = 2;
-                          WidgetsBinding.instance.addPostFrameCallback((_){
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
                             pageController.jumpToPage(2);
                           });
                         },
                         clickOnShare: () {
                           panelController.open();
                           currentActiveTab.value = 1;
-                          WidgetsBinding.instance.addPostFrameCallback((_){
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
                             pageController.jumpToPage(1);
                           });
                         },
