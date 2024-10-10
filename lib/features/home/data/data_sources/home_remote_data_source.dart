@@ -266,6 +266,21 @@ class HomeRemoteDatasource {
     return updateItemInCart();
   }
 
+  Future<bool> requestForNotificationWhenProductBecameAvailable(Map<String, dynamic> params) {
+    PostClient<bool> requestForNotificationWhenProductBecameAvailable =
+        PostClient<bool>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<bool>(
+        endpoint: MarketEndPoints.requestForNotificationWhenProductBecameAvailableEP,
+        data: params,
+        response: ResponseValue<bool>(
+            returnValueOnSuccess: true
+        ),
+      ),
+    );
+    return requestForNotificationWhenProductBecameAvailable();
+  }
+
   /* Future<SearchResultModel> getSearchResult(Map<String, dynamic> params) {
     GetClient<SearchResultModel> getSearchResult = GetClient<SearchResultModel>(
       serverName: ServerName.market,

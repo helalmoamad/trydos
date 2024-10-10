@@ -80,6 +80,7 @@ class HomeState extends Equatable {
     this.startingSetting,
     this.sizes = const [],
     this.sizesQuantities = const [],
+    this.isSizeRequestNotification = const [],
     this.deleteItemInCartStatus,
     this.isGettingProductListingWithPagination = false,
     this.isGettingProductListingWithPaginationForAppearProduct = false,
@@ -184,6 +185,7 @@ class HomeState extends Equatable {
   final List<Story>? storiesForProduct;
   final List<String>? sizes;
   final List<int>? sizesQuantities;
+  final List<String> isSizeRequestNotification;
   final Map<String, int>? countOfProductExpectedByFiltering;
   final get_filters.Filter? prefAppliedFilterForExtendFilter;
   final Map<String, PaginationModel<product.Products>>
@@ -259,6 +261,7 @@ class HomeState extends Equatable {
         deleteItemInCartStatus,
         updateItemInCartStatus,
         currentSelectedColorForEveryProduct,
+    isSizeRequestNotification,
         selectedCollection,
         cashedOrginalBoutique,
         currentIndexForMainCategoryEvent,
@@ -296,6 +299,7 @@ class HomeState extends Equatable {
       int? selectedCollection,
       List<String>? sizes,
       List<int>? sizesQuantities,
+      List<String>? isSizeRequestNotification,
       final String? theReplyFromGemini,
       final bool? isGettingProductListingWithPaginationForAppearProduct,
       int? currentIndexForMainCategoryEvent,
@@ -352,6 +356,7 @@ class HomeState extends Equatable {
 
       sizes: sizes ?? this.sizes,
       sizesQuantities: sizesQuantities ?? this.sizesQuantities,
+      isSizeRequestNotification: isSizeRequestNotification ?? this.isSizeRequestNotification,
       isGettingProductListingWithPagination:
           isGettingProductListingWithPagination ??
               this.isGettingProductListingWithPagination,

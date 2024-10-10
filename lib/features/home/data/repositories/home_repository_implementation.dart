@@ -154,4 +154,10 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
     return handlingExceptionRequest(
         tryCall: () => dataSource.getAllowedCountries());
   }
+
+  @override
+  Future<Either<Failure, bool>> requestForNotificationWhenProductBecameAvailable(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.requestForNotificationWhenProductBecameAvailable(params));
+  }
 }

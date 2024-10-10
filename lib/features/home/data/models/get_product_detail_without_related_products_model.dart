@@ -72,6 +72,7 @@ class Product {
   final int? viewsCount;
   final List<DataDescriptor>? descriptors;
   final List<Label>? labels;
+  final bool isProductNotifiedForUser;
   Product({
     this.id,
     this.description,
@@ -101,6 +102,7 @@ class Product {
     this.wholeSaleLink,
     this.viewsCount,
     this.labels,
+    required this.isProductNotifiedForUser,
   });
 
   Product copyWith({
@@ -132,6 +134,7 @@ class Product {
     String? maxAllowedQty,
     List<DataDescriptor>? descriptors,
     List<Label>? labels,
+    bool? isProductNotifiedForUser,
   }) =>
       Product(
         id: id ?? this.id,
@@ -162,6 +165,7 @@ class Product {
         viewsCount: viewsCount ?? this.viewsCount,
         descriptors: descriptors ?? this.descriptors,
         labels: labels ?? this.labels,
+        isProductNotifiedForUser: isProductNotifiedForUser ?? this.isProductNotifiedForUser,
       );
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
@@ -208,6 +212,7 @@ class Product {
         labels: json["labels"] == null
             ? []
             : List<Label>.from(json["labels"]!.map((x) => Label.fromJson(x))),
+      isProductNotifiedForUser : json['is_product_notify_for_user'] ?? false
       );
 
   Map<String, dynamic> toJson() => {
@@ -248,6 +253,7 @@ class Product {
         "labels": labels == null
             ? []
             : List<dynamic>.from(labels!.map((x) => x.toJson())),
+    "is_product_notify_for_user" : isProductNotifiedForUser
       };
 }
 
@@ -509,6 +515,7 @@ class Shop {
 }
 
 class Variation {
+  final bool variantNotifyForUser;
   final String? type;
   final double? price;
   final String? priceFormated;
@@ -518,6 +525,7 @@ class Variation {
   final int? qty;
 
   Variation({
+    required this.variantNotifyForUser,
     this.type,
     this.price,
     this.priceFormated,
@@ -528,6 +536,7 @@ class Variation {
   });
 
   Variation copyWith({
+    bool? variantNotifyForUser,
     String? type,
     double? price,
     String? priceFormated,
@@ -537,6 +546,7 @@ class Variation {
     int? qty,
   }) =>
       Variation(
+        variantNotifyForUser: variantNotifyForUser ?? this.variantNotifyForUser,
         type: type ?? this.type,
         price: price ?? this.price,
         priceFormated: priceFormated ?? this.priceFormated,
@@ -547,6 +557,7 @@ class Variation {
       );
 
   factory Variation.fromJson(Map<String, dynamic> json) => Variation(
+    variantNotifyForUser: json["variant_notify_for_user"] ?? false,
         type: json["type"],
         price: json["price"]?.toDouble(),
         priceFormated: json["price_formated"],
@@ -557,6 +568,7 @@ class Variation {
       );
 
   Map<String, dynamic> toJson() => {
+        "variant_notify_for_user": variantNotifyForUser,
         "type": type,
         "price": price,
         "price_formated": priceFormated,

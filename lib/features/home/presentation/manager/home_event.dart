@@ -347,6 +347,19 @@ class LoadFailureEvent extends HomeEvent {
   List<Object?> get props => [collectionId];
 }
 
+class RequestForNotificationWhenProductBecameAvailableEvent extends HomeEvent {
+
+  final String productId;
+  final int notificationTypeId;
+  final String size;
+  final String selectedColorName;
+
+  RequestForNotificationWhenProductBecameAvailableEvent(this.productId, this.notificationTypeId, this.size , this.selectedColorName);
+
+  @override
+  List<Object?> get props => [productId , notificationTypeId , size , selectedColorName];
+}
+
 class IscashedOreiginBotiqueEvent extends HomeEvent {
   final bool iscashedOreiginBotique;
 
