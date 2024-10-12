@@ -44,18 +44,20 @@ class HomeRemoteDatasource {
 
   Future<GetProductDetailWithoutRelatedProductsModel>
       getProductDetailWithoutRelatedProducts(String productId) {
-    GetClient<GetProductDetailWithoutRelatedProductsModel> getStartingSettings =
+    GetClient<GetProductDetailWithoutRelatedProductsModel> getProductDetailWithoutRelatedProducts =
         GetClient<GetProductDetailWithoutRelatedProductsModel>(
       serverName: ServerName.market,
       requestPrams: RequestConfig<GetProductDetailWithoutRelatedProductsModel>(
         endpoint: MarketEndPoints.getProductDetailWithoutSimilarRelatedProducts(
             productId),
         response: ResponseValue<GetProductDetailWithoutRelatedProductsModel>(
-            fromJson: (response) =>
-                GetProductDetailWithoutRelatedProductsModel.fromJson(response)),
+            fromJson: (response) {
+              print('qqqqqqq ${response.toString()}');
+              return GetProductDetailWithoutRelatedProductsModel.fromJson(response);
+            }),
       ),
     );
-    return getStartingSettings();
+    return getProductDetailWithoutRelatedProducts();
   }
 
   Future<GetCommentForProductModel> getCommentForProduct(String productId) {
@@ -65,8 +67,10 @@ class HomeRemoteDatasource {
       requestPrams: RequestConfig<GetCommentForProductModel>(
         endpoint: MarketEndPoints.getCommentForProductEP(productId),
         response: ResponseValue<GetCommentForProductModel>(
-            fromJson: (response) =>
-                GetCommentForProductModel.fromJson(response)),
+            fromJson: (response) {
+              print('ddddddddddd ${response.toString()}');
+              return GetCommentForProductModel.fromJson(response);
+            }),
       ),
     );
     return getCommentForProduct();
