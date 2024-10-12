@@ -1,5 +1,8 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:developer' as dev;
+import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -235,7 +238,19 @@ List<String> apisMustNotToRequest = [];
 int applicationVersion = 1;
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  //WidgetsFlutterBinding.ensureInitialized();
+  HttpOverrides.global = MyHttpOverrides();
+  http.get(Uri.parse('https://market_under_dev_backend.trydos.dev/api/new_v1/mobile/product/details_without_similar_related_products/5548'),headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'Authorization' : 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiYWVmNzllYzQwM2JiYTU2NzE5MmM5MWIyZjI5MTQzMGE2ZDUxNzIyNDdmMjQ4ZTg4MWNmMzI0MTNhMTBmMzY0OWI4YWEzMTQxNzhlOTMwZGIiLCJpYXQiOjE3Mjc5NTg2OTYuODc4ODUyLCJuYmYiOjE3Mjc5NTg2OTYuODc4ODU1LCJleHAiOjE3NTk0OTQ2OTYuODY5NjA3LCJzdWIiOiI2MTkyIiwic2NvcGVzIjpbXX0.l86EJEaVsTZdb2SoUosW3HtFD8jWn4eixnNrilupXetmmvGdNnZU2uDBH9hxdfiHMk-DWIxEPFG0ij5GUrsA6g86pUUm0dIvEcySjCqjXSek7tgEOo0J2wOXPsuevSUuUY8Gk9v7bCvTM24Pv3agtIiHKRNC0PB57PuHOFNWJ6x8ZJxpS7X6dtfzQVrQ-FpxwLxFSaA2gAwcBaUDVaiIJfcNf2uj_FDdDuypwQbKd2izGpS-XGrFyv4VLMa7vu-XpxWN2mM6hECeLSagPag2rF6tiIlN9hLcSmzBqX_Zk96caSMSz8q7eTj11cHiDpQwHZGcFzGoxO8VMZv1-DB7dVlvXy-Q5836nSd5vRCvrVfToDEZ1S4K3Xf-xK5BZfenPZVeWPXMI5YsxQHPUCLWNSMOKriIy_5VpPpzlPwb5NIxHaCFrPIppg9OWNRyuEkOSYcZuxQQxbZ7Asrn2RyExPKoNhzq5nFMapFPJqtsBclytrTHX3pblRl_JJprIs4wVNsuJUWSLKuV3Hely_YiG4lhhR5gEjcUpQZGe2n_Wcj1NPJYxYcv-Vurx4Ctba4mAbblU0NYcJWFoVTU1WC2mXuCnnJ2R_f6DCCUDloUYJ5rptOZawEhb_ip4T_qLZSY35d0Fcz1gde1jOAl2JleXkJhxHWoEt7ZK3bjjJdyrwA'
+  }, ).then((value){
+    dev.log('ffffffffff ${value.body}');
+  });
+  http.get(Uri.parse('https://market_under_dev_backend.trydos.dev/api/new_v1/mobile/product/likesCommentsSharesDetails/5548'),).then((value){
+    dev.log('ffffffffff2  ${value.body}');
+  });
+  return;
   HydratedBloc.storage = await HydratedStorage.build(
     storageDirectory: await getApplicationDocumentsDirectory(),
   );
@@ -267,6 +282,7 @@ void main() async {
     apiKey: "AIzaSyDP0q_EapML_zg4ibE_p1NbWNlUa2DjefI",
   );
   gemini.Gemini.enableDebugging = true;
+  print(GetIt.I<PrefsRepository>().marketToken);
   await SentryFlutter.init(
     (options) {
       options.dsn = dotenv.env['SENTRY_DNS'];

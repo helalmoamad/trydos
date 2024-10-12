@@ -561,6 +561,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         return MapEntry(key, value);
       })));
     }, (r) {
+      getHomeBoutiquesPaginationObjectByMainCategory =
+          Map.of(state.getHomeBoutiquesPaginationObjectByMainCategory);
       String url = '';
       int numOfBanners = -1;
       r.data?.boutiques?.forEach((boutique) {
@@ -694,6 +696,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         }
       })));
     }, (r) {
+      getProductsWithoutFilters =
+          Map.of(state.getProductListingPaginationWithoutFiltersModel);
       isFailedTheFirstTime.remove('GetProductsWithoutFiltersEvent');
       bool resetListAfterGetData =
       !(reRequestTheseProductListingInBoutiques[keyForCacheData] ?? false);
@@ -944,6 +948,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           Map.of(getProductListingWithFiltersPaginationModels),
           appliedFiltersByUser: Map.of(prevAppliedFiltersByUser)));
     }, (r) {
+
       Map<String, PaginationModel<product.Products>?>
       getProductListingWithFiltersPaginationModels =
       <String, PaginationModel<product.Products>?>{};
@@ -1409,6 +1414,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           getProductDetailWithoutSimilarRelatedProductsStatus:
           GetProductDetailWithoutSimilarRelatedProductsStatus.failure));
     }, (r) {
+      productStatus = Map.from(state.productStatus ?? {});
       productStatus.addAll({
         event.productId!:
         GetProductDetailWithoutSimilarRelatedProductsStatus.success
@@ -2162,14 +2168,15 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   FutureOr<void> _onGetCommentForProductEvent(GetCommentForProductEvent event,
       Emitter<HomeState> emit) async {
+
     String keyForCacheData = event.productId;
     Map<String, GetCommentForProductModel> getCommentForProduct =
     Map.of(state.getCommentForProductModel);
 
-    if (getCommentForProduct[keyForCacheData] == null) {
-      emit(state.copyWith(
-          getCommentForProductStatus: GetCommentForProductStatus.init));
-    }
+    // if (getCommentForProduct[keyForCacheData] == null) {
+    //   emit(state.copyWith(
+    //       getCommentForProductStatus: GetCommentForProductStatus.init));
+    // }
 
     if (!state.getCommentForProductModel.containsKey(keyForCacheData)) {
       emit(state.copyWith(
@@ -2190,7 +2197,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       getCommentForProduct =
           Map.of(state.getCommentForProductModel);
       isFailedTheFirstTime.remove('GetCommentForProductEvent');
-      if (getCommentForProduct[keyForCacheData] == null ||
+      if (
+      //getCommentForProduct[keyForCacheData] == null ||
           !state.getCommentForProductModel.containsKey(keyForCacheData)) {
         getCommentForProduct.addAll({keyForCacheData: r});
       }
@@ -2901,13 +2909,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     } else {
       choosedFilters[key] = event.filtersChoosedByUser;
     }
-    if (event.resetChoosedFilters) {
-      emit(state.copyWith(
-        theReplyFromGemini: "",
-      ));
-    }
     emit(state.copyWith(
       choosedFiltersByUser: Map.of(choosedFilters),
+      theReplyFromGemini: event.resetChoosedFilters ? ""  : null
     ));
     if (event.requestToUpdateFilters) {
       add(GetProductFiltersEvent(

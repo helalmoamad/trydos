@@ -48,6 +48,7 @@ class GetClient<T> extends BaseApi<T> {
         onReceiveProgress: onReceiveProgress,
       );
 
+
       stopWatch.stop();
       GetIt.I<PrefsRepository>().saveRequestsData(
           response.requestOptions.path,

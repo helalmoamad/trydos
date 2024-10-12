@@ -192,7 +192,7 @@ class Product {
         deliveryAt: json["delivery_at"],
         tax: json["tax"].toString(),
         unitPrice: json["unit_price"].toString(),
-        currentStock: json["current_stock"],
+        currentStock: json["current_stock"]?.toInt(),
         leftStock: json["Left_stock"],
         reviewsCount: json["reviews_count"],
         sellerId: json["seller_id"],
