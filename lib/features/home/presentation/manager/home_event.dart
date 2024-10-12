@@ -335,7 +335,7 @@ class GetStoryForProductEvent extends HomeEvent {
 
   @override
   // TODO: implement props
-  List<Object?> get props => [];
+  List<Object?> get props => [productId];
 }
 
 class LoadFailureEvent extends HomeEvent {
@@ -446,7 +446,7 @@ class AddCurrentColorSizeEvent extends HomeEvent {
   });
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [choice_1];
 }
 
 class AddPrefAppliedFilterForExtendFilterEvent extends HomeEvent {
@@ -457,7 +457,7 @@ class AddPrefAppliedFilterForExtendFilterEvent extends HomeEvent {
   });
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [prefAppliedFilter];
 }
 
 class ResetAllSelectedAppliedFilterEvent extends HomeEvent {
@@ -474,7 +474,7 @@ class AddProductItemForCartEvent extends HomeEvent {
   AddProductItemForCartEvent({this.product, required this.productId});
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [productId , product];
 }
 
 class RemoveItemFormCartEvent extends HomeEvent {
