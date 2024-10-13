@@ -95,7 +95,6 @@ bool declineCallBecauseOfNotificationButton = false;
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  HttpOverrides.global = MyHttpOverrides();
   if (!isHydratedStorageInitialized) {
     HydratedBloc.storage = await HydratedStorage.build(
       storageDirectory: await getApplicationDocumentsDirectory(),
@@ -237,6 +236,7 @@ int applicationVersion = 1;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  HttpOverrides.global = MyHttpOverrides();
   HydratedBloc.storage = await HydratedStorage.build(
     storageDirectory: await getApplicationDocumentsDirectory(),
   );

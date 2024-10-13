@@ -477,6 +477,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   FutureOr<void> _onGetHomeBoutiquesEvent(
       GetHomeBoutiqesEvent event, Emitter<HomeState> emit) async {
+    print(
+        "${event.offset}++++++++++++++++++++++++++++++++++++++++++++++++${state.getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!.paginationStatus}");
     Map<String, PaginationModel<Boutique>>
         getHomeBoutiquesPaginationObjectByMainCategory =
         Map.of(state.getHomeBoutiquesPaginationObjectByMainCategory);
@@ -487,12 +489,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           const PaginationModel<Boutique>.init();
     }
 
-    if ((event.getWithPagination &&
+    if (event.getWithPagination &&
         (getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!
                 .hasReachedMax ||
             getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!
                     .paginationStatus ==
-                PaginationStatus.loading))) {
+                PaginationStatus.loading)) {
       return;
     }
     Map<String, bool> boutiquesForEveryMainCategoryThatDidPrefetch =
@@ -525,6 +527,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         offset: event.offset, categorySlug: event.categorySlug));
 
     response.fold((l) {
+      print(
+          "///////////////////---------------------------------------wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
       Map<String, PaginationModel<Boutique>>
           getHomeBoutiquesPaginationObjectByMainCategory =
           Map.of(state.getHomeBoutiquesPaginationObjectByMainCategory);
@@ -535,9 +539,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             false;
       }
 
-      emit(state.copyWith(
-          boutiquesForEveryMainCategoryThatDidPrefetch:
-              boutiquesForEveryMainCategoryThatDidPrefetch));
       if (!isFailedTheFirstTime
           .contains('GetHomeBoutiqesEvent' + "${event.categorySlug}")) {
         add(GetHomeBoutiqesEvent(
@@ -550,13 +551,18 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             .add('GetHomeBoutiqesEvent' + "${event.categorySlug}");
       }
 
-      emit(state.copyWith(getHomeBoutiquesPaginationObjectByMainCategory:
-          getHomeBoutiquesPaginationObjectByMainCategory.map((key, value) {
-        if (key == event.categorySlug)
-          return MapEntry(
-              key, value.copyWith(paginationStatus: PaginationStatus.failure));
-        return MapEntry(key, value);
-      })));
+      emit(state.copyWith(
+          boutiquesForEveryMainCategoryThatDidPrefetch:
+              boutiquesForEveryMainCategoryThatDidPrefetch,
+          getHomeBoutiquesPaginationObjectByMainCategory:
+              getHomeBoutiquesPaginationObjectByMainCategory.map((key, value) {
+            if (key == event.categorySlug)
+              return MapEntry(key,
+                  value.copyWith(paginationStatus: PaginationStatus.failure));
+            return MapEntry(key, value);
+          })));
+      print(
+          "///////////////////----------${state.getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!.paginationStatus}-----------------------------wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
     }, (r) {
       getHomeBoutiquesPaginationObjectByMainCategory =
           Map.of(state.getHomeBoutiquesPaginationObjectByMainCategory);
@@ -605,6 +611,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           return MapEntry(
               key,
               value.copyWith(
+                  hasReachedMax:
+                      (r.data!.boutiques?.length ?? kPageSize) < kPageSize,
                   paginationStatus: PaginationStatus.success,
                   page: event.getWithPagination
                       ? getHomeBoutiquesPaginationObjectByMainCategory[
@@ -943,7 +951,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               Map.of(getProductListingWithFiltersPaginationModels),
           appliedFiltersByUser: Map.of(prevAppliedFiltersByUser)));
     }, (r) {
-
       Map<String, PaginationModel<product.Products>?>
           getProductListingWithFiltersPaginationModels =
           <String, PaginationModel<product.Products>?>{};
@@ -2148,9 +2155,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     });
   }
 
-  FutureOr<void> _onGetCommentForProductEvent(GetCommentForProductEvent event,
-      Emitter<HomeState> emit) async {
-
+  FutureOr<void> _onGetCommentForProductEvent(
+      GetCommentForProductEvent event, Emitter<HomeState> emit) async {
     String keyForCacheData = event.productId;
     Map<String, GetCommentForProductModel> getCommentForProduct =
         Map.of(state.getCommentForProductModel);
@@ -2179,7 +2185,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       getCommentForProduct = Map.of(state.getCommentForProductModel);
       isFailedTheFirstTime.remove('GetCommentForProductEvent');
       if (
-      //getCommentForProduct[keyForCacheData] == null ||
+          //getCommentForProduct[keyForCacheData] == null ||
           !state.getCommentForProductModel.containsKey(keyForCacheData)) {
         getCommentForProduct.addAll({keyForCacheData: r});
       }
@@ -2892,9 +2898,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       choosedFilters[key] = event.filtersChoosedByUser;
     }
     emit(state.copyWith(
-      choosedFiltersByUser: Map.of(choosedFilters),
-      theReplyFromGemini: event.resetChoosedFilters ? ""  : null
-    ));
+        choosedFiltersByUser: Map.of(choosedFilters),
+        theReplyFromGemini: event.resetChoosedFilters ? "" : null));
     if (event.requestToUpdateFilters) {
       add(GetProductFiltersEvent(
           category: event.category,

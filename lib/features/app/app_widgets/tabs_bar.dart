@@ -61,16 +61,17 @@ class TabsBar extends StatefulWidget {
 class _TabsBarState extends State<TabsBar> {
   late AppBloc appBloc;
   late HomeBloc homeBloc;
+
   late final geminis.Gemini gemini;
   SpeechToText _speechToText = SpeechToText();
   final ValueNotifier<bool> isRecordeForSearchWithMic = ValueNotifier(false);
   bool _speechEnabled = false;
 
-  void _initSpeech() async {
-    _speechEnabled = await _speechToText.initialize();
-  }
-
   void _startListening() async {
+    if (!_speechEnabled) {
+      _speechEnabled = await _speechToText.initialize();
+    }
+
     await _speechToText.listen(
       listenFor: Duration(seconds: 7),
       onResult: (result) async {
@@ -319,7 +320,7 @@ class _TabsBarState extends State<TabsBar> {
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
     gemini = geminis.Gemini.instance;
-    _initSpeech();
+
     widget.controller.clear();
     List<String>? categorySlugs = [];
     homeBloc.state.mainCategoriesResponseModel?.data?.mainCategories?.forEach(
@@ -578,15 +579,16 @@ class _TabsBarState extends State<TabsBar> {
                                           recordeForSearchWithMic, _) {
                                         return InkWell(
                                           onTap: () async {
-                                            final status = await Permission
+                                            /*final status = await Permission
                                                 .microphone
                                                 .request();
                                             if (status !=
                                                 PermissionStatus.granted) {
                                               return;
-                                            }
+                                            }*/
                                             print(
                                                 "**************************************//////");
+
                                             _speechToText.isNotListening
                                                 ? _startListening()
                                                 : _stopListening();
@@ -704,13 +706,13 @@ class _TabsBarState extends State<TabsBar> {
                                             recordeForSearchWithMic, _) {
                                           return InkWell(
                                             onTap: () async {
-                                              final status = await Permission
+                                              /*  final status = await Permission
                                                   .microphone
                                                   .request();
                                               if (status !=
                                                   PermissionStatus.granted) {
                                                 return;
-                                              }
+                                              }*/
                                               print(
                                                   "**************************************//////");
                                               _speechToText.isNotListening
