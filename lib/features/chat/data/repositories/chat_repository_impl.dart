@@ -130,4 +130,10 @@ class ChatRepositoryImpl extends ChatRepository with HandlingExceptionRequest {
     return handlingExceptionRequest(
         tryCall: () => dataSource.sendErrorChatToServer(params));
   }
+
+  @override
+  Future<Either<Failure, Message>> shareProductWithContactsOrChannels(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.shareProductWithContactsOrChannels(params));
+  }
 }

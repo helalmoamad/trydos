@@ -22,6 +22,7 @@ abstract class ChatRepository {
   Future<Either<Failure, bool>> saveContacts(Map<String, dynamic> params);
   Future<Either<Failure, String>> getDateTime();
 
+  Future<Either<Failure, Message>> shareProductWithContactsOrChannels(Map<String, dynamic> params);
   Future<Either<Failure, Message>> sendMessage(Map<String, dynamic> params);
   Future<Either<Failure, bool>> readAllMessages(Map<String, dynamic> params);
   Future<Either<Failure, bool>> receiveMessage(Map<String, dynamic> params);

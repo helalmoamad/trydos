@@ -17,6 +17,8 @@ enum GetChatsStatus { init, loading, success, failure }
 
 enum SendMessageStatus { init, loading, success, failure }
 
+enum ShareProductWithContactsOrChannelsStatus { init, loading, success, failure }
+
 enum ReceiveMessageStatus { init, loading, success, failure }
 
 enum GetMessagesBetweenStatus { init, loading, success, failure }
@@ -55,6 +57,7 @@ class ChatState {
   final ChangeMessageStateFromPusherStatus changeMessageStateFromPusherStatus;
   final ChangeChatPropertyStatus changeChatPropertyStatus;
   final DeleteChatStatus deleteChatStatus;
+  final ShareProductWithContactsOrChannelsStatus shareProductWithContactsOrChannelsStatus;
   final List<Contact> contacts;
   final String? currentOpenedChatId;
   final ResendMessageStatus resendMessageStatus;
@@ -94,6 +97,7 @@ class ChatState {
     this.fileCountInEachChat = 0,
     this.videoCountInEachChat = 0,
     this.loadImageWidthAndHeight = LoadImageWidthAndHeight.init,
+    this.shareProductWithContactsOrChannelsStatus = ShareProductWithContactsOrChannelsStatus.init,
     this.newSortedChatsByDate = const {},
     this.currentOpenedChatId,
     this.getContactsStatus = GetContactsStatus.init,
@@ -147,6 +151,7 @@ class ChatState {
     final SaveContactsStatus? saveContactsStatus,
     final GetContactsStatus? getContactsStatus,
     final GetMessagesBetweenStatus? getMessagesBetweenStatus,
+    final ShareProductWithContactsOrChannelsStatus? shareProductWithContactsOrChannelsStatus,
     final DeleteChatStatus? deleteChatStatus,
     final List<Contact>? contacts,
     final String? channelId,
@@ -198,6 +203,7 @@ class ChatState {
           chatToNavigateFromTerminated ?? this.chatToNavigateFromTerminated,
       contacts: contacts ?? this.contacts,
       chats: chats ?? this.chats,
+      shareProductWithContactsOrChannelsStatus: shareProductWithContactsOrChannelsStatus ?? this.shareProductWithContactsOrChannelsStatus,
       currentOpenedChatId: currentOpenedChatId ?? this.currentOpenedChatId,
       createAnewChat: createAnewChat ?? this.createAnewChat,
       deleteChatStatus: deleteChatStatus ?? this.deleteChatStatus,

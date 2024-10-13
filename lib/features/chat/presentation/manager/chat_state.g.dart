@@ -36,6 +36,10 @@ ChatState _$ChatStateFromJson(Map<String, dynamic> json) => ChatState(
               _$LoadImageWidthAndHeightEnumMap,
               json['loadImageWidthAndHeight']) ??
           LoadImageWidthAndHeight.init,
+      shareProductWithContactsOrChannelsStatus: $enumDecodeNullable(
+              _$ShareProductWithContactsOrChannelsStatusEnumMap,
+              json['shareProductWithContactsOrChannelsStatus']) ??
+          ShareProductWithContactsOrChannelsStatus.init,
       newSortedChatsByDate:
           (json['newSortedChatsByDate'] as Map<String, dynamic>?)?.map(
                 (k, e) => MapEntry(
@@ -154,6 +158,9 @@ Map<String, dynamic> _$ChatStateToJson(ChatState instance) => <String, dynamic>{
       'changeChatPropertyStatus':
           _$ChangeChatPropertyStatusEnumMap[instance.changeChatPropertyStatus]!,
       'deleteChatStatus': _$DeleteChatStatusEnumMap[instance.deleteChatStatus]!,
+      'shareProductWithContactsOrChannelsStatus':
+          _$ShareProductWithContactsOrChannelsStatusEnumMap[
+              instance.shareProductWithContactsOrChannelsStatus]!,
       'contacts': instance.contacts.map((e) => e.toJson()).toList(),
       'currentOpenedChatId': instance.currentOpenedChatId,
       'resendMessageStatus':
@@ -200,6 +207,13 @@ const _$LoadImageWidthAndHeightEnumMap = {
   LoadImageWidthAndHeight.loading: 'loading',
   LoadImageWidthAndHeight.success: 'success',
   LoadImageWidthAndHeight.failure: 'failure',
+};
+
+const _$ShareProductWithContactsOrChannelsStatusEnumMap = {
+  ShareProductWithContactsOrChannelsStatus.init: 'init',
+  ShareProductWithContactsOrChannelsStatus.loading: 'loading',
+  ShareProductWithContactsOrChannelsStatus.success: 'success',
+  ShareProductWithContactsOrChannelsStatus.failure: 'failure',
 };
 
 const _$GetContactsStatusEnumMap = {

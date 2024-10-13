@@ -459,3 +459,25 @@ class SendErrorChatToServerEvent extends ChatEvent {
   // TODO: implement props
   List<Object?> get props => [error, lastPage];
 }
+
+class ShareProductWithContactsOrChannelsEvent extends ChatEvent{
+  final String productId;
+  final String productName;
+  final String productDescription;
+  final String productImageUrl;
+  final List<String> channelIds;
+  final List<String> receiverIds;
+
+  ShareProductWithContactsOrChannelsEvent({
+    required this.productId,
+    required this.productName,
+    required this.productDescription,
+    required this.productImageUrl,
+    required this.channelIds,
+    required this.receiverIds,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [productId , productName , productDescription , productImageUrl , channelIds , receiverIds];
+}
