@@ -122,11 +122,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
   Key gridViewKeyForRenderingForTheFiveFilters = UniqueKey();
   Key gridViewKeyForRendering = UniqueKey();
 
-  void _initSpeech() async {
-    _speechEnabled = await _speechToText.initialize();
-  }
-
   void _startListening() async {
+    if (!_speechEnabled) {
+      _speechEnabled = await _speechToText.initialize();
+    }
     await _speechToText.listen(
       listenFor: Duration(seconds: 7),
       onResult: (result) {
@@ -183,7 +182,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
   @override
   void initState() {
-    _initSpeech();
     itExpendForFirst = true;
     key = widget.boutiqueSlug + (widget.category ?? '');
     keyWithoutFilter = '${widget.boutiqueSlug}' +

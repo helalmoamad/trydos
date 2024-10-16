@@ -190,7 +190,7 @@ class ChatRemoteDataSource {
       requestPrams: RequestConfig<Message>(
         receiveTimeout: const Duration(minutes: 1),
         sendTimeout: const Duration(minutes: 1),
-        endpoint: ChatEndPoints.sendMessageEP,
+        endpoint: ChatEndPoints.shareProductWithChannelsOrContacts,
         data: params,
         response: ResponseValue<Message>(
             fromJson: (response) => Message.fromJson(response['data'])),

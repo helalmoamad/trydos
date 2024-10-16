@@ -20,9 +20,9 @@ class GetStartingSettingsEvent extends HomeEvent {
 }
 
 class GetMainCategoriesEvent extends HomeEvent {
-  const GetMainCategoriesEvent({required this.context});
+  const GetMainCategoriesEvent({this.context});
 
-  final BuildContext context;
+  final BuildContext? context;
   @override
   // TODO: implement props
   List<Object?> get props => [context];

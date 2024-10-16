@@ -94,7 +94,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<GetCustomerInfoEvent>(_onGetCustomerInfoEvent,
         transformer: throttleDroppable(throttleDuration));
     on<GetUserCountryEvent>(_onGetUserCountryEvent,
-        transformer: throttleDroppable(throttleDuration));
+        //transformer: throttleDroppable(throttleDuration)
+    );
   }
 
   final LoginToChatUseCase loginToChatUseCase;
@@ -413,7 +414,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           registerGuestStatus: RegisterGuestStatus.success,
           marketUser: r.data!.user));
     });
-    GetIt.I<HomeBloc>().add(GetStartingSettingsEvent());
   }
 
   FutureOr<void> _onUpdateNameEvent(
@@ -440,7 +440,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   FutureOr<void> _onGetCustomerInfoEvent(
       GetCustomerInfoEvent event, Emitter<AuthState> emit) async {
-    if (state.getCustomerInfoStatus == GetCustomerInfoStatus.success) return;
+    if (state.marketUser != null || state.getCustomerInfoStatus == GetCustomerInfoStatus.loading) return;
     emit(state.copyWith(getCustomerInfoStatus: GetCustomerInfoStatus.loading));
     final response = await getCustomerInfoUseCase(NoParams());
     response.fold((l) {

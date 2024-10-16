@@ -35,6 +35,8 @@ import '../../../../generated/locale_keys.g.dart';
 import '../../../../service/language_service.dart';
 
 import '../../../app/app_widgets/loading_indicator/trydos_loader.dart';
+import '../../../chat/presentation/manager/chat_bloc.dart';
+import '../../../chat/presentation/manager/chat_event.dart';
 import '../../data/models/get_product_listing_without_filters_model.dart'
     as productListingModel;
 
@@ -83,7 +85,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     });
     homeBloc.add(
         GetStoryForProductEvent(productId: widget.productItem.id.toString()));
-
+    if(GetIt.I<PrefsRepository>().chatToken != null) {
+      BlocProvider.of<ChatBloc>(context).add(GetChatsEvent());
+      BlocProvider.of<ChatBloc>(context).add(SaveContactsEvent());
+    }
     super.initState();
   }
 

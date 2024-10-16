@@ -8,8 +8,11 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:dio/dio.dart' as _i361;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
+import 'package:logger/logger.dart' as _i974;
+import 'package:shared_preferences/shared_preferences.dart' as _i460;
 
 import '../../common/helper/firebase_analytics_sessions.dart' as _i824;
 import '../../features/app/blocs/app_bloc/app_bloc.dart' as _i721;
@@ -166,21 +169,25 @@ import '../../features/story/presentation/bloc/story_bloc.dart' as _i536;
 import '../data/data_source/common_use_repo_data_source.dart' as _i672;
 import '../data/repository/common_use_repository_impl.dart' as _i77;
 import '../domin/repositories/common_use_repository.dart' as _i702;
+import '../domin/repositories/prefs_repository.dart' as _i658;
 import '../domin/usecases/upload_file_cloudinary_usecase.dart' as _i1043;
+import 'di_container.dart' as _i198;
 
 // initializes the registration of main-scope dependencies inside of GetIt
-_i174.GetIt $initGetIt(
+Future<_i174.GetIt> $initGetIt(
   _i174.GetIt getIt, {
   String? environment,
   _i526.EnvironmentFilter? environmentFilter,
-}) {
+}) async {
   final gh = _i526.GetItHelper(
     getIt,
     environment,
     environmentFilter,
   );
+  final appModule = _$AppModule();
   gh.factory<_i672.CommonUseRemoteDataSource>(
       () => _i672.CommonUseRemoteDataSource());
+  gh.factory<_i361.BaseOptions>(() => appModule.dioOption);
   gh.factory<_i274.SensitiveConnectivityBloc>(
       () => _i274.SensitiveConnectivityBloc());
   gh.factory<_i539.AuthRemoteDatasource>(() => _i539.AuthRemoteDatasource());
@@ -190,6 +197,15 @@ _i174.GetIt $initGetIt(
   gh.factory<_i243.PreloadingVideosBloc>(() => _i243.PreloadingVideosBloc());
   gh.factory<_i350.HomeRemoteDatasource>(() => _i350.HomeRemoteDatasource());
   gh.factory<_i777.StoriesDataSource>(() => _i777.StoriesDataSource());
+  gh.singleton<_i974.Logger>(() => appModule.logger);
+  await gh.singletonAsync<_i460.SharedPreferences>(
+    () => appModule.sharedPreferences,
+    preResolve: true,
+  );
+  await gh.singletonAsync<_i658.PrefsRepository>(
+    () => appModule.prefsRepository,
+    preResolve: true,
+  );
   gh.lazySingleton<_i824.SessionManager>(() => _i824.SessionManager());
   gh.lazySingleton<_i721.AppBloc>(() => _i721.AppBloc());
   gh.lazySingleton<_i1026.PreCachingImageBloc>(
@@ -210,6 +226,10 @@ _i174.GetIt $initGetIt(
       () => _i4.IncreaseViewersUseCase(gh<_i505.StoryRepository>()));
   gh.factory<_i290.UploadStoryUseCase>(
       () => _i290.UploadStoryUseCase(gh<_i505.StoryRepository>()));
+  gh.singleton<_i361.Dio>(() => appModule.dio(
+        gh<_i361.BaseOptions>(),
+        gh<_i974.Logger>(),
+      ));
   gh.factory<_i260.DeleteFcmUseCase>(
       () => _i260.DeleteFcmUseCase(gh<_i742.AuthRepository>()));
   gh.factory<_i862.GetCustomerInfoUseCase>(
@@ -312,11 +332,11 @@ _i174.GetIt $initGetIt(
       () => _i677.SendErrorToServerUseCase(gh<_i420.ChatRepository>()));
   gh.factory<_i703.SendMessageUseCase>(
       () => _i703.SendMessageUseCase(gh<_i420.ChatRepository>()));
-  gh.factory<_i897.UploadFileUseCase>(
-      () => _i897.UploadFileUseCase(gh<_i420.ChatRepository>()));
   gh.factory<_i139.ShareProductWithContactsOrChannelsUsecase>(() =>
       _i139.ShareProductWithContactsOrChannelsUsecase(
           gh<_i420.ChatRepository>()));
+  gh.factory<_i897.UploadFileUseCase>(
+      () => _i897.UploadFileUseCase(gh<_i420.ChatRepository>()));
   gh.factory<_i661.AnswerCallUseCase>(
       () => _i661.AnswerCallUseCase(gh<_i1032.CallsRepository>()));
   gh.factory<_i95.DeleteMessageUseCase>(
@@ -407,3 +427,5 @@ _i174.GetIt $initGetIt(
       ));
   return getIt;
 }
+
+class _$AppModule extends _i198.AppModule {}

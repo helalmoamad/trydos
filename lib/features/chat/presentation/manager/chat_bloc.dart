@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,18 +30,18 @@ import 'package:trydos/features/chat/domain/use_cases/share_product_with_contact
 import 'package:trydos/features/feed_back/presentation/pages/shared_preference_page.dart';
 import 'package:trydos/main.dart';
 import 'package:uuid/uuid.dart';
+import 'package:uuid/v4.dart';
+import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/data/model/pagination_model.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/domin/usecases/upload_file_cloudinary_usecase.dart';
 import '../../../../service/notification_service/notification_service/handle_notification/notification_process.dart';
 import '../../data/models/my_chats_response_model.dart';
 import '../../data/models/my_contacts_response_model.dart';
-import '../utils/firebase_presence.dart';
 import 'chat_event.dart';
 import 'chat_state.dart';
 import 'helper_function_for_chat_bloc/group_received_message_on_days.dart';
 import 'helper_function_for_chat_bloc/merge_chats_from_pagination.dart';
-import 'helper_function_for_chat_bloc/merge_the_old_chat_with_new.dart';
 
 const throttleDuration = Duration(minutes: 2);
 
@@ -83,7 +84,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     on<AddChannelToChannels>(_onAddChannelToChannels);
     on<AddUserConntctSatuseEvent>(_onAddUserConntctSatuseEvent);
     on<SendMessageEvent>(_onSendMessageEvent);
-    //on<ShareProductWithContactsOrChannelsEvent>(_onShareProductWithContactsOrChannelsEvent);
+    on<ShareProductWithContactsOrChannelsEvent>(_onShareProductWithContactsOrChannelsEvent);
     on<IncreaseFileImageVideoCounterEvent>(
         _onIncreaseFileImageVideoCounterEvent);
     on<ReadAllMessagesEvent>(_onReadAllMessagesEvent);
@@ -135,7 +136,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
   final ShareProductWithContactsOrChannelsUsecase shareProductWithContactsOrChannelsUsecase;
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
   String? currentOpenedChatId;
-  bool requestGetChats = true;
+  bool enableRequestGetChats = true;
 
   FutureOr<void> _onSendMessageEvent(
       SendMessageEvent event, Emitter<ChatState> emit) async {
@@ -339,6 +340,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           state.copyWith(
               chats: chats,
               createAnewChat: false,
+              sendMessageStatus: SendMessageStatus.success,
               pinnedChats: pinnedChats,
               newSortedChatsByDate:
                   groupReceivedMessageOnDays(chats: [...chats, ...pinnedChats]),
@@ -351,252 +353,221 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
   }
 
 
-//   FutureOr<void> _onShareProductWithContactsOrChannelsEvent(
-//       ShareProductWithContactsOrChannelsEvent event, Emitter<ChatState> emit) async {
-//     //todo waiting messages and not sent yet
-//
-//     List<String> ids = List.of(state.currentMessage);
-//     List<Message> messages;
-//     bool fromPinned = false;
-//
-//     //todo ---if-----
-//     //todo check if the channel exist and get the messages of this channel
-//     if (state.chats.any(
-//       (e) => e.id == event.channelId,
-//     )) {
-//       messages = List.of(state.chats
-//               .firstWhere((element) => element.id == event.channelId)
-//               .messages ??
-//           []);
-//     }
-//     //todo the same but from the pinned channels
-//
-//     else {
-//       fromPinned = true;
-//       messages = List.of(state.pinnedChats
-//               .firstWhere((element) => element.id == event.channelId)
-//               .messages ??
-//           []);
-//     }
-//     String? parentMessageId;
-//
-//     //todo just add the message to the waiting list and give it the local info like localParentMessageId
-//     if (!ids.contains(event.messageId)) {
-//       ids.add(event.messageId);
-//
-//       //todo check if the message has a parentMessage an get it
-//       int index = messages.indexWhere((element) =>
-//           element.localId == event.parentMessageId &&
-//           event.parentMessageId != null);
-//       parentMessageId = event.parentMessageId;
-//       //
-//       if (index != -1) {
-//         parentMessageId = messages[index].id;
-//       }
-//
-//       //todo insert the new message in the first of the list
-//       messages.insert(
-//           0,
-//           Message(
-//               channelId: event.channelId,
-//               id: event.messageId,
-//               localId: event.messageId,
-//               createdAt: DateTime.now(),
-//               receiverUserId: event.receiverUserId,
-//               messageContent: event.messageType == 'TextMessage'
-//                   ? MessageContent(
-//                       messageId: int.tryParse(event.messageId),
-//                       content: event.content)
-//                   : null,
-//               senderUserId: _prefsRepository.myChatId,
-//               messageType: MessageType(name: event.messageType),
-//               isForward: (event.isForward ?? false) ? 1 : 0,
-//               parentMessageId: parentMessageId,
-//               localParentMessageId: event.parentMessageId,
-//               authMessageStatus:
-//                   MessageStatus(isDeleted: 0, deleteForAll: false),
-//               mediaMessageContent: event.messageType != 'TextMessage'
-//                   ? [
-//                       MediaMessageContent(
-//                           filePath: event.mediaContent?[0]['file_path'],
-//                           titleMedium: event.mediaContent?[0]['titleMedium'])
-//                     ]
-//                   : null,
-//               parentMessage: parentMessageId != null
-//                   ? Message(
-//                       file: event.file,
-//                       senderUserId: index != -1
-//                           ? messages[index].senderUserId
-//                           : event.senderParentMessageId,
-//                       messageContent:
-//                           MessageContent(content: event.parentMessageContent))
-//                   : null));
-//     }
-//     if (event.messageType != 'TextMessage') {
-//       int index = messages.indexWhere((element) =>
-//           element.localId == event.parentMessageId &&
-//           event.parentMessageId != null);
-//       parentMessageId = event.parentMessageId;
-//       if (index != -1) {
-//         parentMessageId = messages[index].id;
-//       }
-//     }
-//
-//     //todo remove the chat  and reinsert it in the first of the List<Chat>
-//     List<Chat> chats;
-//     if (fromPinned) {
-//       chats = sortChats(state.pinnedChats, event.channelId, messages);
-//     } else {
-//       chats = sortChats(state.chats, event.channelId, messages);
-//     }
-//
-//     //todo  createAnewChat  so if the condition true that's mean the message from the local
-//     emit(state.copyWith(
-//         sendMessageStatus: SendMessageStatus.loading,
-//         currentMessage: ids,
-//         createAnewChat: int.tryParse(event.channelId) == null,
-//         newSortedChatsByDate: groupReceivedMessageOnDays(chats: [
-//           ...chats,
-//           ...(fromPinned ? state.chats : state.pinnedChats)
-//         ]),
-//         chats: fromPinned ? state.chats : chats,
-//         pinnedChats: !fromPinned ? state.pinnedChats : chats,
-//         channelId: event.channelId));
-//     final response = await sendMessageUseCase(
-//       SendMessageParams(
-//           content: event.content,
-//           extraFields: event.extraFields,
-//           isForward: event.isForward,
-//           mediaContent: event.mediaContent,
-//           messageType: event.messageType,
-//           parentMessageId: parentMessageId,
-//           receiverUserId: event.receiverUserId),
-//     );
-//     response.fold(
-//       (l) {
-//         List<String> currentFailedMessage = List.of(state.currentFailedMessage);
-//         ids.remove(event.messageId);
-//         currentFailedMessage.add(event.messageId);
-//         emit(state.copyWith(
-//             sendMessageStatus: SendMessageStatus.failure,
-//             currentMessage: ids,
-//             currentFailedMessage: currentFailedMessage));
-//       },
-//       (r) {
-//         print("///-------------------------------------*${r.parentMessage}");
-//
-// //        debugPrint('count  ${messages.length}');
-//         print('mediaMessageContent ${r.mediaMessageContent}');
-//         if (currentOpenedChatId == event.channelId) {
-//           currentOpenedChatId = r.channel!.id;
-//         }
-//         ids.remove(event.messageId);
-//         List<Chat> pinnedChats = state.pinnedChats.map((e) {
-//           if (e.localId == event.channelId &&
-//               int.tryParse(event.channelId) == null) {
-//             return r.channel!.copyWith(
-//                 localId: event.channelId,
-//                 channelMembers: state.pinnedChats
-//                     .firstWhere((element) => element.id == event.channelId)
-//                     .channelMembers,
-//                 messages: e.messages?.map((e) {
-//                   if (e.localId == event.messageId) {
-//                     return r.copyWith(localId: e.localId);
-//                   }
-//                   return e;
-//                 }).toList());
-//           } else if (e.id == event.channelId) {
-//             List<Message> messages = List.of(e.messages ?? []);
-//             int index = messages.indexWhere((element) =>
-//                 (element.id == event.messageId ||
-//                     element.localId == event.messageId));
-//             messages[index] = r.copyWith(
-//               file: event.file,
-//               localId: event.messageId,
-//             );
-//
-//             return e.copyWith(messages: messages);
-//           }
-//           return e;
-//         }).toList();
-//         List<Chat> chats = state.chats.map((e) {
-//           if (e.localId == event.channelId &&
-//               int.tryParse(event.channelId) == null) {
-//             return r.channel!.copyWith(
-//                 localId: event.channelId,
-//                 channelMembers: state.chats
-//                     .firstWhere((element) => element.id == event.channelId)
-//                     .channelMembers,
-//                 messages: e.messages?.map((e) {
-//                   if (e.localId == event.messageId) {
-//                     return r.copyWith(localId: e.localId);
-//                   }
-//                   return e;
-//                 }).toList());
-//           } else if (e.id == event.channelId) {
-//             List<Message> messages = List.of(e.messages ?? []);
-//             int index = messages.indexWhere((element) =>
-//                 (element.id == event.messageId ||
-//                     element.localId == event.messageId));
-//             messages[index] =
-//                 r.copyWith(file: event.file, localId: event.messageId);
-//             return e.copyWith(messages: messages);
-//           }
-//           return e;
-//         }).toList();
-//         if (event.file != null) {
-//           _prefsRepository.setAFilePathExist(
-//               event.mediaContent![0]['file_path'] + ' ' + event.file!.path,
-//               r.channel!.id!);
-//         }
-//         emit(
-//           state.copyWith(
-//               chats: chats,
-//               createAnewChat: false,
-//               pinnedChats: pinnedChats,
-//               newSortedChatsByDate:
-//                   groupReceivedMessageOnDays(chats: [...chats, ...pinnedChats]),
-//               currentMessage: ids),
-//         );
-//
-//         //  add(IncreaseFileImageVideoCounterEvent(r.messageType!.name!));
-//       },
-//     );
-//   }
+  FutureOr<void> _onShareProductWithContactsOrChannelsEvent(
+      ShareProductWithContactsOrChannelsEvent event, Emitter<ChatState> emit) async {
+    //todo waiting messages and not sent yet
+    final String messageId = Uuid().v4();
+    List<Chat> chats = List.of(state.chats);
+    List<Chat> pinnedChats = List.of(state.pinnedChats);
+    List<String> ids = List.of(state.currentMessage);
+    Map<String , List<Message>> messagesPerChannel = {};
+    Map<String , int?> receivers = {};
+
+    // load messages of channels
+    for(int i = 0 ; i < chats.length ; i++){
+      if(event.channelIds.contains(chats[i].id)){
+        messagesPerChannel[chats[i].id!] = chats[i].messages ?? [];
+        receivers[chats[i].id!] = chats[i].channelMembers!.firstWhere((member) => member.userId != _prefsRepository.myChatId).userId;
+      }
+    }
+
+    for(int i = 0 ; i < pinnedChats.length ; i++){
+      if(event.channelIds.contains(pinnedChats[i].id)){
+        messagesPerChannel[pinnedChats[i].id!] = pinnedChats[i].messages ?? [];
+        receivers[chats[i].id!] = chats[i].channelMembers!.firstWhere((member) => member.userId != _prefsRepository.myChatId).userId;
+      }
+    }
+
+
+    if (!ids.contains(messageId)) {
+      ids.add(messageId);
+
+      //todo insert the new message in the first of the list
+      messagesPerChannel.forEach((key , value){
+        value.insert(
+            0,
+            Message(
+                channelId: key,
+                id: messageId,
+                localId: messageId,
+                createdAt: DateTime.now(),
+                receiverUserId: receivers[key],
+                messageContent:  MessageContent(
+                    messageId: int.tryParse(messageId),
+                    content: event.productImageUrl),
+                senderUserId: _prefsRepository.myChatId,
+                messageType: MessageType(name: 'SharedProductMessage'),
+                isForward: 0,
+                authMessageStatus:
+                MessageStatus(isDeleted: 0, deleteForAll: false),
+                // mediaMessageContent: event.messageType != 'TextMessage'
+                //     ? [
+                //   MediaMessageContent(
+                //       filePath: event.mediaContent?[0]['file_path'],
+                //       titleMedium: event.mediaContent?[0]['titleMedium'])
+                // ]
+                //     : null,
+            ));
+      });
+
+    }
+
+    //todo remove the chat  and reinsert it in the first of the List<Chat>
+    for(int i = 0 ; i < chats.length ; i++){
+      if(event.channelIds.contains(chats[i].id)){
+        chats = sortChats(chats, chats[i].id, messagesPerChannel[chats[i].id!]!);
+      }
+    }
+    for(int i = 0 ; i < pinnedChats.length ; i++){
+      if(event.channelIds.contains(pinnedChats[i].id)){
+        pinnedChats = sortChats(pinnedChats, pinnedChats[i].id, messagesPerChannel[pinnedChats[i].id!]!);
+      }
+    }
+    //todo  createAnewChat  so if the condition true that's mean the message from the local
+    emit(state.copyWith(
+        sendMessageStatus: SendMessageStatus.loading,
+        currentMessage: ids,
+        //createAnewChat: int.tryParse(event.channelId) == null,
+        newSortedChatsByDate: groupReceivedMessageOnDays(chats: [
+          ...chats,
+          ...pinnedChats
+        ]),
+        chats:  chats,
+        pinnedChats: pinnedChats,
+        // channelId: event.channelId
+    ));
+    List<int?> receiverIds = [];
+    receivers.forEach((key , value){
+      //if(int.tryParse(key) == null){
+        receiverIds.add(value);
+      //}
+    });
+    final response = await shareProductWithContactsOrChannelsUsecase(
+      ShareProductWithContactsOrChannelsParams(
+        channelIds: [] , // event.channelIds,
+        receiverIds: receiverIds,
+        productId: event.productId,
+        productDescription: event.productDescription,
+        productImageUrl: event.productImageUrl,
+        productName: event.productName,
+        productSlug: event.productSlug,
+      ),
+    );
+    response.fold(
+      (l) {
+        List<String> currentFailedMessage = List.of(state.currentFailedMessage);
+        ids.remove(messageId);
+        currentFailedMessage.add(messageId);
+        emit(state.copyWith(
+            sendMessageStatus: SendMessageStatus.failure,
+            currentMessage: ids,
+            currentFailedMessage: currentFailedMessage));
+      },
+      (r) {
+        ids.remove(messageId);
+        pinnedChats = state.pinnedChats.map((e) {
+          if (event.channelIds.contains(e.localId) &&
+              int.tryParse(e.localId!) == null) {
+            return r.channel!.copyWith(
+                localId: e.localId,
+                channelMembers: state.pinnedChats
+                    .firstWhere((element) => element.id == e.localId)
+                    .channelMembers,
+                messages: e.messages?.map((e) {
+                  if (e.localId == messageId) {
+                    return r.copyWith(localId: e.localId);
+                  }
+                  return e;
+                }).toList());
+          } else if (event.channelIds.contains(e.id)) {
+            List<Message> messages = List.of(e.messages ?? []);
+            int index = messages.indexWhere((element) =>
+                (element.id == messageId ||
+                    element.localId == messageId));
+            messages[index] = r.copyWith(
+              localId: messageId,
+            );
+
+            return e.copyWith(messages: messages);
+          }
+          return e;
+        }).toList();
+         chats = state.chats.map((e) {
+          if (event.channelIds.contains(e.localId) &&
+              int.tryParse(e.localId!) == null) {
+            return r.channel!.copyWith(
+                localId: e.localId,
+                channelMembers: state.pinnedChats
+                    .firstWhere((element) => element.id == e.localId)
+                    .channelMembers,
+                messages: e.messages?.map((e) {
+                  if (e.localId == messageId) {
+                    return r.copyWith(localId: e.localId);
+                  }
+                  return e;
+                }).toList());
+          } else if (event.channelIds.contains(e.id)) {
+            List<Message> messages = List.of(e.messages ?? []);
+            int index = messages.indexWhere((element) =>
+            (element.id == messageId ||
+                element.localId == messageId));
+            messages[index] = r.copyWith(
+              localId: messageId,
+            );
+
+            return e.copyWith(messages: messages);
+          }
+          return e;
+        }).toList();
+        emit(
+          state.copyWith(
+              chats: chats,
+              createAnewChat: false,
+              pinnedChats: pinnedChats,
+              sendMessageStatus: SendMessageStatus.success,
+              newSortedChatsByDate:
+                  groupReceivedMessageOnDays(chats: [...chats, ...pinnedChats]),
+              currentMessage: ids),
+        );
+      },
+    );
+  }
 
   FutureOr<void> _onSaveContactsEvent(
       SaveContactsEvent event, Emitter<ChatState> emit) async {
-    // print('wwwwwww $apisMustNotToRequest');
-    // if (apisMustNotToRequest.contains('SaveContactsEvent')) {
-    //   return;
-    // }
-    // emit(state.copyWith(saveContactsStatus: SaveContactsStatus.loading));
-    // final response =
-    //     await saveContactsUseCase(SaveContactsParams(contacts: event.contacts));
-    // response.fold(
-    //   (l) {
-    //     if (!isFailedTheFirstTime.contains('SaveContactsEvent')) {
-    //       add(SaveContactsEvent());
-    //       isFailedTheFirstTime.add('SaveContactsEvent');
-    //     }
-    //     emit(state.copyWith(saveContactsStatus: SaveContactsStatus.failure));
-    //   },
-    //   (r) {
-    //     apisMustNotToRequest.add('SaveContactsEvent');
-    //     isFailedTheFirstTime.remove('SaveContactsEvent');
-    //     emit(
-    //       state.copyWith(
-    //         saveContactsStatus: SaveContactsStatus.success,
-    //       ),
-    //     );
-    //     getContactsAfterSavingItAndGettingChannels();
-    //   },
-    // );
+    if (apisMustNotToRequest.contains('SaveContactsEvent')) {
+      return;
+    }
+    apisMustNotToRequest.add('SaveContactsEvent');
+    emit(state.copyWith(saveContactsStatus: SaveContactsStatus.loading));
+    List<Map<String, dynamic>> contacts =
+    await HelperFunctions.getContactsFromDevice();
+    final response =
+        await saveContactsUseCase(SaveContactsParams(contacts: contacts));
+    response.fold(
+      (l) {
+        if (!isFailedTheFirstTime.contains('SaveContactsEvent')) {
+          add(SaveContactsEvent());
+          isFailedTheFirstTime.add('SaveContactsEvent');
+        }
+        apisMustNotToRequest.remove('SaveContactsEvent');
+        emit(state.copyWith(saveContactsStatus: SaveContactsStatus.failure));
+      },
+      (r) {
+        isFailedTheFirstTime.remove('SaveContactsEvent');
+        emit(
+          state.copyWith(
+            saveContactsStatus: SaveContactsStatus.success,
+          ),
+        );
+        getContactsAfterSavingItAndGettingChannels();
+      },
+    );
   }
 
   FutureOr<void> _onGetChatsEvent(
       GetChatsEvent event, Emitter<ChatState> emit) async {
-    if (state.getChatsStatus == GetChatsStatus.loading || !requestGetChats) {
+    if (state.getChatsStatus == GetChatsStatus.loading || !enableRequestGetChats) {
       return;
     }
     emit(state.copyWith(getChatsStatus: GetChatsStatus.loading));
@@ -621,7 +592,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       },
       (r) {
         try {
-          requestGetChats = !r.data!.chats.isNullOrEmpty;
+          enableRequestGetChats = false;
           if (r.data!.missedFcmToken) {
             GetIt.I<AuthBloc>().add(StoreFcmTokenEvent(
                 userId: _prefsRepository.myChatId!,
@@ -674,12 +645,15 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
   FutureOr<void> _onGetContactsEvent(
       GetContactsEvent event, Emitter<ChatState> emit) async {
     if (apisMustNotToRequest.contains('GetContactsEvent')) return;
+    apisMustNotToRequest.add('GetContactsEvent');
     emit(state.copyWith(
       getContactsStatus: GetContactsStatus.loading,
     ));
     final response = await getContactsUseCase(NoParams());
     response.fold(
       (l) {
+        apisMustNotToRequest.remove('GetContactsEvent');
+
         if (!isFailedTheFirstTime.contains('GetContactsEvent')) {
           add(GetContactsEvent());
           isFailedTheFirstTime.add('GetContactsEvent');
@@ -1208,17 +1182,18 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       return unSortedChats;
     }
     unSortedChats.sort((a, b) {
-      if ((a.messages?.isEmpty ?? true) || (b.messages?.isEmpty ?? true)) {
-        if (a.messages?.isEmpty ?? true) {
-          return -1;
-        } else if (b.messages?.isEmpty ?? true) {
-          return 1;
-        } else {
-          return 0;
-        }
+      if ((a.messages?.isEmpty ?? true) &&
+          (b.messages?.isEmpty ?? true)) {
+        return 0;
       }
-      return a.messages!.first.createdAt!
-          .compareTo(b.messages!.first.createdAt!);
+      if (a.messages?.isEmpty ?? true) {
+        return 1; // a < b
+      }
+      if (b.messages?.isEmpty ?? true) {
+        return -1;
+      }
+      return b.messages!.first.createdAt!
+          .compareTo(a.messages!.first.createdAt!);
     });
     return unSortedChats.reversed.toList();
   }
