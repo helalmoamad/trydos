@@ -357,6 +357,16 @@ class GetMediaCountEvent extends ChatEvent {
   List<Object?> get props => [channelId];
 }
 
+class GetSharedProductCountEvent extends ChatEvent {
+  final String productId;
+
+  const GetSharedProductCountEvent({required this.productId});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [productId];
+}
+
 class AddMediaCountEvent extends ChatEvent {
   int images = 0;
   int videos = 0;

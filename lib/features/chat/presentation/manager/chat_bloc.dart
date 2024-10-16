@@ -20,6 +20,7 @@ import 'package:trydos/features/chat/domain/use_cases/get_media_count_usecase.da
 import 'package:trydos/features/chat/domain/use_cases/get_messages_between_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/get_messages_for_chat_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/get_my_chats_usecase.dart';
+import 'package:trydos/features/chat/domain/use_cases/get_shared_product_count_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/read_all_messages_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/receive_message_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/save_contacts_usecase.dart';
@@ -58,6 +59,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       this.getMyChatsUseCase,
       this.saveContactsUseCase,
       this.sendMessageUseCase,
+      this.getSharedProductCountUseCase,
       this.getMessagesBetweenUseCase,
       this.uploadFileCloudinaryUseCase,
       this.getMessagesForChatUseCase,
@@ -95,6 +97,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     on<DeleteMessageNotificationReceivedInChatsEvent>(
         _onDeleteMessageNotificationReceivedInChatsEvent);
     on<DeleteChatEvent>(_onDeleteChatEvent);
+
+    on<GetSharedProductCountEvent>(_onGetSharedProductCountEvent);
     on<ReceiveMessageFromPusherEvent>(_onReceiveMessageFromPusherEvent);
     on<WatchedMessageFromPusherEvent>(_onWatchedMessageFromPusherEvent);
     on<ChangeChatPropertyEvent>(_onChangeChatPropertyEvent);
@@ -122,6 +126,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
   final GetMediaCountUseCase getMediaCountUseCase;
   final SaveContactsUseCase saveContactsUseCase;
   final GetContactsUseCase getContactsUseCase;
+  final GetSharedProductCountUseCase getSharedProductCountUseCase;
   final GetDateTimeUseCase getDateTimeUseCase;
   final GetMyChatsUseCase getMyChatsUseCase;
   final SendErrorToServerUseCase sendErrorToServerUseCase;
@@ -1634,6 +1639,31 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       int counter = state.videoCountInEachChat + 1;
       emit(state.copyWith(videoCountInEachChat: counter));
     }
+  }
+
+  _onGetSharedProductCountEvent(
+      GetSharedProductCountEvent event, Emitter<ChatState> emit) async {
+    emit(state.copyWith(
+        getSharedProductCountStatus: GetSharedProductCountStatus.loading));
+    final response = await getSharedProductCountUseCase(
+        GetSharedProductCountParams(productId: event.productId));
+    response.fold((l) {
+      emit(state.copyWith(
+          getSharedProductCountStatus: GetSharedProductCountStatus.failure));
+    }, (r) {
+      Map<String, String> getSharedProductCount =
+          Map.of(state.getSharedProductCount ?? {});
+      if (getSharedProductCount.containsKey(event.productId)) {
+        getSharedProductCount[event.productId] =
+            (r.data?.sharedCount ?? "").toString();
+      } else {
+        getSharedProductCount
+            .addAll({event.productId: (r.data?.sharedCount ?? "").toString()});
+      }
+      emit(state.copyWith(
+          getSharedProductCountStatus: GetSharedProductCountStatus.success,
+          getSharedProductCount: getSharedProductCount));
+    });
   }
 
   _onGetMediaCountEvent(

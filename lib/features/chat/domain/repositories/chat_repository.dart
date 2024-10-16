@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:trydos/features/authentication/data/models/create_user_response_model.dart';
 import 'package:trydos/features/chat/data/models/my_contacts_response_model.dart';
+import 'package:trydos/features/chat/data/models/shared_product_count_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 
 import '../../../../core/error/failures.dart';
@@ -19,6 +20,9 @@ abstract class ChatRepository {
       Map<String, dynamic> params);
   Future<Either<Failure, UploadFileResponseModel>> uploadFile(
       Map<String, dynamic> params);
+       Future<Either<Failure, GetSharedProductCountModel>> getSharedProductCount(
+      Map<String, dynamic> params);
+      
   Future<Either<Failure, bool>> saveContacts(Map<String, dynamic> params);
   Future<Either<Failure, String>> getDateTime();
 

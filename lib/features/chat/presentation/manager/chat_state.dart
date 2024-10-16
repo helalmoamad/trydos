@@ -17,6 +17,7 @@ enum GetChatsStatus { init, loading, success, failure }
 
 enum SendMessageStatus { init, loading, success, failure }
 
+enum GetSharedProductCountStatus { init, loading, success, failure }
 
 enum ReceiveMessageStatus { init, loading, success, failure }
 
@@ -49,6 +50,7 @@ class ChatState {
   final SaveContactsStatus saveContactsStatus;
   final GetContactsStatus getContactsStatus;
   final Duration? duration;
+  final Map<String, String>? getSharedProductCount;
   final GetMediaCountStatus getMediaCountStatus;
   final ResetReadMessagesStatus readMessagesStatus;
   final GetMessagesBetweenStatus getMessagesBetweenStatus;
@@ -77,6 +79,7 @@ class ChatState {
   final String currentChannelReceivedMessage;
   final bool scrollToParentMessage;
   final Chat? chatToNavigateFromTerminated;
+  final GetSharedProductCountStatus? getSharedProductCountStatus;
   final bool createAnewChat;
   Map<String, List<Message>>? newSortedChatsByDate;
   final bool firstRequestForGetChats;
@@ -92,7 +95,9 @@ class ChatState {
     this.firstRequestForGetChats = true,
     this.height = 0,
     this.imageCountInEachChat = 0,
+    this.getSharedProductCountStatus,
     this.fileCountInEachChat = 0,
+    this.getSharedProductCount,
     this.videoCountInEachChat = 0,
     this.loadImageWidthAndHeight = LoadImageWidthAndHeight.init,
     this.newSortedChatsByDate = const {},
@@ -170,6 +175,8 @@ class ChatState {
     final int? unReadMessagesFromAllChats,
     final String? messageType,
     final String? messageContent,
+    final Map<String, String>? getSharedProductCount,
+    final GetSharedProductCountStatus? getSharedProductCountStatus,
     String? userConnectedStatuse,
     final List<Chat>? pinnedChats,
   }) {
@@ -185,6 +192,8 @@ class ChatState {
       resendMessageStatus: resendMessageStatus ?? this.resendMessageStatus,
       imageCountInEachChat: imageCountInEachChat ?? this.imageCountInEachChat,
       getMediaCountStatus: getMediaCountStatus ?? this.getMediaCountStatus,
+      getSharedProductCountStatus:
+          getSharedProductCountStatus ?? this.getSharedProductCountStatus,
       fileCountInEachChat: fileCountInEachChat ?? this.fileCountInEachChat,
       videoCountInEachChat: videoCountInEachChat ?? this.videoCountInEachChat,
       loadImageWidthAndHeight:
@@ -209,6 +218,8 @@ class ChatState {
           this.changeMessageStateFromPusherStatus,
       scrollToParentMessage:
           scrollToParentMessage ?? this.scrollToParentMessage,
+      getSharedProductCount:
+          getSharedProductCount ?? this.getSharedProductCount,
       notifyThatIReceivedMessageStatus: notifyThatIReceivedMessageStatus ??
           this.notifyThatIReceivedMessageStatus,
       currentMessage: currentMessage ?? this.currentMessage,

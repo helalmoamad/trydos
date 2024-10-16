@@ -29,7 +29,14 @@ ChatState _$ChatStateFromJson(Map<String, dynamic> json) => ChatState(
       height: (json['height'] as num?)?.toInt() ?? 0,
       imageCountInEachChat:
           (json['imageCountInEachChat'] as num?)?.toInt() ?? 0,
+      getSharedProductCountStatus: $enumDecodeNullable(
+          _$GetSharedProductCountStatusEnumMap,
+          json['getSharedProductCountStatus']),
       fileCountInEachChat: (json['fileCountInEachChat'] as num?)?.toInt() ?? 0,
+      getSharedProductCount:
+          (json['getSharedProductCount'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(k, e as String),
+      ),
       videoCountInEachChat:
           (json['videoCountInEachChat'] as num?)?.toInt() ?? 0,
       loadImageWidthAndHeight: $enumDecodeNullable(
@@ -139,6 +146,7 @@ Map<String, dynamic> _$ChatStateToJson(ChatState instance) => <String, dynamic>{
       'getContactsStatus':
           _$GetContactsStatusEnumMap[instance.getContactsStatus]!,
       'duration': instance.duration?.inMicroseconds,
+      'getSharedProductCount': instance.getSharedProductCount,
       'getMediaCountStatus':
           _$GetMediaCountStatusEnumMap[instance.getMediaCountStatus]!,
       'readMessagesStatus':
@@ -175,6 +183,8 @@ Map<String, dynamic> _$ChatStateToJson(ChatState instance) => <String, dynamic>{
       'scrollToParentMessage': instance.scrollToParentMessage,
       'chatToNavigateFromTerminated':
           instance.chatToNavigateFromTerminated?.toJson(),
+      'getSharedProductCountStatus': _$GetSharedProductCountStatusEnumMap[
+          instance.getSharedProductCountStatus],
       'createAnewChat': instance.createAnewChat,
       'newSortedChatsByDate': instance.newSortedChatsByDate
           ?.map((k, e) => MapEntry(k, e.map((e) => e.toJson()).toList())),
@@ -195,13 +205,19 @@ const _$ResendMessageStatusEnumMap = {
   ResendMessageStatus.failure: 'failure',
 };
 
+const _$GetSharedProductCountStatusEnumMap = {
+  GetSharedProductCountStatus.init: 'init',
+  GetSharedProductCountStatus.loading: 'loading',
+  GetSharedProductCountStatus.success: 'success',
+  GetSharedProductCountStatus.failure: 'failure',
+};
+
 const _$LoadImageWidthAndHeightEnumMap = {
   LoadImageWidthAndHeight.init: 'init',
   LoadImageWidthAndHeight.loading: 'loading',
   LoadImageWidthAndHeight.success: 'success',
   LoadImageWidthAndHeight.failure: 'failure',
 };
-
 
 const _$GetContactsStatusEnumMap = {
   GetContactsStatus.init: 'init',

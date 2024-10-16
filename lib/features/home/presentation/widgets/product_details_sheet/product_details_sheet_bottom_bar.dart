@@ -15,6 +15,10 @@ import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
+import 'package:trydos/features/app/trydos_shimmer_loading.dart';
+import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
@@ -108,7 +112,9 @@ class _ProductDetailsSheetBottomBarState
           previous.updateItemInCartStatus != current.updateItemInCartStatus ||
           previous.addItemInCartStatus != current.addItemInCartStatus ||
           previous.ListitemForAddToCart?.length !=
-              current.ListitemForAddToCart?.length,
+              current.ListitemForAddToCart?.length ||
+          previous.getCommentForProductStatus !=
+              current.getCommentForProductStatus,
       builder: (context, state) {
         List<String> allimages = [];
 
@@ -556,19 +562,55 @@ class _ProductDetailsSheetBottomBarState
                                         text: '110K',
                                         svgPath: AppAssets.favoriteSvg,
                                         onTap: widget.clickOnFavorite),
-                                    BarWidget(
-                                        text: '110K',
-                                        svgPath: currentTab == 0
-                                            ? AppAssets.chatMarkActiveSvg
-                                            : AppAssets.chatMarkSvg,
-                                        onTap: widget.clickOnComments),
-                                    BarWidget(
-                                        text: '2K',
-                                        svgPath: AppAssets.shareSvg,
-                                        color: currentTab == 1
-                                            ? Color(0xff505050)
-                                            : null,
-                                        onTap: widget.clickOnShare),
+                                    state
+                                                .getCommentForProductModel[
+                                                    widget.productId]
+                                                ?.commentsForProduct
+                                                ?.commentsCount ==
+                                            null
+                                        ? Shimmer.fromColors(
+                                            baseColor: Colors.grey.shade400,
+                                            highlightColor:
+                                                Colors.grey.shade100,
+                                            child: SvgPicture.asset(
+                                                AppAssets.chatMarkSvg),
+                                          )
+                                        : BarWidget(
+                                            text:
+                                                '${state.getCommentForProductModel[widget.productId]?.commentsForProduct?.commentsCount ?? 0}',
+                                            svgPath: currentTab == 0
+                                                ? AppAssets.chatMarkActiveSvg
+                                                : AppAssets.chatMarkSvg,
+                                            onTap: widget.clickOnComments),
+                                    BlocBuilder<ChatBloc, ChatState>(
+                                      buildWhen: (previous, current) =>
+                                          previous
+                                              .getSharedProductCountStatus !=
+                                          current.getSharedProductCountStatus,
+                                      builder: (context, state) {
+                                        return state.getSharedProductCount?[
+                                                        widget.productId] ==
+                                                    null &&
+                                                state.getSharedProductCountStatus ==
+                                                    GetSharedProductCountStatus
+                                                        .loading
+                                            ? Shimmer.fromColors(
+                                                baseColor: Colors.grey.shade400,
+                                                highlightColor:
+                                                    Colors.grey.shade100,
+                                                child: SvgPicture.asset(
+                                                    AppAssets.shareSvg),
+                                              )
+                                            : BarWidget(
+                                                text:
+                                                    '${state.getSharedProductCount?[widget.productId] ?? "0"}',
+                                                svgPath: AppAssets.shareSvg,
+                                                color: currentTab == 1
+                                                    ? Color(0xff505050)
+                                                    : null,
+                                                onTap: widget.clickOnShare);
+                                      },
+                                    ),
                                     BarWidget(
                                         svgPath: AppAssets.moreOptionSvg,
                                         color: currentTab == 2
