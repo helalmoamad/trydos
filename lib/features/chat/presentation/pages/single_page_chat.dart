@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -32,6 +33,7 @@ import 'package:trydos/features/chat/presentation/widgets/chat_widgets/document_
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/image_message.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/reply_messge.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/reply_on_me_message.dart';
+import 'package:trydos/features/chat/presentation/widgets/chat_widgets/shared_product_message.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/video_message.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:uuid/uuid.dart';
@@ -48,6 +50,7 @@ import '../../../app/blocs/app_bloc/app_event.dart';
 import '../../../app/my_cached_network_image.dart';
 import '../../../app/my_text_widget.dart';
 import '../../../calls/presentation/utils/caller_info.dart';
+import '../../../home/presentation/pages/product_details_page.dart';
 import '../../data/models/my_chats_response_model.dart';
 import '../manager/chat_bloc.dart';
 import '../manager/chat_event.dart';
@@ -757,6 +760,17 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                           index;
                                                                     },
                                                                     onTap: () {
+                                                                      if(messages[index]
+                                                                          .messageType
+                                                                          ?.name == 'ShareProduct'){
+                                                                        // Navigator.of(context).push(
+                                                                        //     MaterialPageRoute(
+                                                                        //         builder: (ctx) =>
+                                                                        //             ProductDetailsPage(
+                                                                        //               productItem:
+                                                                        //               products[index],
+                                                                        //             )));
+                                                                      }
                                                                       rebuildMessage
                                                                           .value = -1;
                                                                     },
@@ -1451,15 +1465,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
       );
     }
     int index;
-    debugPrint("id${message.id.toString()}");
-    debugPrint("localId${message.localId.toString()}");
-    FlutterError.onError = (details) {
-      debugPrint("asfsd${details.toString()}");
-    };
     String? filePath = message.mediaMessageContent.isNullOrEmpty
-        ? null
-        : message.mediaMessageContent?[0].filePath;
-    print('ppppppppp $filePath');
+        ? message.messageType?.name == 'ShareProduct' ? message.shareProductContent!.productImageUrl : null : message.mediaMessageContent?[0].filePath;
     if (message.file == null &&
         filePath != null &&
         _prefsRepository.isAFilePathExist(filePath, widget.chatId)) {
@@ -1623,7 +1630,32 @@ class _SinglePageChatState extends State<SinglePageChat> {
             isLocalMessage: true,
             isForwarded: message.isForward == 1,
           );
-        case 'VideoMessage':
+        case 'ShareProduct':
+          return SharedProductMessage(
+            channelId: message.channelId!,
+            imageUrl: message.shareProductContent!.productImageUrl,
+            productName: message.shareProductContent!.productName,
+            productDescription: message.shareProductContent!.productDescription,
+            imageFile: message.file,
+            receivedAt: messageStatus?.receivedAt,
+            createAt: message.createdAt,
+            key: ValueKey(message.id),
+            isSent: isSentMessage,
+            messageId: message.id.toString(),
+            senderId: message.senderUserId!,
+            userMessageName: message.receiverUserId != _prefsRepository.myChatId
+                ? senderName
+                : receiverName,
+            userMessagePhoto: isSentMessage ? senderPhoto : receiverPhoto,
+            isFirstMessage:
+                message.isFirstMessage! || message.isFirstMessageForThisDay!,
+            isRead: messageStatus?.isWatched ?? false,
+            isReceived: (messageStatus?.isReceived ?? 0) == 1,
+            isForwarded: message.isForward == 1,
+            watchedAt: messageStatus?.watchedAt,
+          );
+
+          case 'VideoMessage':
           return VideoMessage(
             channelId: message.channelId!,
             receivedAt: messageStatus?.receivedAt,

@@ -196,9 +196,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<GetProductFiltersWithPrefetchForFiveFiltersEvent>(
       _onGetProductFiltersWithPrefetchForFiveFiltersEvent,
     );
-    on<GetProductsWithFiltersWithPrefetchForFiveFiltersEvent>(
-      _onGetProductsWithFiltersWithPrefetchForFiveFiltersEvent,
-    );
     /* on<GetProductsWithFiltersEventWithoutCancelingPreviousEvents>(
         _onGetProductsWithFiltersEventWithoutCancelingPreviousEvents);*/
     on<UpdateItemInCartEvent>(
@@ -319,17 +316,20 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     }, (r) async {
       apisMustNotToRequest.add('GetMainCategoriesEvent');
       isFailedTheFirstTime.remove('GetMainCategoriesEvent');
-
-      if (state.getHomeBoutiquesPaginationObjectByMainCategory['Empty']
-              ?.paginationStatus ==
-          PaginationStatus.success) {
-        requestAPIAfterHome();
+      if(state.boutiquesForEveryMainCategoryThatDidPrefetch[
+      'Empty'] !=
+          true){
+        add(GetHomeBoutiqesEvent(
+          getWithPrefetchForBoutiques: true,
+          context: event.context ?? navigatorKey.currentContext!,
+          categorySlug: 'Empty',
+          offset: "1",
+        ));
       }
       emit(state.copyWith(
           mainCategoriesResponseModel: r,
           getMainCategoriesStatus: GetMainCategoriesStatus.success));
       List<String> categorySlugs = [];
-      categorySlugs.add("Empty");
       for (var i = 0; i < r.data!.mainCategories!.length; i++) {
         categorySlugs.add(r.data!.mainCategories![i].slug ?? "");
       }
@@ -343,7 +343,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               true) {
             add(GetHomeBoutiqesEvent(
               getWithPrefetchForBoutiques: true,
-              context: event.context,
+              context: event.context ?? navigatorKey.currentContext!,
               categorySlug: categorySlugs[i],
               offset: "1",
             ));
@@ -520,7 +520,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                 value.copyWith(paginationStatus: PaginationStatus.loading));
           return MapEntry(key, value);
         })));
-
     final response = await getHomeBoutiqesUseCase(GetHomeBoutiqesParams(
         offset: event.offset, categorySlug: event.categorySlug));
 
@@ -1762,9 +1761,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     String key = event.boutiqueSlug + (event.category ?? '');
     Map<String, bool> boutiquesThatDidPrefetch =
         Map.of(state.boutiquesThatDidPrefetch);
+    if (boutiquesThatDidPrefetch[key] == true) {
+      return ;
+    }
     if (boutiquesThatDidPrefetch[key] == null) {
       boutiquesThatDidPrefetch.addAll({key: false});
     }
+    boutiquesThatDidPrefetch[key] = true;
     // if (boutiquesThatDidPrefetch[key] == true) {
     //   if (event.indexOfCategory < event.categorySlugs.length &&
     //       event.categorySlugs.length > 0) {
@@ -1783,8 +1786,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     //   }
     //   return;
     // }
-
-    boutiquesThatDidPrefetch[key] = true;
 
     emit(state.copyWith(boutiquesThatDidPrefetch: boutiquesThatDidPrefetch));
 
@@ -1891,20 +1892,20 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       boutiquesThatDidPrefetch[key] = false;
 
       emit(state.copyWith(boutiquesThatDidPrefetch: boutiquesThatDidPrefetch));
-      if (!isFailedTheFirstTime.contains('GetProductFiltersEvent'
-          "${event.category}")) {
-        add(GetProductWithFiltersWithoutCancelingPreviousEvents(
-            categorySlugs: event.categorySlugs,
-            context: event.context,
-            cashedOrginalBoutique: true,
-            fromHomePageSearch: false,
-            boutiqueSlug: event.boutiqueSlug,
-            indexOfCategory: event.indexOfCategory,
-            category: event.category,
-            searchText: null));
-        isFailedTheFirstTime.add('GetProductFiltersEvent'
-            "${event.categorySlugs[event.indexOfCategory]}");
-      }
+      // if (!isFailedTheFirstTime.contains('GetProductFiltersEvent'
+      //     "${event.category}")) {
+      //   add(GetProductWithFiltersWithoutCancelingPreviousEvents(
+      //       categorySlugs: event.categorySlugs,
+      //       context: event.context,
+      //       cashedOrginalBoutique: true,
+      //       fromHomePageSearch: false,
+      //       boutiqueSlug: event.boutiqueSlug,
+      //       indexOfCategory: event.indexOfCategory,
+      //       category: event.category,
+      //       searchText: null));
+      //   isFailedTheFirstTime.add('GetProductFiltersEvent'
+      //       "${event.categorySlugs[event.indexOfCategory]}");
+      // }
     }, (r) async {
       List<String> cachedLinksOfImages = [];
       String url, url2;

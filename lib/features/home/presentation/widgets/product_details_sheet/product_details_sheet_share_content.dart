@@ -1,33 +1,55 @@
+import 'dart:math';
+
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart' as cupertino;
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
+import '../../../../../common/helper/helper_functions.dart';
 import '../../../../../core/utils/responsive_padding.dart';
+import '../../../../../generated/locale_keys.g.dart';
 import '../../../../app/app_widgets/app_text_field.dart';
+import '../../../../app/my_cached_network_image.dart';
 import '../../../../app/my_text_widget.dart';
+import '../../../../calls/presentation/widgets/no_image_widget.dart';
+import '../../../../chat/data/models/my_chats_response_model.dart';
+import '../../../../chat/presentation/manager/chat_bloc.dart';
 
-class ProductDetailsSheetShareContent extends StatelessWidget {
+class ProductDetailsSheetShareContent extends cupertino.StatefulWidget {
   const ProductDetailsSheetShareContent(
       {super.key,
-      required this.indicesOfChatCardsToShare,
+      required this.idsOfChatCardsToShare,
       required this.focusNode,
-       this.scrollController});
+      this.scrollController});
 
   final FocusNode focusNode;
 
-  final ValueNotifier<List<int>> indicesOfChatCardsToShare;
+  final ValueNotifier<List<String>> idsOfChatCardsToShare;
   final ScrollController? scrollController;
 
+  @override
+  cupertino.State<ProductDetailsSheetShareContent> createState() =>
+      _ProductDetailsSheetShareContentState();
+}
+
+class _ProductDetailsSheetShareContentState
+    extends cupertino.State<ProductDetailsSheetShareContent> {
+  final ValueNotifier<List<Chat>> chats = ValueNotifier([]);
+  List<Chat> originalCopyOfChats = [] ;
   @override
   Widget build(BuildContext context) {
     return ScrollConfiguration(
       behavior: cupertino.CupertinoScrollBehavior(),
       child: ListView(
-        controller: scrollController,
+        controller: widget.scrollController,
         shrinkWrap: true,
         physics: cupertino.ClampingScrollPhysics(),
         padding: EdgeInsets.zero,
@@ -51,55 +73,139 @@ class ProductDetailsSheetShareContent extends StatelessWidget {
                   )),
             ],
           ),
-          10.verticalSpace,
-          Material(
-            color: Colors.transparent,
-            child: Padding(
-              padding:
-                  HWEdgeInsets.symmetric(horizontal: 20.0).copyWith(bottom: 10),
-              child: AppTextField(
-                focusNode: focusNode,
-                filledColor: Color(0xffF8F8F8),
-                bordersColor: Color(0xffF8F8F8),
-                hintText: 'Search',
-                roundingCornersValue: 30,
-                textStyle: context.textTheme.titleMedium?.lr
-                    .copyWith(color: const Color(0xff8D8D8D)),
-                hintTextStyle: context.textTheme.bodySmall?.lr
-                    .copyWith(color: const Color(0xff8D8D8D)),
-                prefixIcon: Padding(
-                  padding: HWEdgeInsetsDirectional.only(top: 15, bottom: 15),
-                  child: SvgPicture.asset(
-                    AppAssets.searchOutlinedSvg,
+          if(GetIt.I<PrefsRepository>().chatToken == null)...{
+            SizedBox(height: 50,),
+            Center(
+              child: MyTextWidget('You Must Login To Share Product!',
+                  style: context.textTheme.bodyMedium?.bq.copyWith(
+                    color: Color(0xffff0000),
+                  )),
+            ),
+            SizedBox(height: 50,),
+          }else ...{
+            10.verticalSpace,
+            Material(
+              color: Colors.transparent,
+              child: Padding(
+                padding:
+                HWEdgeInsets.symmetric(horizontal: 20.0).copyWith(bottom: 10),
+                child: AppTextField(
+                  focusNode: widget.focusNode,
+                  filledColor: Color(0xffF8F8F8),
+                  bordersColor: Color(0xffF8F8F8),
+                  hintText: 'Search',
+                  roundingCornersValue: 30,
+                  onChange: (String text) {
+                    if (text.isEmpty) {
+                      chats.value = originalCopyOfChats;
+                    } else {
+                      List<Chat> search = [];
+                      for (Chat chat in originalCopyOfChats) {
+                        ChannelMember member = chat.channelMembers!.firstWhere(
+                                (element) =>
+                            element.userId != GetIt
+                                .I<PrefsRepository>()
+                                .myChatId);
+                        if ((chat.channelName ?? LocaleKeys.unknown_user.tr())
+                            .toLowerCase()
+                            .contains(text.toLowerCase() ?? '') ||
+                            (member.user?.mobilePhone ?? LocaleKeys.no_num.tr())
+                                .toLowerCase()
+                                .contains(text.toLowerCase() ?? '')) {
+                          search.add(chat);
+                        }
+                      }
+                      chats.value = search;
+                    }
+                  },
+                  textStyle: context.textTheme.titleMedium?.lr
+                      .copyWith(color: const Color(0xff8D8D8D)),
+                  hintTextStyle: context.textTheme.bodySmall?.lr
+                      .copyWith(color: const Color(0xff8D8D8D)),
+                  prefixIcon: Padding(
+                    padding: HWEdgeInsetsDirectional.only(top: 15, bottom: 15),
+                    child: SvgPicture.asset(
+                      AppAssets.searchOutlinedSvg,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          ValueListenableBuilder<List<int>>(
-              valueListenable: indicesOfChatCardsToShare,
-              builder: (context, indices, _) {
-                return Align(
-                  alignment: Alignment.center,
-                  child: Wrap(
-                    children: List.generate(
-                        10,
-                        (index) => ChatCardForShare(
-                              index: index,
-                              onTap: () {
-                                if (!indicesOfChatCardsToShare.value
-                                    .contains(index)) {
-                                  indicesOfChatCardsToShare.value.add(index);
-                                } else {
-                                  indicesOfChatCardsToShare.value.remove(index);
-                                }
-                                indicesOfChatCardsToShare.notifyListeners();
-                              },
-                              selected: indices.contains(index),
-                            )),
-                  ),
-                );
-              }),
+            ValueListenableBuilder<List<String>>(
+                valueListenable: widget.idsOfChatCardsToShare,
+                builder: (context, channelIds, _) {
+                  return BlocBuilder<ChatBloc, ChatState>(
+                    builder: (context, state) {
+                      chats.value = [...state.pinnedChats, ...state.chats];
+                      chats.value.sort(
+                            (a, b) {
+
+                          if ((a.messages?.isEmpty ?? true) &&
+                              (b.messages?.isEmpty ?? true)) {
+                            return 0;
+                          }
+                          if (a.messages?.isEmpty ?? true) {
+                            return 1; // a < b
+                          }
+                          if (b.messages?.isEmpty ?? true) {
+                            return -1;
+                          }
+                          return b.messages!.first.createdAt!
+                              .compareTo(a.messages!.first.createdAt!);
+                        },
+                      );
+                      originalCopyOfChats = chats.value;
+                      return ValueListenableBuilder<List<Chat>>(
+                          valueListenable: chats,
+                          builder: (context, chats, _) {
+                            final List<Chat> displayedChats =
+                            chats.getRange(0, min(10, chats.length)).toList();
+                            return Align(
+                              alignment: Alignment.center,
+                              child: Wrap(
+                                children: List.generate(
+                                    min(10, chats.length),
+                                        (index) =>
+                                        ChatCardForShare(
+                                          index: index,
+                                          channelMember: displayedChats[index]
+                                              .channelMembers!
+                                              .firstWhere((member) =>
+                                          member.userId !=
+                                              GetIt
+                                                  .I<PrefsRepository>()
+                                                  .myChatId),
+                                          onTap: () {
+                                            if (!widget
+                                                .idsOfChatCardsToShare.value
+                                                .contains(
+                                                displayedChats[index].id
+                                                    .toString())) {
+                                              widget
+                                                  .idsOfChatCardsToShare.value
+                                                  .add(displayedChats[index].id
+                                                  .toString());
+                                            } else {
+                                              widget
+                                                  .idsOfChatCardsToShare.value
+                                                  .remove(
+                                                  displayedChats[index].id
+                                                      .toString());
+                                            }
+                                            widget.idsOfChatCardsToShare
+                                                .notifyListeners();
+                                          },
+                                          selected: channelIds.contains(
+                                              displayedChats[index].id
+                                                  .toString()),
+                                        )),
+                              ),
+                            );
+                          });
+                    },
+                  );
+                }),
+          }
         ],
       ),
     );
@@ -108,14 +214,29 @@ class ProductDetailsSheetShareContent extends StatelessWidget {
 
 class ChatCardForShare extends StatelessWidget {
   const ChatCardForShare(
-      {super.key, required this.index, required this.selected, this.onTap});
+      {super.key,
+      required this.index,
+      required this.selected,
+      this.onTap,
+      required this.channelMember});
 
   final int index;
   final bool selected;
+  final ChannelMember channelMember;
+
   final void Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
+    final String receiverName, fullReceiverName;
+    if (channelMember.user?.name == null) {
+      receiverName = LocaleKeys.uk.tr();
+      fullReceiverName = channelMember.user?.mobilePhone ?? 'UnKnown User';
+    } else {
+      receiverName = HelperFunctions.getTheFirstTwoLettersOfName(
+          channelMember.user!.name!);
+      fullReceiverName = channelMember.user!.name!;
+    }
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -154,14 +275,29 @@ class ChatCardForShare extends StatelessWidget {
                           Opacity(
                             opacity: selected ? 0.5 : 1,
                             child: Container(
-                              width: 70.w - (selected ? 2 : 0),
-                              height: 80 - (selected ? 2 : 0),
-                              decoration: BoxDecoration(),
-                              child: Image.asset(
-                                AppAssets.profileJpg,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
+                                width: 70.w - (selected ? 2 : 0),
+                                height: 80 - (selected ? 2 : 0),
+                                decoration: BoxDecoration(),
+                                child: channelMember.user?.photoPath == null
+                                    ? NoImageWidget(
+                                        width: 70.w - (selected ? 2 : 0),
+                                        height: 80 - (selected ? 2 : 0),
+                                        textStyle: context
+                                            .textTheme.bodyMedium?.br
+                                            .copyWith(
+                                                color: const Color(0xff6638FF),
+                                                letterSpacing: 0.18,
+                                                height: 1.33),
+                                        name: receiverName)
+                                    : MyCachedNetworkImage(
+                                        imageUrl: ChatUrls.baseUrl +
+                                            channelMember.user?.photoPath,
+                                        imageFit: BoxFit.cover,
+                                        width: 70.w - (selected ? 2 : 0),
+                                        height: 80 - (selected ? 2 : 0),
+                                        imageWidth: 70.w - (selected ? 2 : 0),
+                                        imageHeight: 80 - (selected ? 2 : 0),
+                                      )),
                           ),
                           Container(
                             width: 70.w - (selected ? 2 : 0),
@@ -183,10 +319,16 @@ class ChatCardForShare extends StatelessWidget {
                     ),
                   ),
                   10.verticalSpace,
-                  MyTextWidget(
-                    'Omar',
-                    style: context.textTheme.bodySmall?.rq
-                        .copyWith(color: Color(0xff505050)),
+                  cupertino.SizedBox(
+                    width: 70.w - (selected ? 2 : 0),
+                    child: MyTextWidget(
+                      fullReceiverName,
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.textTheme.bodySmall?.rq
+                          .copyWith(color: Color(0xff505050)),
+                    ),
                   )
                 ],
               ),

@@ -75,7 +75,8 @@ abstract class ChatEndPoints {
   static final sendMessageEP = 'send'.messagesScope();
   static final getMessagesBetweenEP =
       'get_all_messages_between_two_messages'.messagesScope();
-
+  static final shareProductWithChannelsOrContacts =
+  'share_product'.messagesScope();
   static String getMessagesForChatEP(String channelId) =>
       'messages_of_channel/$channelId'.messagesScope();
 

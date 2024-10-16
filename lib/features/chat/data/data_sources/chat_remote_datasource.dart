@@ -185,6 +185,21 @@ class ChatRemoteDataSource {
     return sendMessage();
   }
 
+  Future<Message> shareProductWithContactsOrChannels(Map<String, dynamic> params) {
+    PostClient<Message> shareProductWithContactsOrChannels = PostClient<Message>(
+      serverName: ServerName.chat,
+      requestPrams: RequestConfig<Message>(
+        receiveTimeout: const Duration(minutes: 1),
+        sendTimeout: const Duration(minutes: 1),
+        endpoint: ChatEndPoints.shareProductWithChannelsOrContacts,
+        data: params,
+        response: ResponseValue<Message>(
+            fromJson: (response) => Message.fromJson(response['data'])),
+      ),
+    );
+    return shareProductWithContactsOrChannels();
+  }
+
   Future<CreateUserResponseModel> createUser(Map<String, dynamic> params) {
     PostClient<CreateUserResponseModel> createUser =
         PostClient<CreateUserResponseModel>(

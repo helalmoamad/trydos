@@ -13,6 +13,8 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
@@ -66,10 +68,9 @@ class ProductDetailsBottomSheet extends StatefulWidget {
 }
 
 class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
-  final ValueNotifier<List<int>> indicesOfChatCardsToShare = ValueNotifier([]);
+  final ValueNotifier<List<String>> idsOfChatCardsToShare = ValueNotifier([]);
   final ValueNotifier<int> currentActiveTab = ValueNotifier(-1);
   final ValueNotifier<double> workOnBlurNotifier = ValueNotifier(10);
-  final ValueNotifier<int> currentImageTab = ValueNotifier(0);
 
   final ValueNotifier<String?> sizeIsNotAvailableNotifier = ValueNotifier(null);
   final PageController pageController = PageController();
@@ -254,45 +255,33 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                             tag == ''
                                 ? LocalHero(
                                     tag: 'cart',
-                                    child: ValueListenableBuilder<int>(
-                                        valueListenable: currentImageTab,
-                                        builder: (context, currentImage, _) {
-                                          return ProductDetailsImageWidget(
-                                            width: 198.w,
-                                            height: 288.h,
-                                            imageWidth: 320,
-                                            imageHeight: 464,
-                                            orginalWidth: double.tryParse(
-                                                gallery3dControllerForCircles !=
-                                                        null
-                                                    ? orginalWidth![
-                                                            currentIndexInSlider]
-                                                        .toString()
-                                                    : widget
-                                                        .productItem
-                                                        .images![0]
-                                                        .originalWidth
-                                                        .toString()),
-                                            orginalHeight: double.tryParse(
-                                                gallery3dControllerForCircles !=
-                                                        null
-                                                    ? orginalHeight![
-                                                            currentIndexInSlider]
-                                                        .toString()
-                                                    : widget
-                                                        .productItem
-                                                        .images![0]
-                                                        .originalHeight
-                                                        .toString()),
-                                            imageUrl:
-                                                gallery3dControllerForCircles !=
-                                                        null
-                                                    ? images[
-                                                        currentIndexInSlider]
-                                                    : widget.productItem
-                                                        .images![0].filePath,
-                                          );
-                                        }))
+                                    child: ProductDetailsImageWidget(
+                                      width: 198.w,
+                                      height: 288.h,
+                                      imageWidth: 320,
+                                      imageHeight: 464,
+                                      orginalWidth: double.tryParse(
+                                          gallery3dControllerForCircles != null
+                                              ? orginalWidth![
+                                                      currentIndexInSlider]
+                                                  .toString()
+                                              : widget.productItem.images![0]
+                                                  .originalWidth
+                                                  .toString()),
+                                      orginalHeight: double.tryParse(
+                                          gallery3dControllerForCircles != null
+                                              ? orginalHeight![
+                                                      currentIndexInSlider]
+                                                  .toString()
+                                              : widget.productItem.images![0]
+                                                  .originalHeight
+                                                  .toString()),
+                                      imageUrl:
+                                          gallery3dControllerForCircles != null
+                                              ? images[currentIndexInSlider]
+                                              : widget.productItem.images![0]
+                                                  .filePath,
+                                    ))
                                 : SizedBox(
                                     height: 288.h,
                                   ),
@@ -327,7 +316,6 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                           isClip: false,
                                           onItemChanged: (index) {
                                             currentIndexInSlider = index;
-                                            currentImageTab.value = index;
                                             homeBloc.add(
                                                 AddCurrentSelectedColorEvent(
                                                     currentSelectedColor:
@@ -473,9 +461,9 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                     controller: pageController,
                                     onPageChanged: (index) {
                                       currentActiveTab.value = index;
-                                      if (indicesOfChatCardsToShare
+                                      if (idsOfChatCardsToShare
                                           .value.isNotEmpty) {
-                                        indicesOfChatCardsToShare.value = [];
+                                        idsOfChatCardsToShare.value = [];
                                       }
                                     },
                                     children: [
@@ -490,8 +478,8 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                           scrollController: currentTab == 1
                                               ? controller
                                               : null,
-                                          indicesOfChatCardsToShare:
-                                              indicesOfChatCardsToShare),
+                                          idsOfChatCardsToShare:
+                                              idsOfChatCardsToShare),
                                       ProductDetailsSheetMoreOptionsContent(
                                           scrollController: currentTab == 2
                                               ? controller
@@ -591,10 +579,10 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                         color: const Color(0xffE6E6E6),
                       );
               }),
-          ValueListenableBuilder<List<int>>(
-              valueListenable: indicesOfChatCardsToShare,
-              builder: (context, indices, _) {
-                return indices.isEmpty
+          ValueListenableBuilder<List<String>>(
+              valueListenable: idsOfChatCardsToShare,
+              builder: (context, channelIds, _) {
+                return channelIds.isEmpty
                     ? ProductDetailsSheetBottomBar(
                         countOfPieces: widget.countOfPieces,
                         colorNum: widget.currentColornum,
@@ -655,7 +643,26 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                         addToBagButtonShapeNotifier:
                             widget.addToBagButtonShapeNotifier)
                     : ShareButton(
-                        onTap: () {},
+                        onTap: () {
+                          BlocProvider.of<ChatBloc>(context).add(
+                              ShareProductWithContactsOrChannelsEvent(
+                                  productId: widget.productItem.id.toString(),
+                                  productName:
+                                      widget.productItem.name.toString(),
+                                  productSlug:
+                                      widget.productItem.slug.toString(),
+                                  productDescription:
+                                      widget.productItem.details.toString(),
+                                  productImageUrl:
+                                      gallery3dControllerForCircles != null
+                                          ? images[currentIndexInSlider]
+                                          : widget
+                                              .productItem.images![0].filePath
+                                              .toString(),
+                                  channelIds: channelIds));
+                          idsOfChatCardsToShare.value = [];
+                          currentActiveTab.value = -1;
+                        },
                       );
               }),
         ],

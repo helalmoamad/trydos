@@ -21,6 +21,10 @@ import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/utils/form_state_mixin.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../routes/router.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
+import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/my_text_widget.dart';
 import '../manager/auth_bloc.dart';
 import 'dart:ui' as ui;
@@ -59,6 +63,20 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
     prefsRepository.setTimerForOtpRunning(false);
     checkOtp.value = 0;
     enabledResendNotifier.value = true;
+    ///////////////////////////
+    FirebaseAnalyticsService.logEventForSession(
+      eventName: AnalyticsEventsConst.programmingEvent,
+      executedEventName: AnalyticsExecutedEventNameConst.timerHasExpiredEvent,
+    );
+  }
+
+  @override
+  void didChangeDependencies() async {
+    FirebaseAnalyticsService.logScreen(
+      screen: AnalyticsScreensConst.verifyOtpScreen,
+    );
+
+    super.didChangeDependencies();
   }
 
   @override
@@ -96,10 +114,23 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
             if (state.verifyOtpSignInStatus == VerifyOtpSignInStatus.failure) {
               if (state.signInErrorMessage == 'auth-001') {
                 context.go(
-                    GRouter.config.applicationRoutes.kNumberNotRegisteredPage +
-                        '?phoneNumber=${widget.phoneNumber}',
-                    extra: widget.onLoginFailed);
+                  GRouter.config.applicationRoutes.kNumberNotRegisteredPage +
+                      '?phoneNumber=${widget.phoneNumber}',
+                  extra: widget.onLoginFailed,
+                );
+                /////////////////////////////////////////////
+                FirebaseAnalyticsService.logEventForSession(
+                  eventName: AnalyticsEventsConst.programmingEvent,
+                  executedEventName: AnalyticsExecutedEventNameConst
+                      .phoneNumberNotRegisteredEvent,
+                );
                 return;
+              } else {
+                FirebaseAnalyticsService.logEventForSession(
+                  eventName: AnalyticsEventsConst.programmingEvent,
+                  executedEventName:
+                      AnalyticsExecutedEventNameConst.otpFailedEvent,
+                );
               }
               checkOtp.value = 2;
             } else if (state.verifyOtpSignInStatus ==
@@ -110,6 +141,12 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                 () {
                   widget.navigateToAddName.call();
                 },
+              );
+              /////////////////////////////////
+              FirebaseAnalyticsService.logEventForSession(
+                eventName: AnalyticsEventsConst.programmingEvent,
+                executedEventName:
+                    AnalyticsExecutedEventNameConst.verifyOtpSignInSuccessEvent,
               );
             }
           },
@@ -125,7 +162,19 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                     GRouter.config.applicationRoutes.kUserExistPage +
                         '?phoneNumber=${widget.phoneNumber}',
                   );
+                  /////////////////////////
+                  FirebaseAnalyticsService.logEventForSession(
+                    eventName: AnalyticsEventsConst.programmingEvent,
+                    executedEventName:
+                        AnalyticsExecutedEventNameConst.userAlreadyExistsEvent,
+                  );
                   return;
+                } else {
+                  FirebaseAnalyticsService.logEventForSession(
+                    eventName: AnalyticsEventsConst.programmingEvent,
+                    executedEventName:
+                        AnalyticsExecutedEventNameConst.otpFailedEvent,
+                  );
                 }
                 checkOtp.value = 2;
               } else if (state.verifyOtpSignUpStatus ==
@@ -136,6 +185,12 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                   () {
                     widget.navigateToAddName.call();
                   },
+                );
+                /////////////////////////
+                FirebaseAnalyticsService.logEventForSession(
+                  eventName: AnalyticsEventsConst.programmingEvent,
+                  executedEventName: AnalyticsExecutedEventNameConst
+                      .verifyOtpSignUpSuccessEvent,
                 );
               }
             },
@@ -524,12 +579,14 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                             checkOtp.value = 0;
                                           },
                                           checkOtp: () {
-                                            print('wwwwwwwwwwwwww');
-                                            print(
+                                            debugPrint('/// checkOtp //////');
+                                            debugPrint(
                                                 prefsRepository.verificationId);
                                             if (prefsRepository
                                                     .verificationId !=
                                                 null) {
+                                              debugPrint(
+                                                  '/// verificationId not null //////');
                                               String insertedCode =
                                                   form.controllers[0].text +
                                                       form.controllers[1].text +
@@ -538,6 +595,8 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                       form.controllers[4].text +
                                                       form.controllers[5].text;
                                               if (widget.fromLogin) {
+                                                debugPrint(
+                                                    '/// fromLogin //////');
                                                 authBloc.add(
                                                     VerifyOtpSignInEvent(
                                                         verificationId:
@@ -546,20 +605,53 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                         otp: insertedCode,
                                                         phone: widget
                                                             .phoneNumber));
+                                                /////////////////////////////////////
+                                                FirebaseAnalyticsService
+                                                    .logEventForSession(
+                                                  eventName:
+                                                      AnalyticsEventsConst
+                                                          .programmingEvent,
+                                                  executedEventName:
+                                                      AnalyticsExecutedEventNameConst
+                                                          .verifyOtpSignInEvent,
+                                                );
                                               } else {
                                                 authBloc.add(
-                                                    VerifyOtpSignUpEvent(
-                                                        verificationId:
-                                                            prefsRepository
-                                                                .verificationId!,
-                                                        otp: insertedCode));
+                                                  VerifyOtpSignUpEvent(
+                                                    verificationId:
+                                                        prefsRepository
+                                                            .verificationId!,
+                                                    otp: insertedCode,
+                                                  ),
+                                                );
+                                                /////////////////////////////////////
+                                                FirebaseAnalyticsService
+                                                    .logEventForSession(
+                                                  eventName:
+                                                      AnalyticsEventsConst
+                                                          .programmingEvent,
+                                                  executedEventName:
+                                                      AnalyticsExecutedEventNameConst
+                                                          .verifyOtpSignUpEvent,
+                                                );
                                               }
                                             } else {
+                                              debugPrint(
+                                                  '/// verificationId is null //////');
                                               showMessage(LocaleKeys
                                                   .please_wait_5_seconds
                                                   .tr());
                                               pasteOtpCode('');
                                               //widget.checkOtp.value = 2;
+                                              /////////////////////////////////////
+                                              FirebaseAnalyticsService
+                                                  .logEventForSession(
+                                                eventName: AnalyticsEventsConst
+                                                    .programmingEvent,
+                                                executedEventName:
+                                                    AnalyticsExecutedEventNameConst
+                                                        .pleaseWait5SecondsEvent,
+                                              );
                                             }
                                           },
                                           controller: form.controllers[5],
@@ -635,6 +727,11 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
     checkOtp.value = 0;
     authBloc.add(SendOtpEvent(
         phone: widget.phoneNumber, isViaWhatsApp: widget.isVisWhatsApp));
+    ////////////////////
+    FirebaseAnalyticsService.logEventForSession(
+      eventName: AnalyticsEventsConst.buttonClicked,
+      executedEventName: AnalyticsExecutedEventNameConst.resendOtpButton,
+    );
   }
 
   @override
