@@ -477,8 +477,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   FutureOr<void> _onGetHomeBoutiquesEvent(
       GetHomeBoutiqesEvent event, Emitter<HomeState> emit) async {
-    print(
-        "${event.offset}++++++++++++++++++++++++++++++++++++++++++++++++${state.getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!.paginationStatus}");
     Map<String, PaginationModel<Boutique>>
         getHomeBoutiquesPaginationObjectByMainCategory =
         Map.of(state.getHomeBoutiquesPaginationObjectByMainCategory);
@@ -2166,10 +2164,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     //       getCommentForProductStatus: GetCommentForProductStatus.init));
     // }
 
-    if (!state.getCommentForProductModel.containsKey(keyForCacheData)) {
+    /*if (!state.getCommentForProductModel.containsKey(keyForCacheData)) {
       emit(state.copyWith(
           getCommentForProductStatus: GetCommentForProductStatus.loading));
-    }
+    }*/
+    emit(state.copyWith(
+        getCommentForProductStatus: GetCommentForProductStatus.loading));
 
     final response = await getCommentForProductUseCase(event.productId);
 
@@ -2180,7 +2180,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       }
       emit(state.copyWith(
           getCommentForProductModel: Map.of(getCommentForProduct),
-          getCommentForProductStatus: GetCommentForProductStatus.init));
+          getCommentForProductStatus: GetCommentForProductStatus.failure));
     }, (r) {
       getCommentForProduct = Map.of(state.getCommentForProductModel);
       isFailedTheFirstTime.remove('GetCommentForProductEvent');

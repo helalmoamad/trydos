@@ -20,6 +20,8 @@ import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
@@ -64,7 +66,9 @@ class ProductDetailsPage extends StatefulWidget {
 
 class _ProductDetailsPageState extends State<ProductDetailsPage> {
   final ScrollController scrollController = ScrollController();
+
   late HomeBloc homeBloc;
+  late ChatBloc chatBloc;
   final ValueNotifier<int> addToBagButtonShapeNotifier = ValueNotifier(0);
   bool enable = true;
   double? valueOnY;
@@ -74,15 +78,18 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
+    chatBloc = BlocProvider.of<ChatBloc>(context);
 
     homeBloc.add(GetProductDatailsWithoutRelatedProductsEvent(
         productId: widget.productItem.id.toString()));
-    Future.delayed(Duration(seconds: 3) , (){
-      homeBloc.add(
-          GetCommentForProductEvent(productId: widget.productItem.id.toString()));
+    Future.delayed(Duration(seconds: 3), () {
+      homeBloc.add(GetCommentForProductEvent(
+          productId: widget.productItem.id.toString()));
     });
     homeBloc.add(
         GetStoryForProductEvent(productId: widget.productItem.id.toString()));
+    //  chatBloc.add(GetSharedProductCountEvent(
+    //     productId: widget.productItem.id.toString()));
 
     super.initState();
   }

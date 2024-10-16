@@ -18,8 +18,9 @@ class GetClient<T> extends BaseApi<T> {
         _valueOnSuccess = requestPrams.response.returnValueOnSuccess,
         _endpoint = requestPrams.endpoint,
         _queryParameters = requestPrams.queryParameters,
-  _receiveTimeout = requestPrams.receiveTimeout,
-  _sendTimeout = requestPrams.sendTimeout, super(serverName);
+        _receiveTimeout = requestPrams.receiveTimeout,
+        _sendTimeout = requestPrams.sendTimeout,
+        super(serverName);
   final Duration? _receiveTimeout;
   final Duration? _sendTimeout;
   final Stopwatch stopWatch = Stopwatch();
@@ -30,24 +31,27 @@ class GetClient<T> extends BaseApi<T> {
   final T? _valueOnSuccess;
   final String _endpoint;
   final Map<String, dynamic>? _queryParameters;
-  final ServerName serverName ;
+  final ServerName serverName;
   @override
   Future<T> call() async {
     try {
+      print(
+          "***********************************############################${_receiveTimeout}+++++++++++++++++++++++++++++++++++++++++++++++++++++++14[${options.receiveTimeout}]");
       stopWatch.start();
       final baseUri = getBaseUriForSpecificServer(serverName);
+
       final Response response = await client.getUri(
         Uri(
           host: baseUri.host,
           scheme: baseUri.scheme,
-          path:  _endpoint,
+          path: _endpoint,
           queryParameters: _queryParameters,
         ),
         options: options.copyWith(
-            receiveTimeout: _receiveTimeout ?? options.receiveTimeout, sendTimeout: _sendTimeout ?? options.sendTimeout),
+            receiveTimeout: _receiveTimeout ?? options.receiveTimeout,
+            sendTimeout: _sendTimeout ?? options.sendTimeout),
         onReceiveProgress: onReceiveProgress,
       );
-
 
       stopWatch.stop();
       GetIt.I<PrefsRepository>().saveRequestsData(
@@ -58,8 +62,7 @@ class GetClient<T> extends BaseApi<T> {
           response.requestOptions.method,
           response.requestOptions.queryParameters,
           response.data is! FormData ? response.data : {'data': 'formData'},
-          responseTime: stopWatch.elapsed.toString()
-      );
+          responseTime: stopWatch.elapsed.toString());
 
       prettyPrinterI(stopWatch.elapsed.toString());
 
@@ -70,7 +73,9 @@ class GetClient<T> extends BaseApi<T> {
 
         return _fromJson!(response.data);
       } else {
-        final exception = getException(statusCode: response.statusCode!, message: response.data['message']);
+        final exception = getException(
+            statusCode: response.statusCode!,
+            message: response.data['message']);
         throw exception;
       }
     } catch (exception) {

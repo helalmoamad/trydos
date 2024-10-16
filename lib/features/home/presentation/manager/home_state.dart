@@ -137,6 +137,7 @@ class HomeState extends Equatable {
   final GetCommentForProductStatus getCommentForProductStatus;
   final Map<String, product.Products>? productITemForCart;
   final GetMainCategoriesStatus getMainCategoriesStatus;
+
   final List<ImageForAddToCart>? ListitemForAddToCart;
   final GetAllowedCountriesModel? getAllowedCountriesModel;
   final Map<String, GetProductFiltersStatus> getProductFiltersStatus;
@@ -228,7 +229,7 @@ class HomeState extends Equatable {
         choosedFiltersByUser,
         selectedCollection,
         currentPage,
-    sizesQuantities,
+        sizesQuantities,
         isExpandedForListingPage,
         isGettingProductListingWithPagination,
         isGettingProductListingWithPaginationForAppearProduct,
@@ -261,7 +262,7 @@ class HomeState extends Equatable {
         deleteItemInCartStatus,
         updateItemInCartStatus,
         currentSelectedColorForEveryProduct,
-    isSizeRequestNotification,
+        isSizeRequestNotification,
         selectedCollection,
         cashedOrginalBoutique,
         currentIndexForMainCategoryEvent,
@@ -282,6 +283,7 @@ class HomeState extends Equatable {
       bool? isExpandedForLidtingPage,
 
       // String? idForRequest,
+
       get_filters.Filter? prefAppliedFilterForExtendFilter,
       final Map<String, bool>? boutiquesThatDidPrefetch,
       final Map<String, bool>? boutiquesForEveryMainCategoryThatDidPrefetch,
@@ -356,7 +358,8 @@ class HomeState extends Equatable {
 
       sizes: sizes ?? this.sizes,
       sizesQuantities: sizesQuantities ?? this.sizesQuantities,
-      isSizeRequestNotification: isSizeRequestNotification ?? this.isSizeRequestNotification,
+      isSizeRequestNotification:
+          isSizeRequestNotification ?? this.isSizeRequestNotification,
       isGettingProductListingWithPagination:
           isGettingProductListingWithPagination ??
               this.isGettingProductListingWithPagination,
