@@ -70,11 +70,9 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
     //   Permission.accessMediaLocation,Permission.mediaLibrary,
     //   Permission.bluetooth,Permission.camera, Permission.microphone]
     //     .request();
-    List<Map<String, dynamic>> contacts =
-        await HelperFunctions.getContactsFromDevice();
     //todo debug
 //    Fluttertoast.showToast(msg: contacts.toString(),toastLength: Toast.LENGTH_LONG);
-    chatBloc.add(SaveContactsEvent(contacts: contacts));
+    chatBloc.add(SaveContactsEvent());
   }
 
   @override

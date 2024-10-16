@@ -186,15 +186,12 @@ class UploadFileEvent extends ChatEvent {
 }
 
 class SaveContactsEvent extends ChatEvent {
-  final List<Map<String, dynamic>> contacts;
 
-  const SaveContactsEvent({
-    this.contacts = const [],
-  });
+  const SaveContactsEvent();
 
   @override
   // TODO: implement props
-  List<Object?> get props => [contacts];
+  List<Object?> get props => [];
 }
 
 class ReceiveMessageEvent extends ChatEvent {
@@ -360,6 +357,16 @@ class GetMediaCountEvent extends ChatEvent {
   List<Object?> get props => [channelId];
 }
 
+class GetSharedProductCountEvent extends ChatEvent {
+  final String productId;
+
+  const GetSharedProductCountEvent({required this.productId});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [productId];
+}
+
 class AddMediaCountEvent extends ChatEvent {
   int images = 0;
   int videos = 0;
@@ -458,4 +465,26 @@ class SendErrorChatToServerEvent extends ChatEvent {
   @override
   // TODO: implement props
   List<Object?> get props => [error, lastPage];
+}
+
+class ShareProductWithContactsOrChannelsEvent extends ChatEvent{
+  final String productId;
+  final String productName;
+  final String productSlug;
+  final String productDescription;
+  final String productImageUrl;
+  final List<String> channelIds;
+
+  ShareProductWithContactsOrChannelsEvent({
+    required this.productId,
+    required this.productName,
+    required this.productSlug,
+    required this.productDescription,
+    required this.productImageUrl,
+    required this.channelIds,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [productId , productSlug ,  productName , productDescription , productImageUrl , channelIds ];
 }

@@ -39,7 +39,6 @@ class NotificationService {
               maxProgress: maxProgress,
               progress: progress,
               autoCancel: false);
-      final IosNotificationDetails = DarwinNotificationDetails();
 
       NotificationDetails platformChannelSpecifics =
           NotificationDetails(android: androidPlatformChannelSpecifics);

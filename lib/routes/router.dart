@@ -117,6 +117,7 @@ class GRouter {
             return _builderPage(
               child: ChatPages(
                 description: state.uri.queryParameters['description']!,
+                // ignore: sdk_version_since
                 hideCallsAndStories: bool.parse(
                     state.uri.queryParameters['hideCallsAndStories']!),
                 onSendForwardMessage: onSendForwardMessage,

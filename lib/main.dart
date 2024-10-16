@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
 import 'dart:developer' as dev;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -95,7 +97,6 @@ bool declineCallBecauseOfNotificationButton = false;
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  HttpOverrides.global = MyHttpOverrides();
   if (!isHydratedStorageInitialized) {
     HydratedBloc.storage = await HydratedStorage.build(
       storageDirectory: await getApplicationDocumentsDirectory(),
@@ -235,6 +236,18 @@ List<String> isFailedTheFirstTime = [];
 List<String> apisMustNotToRequest = [];
 int applicationVersion = 1;
 
+request()async{
+  final Stopwatch stopWatch = Stopwatch();
+  stopWatch.start();
+  //await http.get(Uri.parse('http://market_under_dev_backend.trydos.dev/api/new_v1/mobile/home/mainCategories'));
+  await Dio().getUri(Uri.parse('http://ip-api.com/json')).onError((e , st){
+    dev.log(e.toString());
+    return Response(requestOptions: RequestOptions());
+  });
+  stopWatch.stop();
+  dev.log('request time: ${stopWatch.elapsed.toString()}');
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   HydratedBloc.storage = await HydratedStorage.build(
@@ -249,18 +262,16 @@ void main() async {
     NotificationProcess().init(),
   ]);
 
-  Eraser.clearAllAppNotifications();
-  GetIt.I<PrefsRepository>().removeMessageFromBackground();
+  await Eraser.clearAllAppNotifications();
+  await GetIt.I<PrefsRepository>().removeMessageFromBackground();
   NotificationProcess().setupInteractedMessage();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
+  await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
   await FirebaseAnalytics.instance
       .setSessionTimeoutDuration(Duration(seconds: 20));
-  String sessionId = Uuid().v4();
-  GetIt.I<PrefsRepository>().setSessionId(sessionId);
   GetIt.I<PrefsRepository>().setTimerForOtpRunning(false);
   fetchServersUrlsFromSharedPreference();
-  NotificationProcess().fcmToken();
+  await NotificationProcess().fcmToken();
   isDependencyInitialized = true;
   GetIt.I<AuthBloc>().add(GetUserCountryEvent());
 

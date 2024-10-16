@@ -9,14 +9,12 @@ import 'package:go_router/go_router.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/service/firebase_analytics_service/analytics_const.dart';
 import '../../../../base_page.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../core/utils/theme_state.dart';
 import '../../../../routes/router.dart';
-import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/my_text_widget.dart';
 import '../manager/auth_bloc.dart';
 
@@ -37,8 +35,6 @@ class _LoginSuccessfullyState extends ThemeState<LoginSuccessfully> {
       statusBarBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.light,
     ));
-    await FirebaseAnalyticsService.logScreen(
-        screen: AnalyticsConst.loginSuccessfullyPage);
 
     Future.delayed(
       Duration(seconds: 1),

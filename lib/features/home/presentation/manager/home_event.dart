@@ -20,9 +20,9 @@ class GetStartingSettingsEvent extends HomeEvent {
 }
 
 class GetMainCategoriesEvent extends HomeEvent {
-  const GetMainCategoriesEvent({required this.context});
+  const GetMainCategoriesEvent({this.context});
 
-  final BuildContext context;
+  final BuildContext? context;
   @override
   // TODO: implement props
   List<Object?> get props => [context];
@@ -348,16 +348,17 @@ class LoadFailureEvent extends HomeEvent {
 }
 
 class RequestForNotificationWhenProductBecameAvailableEvent extends HomeEvent {
-
   final String productId;
   final int notificationTypeId;
   final String size;
   final String selectedColorName;
 
-  RequestForNotificationWhenProductBecameAvailableEvent(this.productId, this.notificationTypeId, this.size , this.selectedColorName);
+  RequestForNotificationWhenProductBecameAvailableEvent(this.productId,
+      this.notificationTypeId, this.size, this.selectedColorName);
 
   @override
-  List<Object?> get props => [productId , notificationTypeId , size , selectedColorName];
+  List<Object?> get props =>
+      [productId, notificationTypeId, size, selectedColorName];
 }
 
 class IscashedOreiginBotiqueEvent extends HomeEvent {
@@ -474,7 +475,7 @@ class AddProductItemForCartEvent extends HomeEvent {
   AddProductItemForCartEvent({this.product, required this.productId});
 
   @override
-  List<Object?> get props => [productId , product];
+  List<Object?> get props => [productId, product];
 }
 
 class RemoveItemFormCartEvent extends HomeEvent {

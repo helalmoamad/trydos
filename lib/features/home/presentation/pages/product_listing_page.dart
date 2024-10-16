@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -31,13 +30,13 @@ import 'package:trydos/features/home/data/models/get_product_listing_without_fil
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/language_service.dart';
 import 'package:tuple/tuple.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/data/model/pagination_model.dart';
-import '../../../../service/firebase_analytics_service/analytics_const.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/app_widgets/app_bottom_navigation_bar.dart';
 import '../../../app/app_widgets/loading_indicator/trydos_loader.dart';
@@ -113,7 +112,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
   bool? fromSearch;
   SpeechToText _speechToText = SpeechToText();
   final ValueNotifier<bool> isRecordeForSearchWithMic = ValueNotifier(false);
-  bool _speechEnabled = false;
 
   bool itExpendForFirst = true;
   String key = '';
@@ -121,12 +119,13 @@ class _ProductListingPageState extends State<ProductListingPage> {
   Filter? prefAppliedFilters;
   Key gridViewKeyForRenderingForTheFiveFilters = UniqueKey();
   Key gridViewKeyForRendering = UniqueKey();
+  bool _speechEnabled = false;
 
-  void _initSpeech() async {
-    _speechEnabled = await _speechToText.initialize();
-  }
 
   void _startListening() async {
+    if (!_speechEnabled) {
+      _speechEnabled = await _speechToText.initialize();
+    }
     await _speechToText.listen(
       listenFor: Duration(seconds: 7),
       onResult: (result) {
@@ -183,7 +182,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
   @override
   void initState() {
-    _initSpeech();
     itExpendForFirst = true;
     key = widget.boutiqueSlug + (widget.category ?? '');
     keyWithoutFilter = '${widget.boutiqueSlug}' +
@@ -2176,8 +2174,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                     .toString(),
                                                                 "previous_event_button_name":
                                                                     GetIt.I<PrefsRepository>()
-                                                                            .currentEvent ??
-                                                                        "",
+                                                                        .currentEvent,
                                                                 "device_language":
                                                                     LanguageService.languageCode ==
                                                                             'ar'
@@ -2203,7 +2200,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                           await GetIt.I<
                                                                   PrefsRepository>()
                                                               .setCurrentEvent(
-                                                                  "i loveddssssssssssss44444444444444444ssssssssssssss you Ahmad in past");
+                                                                  "");
 
                                                           // pushOverscrollRoute(
                                                           //     context: context,
@@ -2478,47 +2475,47 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                           print("${prefsRepository.myMarketName.toString()}" +
                                                               "554${GetIt.I<PrefsRepository>().serverTime}4555554444${prefsRepository.countryIso.toString()}444444444${LanguageService.languageCode == 'ar' ? 'ae' : LanguageService.languageCode}444444444444${GetIt.I<PrefsRepository>().currentEvent}44444444444444444444444444445555555555555555555555");
                                                         });
-                                                        /*   await FirebaseAnalytics
-                                                      .instance
-                                                      .logEvent(
-                                                      name:
-                                                      'button_clicked',
-                                                      parameters: {
-                                                        "time_stamp": DateTime
-                                                            .now()
-                                                            .toUtc()
-                                                            .add(Duration(
-                                                            minutes:
-                                                            GetIt.I<PrefsRepository>().getdurtion ??
-                                                                0))
-                                                            .toString(),
-                                                        "previous_event_button_name":
-                                                        GetIt.I<PrefsRepository>()
-                                                            .currentEvent,
-                                                        "device_language":
-                                                        LanguageService
-                                                            .languageCode ==
-                                                            'ar'
-                                                            ? 'ae'
-                                                            : LanguageService
-                                                            .languageCode,
-                                                        "country_name":
-                                                        GetIt.I<PrefsRepository>()
-                                                            .countryIso,
-                                                        'userID':
-                                                        prefsRepository
-                                                            .myMarketId
-                                                            .toString(),
-                                                        'user_name':
-                                                        prefsRepository
-                                                            .myMarketName
-                                                            .toString(),
-                                                        'clicked_button_name':
-                                                        'i love you Ahmad',
-                                                        "session_id": GetIt.I<
-                                                            PrefsRepository>()
-                                                            .sessionId,
-                                                      });*/
+                                                        await FirebaseAnalytics
+                                                            .instance
+                                                            .logEvent(
+                                                                name:
+                                                                    'button_clicked',
+                                                                parameters: {
+                                                              "time_stamp": DateTime
+                                                                      .now()
+                                                                  .toUtc()
+                                                                  .add(Duration(
+                                                                      minutes:
+                                                                          GetIt.I<PrefsRepository>().getdurtion ??
+                                                                              0))
+                                                                  .toString(),
+                                                              "previous_event_button_name":
+                                                                  GetIt.I<PrefsRepository>()
+                                                                      .currentEvent,
+                                                              "device_language":
+                                                                  LanguageService
+                                                                              .languageCode ==
+                                                                          'ar'
+                                                                      ? 'ae'
+                                                                      : LanguageService
+                                                                          .languageCode,
+                                                              "country_name":
+                                                                  GetIt.I<PrefsRepository>()
+                                                                      .countryIso,
+                                                              'userID':
+                                                                  prefsRepository
+                                                                      .myMarketId
+                                                                      .toString(),
+                                                              'user_name':
+                                                                  prefsRepository
+                                                                      .myMarketName
+                                                                      .toString(),
+                                                              'clicked_button_name':
+                                                                  'i love you Ahmad',
+                                                              "session_id": GetIt.I<
+                                                                      PrefsRepository>()
+                                                                  .sessionId,
+                                                            });
                                                         await GetIt.I<
                                                                 PrefsRepository>()
                                                             .setCurrentEvent(
@@ -2681,7 +2678,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                 );
 
                 await FirebaseAnalyticsService.logEventForViewedProducts(
-                  eventName: AnalyticsConst.viewedProducts,
+                  eventName: AnalyticsEventsConst.viewedProducts,
                   productId: products[index].id.toString(),
                   productName: products[index].name.toString(),
                   productCategoriesId: products[index]

@@ -8,6 +8,7 @@ import '../../domin/repositories/prefs_repository.dart';
 import '../api.dart';
 import '../client_config.dart';
 import 'detect_server.dart';
+import 'dart:developer';
 
 class GetClient<T> extends BaseApi<T> {
   GetClient({
@@ -18,8 +19,9 @@ class GetClient<T> extends BaseApi<T> {
         _valueOnSuccess = requestPrams.response.returnValueOnSuccess,
         _endpoint = requestPrams.endpoint,
         _queryParameters = requestPrams.queryParameters,
-  _receiveTimeout = requestPrams.receiveTimeout,
-  _sendTimeout = requestPrams.sendTimeout, super(serverName);
+        _receiveTimeout = requestPrams.receiveTimeout,
+        _sendTimeout = requestPrams.sendTimeout,
+        super(serverName);
   final Duration? _receiveTimeout;
   final Duration? _sendTimeout;
   final Stopwatch stopWatch = Stopwatch();
@@ -30,28 +32,31 @@ class GetClient<T> extends BaseApi<T> {
   final T? _valueOnSuccess;
   final String _endpoint;
   final Map<String, dynamic>? _queryParameters;
-  final ServerName serverName ;
+  final ServerName serverName;
   @override
   Future<T> call() async {
     try {
+      print(
+          "***********************************############################${_receiveTimeout}+++++++++++++++++++++++++++++++++++++++++++++++++++++++14[${options.receiveTimeout}]");
       stopWatch.start();
       final baseUri = getBaseUriForSpecificServer(serverName);
+
       final Response response = await client.getUri(
         Uri(
           host: baseUri.host,
           scheme: baseUri.scheme,
-          path:  _endpoint,
+          path: _endpoint,
           queryParameters: _queryParameters,
         ),
         options: options.copyWith(
-            receiveTimeout: _receiveTimeout ?? options.receiveTimeout, sendTimeout: _sendTimeout ?? options.sendTimeout),
+            receiveTimeout: _receiveTimeout ?? options.receiveTimeout,
+            sendTimeout: _sendTimeout ?? options.sendTimeout),
         onReceiveProgress: onReceiveProgress,
       );
 
-
       stopWatch.stop();
       GetIt.I<PrefsRepository>().saveRequestsData(
-          response.requestOptions.path,
+          'This From Response   ${response.requestOptions.path}',
           response.data is! FormData ? response.data : {'data': 'formData'},
           response.requestOptions.headers,
           response.statusCode,
@@ -60,7 +65,7 @@ class GetClient<T> extends BaseApi<T> {
           response.data is! FormData ? response.data : {'data': 'formData'},
           responseTime: stopWatch.elapsed.toString()
       );
-
+      log('request time: ${stopWatch.elapsed.toString()}');
       prettyPrinterI(stopWatch.elapsed.toString());
 
       if (response.statusCode == StatusCode.operationSucceeded.code) {
@@ -70,7 +75,9 @@ class GetClient<T> extends BaseApi<T> {
 
         return _fromJson!(response.data);
       } else {
-        final exception = getException(statusCode: response.statusCode!, message: response.data['message']);
+        final exception = getException(
+            statusCode: response.statusCode!,
+            message: response.data['message']);
         throw exception;
       }
     } catch (exception) {

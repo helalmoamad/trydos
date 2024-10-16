@@ -1,9 +1,7 @@
 import 'package:country_flags/country_flags.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
@@ -13,6 +11,8 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/form_utils.dart';
 import 'package:trydos/features/authentication/presentation/widgets/phone_form_fields.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 
 import '../../../../common/constant/countries.dart';
 import '../../../../common/constant/design/assets_provider.dart';
@@ -20,6 +20,8 @@ import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/form_state_mixin.dart';
 import '../../../../core/utils/responsive_padding.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
+import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/my_text_widget.dart';
 
 class InsertPhoneTab extends StatefulWidget {
@@ -57,6 +59,11 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
       statusBarBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.dark,
     ));
+    ///////////////////
+    FirebaseAnalyticsService.logScreen(
+      screen: AnalyticsScreensConst.insertPhoneScreen,
+    );
+    ///////////////////
     super.didChangeDependencies();
   }
 
@@ -260,6 +267,13 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                               onTap: () {
                                 widget.moveToNextStep
                                     .call('${form.controllers[0].text}');
+                                //////////////////////////
+                                FirebaseAnalyticsService.logEventForSession(
+                                  eventName: AnalyticsEventsConst.buttonClicked,
+                                  executedEventName:
+                                      AnalyticsExecutedEventNameConst
+                                          .confirmPhoneNumberButton,
+                                );
                               },
                               child: Row(
                                   mainAxisSize: MainAxisSize.min,

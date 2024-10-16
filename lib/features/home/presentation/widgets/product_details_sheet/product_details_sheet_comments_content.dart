@@ -30,8 +30,12 @@ class ProductDetailsSheetCommentsContent extends StatelessWidget {
           previous.getCommentForProductStatus !=
           current.getCommentForProductStatus,
       builder: (context, state) {
-        if (state.getCommentForProductStatus ==
-                GetCommentForProductStatus.loading ||
+        if ((state.getCommentForProductStatus ==
+                    GetCommentForProductStatus.loading &&
+                (state.getCommentForProductModel[productId]?.commentsForProduct
+                            ?.commentsCount ??
+                        0) <
+                    1) ||
             state.getCommentForProductModel[productId] == null) {
           return cupertino.SizedBox.shrink();
         }

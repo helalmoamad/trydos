@@ -7,6 +7,7 @@ import '../../domin/repositories/prefs_repository.dart';
 import '../api.dart';
 import '../client_config.dart';
 import 'detect_server.dart';
+import 'dart:developer';
 
 class PutClient<T> extends BaseApi<T> {
   PutClient({
@@ -57,7 +58,7 @@ class PutClient<T> extends BaseApi<T> {
 
       stopWatch.stop();
       GetIt.I<PrefsRepository>().saveRequestsData(
-          response.requestOptions.path,
+          'This From Response   ${response.requestOptions.path}',
           response.data is! FormData ? response.data : {'data': 'formData'},
           response.requestOptions.headers,
           response.statusCode,
@@ -66,6 +67,7 @@ class PutClient<T> extends BaseApi<T> {
           response.data is! FormData ? response.data : {'data': 'formData'},
           responseTime: stopWatch.elapsed.toString()
       );
+      log('request time: ${stopWatch.elapsed.toString()}');
       prettyPrinterI(stopWatch.elapsed.toString());
       if (response.statusCode == StatusCode.operationSucceeded.code) {
         if (_fromJson == null) {

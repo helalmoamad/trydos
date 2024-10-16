@@ -110,6 +110,7 @@ class Message {
   final String? parentMessageId;
   final int? isForward;
   final MessageContent? messageContent;
+  final ShareProductContent? shareProductContent;
   final List<MediaMessageContent>? mediaMessageContent;
   final List<MessageStatus>? messageStatus;
   final Chat? channel;
@@ -139,6 +140,7 @@ class Message {
     this.localId,
     this.parentMessageId,
     this.isForward,
+    this.shareProductContent,
     this.messageContent,
     this.messageStatus,
     this.mediaMessageContent,
@@ -162,6 +164,7 @@ class Message {
     final int? isForward,
     int? deletedByUserId,
     final MessageContent? messageContent,
+    final ShareProductContent? shareProductContent,
     final List<MediaMessageContent>? mediaMessageContent,
     final List<MessageStatus>? messageStatus,
     final Chat? channel,
@@ -188,6 +191,7 @@ class Message {
       isFirstMessage: isFirstMessage ?? this.isFirstMessage,
       messageStatus: messageStatus ?? this.messageStatus,
       mediaMessageContent: mediaMessageContent ?? this.mediaMessageContent,
+      shareProductContent: shareProductContent ?? this.shareProductContent,
       channel: channel ?? this.channel,
       parentMessage: parentMessage ?? this.parentMessage,
     );
@@ -225,21 +229,39 @@ class Message {
       isForward: (json["is_forward"] is bool)
           ? (json["is_forward"] ? 1 : 0)
           : json["is_forward"],
-      mediaMessageContent: json['auth_message_status']!= null && json['auth_message_status']['is_deleted'] == 1 ? null : json["message_type"] == null
+      mediaMessageContent: json['auth_message_status'] != null &&
+              json['auth_message_status']['is_deleted'] == 1
           ? null
-          : json["message_type"]["name"] == "TextMessage"
+          : json["message_type"] == null
               ? null
-              : json["message_content"] == null
-                  ? []
-                  : List<MediaMessageContent>.from(json["message_content"]!
-                      .map((x) => MediaMessageContent.fromJson(x))),
-      messageContent: json['auth_message_status']!= null && json['auth_message_status']['is_deleted'] == 1 ? null : json["message_type"] == null
-          ? null
-          : json["message_type"]["name"] != "TextMessage"
-              ? null
-              : json["message_content"] == null
+              : json["message_type"]["name"] == "TextMessage" ||
+                      json["message_type"]["name"] == "ShareProduct"
                   ? null
-                  : MessageContent.fromJson(json["message_content"]),
+                  : json["message_content"] == null
+                      ? []
+                      : List<MediaMessageContent>.from(json["message_content"]!
+                          .map((x) => MediaMessageContent.fromJson(x))),
+      messageContent: json['auth_message_status'] != null &&
+              json['auth_message_status']['is_deleted'] == 1
+          ? null
+          : json["message_type"] == null
+              ? null
+              : json["message_type"]["name"] != "TextMessage" &&
+                      json["message_type"]["name"] != "ShareProduct"
+                  ? null
+                  : json["message_content"] == null
+                      ? null
+                      : MessageContent.fromJson(json["message_content"]),
+      shareProductContent: json['auth_message_status'] != null &&
+              json['auth_message_status']['is_deleted'] == 1
+          ? null
+          : json["message_type"] == null
+              ? null
+              : json["message_type"]["name"] != "ShareProduct"
+                  ? null
+                  : json["message_content"] == null
+                      ? null
+                      : ShareProductContent.fromJson(jsonDecode(json["message_content"]["content"])[0]),
       messageStatus: json["message_status"] == null
           ? []
           : List<MessageStatus>.from(
@@ -346,7 +368,7 @@ class Chat {
         photoPath: json["photo_path"],
         channelName: json["channel_name"],
         totalUnreadMessageCount: json["total_unread_message_count"],
-          updatedAt : DateTime.tryParse(json['updated_at'].toString()),
+        updatedAt: DateTime.tryParse(json['updated_at'].toString()),
         channelMembers: json["channel_members"] == null
             ? []
             : List<ChannelMember>.from(
@@ -362,13 +384,46 @@ class Chat {
         "channel_name": channelName,
         "photo_path": photoPath,
         "total_unread_message_count": totalUnreadMessageCount,
-        'updated_at' : updatedAt?.toIso8601String(),
+        'updated_at': updatedAt?.toIso8601String(),
         "channel_members": channelMembers == null
             ? []
             : List<dynamic>.from(channelMembers!.map((x) => x.toJson())),
         "messages": messages == null
             ? []
             : List<dynamic>.from(messages!.map((x) => x.toJson())),
+      };
+}
+
+class ShareProductContent {
+  final String productId;
+  final String productSlug;
+  final String productDescription;
+  final String productImageUrl;
+  final String productName;
+
+  ShareProductContent({
+    required this.productId,
+    required this.productSlug,
+    required this.productDescription,
+    required this.productImageUrl,
+    required this.productName,
+  });
+
+  factory ShareProductContent.fromJson(Map<String, dynamic> json) =>
+      ShareProductContent(
+        productId: json["product_id"],
+        productSlug: json["product_slug"],
+        productDescription: json["product_description"],
+        productImageUrl: json["product_image_url"],
+        productName: json["product_name"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "product_id": productId,
+        "product_slug": productSlug,
+        "product_description": productDescription,
+        "product_image_url": productImageUrl,
+        "product_name": productName,
       };
 }
 

@@ -10,11 +10,14 @@ import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../routes/router.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/my_text_widget.dart';
 import '../manager/auth_bloc.dart';
 
@@ -118,6 +121,12 @@ class CreateAccountSection extends StatelessWidget {
                   moveToNextStep.call();
                 },
               );
+              /////////////////////////////////////
+              FirebaseAnalyticsService.logEventForSession(
+                eventName: AnalyticsEventsConst.buttonClicked,
+                executedEventName:
+                    AnalyticsExecutedEventNameConst.agreeContinueButton,
+              );
             },
             child: ValueListenableBuilder<int>(
                 valueListenable: clickButton,
@@ -169,6 +178,12 @@ class CreateAccountSection extends StatelessWidget {
                   .add(RegisterGuestEvent(deviceId: deviceId!));
             }
             context.go(GRouter.config.applicationRoutes.kBasePage);
+            /////////////////////////////////////
+            FirebaseAnalyticsService.logEventForSession(
+              eventName: AnalyticsEventsConst.buttonClicked,
+              executedEventName:
+                  AnalyticsExecutedEventNameConst.laterTakeLookButton,
+            );
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 10.0),

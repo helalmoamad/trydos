@@ -14,7 +14,7 @@ class LocalizationService extends StatelessWidget {
       path: "assets/languages",
       saveLocale: true,
       startLocale: HelperFunctions.getInitLocale(),
-      fallbackLocale: HelperFunctions.getInitLocale()!,
+      fallbackLocale: HelperFunctions.getInitLocale(),
       supportedLocales: supportedLocal,
       child: child,
     );
