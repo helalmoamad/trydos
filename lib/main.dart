@@ -262,18 +262,16 @@ void main() async {
     NotificationProcess().init(),
   ]);
 
-  Eraser.clearAllAppNotifications();
-  GetIt.I<PrefsRepository>().removeMessageFromBackground();
+  await Eraser.clearAllAppNotifications();
+  await GetIt.I<PrefsRepository>().removeMessageFromBackground();
   NotificationProcess().setupInteractedMessage();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
+  await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
   await FirebaseAnalytics.instance
       .setSessionTimeoutDuration(Duration(seconds: 20));
-  String sessionId = Uuid().v4();
-  GetIt.I<PrefsRepository>().setSessionId(sessionId);
   GetIt.I<PrefsRepository>().setTimerForOtpRunning(false);
   fetchServersUrlsFromSharedPreference();
-  NotificationProcess().fcmToken();
+  await NotificationProcess().fcmToken();
   isDependencyInitialized = true;
   GetIt.I<AuthBloc>().add(GetUserCountryEvent());
 

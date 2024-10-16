@@ -13,7 +13,7 @@ import 'package:trydos/main.dart';
 import 'package:trydos/routes/router.dart';
 import '../../../../base_page.dart';
 import '../../../../core/di/di_container.dart';
-import '../../../../core/domin/repositories/prefs_repository.dart';
+
 import '../../../../features/chat/presentation/manager/chat_bloc.dart';
 import '../../../../features/chat/presentation/manager/chat_event.dart';
 import '../../../../features/chat/data/models/my_chats_response_model.dart'

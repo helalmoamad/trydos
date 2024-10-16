@@ -5,7 +5,6 @@ import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:trydos/common/helper/firebase_analytics_sessions.dart';
 import '../api/log_interceptor.dart';
 import '../data/repository/prefs_repository_impl.dart';
 import '../domin/repositories/prefs_repository.dart';
@@ -58,8 +57,8 @@ abstract class AppModule {
   }
 }
 
-@singleton
-SessionManager get sessionManager => SessionManager();
+// @singleton
+// SessionManager get sessionManager => SessionManager();
 
 class MyHttpOverrides extends HttpOverrides {
   @override

@@ -11,6 +11,7 @@ import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 
 import '../../../../base_page.dart';
 import '../../../../common/constant/design/assets_provider.dart';
@@ -20,6 +21,9 @@ import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../core/utils/theme_state.dart';
 import '../../../../routes/router.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/my_text_widget.dart';
 import '../manager/auth_bloc.dart';
 
@@ -41,6 +45,11 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
       statusBarBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.dark,
     ));
+
+    FirebaseAnalyticsService.logScreen(
+      screen: AnalyticsScreensConst.userExistsScreen,
+    );
+
     super.didChangeDependencies();
   }
 
@@ -134,6 +143,12 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                       verificationId: prefsRepository.verificationId!,
                       phone: widget.phoneNumber,
                     ));
+                    ////////////////////
+                    FirebaseAnalyticsService.logEventForSession(
+                      eventName: AnalyticsEventsConst.buttonClicked,
+                      executedEventName:
+                          AnalyticsExecutedEventNameConst.loginContinueButton,
+                    );
                   },
                   child: Container(
                     width: 1.sw,
@@ -172,6 +187,12 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                           .add(RegisterGuestEvent(deviceId: deviceId!));
                     }
                     context.go(GRouter.config.applicationRoutes.kBasePage);
+                    ////////////////////
+                    FirebaseAnalyticsService.logEventForSession(
+                      eventName: AnalyticsEventsConst.buttonClicked,
+                      executedEventName:
+                          AnalyticsExecutedEventNameConst.laterTakeLookButton,
+                    );
                   },
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10.0),

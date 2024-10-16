@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
+
+import '../../service/firebase_analytics_service/firebase_analytics_service.dart';
 
 class CountryDropdown extends StatefulWidget {
   final List<Country> countries;
@@ -24,6 +26,15 @@ class _CountryDropdownState extends State<CountryDropdown> {
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() async {
+    FirebaseAnalyticsService.logScreen(
+      screen: AnalyticsScreensConst.chooseCountryScreen,
+    );
+
+    super.didChangeDependencies();
   }
 
   @override

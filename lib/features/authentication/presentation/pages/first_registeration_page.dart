@@ -9,7 +9,8 @@ import 'package:trydos/base_page.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/authentication/presentation/widgets/create_account_section.dart';
-import 'package:trydos/service/firebase_analytics_service/analytics_const.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../common/helper/show_message.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
@@ -66,8 +67,6 @@ class _RegistrationPageState extends State<RegistrationPage>
       statusBarBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.dark,
     ));
-    await FirebaseAnalyticsService.logScreen(
-        screen: AnalyticsConst.registrationPage);
 
     super.didChangeDependencies();
   }
@@ -104,7 +103,7 @@ class _RegistrationPageState extends State<RegistrationPage>
           }
           return Scaffold(
             backgroundColor:
-                index != 6 ? context.colorScheme.background : Color(0xffF4FFF4),
+                index != 6 ? context.colorScheme.surface : Color(0xffF4FFF4),
             body: Stack(
               alignment: Alignment.bottomCenter,
               children: [
@@ -139,6 +138,13 @@ class _RegistrationPageState extends State<RegistrationPage>
                               }
                               context.go(
                                   GRouter.config.applicationRoutes.kBasePage);
+                              //////////////////////////
+                              FirebaseAnalyticsService.logEventForSession(
+                                eventName: AnalyticsEventsConst.buttonClicked,
+                                executedEventName:
+                                    AnalyticsExecutedEventNameConst
+                                        .registerCancelButton,
+                              );
                             },
                             child: Padding(
                               padding: HWEdgeInsets.only(

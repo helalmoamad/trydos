@@ -9,6 +9,7 @@ import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
 import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 import 'dart:ui' as ui;
 import '../../../../common/test_utils/widgets_keys.dart';
@@ -16,7 +17,8 @@ import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../routes/router.dart';
-import '../../../../service/firebase_analytics_service/analytics_const.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../app/my_text_widget.dart';
 import '../manager/auth_bloc.dart';
 
@@ -36,8 +38,9 @@ class WelcomeSection extends StatefulWidget {
 class _WelcomeSectionState extends State<WelcomeSection> {
   @override
   void didChangeDependencies() async {
-    await FirebaseAnalyticsService.logScreen(
-        screen: AnalyticsConst.welcomePage);
+    FirebaseAnalyticsService.logScreen(
+      screen: AnalyticsScreensConst.welcomeScreen,
+    );
 
     super.didChangeDependencies();
   }
@@ -95,19 +98,17 @@ class _WelcomeSectionState extends State<WelcomeSection> {
             onTap: () async {
               clickButton.value = 0;
               Future.delayed(Duration(milliseconds: 100), () {
-                print("${prefsRepository.myMarketId.toString()}" +
-                    "55555555555555555555555555555555555555555");
-                print("${prefsRepository.myMarketId.toString()}" +
-                    "5555555444444444444444444444444444444444444444444444444444444445555555555555555555555");
-
+                debugPrint(
+                    "/////// user_id : ${prefsRepository.myMarketId.toString()} ///////");
+                debugPrint(
+                    "/////// user_name: ${prefsRepository.myMarketName.toString()} ///////");
                 clickButton.value = -1;
                 widget.goToLoginSection.call();
               });
-              await FirebaseAnalyticsService.logEventForSession(
-                eventName: AnalyticsConst.buttonClicked,
-                userID: prefsRepository.myMarketId.toString(),
-                user_name: prefsRepository.myMarketName.toString(),
-                clickedButtonName: AnalyticsConst.haveAlreadyAccount,
+              FirebaseAnalyticsService.logEventForSession(
+                eventName: AnalyticsEventsConst.buttonClicked,
+                executedEventName:
+                    AnalyticsExecutedEventNameConst.haveAlreadyAccountButton,
               );
             },
             child: ValueListenableBuilder<int>(
@@ -166,11 +167,10 @@ class _WelcomeSectionState extends State<WelcomeSection> {
                 clickButton.value = -1;
                 widget.goToCreateAccount.call();
               });
-              await FirebaseAnalyticsService.logEventForSession(
-                eventName: AnalyticsConst.buttonClicked,
-                userID: prefsRepository.myMarketId.toString(),
-                user_name: prefsRepository.myMarketName.toString(),
-                clickedButtonName: AnalyticsConst.createNewAccount,
+              FirebaseAnalyticsService.logEventForSession(
+                eventName: AnalyticsEventsConst.buttonClicked,
+                executedEventName:
+                    AnalyticsExecutedEventNameConst.createNewAccountButton,
               );
             },
             child: ValueListenableBuilder<int>(
@@ -229,13 +229,19 @@ class _WelcomeSectionState extends State<WelcomeSection> {
                 BlocProvider.of<AuthBloc>(context)
                     .add(RegisterGuestEvent(deviceId: deviceId!));
               }
-              await FirebaseAnalyticsService.logEventForSession(
-                eventName: AnalyticsConst.buttonClicked,
-                userID: prefsRepository.myMarketId.toString(),
-                user_name: prefsRepository.myMarketName.toString(),
-                clickedButtonName: AnalyticsConst.laterTakeLook,
+              Future.delayed(
+                Duration(milliseconds: 100),
+                () {
+                  context.go(GRouter.config.applicationRoutes.kBasePage);
+                },
               );
-              context.go(GRouter.config.applicationRoutes.kBasePage);
+              //////////////////////////
+              FirebaseAnalyticsService.logEventForSession(
+                eventName: AnalyticsEventsConst.buttonClicked,
+                executedEventName:
+                    AnalyticsExecutedEventNameConst.laterTakeLookButton,
+              );
+              //////////////////////////
             },
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 10.0),
