@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:http/http.dart' as http;
 import 'dart:developer' as dev;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -236,11 +235,11 @@ List<String> isFailedTheFirstTime = [];
 List<String> apisMustNotToRequest = [];
 int applicationVersion = 1;
 
-request()async{
+request() async {
   final Stopwatch stopWatch = Stopwatch();
   stopWatch.start();
   //await http.get(Uri.parse('http://market_under_dev_backend.trydos.dev/api/new_v1/mobile/home/mainCategories'));
-  await Dio().getUri(Uri.parse('http://ip-api.com/json')).onError((e , st){
+  await Dio().getUri(Uri.parse('http://ip-api.com/json')).onError((e, st) {
     dev.log(e.toString());
     return Response(requestOptions: RequestOptions());
   });

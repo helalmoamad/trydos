@@ -39,6 +39,7 @@ class ProductDetailsBottomSheet extends StatefulWidget {
   final int boutiqueId;
   final String boutiqueIcon;
   final String currentColorName;
+  final String productDescription;
   final String currentColornum;
   final String currentSize;
   final int countOfPieces;
@@ -53,6 +54,7 @@ class ProductDetailsBottomSheet extends StatefulWidget {
       required this.addToBagButtonShapeNotifier,
       required this.boutiqueIcon,
       required this.sizes,
+      required this.productDescription,
       required this.maxAllowedToAddCart,
       required this.sizesQuantities,
       required this.countOfPieces,
@@ -474,6 +476,9 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                               ? controller
                                               : null),
                                       ProductDetailsSheetShareContent(
+                                          productDescription:
+                                              widget.productDescription,
+                                          productItem: widget.productItem,
                                           focusNode: _focusNode,
                                           scrollController: currentTab == 1
                                               ? controller

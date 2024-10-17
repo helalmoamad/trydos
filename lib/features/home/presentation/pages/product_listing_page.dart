@@ -2491,7 +2491,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                   .toString(),
                                                               "previous_event_button_name":
                                                                   GetIt.I<PrefsRepository>()
-                                                                      .currentEvent,
+                                                                      .currentEvent??"",
                                                               "device_language":
                                                                   LanguageService
                                                                               .languageCode ==

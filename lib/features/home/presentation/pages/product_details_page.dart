@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_html/flutter_html.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -90,12 +91,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     });
     homeBloc.add(
         GetStoryForProductEvent(productId: widget.productItem.id.toString()));
-    if(GetIt.I<PrefsRepository>().chatToken != null) {
+    if (GetIt.I<PrefsRepository>().chatToken != null) {
       BlocProvider.of<ChatBloc>(context).add(GetChatsEvent());
       BlocProvider.of<ChatBloc>(context).add(SaveContactsEvent());
     }
-    //  chatBloc.add(GetSharedProductCountEvent(
-    //     productId: widget.productItem.id.toString()));
+    chatBloc.add(GetSharedProductCountEvent(
+        productId: widget.productItem.id.toString()));
 
     super.initState();
   }
@@ -498,6 +499,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     state.currentSelectedColorForEveryProduct[productId] ??
                         (widget.productItem.syncColorImages?.length ?? 0) ~/ 2;
                 return ProductDetailsBottomSheet(
+                  productDescription:
+                      HtmlParser.parseHTML(widget.productItem.details ?? "")
+                          .text,
                   countOfPieces: state.cachedProductWithoutRelatedProductsModel[
                               widget.productItem.id.toString()] !=
                           null
