@@ -253,6 +253,7 @@ class Cart {
   final String? discountFormatted;
   final String? slug;
   final String? name;
+
   final int? countOfPieces;
   final Shop? shop;
   final CartBrand? brand;

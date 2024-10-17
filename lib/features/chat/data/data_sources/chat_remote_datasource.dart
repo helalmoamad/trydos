@@ -8,6 +8,7 @@ import 'package:trydos/core/api/methods/detect_server.dart';
 import 'package:trydos/features/authentication/data/models/create_user_response_model.dart';
 import 'package:trydos/features/chat/data/models/change_chat_property_model.dart';
 import 'package:trydos/features/chat/data/models/my_contacts_response_model.dart';
+import 'package:trydos/features/chat/data/models/shared_product_count_model.dart';
 import 'package:trydos/features/chat/data/models/upload_file_response_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 
@@ -184,6 +185,21 @@ class ChatRemoteDataSource {
     return sendMessage();
   }
 
+  Future<Message> shareProductWithContactsOrChannels(Map<String, dynamic> params) {
+    PostClient<Message> shareProductWithContactsOrChannels = PostClient<Message>(
+      serverName: ServerName.chat,
+      requestPrams: RequestConfig<Message>(
+        receiveTimeout: const Duration(minutes: 1),
+        sendTimeout: const Duration(minutes: 1),
+        endpoint: ChatEndPoints.shareProductWithChannelsOrContacts,
+        data: params,
+        response: ResponseValue<Message>(
+            fromJson: (response) => Message.fromJson(response['data'])),
+      ),
+    );
+    return shareProductWithContactsOrChannels();
+  }
+
   Future<CreateUserResponseModel> createUser(Map<String, dynamic> params) {
     PostClient<CreateUserResponseModel> createUser =
         PostClient<CreateUserResponseModel>(
@@ -241,6 +257,21 @@ class ChatRemoteDataSource {
       ),
     );
     return receiveMessage();
+  }
+
+  Future<GetSharedProductCountModel> getSharedProductCount(
+      Map<String, dynamic> params) {
+    GetClient<GetSharedProductCountModel> getSharedProductCount =
+        GetClient<GetSharedProductCountModel>(
+      serverName: ServerName.chat,
+      requestPrams: RequestConfig<GetSharedProductCountModel>(
+        endpoint: ChatEndPoints.getSharedProductCount(params["id"]),
+        response: ResponseValue<GetSharedProductCountModel>(
+            fromJson: (response) =>
+                GetSharedProductCountModel.fromJson(response)),
+      ),
+    );
+    return getSharedProductCount();
   }
 
   Future<bool> sendErrorChatToServer(Map<String, dynamic> params) {

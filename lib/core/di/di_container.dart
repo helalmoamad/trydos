@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:dio_http2_adapter/dio_http2_adapter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
@@ -8,7 +9,6 @@ import '../api/log_interceptor.dart';
 import '../data/repository/prefs_repository_impl.dart';
 import '../domin/repositories/prefs_repository.dart';
 import 'di_container.config.dart';
-
 final GetIt _getIt = GetIt.I;
 
 @InjectableInit(
@@ -49,6 +49,9 @@ abstract class AppModule {
   @singleton
   Dio dio(BaseOptions option, Logger logger) {
     final dio = Dio(option);
+    // dio.httpClientAdapter = Http2Adapter(
+    //   ConnectionManager(idleTimeout: Duration(seconds: 15),proxyConnectedPredicate: (_,__)=> true),
+    // );
     dio.interceptors.add(LoggerInterceptor());
     return dio;
   }

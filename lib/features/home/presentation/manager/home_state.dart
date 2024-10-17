@@ -56,6 +56,12 @@ enum SendRequestToGeminiStatus { init, loading, success, failure }
 
 enum GetHomeBoutiqesStatus { init, loading, success, failure }
 
+enum AddItemInCartStatus { init, loading, success, failure }
+
+enum UpdateItemInCartStatus { init, loading, success, failure }
+
+enum DeleteItemInCartStatus { init, loading, success, failure }
+
 enum GetProductsWithoutFiltersStatus { init, loading, success, failure }
 
 enum GetProductListingStatus { init, loading, success, failure }
@@ -65,6 +71,7 @@ enum GetProductListingStatus { init, loading, success, failure }
 class HomeState extends Equatable {
   const HomeState({
     this.storiesForProduct,
+    this.addItemInCartStatus,
     this.getProductDetailWithoutSimilarRelatedProductsStatus =
         GetProductDetailWithoutSimilarRelatedProductsStatus.init,
     this.getStartingSettingsStatus = GetStartingSettingsStatus.init,
@@ -72,6 +79,9 @@ class HomeState extends Equatable {
     this.getCommentForProductStatus = GetCommentForProductStatus.init,
     this.startingSetting,
     this.sizes = const [],
+    this.sizesQuantities = const [],
+    this.isSizeRequestNotification = const [],
+    this.deleteItemInCartStatus,
     this.isGettingProductListingWithPagination = false,
     this.isGettingProductListingWithPaginationForAppearProduct = false,
     this.getProductFiltersStatus = const {},
@@ -80,6 +90,7 @@ class HomeState extends Equatable {
     this.appliedFiltersByUser = const {},
     this.currentPage = 0,
     this.productStatus,
+    this.updateItemInCartStatus,
     this.theReplyFromGemini,
     this.productITemForCart,
     this.getCartShippingItemsModel,
@@ -126,6 +137,7 @@ class HomeState extends Equatable {
   final GetCommentForProductStatus getCommentForProductStatus;
   final Map<String, product.Products>? productITemForCart;
   final GetMainCategoriesStatus getMainCategoriesStatus;
+
   final List<ImageForAddToCart>? ListitemForAddToCart;
   final GetAllowedCountriesModel? getAllowedCountriesModel;
   final Map<String, GetProductFiltersStatus> getProductFiltersStatus;
@@ -135,6 +147,9 @@ class HomeState extends Equatable {
   final Map<String, PaginationModel<product.Products>?>
       getProductListingWithFiltersPaginationWithPrefetchModels;
   final SendRequestToGeminiStatus sendRequestToGeminiStatus;
+  final AddItemInCartStatus? addItemInCartStatus;
+  final UpdateItemInCartStatus? updateItemInCartStatus;
+  final DeleteItemInCartStatus? deleteItemInCartStatus;
 
   final Map<String, get_filters.GetProductFiltersModel?> getProductFiltersModel;
   final Map<String, get_filters.GetProductFiltersModel?>
@@ -163,12 +178,15 @@ class HomeState extends Equatable {
   final String? theReplyFromGemini;
 
   final GetCartItemsStatus getCartItemsStatus;
+
   final GetProductListingStatus getProductListingStatus;
   final GetStoriesForProductStatus getStoriesForProductStatus;
   final Map<String, PaginationModel<boutiques_model.Boutique>>
       getHomeBoutiquesPaginationObjectByMainCategory;
   final List<Story>? storiesForProduct;
   final List<String>? sizes;
+  final List<int>? sizesQuantities;
+  final List<String> isSizeRequestNotification;
   final Map<String, int>? countOfProductExpectedByFiltering;
   final get_filters.Filter? prefAppliedFilterForExtendFilter;
   final Map<String, PaginationModel<product.Products>>
@@ -211,6 +229,7 @@ class HomeState extends Equatable {
         choosedFiltersByUser,
         selectedCollection,
         currentPage,
+        sizesQuantities,
         isExpandedForListingPage,
         isGettingProductListingWithPagination,
         isGettingProductListingWithPaginationForAppearProduct,
@@ -235,6 +254,16 @@ class HomeState extends Equatable {
         getCommentForProductModel,
         mainCategoriesResponseModel,
         getProductDetailWithoutRelatedProductsModel,
+        updateItemInCartStatus,
+        addItemInCartStatus,
+        appliedFiltersByUser,
+        addImagesToProductIdForCart,
+        addItemInCartStatus,
+        deleteItemInCartStatus,
+        updateItemInCartStatus,
+        currentSelectedColorForEveryProduct,
+        isSizeRequestNotification,
+        selectedCollection,
         cashedOrginalBoutique,
         currentIndexForMainCategoryEvent,
         startingSetting,
@@ -246,12 +275,15 @@ class HomeState extends Equatable {
   HomeState copyWith(
       {final GetStartingSettingsStatus? getStartingSettingsStatus,
       final GetMainCategoriesStatus? getMainCategoriesStatus,
+      final AddItemInCartStatus? addItemInCartStatus,
+      final UpdateItemInCartStatus? updateItemInCartStatus,
       final Map<String, get_filters.GetProductFiltersModel?>?
           getProductFiltersWithPrefetchModel,
       bool? cashedOrginalBoutique,
       bool? isExpandedForLidtingPage,
 
       // String? idForRequest,
+
       get_filters.Filter? prefAppliedFilterForExtendFilter,
       final Map<String, bool>? boutiquesThatDidPrefetch,
       final Map<String, bool>? boutiquesForEveryMainCategoryThatDidPrefetch,
@@ -268,6 +300,8 @@ class HomeState extends Equatable {
           getProductDetailWithoutRelatedProductsModel,
       int? selectedCollection,
       List<String>? sizes,
+      List<int>? sizesQuantities,
+      List<String>? isSizeRequestNotification,
       final String? theReplyFromGemini,
       final bool? isGettingProductListingWithPaginationForAppearProduct,
       int? currentIndexForMainCategoryEvent,
@@ -295,6 +329,7 @@ class HomeState extends Equatable {
       GetStoriesForProductStatus? getStoriesForProductStatus,
       final GetProductDetailWithoutSimilarRelatedProductsStatus?
           getProductDetailWithoutSimilarRelatedProductsStatus,
+      final DeleteItemInCartStatus? deleteItemInCartStatus,
       final Map<String, int>? currentSelectedColorForEveryProduct,
       int? currentPage,
       Map<String, int>? countOfProductExpectedByFiltering,
@@ -312,13 +347,19 @@ class HomeState extends Equatable {
           getProductListingPaginationWithoutFiltersModel,
       final Map<String, GetCommentForProductModel>?
           getCommentForProductModel}) {
-    final x = HomeState(
+    return HomeState(
       boutiquesForEveryMainCategoryThatDidPrefetch:
           boutiquesForEveryMainCategoryThatDidPrefetch ??
               this.boutiquesForEveryMainCategoryThatDidPrefetch,
       getCommentForProductModel:
           getCommentForProductModel ?? this.getCommentForProductModel,
+      updateItemInCartStatus:
+          updateItemInCartStatus ?? this.updateItemInCartStatus,
+
       sizes: sizes ?? this.sizes,
+      sizesQuantities: sizesQuantities ?? this.sizesQuantities,
+      isSizeRequestNotification:
+          isSizeRequestNotification ?? this.isSizeRequestNotification,
       isGettingProductListingWithPagination:
           isGettingProductListingWithPagination ??
               this.isGettingProductListingWithPagination,
@@ -338,13 +379,16 @@ class HomeState extends Equatable {
       cartCollection: cartCollection ?? this.cartCollection,
       getProductFiltersStatus:
           getProductFiltersStatus ?? this.getProductFiltersStatus,
+      addItemInCartStatus: addItemInCartStatus ?? this.addItemInCartStatus,
       sendRequestToGeminiStatus:
           sendRequestToGeminiStatus ?? this.sendRequestToGeminiStatus,
       getProductListingWithFiltersPaginationModels:
           getProductListingWithFiltersPaginationModels ??
               this.getProductListingWithFiltersPaginationModels,
+
       prefAppliedFilterForExtendFilter: prefAppliedFilterForExtendFilter ??
           this.prefAppliedFilterForExtendFilter,
+
       getCurrencyForCountryModel:
           getCurrencyForCountryModel ?? this.getCurrencyForCountryModel,
       getProductFiltersWithPrefetchModel: getProductFiltersWithPrefetchModel ??
@@ -408,6 +452,8 @@ class HomeState extends Equatable {
       cachedProductWithoutRelatedProductsModel:
           cachedProductWithoutRelatedProductsModel ??
               this.cachedProductWithoutRelatedProductsModel,
+      deleteItemInCartStatus:
+          deleteItemInCartStatus ?? this.deleteItemInCartStatus,
       getProductDetailWithoutRelatedProductsModel:
           getProductDetailWithoutRelatedProductsModel ??
               this.getProductDetailWithoutRelatedProductsModel,
@@ -415,8 +461,6 @@ class HomeState extends Equatable {
       getAllowedCountriesModel:
           getAllowedCountriesModel ?? this.getAllowedCountriesModel,
     );
-    print('8888888888 ${x.hashCode}');
-    return x;
   }
 
   factory HomeState.fromJson(Map<String, dynamic> data) =>

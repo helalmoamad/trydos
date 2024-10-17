@@ -194,8 +194,8 @@ class _ImageMessageState extends State<ImageMessage> {
                       children: [
                         if (widget.imageFile == null) ...{
                           Container(
-                              width: 300.w,
-                              height: 600,
+                              width: 200.w,
+                              height: 400,
                               decoration: BoxDecoration(
                                 color: Colors.grey.shade200,
                                 borderRadius: BorderRadius.circular(12.0),

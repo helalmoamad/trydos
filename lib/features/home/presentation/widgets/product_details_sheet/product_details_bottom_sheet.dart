@@ -13,6 +13,8 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
@@ -40,15 +42,19 @@ class ProductDetailsBottomSheet extends StatefulWidget {
   final String currentColornum;
   final String currentSize;
   final int countOfPieces;
-
+  final String maxAllowedToAddCart;
   final ValueNotifier<int> addToBagButtonShapeNotifier;
   final List<String> sizes;
+  final List<int> sizesQuantities;
+
   const ProductDetailsBottomSheet(
       {super.key,
       required this.productItem,
       required this.addToBagButtonShapeNotifier,
       required this.boutiqueIcon,
       required this.sizes,
+      required this.maxAllowedToAddCart,
+      required this.sizesQuantities,
       required this.countOfPieces,
       required this.currentSize,
       required this.currentColornum,
@@ -62,10 +68,9 @@ class ProductDetailsBottomSheet extends StatefulWidget {
 }
 
 class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
-  final ValueNotifier<List<int>> indicesOfChatCardsToShare = ValueNotifier([]);
+  final ValueNotifier<List<String>> idsOfChatCardsToShare = ValueNotifier([]);
   final ValueNotifier<int> currentActiveTab = ValueNotifier(-1);
   final ValueNotifier<double> workOnBlurNotifier = ValueNotifier(10);
-  final ValueNotifier<int> currentImageTab = ValueNotifier(0);
 
   final ValueNotifier<String?> sizeIsNotAvailableNotifier = ValueNotifier(null);
   final PageController pageController = PageController();
@@ -84,7 +89,9 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
-
+    int currentColor = homeBloc.state.currentSelectedColorForEveryProduct[
+            widget.productItem.id.toString()] ??
+        (widget.productItem.syncColorImages?.length ?? 0) ~/ 2;
     syncColorImageList = widget.productItem.syncColorImages ?? [];
     syncColorImageList.removeWhere((element) => element.images.isNullOrEmpty);
     syncColorImageList = [
@@ -110,7 +117,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                     : (syncColorImageList.length) <= 8
                         ? 0.55
                         : 0.4,
-                initialIndex: widget.currentColor,
+                initialIndex: currentColor,
                 primaryshiftingOffsetDivision: (syncColorImageList.length) == 4
                     ? 4.5
                     : (syncColorImageList.length) <= 8
@@ -197,6 +204,11 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                   : 433,
                       minHeight: 78,
                       onPanelClosed: () {
+                        homeBloc.add(UpdateListOfItemForAddToCartEvent(
+                            imageForAddToCart: ImageForAddToCart(),
+                            operation: "remove",
+                            productId: widget.productItem.id.toString(),
+                            resetTheList: true));
                         sizeIsNotAvailableNotifier.value = null;
                         firstOpenOfPanel = true;
                         denySlidingBackForSlidingUpPanels.value = false;
@@ -243,21 +255,33 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                             tag == ''
                                 ? LocalHero(
                                     tag: 'cart',
-                                    child: ValueListenableBuilder<int>(
-                                        valueListenable: currentImageTab,
-                                        builder: (context, currentImage, _) {
-                                          return ProductDetailsImageWidget(
-                                            width: 198.w,
-                                            height: 288.h,
-                                            imageUrl:
-                                                gallery3dControllerForCircles !=
-                                                        null
-                                                    ? images[
-                                                        currentIndexInSlider]
-                                                    : widget.productItem
-                                                        .images![0].filePath,
-                                          );
-                                        }))
+                                    child: ProductDetailsImageWidget(
+                                      width: 198.w,
+                                      height: 288.h,
+                                      imageWidth: 320,
+                                      imageHeight: 464,
+                                      orginalWidth: double.tryParse(
+                                          gallery3dControllerForCircles != null
+                                              ? orginalWidth![
+                                                      currentIndexInSlider]
+                                                  .toString()
+                                              : widget.productItem.images![0]
+                                                  .originalWidth
+                                                  .toString()),
+                                      orginalHeight: double.tryParse(
+                                          gallery3dControllerForCircles != null
+                                              ? orginalHeight![
+                                                      currentIndexInSlider]
+                                                  .toString()
+                                              : widget.productItem.images![0]
+                                                  .originalHeight
+                                                  .toString()),
+                                      imageUrl:
+                                          gallery3dControllerForCircles != null
+                                              ? images[currentIndexInSlider]
+                                              : widget.productItem.images![0]
+                                                  .filePath,
+                                    ))
                                 : SizedBox(
                                     height: 288.h,
                                   ),
@@ -292,7 +316,6 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                           isClip: false,
                                           onItemChanged: (index) {
                                             currentIndexInSlider = index;
-                                            currentImageTab.value = index;
                                             homeBloc.add(
                                                 AddCurrentSelectedColorEvent(
                                                     currentSelectedColor:
@@ -371,7 +394,17 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                               BlocBuilder<HomeBloc, HomeState>(
                                   buildWhen: (previous, current) =>
                                       previous.getCurrencyForCountryModel !=
-                                      current.getCurrencyForCountryModel,
+                                          current.getCurrencyForCountryModel ||
+                                      previous.CurrentColorSizeForCart?[
+                                              "size"] !=
+                                          current.CurrentColorSizeForCart?[
+                                              "size"] ||
+                                      previous.currentSelectedColorForEveryProduct !=
+                                          current
+                                              .currentSelectedColorForEveryProduct ||
+                                      previous.getProductDetailWithoutSimilarRelatedProductsStatus !=
+                                          current
+                                              .getProductDetailWithoutSimilarRelatedProductsStatus,
                                   builder: (context, state) {
                                     return ProductDetailsSheetHeader(
                                       decimalPoint: state.startingSetting
@@ -428,9 +461,9 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                     controller: pageController,
                                     onPageChanged: (index) {
                                       currentActiveTab.value = index;
-                                      if (indicesOfChatCardsToShare
+                                      if (idsOfChatCardsToShare
                                           .value.isNotEmpty) {
-                                        indicesOfChatCardsToShare.value = [];
+                                        idsOfChatCardsToShare.value = [];
                                       }
                                     },
                                     children: [
@@ -445,8 +478,8 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                           scrollController: currentTab == 1
                                               ? controller
                                               : null,
-                                          indicesOfChatCardsToShare:
-                                              indicesOfChatCardsToShare),
+                                          idsOfChatCardsToShare:
+                                              idsOfChatCardsToShare),
                                       ProductDetailsSheetMoreOptionsContent(
                                           scrollController: currentTab == 2
                                               ? controller
@@ -455,16 +488,43 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                   ),
                                 )
                               : currentTab == 3
-                                  ? SelectSizeContent(
-                                      productId:
-                                          widget.productItem.id.toString(),
-                                      sizes: widget.sizes,
-                                      scrollController: controller,
-                                      selectedColor: Colors.blue,
-                                      sizeIsNotAvailableNotifier:
-                                          sizeIsNotAvailableNotifier,
-                                      addToBagButtonShapeNotifier:
-                                          widget.addToBagButtonShapeNotifier,
+                                  ? BlocBuilder<HomeBloc, HomeState>(
+                                      buildWhen: (p, c) =>
+                                          p.currentSelectedColorForEveryProduct[
+                                              widget.productItem.id
+                                                  .toString()] !=
+                                          c.currentSelectedColorForEveryProduct[
+                                              widget.productItem.id.toString()],
+                                      builder: (context, state) {
+                                        return SelectSizeContent(
+                                          productId:
+                                              widget.productItem.id.toString(),
+                                          sizes: widget.sizes,
+                                          sizesQuantities:
+                                              widget.sizesQuantities,
+                                          scrollController: controller,
+                                          selectedColorName: widget.productItem
+                                                  .colors.isNullOrEmpty
+                                              ? null
+                                              : widget
+                                                  .productItem
+                                                  .colors![state
+                                                          .currentSelectedColorForEveryProduct[
+                                                      widget.productItem.id
+                                                          .toString()]!]
+                                                  .name
+                                                  .toString(),
+                                          selectedColor: widget.productItem
+                                                  .colors.isNullOrEmpty
+                                              ? null
+                                              : Color(int.parse(
+                                                  '0xff${widget.productItem.colors![state.currentSelectedColorForEveryProduct[widget.productItem.id.toString()]!].color!.substring(1)}')),
+                                          sizeIsNotAvailableNotifier:
+                                              sizeIsNotAvailableNotifier,
+                                          addToBagButtonShapeNotifier: widget
+                                              .addToBagButtonShapeNotifier,
+                                        );
+                                      },
                                     )
                                   : const SizedBox.shrink(),
                         ],
@@ -519,10 +579,10 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                         color: const Color(0xffE6E6E6),
                       );
               }),
-          ValueListenableBuilder<List<int>>(
-              valueListenable: indicesOfChatCardsToShare,
-              builder: (context, indices, _) {
-                return indices.isEmpty
+          ValueListenableBuilder<List<String>>(
+              valueListenable: idsOfChatCardsToShare,
+              builder: (context, channelIds, _) {
+                return channelIds.isEmpty
                     ? ProductDetailsSheetBottomBar(
                         countOfPieces: widget.countOfPieces,
                         colorNum: widget.currentColornum,
@@ -544,6 +604,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                     "",
                         onFinishBuying: (quantity) {
                           homeBloc.add(AddMultiItemsToCartEvent(
+                              maxAllowed: widget.maxAllowedToAddCart,
                               boutiqueIcon: widget.boutiqueIcon,
                               boutiqueId: widget.boutiqueId,
                               products: widget.productItem,
@@ -556,7 +617,9 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                         clickOnComments: () {
                           panelController.open();
                           currentActiveTab.value = 0;
-                          pageController.jumpToPage(0);
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            pageController.jumpToPage(0);
+                          });
                         },
                         clickOnFavorite: () {
                           currentActiveTab.value = -1;
@@ -564,19 +627,42 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                         clickOnMoreOptions: () {
                           panelController.open();
                           currentActiveTab.value = 2;
-                          pageController.jumpToPage(2);
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            pageController.jumpToPage(2);
+                          });
                         },
                         clickOnShare: () {
                           panelController.open();
                           currentActiveTab.value = 1;
-                          pageController.jumpToPage(1);
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            pageController.jumpToPage(1);
+                          });
                         },
                         currentActiveTab: currentActiveTab,
                         sizeIsNotAvailableNotifier: sizeIsNotAvailableNotifier,
                         addToBagButtonShapeNotifier:
                             widget.addToBagButtonShapeNotifier)
                     : ShareButton(
-                        onTap: () {},
+                        onTap: () {
+                          BlocProvider.of<ChatBloc>(context).add(
+                              ShareProductWithContactsOrChannelsEvent(
+                                  productId: widget.productItem.id.toString(),
+                                  productName:
+                                      widget.productItem.name.toString(),
+                                  productSlug:
+                                      widget.productItem.slug.toString(),
+                                  productDescription:
+                                      widget.productItem.details.toString(),
+                                  productImageUrl:
+                                      gallery3dControllerForCircles != null
+                                          ? images[currentIndexInSlider]
+                                          : widget
+                                              .productItem.images![0].filePath
+                                              .toString(),
+                                  channelIds: channelIds));
+                          idsOfChatCardsToShare.value = [];
+                          currentActiveTab.value = -1;
+                        },
                       );
               }),
         ],

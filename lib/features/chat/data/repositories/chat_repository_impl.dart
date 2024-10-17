@@ -8,6 +8,7 @@ import 'package:trydos/features/chat/data/data_sources/chat_remote_datasource.da
 import 'package:trydos/features/authentication/data/models/create_user_response_model.dart';
 import 'package:trydos/features/chat/data/models/change_chat_property_model.dart';
 import 'package:trydos/features/chat/data/models/my_contacts_response_model.dart';
+import 'package:trydos/features/chat/data/models/shared_product_count_model.dart';
 import 'package:trydos/features/chat/data/models/upload_file_response_model.dart';
 
 import 'package:trydos/features/chat/domain/repositories/chat_repository.dart';
@@ -49,6 +50,13 @@ class ChatRepositoryImpl extends ChatRepository with HandlingExceptionRequest {
       Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.createUser(params));
+  }
+
+  @override
+  Future<Either<Failure, GetSharedProductCountModel>> getSharedProductCount(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.getSharedProductCount(params));
   }
 
   @override
@@ -129,5 +137,11 @@ class ChatRepositoryImpl extends ChatRepository with HandlingExceptionRequest {
       Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.sendErrorChatToServer(params));
+  }
+
+  @override
+  Future<Either<Failure, Message>> shareProductWithContactsOrChannels(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.shareProductWithContactsOrChannels(params));
   }
 }

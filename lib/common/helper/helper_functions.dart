@@ -19,7 +19,7 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/app_elvated_button.dart';
-import 'package:url_launcher/url_launcher.dart';
+  import 'package:url_launcher/url_launcher.dart';
 
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../features/app/my_text_widget.dart';

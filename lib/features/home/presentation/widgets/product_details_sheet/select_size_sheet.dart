@@ -13,6 +13,7 @@ import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
+import 'package:tuple/tuple.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../../core/utils/theme_state.dart';
 
@@ -20,18 +21,22 @@ class SelectSizeContent extends StatefulWidget {
   const SelectSizeContent({
     super.key,
     required this.scrollController,
-    required this.selectedColor,
+    this.selectedColor,
+    this.selectedColorName,
     required this.sizes,
+    required this.sizesQuantities,
     required this.productId,
     required this.addToBagButtonShapeNotifier,
     required this.sizeIsNotAvailableNotifier,
   });
 
   final ScrollController scrollController;
-  final Color selectedColor;
+  final Color? selectedColor;
+  final String? selectedColorName;
   final String productId;
 
   final List<String> sizes;
+  final List<int> sizesQuantities;
   final ValueNotifier<int> addToBagButtonShapeNotifier;
   final ValueNotifier<String?> sizeIsNotAvailableNotifier;
 
@@ -41,6 +46,7 @@ class SelectSizeContent extends StatefulWidget {
 
 class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
   List<String> sizes = [];
+  List<int> sizesQuantities = [];
 
   final CarouselSliderController carouselController =
       CarouselSliderController();
@@ -49,11 +55,10 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
-
     currentIndexInSizes = ValueNotifier(0);
 
     if ((homeBloc.state.sizes?.length ?? 0) > 0) {
-      int firstSizeSelected = (homeBloc.state.sizes?.length ?? 0) ~/ 2;
+      int firstSizeSelected = max(0 , (homeBloc.state.CurrentColorSizeForCart?['size'] ?? '') == '' ? (homeBloc.state.sizes?.length ?? 0) ~/ 2 :  homeBloc.state.sizes!.indexWhere((size)=> homeBloc.state.CurrentColorSizeForCart?['size'] == size));
       homeBloc.add(AddCurrentColorSizeEvent(
           choice_1: homeBloc.state.sizes?[firstSizeSelected]));
       currentIndexInSizes.value = firstSizeSelected;
@@ -66,13 +71,13 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<HomeBloc, HomeState>(
-      buildWhen: (p, c) =>
-          p.currentSelectedColorForEveryProduct !=
+      buildWhen: (p, c) => p.currentSelectedColorForEveryProduct !=
               c.currentSelectedColorForEveryProduct ||
           p.sizes != c.sizes ||
           p.cartCollection != c.cartCollection,
       builder: (context, state) {
-        sizes = state.sizes ?? [];
+          sizes = state.sizes ?? [];
+          sizesQuantities = state.sizesQuantities ?? [];
 
         if (sizes.length > 0) {
           homeBloc.add(AddCurrentColorSizeEvent(
@@ -180,9 +185,9 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                                       ),
                                     ],
                                     borderRadius: BorderRadius.circular(180),
-                                    color: sizes[currentIndex] == 'S'
+                                    color: sizesQuantities[currentIndex] == 0
                                         ? const Color(0xffFF5F61)
-                                        : sizes[currentIndex] == 'XS'
+                                        : sizesQuantities[currentIndex] < 3
                                             ? const Color(0xffFFAF5F)
                                             : const Color.fromARGB(
                                                 255, 75, 61, 61),
@@ -192,9 +197,9 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                                 width: 70,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(180),
-                                    border: Border.all(
-                                        color: widget.selectedColor,
-                                        width: 0.5),
+                                    border: widget.selectedColor != null ? Border.all(
+                                        color: widget.selectedColor!,
+                                        width: 0.5) : null,
                                     boxShadow: [
                                       BoxShadow(
                                           color: colorScheme.white,
@@ -238,9 +243,9 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                                             : 20.sp,*/
                                         color: index == currentIndex
                                             ? Colors.white
-                                            : sizes[index] == 'S'
+                                            : sizesQuantities[index] == 0
                                                 ? const Color(0xffFF5F61)
-                                                : sizes[index] == 'XS'
+                                                : sizesQuantities[index] < 3
                                                     ? const Color(0xffFFAF5F)
                                                     : const Color(0xff505050),
                                       ),
@@ -249,7 +254,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                                 );
                               },
                               options: CarouselOptions(
-                                  initialPage: sizes.length ~/ 2,
+                                  initialPage: currentIndexInSizes.value,
                                   height: 80,
                                   enableInfiniteScroll: false,
                                   onPageChanged: (index, reason) {
@@ -257,7 +262,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                                     homeBloc.add(AddCurrentColorSizeEvent(
                                         choice_1: sizes[index]));
                                     HapticFeedback.lightImpact();
-                                    if (sizes[index] == 'S') {
+                                    if (sizesQuantities[index] == 0) {
                                       widget.sizeIsNotAvailableNotifier.value =
                                           sizes[index];
                                     } else {
@@ -308,7 +313,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
               ValueListenableBuilder<int>(
                   valueListenable: currentIndexInSizes,
                   builder: (context, currentIndex, _) {
-                    if (sizes[currentIndex] == 'S') {
+                    if (sizesQuantities[currentIndex] == 0) {
                       return MyTextWidget(
                         'Not Available Now, Stock Is Sold Out',
                         style: textTheme.titleMedium?.mq.copyWith(
@@ -338,14 +343,14 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                           style: textTheme.titleMedium?.rq.copyWith(
                               height: 1, color: const Color(0xff505050)),
                         ),
-                        if (sizes[currentIndex] == 'XS') ...{
+                        if (sizesQuantities[currentIndex] < 3) ...{
                           MyTextWidget(
                             'Last ',
                             style: textTheme.titleMedium?.rq.copyWith(
                                 height: 1, color: const Color(0xffFFAF5F)),
                           ),
                           MyTextWidget(
-                            '2',
+                            '${sizesQuantities[currentIndex]}',
                             style: textTheme.titleMedium?.mq.copyWith(
                                 height: 1, color: const Color(0xffFFAF5F)),
                           ),

@@ -20,9 +20,9 @@ class GetStartingSettingsEvent extends HomeEvent {
 }
 
 class GetMainCategoriesEvent extends HomeEvent {
-  const GetMainCategoriesEvent({required this.context});
+  const GetMainCategoriesEvent({this.context});
 
-  final BuildContext context;
+  final BuildContext? context;
   @override
   // TODO: implement props
   List<Object?> get props => [context];
@@ -335,7 +335,7 @@ class GetStoryForProductEvent extends HomeEvent {
 
   @override
   // TODO: implement props
-  List<Object?> get props => [];
+  List<Object?> get props => [productId];
 }
 
 class LoadFailureEvent extends HomeEvent {
@@ -345,6 +345,20 @@ class LoadFailureEvent extends HomeEvent {
 
   @override
   List<Object?> get props => [collectionId];
+}
+
+class RequestForNotificationWhenProductBecameAvailableEvent extends HomeEvent {
+  final String productId;
+  final int notificationTypeId;
+  final String size;
+  final String selectedColorName;
+
+  RequestForNotificationWhenProductBecameAvailableEvent(this.productId,
+      this.notificationTypeId, this.size, this.selectedColorName);
+
+  @override
+  List<Object?> get props =>
+      [productId, notificationTypeId, size, selectedColorName];
 }
 
 class IscashedOreiginBotiqueEvent extends HomeEvent {
@@ -383,12 +397,16 @@ class AddItemToCartEvent extends HomeEvent {
   final String? choice_1;
   final int? boutiqueId;
   final String colorName;
+  final String? maxAllowed;
+  final bool fishAddAllTheItems;
   final Products products;
 
   AddItemToCartEvent(
       {this.quantity,
       this.boutiqueIcon,
+      this.fishAddAllTheItems = true,
       this.boutiqueId,
+      required this.maxAllowed,
       required this.image,
       required this.countOfPieces,
       required this.colorName,
@@ -406,11 +424,16 @@ class AddMultiItemsToCartEvent extends HomeEvent {
   final String? boutiqueIcon;
 
   final int? boutiqueId;
+  final String? maxAllowed;
 
   final Products products;
 
   AddMultiItemsToCartEvent(
-      {this.id, this.boutiqueIcon, this.boutiqueId, required this.products});
+      {this.id,
+      this.boutiqueIcon,
+      required this.maxAllowed,
+      this.boutiqueId,
+      required this.products});
 
   @override
   List<Object?> get props => [];
@@ -424,7 +447,7 @@ class AddCurrentColorSizeEvent extends HomeEvent {
   });
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [choice_1];
 }
 
 class AddPrefAppliedFilterForExtendFilterEvent extends HomeEvent {
@@ -435,7 +458,7 @@ class AddPrefAppliedFilterForExtendFilterEvent extends HomeEvent {
   });
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [prefAppliedFilter];
 }
 
 class ResetAllSelectedAppliedFilterEvent extends HomeEvent {
@@ -452,7 +475,7 @@ class AddProductItemForCartEvent extends HomeEvent {
   AddProductItemForCartEvent({this.product, required this.productId});
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [productId, product];
 }
 
 class RemoveItemFormCartEvent extends HomeEvent {
@@ -482,16 +505,20 @@ class UpdateItemInCartEvent extends HomeEvent {
   final int quantity;
   final String currentSize;
   final String productId;
+  final bool fishAddAllTheItems;
   final String colorName;
   final String image;
   final String boutiqueId;
   final int? countOfPieces;
+  final double? maxAllowed;
 
   UpdateItemInCartEvent({
     required this.quantity,
     required this.colorName,
+    this.fishAddAllTheItems = true,
     required this.cartId,
     required this.image,
+    required this.maxAllowed,
     required this.countOfPieces,
     required this.currentSize,
     required this.productId,
@@ -617,9 +644,11 @@ class UpdateListOfItemForAddToCartEvent extends HomeEvent {
   final ImageForAddToCart imageForAddToCart;
   final String operation;
   final String productId;
+  final bool resetTheList;
   UpdateListOfItemForAddToCartEvent({
     required this.imageForAddToCart,
     required this.operation,
+    this.resetTheList = false,
     required this.productId,
   });
 

@@ -27,6 +27,9 @@ extension ScopeApi on String {
 
   String firebaseTokensScope({bool current = false}) =>
       '$_api/${current ? _currentVersion : _previousVersion}/firebase_tokens${this != '' ? '/$this' : ''}';
+
+  String elasticScope({bool current = true}) =>
+      '$_api/${current ? _currentVersion : _previousVersion}/elastic/$this}';
 }
 
 abstract class ChatEndPoints {
@@ -72,7 +75,8 @@ abstract class ChatEndPoints {
   static final sendMessageEP = 'send'.messagesScope();
   static final getMessagesBetweenEP =
       'get_all_messages_between_two_messages'.messagesScope();
-
+  static final shareProductWithChannelsOrContacts =
+  'share_product'.messagesScope();
   static String getMessagesForChatEP(String channelId) =>
       'messages_of_channel/$channelId'.messagesScope();
 
@@ -94,6 +98,10 @@ abstract class ChatEndPoints {
 
   static String refuseCall(String messageId) {
     return 'refuse_call/$messageId'.messagesScope();
+  }
+
+  static String getSharedProductCount(String ProductId) {
+    return 'shared_count/$ProductId'.elasticScope();
   }
 
   static String inAnotherCall(String ChatId) {

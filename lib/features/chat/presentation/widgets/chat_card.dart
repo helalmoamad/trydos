@@ -616,20 +616,20 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                                                           .tr()
                                                                   : messageType !=
                                                                           'TextMessage'
-                                                                      ? (messageType ==
-                                                                              'ImageMessage'
-                                                                          ? LocaleKeys
-                                                                              .photo
-                                                                              .tr()
-                                                                          : messageType == 'VideoMessage'
-                                                                              ? LocaleKeys.vvideo.tr()
-                                                                              : messageType == 'FileMessage'
-                                                                                  ? LocaleKeys.file.tr()
-                                                                                  : messageType == 'VoiceCall'
-                                                                                      ? LocaleKeys.voice_call.tr()
-                                                                                      : messageType == 'VideoCall'
-                                                                                          ? LocaleKeys.video_call.tr()
-                                                                                          : LocaleKeys.voice.tr())
+                                                                      ? messageType !=
+                                                                              'ShareProduct'
+                                                                          ? (messageType == 'ImageMessage'
+                                                                              ? LocaleKeys.photo.tr()
+                                                                              : messageType == 'VideoMessage'
+                                                                                  ? LocaleKeys.vvideo.tr()
+                                                                                  : messageType == 'FileMessage'
+                                                                                      ? LocaleKeys.file.tr()
+                                                                                      : messageType == 'VoiceCall'
+                                                                                          ? LocaleKeys.voice_call.tr()
+                                                                                          : messageType == 'VideoCall'
+                                                                                              ? LocaleKeys.video_call.tr()
+                                                                                              : LocaleKeys.voice.tr())
+                                                                          : widget.chat.messages!.firstWhere((element) => element.authMessageStatus!.isDeleted == 0).shareProductContent!.productName
                                                                       : widget.chat.messages!.firstWhere((element) => element.authMessageStatus!.isDeleted == 0).messageContent!.content.toString(),
                                                               maxLines: widget
                                                                       .thereActivity

@@ -15,7 +15,12 @@ import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
+import 'package:trydos/features/app/trydos_shimmer_loading.dart';
+import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
+import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
@@ -75,8 +80,6 @@ class _ProductDetailsSheetBottomBarState
 
   @override
   void initState() {
-    print(
-        "////////////////////******************************************/////////////////${widget.size}");
     widget.addToBagButtonShapeNotifier.value = 0;
     homeBloc = BlocProvider.of<HomeBloc>(context);
     animationController = AnimationController(
@@ -101,14 +104,18 @@ class _ProductDetailsSheetBottomBarState
   Widget build(BuildContext context) {
     return BlocBuilder<HomeBloc, HomeState>(
       buildWhen: (previous, current) =>
-          previous.addImagesToProductIdForCart !=
-              current.addImagesToProductIdForCart ||
+          previous.addImagesToProductIdForCart[widget.productId]?.length !=
+              current.addImagesToProductIdForCart[widget.productId]?.length ||
           previous.currentSelectedColorForEveryProduct[widget.productId] !=
               current.currentSelectedColorForEveryProduct[widget.productId] ||
           previous.productStatus != current.productStatus ||
-          previous.ListitemForAddToCart != current.ListitemForAddToCart,
+          previous.updateItemInCartStatus != current.updateItemInCartStatus ||
+          previous.addItemInCartStatus != current.addItemInCartStatus ||
+          previous.ListitemForAddToCart?.length !=
+              current.ListitemForAddToCart?.length ||
+          previous.getCommentForProductStatus !=
+              current.getCommentForProductStatus,
       builder: (context, state) {
-        print(state.addImagesToProductIdForCart[widget.productId]);
         List<String> allimages = [];
 
         // حلقات متداخلة للوصول إلى جميع القيم
@@ -156,333 +163,390 @@ class _ProductDetailsSheetBottomBarState
                                           colorName: widget.colorName,
                                         );
                                         return AnimatedSwitcher(
-                                          duration: Duration(milliseconds: 300),
-                                          reverseDuration:
-                                              Duration(milliseconds: 300),
-                                          transitionBuilder:
-                                              (child, animation) {
-                                            return SlideTransition(
-                                              position: Tween(
-                                                begin: Offset(-1.0, 0.0),
-                                                end: Offset(0.0, 0.0),
-                                              ).animate(animation),
-                                              child: child,
-                                            );
-                                          },
-                                          child: selectedSizeByUser == null
-                                              ? GestureDetector(
-                                                  onTapDown: (details) {
-                                                    if (currentTab != 3 &&
-                                                        state.productStatus !=
-                                                            null) {
-                                                      print(
-                                                          "11111111${state.productStatus![widget.productId]}1111111111111111111");
+                                            duration:
+                                                Duration(milliseconds: 300),
+                                            reverseDuration:
+                                                Duration(milliseconds: 300),
+                                            transitionBuilder:
+                                                (child, animation) {
+                                              return SlideTransition(
+                                                position: Tween(
+                                                  begin: Offset(-1.0, 0.0),
+                                                  end: Offset(0.0, 0.0),
+                                                ).animate(animation),
+                                                child: child,
+                                              );
+                                            },
+                                            child: selectedSizeByUser == null
+                                                ? (state.productStatus?[
+                                                            widget.productId] !=
+                                                        GetProductDetailWithoutSimilarRelatedProductsStatus
+                                                            .success)
+                                                    ? Stack(
+                                                        alignment:
+                                                            Alignment.center,
+                                                        children: [
+                                                          Shimmer.fromColors(
+                                                            baseColor: Colors
+                                                                .grey.shade300,
+                                                            highlightColor:
+                                                                Colors.grey
+                                                                    .shade100,
+                                                            child: Container(
+                                                              width: 97.w,
+                                                              height: 60,
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            20),
+                                                                color: Colors
+                                                                    .grey
+                                                                    .shade300,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          Shimmer.fromColors(
+                                                            baseColor: Colors
+                                                                .grey.shade400,
+                                                            highlightColor:
+                                                                Colors.grey
+                                                                    .shade100,
+                                                            child: SvgPicture
+                                                                .asset(
+                                                              AppAssets.bagSvg,
+                                                              height: 30.h,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      )
+                                                    : GestureDetector(
+                                                        onTapDown: (details) {
+                                                          if (currentTab != 3) {
+                                                            print(
+                                                                "11111111${state.productStatus![widget.productId]}1111111111111111111");
 
-                                                      if (state.productStatus![
+                                                            if (state.productStatus![
+                                                                    widget
+                                                                        .productId] ==
+                                                                GetProductDetailWithoutSimilarRelatedProductsStatus
+                                                                    .success) {
                                                               widget
-                                                                  .productId] ==
-                                                          GetProductDetailWithoutSimilarRelatedProductsStatus
-                                                              .success) {
-                                                        widget.panelController
-                                                            .open();
-                                                        widget.currentActiveTab
-                                                            .value = 3;
-                                                      }
-                                                    } else {
-                                                      HapticFeedback
-                                                          .lightImpact();
-                                                      if (itemCount > 0) {
-                                                        if (details
-                                                                .localPosition
-                                                                .dx <=
-                                                            50.w) {
-                                                          animationController
-                                                              .forward();
-                                                          widget
-                                                              .addToBagButtonShapeNotifier
-                                                              .value--;
-                                                          homeBloc.add(UpdateListOfItemForAddToCartEvent(
-                                                              productId: widget
-                                                                  .productId,
-                                                              imageForAddToCart:
-                                                                  imageForAddToCart,
-                                                              operation: "-"));
-                                                        } else if (details
-                                                                .localPosition
-                                                                .dx >=
-                                                            (1.sw - 90).w) {
-                                                          animationController
-                                                              .forward();
-                                                          widget
-                                                              .addToBagButtonShapeNotifier
-                                                              .value++;
-                                                          homeBloc.add(UpdateListOfItemForAddToCartEvent(
-                                                              productId: widget
-                                                                  .productId,
-                                                              imageForAddToCart:
-                                                                  imageForAddToCart,
-                                                              operation: "+"));
-                                                        } else {
-                                                          animationController
-                                                              .forward();
-                                                          widget.onFinishBuying
-                                                              .call(itemCount
-                                                                  .toString());
-                                                          Future.delayed(
-                                                              Duration(
-                                                                  milliseconds:
-                                                                      400), () {
-                                                            widget
-                                                                .panelController
-                                                                .close();
-                                                          });
-                                                          widget
-                                                              .addToBagButtonShapeNotifier
-                                                              .value = 0;
-                                                        }
-                                                      } else {
-                                                        animationController
-                                                            .forward();
-                                                        widget
-                                                            .addToBagButtonShapeNotifier
-                                                            .value++;
-                                                        homeBloc.add(
-                                                            UpdateListOfItemForAddToCartEvent(
-                                                                productId: widget
-                                                                    .productId,
-                                                                imageForAddToCart:
-                                                                    imageForAddToCart,
-                                                                operation:
-                                                                    "+"));
-                                                      }
-                                                    }
-                                                  },
-                                                  child: AnimatedBuilder(
-                                                      animation:
-                                                          animationController,
-                                                      builder:
-                                                          (context, child) {
-                                                        final sineValue = sin(3 *
-                                                            2 *
-                                                            pi *
-                                                            animationController
-                                                                .value);
-                                                        return Transform
-                                                            .translate(
-                                                                offset: Offset(
-                                                                    sineValue *
-                                                                        3,
-                                                                    0),
-                                                                child: SizedBox(
-                                                                  width: currentTab ==
-                                                                          3
-                                                                      ? 1.sw -
-                                                                          40
-                                                                      : itemCount >
-                                                                              0
-                                                                          ? 197
-                                                                              .w
-                                                                          : 97.w,
-                                                                  child: Stack(
-                                                                    alignment:
-                                                                        Alignment
-                                                                            .topRight,
-                                                                    children: [
-                                                                      AnimatedContainer(
-                                                                        duration:
-                                                                            const Duration(milliseconds: 300),
-                                                                        curve: Curves
-                                                                            .fastLinearToSlowEaseIn,
-                                                                        decoration: BoxDecoration(
-                                                                            border:
-                                                                                Border.all(color: Colors.blue),
-                                                                            borderRadius: BorderRadius.circular(20),
-                                                                            color: itemCount > 0 ? const Color(0xffCEFFE6) : const Color(0xffF8F8F8)),
+                                                                  .panelController
+                                                                  .open();
+                                                              widget
+                                                                  .currentActiveTab
+                                                                  .value = 3;
+                                                            }
+                                                          } else {
+                                                            HapticFeedback
+                                                                .lightImpact();
+                                                            if (itemCount > 0) {
+                                                              if (details
+                                                                      .localPosition
+                                                                      .dx <=
+                                                                  50.w) {
+                                                                animationController
+                                                                    .forward();
+                                                                widget
+                                                                    .addToBagButtonShapeNotifier
+                                                                    .value--;
+                                                                homeBloc.add(UpdateListOfItemForAddToCartEvent(
+                                                                    productId:
+                                                                        widget
+                                                                            .productId,
+                                                                    imageForAddToCart:
+                                                                        imageForAddToCart,
+                                                                    operation:
+                                                                        "-"));
+                                                              } else if (details
+                                                                      .localPosition
+                                                                      .dx >=
+                                                                  (1.sw - 90)
+                                                                      .w) {
+                                                                animationController
+                                                                    .forward();
+                                                                widget
+                                                                    .addToBagButtonShapeNotifier
+                                                                    .value++;
+                                                                homeBloc.add(UpdateListOfItemForAddToCartEvent(
+                                                                    productId:
+                                                                        widget
+                                                                            .productId,
+                                                                    imageForAddToCart:
+                                                                        imageForAddToCart,
+                                                                    operation:
+                                                                        "+"));
+                                                              } else {
+                                                                animationController
+                                                                    .forward();
+                                                                widget
+                                                                    .onFinishBuying
+                                                                    .call(itemCount
+                                                                        .toString());
+                                                                Future.delayed(
+                                                                    Duration(
+                                                                        milliseconds:
+                                                                            400),
+                                                                    () {
+                                                                  widget
+                                                                      .panelController
+                                                                      .close();
+                                                                });
+                                                                widget
+                                                                    .addToBagButtonShapeNotifier
+                                                                    .value = 0;
+                                                                homeBloc.add(UpdateListOfItemForAddToCartEvent(
+                                                                    productId:
+                                                                        widget
+                                                                            .productId,
+                                                                    resetTheList:
+                                                                        true,
+                                                                    imageForAddToCart:
+                                                                        imageForAddToCart,
+                                                                    operation:
+                                                                        "remove"));
+                                                              }
+                                                            } else {
+                                                              animationController
+                                                                  .forward();
+                                                              widget
+                                                                  .addToBagButtonShapeNotifier
+                                                                  .value++;
+                                                              homeBloc.add(UpdateListOfItemForAddToCartEvent(
+                                                                  productId: widget
+                                                                      .productId,
+                                                                  imageForAddToCart:
+                                                                      imageForAddToCart,
+                                                                  operation:
+                                                                      "+"));
+                                                            }
+                                                          }
+                                                        },
+                                                        child: AnimatedBuilder(
+                                                            animation:
+                                                                animationController,
+                                                            builder: (context,
+                                                                child) {
+                                                              final sineValue =
+                                                                  sin(3 *
+                                                                      2 *
+                                                                      pi *
+                                                                      animationController
+                                                                          .value);
+                                                              return Transform
+                                                                  .translate(
+                                                                      offset: Offset(
+                                                                          sineValue *
+                                                                              3,
+                                                                          0),
+                                                                      child:
+                                                                          SizedBox(
+                                                                        width: currentTab ==
+                                                                                3
+                                                                            ? 1.sw -
+                                                                                40
+                                                                            : itemCount > 0
+                                                                                ? 197.w
+                                                                                : 97.w,
                                                                         child:
-                                                                            Center(
-                                                                          child:
-                                                                              Padding(
-                                                                            padding:
-                                                                                const EdgeInsets.symmetric(vertical: 10),
-                                                                            child:
-                                                                                Column(
-                                                                              children: [
-                                                                                Row(
-                                                                                  mainAxisAlignment: MainAxisAlignment.center,
-                                                                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                                                                  children: [
-                                                                                    SvgPicture.asset(
-                                                                                      AppAssets.bagSvg,
-                                                                                      height: 30.h,
-                                                                                    ),
-                                                                                    if (itemCount > 0) ...{
-                                                                                      SizedBox(
-                                                                                        height: 20,
-                                                                                        child: ListView.builder(
-                                                                                          itemBuilder: (context, index) {
-                                                                                            return Align(widthFactor: 1 - (itemCount / 12 * 0.3), child: MyCachedNetworkImage(circleDimensions: 15, imageUrl: state.ListitemForAddToCart != null ? state.ListitemForAddToCart![index].images! : "", width: 15, imageWidth: 70, imageHeight: 70, imageFit: BoxFit.cover, height: 20)); /*Container(
-                                                                                          width: 15,
-                                                                                          height: 20,
-                                                                                          decoration: BoxDecoration(
-                                                                                            image: DecorationImage(
-                                                                                              image: NetworkImage(widget.imageUrl),
-                                                                                              fit: ,
-                                                                                            ),
-                                                                                            borderRadius: BorderRadius.circular(5.0),
-                                                                                          ),
-                                                                                        ));*/
-                                                                                          },
-                                                                                          reverse: true,
-                                                                                          shrinkWrap: true,
-                                                                                          scrollDirection: Axis.horizontal,
-                                                                                          itemCount: state.ListitemForAddToCart != null ? state.ListitemForAddToCart!.length : 0,
-                                                                                        ),
-                                                                                      ),
-                                                                                    },
-                                                                                    SizedBox(
-                                                                                      height: 20,
-                                                                                      child: ListView.builder(
-                                                                                        itemBuilder: (context, index) {
-                                                                                          return Align(widthFactor: 1 - (itemCount / 12 * 0.3), child: MyCachedNetworkImage(circleDimensions: 15, imageUrl: allimages[index], width: 15, imageWidth: 70, imageHeight: 70, imageFit: BoxFit.cover, height: 20)); /*Container(
-                                                                                          width: 15,
-                                                                                          height: 20,
-                                                                                          decoration: BoxDecoration(
-                                                                                            image: DecorationImage(
-                                                                                              image: NetworkImage(widget.imageUrl),
-                                                                                              fit: ,
-                                                                                            ),
-                                                                                            borderRadius: BorderRadius.circular(5.0),
-                                                                                          ),
-                                                                                        ));*/
-                                                                                        },
-                                                                                        reverse: true,
-                                                                                        shrinkWrap: true,
-                                                                                        scrollDirection: Axis.horizontal,
-                                                                                        itemCount: allimages.length,
-                                                                                      ),
-                                                                                    ),
-                                                                                  ],
-                                                                                ),
-                                                                                const SizedBox(
-                                                                                  height: 5,
-                                                                                ),
-                                                                                if (currentTab != 3) ...{
-                                                                                  MyTextWidget(
-                                                                                    itemCount > 0 ? '$itemCount' : 'Add to bag',
-                                                                                    style: itemCount > 0 ? textTheme.titleMedium?.bq.copyWith(color: const Color(0xff505050)) : textTheme.titleMedium?.rq.copyWith(color: const Color(0xff505050)),
-                                                                                  )
-                                                                                } else ...{
-                                                                                  Row(
-                                                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                                            Stack(
+                                                                          alignment:
+                                                                              Alignment.topRight,
+                                                                          children: [
+                                                                            AnimatedContainer(
+                                                                              duration: const Duration(milliseconds: 300),
+                                                                              curve: Curves.fastLinearToSlowEaseIn,
+                                                                              decoration: BoxDecoration(border: Border.all(color: Colors.blue), borderRadius: BorderRadius.circular(20), color: itemCount > 0 ? const Color(0xffCEFFE6) : const Color(0xffF8F8F8)),
+                                                                              child: Center(
+                                                                                child: Padding(
+                                                                                  padding: const EdgeInsets.symmetric(vertical: 10),
+                                                                                  child: Column(
                                                                                     children: [
-                                                                                      MyTextWidget(
-                                                                                        'Add ',
-                                                                                        style: textTheme.titleMedium?.mq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
-                                                                                      ),
-                                                                                      MyTextWidget(
-                                                                                        'to bag ',
-                                                                                        style: textTheme.titleMedium?.rq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
-                                                                                      ),
-                                                                                      widget.colorNum == ""
-                                                                                          ? SizedBox.shrink()
-                                                                                          : MyTextWidget(
-                                                                                              '${widget.colorName} ',
-                                                                                              style: textTheme.titleMedium?.mq.copyWith(height: 15 / 12, color: Color(int.parse('0xff${widget.colorNum.substring(1)}'))),
+                                                                                      Row(
+                                                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                                                        crossAxisAlignment: CrossAxisAlignment.end,
+                                                                                        children: [
+                                                                                          SvgPicture.asset(
+                                                                                            AppAssets.bagSvg,
+                                                                                            height: 30.h,
+                                                                                          ),
+                                                                                          if (itemCount > 0) ...{
+                                                                                            SizedBox(
+                                                                                              height: 20,
+                                                                                              child: ListView.builder(
+                                                                                                itemBuilder: (context, index) {
+                                                                                                  return Align(widthFactor: 1 - (itemCount / 12 * 0.3), child: MyCachedNetworkImage(circleDimensions: 15, imageUrl: state.ListitemForAddToCart != null ? state.ListitemForAddToCart![index].images! : "", width: 15, imageWidth: 70, imageHeight: 70, imageFit: BoxFit.cover, height: 20)); /*Container(
+                                                                                          width: 15,
+                                                                                          height: 20,
+                                                                                          decoration: BoxDecoration(
+                                                                                            image: DecorationImage(
+                                                                                              image: NetworkImage(widget.imageUrl),
+                                                                                              fit: ,
                                                                                             ),
-                                                                                      widget.colorNum == ""
-                                                                                          ? SizedBox.shrink()
-                                                                                          : MyTextWidget(
-                                                                                              'color ',
-                                                                                              style: textTheme.titleMedium?.rq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
+                                                                                            borderRadius: BorderRadius.circular(5.0),
+                                                                                          ),
+                                                                                        ));*/
+                                                                                                },
+                                                                                                reverse: true,
+                                                                                                shrinkWrap: true,
+                                                                                                scrollDirection: Axis.horizontal,
+                                                                                                itemCount: state.ListitemForAddToCart != null ? state.ListitemForAddToCart!.length : 0,
+                                                                                              ),
                                                                                             ),
-                                                                                      widget.size == ""
-                                                                                          ? SizedBox.shrink()
-                                                                                          : MyTextWidget(
-                                                                                              '${widget.size} ',
+                                                                                          },
+                                                                                          SizedBox(
+                                                                                            height: 20,
+                                                                                            child: ListView.builder(
+                                                                                              itemBuilder: (context, index) {
+                                                                                                return Align(widthFactor: 1 - (itemCount / 12 * 0.3), child: MyCachedNetworkImage(circleDimensions: 15, imageUrl: allimages[index], width: 15, imageWidth: 70, imageHeight: 70, imageFit: BoxFit.cover, height: 20)); /*Container(
+                                                                                          width: 15,
+                                                                                          height: 20,
+                                                                                          decoration: BoxDecoration(
+                                                                                            image: DecorationImage(
+                                                                                              image: NetworkImage(widget.imageUrl),
+                                                                                              fit: ,
+                                                                                            ),
+                                                                                            borderRadius: BorderRadius.circular(5.0),
+                                                                                          ),
+                                                                                        ));*/
+                                                                                              },
+                                                                                              reverse: true,
+                                                                                              shrinkWrap: true,
+                                                                                              scrollDirection: Axis.horizontal,
+                                                                                              itemCount: allimages.length,
+                                                                                            ),
+                                                                                          ),
+                                                                                        ],
+                                                                                      ),
+                                                                                      const SizedBox(
+                                                                                        height: 5,
+                                                                                      ),
+                                                                                      if (currentTab != 3) ...{
+                                                                                        MyTextWidget(
+                                                                                          itemCount > 0 ? '$itemCount' : 'Add to bag',
+                                                                                          style: itemCount > 0 ? textTheme.titleMedium?.bq.copyWith(color: const Color(0xff505050)) : textTheme.titleMedium?.rq.copyWith(color: const Color(0xff505050)),
+                                                                                        )
+                                                                                      } else ...{
+                                                                                        Row(
+                                                                                          mainAxisAlignment: MainAxisAlignment.center,
+                                                                                          children: [
+                                                                                            MyTextWidget(
+                                                                                              'Add ',
                                                                                               style: textTheme.titleMedium?.mq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
                                                                                             ),
-                                                                                      widget.size == ""
-                                                                                          ? SizedBox.shrink()
-                                                                                          : MyTextWidget(
-                                                                                              'size',
+                                                                                            MyTextWidget(
+                                                                                              'to bag ',
                                                                                               style: textTheme.titleMedium?.rq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
                                                                                             ),
+                                                                                            widget.colorNum == ""
+                                                                                                ? SizedBox.shrink()
+                                                                                                : MyTextWidget(
+                                                                                                    'color ',
+                                                                                                    style: textTheme.titleMedium?.rq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
+                                                                                                  ),
+                                                                                            widget.colorNum == ""
+                                                                                                ? SizedBox.shrink()
+                                                                                                : MyTextWidget(
+                                                                                                    '${widget.colorName} ',
+                                                                                                    style: textTheme.titleMedium?.mq.copyWith(height: 15 / 12, color: Color(int.parse('0xff${widget.colorNum.substring(1)}'))),
+                                                                                                  ),
+                                                                                            widget.size == ""
+                                                                                                ? SizedBox.shrink()
+                                                                                                : MyTextWidget(
+                                                                                                    'size ',
+                                                                                                    style: textTheme.titleMedium?.rq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
+                                                                                                  ),
+                                                                                            widget.size == ""
+                                                                                                ? SizedBox.shrink()
+                                                                                                : MyTextWidget(
+                                                                                                    '${widget.size} ',
+                                                                                                    style: textTheme.titleMedium?.mq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
+                                                                                                  ),
+                                                                                          ].reversed.toList(),
+                                                                                        )
+                                                                                      }
                                                                                     ],
-                                                                                  )
-                                                                                }
-                                                                              ],
+                                                                                  ),
+                                                                                ),
+                                                                              ),
                                                                             ),
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                      if (itemCount >
-                                                                          0) ...{
-                                                                        Positioned(
-                                                                          top:
-                                                                              -35,
-                                                                          left:
-                                                                              -35,
-                                                                          child:
-                                                                              Container(
-                                                                            width:
-                                                                                55,
-                                                                            height:
-                                                                                55,
-                                                                            decoration: BoxDecoration(
-                                                                                border: Border.all(color: Colors.blue),
-                                                                                borderRadius: BorderRadius.circular(20),
-                                                                                color: colorScheme.white),
-                                                                          ),
-                                                                        ),
-                                                                        Positioned(
-                                                                          left:
-                                                                              0,
-                                                                          child:
-                                                                              Padding(
-                                                                            padding:
-                                                                                EdgeInsets.only(top: itemCount == 1 ? 0 : 7.h),
-                                                                            child:
-                                                                                SvgPicture.asset(
-                                                                              itemCount == 1 ? AppAssets.binSvg : AppAssets.minusMarkSvg,
-                                                                              height: itemCount == 1 ? 15.h : 3.h,
+                                                                            if (itemCount >
+                                                                                0) ...{
+                                                                              Positioned(
+                                                                                top: -35,
+                                                                                left: -35,
+                                                                                child: Container(
+                                                                                  width: 55,
+                                                                                  height: 55,
+                                                                                  decoration: BoxDecoration(border: Border.all(color: Colors.blue), borderRadius: BorderRadius.circular(20), color: colorScheme.white),
+                                                                                ),
+                                                                              ),
+                                                                              Positioned(
+                                                                                left: 0,
+                                                                                child: Padding(
+                                                                                  padding: EdgeInsets.only(top: itemCount == 1 ? 0 : 7.h),
+                                                                                  child: SvgPicture.asset(
+                                                                                    itemCount == 1 ? AppAssets.binSvg : AppAssets.minusMarkSvg,
+                                                                                    height: itemCount == 1 ? 15.h : 3.h,
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+                                                                            },
+                                                                            Positioned(
+                                                                              top: -35,
+                                                                              right: -35,
+                                                                              child: Container(
+                                                                                width: 55,
+                                                                                height: 55,
+                                                                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), border: Border.all(color: Colors.blue), color: colorScheme.white),
+                                                                              ),
                                                                             ),
-                                                                          ),
+                                                                            SvgPicture.asset(
+                                                                              AppAssets.plusMarkSvg,
+                                                                              height: 15.h,
+                                                                            ),
+                                                                          ],
                                                                         ),
-                                                                      },
-                                                                      Positioned(
-                                                                        top:
-                                                                            -35,
-                                                                        right:
-                                                                            -35,
-                                                                        child:
-                                                                            Container(
-                                                                          width:
-                                                                              55,
-                                                                          height:
-                                                                              55,
-                                                                          decoration: BoxDecoration(
-                                                                              borderRadius: BorderRadius.circular(20),
-                                                                              border: Border.all(color: Colors.blue),
-                                                                              color: colorScheme.white),
-                                                                        ),
-                                                                      ),
-                                                                      SvgPicture
-                                                                          .asset(
-                                                                        AppAssets
-                                                                            .plusMarkSvg,
-                                                                        height:
-                                                                            15.h,
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                ));
-                                                      }),
-                                                )
-                                              : NotifyWhenQuantityAvailableButton(
-                                                  unAvailableSize:
-                                                      selectedSizeByUser,
-                                                ),
-                                        );
+                                                                      ));
+                                                            }),
+                                                      )
+                                                : BlocBuilder<HomeBloc,
+                                                    HomeState>(
+                                                    buildWhen: (p, c) =>
+                                                        p.getStartingSettingsStatus !=
+                                                        c.getStartingSettingsStatus,
+                                                    builder: (context, state) {
+                                                      int notificationTypeId = state
+                                                              .startingSetting
+                                                              ?.notificationTypes
+                                                              ?.firstWhere(
+                                                                  (type) =>
+                                                                      type.name ==
+                                                                      'product availability',
+                                                                  orElse: () =>
+                                                                      NotificationType(
+                                                                          id: -1))
+                                                              .id ??
+                                                          -1;
+
+                                                      return notificationTypeId ==
+                                                              -1
+                                                          ? SizedBox.shrink()
+                                                          : NotifyWhenQuantityAvailableButton(
+                                                              unAvailableSize:
+                                                                  selectedSizeByUser,
+                                                              notificationTypeId:
+                                                                  notificationTypeId,
+                                                              productId: widget
+                                                                  .productId,
+                                                              selectedColorName:
+                                                                  widget
+                                                                      .colorName,
+                                                            );
+                                                    },
+                                                  ));
                                       });
                                 }),
                             if (currentTab != 3) ...{
@@ -498,19 +562,55 @@ class _ProductDetailsSheetBottomBarState
                                         text: '110K',
                                         svgPath: AppAssets.favoriteSvg,
                                         onTap: widget.clickOnFavorite),
-                                    BarWidget(
-                                        text: '110K',
-                                        svgPath: currentTab == 0
-                                            ? AppAssets.chatMarkActiveSvg
-                                            : AppAssets.chatMarkSvg,
-                                        onTap: widget.clickOnComments),
-                                    BarWidget(
-                                        text: '2K',
-                                        svgPath: AppAssets.shareSvg,
-                                        color: currentTab == 1
-                                            ? Color(0xff505050)
-                                            : null,
-                                        onTap: widget.clickOnShare),
+                                    state
+                                                .getCommentForProductModel[
+                                                    widget.productId]
+                                                ?.commentsForProduct
+                                                ?.commentsCount ==
+                                            null
+                                        ? Shimmer.fromColors(
+                                            baseColor: Colors.grey.shade400,
+                                            highlightColor:
+                                                Colors.grey.shade100,
+                                            child: SvgPicture.asset(
+                                                AppAssets.chatMarkSvg),
+                                          )
+                                        : BarWidget(
+                                            text:
+                                                '${state.getCommentForProductModel[widget.productId]?.commentsForProduct?.commentsCount ?? 0}',
+                                            svgPath: currentTab == 0
+                                                ? AppAssets.chatMarkActiveSvg
+                                                : AppAssets.chatMarkSvg,
+                                            onTap: widget.clickOnComments),
+                                    BlocBuilder<ChatBloc, ChatState>(
+                                      buildWhen: (previous, current) =>
+                                          previous
+                                              .getSharedProductCountStatus !=
+                                          current.getSharedProductCountStatus,
+                                      builder: (context, state) {
+                                        return state.getSharedProductCount?[
+                                                        widget.productId] ==
+                                                    null &&
+                                                state.getSharedProductCountStatus ==
+                                                    GetSharedProductCountStatus
+                                                        .loading
+                                            ? Shimmer.fromColors(
+                                                baseColor: Colors.grey.shade400,
+                                                highlightColor:
+                                                    Colors.grey.shade100,
+                                                child: SvgPicture.asset(
+                                                    AppAssets.shareSvg),
+                                              )
+                                            : BarWidget(
+                                                text:
+                                                    '${state.getSharedProductCount?[widget.productId] ?? "0"}',
+                                                svgPath: AppAssets.shareSvg,
+                                                color: currentTab == 1
+                                                    ? Color(0xff505050)
+                                                    : null,
+                                                onTap: widget.clickOnShare);
+                                      },
+                                    ),
                                     BarWidget(
                                         svgPath: AppAssets.moreOptionSvg,
                                         color: currentTab == 2

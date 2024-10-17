@@ -1,5 +1,8 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
+import 'dart:developer' as dev;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -94,7 +97,6 @@ bool declineCallBecauseOfNotificationButton = false;
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  HttpOverrides.global = MyHttpOverrides();
   if (!isHydratedStorageInitialized) {
     HydratedBloc.storage = await HydratedStorage.build(
       storageDirectory: await getApplicationDocumentsDirectory(),
@@ -234,6 +236,18 @@ List<String> isFailedTheFirstTime = [];
 List<String> apisMustNotToRequest = [];
 int applicationVersion = 1;
 
+request()async{
+  final Stopwatch stopWatch = Stopwatch();
+  stopWatch.start();
+  //await http.get(Uri.parse('http://market_under_dev_backend.trydos.dev/api/new_v1/mobile/home/mainCategories'));
+  await Dio().getUri(Uri.parse('http://ip-api.com/json')).onError((e , st){
+    dev.log(e.toString());
+    return Response(requestOptions: RequestOptions());
+  });
+  stopWatch.stop();
+  dev.log('request time: ${stopWatch.elapsed.toString()}');
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   HydratedBloc.storage = await HydratedStorage.build(
@@ -265,6 +279,7 @@ void main() async {
     apiKey: "AIzaSyDP0q_EapML_zg4ibE_p1NbWNlUa2DjefI",
   );
   gemini.Gemini.enableDebugging = true;
+  print(GetIt.I<PrefsRepository>().marketToken);
   await SentryFlutter.init(
     (options) {
       options.dsn = dotenv.env['SENTRY_DNS'];
