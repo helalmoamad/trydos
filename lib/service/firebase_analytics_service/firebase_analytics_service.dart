@@ -13,22 +13,29 @@ class FirebaseAnalyticsService {
     required String screen,
     Map<String, String>? extraParams,
   }) async {
-    await FirebaseAnalytics.instance.logScreenView(
-      screenName: screen,
-      parameters: {
-        'user_id': GetIt.I<PrefsRepository>().myMarketId ?? 'empty',
-        'session_id': GetIt.I<PrefsRepository>().sessionId.toString(),
-        'time_stamp': DateTime.now()
-            .toUtc()
-            .add(Duration(minutes: GetIt.I<PrefsRepository>().getdurtion ?? 0))
-            .toString(),
-        'device_language': LanguageService.languageCode == 'ar'
-            ? 'ae'
-            : LanguageService.languageCode,
-        'country_name': GetIt.I<PrefsRepository>().countryIso.toString(),
-        if (extraParams != null) ...extraParams,
-      },
-    );
+    try {
+      await FirebaseAnalytics.instance.logScreenView(
+        screenName: screen,
+        parameters: {
+          'our_user_id': GetIt.I<PrefsRepository>().myMarketId ?? 'empty',
+          'our_session_id': GetIt.I<PrefsRepository>().sessionId.toString(),
+          'time_stamp': DateTime.now()
+              .toUtc()
+              .add(
+                  Duration(minutes: GetIt.I<PrefsRepository>().getdurtion ?? 0))
+              .toString(),
+          'device_language': LanguageService.languageCode == 'ar'
+              ? 'ae'
+              : LanguageService.languageCode,
+          'country_name': GetIt.I<PrefsRepository>().countryIso.toString(),
+          if (extraParams != null) ...extraParams,
+        },
+      );
+    } catch (e, st) {
+      debugPrint(
+          '////logScreen Error ////////// ${e.toString()} //////////////////');
+      debugPrint(st.toString());
+    }
   }
 
   static Future<void> logEventForSession({
@@ -40,8 +47,8 @@ class FirebaseAnalyticsService {
       await FirebaseAnalytics.instance.logEvent(
         name: eventName,
         parameters: {
-          'user_id': GetIt.I<PrefsRepository>().myMarketId ?? 'empty',
-          'session_id': GetIt.I<PrefsRepository>().sessionId.toString(),
+          'our_user_id': GetIt.I<PrefsRepository>().myMarketId ?? 'empty',
+          'our_session_id': GetIt.I<PrefsRepository>().sessionId.toString(),
           'executed_event_name': executedEventName,
           'time_stamp': DateTime.now()
               .toUtc()
@@ -63,7 +70,8 @@ class FirebaseAnalyticsService {
       );
       ///////////////////////
     } catch (e, st) {
-      debugPrint(e.toString());
+      debugPrint(
+          '////log Event For Session Error ////////// ${e.toString()} //////////////////');
       debugPrint(st.toString());
     }
   }
@@ -76,7 +84,7 @@ class FirebaseAnalyticsService {
       await FirebaseAnalytics.instance.logEvent(
         name: AnalyticsEventsConst.startSession,
         parameters: {
-          'session_id': GetIt.I<PrefsRepository>().sessionId.toString(),
+          'our_session_id': GetIt.I<PrefsRepository>().sessionId.toString(),
           'session_startAt': DateTime.now()
               .toUtc()
               .add(
@@ -87,7 +95,8 @@ class FirebaseAnalyticsService {
 
       await GetIt.I<PrefsRepository>().removeCurrentEvent();
     } catch (e, st) {
-      debugPrint(e.toString());
+      debugPrint(
+          '//// startAnalyticsSession Error ////////// ${e.toString()} //////////////////');
       debugPrint(st.toString());
     }
   }
@@ -110,7 +119,8 @@ class FirebaseAnalyticsService {
         },
       );
     } catch (e, st) {
-      debugPrint(e.toString());
+      debugPrint(
+          '//// logEventForViewedProducts Error ////////// ${e.toString()} //////////////////');
       debugPrint(st.toString());
     }
   }
