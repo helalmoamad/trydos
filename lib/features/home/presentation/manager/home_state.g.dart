@@ -205,8 +205,9 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       prefAppliedFilterForExtendFilter:
           json['prefAppliedFilterForExtendFilter'] == null
               ? null
-              : get_filters.Filter.fromJson(json['prefAppliedFilterForExtendFilter']
-                  as Map<String, dynamic>),
+              : get_filters.Filter.fromJson(
+                  json['prefAppliedFilterForExtendFilter']
+                      as Map<String, dynamic>),
       ListitemForAddToCart: (json['ListitemForAddToCart'] as List<dynamic>?)
           ?.map((e) => ImageForAddToCart.fromJson(e as Map<String, dynamic>))
           .toList(),

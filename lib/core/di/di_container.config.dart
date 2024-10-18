@@ -109,6 +109,8 @@ import '../../features/chat/domain/use_cases/send_error_to_server_usecase.dart'
     as _i677;
 import '../../features/chat/domain/use_cases/send_message_usecase.dart'
     as _i703;
+import '../../features/chat/domain/use_cases/share_product_on_social_app_count_usecase.dart'
+    as _i710;
 import '../../features/chat/domain/use_cases/share_product_with_contacts_or_channels_usecase.dart'
     as _i139;
 import '../../features/chat/domain/use_cases/upload_file_usecase.dart' as _i897;
@@ -207,7 +209,6 @@ Future<_i174.GetIt> $initGetIt(
     () => appModule.prefsRepository,
     preResolve: true,
   );
-  // gh.lazySingleton<_i824.SessionManager>(() => _i824.SessionManager());
   gh.lazySingleton<_i721.AppBloc>(() => _i721.AppBloc());
   gh.lazySingleton<_i1026.PreCachingImageBloc>(
       () => _i1026.PreCachingImageBloc());
@@ -335,30 +336,13 @@ Future<_i174.GetIt> $initGetIt(
       () => _i677.SendErrorToServerUseCase(gh<_i420.ChatRepository>()));
   gh.factory<_i703.SendMessageUseCase>(
       () => _i703.SendMessageUseCase(gh<_i420.ChatRepository>()));
+  gh.factory<_i710.ShareProductOnAppsUseCase>(
+      () => _i710.ShareProductOnAppsUseCase(gh<_i420.ChatRepository>()));
   gh.factory<_i139.ShareProductWithContactsOrChannelsUsecase>(() =>
       _i139.ShareProductWithContactsOrChannelsUsecase(
           gh<_i420.ChatRepository>()));
   gh.factory<_i897.UploadFileUseCase>(
       () => _i897.UploadFileUseCase(gh<_i420.ChatRepository>()));
-  gh.lazySingleton<_i243.ChatBloc>(() => _i243.ChatBloc(
-        gh<_i418.GetContactsUseCase>(),
-        gh<_i675.GetMyChatsUseCase>(),
-        gh<_i777.SaveContactsUseCase>(),
-        gh<_i703.SendMessageUseCase>(),
-        gh<_i538.GetSharedProductCountUseCase>(),
-        gh<_i912.GetMessagesBetweenUseCase>(),
-        gh<_i1043.UploadFileCloudinaryUseCase>(),
-        gh<_i304.GetMessagesForChatUseCase>(),
-        gh<_i361.DeleteChatUseCase>(),
-        gh<_i142.ChangeChatPropertyUseCase>(),
-        gh<_i897.UploadFileUseCase>(),
-        gh<_i314.ReadAllMessagesUseCase>(),
-        gh<_i40.ReceiveMessageUseCase>(),
-        gh<_i139.ShareProductWithContactsOrChannelsUsecase>(),
-        gh<_i109.GetMediaCountUseCase>(),
-        gh<_i668.GetDateTimeUseCase>(),
-        gh<_i677.SendErrorToServerUseCase>(),
-      ));
   gh.factory<_i661.AnswerCallUseCase>(
       () => _i661.AnswerCallUseCase(gh<_i1032.CallsRepository>()));
   gh.factory<_i95.DeleteMessageUseCase>(
@@ -411,6 +395,26 @@ Future<_i174.GetIt> $initGetIt(
         gh<_i767.GetMissedCalCountUseCase>(),
         gh<_i1014.GetAgoraTokenUseCase>(),
         gh<_i95.DeleteMessageUseCase>(),
+      ));
+  gh.lazySingleton<_i243.ChatBloc>(() => _i243.ChatBloc(
+        gh<_i418.GetContactsUseCase>(),
+        gh<_i675.GetMyChatsUseCase>(),
+        gh<_i710.ShareProductOnAppsUseCase>(),
+        gh<_i777.SaveContactsUseCase>(),
+        gh<_i703.SendMessageUseCase>(),
+        gh<_i538.GetSharedProductCountUseCase>(),
+        gh<_i912.GetMessagesBetweenUseCase>(),
+        gh<_i1043.UploadFileCloudinaryUseCase>(),
+        gh<_i304.GetMessagesForChatUseCase>(),
+        gh<_i361.DeleteChatUseCase>(),
+        gh<_i142.ChangeChatPropertyUseCase>(),
+        gh<_i897.UploadFileUseCase>(),
+        gh<_i314.ReadAllMessagesUseCase>(),
+        gh<_i40.ReceiveMessageUseCase>(),
+        gh<_i139.ShareProductWithContactsOrChannelsUsecase>(),
+        gh<_i109.GetMediaCountUseCase>(),
+        gh<_i668.GetDateTimeUseCase>(),
+        gh<_i677.SendErrorToServerUseCase>(),
       ));
   gh.lazySingleton<_i561.AuthBloc>(() => _i561.AuthBloc(
         gh<_i434.UpdateStoriesUserUseCase>(),

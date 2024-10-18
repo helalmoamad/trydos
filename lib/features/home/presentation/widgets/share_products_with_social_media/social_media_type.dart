@@ -1,5 +1,8 @@
 import 'package:flutter_html/flutter_html.dart';
+import 'package:get_it/get_it.dart';
 import 'package:html/parser.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 enum SocialMediaType {
@@ -14,7 +17,10 @@ enum SocialMediaType {
 }
 
 Future share(
-    SocialMediaType socialPlatform, String text, String urlShare) async {
+    {required SocialMediaType socialPlatform,
+    required String text,
+    required String productId,
+    required String urlShare}) async {
   text = parseFragment(text).text ?? "";
   print(text);
   final urlShares = Uri.encodeComponent(urlShare);
@@ -37,6 +43,10 @@ Future share(
   if (await canLaunchUrlString(url!)) {
     await launchUrlString(url).then(
       (value) {
+        GetIt.I<ChatBloc>().add(IncreaseSharedProductCountOnSocialAppEvent(
+            socialMediaName: socialPlatform.name,
+            productId: productId,
+            sharedCount: 1));
         print(
             "___________________________________________________________________${value}");
       },

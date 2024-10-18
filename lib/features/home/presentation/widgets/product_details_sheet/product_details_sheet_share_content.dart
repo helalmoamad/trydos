@@ -96,8 +96,10 @@ class _ProductDetailsSheetShareContentState
                         color: Color(0xffff0000),
                       )),
                   cupertino.Spacer(),
-                  buildSocialButtons("${widget.productDescription} \n",
-                      "https://....................."),
+                  buildSocialButtons(
+                      text: "${widget.productDescription} \n",
+                      urlShare: "https://.....................",
+                      productId: widget.productItem.id.toString()),
                 ],
               ),
             ),
@@ -224,8 +226,10 @@ class _ProductDetailsSheetShareContentState
                     },
                   );
                 }),
-            buildSocialButtons("${widget.productDescription} \n",
-                "https://....................."),
+            buildSocialButtons(
+                text: "${widget.productDescription} \n",
+                urlShare: "https://.....................",
+                productId: widget.productItem.id.toString()),
           }
         ],
       ),

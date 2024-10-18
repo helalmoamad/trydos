@@ -15,17 +15,23 @@ class ShareProductOnAppsUseCase
 
   @override
   Future<Either<Failure, bool>> call(ShareProductOnAppsParams params) {
-    return repository.saveContacts(params.map);
+    return repository.shareProductOnApps(params.map);
   }
 }
 
 class ShareProductOnAppsParams {
-  List<Map<String, dynamic>> contacts;
+  String appName;
+  String productId;
+  int sharedCount;
 
   ShareProductOnAppsParams({
-    this.contacts = const [],
+    required this.appName,
+    required this.productId,
+    required this.sharedCount,
   });
   Map<String, dynamic> get map => {
-        "contacts": contacts,
+        "app_name": "${appName}'",
+        "product_id": "${productId}",
+        "shared_count": sharedCount,
       };
 }
