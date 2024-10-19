@@ -60,6 +60,13 @@ class ChatRepositoryImpl extends ChatRepository with HandlingExceptionRequest {
   }
 
   @override
+  Future<Either<Failure, bool>> shareProductOnApps(Map<String, dynamic> params) {
+    ///todo debug12
+//    Fluttertoast.showToast(msg: dataSource.saveContacts(params).toString());
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.shareProductOnApps(params));
+  }
+@override
   Future<Either<Failure, bool>> saveContacts(Map<String, dynamic> params) {
     ///todo debug12
 //    Fluttertoast.showToast(msg: dataSource.saveContacts(params).toString());

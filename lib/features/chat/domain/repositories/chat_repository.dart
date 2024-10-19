@@ -20,13 +20,17 @@ abstract class ChatRepository {
       Map<String, dynamic> params);
   Future<Either<Failure, UploadFileResponseModel>> uploadFile(
       Map<String, dynamic> params);
-       Future<Either<Failure, GetSharedProductCountModel>> getSharedProductCount(
+  Future<Either<Failure, GetSharedProductCountModel>> getSharedProductCount(
       Map<String, dynamic> params);
-      
+
   Future<Either<Failure, bool>> saveContacts(Map<String, dynamic> params);
+
+  Future<Either<Failure, bool>> shareProductOnApps(Map<String, dynamic> params);
+
   Future<Either<Failure, String>> getDateTime();
 
-  Future<Either<Failure, Message>> shareProductWithContactsOrChannels(Map<String, dynamic> params);
+  Future<Either<Failure, Message>> shareProductWithContactsOrChannels(
+      Map<String, dynamic> params);
   Future<Either<Failure, Message>> sendMessage(Map<String, dynamic> params);
   Future<Either<Failure, bool>> readAllMessages(Map<String, dynamic> params);
   Future<Either<Failure, bool>> receiveMessage(Map<String, dynamic> params);

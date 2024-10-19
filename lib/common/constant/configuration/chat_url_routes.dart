@@ -69,6 +69,7 @@ abstract class ChatEndPoints {
   ///! ----< channel Members  >----
   ///
   static final setChatPropertyEP = 'set'.channelMembersScope();
+  static final shareProductOnAppsEP = 'share_product_on_apps'.elasticScope();
 
   ///! ----< messages >----
   ///
@@ -76,7 +77,7 @@ abstract class ChatEndPoints {
   static final getMessagesBetweenEP =
       'get_all_messages_between_two_messages'.messagesScope();
   static final shareProductWithChannelsOrContacts =
-  'share_product'.messagesScope();
+      'share_product'.messagesScope();
   static String getMessagesForChatEP(String channelId) =>
       'messages_of_channel/$channelId'.messagesScope();
 

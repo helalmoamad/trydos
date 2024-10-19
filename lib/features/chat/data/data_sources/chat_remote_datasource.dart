@@ -216,6 +216,18 @@ class ChatRemoteDataSource {
     return createUser();
   }
 
+  Future<bool> shareProductOnApps(Map<String, dynamic> params) {
+    PostClient<bool> shareProductOnApps = PostClient<bool>(
+      serverName: ServerName.chat,
+      requestPrams: RequestConfig<bool>(
+        endpoint: ChatEndPoints.shareProductOnAppsEP,
+        data: params,
+        response: ResponseValue<bool>(returnValueOnSuccess: true),
+      ),
+    );
+    return shareProductOnApps();
+  }
+
   Future<ChatImageDetail> loadWidthAndHeightForImage(
       {required File ImageFile, Function? onError}) async {
     Completer<ChatImageDetail> completer = Completer<ChatImageDetail>();
