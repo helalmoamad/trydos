@@ -124,4 +124,26 @@ class FirebaseAnalyticsService {
       debugPrint(st.toString());
     }
   }
+
+  static Future<void> logEventForViewedBoutiques({
+    required String eventName,
+    required String boutiqueId,
+    required String boutiqueName,
+    Map<String, String>? extraParams,
+  }) async {
+    try {
+      await FirebaseAnalytics.instance.logEvent(
+        name: eventName,
+        parameters: {
+          'boutique_id': boutiqueId,
+          'boutique_name': boutiqueName,
+          if (extraParams != null) ...extraParams,
+        },
+      );
+    } catch (e, st) {
+      debugPrint(
+          '//// log Event For Viewed Boutiques Error ////////// ${e.toString()} //////////////////');
+      debugPrint(st.toString());
+    }
+  }
 }

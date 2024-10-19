@@ -3,4 +3,5 @@ class AnalyticsEventsConst {
   static const programmingEvent = 'programming_event';
   static const startSession = 'start_session';
   static const viewedProducts = 'viewed_products';
+  static const viewedBoutiques = 'viewed_boutiques';
 }

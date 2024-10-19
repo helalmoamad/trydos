@@ -18,7 +18,6 @@ import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
-import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/widgets/sliver_list_seprated.dart';
@@ -29,7 +28,6 @@ import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/my_text_widget.dart';
-import '../../../chat/presentation/manager/chat_bloc.dart';
 import '../../../story/presentation/widget/stories_list.dart';
 import '../manager/home_state.dart';
 import '../widgets/home_page_card2.dart';
@@ -46,7 +44,8 @@ class _HomePageState extends State<HomePage> {
   late HomeBloc homeBloc;
   final ScrollController scrollController = ScrollController();
   Map<String, Key> reRenderingListViewKey = {};
-  Map<String, int> lastIndexRequestedInEachMainCategoryForPrefetchBoutiques = {};
+  Map<String, int> lastIndexRequestedInEachMainCategoryForPrefetchBoutiques =
+      {};
 
   @override
   void initState() {
@@ -462,7 +461,8 @@ class _HomePageState extends State<HomePage> {
                               .getHomeBoutiquesPaginationObjectByMainCategory[
                                   currentSlug]
                               ?.paginationStatus ==
-                          PaginationStatus.loading && state.isGettingProductListingWithPagination) {
+                          PaginationStatus.loading &&
+                      state.isGettingProductListingWithPagination) {
                     return SliverToBoxAdapter(
                       child: Center(
                         child: TrydosLoader(),

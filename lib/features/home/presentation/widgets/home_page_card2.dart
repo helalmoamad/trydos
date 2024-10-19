@@ -16,6 +16,8 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/my_text_widget.dart';
 import '../../../app/svg_network_widget.dart';
 
@@ -54,42 +56,24 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
         InkWell(
           splashColor: Colors.transparent,
           highlightColor: Colors.transparent,
-          onTap: () async {
-            // try {
-            //   await FirebaseAnalytics.instance
-            //       .logEvent(name: 'button_clicked', parameters: {
-            //     "time_stamp": DateTime.now()
-            //         .toUtc()
-            //         .add(Duration(
-            //             minutes: GetIt.I<PrefsRepository>().getdurtion ?? 0))
-            //         .toString(),
-            //     "previous_event_button_name":
-            //         GetIt.I<PrefsRepository>().currentEvent ?? " ",
-            //     "device_language": LanguageService.languageCode == 'ar'
-            //         ? 'ae'
-            //         : LanguageService.languageCode,
-            //     "country_name": GetIt.I<PrefsRepository>().countryIso,
-            //     'userID': prefsRepository.myMarketId.toString(),
-            //     'user_name': prefsRepository.myMarketName.toString(),
-            //     'clicked_button_name': 'i love you Ahmad',
-            //     "session_id": GetIt.I<PrefsRepository>().sessionId,
-            //   });
-            // } catch (e, st) {
-            //   print(e);
-            //   print(st);
-            // }
-            // await GetIt.I<PrefsRepository>().setCurrentEvent(
-            //     "i loveddsssssssssssssssssssssssssssssssssssssssss you Ahmad in past");
+          onTap: () {
             HelperFunctions.slidingNavigation(
-                context,
-                ProductListingPage(
-                  boutniqe: widget.boutniqe,
-                  withSlidingImages: widget.withSlidingImages,
-                  boutiqueSlug: widget.boutniqe.slug!,
-                  boutiqueDescription: widget.boutniqe.description,
-                  boutiqueFirstBanner: widget.boutniqe.banners![0].filePath!,
-                  boutiqueIcon: widget.boutniqe.icon?.filePath!,
-                ));
+              context,
+              ProductListingPage(
+                boutniqe: widget.boutniqe,
+                withSlidingImages: widget.withSlidingImages,
+                boutiqueSlug: widget.boutniqe.slug!,
+                boutiqueDescription: widget.boutniqe.description,
+                boutiqueFirstBanner: widget.boutniqe.banners![0].filePath!,
+                boutiqueIcon: widget.boutniqe.icon?.filePath!,
+              ),
+            );
+            ////////////////////////////////////
+            FirebaseAnalyticsService.logEventForViewedBoutiques(
+              eventName: AnalyticsEventsConst.viewedBoutiques,
+              boutiqueId: widget.boutniqe.id.toString(),
+              boutiqueName: widget.boutniqe.name.toString(),
+            );
           },
           child: Stack(
             alignment: Alignment.bottomCenter,

@@ -39,7 +39,7 @@ class AnalyticsExecutedEventNameConst {
   static const addStoryButton = 'add_story_button';
   static const addCameraStoryButton = 'add_camera_story_button';
   static const addGalleryStoryButton = 'add_gallery_story_button';
-  static const productListingSearchButton = 'product_listing_search_button';
+  static const productListingSearchEvent = 'product_listing_search_event';
   static const searchFailed = 'search_failed';
   static const searchSuccess = 'search_success';
   static const chooseProductButton = 'choose_product_button';
@@ -48,4 +48,10 @@ class AnalyticsExecutedEventNameConst {
   static const applyFilterRequestFailed = 'apply_filter_request_failed';
   static const applyFilterRequestSuccess = 'apply_filter_request_success';
   static const productListingFilterButton = 'product_listing_filter_button';
+  static const backButton = 'back_button';
+  static const applySearchResultButton = 'apply_search_result_button';
+  static const resetSearchButton = 'reset_search_button';
+  static const searchForFiltersEvent = 'search_for_filters_event';
+  static const resetButton = 'reset_button';
+  static const applyFilterButton = 'apply_filter_button';
 }

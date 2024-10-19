@@ -1,20 +1,13 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-import 'package:permission_handler/permission_handler.dart';
-
 import 'package:speech_to_text/speech_to_text.dart';
-import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gemini/flutter_gemini.dart' as geminis;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:mime/mime.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
@@ -33,6 +26,9 @@ import '../../../common/constant/design/assets_provider.dart';
 import '../../../common/constant/design/constant_design.dart';
 import '../../../common/test_utils/widgets_keys.dart';
 import '../../../core/utils/responsive_padding.dart';
+import '../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import '../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../home/data/models/get_product_filters_model.dart';
 import '../../home/presentation/manager/home_bloc.dart';
 import '../../home/presentation/manager/home_state.dart';
@@ -897,22 +893,16 @@ class _TabsBarState extends State<TabsBar> {
                                                       ChangeCurrentIndexForMainCategoryEvent(
                                                           index: -1));
                                                 }
-
-                                                /* appBloc.add(ChangeTab(index));
-                                                          BlocProvider.of<HomeBloc>(context).add(
-                                                                        GetHomeSectionsEvent(
-                                                                            mainCategory.slug.toString()));*/
-
-                                                /*   homeBloc.add(
-                                                  GetProductsWithoutFiltersEvent(
-                                                      offset: 1,
-                                                      category: homeState
-                                                          .mainCategoriesResponseModel!
-                                                          .data!
-                                                          .mainCategories![index]
-                                                          .slug!,
-                                                      selectedProssesType:
-                                                          'category'));*/
+                                                /////////////////////////////////////
+                                                FirebaseAnalyticsService
+                                                    .logEventForSession(
+                                                  eventName:
+                                                      AnalyticsEventsConst
+                                                          .programmingEvent,
+                                                  executedEventName:
+                                                      AnalyticsExecutedEventNameConst
+                                                          .chooseCategoryButton,
+                                                );
                                               },
                                               child: Column(
                                                 crossAxisAlignment:
