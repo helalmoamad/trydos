@@ -13,6 +13,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
+import 'package:trydos/features/home/presentation/widgets/share_products_with_social_media/build_social_buttons.dart';
 import '../../../../../common/helper/helper_functions.dart';
 import '../../../../../core/utils/responsive_padding.dart';
 import '../../../../../generated/locale_keys.g.dart';
@@ -22,16 +23,21 @@ import '../../../../app/my_text_widget.dart';
 import '../../../../calls/presentation/widgets/no_image_widget.dart';
 import '../../../../chat/data/models/my_chats_response_model.dart';
 import '../../../../chat/presentation/manager/chat_bloc.dart';
+import '../../../data/models/get_product_listing_without_filters_model.dart'
+    as product;
 
 class ProductDetailsSheetShareContent extends cupertino.StatefulWidget {
   const ProductDetailsSheetShareContent(
       {super.key,
       required this.idsOfChatCardsToShare,
       required this.focusNode,
+      required this.productItem,
+      required this.productDescription,
       this.scrollController});
 
   final FocusNode focusNode;
-
+  final product.Products productItem;
+  final String productDescription;
   final ValueNotifier<List<String>> idsOfChatCardsToShare;
   final ScrollController? scrollController;
 
@@ -43,9 +49,12 @@ class ProductDetailsSheetShareContent extends cupertino.StatefulWidget {
 class _ProductDetailsSheetShareContentState
     extends cupertino.State<ProductDetailsSheetShareContent> {
   final ValueNotifier<List<Chat>> chats = ValueNotifier([]);
-  List<Chat> originalCopyOfChats = [] ;
+  List<Chat> originalCopyOfChats = [];
   @override
   Widget build(BuildContext context) {
+    print(
+        "*******************************///////////////////////////////111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111/");
+    print(widget.productDescription);
     return ScrollConfiguration(
       behavior: cupertino.CupertinoScrollBehavior(),
       child: ListView(
@@ -73,22 +82,33 @@ class _ProductDetailsSheetShareContentState
                   )),
             ],
           ),
-          if(GetIt.I<PrefsRepository>().chatToken == null)...{
-            SizedBox(height: 50,),
-            Center(
-              child: MyTextWidget('You Must Login To Share Product!',
-                  style: context.textTheme.bodyMedium?.bq.copyWith(
-                    color: Color(0xffff0000),
-                  )),
+          if (GetIt.I<PrefsRepository>().chatToken == null) ...{
+            SizedBox(
+              height: 50,
             ),
-            SizedBox(height: 50,),
-          }else ...{
+            cupertino.Container(
+              height: 280.h,
+              child: cupertino.Column(
+                mainAxisAlignment: cupertino.MainAxisAlignment.center,
+                children: [
+                  MyTextWidget('You Must Login To Share Product With Chats!',
+                      style: context.textTheme.bodyMedium?.bq.copyWith(
+                        color: Color(0xffff0000),
+                      )),
+                  cupertino.Spacer(),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 50,
+            ),
+          } else ...{
             10.verticalSpace,
             Material(
               color: Colors.transparent,
               child: Padding(
-                padding:
-                HWEdgeInsets.symmetric(horizontal: 20.0).copyWith(bottom: 10),
+                padding: HWEdgeInsets.symmetric(horizontal: 20.0)
+                    .copyWith(bottom: 10),
                 child: AppTextField(
                   focusNode: widget.focusNode,
                   filledColor: Color(0xffF8F8F8),
@@ -102,13 +122,12 @@ class _ProductDetailsSheetShareContentState
                       List<Chat> search = [];
                       for (Chat chat in originalCopyOfChats) {
                         ChannelMember member = chat.channelMembers!.firstWhere(
-                                (element) =>
-                            element.userId != GetIt
-                                .I<PrefsRepository>()
-                                .myChatId);
+                            (element) =>
+                                element.userId !=
+                                GetIt.I<PrefsRepository>().myChatId);
                         if ((chat.channelName ?? LocaleKeys.unknown_user.tr())
-                            .toLowerCase()
-                            .contains(text.toLowerCase() ?? '') ||
+                                .toLowerCase()
+                                .contains(text.toLowerCase() ?? '') ||
                             (member.user?.mobilePhone ?? LocaleKeys.no_num.tr())
                                 .toLowerCase()
                                 .contains(text.toLowerCase() ?? '')) {
@@ -138,8 +157,7 @@ class _ProductDetailsSheetShareContentState
                     builder: (context, state) {
                       chats.value = [...state.pinnedChats, ...state.chats];
                       chats.value.sort(
-                            (a, b) {
-
+                        (a, b) {
                           if ((a.messages?.isEmpty ?? true) &&
                               (b.messages?.isEmpty ?? true)) {
                             return 0;
@@ -158,45 +176,44 @@ class _ProductDetailsSheetShareContentState
                       return ValueListenableBuilder<List<Chat>>(
                           valueListenable: chats,
                           builder: (context, chats, _) {
-                            final List<Chat> displayedChats =
-                            chats.getRange(0, min(10, chats.length)).toList();
+                            final List<Chat> displayedChats = chats
+                                .getRange(0, min(10, chats.length))
+                                .toList();
                             return Align(
                               alignment: Alignment.center,
                               child: Wrap(
                                 children: List.generate(
                                     min(10, chats.length),
-                                        (index) =>
-                                        ChatCardForShare(
+                                    (index) => ChatCardForShare(
                                           index: index,
                                           channelMember: displayedChats[index]
                                               .channelMembers!
                                               .firstWhere((member) =>
-                                          member.userId !=
-                                              GetIt
-                                                  .I<PrefsRepository>()
-                                                  .myChatId),
+                                                  member.userId !=
+                                                  GetIt.I<PrefsRepository>()
+                                                      .myChatId),
                                           onTap: () {
                                             if (!widget
                                                 .idsOfChatCardsToShare.value
-                                                .contains(
-                                                displayedChats[index].id
+                                                .contains(displayedChats[index]
+                                                    .id
                                                     .toString())) {
-                                              widget
-                                                  .idsOfChatCardsToShare.value
-                                                  .add(displayedChats[index].id
-                                                  .toString());
+                                              widget.idsOfChatCardsToShare.value
+                                                  .add(displayedChats[index]
+                                                      .id
+                                                      .toString());
                                             } else {
-                                              widget
-                                                  .idsOfChatCardsToShare.value
-                                                  .remove(
-                                                  displayedChats[index].id
+                                              widget.idsOfChatCardsToShare.value
+                                                  .remove(displayedChats[index]
+                                                      .id
                                                       .toString());
                                             }
                                             widget.idsOfChatCardsToShare
                                                 .notifyListeners();
                                           },
                                           selected: channelIds.contains(
-                                              displayedChats[index].id
+                                              displayedChats[index]
+                                                  .id
                                                   .toString()),
                                         )),
                               ),
@@ -205,7 +222,9 @@ class _ProductDetailsSheetShareContentState
                     },
                   );
                 }),
-          }
+          },
+          buildSocialButtons("${widget.productDescription} \n",
+              "https://....................."),
         ],
       ),
     );

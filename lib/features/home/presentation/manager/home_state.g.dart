@@ -28,6 +28,10 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               _$GetCommentForProductStatusEnumMap,
               json['getCommentForProductStatus']) ??
           GetCommentForProductStatus.init,
+      getFullProductDetailsStatus: $enumDecodeNullable(
+              _$GetFullProductDetailsStatusEnumMap,
+              json['getFullProductDetailsStatus']) ??
+          GetFullProductDetailsStatus.init,
       startingSetting: json['startingSetting'] == null
           ? null
           : StartingSetting.fromJson(
@@ -136,6 +140,12 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               json['getProductListingStatus']) ??
           GetProductListingStatus.init,
       selectedCollection: (json['selectedCollection'] as num?)?.toInt(),
+      productContentForStatusOfOpeningProductDetailsDirectly:
+          json['productContentForStatusOfOpeningProductDetailsDirectly'] == null
+              ? null
+              : Products.fromJson(
+                  json['productContentForStatusOfOpeningProductDetailsDirectly']
+                      as Map<String, dynamic>),
       cartCollection: (json['cartCollection'] as Map<String, dynamic>?)?.map(
             (k, e) => MapEntry(
                 k,
@@ -382,9 +392,14 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'getProductDetailWithoutSimilarRelatedProductsStatus':
           _$GetProductDetailWithoutSimilarRelatedProductsStatusEnumMap[
               instance.getProductDetailWithoutSimilarRelatedProductsStatus]!,
+      'getFullProductDetailsStatus': _$GetFullProductDetailsStatusEnumMap[
+          instance.getFullProductDetailsStatus]!,
       'theReplyFromGemini': instance.theReplyFromGemini,
       'getCartItemsStatus':
           _$GetCartItemsStatusEnumMap[instance.getCartItemsStatus]!,
+      'productContentForStatusOfOpeningProductDetailsDirectly': instance
+          .productContentForStatusOfOpeningProductDetailsDirectly
+          ?.toJson(),
       'getProductListingStatus':
           _$GetProductListingStatusEnumMap[instance.getProductListingStatus]!,
       'getStoriesForProductStatus': _$GetStoriesForProductStatusEnumMap[
@@ -463,6 +478,13 @@ const _$GetCommentForProductStatusEnumMap = {
   GetCommentForProductStatus.loading: 'loading',
   GetCommentForProductStatus.success: 'success',
   GetCommentForProductStatus.failure: 'failure',
+};
+
+const _$GetFullProductDetailsStatusEnumMap = {
+  GetFullProductDetailsStatus.init: 'init',
+  GetFullProductDetailsStatus.loading: 'loading',
+  GetFullProductDetailsStatus.success: 'success',
+  GetFullProductDetailsStatus.failure: 'failure',
 };
 
 const _$DeleteItemInCartStatusEnumMap = {

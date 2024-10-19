@@ -41,6 +41,7 @@ import 'package:trydos/features/home/domain/use_cases/get_brand_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_cart_item_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_category_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_currency_for_country_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/get_full_product_details_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_home_boutiqes_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_home_sections_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_main_categories_usecase.dart';
@@ -103,6 +104,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.getProductDetailWithoutRelatedProductsUseCase,
     this.getStartingSettingsUseCase,
     this.getCurrencyForCountryUseCase,
+    this.getFullProductDetailsUseCase,
     this.getProductsWithoutFiltersUseCase,
     this.requestForNotificationWhenProductBecameAvailableUseCase,
     this.getProductsWithFiltersUseCase,
@@ -220,8 +222,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<RemoveItemFormCartEvent>(
       _onRemoveItemToCartEvent,
     );
+
     on<GetProductDatailsWithoutRelatedProductsEvent>(
       _onGetProductDatailsWithoutRelatedProductsEvent,
+    );
+
+    on<GetFullProductDetailsEvent>(
+      _onGetFullProductDetailsEvent,
     );
 
     on<GetCommentForProductEvent>(
@@ -256,6 +263,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final AddItemToCartUseCase addItemToCartUseCase;
   final UpdateItemInCartUseCase updateItemInCartUseCase;
   final GetAllowedCountryUseCase getAllowedCountryUseCase;
+  final GetFullProductDetailsUseCase getFullProductDetailsUseCase;
 
   final Smartlook smartLook = Smartlook.instance;
 
@@ -316,9 +324,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     }, (r) async {
       apisMustNotToRequest.add('GetMainCategoriesEvent');
       isFailedTheFirstTime.remove('GetMainCategoriesEvent');
-      if(state.boutiquesForEveryMainCategoryThatDidPrefetch[
-      'Empty'] !=
-          true){
+      if (state.boutiquesForEveryMainCategoryThatDidPrefetch['Empty'] != true) {
         add(GetHomeBoutiqesEvent(
           getWithPrefetchForBoutiques: true,
           context: event.context ?? navigatorKey.currentContext!,
@@ -1762,7 +1768,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     Map<String, bool> boutiquesThatDidPrefetch =
         Map.of(state.boutiquesThatDidPrefetch);
     if (boutiquesThatDidPrefetch[key] == true) {
-      return ;
+      return;
     }
     if (boutiquesThatDidPrefetch[key] == null) {
       boutiquesThatDidPrefetch.addAll({key: false});
@@ -3331,5 +3337,32 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           cacheManager: CustomCacheManager(),
         ),
         context);
+  }
+
+  FutureOr<void> _onGetFullProductDetailsEvent(
+      GetFullProductDetailsEvent event, Emitter<HomeState> emit) async {
+    emit(state.copyWith(
+        getFullProductDetailsStatus: GetFullProductDetailsStatus.loading));
+    final response =
+        await getFullProductDetailsUseCase(event.productId.toString());
+    response.fold((l) {
+      emit(state.copyWith(
+          getFullProductDetailsStatus: GetFullProductDetailsStatus.failure));
+    }, (r) {
+      Map<String, GetProductDetailWithoutRelatedProductsModel> cachedData =
+          Map.of(state.cachedProductWithoutRelatedProductsModel);
+      Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>
+          productStatus = Map.from(state.productStatus ?? {});
+      productStatus[event.productId!] =
+          GetProductDetailWithoutSimilarRelatedProductsStatus.success;
+      cachedData.addAll(
+          {event.productId!: r.getProductDetailWithoutRelatedProductsModel!});
+      emit(state.copyWith(
+        productStatus: productStatus,
+        cachedProductWithoutRelatedProductsModel: cachedData,
+        productContentForStatusOfOpeningProductDetailsDirectly : r.productItem,
+        getFullProductDetailsStatus: GetFullProductDetailsStatus.success,
+      ));
+    });
   }
 }

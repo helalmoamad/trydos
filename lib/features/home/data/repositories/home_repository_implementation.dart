@@ -13,6 +13,7 @@ import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_category_model.dart';
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
 import 'package:trydos/features/home/data/models/get_currency_for_country_model.dart';
+import 'package:trydos/features/home/data/models/get_full_product_details_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart';
@@ -159,5 +160,11 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   Future<Either<Failure, bool>> requestForNotificationWhenProductBecameAvailable(Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.requestForNotificationWhenProductBecameAvailable(params));
+  }
+
+  @override
+  Future<Either<Failure, GetFullProductDetailsModel>> getFullProductDetails(String productId) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.getFullProductDetails(productId));
   }
 }

@@ -185,8 +185,10 @@ class ChatRemoteDataSource {
     return sendMessage();
   }
 
-  Future<Message> shareProductWithContactsOrChannels(Map<String, dynamic> params) {
-    PostClient<Message> shareProductWithContactsOrChannels = PostClient<Message>(
+  Future<Message> shareProductWithContactsOrChannels(
+      Map<String, dynamic> params) {
+    PostClient<Message> shareProductWithContactsOrChannels =
+        PostClient<Message>(
       serverName: ServerName.chat,
       requestPrams: RequestConfig<Message>(
         receiveTimeout: const Duration(minutes: 1),
@@ -261,6 +263,7 @@ class ChatRemoteDataSource {
 
   Future<GetSharedProductCountModel> getSharedProductCount(
       Map<String, dynamic> params) {
+    print("/////////////////////////////////////////////////${params["id"]}");
     GetClient<GetSharedProductCountModel> getSharedProductCount =
         GetClient<GetSharedProductCountModel>(
       serverName: ServerName.chat,

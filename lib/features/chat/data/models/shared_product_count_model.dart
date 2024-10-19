@@ -15,6 +15,7 @@ class GetSharedProductCountModel {
   final bool? hasContent;
   final int? code;
   final dynamic message;
+  final dynamic detailedError;
   final Data? data;
 
   GetSharedProductCountModel({
@@ -22,6 +23,7 @@ class GetSharedProductCountModel {
     this.hasContent,
     this.code,
     this.message,
+    this.detailedError,
     this.data,
   });
 
@@ -30,6 +32,7 @@ class GetSharedProductCountModel {
     bool? hasContent,
     int? code,
     dynamic message,
+    dynamic detailedError,
     Data? data,
   }) =>
       GetSharedProductCountModel(
@@ -37,6 +40,7 @@ class GetSharedProductCountModel {
         hasContent: hasContent ?? this.hasContent,
         code: code ?? this.code,
         message: message ?? this.message,
+        detailedError: detailedError ?? this.detailedError,
         data: data ?? this.data,
       );
 
@@ -46,6 +50,7 @@ class GetSharedProductCountModel {
         hasContent: json["hasContent"],
         code: json["code"],
         message: json["message"],
+        detailedError: json["detailed_error"],
         data: json["data"] == null ? null : Data.fromJson(json["data"]),
       );
 
@@ -54,6 +59,7 @@ class GetSharedProductCountModel {
         "hasContent": hasContent,
         "code": code,
         "message": message,
+        "detailed_error": detailedError,
         "data": data?.toJson(),
       };
 }
