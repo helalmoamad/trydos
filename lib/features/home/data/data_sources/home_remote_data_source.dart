@@ -5,6 +5,7 @@ import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
+import 'package:trydos/features/home/data/models/get_full_product_details_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 
@@ -58,6 +59,23 @@ class HomeRemoteDatasource {
       ),
     );
     return getProductDetailWithoutRelatedProducts();
+  }
+
+  Future<GetFullProductDetailsModel>
+  getFullProductDetails(String productId) {
+    GetClient<GetFullProductDetailsModel> getFullProductDetails =
+        GetClient<GetFullProductDetailsModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<GetFullProductDetailsModel>(
+        endpoint: MarketEndPoints.getFullProductDetailsEP(
+            productId),
+        response: ResponseValue<GetFullProductDetailsModel>(
+            fromJson: (response) {
+              return GetFullProductDetailsModel.fromJson(response);
+            }),
+      ),
+    );
+    return getFullProductDetails();
   }
 
   Future<GetCommentForProductModel> getCommentForProduct(String productId) {

@@ -151,6 +151,16 @@ class GetProductDatailsWithoutRelatedProductsEvent extends HomeEvent {
   List<Object?> get props => [productId];
 }
 
+class GetFullProductDetailsEvent extends HomeEvent {
+  final String? productId;
+
+  const GetFullProductDetailsEvent({this.productId});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [productId];
+}
+
 class GetProductsWithoutFiltersEvent extends HomeEvent {
   final String? category;
   final int offset;

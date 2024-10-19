@@ -17,6 +17,7 @@ import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart'
 import 'package:trydos/features/home/domain/use_cases/get_products_usecase.dart';
 
 import '../../../../core/error/failures.dart';
+import '../../data/models/get_full_product_details_model.dart';
 import '../../data/models/get_product_filters_model.dart';
 import '../../data/models/get_product_listing_with_filters_model.dart';
 import '../../data/models/get_story_for_product_model.dart';
@@ -42,6 +43,8 @@ abstract class HomeRepository {
       getProductsWithFilters(Map<String, dynamic> params);
   Future<Either<Failure, GetProductDetailWithoutRelatedProductsModel>>
       getProductDetailWithoutSimilarRelatedProducts(String productId);
+  Future<Either<Failure, GetFullProductDetailsModel>>
+  getFullProductDetails(String productId);
   Future<Either<Failure, GetCommentForProductModel>> geCommentForProduct(
       String productId);
   Future<Either<Failure, AddItemToCartModel>> addItemToCart(

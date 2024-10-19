@@ -35,6 +35,8 @@ import 'package:trydos/features/chat/presentation/widgets/chat_widgets/reply_mes
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/reply_on_me_message.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/shared_product_message.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/video_message.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
@@ -760,16 +762,19 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                           index;
                                                                     },
                                                                     onTap: () {
-                                                                      if(messages[index]
-                                                                          .messageType
-                                                                          ?.name == 'ShareProduct'){
-                                                                        // Navigator.of(context).push(
-                                                                        //     MaterialPageRoute(
-                                                                        //         builder: (ctx) =>
-                                                                        //             ProductDetailsPage(
-                                                                        //               productItem:
-                                                                        //               products[index],
-                                                                        //             )));
+                                                                      if (messages[index]
+                                                                              .messageType
+                                                                              ?.name ==
+                                                                          'ShareProduct') {
+                                                                        BlocProvider.of<HomeBloc>(context).add(GetFullProductDetailsEvent(
+
+                                                                            productId:
+                                                                                messages[index].shareProductContent?.productId.toString()));
+                                                                        Navigator.of(context).push(MaterialPageRoute(
+                                                                            builder: (ctx) =>
+                                                                                ProductDetailsPage(
+                                                                                  productIdForOpeningChatDirectly: messages[index].shareProductContent?.productId.toString(),
+                                                                                )));
                                                                       }
                                                                       rebuildMessage
                                                                           .value = -1;
@@ -1466,7 +1471,10 @@ class _SinglePageChatState extends State<SinglePageChat> {
     }
     int index;
     String? filePath = message.mediaMessageContent.isNullOrEmpty
-        ? message.messageType?.name == 'ShareProduct' ? message.shareProductContent!.productImageUrl : null : message.mediaMessageContent?[0].filePath;
+        ? message.messageType?.name == 'ShareProduct'
+            ? message.shareProductContent!.productImageUrl
+            : null
+        : message.mediaMessageContent?[0].filePath;
     if (message.file == null &&
         filePath != null &&
         _prefsRepository.isAFilePathExist(filePath, widget.chatId)) {
@@ -1655,7 +1663,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
             watchedAt: messageStatus?.watchedAt,
           );
 
-          case 'VideoMessage':
+        case 'VideoMessage':
           return VideoMessage(
             channelId: message.channelId!,
             receivedAt: messageStatus?.receivedAt,

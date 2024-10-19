@@ -25,9 +25,9 @@ extension ScopeApi on String {
 
 abstract class MarketEndPoints {
   static String getProductDetailWithoutSimilarRelatedProducts(
-          String productId) =>
-      "details_without_similar_related_products/$productId".productScope();
-
+          String productId) => "details_without_similar_related_products/$productId".productScope();
+  static String getFullProductDetailsEP(
+      String productId) => "details/$productId".productScope();
   static final sendOtpEP = 'send_otp'.phoneScope();
   static final getCartItemEP = 'cart_shipping'.cartScope();
   static final addItemCartItemEP = 'add'.cartScope();
