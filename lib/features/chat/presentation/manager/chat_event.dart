@@ -186,7 +186,6 @@ class UploadFileEvent extends ChatEvent {
 }
 
 class SaveContactsEvent extends ChatEvent {
-
   const SaveContactsEvent();
 
   @override
@@ -357,6 +356,21 @@ class GetMediaCountEvent extends ChatEvent {
   List<Object?> get props => [channelId];
 }
 
+class IncreaseSharedProductCountOnSocialAppEvent extends ChatEvent {
+  final String productId;
+  final String socialMediaName;
+  final int sharedCount;
+
+  const IncreaseSharedProductCountOnSocialAppEvent(
+      {required this.socialMediaName,
+      required this.productId,
+      required this.sharedCount});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [sharedCount, productId, socialMediaName];
+}
+
 class GetSharedProductCountEvent extends ChatEvent {
   final String productId;
 
@@ -467,7 +481,7 @@ class SendErrorChatToServerEvent extends ChatEvent {
   List<Object?> get props => [error, lastPage];
 }
 
-class ShareProductWithContactsOrChannelsEvent extends ChatEvent{
+class ShareProductWithContactsOrChannelsEvent extends ChatEvent {
   final String productId;
   final String productName;
   final String productSlug;
@@ -486,5 +500,12 @@ class ShareProductWithContactsOrChannelsEvent extends ChatEvent{
 
   @override
   // TODO: implement props
-  List<Object?> get props => [productId , productSlug ,  productName , productDescription , productImageUrl , channelIds ];
+  List<Object?> get props => [
+        productId,
+        productSlug,
+        productName,
+        productDescription,
+        productImageUrl,
+        channelIds
+      ];
 }

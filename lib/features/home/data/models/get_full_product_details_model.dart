@@ -13,7 +13,6 @@ class GetFullProductDetailsModel {
     this.productItem,
     this.getProductDetailWithoutRelatedProductsModel,
   });
-
   GetFullProductDetailsModel copyWith({
     Products? productItem,
     GetProductDetailWithoutRelatedProductsModel? getProductDetailWithoutRelatedProductsModel,
