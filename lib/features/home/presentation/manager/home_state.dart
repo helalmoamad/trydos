@@ -40,6 +40,8 @@ enum GetProductDetailWithoutSimilarRelatedProductsStatus {
   failure
 }
 
+enum GetFullProductDetailsStatus { init, loading, success, failure }
+
 enum SelectedVideoStatus { init, loading, success, failure }
 
 enum GetProductFiltersStatus { init, loading, success, failure }
@@ -77,6 +79,7 @@ class HomeState extends Equatable {
     this.getStartingSettingsStatus = GetStartingSettingsStatus.init,
     this.getMainCategoriesStatus = GetMainCategoriesStatus.init,
     this.getCommentForProductStatus = GetCommentForProductStatus.init,
+    this.getFullProductDetailsStatus = GetFullProductDetailsStatus.init,
     this.startingSetting,
     this.sizes = const [],
     this.sizesQuantities = const [],
@@ -100,6 +103,7 @@ class HomeState extends Equatable {
     this.reRequestProductWithFilters = const {},
     this.getProductListingStatus = GetProductListingStatus.init,
     this.selectedCollection,
+    this.productContentForStatusOfOpeningProductDetailsDirectly,
     this.cartCollection = const {},
     //this.idForRequest,
     this.getProductListingWithFiltersPaginationModels = const {},
@@ -175,9 +179,11 @@ class HomeState extends Equatable {
   final Map<String, bool> reRequestProductWithFilters;
   final GetProductDetailWithoutSimilarRelatedProductsStatus
       getProductDetailWithoutSimilarRelatedProductsStatus;
+  final GetFullProductDetailsStatus getFullProductDetailsStatus;
   final String? theReplyFromGemini;
 
   final GetCartItemsStatus getCartItemsStatus;
+  final Products? productContentForStatusOfOpeningProductDetailsDirectly;
 
   final GetProductListingStatus getProductListingStatus;
   final GetStoriesForProductStatus getStoriesForProductStatus;
@@ -222,6 +228,7 @@ class HomeState extends Equatable {
         sendRequestToGeminiStatus,
         theReplyFromGemini,
         cashedOrginalBoutique,
+        productContentForStatusOfOpeningProductDetailsDirectly,
         getProductListingWithFiltersPaginationWithPrefetchModels,
         getProductFiltersModel,
         getProductFiltersWithPrefetchModel,
@@ -247,6 +254,7 @@ class HomeState extends Equatable {
         getHomeBoutiquesPaginationObjectByMainCategory,
         storiesForProduct,
         sizes,
+        getFullProductDetailsStatus,
         countOfProductExpectedByFiltering,
         prefAppliedFilterForExtendFilter,
         getProductListingPaginationWithoutFiltersModel,
@@ -299,6 +307,7 @@ class HomeState extends Equatable {
       final GetProductDetailWithoutRelatedProductsModel?
           getProductDetailWithoutRelatedProductsModel,
       int? selectedCollection,
+        Products? productContentForStatusOfOpeningProductDetailsDirectly,
       List<String>? sizes,
       List<int>? sizesQuantities,
       List<String>? isSizeRequestNotification,
@@ -327,6 +336,7 @@ class HomeState extends Equatable {
           cachedProductWithoutRelatedProductsModel,
       SelectedVideoStatus? selectedVideoStatus,
       GetStoriesForProductStatus? getStoriesForProductStatus,
+      GetFullProductDetailsStatus? getFullProductDetailsStatus,
       final GetProductDetailWithoutSimilarRelatedProductsStatus?
           getProductDetailWithoutSimilarRelatedProductsStatus,
       final DeleteItemInCartStatus? deleteItemInCartStatus,
@@ -357,6 +367,8 @@ class HomeState extends Equatable {
           updateItemInCartStatus ?? this.updateItemInCartStatus,
 
       sizes: sizes ?? this.sizes,
+      getFullProductDetailsStatus:
+          getFullProductDetailsStatus ?? this.getFullProductDetailsStatus,
       sizesQuantities: sizesQuantities ?? this.sizesQuantities,
       isSizeRequestNotification:
           isSizeRequestNotification ?? this.isSizeRequestNotification,
@@ -371,6 +383,7 @@ class HomeState extends Equatable {
       isExpandedForListingPage:
           isExpandedForLidtingPage ?? this.isExpandedForListingPage,
       theReplyFromGemini: theReplyFromGemini ?? this.theReplyFromGemini,
+      productContentForStatusOfOpeningProductDetailsDirectly: productContentForStatusOfOpeningProductDetailsDirectly ?? this.productContentForStatusOfOpeningProductDetailsDirectly,
       countOfProductExpectedByFiltering: countOfProductExpectedByFiltering ??
           this.countOfProductExpectedByFiltering,
       ListitemForAddToCart: ListitemForAddToCart ?? this.ListitemForAddToCart,

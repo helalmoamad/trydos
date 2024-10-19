@@ -22,13 +22,13 @@ Widget buildSocialButtons(String text, String urlShare) => Card(
                 size: 40,
               ),
               onClick: () => share(SocialMediaType.whatsapp, text, urlShare)),
-          /* buildSocialButton(
-              icon: FaIcon(
-                FontAwesomeIcons.facebookMessenger,
-                color: Color.fromARGB(255, 172, 0, 252),
-                size: 40,
-              ),
-              onClick: () => share(SocialMediaType.messanger, text, urlShare)),*/
+           // buildSocialButton(
+           //    icon: FaIcon(
+           //      FontAwesomeIcons.facebookMessenger,
+           //      color: Color.fromARGB(255, 172, 0, 252),
+           //      size: 40,
+           //    ),
+           //    onClick: () => share(SocialMediaType.messanger, text, urlShare)),
           buildSocialButton(
               icon: FaIcon(
                 FontAwesomeIcons.telegram,
@@ -50,13 +50,13 @@ Widget buildSocialButtons(String text, String urlShare) => Card(
                 size: 40,
               ),
               onClick: () => share(SocialMediaType.email, text, urlShare)),
-          /*  buildSocialButton(
-              icon: FaIcon(
-                FontAwesomeIcons.instagram,
-                color: Color.fromARGB(255, 15, 15, 15),
-                size: 40,
-              ),
-              onClick: () => share(SocialMediaType.instagram, text, urlShare))*/
+          // /*  buildSocialButton(
+          //     icon: FaIcon(
+          //       FontAwesomeIcons.instagram,
+          //       color: Color.fromARGB(255, 15, 15, 15),
+          //       size: 40,
+          //     ),
+          //     onClick: () => share(SocialMediaType.instagram, text, urlShare))*/
         ],
       ),
     );

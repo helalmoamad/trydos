@@ -23,11 +23,11 @@ Future share(
   final urls = {
     SocialMediaType.facebook:
         "https://www.facebook.com/sharer/sharer.php?u=$textShares$urlShare",
-    // SocialMediaType.messanger: 'https://m.me/?message=$text',
+    SocialMediaType.messanger: 'http://m.me/?$text',
     SocialMediaType.whatsapp:
         "https://api.whatsapp.com/send/?text=$text \n $urlShares",
     SocialMediaType.telegram: "https://t.me/share/url?url=$text \n $urlShares",
-    // SocialMediaType.instagram: 'https://instagram.com/share?text=$text',
+    SocialMediaType.instagram: 'https://instagram.com/share?text=$text',
     SocialMediaType.email:
         "mailto:?subject=Shared Preoduct&body=$text $urlShares",
     SocialMediaType.twitter:

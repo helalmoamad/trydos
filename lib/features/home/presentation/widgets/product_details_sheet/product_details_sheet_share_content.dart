@@ -91,13 +91,11 @@ class _ProductDetailsSheetShareContentState
               child: cupertino.Column(
                 mainAxisAlignment: cupertino.MainAxisAlignment.center,
                 children: [
-                  MyTextWidget('You Must Login To Share Product!',
+                  MyTextWidget('You Must Login To Share Product With Chats!',
                       style: context.textTheme.bodyMedium?.bq.copyWith(
                         color: Color(0xffff0000),
                       )),
                   cupertino.Spacer(),
-                  buildSocialButtons("${widget.productDescription} \n",
-                      "https://....................."),
                 ],
               ),
             ),
@@ -224,9 +222,9 @@ class _ProductDetailsSheetShareContentState
                     },
                   );
                 }),
-            buildSocialButtons("${widget.productDescription} \n",
-                "https://....................."),
-          }
+          },
+          buildSocialButtons("${widget.productDescription} \n",
+              "https://....................."),
         ],
       ),
     );
