@@ -37,6 +37,7 @@ import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/data/model/pagination_model.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/app_widgets/app_bottom_navigation_bar.dart';
 import '../../../app/app_widgets/loading_indicator/trydos_loader.dart';
@@ -120,7 +121,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
   Key gridViewKeyForRenderingForTheFiveFilters = UniqueKey();
   Key gridViewKeyForRendering = UniqueKey();
   bool _speechEnabled = false;
-
 
   void _startListening() async {
     if (!_speechEnabled) {
@@ -280,6 +280,15 @@ class _ProductListingPageState extends State<ProductListingPage> {
       }
     });
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() async {
+    FirebaseAnalyticsService.logScreen(
+      screen: AnalyticsScreensConst.productListingScreen,
+    );
+
+    super.didChangeDependencies();
   }
 
   @override
@@ -2465,61 +2474,40 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                   (BuildContext context,
                                                       int index) {
                                                     return InkWell(
-                                                      onTap: () async {
+                                                      onTap: () {
                                                         Future.delayed(
-                                                            Duration(
-                                                                milliseconds:
-                                                                    100), () {
-                                                          print("${prefsRepository.myMarketId.toString()}" +
-                                                              "55555555555555555555555555555555555555555");
-                                                          print("${prefsRepository.myMarketName.toString()}" +
-                                                              "554${GetIt.I<PrefsRepository>().serverTime}4555554444${prefsRepository.countryIso.toString()}444444444${LanguageService.languageCode == 'ar' ? 'ae' : LanguageService.languageCode}444444444444${GetIt.I<PrefsRepository>().currentEvent}44444444444444444444444444445555555555555555555555");
-                                                        });
-                                                        await FirebaseAnalytics
-                                                            .instance
-                                                            .logEvent(
-                                                                name:
-                                                                    'button_clicked',
-                                                                parameters: {
-                                                              "time_stamp": DateTime
-                                                                      .now()
-                                                                  .toUtc()
-                                                                  .add(Duration(
-                                                                      minutes:
-                                                                          GetIt.I<PrefsRepository>().getdurtion ??
-                                                                              0))
+                                                          Duration(
+                                                              milliseconds:
+                                                                  100),
+                                                          () {
+                                                            print("${prefsRepository.myMarketId.toString()}" +
+                                                                "55555555555555555555555555555555555555555");
+                                                            print("${prefsRepository.myMarketName.toString()}" +
+                                                                "554${GetIt.I<PrefsRepository>().serverTime}4555554444${prefsRepository.countryIso.toString()}444444444${LanguageService.languageCode == 'ar' ? 'ae' : LanguageService.languageCode}444444444444${GetIt.I<PrefsRepository>().currentEvent}44444444444444444444444444445555555555555555555555");
+                                                          },
+                                                        );
+                                                        FirebaseAnalyticsService
+                                                            .logEventForViewedProduct(
+                                                          eventName:
+                                                              AnalyticsEventsConst
+                                                                  .viewedProduct,
+                                                          productId:
+                                                              products[index]
+                                                                  .id
                                                                   .toString(),
-                                                              "previous_event_button_name":
-                                                                  GetIt.I<PrefsRepository>()
-                                                                      .currentEvent,
-                                                              "device_language":
-                                                                  LanguageService
-                                                                              .languageCode ==
-                                                                          'ar'
-                                                                      ? 'ae'
-                                                                      : LanguageService
-                                                                          .languageCode,
-                                                              "country_name":
-                                                                  GetIt.I<PrefsRepository>()
-                                                                      .countryIso,
-                                                              'userID':
-                                                                  prefsRepository
-                                                                      .myMarketId
-                                                                      .toString(),
-                                                              'user_name':
-                                                                  prefsRepository
-                                                                      .myMarketName
-                                                                      .toString(),
-                                                              'clicked_button_name':
-                                                                  'i love you Ahmad',
-                                                              "session_id": GetIt.I<
-                                                                      PrefsRepository>()
-                                                                  .sessionId,
-                                                            });
-                                                        await GetIt.I<
-                                                                PrefsRepository>()
-                                                            .setCurrentEvent(
-                                                                "i loveddssssssssssss44444444444444444ssssssssssssss you Ahmad in past");
+                                                          productName:
+                                                              products[index]
+                                                                  .name
+                                                                  .toString(),
+                                                          productCategoriesId:
+                                                              products[index]
+                                                                  .categories
+                                                                  ?.map(
+                                                                    (e) => e.id
+                                                                        .toString(),
+                                                                  )
+                                                                  .toList(),
+                                                        );
 
                                                         // pushOverscrollRoute(
                                                         //     context: context,
@@ -2670,15 +2658,15 @@ class _ProductListingPageState extends State<ProductListingPage> {
           childCount: products.length,
           (BuildContext context, int index) {
             return InkWell(
-              onTap: () async {
+              onTap: () {
                 print(
                     '/////////// Go to details  /////// ${products[index].categories?[0].name} ///////');
                 Future.delayed(
                   Duration(milliseconds: 100),
                 );
 
-                await FirebaseAnalyticsService.logEventForViewedProducts(
-                  eventName: AnalyticsEventsConst.viewedProducts,
+                FirebaseAnalyticsService.logEventForViewedProduct(
+                  eventName: AnalyticsEventsConst.viewedProduct,
                   productId: products[index].id.toString(),
                   productName: products[index].name.toString(),
                   productCategoriesId: products[index]
@@ -2688,51 +2676,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
                       )
                       .toList(),
                 );
-
-                // await FirebaseAnalytics
-                //     .instance
-                //     .logEvent(
-                //   name:
-                //       'button_clicked',
-                //   parameters: {
-                //     "time_stamp": DateTime
-                //             .now()
-                //         .toUtc()
-                //         .add(Duration(
-                //             minutes:
-                //                 GetIt.I<PrefsRepository>().getdurtion ??
-                //                     0))
-                //         .toString(),
-                //     "previous_event_button_name":
-                //         GetIt.I<PrefsRepository>()
-                //             .currentEvent,
-                //     "device_language":
-                //         LanguageService.languageCode ==
-                //                 'ar'
-                //             ? 'ae'
-                //             : LanguageService
-                //                 .languageCode,
-                //     "country_name":
-                //         GetIt.I<PrefsRepository>()
-                //             .countryIso,
-                //     'userID': prefsRepository
-                //         .myMarketId
-                //         .toString(),
-                //     'user_name':
-                //         prefsRepository
-                //             .myMarketName
-                //             .toString(),
-                //     'clicked_button_name':
-                //         'i love you Ahmad',
-                //     "session_id": GetIt.I<
-                //             PrefsRepository>()
-                //         .sessionId,
-                //   },
-                // );
-                // await GetIt.I<
-                //         PrefsRepository>()
-                //     .setCurrentEvent(
-                //         "i loveddssssssssssss44444444444444444ssssssssssssss you Ahmad in past");
 
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (ctx) => ProductDetailsPage(

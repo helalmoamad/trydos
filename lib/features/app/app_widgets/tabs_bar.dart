@@ -78,14 +78,17 @@ class _TabsBarState extends State<TabsBar> {
                   .choosedFiltersByUser['search']
                   ?.filters ??
               Filter();
-          BlocProvider.of<HomeBloc>(context).add(ChangeSelectedFiltersEvent(
-              boutiqueSlug: 'search',
-              fromHomePageSearch: true,
-              filtersChoosedByUser: GetProductFiltersModel(
+          BlocProvider.of<HomeBloc>(context).add(
+            ChangeSelectedFiltersEvent(
+                boutiqueSlug: 'search',
+                fromHomePageSearch: true,
+                filtersChoosedByUser: GetProductFiltersModel(
                   filters: filters.copyWithSaveOtherField(
-                prices: filters.prices,
-                searchText: result.recognizedWords,
-              ))));
+                    prices: filters.prices,
+                    searchText: result.recognizedWords,
+                  ),
+                )),
+          );
           BlocProvider.of<HomeBloc>(context).add(ChangeAppliedFiltersEvent(
             boutiqueSlug: 'search',
             filtersAppliedByUser: GetProductFiltersModel(
@@ -121,12 +124,12 @@ class _TabsBarState extends State<TabsBar> {
   }
 
   final ScrollController scrollController = ScrollController();
-  void SelecteImageForSearch() async {
+  void selecteImageForSearch() async {
     showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return GalleryAndCameraDialogWidget(
-              onChooseFileFromGalleryAction: (AssetEntity? assetEntity) async {
+      context: context,
+      builder: (BuildContext context) {
+        return GalleryAndCameraDialogWidget(
+          onChooseFileFromGalleryAction: (AssetEntity? assetEntity) async {
             if (assetEntity != null) {
               File file = (await assetEntity.originFile)!;
               String mimeStr = lookupMimeType(file.absolute.path) ?? '';
@@ -142,83 +145,122 @@ class _TabsBarState extends State<TabsBar> {
                   backgroundColor: const Color.fromARGB(255, 0, 0, 0),
                   textColor: Colors.white,
                 );
+                /////////////////////////////////////////////////////
+                FirebaseAnalyticsService.logEventForSession(
+                  eventName: AnalyticsEventsConst.programmingEvent,
+                  executedEventName:
+                      AnalyticsExecutedEventNameConst.videoNotSupported,
+                );
                 return;
               }
               final Uint8List imageBytes = file.readAsBytesSync();
 
-              homeBloc.add(ReplyFromGeminiEvent(
-                  sendRequestToGeminiStatus: SendRequestToGeminiStatus.loading,
-                  theReplyFromGemini: ""));
+              homeBloc.add(
+                ReplyFromGeminiEvent(
+                    sendRequestToGeminiStatus:
+                        SendRequestToGeminiStatus.loading,
+                    theReplyFromGemini: ""),
+              );
 
-              await gemini
-                  .textAndImage(
-                      text: LanguageService.languageCode == "ar"
-                          ? " حدد ماذا يوجد في هذه الصورة بكلمة واحدة فقط بصيغة المفرد الغائب الاجابة بالعربي"
-                          : "Identify what's in this picture with just one word in the singular absent answer in English",
-                      images: [
-                        imageBytes
-                      ])
-                  .then((value) => homeBloc.add(ReplyFromGeminiEvent(
+              await gemini.textAndImage(
+                  text: LanguageService.languageCode == "ar"
+                      ? " حدد ماذا يوجد في هذه الصورة بكلمة واحدة فقط بصيغة المفرد الغائب الاجابة بالعربي"
+                      : "Identify what's in this picture with just one word in the singular absent answer in English",
+                  images: [imageBytes]).then(
+                (value) {
+                  homeBloc.add(
+                    ReplyFromGeminiEvent(
+                        sendRequestToGeminiStatus:
+                            SendRequestToGeminiStatus.success,
+                        theReplyFromGemini:
+                            value?.content?.parts?[0].text?.split(".").first ??
+                                value?.content?.parts?[0].text ??
+                                ""),
+                  );
+                  /////////////////////////////////////////////////////
+                  FirebaseAnalyticsService.logEventForSession(
+                    eventName: AnalyticsEventsConst.programmingEvent,
+                    executedEventName: AnalyticsExecutedEventNameConst
+                        .uploadSearchImageSuccess,
+                  );
+                },
+              ).onError(
+                (error, stackTrace) {
+                  homeBloc.add(ReplyFromGeminiEvent(
                       sendRequestToGeminiStatus:
-                          SendRequestToGeminiStatus.success,
-                      theReplyFromGemini:
-                          value?.content?.parts?[0].text?.split(".").first ??
-                              value?.content?.parts?[0].text ??
-                              "")))
-                  .onError(
-                    (error, stackTrace) {
-                      homeBloc.add(ReplyFromGeminiEvent(
-                          sendRequestToGeminiStatus:
-                              SendRequestToGeminiStatus.failure,
-                          theReplyFromGemini: ""));
+                          SendRequestToGeminiStatus.failure,
+                      theReplyFromGemini: ""));
 
-                      if (error.toString().contains("Failed host")) {
-                        Fluttertoast.showToast(
-                            fontSize: 18,
-                            timeInSecForIosWeb: 3,
-                            msg: "the internet is not available ",
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.TOP,
-                            backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                            textColor: Colors.white);
-                        return;
-                      }
-                      if (error
-                          .toString()
-                          .contains("The request was manually cancelled")) {
-                        Fluttertoast.showToast(
-                            fontSize: 18,
-                            timeInSecForIosWeb: 3,
-                            msg: "time out ",
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.TOP,
-                            backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                            textColor: Colors.white);
-                        return;
-                      }
-                      print("3333333333333333333333############${error}");
-                      Fluttertoast.showToast(
-                          msg: "this service is not available in your Country ",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.TOP,
-                          backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                          textColor: Colors.white,
-                          fontSize: 18,
-                          timeInSecForIosWeb: 3);
-                    },
-                  )
-                  .timeout(
-                      Duration(
-                        seconds: 30,
-                      ), onTimeout: () {
-                    gemini.cancelRequest();
-                    return homeBloc.add(ReplyFromGeminiEvent(
+                  if (error.toString().contains("Failed host")) {
+                    Fluttertoast.showToast(
+                        fontSize: 18,
+                        timeInSecForIosWeb: 3,
+                        msg: "the internet is not available ",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.TOP,
+                        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                        textColor: Colors.white);
+                    return;
+                  }
+                  if (error
+                      .toString()
+                      .contains("The request was manually cancelled")) {
+                    Fluttertoast.showToast(
+                        fontSize: 18,
+                        timeInSecForIosWeb: 3,
+                        msg: "time out ",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.TOP,
+                        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                        textColor: Colors.white);
+                    return;
+                  }
+                  print("3333333333333333333333############${error}");
+                  Fluttertoast.showToast(
+                      msg: "this service is not available in your Country ",
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.TOP,
+                      backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                      textColor: Colors.white,
+                      fontSize: 18,
+                      timeInSecForIosWeb: 3);
+                  /////////////////////////////////////////////////////
+                  FirebaseAnalyticsService.logEventForSession(
+                    eventName: AnalyticsEventsConst.programmingEvent,
+                    executedEventName:
+                        AnalyticsExecutedEventNameConst.uploadSearchImageFailed,
+                  );
+                },
+              ).timeout(
+                Duration(
+                  seconds: 30,
+                ),
+                onTimeout: () {
+                  gemini.cancelRequest();
+                  ///////////////////////////////
+                  homeBloc.add(
+                    ReplyFromGeminiEvent(
                         sendRequestToGeminiStatus:
                             SendRequestToGeminiStatus.failure,
-                        theReplyFromGemini: ""));
-                  });
+                        theReplyFromGemini: ""),
+                  );
+                  /////////////////////////////////////////////////////
+                  FirebaseAnalyticsService.logEventForSession(
+                    eventName: AnalyticsEventsConst.programmingEvent,
+                    executedEventName:
+                        AnalyticsExecutedEventNameConst.uploadSearchImageFailed,
+                  );
+                },
+              );
             }
-          }, onChooseFileFromCameraAction: (File? file) async {
+            ///////////////////////////////////////////
+            FirebaseAnalyticsService.logEventForSession(
+              eventName: AnalyticsEventsConst.buttonClicked,
+              executedEventName: AnalyticsExecutedEventNameConst
+                  .confirmUploadSearchImageButton,
+            );
+          },
+          onChooseFileFromCameraAction: (File? file) async {
             if (file != null) {
               String mimeStr = lookupMimeType(file.absolute.path) ?? '';
               var fileType = mimeStr.split('/');
@@ -232,6 +274,12 @@ class _TabsBarState extends State<TabsBar> {
                   backgroundColor: const Color.fromARGB(255, 0, 0, 0),
                   textColor: Colors.white,
                 );
+                /////////////////////////////////////////////////////
+                FirebaseAnalyticsService.logEventForSession(
+                  eventName: AnalyticsEventsConst.programmingEvent,
+                  executedEventName:
+                      AnalyticsExecutedEventNameConst.videoNotSupported,
+                );
                 return;
               }
               final Uint8List imageBytes = file.readAsBytesSync();
@@ -239,77 +287,110 @@ class _TabsBarState extends State<TabsBar> {
               homeBloc.add(ReplyFromGeminiEvent(
                   sendRequestToGeminiStatus: SendRequestToGeminiStatus.loading,
                   theReplyFromGemini: ""));
-              await gemini
-                  .textAndImage(
-                      text: LanguageService.languageCode == "ar"
-                          ? "اعطني كلمة واحد ماذا يوجد هذه الصورة"
-                          : "give me only word about what do you see in this image ",
-                      images: [
-                        imageBytes
-                      ])
-                  .then((value) => homeBloc.add(ReplyFromGeminiEvent(
-                      sendRequestToGeminiStatus:
-                          SendRequestToGeminiStatus.success,
-                      theReplyFromGemini:
-                          value?.content?.parts?[0].text?.split(".").first ??
-                              value?.content?.parts?[0].text ??
-                              "")))
-                  .onError((error, stackTrace) {
-                    print(
-                        "---------------------------------------${stackTrace}-----------------------------------${error}");
-
-                    homeBloc.add(ReplyFromGeminiEvent(
+              await gemini.textAndImage(
+                text: LanguageService.languageCode == "ar"
+                    ? "اعطني كلمة واحد ماذا يوجد هذه الصورة"
+                    : "give me only word about what do you see in this image ",
+                images: [imageBytes],
+              ).then(
+                (value) {
+                  homeBloc.add(
+                    ReplyFromGeminiEvent(
                         sendRequestToGeminiStatus:
-                            SendRequestToGeminiStatus.failure,
-                        theReplyFromGemini: ""));
+                            SendRequestToGeminiStatus.success,
+                        theReplyFromGemini:
+                            value?.content?.parts?[0].text?.split(".").first ??
+                                value?.content?.parts?[0].text ??
+                                ""),
+                  );
+                  /////////////////////////////////////////////////////
+                  FirebaseAnalyticsService.logEventForSession(
+                    eventName: AnalyticsEventsConst.programmingEvent,
+                    executedEventName: AnalyticsExecutedEventNameConst
+                        .uploadSearchImageSuccess,
+                  );
+                },
+              ).onError(
+                (error, stackTrace) {
+                  print(
+                      "---------------------------------------${stackTrace}-----------------------------------${error}");
 
-                    if (error.toString().contains("Failed host")) {
-                      Fluttertoast.showToast(
-                          fontSize: 18,
-                          timeInSecForIosWeb: 3,
-                          msg: "the internet is not available ",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.TOP,
-                          backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                          textColor: Colors.white);
-                      return;
-                    }
+                  homeBloc.add(ReplyFromGeminiEvent(
+                      sendRequestToGeminiStatus:
+                          SendRequestToGeminiStatus.failure,
+                      theReplyFromGemini: ""));
 
-                    if (error
-                        .toString()
-                        .contains("The request was manually cancelled")) {
-                      Fluttertoast.showToast(
-                          fontSize: 18,
-                          timeInSecForIosWeb: 3,
-                          msg: "time out ",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.TOP,
-                          backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                          textColor: Colors.white);
-                      return;
-                    }
+                  if (error.toString().contains("Failed host")) {
                     Fluttertoast.showToast(
                         fontSize: 18,
-                        timeInSecForIosWeb: 1,
-                        msg: "this service is not available in your Country ",
+                        timeInSecForIosWeb: 3,
+                        msg: "the internet is not available ",
                         toastLength: Toast.LENGTH_SHORT,
                         gravity: ToastGravity.TOP,
                         backgroundColor: const Color.fromARGB(255, 0, 0, 0),
                         textColor: Colors.white);
-                  })
-                  .timeout(
-                      Duration(
-                        seconds: 30,
-                      ), onTimeout: () {
-                    gemini.cancelRequest();
-                    return homeBloc.add(ReplyFromGeminiEvent(
+                    return;
+                  }
+
+                  if (error
+                      .toString()
+                      .contains("The request was manually cancelled")) {
+                    Fluttertoast.showToast(
+                        fontSize: 18,
+                        timeInSecForIosWeb: 3,
+                        msg: "time out ",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.TOP,
+                        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                        textColor: Colors.white);
+                    return;
+                  }
+                  Fluttertoast.showToast(
+                      fontSize: 18,
+                      timeInSecForIosWeb: 1,
+                      msg: "this service is not available in your Country ",
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.TOP,
+                      backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                      textColor: Colors.white);
+                  /////////////////////////////////////////////////////
+                  FirebaseAnalyticsService.logEventForSession(
+                    eventName: AnalyticsEventsConst.programmingEvent,
+                    executedEventName:
+                        AnalyticsExecutedEventNameConst.uploadSearchImageFailed,
+                  );
+                },
+              ).timeout(
+                Duration(
+                  seconds: 30,
+                ),
+                onTimeout: () {
+                  gemini.cancelRequest();
+                  homeBloc.add(
+                    ReplyFromGeminiEvent(
                         sendRequestToGeminiStatus:
                             SendRequestToGeminiStatus.failure,
-                        theReplyFromGemini: ""));
-                  });
+                        theReplyFromGemini: ""),
+                  );
+                  /////////////////////////////////////////////////////
+                  FirebaseAnalyticsService.logEventForSession(
+                    eventName: AnalyticsEventsConst.programmingEvent,
+                    executedEventName:
+                        AnalyticsExecutedEventNameConst.uploadSearchImageFailed,
+                  );
+                },
+              );
             }
-          });
-        });
+            ///////////////////////////////////////////
+            FirebaseAnalyticsService.logEventForSession(
+              eventName: AnalyticsEventsConst.buttonClicked,
+              executedEventName: AnalyticsExecutedEventNameConst
+                  .confirmUploadSearchImageButton,
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -529,11 +610,18 @@ class _TabsBarState extends State<TabsBar> {
                                 appBloc.add(ChangeIndexForSearch(2));
                                 widget.buildSearchResult.value = 1;
                                 widget.appearTrendingAndHistory.value = true;
-
+                                //////////////////////////////////
                                 Future.delayed(Duration(milliseconds: 300), () {
                                   appBloc.add(ChangeBasePage(4));
                                   appBloc.add(HideBottomNavigationBar(true));
                                 });
+                                ////////////////////////////////
+                                FirebaseAnalyticsService.logEventForSession(
+                                  eventName: AnalyticsEventsConst.buttonClicked,
+                                  executedEventName:
+                                      AnalyticsExecutedEventNameConst
+                                          .homeSearchButton,
+                                );
                               },
                               suffixWidget: Center(
                                 key: TestVariables.kTestMode
@@ -554,7 +642,7 @@ class _TabsBarState extends State<TabsBar> {
                                   children: [
                                     InkWell(
                                       onTap: () async {
-                                        SelecteImageForSearch();
+                                        selecteImageForSearch();
                                       },
                                       child: homeState
                                                   .sendRequestToGeminiStatus ==
@@ -677,7 +765,16 @@ class _TabsBarState extends State<TabsBar> {
                                     children: [
                                       InkWell(
                                         onTap: () async {
-                                          SelecteImageForSearch();
+                                          selecteImageForSearch();
+                                          /////////////////////////////
+                                          FirebaseAnalyticsService
+                                              .logEventForSession(
+                                            eventName: AnalyticsEventsConst
+                                                .buttonClicked,
+                                            executedEventName:
+                                                AnalyticsExecutedEventNameConst
+                                                    .searchWithImageButton,
+                                          );
                                         },
                                         child: homeState
                                                     .sendRequestToGeminiStatus ==
@@ -709,11 +806,23 @@ class _TabsBarState extends State<TabsBar> {
                                                   PermissionStatus.granted) {
                                                 return;
                                               }*/
-                                              print(
-                                                  "**************************************//////");
-                                              _speechToText.isNotListening
-                                                  ? _startListening()
-                                                  : _stopListening();
+
+                                              if (_speechToText
+                                                  .isNotListening) {
+                                                _startListening();
+                                                /////////////////////////////
+                                                FirebaseAnalyticsService
+                                                    .logEventForSession(
+                                                  eventName:
+                                                      AnalyticsEventsConst
+                                                          .buttonClicked,
+                                                  executedEventName:
+                                                      AnalyticsExecutedEventNameConst
+                                                          .searchWithVoiceButton,
+                                                );
+                                              } else {
+                                                _stopListening();
+                                              }
                                             },
                                             child: Container(
                                               width: 20,
@@ -864,7 +973,9 @@ class _TabsBarState extends State<TabsBar> {
                                                         .tabIndex !=
                                                     index) {
                                                   appBloc.add(ChangeTab(index));
-                                                  homeBloc.add(GetHomeBoutiqesEvent(
+                                                  ///////////////////////
+                                                  homeBloc.add(
+                                                    GetHomeBoutiqesEvent(
                                                       getWithPrefetchForBoutiques:
                                                           true,
                                                       getWithPagination: false,
@@ -875,34 +986,42 @@ class _TabsBarState extends State<TabsBar> {
                                                           .mainCategories![
                                                               index]
                                                           .slug!,
-                                                      context: context));
+                                                      context: context,
+                                                    ),
+                                                  );
+                                                  ////////////////////////////
                                                   homeBloc.add(
-                                                      ChangeCurrentIndexForMainCategoryEvent(
-                                                          index: index));
+                                                    ChangeCurrentIndexForMainCategoryEvent(
+                                                      index: index,
+                                                    ),
+                                                  );
+                                                  ///////////////////////////
+                                                  FirebaseAnalyticsService
+                                                      .logEventForSession(
+                                                    eventName:
+                                                        AnalyticsEventsConst
+                                                            .programmingEvent,
+                                                    executedEventName:
+                                                        AnalyticsExecutedEventNameConst
+                                                            .chooseCategoryButton,
+                                                  );
                                                 } else {
                                                   appBloc.add(ChangeTab(-1));
-                                                  homeBloc.add(GetHomeBoutiqesEvent(
+                                                  homeBloc.add(
+                                                    GetHomeBoutiqesEvent(
                                                       getWithPrefetchForBoutiques:
                                                           true,
                                                       context: context,
                                                       categorySlug: "Empty",
                                                       offset: "1",
-                                                      getWithPagination:
-                                                          false));
+                                                      getWithPagination: false,
+                                                    ),
+                                                  );
                                                   homeBloc.add(
-                                                      ChangeCurrentIndexForMainCategoryEvent(
-                                                          index: -1));
+                                                    ChangeCurrentIndexForMainCategoryEvent(
+                                                        index: -1),
+                                                  );
                                                 }
-                                                /////////////////////////////////////
-                                                FirebaseAnalyticsService
-                                                    .logEventForSession(
-                                                  eventName:
-                                                      AnalyticsEventsConst
-                                                          .programmingEvent,
-                                                  executedEventName:
-                                                      AnalyticsExecutedEventNameConst
-                                                          .chooseCategoryButton,
-                                                );
                                               },
                                               child: Column(
                                                 crossAxisAlignment:

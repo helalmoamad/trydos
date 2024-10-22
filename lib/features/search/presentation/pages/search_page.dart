@@ -1,18 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'package:trydos/common/helper/helper_functions.dart';
-import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
-import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
-
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
@@ -21,23 +15,17 @@ import 'package:trydos/features/home/presentation/pages/product_listing_page.dar
 import 'package:trydos/features/search/presentation/widgets/search_Circle_boutique.dart';
 import 'package:trydos/features/search/presentation/widgets/search_circle_brand.dart';
 import 'package:trydos/features/search/presentation/widgets/search_circle_category.dart';
-
 import 'package:trydos/features/search/presentation/widgets/trendig_section.dart';
-
 import '../../../../common/test_utils/test_var.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
-import '../../../../core/data/model/pagination_model.dart';
 import '../../../../core/utils/theme_state.dart';
-
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
+import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../app/blocs/app_bloc/app_event.dart';
-
-import '../../../app/my_cached_network_image.dart';
-import '../../../home/data/models/get_product_listing_with_filters_model.dart'
-    as product_listing_model;
 import '../../../home/presentation/manager/home_bloc.dart';
-
-import '../../../home/presentation/widgets/product_listing/filters_normal_list.dart';
 import '../../../home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 import '../widgets/search_history.dart';
 import '../widgets/search_result.dart';
@@ -82,6 +70,15 @@ class _SearchPageState extends ThemeState<SearchPage> {
     super.initState();
   }
 
+  @override
+  void didChangeDependencies() async {
+    FirebaseAnalyticsService.logScreen(
+      screen: AnalyticsScreensConst.homeSearchScreen,
+    );
+
+    super.didChangeDependencies();
+  }
+
   String key = 'search';
 
   @override
@@ -108,6 +105,11 @@ class _SearchPageState extends ThemeState<SearchPage> {
         appBloc.add(ChangeBasePage(0));
         homeBloc.add(ResetAllSelectedAppliedFilterEvent());
         appBloc.add(HideBottomNavigationBar(false));
+        ///////////////////////////////
+        FirebaseAnalyticsService.logEventForSession(
+          eventName: AnalyticsEventsConst.buttonClicked,
+          executedEventName: AnalyticsExecutedEventNameConst.backAppButton,
+        );
       },
       child: Scaffold(
         backgroundColor: colorScheme.white,
@@ -248,46 +250,47 @@ class _SearchPageState extends ThemeState<SearchPage> {
                   BlocBuilder<HomeBloc, HomeState>(
                     builder: (context, state) {
                       return SliverToBoxAdapter(
-                          child: ((state.choosedFiltersByUser[key]?.filters
-                                              ?.attributes?.isNullOrEmpty ??
-                                          true) &&
-                                      (state.choosedFiltersByUser[key]?.filters
-                                              ?.colors?.isNullOrEmpty ??
-                                          true) &&
-                                      (state.choosedFiltersByUser[key]?.filters
-                                              ?.brands?.isNullOrEmpty ??
-                                          true) &&
-                                      (state.choosedFiltersByUser[key]?.filters
-                                              ?.boutiques?.isNullOrEmpty ??
-                                          true) &&
-                                      (state.choosedFiltersByUser[key]?.filters
-                                              ?.categories?.isNullOrEmpty ??
-                                          true) &&
-                                      ((state.appliedFiltersByUser[key]?.filters
-                                                  ?.searchText?.isEmpty ??
-                                              true) ||
-                                          (state.appliedFiltersByUser[key]?.filters?.searchText?.length ?? 0) < 2) &&
-                                      (state.choosedFiltersByUser[key]?.filters?.prices?.maxPrice == null) &&
-                                      (state.choosedFiltersByUser[key]?.filters?.prices?.minPrice == null)) &&
-                                  widget.controller.text.length < 3
-                              ? SizedBox.shrink()
-                              : Container(
-                                  padding: EdgeInsets.all(8),
-                                  margin: EdgeInsets.symmetric(
-                                      horizontal: 20, vertical: 10),
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
-                                      color: Colors.grey.shade300),
-                                  height: 30,
-                                  width: 1.sw,
-                                  child: choosedOrAppliedFiltersWidget(
-                                    controller: widget.controller,
-                                    boutiqueSlug: 'search',
-                                    context: context,
-                                    choosedFilter: true,
-                                    fromSearch: true,
-                                  ),
-                                ));
+                        child: ((state.choosedFiltersByUser[key]?.filters
+                                            ?.attributes?.isNullOrEmpty ??
+                                        true) &&
+                                    (state.choosedFiltersByUser[key]?.filters
+                                            ?.colors?.isNullOrEmpty ??
+                                        true) &&
+                                    (state.choosedFiltersByUser[key]?.filters
+                                            ?.brands?.isNullOrEmpty ??
+                                        true) &&
+                                    (state.choosedFiltersByUser[key]?.filters
+                                            ?.boutiques?.isNullOrEmpty ??
+                                        true) &&
+                                    (state.choosedFiltersByUser[key]?.filters
+                                            ?.categories?.isNullOrEmpty ??
+                                        true) &&
+                                    ((state.appliedFiltersByUser[key]?.filters
+                                                ?.searchText?.isEmpty ??
+                                            true) ||
+                                        (state.appliedFiltersByUser[key]?.filters?.searchText?.length ?? 0) < 2) &&
+                                    (state.choosedFiltersByUser[key]?.filters?.prices?.maxPrice == null) &&
+                                    (state.choosedFiltersByUser[key]?.filters?.prices?.minPrice == null)) &&
+                                widget.controller.text.length < 3
+                            ? SizedBox.shrink()
+                            : Container(
+                                padding: EdgeInsets.all(8),
+                                margin: EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 10),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                    color: Colors.grey.shade300),
+                                height: 30,
+                                width: 1.sw,
+                                child: choosedOrAppliedFiltersWidget(
+                                  controller: widget.controller,
+                                  boutiqueSlug: 'search',
+                                  context: context,
+                                  choosedFilter: true,
+                                  fromSearch: true,
+                                ),
+                              ),
+                      );
                     },
                   ),
                   BlocBuilder<HomeBloc, HomeState>(
@@ -333,16 +336,25 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                         fromSearch: true,
                                         searchText: text));
                                     HelperFunctions.slidingNavigation(
-                                        context,
-                                        ProductListingPage(
-                                          controllerFormSearchPage:
-                                              widget.controller,
-                                          searchText: text,
-                                          boutiqueIcon: "",
-                                          fromSearch: true,
-                                          withSlidingImages: false,
-                                          boutiqueSlug: key,
-                                        ));
+                                      context,
+                                      ProductListingPage(
+                                        controllerFormSearchPage:
+                                            widget.controller,
+                                        searchText: text,
+                                        boutiqueIcon: "",
+                                        fromSearch: true,
+                                        withSlidingImages: false,
+                                        boutiqueSlug: key,
+                                      ),
+                                    );
+                                    /////////////////////////////////
+                                    FirebaseAnalyticsService.logEventForSession(
+                                      eventName:
+                                          AnalyticsEventsConst.buttonClicked,
+                                      executedEventName:
+                                          AnalyticsExecutedEventNameConst
+                                              .applyHomeSearchResultButton,
+                                    );
                                   },
                                   child: Container(
                                     height: 65,
@@ -418,6 +430,14 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                       filtersChoosedByUser: null,
                                     ));
                                     widget.controller.clear();
+                                    /////////////////////////////////
+                                    FirebaseAnalyticsService.logEventForSession(
+                                      eventName:
+                                          AnalyticsEventsConst.buttonClicked,
+                                      executedEventName:
+                                          AnalyticsExecutedEventNameConst
+                                              .resetHomeSearchButton,
+                                    );
                                   },
                                   child: Container(
                                     height: 65,
@@ -463,7 +483,5 @@ class _SearchPageState extends ThemeState<SearchPage> {
     );
   }
 
-  @override
-  // TODO: implement numberOfFields
   int get numberOfFields => 1;
 }

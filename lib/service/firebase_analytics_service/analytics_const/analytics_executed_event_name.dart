@@ -27,31 +27,39 @@ class AnalyticsExecutedEventNameConst {
       'choose_country_and_continue_button';
   ///////////////////// Home  //////////////////////////
   static const chooseCategoryButton = 'choose_category_button';
-  static const chooseCategoryRequestSuccess = 'choose_category_request_success';
-  static const chooseCategoryRequestFailed = 'choose_category_request_failed';
-  static const chooseBoutiqueButton = 'choose_boutique_button';
   static const homeSearchButton = 'home_search_button';
-  static const homeBavBarButton = 'home_nav_bar_button';
+  static const homeNavBarButton = 'home_nav_bar_button';
   static const cartNavBarButton = 'cart_nav_bar_button';
   static const chatNavBarButton = 'chat_nav_bar_button';
   static const meNavBarButton = 'me_nav_bar_button';
   static const viewStoryButton = 'view_story_button';
-  static const addStoryButton = 'add_story_button';
-  static const addCameraStoryButton = 'add_camera_story_button';
-  static const addGalleryStoryButton = 'add_gallery_story_button';
+  static const uploadStoryButton = 'upload_story_button';
+  static const uploadCameraButton = 'upload_camera_button';
+  static const uploadGalleryButton = 'upload_gallery_button';
+  static const confirmUploadStoryButton = 'confirm_upload_story_button';
+  static const uploadStoryFailed = 'upload_story_failed';
+  static const uploadStorySuccess = 'upload_story_success';
+  static const scrollStoriesInHomeEvent = 'scroll_stories_in_home_event';
+  static const changeStoryInStroyScreenEvent =
+      'change_story_in_stroyscreen_event';
+  static const homeSearchBackCloseIconButton =
+      'home_search_back_closeicon_button';
+  static const searchWithImageButton = 'search_with_image_button';
+  static const uploadSearchImageSuccess = 'upload_search_image_success';
+  static const videoNotSupported = 'video_not_supported';
+  static const uploadSearchImageFailed = 'upload_search_image_failed';
+  static const confirmUploadSearchImageButton =
+      'confirm_upload_search_image_button';
+  static const resetHomeSearchButton = 'reset_home_search_button';
+  static const applyHomeSearchResultButton = 'apply_home_search_result_button';
+  static const searchWithVoiceButton = 'search_with_voice_button';
+
   static const productListingSearchEvent = 'product_listing_search_event';
-  static const searchFailed = 'search_failed';
-  static const searchSuccess = 'search_success';
-  static const chooseProductButton = 'choose_product_button';
-  static const productListingApplyFilterButton =
-      'product_listing_apply_filter_button';
-  static const applyFilterRequestFailed = 'apply_filter_request_failed';
-  static const applyFilterRequestSuccess = 'apply_filter_request_success';
+  static const appliedFiltersEvent = 'applied_filters_event';
   static const productListingFilterButton = 'product_listing_filter_button';
-  static const backButton = 'back_button';
+  static const backAppButton = 'back_app_button';
   static const applySearchResultButton = 'apply_search_result_button';
-  static const resetSearchButton = 'reset_search_button';
+  static const resetCloseIconButton = 'reset_closeicon_button';
   static const searchForFiltersEvent = 'search_for_filters_event';
   static const resetButton = 'reset_button';
-  static const applyFilterButton = 'apply_filter_button';
 }

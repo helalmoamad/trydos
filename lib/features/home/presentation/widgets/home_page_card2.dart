@@ -69,8 +69,8 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
               ),
             );
             ////////////////////////////////////
-            FirebaseAnalyticsService.logEventForViewedBoutiques(
-              eventName: AnalyticsEventsConst.viewedBoutiques,
+            FirebaseAnalyticsService.logEventForViewedBoutique(
+              eventName: AnalyticsEventsConst.viewedBoutique,
               boutiqueId: widget.boutniqe.id.toString(),
               boutiqueName: widget.boutniqe.name.toString(),
             );

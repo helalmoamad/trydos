@@ -236,11 +236,11 @@ List<String> isFailedTheFirstTime = [];
 List<String> apisMustNotToRequest = [];
 int applicationVersion = 1;
 
-request()async{
+request() async {
   final Stopwatch stopWatch = Stopwatch();
   stopWatch.start();
   //await http.get(Uri.parse('http://market_under_dev_backend.trydos.dev/api/new_v1/mobile/home/mainCategories'));
-  await Dio().getUri(Uri.parse('http://ip-api.com/json')).onError((e , st){
+  await Dio().getUri(Uri.parse('http://ip-api.com/json')).onError((e, st) {
     dev.log(e.toString());
     return Response(requestOptions: RequestOptions());
   });
@@ -266,9 +266,8 @@ void main() async {
   await GetIt.I<PrefsRepository>().removeMessageFromBackground();
   NotificationProcess().setupInteractedMessage();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
-  await FirebaseAnalytics.instance
-      .setSessionTimeoutDuration(Duration(seconds: 20));
+  FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
+  FirebaseAnalytics.instance.setSessionTimeoutDuration(Duration(seconds: 20));
   GetIt.I<PrefsRepository>().setTimerForOtpRunning(false);
   fetchServersUrlsFromSharedPreference();
   await NotificationProcess().fcmToken();

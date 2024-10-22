@@ -123,16 +123,14 @@ class CategoriesFilterList extends StatelessWidget {
                                 top: (currentExpandedIndex == index)
                                     ? (70 - 50)
                                     : (70 - 50) / 2,
-                                end: currentExpandedIndex ==
-                                    index
-                                    ? innerIndex *
-                                    55
+                                end: currentExpandedIndex == index
+                                    ? innerIndex * 55
                                     : innerIndex >=
-                                    (filters.categories![index].subCategories!.length -
-                                        2)
-                                    ? (innerIndex - 1) *
-                                    3
-                                    : 0,
+                                            (filters.categories![index]
+                                                    .subCategories!.length -
+                                                2)
+                                        ? (innerIndex - 1) * 3
+                                        : 0,
                                 child: filters
                                             .categories![index]
                                             .subCategories![innerIndex]
@@ -600,18 +598,23 @@ class CategoriesFilterList extends StatelessWidget {
                           );
                         }
                         if (!workWithChoosedFilter) {
-                          homeBloc.add(ChangeAppliedFiltersEvent(
-                            category: category,
-                            boutiqueSlug: boutiqueSlug,
-                            filtersAppliedByUser: GetProductFiltersModel(
-                                filters: prevChoosedOrAppliedFilterToAddToIt),
-                          ));
-                          homeBloc.add(GetProductsWithFiltersEvent(
+                          homeBloc.add(
+                            ChangeAppliedFiltersEvent(
+                              category: category,
+                              boutiqueSlug: boutiqueSlug,
+                              filtersAppliedByUser: GetProductFiltersModel(
+                                  filters: prevChoosedOrAppliedFilterToAddToIt),
+                            ),
+                          );
+                          homeBloc.add(
+                            GetProductsWithFiltersEvent(
                               searchText: controller?.text,
                               fromSearch: fromSearch,
                               boutiqueSlug: boutiqueSlug,
                               category: category,
-                              offset: 1));
+                              offset: 1,
+                            ),
+                          );
                         } else {
                           homeBloc.add(ChangeSelectedFiltersEvent(
                             fromHomePageSearch: fromSearch,
@@ -621,7 +624,8 @@ class CategoriesFilterList extends StatelessWidget {
                                 filters: prevChoosedOrAppliedFilterToAddToIt),
                           ));
                         }
-                      })
+                      },
+                    )
                   : SizedBox.shrink();
             }
           },

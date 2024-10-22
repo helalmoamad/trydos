@@ -94,6 +94,8 @@ class FirebaseAnalyticsService {
       );
 
       await GetIt.I<PrefsRepository>().removeCurrentEvent();
+      await GetIt.I<PrefsRepository>().removeViewedProducts();
+      await GetIt.I<PrefsRepository>().removeViewedBoutiques();
     } catch (e, st) {
       debugPrint(
           '//// startAnalyticsSession Error ////////// ${e.toString()} //////////////////');
@@ -101,49 +103,68 @@ class FirebaseAnalyticsService {
     }
   }
 
-  static Future<void> logEventForViewedProducts({
+  static Future<void> logEventForViewedProduct({
     required String eventName,
     required String productId,
     required String productName,
     required List<String>? productCategoriesId,
     Map<String, String>? extraParams,
   }) async {
-    try {
-      await FirebaseAnalytics.instance.logEvent(
-        name: eventName,
-        parameters: {
-          'product_id': productId,
-          'product_name': productName,
-          'product_category': json.encode(productCategoriesId),
-          if (extraParams != null) ...extraParams,
-        },
-      );
-    } catch (e, st) {
-      debugPrint(
-          '//// logEventForViewedProducts Error ////////// ${e.toString()} //////////////////');
-      debugPrint(st.toString());
+    List<String> viewedProducts =
+        GetIt.I<PrefsRepository>().getviewedProductsProducts();
+    if (!viewedProducts.contains(productId)) {
+      try {
+        await FirebaseAnalytics.instance.logEvent(
+          name: eventName,
+          parameters: {
+            'our_user_id': GetIt.I<PrefsRepository>().myMarketId ?? 'empty',
+            'product_id': productId,
+            'product_name': productName,
+            'product_category': json.encode(productCategoriesId),
+            if (extraParams != null) ...extraParams,
+          },
+        ).then(
+          (value) async {
+            await GetIt.I<PrefsRepository>().setViewedProducts(productId);
+          },
+        );
+      } catch (e, st) {
+        debugPrint(
+            '//// logEventForViewedProducts Error ////////// ${e.toString()} //////////////////');
+        debugPrint(st.toString());
+      }
     }
   }
 
-  static Future<void> logEventForViewedBoutiques({
+  static Future<void> logEventForViewedBoutique({
     required String eventName,
     required String boutiqueId,
     required String boutiqueName,
     Map<String, String>? extraParams,
   }) async {
-    try {
-      await FirebaseAnalytics.instance.logEvent(
-        name: eventName,
-        parameters: {
-          'boutique_id': boutiqueId,
-          'boutique_name': boutiqueName,
-          if (extraParams != null) ...extraParams,
-        },
-      );
-    } catch (e, st) {
-      debugPrint(
-          '//// log Event For Viewed Boutiques Error ////////// ${e.toString()} //////////////////');
-      debugPrint(st.toString());
+    List<String> viewedBoutiques =
+        GetIt.I<PrefsRepository>().getviewedProductsBoutiques();
+
+    if (!viewedBoutiques.contains(boutiqueId)) {
+      try {
+        await FirebaseAnalytics.instance.logEvent(
+          name: eventName,
+          parameters: {
+            'our_user_id': GetIt.I<PrefsRepository>().myMarketId ?? 'empty',
+            'boutique_id': boutiqueId,
+            'boutique_name': boutiqueName,
+            if (extraParams != null) ...extraParams,
+          },
+        ).then(
+          (value) async {
+            await GetIt.I<PrefsRepository>().setViewedBoutiques(boutiqueId);
+          },
+        );
+      } catch (e, st) {
+        debugPrint(
+            '//// log Event For Viewed Boutiques Error ////////// ${e.toString()} //////////////////');
+        debugPrint(st.toString());
+      }
     }
   }
 }

@@ -26,6 +26,9 @@ import 'package:trydos/features/home/presentation/widgets/product_listing/sizes_
 import 'package:tuple/tuple.dart';
 import '../../../../../common/test_utils/test_var.dart';
 import '../../../../../common/test_utils/widgets_keys.dart';
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../../service/language_service.dart';
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../app/my_cached_network_image.dart';
@@ -1551,6 +1554,12 @@ Widget choosedOrAppliedFiltersWidget({
                       searchText: null,
                       category: category,
                     ));
+                    ///////////////////////////////
+                    FirebaseAnalyticsService.logEventForSession(
+                      eventName: AnalyticsEventsConst.buttonClicked,
+                      executedEventName:
+                          AnalyticsExecutedEventNameConst.resetCloseIconButton,
+                    );
                   },
                   child: Center(
                     child: Row(
@@ -2357,16 +2366,17 @@ class _FilterCircleWidgetState extends State<FilterCircleWidget> {
                   SizedBox(height: 5),
                   SizedBox(
                     width: widget.width,
-                  child: MyTextWidget(
-                    widget.categoryName,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                    textAlign: TextAlign.center,
-                    style: context.textTheme.titleMedium?.rq.copyWith(
-                        color: Color(0xff8E8E8E),
-                        letterSpacing: 0,
-                        height: 1.25),
-                  ),),
+                    child: MyTextWidget(
+                      widget.categoryName,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      textAlign: TextAlign.center,
+                      style: context.textTheme.titleMedium?.rq.copyWith(
+                          color: Color(0xff8E8E8E),
+                          letterSpacing: 0,
+                          height: 1.25),
+                    ),
+                  ),
                 }
               ],
             ),
