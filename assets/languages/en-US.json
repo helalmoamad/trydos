@@ -14,6 +14,8 @@
   "later_take_look": "Later, Take A Look At The App",
   "chat": "Chat",
   "cart": "Cart",
+  "add_comment": "Add a Comment",
+  "error_empty_comment": "You can't add empty comment",
   "story": "story",
   "find_products": "المقترحات",
   "upload": "Upload",

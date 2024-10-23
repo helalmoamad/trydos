@@ -86,7 +86,7 @@ class CommentsForProduct {
 class Comment {
   final int? id;
   final Customer? customer;
-  final int? productId;
+  final String? productId;
   final String? comment;
   final DateTime? createdAt;
 
@@ -101,7 +101,7 @@ class Comment {
   Comment copyWith({
     int? id,
     Customer? customer,
-    int? productId,
+    String? productId,
     String? comment,
     DateTime? createdAt,
   }) =>
@@ -118,7 +118,7 @@ class Comment {
         customer: json["customer"] == null
             ? null
             : Customer.fromJson(json["customer"]),
-        productId: json["product_id"],
+        productId: json["product_id"]?.toString(),
         comment: json["comment"],
         createdAt: json["created_at"] == null
             ? null
@@ -135,7 +135,7 @@ class Comment {
 }
 
 class Customer {
-  final int? id;
+  final String? id;
   final String? name;
   final String? image;
 
@@ -146,7 +146,7 @@ class Customer {
   });
 
   Customer copyWith({
-    int? id,
+    String? id,
     String? name,
     String? image,
   }) =>
@@ -157,7 +157,7 @@ class Customer {
       );
 
   factory Customer.fromJson(Map<String, dynamic> json) => Customer(
-        id: json["id"],
+        id: json["id"].toString(),
         name: json["name"],
         image: json["image"],
       );

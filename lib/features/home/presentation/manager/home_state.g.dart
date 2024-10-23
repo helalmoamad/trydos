@@ -40,6 +40,9 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               _$GetFullProductDetailsStatusEnumMap,
               json['getFullProductDetailsStatus']) ??
           GetFullProductDetailsStatus.init,
+      addCommentStatus: $enumDecodeNullable(
+              _$AddCommentStatusEnumMap, json['addCommentStatus']) ??
+          AddCommentStatus.init,
       startingSetting: json['startingSetting'] == null
           ? null
           : StartingSetting.fromJson(
@@ -223,9 +226,8 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       prefAppliedFilterForExtendFilter:
           json['prefAppliedFilterForExtendFilter'] == null
               ? null
-              : get_filters.Filter.fromJson(
-                  json['prefAppliedFilterForExtendFilter']
-                      as Map<String, dynamic>),
+              : get_filters.Filter.fromJson(json['prefAppliedFilterForExtendFilter']
+                  as Map<String, dynamic>),
       ListitemForAddToCart: (json['ListitemForAddToCart'] as List<dynamic>?)
           ?.map((e) => ImageForAddToCart.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -375,6 +377,7 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           _$UpdateItemInCartStatusEnumMap[instance.updateItemInCartStatus],
       'deleteItemInCartStatus':
           _$DeleteItemInCartStatusEnumMap[instance.deleteItemInCartStatus],
+      'addCommentStatus': _$AddCommentStatusEnumMap[instance.addCommentStatus]!,
       'getProductFiltersModel': instance.getProductFiltersModel
           .map((k, e) => MapEntry(k, e?.toJson())),
       'getProductFiltersWithPrefetchModel': instance
@@ -502,6 +505,13 @@ const _$GetFullProductDetailsStatusEnumMap = {
   GetFullProductDetailsStatus.loading: 'loading',
   GetFullProductDetailsStatus.success: 'success',
   GetFullProductDetailsStatus.failure: 'failure',
+};
+
+const _$AddCommentStatusEnumMap = {
+  AddCommentStatus.init: 'init',
+  AddCommentStatus.loading: 'loading',
+  AddCommentStatus.success: 'success',
+  AddCommentStatus.failure: 'failure',
 };
 
 const _$DeleteItemInCartStatusEnumMap = {

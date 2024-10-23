@@ -177,20 +177,23 @@ class MyCachedNetworkImage extends StatelessWidget {
                             rebuildImage.value++;
                           });
                         }
-                        return InkWell(
-                          focusColor: Colors.transparent,
-                          splashColor: Colors.transparent,
-                          onTap: () async {
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              currentUrl = '';
-                              enable = true;
-                              rebuildImage.value++;
-                            });
-                          },
-                          child: Center(
-                            child: Icon(Icons.refresh,
-                                color: const Color(0xffff5f61),
-                                size: min(25, height)),
+                        return Material(
+                          color:  Colors.transparent,
+                          child: InkWell(
+                            focusColor: Colors.transparent,
+                            splashColor: Colors.transparent,
+                            onTap: () async {
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                currentUrl = '';
+                                enable = true;
+                                rebuildImage.value++;
+                              });
+                            },
+                            child: Center(
+                              child: Icon(Icons.refresh,
+                                  color: const Color(0xffff5f61),
+                                  size: min(25, height)),
+                            ),
                           ),
                         );
                       });
@@ -223,6 +226,9 @@ String addSuitableWidthAndHeightToImage({required String imageUrl,
   double? ordinalWidth,
   required double width,
   required double height}) {
+  if(!imageUrl.contains('upload')){
+    return imageUrl;
+  }
   List<String> list;
   String url = '';
   list = imageUrl.split('upload');

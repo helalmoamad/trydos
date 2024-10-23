@@ -184,6 +184,7 @@ class _SharedProductMessageState extends State<SharedProductMessage> {
                     ),
                     padding: EdgeInsets.all(10),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Transform.translate(
                           offset: !(state.isSlpoing &&
@@ -200,8 +201,8 @@ class _SharedProductMessageState extends State<SharedProductMessage> {
                             children: [
                               if (widget.imageFile == null) ...{
                                 Container(
-                                    width: 200.w,
-                                    height: 400,
+                                    width: 1.sw - 100,
+                                    height: 464,
                                     decoration: BoxDecoration(
                                       color: Colors.grey.shade200,
                                       borderRadius: BorderRadius.circular(12.0),
@@ -218,7 +219,7 @@ class _SharedProductMessageState extends State<SharedProductMessage> {
                                             builder: (context, status, _) {
                                               FileSaving().downloadFileToLocalStorage(
                                                   widget.imageUrl! +
-                                                      '?width=${200.w}&height=400',
+                                                      '?width=${1.sw - 100}&height=464',
                                                   widget.channelId,
                                                   action: (File? file) {
                                                 // _loadingImage.value = 2;
@@ -246,7 +247,8 @@ class _SharedProductMessageState extends State<SharedProductMessage> {
                                   alignment: Alignment.bottomCenter,
                                   children: [
                                     Container(
-                                      width: 200.w
+          width: 1.sw - 100,
+          height: 464,
                                       // (snapshot.data!.width.w < 200.w)
                                       //     ? snapshot.data!.width.toDouble()
                                       //     : 200.w
@@ -255,8 +257,6 @@ class _SharedProductMessageState extends State<SharedProductMessage> {
                                       //             200.w)
                                       //         ? 200.w.toDouble()
                                       //         : snapshot.data!.width / 3
-                                      ,
-                                      height: 400
                                       // (snapshot.data!.height.h <
                                       //         200.h)
                                       //     ? snapshot.data!.height.toDouble()
@@ -264,7 +264,6 @@ class _SharedProductMessageState extends State<SharedProductMessage> {
 
                                       // snapshot.data!.height / 3
 
-                                      ,
                                       decoration: BoxDecoration(
                                         image: DecorationImage(
                                           image: FileImage(widget.imageFile!),
@@ -283,7 +282,7 @@ class _SharedProductMessageState extends State<SharedProductMessage> {
                                       offset: const Offset(0, -3),
                                       child: Container(
                                         height: 40.h,
-                                        width: 200.w,
+                                        width: 1.sw - 100,
                                         // (snapshot.data!.width.w < 200.w)
                                         //     ? snapshot.data!.width.toDouble()
                                         //     : 200.w,
@@ -400,7 +399,7 @@ class _SharedProductMessageState extends State<SharedProductMessage> {
                               //todo until i solve the translate
                               widget.isFirstMessage
                                   ? Transform.translate(
-                                      offset: Offset(widget.isSent ? 40.w : -40.w, 0),
+                                      offset: Offset(widget.isSent ? 30.w : -30.w, 0),
                                       child: Stack(
                                         alignment: Alignment.center,
                                         children: [

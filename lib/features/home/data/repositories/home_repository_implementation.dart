@@ -186,4 +186,10 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
     return handlingExceptionRequest(
         tryCall: () => dataSource.getFullProductDetails(productId));
   }
+
+  @override
+  Future<Either<Failure, Comment>> addComment(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.addComment(params));
+  }
 }

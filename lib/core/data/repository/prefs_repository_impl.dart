@@ -241,7 +241,13 @@ class PrefsRepositoryImpl extends PrefsRepository {
     List<String> files = getExistenceFiles();
 
     String path =
-        files.firstWhere((element) => element.contains('"${chatId}"' + ":"));
+        files.firstWhere((element) {
+          if( element.contains('"${chatId}"' + ":" )){
+            Map paths = convert.jsonDecode(element);
+            return paths[chatId].toString().startsWith(filePath);
+          }
+          return false;
+        });
 
     Map paths = convert.jsonDecode(path);
     return paths[chatId].toString().split(' ').length > 1

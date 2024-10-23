@@ -64,6 +64,8 @@ enum UpdateItemInCartStatus { init, loading, success, failure }
 
 enum DeleteItemInCartStatus { init, loading, success, failure }
 
+enum AddCommentStatus { init, loading, success, failure }
+
 enum GetProductsWithoutFiltersStatus { init, loading, success, failure }
 
 enum AddOrRemoveLikeOfProductStatus { init, loading, success, failure }
@@ -84,6 +86,7 @@ class HomeState extends Equatable {
     this.getMainCategoriesStatus = GetMainCategoriesStatus.init,
     this.getCommentForProductStatus = GetCommentForProductStatus.init,
     this.getFullProductDetailsStatus = GetFullProductDetailsStatus.init,
+    this.addCommentStatus = AddCommentStatus.init,
     this.startingSetting,
     this.sizes = const [],
     this.sizesQuantities = const [],
@@ -159,6 +162,7 @@ class HomeState extends Equatable {
   final AddItemInCartStatus? addItemInCartStatus;
   final UpdateItemInCartStatus? updateItemInCartStatus;
   final DeleteItemInCartStatus? deleteItemInCartStatus;
+  final AddCommentStatus addCommentStatus;
 
   final Map<String, get_filters.GetProductFiltersModel?> getProductFiltersModel;
   final Map<String, get_filters.GetProductFiltersModel?>
@@ -235,6 +239,7 @@ class HomeState extends Equatable {
         getCurrencyForCountryModel,
         sendRequestToGeminiStatus,
         theReplyFromGemini,
+        addCommentStatus,
         cashedOrginalBoutique,
         productContentForStatusOfOpeningProductDetailsDirectly,
         getProductListingWithFiltersPaginationWithPrefetchModels,
@@ -316,6 +321,7 @@ class HomeState extends Equatable {
       final bool? isGettingProductListingWithPagination,
       final GetCartItemsStatus? getCartItemsStatus,
       Map<int, int?>? currentStoryInEachCollection,
+        final AddCommentStatus? addCommentStatus,
       final GetProductDetailWithoutRelatedProductsModel?
           getProductDetailWithoutRelatedProductsModel,
       int? selectedCollection,
@@ -384,6 +390,7 @@ class HomeState extends Equatable {
       getFullProductDetailsStatus:
           getFullProductDetailsStatus ?? this.getFullProductDetailsStatus,
       sizesQuantities: sizesQuantities ?? this.sizesQuantities,
+      addCommentStatus: addCommentStatus ?? this.addCommentStatus,
       isSizeRequestNotification:
           isSizeRequestNotification ?? this.isSizeRequestNotification,
       isGettingProductListingWithPagination:

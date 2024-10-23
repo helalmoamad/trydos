@@ -210,6 +210,22 @@ class HomeRemoteDatasource {
     return getProductFilters();
   }
 
+
+  Future<Comment> addComment(
+      Map<String, dynamic> params) {
+    PostClient<Comment> addComment =
+        PostClient<Comment>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<Comment>(
+        endpoint: MarketEndPoints.addCommentEP,
+        data: params,
+        response: ResponseValue<Comment>(
+            fromJson: (response) => Comment.fromJson(response['data']['comment'])),
+      ),
+    );
+    return addComment();
+  }
+
   Future<GetStoryForProductModel> getStories(String productId) {
     GetClient<GetStoryForProductModel> getStories =
         GetClient<GetStoryForProductModel>(

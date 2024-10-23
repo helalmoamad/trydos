@@ -91,21 +91,15 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       homeBloc.add(GetProductDatailsWithoutRelatedProductsEvent(
           productId: productItem.id.toString()));
     }
-    Future.delayed(Duration(seconds: 3), () {
-      homeBloc.add(GetCommentForProductEvent(
-          productId: widget.productIdForOpeningChatDirectly ??
-              productItem.id.toString()));
-      homeBloc.add(GetStoryForProductEvent(
-          productId: widget.productIdForOpeningChatDirectly ??
-              productItem.id.toString()));
-    });
-    if (GetIt.I<PrefsRepository>().chatToken != null) {
-      BlocProvider.of<ChatBloc>(context).add(GetChatsEvent());
-      BlocProvider.of<ChatBloc>(context).add(SaveContactsEvent());
-    }
-    chatBloc.add(GetSharedProductCountEvent(
-        productId: widget.productIdForOpeningChatDirectly ??
-            productItem.id.toString()));
+      Future.delayed(Duration(seconds: 3), () {
+        homeBloc
+            .add(
+            GetCommentForProductEvent(productId: widget.productIdForOpeningChatDirectly ?? productItem.id.toString()));
+        homeBloc
+            .add(GetStoryForProductEvent(productId: widget.productIdForOpeningChatDirectly ?? productItem.id.toString()));
+      });
+    chatBloc
+        .add(GetSharedProductCountEvent(productId: widget.productIdForOpeningChatDirectly ?? productItem.id.toString()));
 
     super.initState();
   }
@@ -122,9 +116,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (error) {
-      debugPrint(error.toString());
-    };
     return SafeArea(
       child: Stack(
         alignment: Alignment.bottomCenter,
