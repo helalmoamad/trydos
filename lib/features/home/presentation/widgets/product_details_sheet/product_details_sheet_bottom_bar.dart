@@ -561,37 +561,63 @@ class _ProductDetailsSheetBottomBarState
                                   children: [
                                     BlocBuilder<HomeBloc, HomeState>(
                                       buildWhen: (previous, current) =>
-                                          previous
-                                              .addOrRemoveLikeOfProductStatus !=
-                                          current
-                                              .addOrRemoveLikeOfProductStatus,
+                                          previous.addOrRemoveLikeOfProductStatus !=
+                                              current
+                                                  .addOrRemoveLikeOfProductStatus ||
+                                          previous.productStatus !=
+                                              current.productStatus ||
+                                          previous.getProductDetailWithoutSimilarRelatedProductsStatus !=
+                                              current
+                                                  .getProductDetailWithoutSimilarRelatedProductsStatus,
                                       builder: (context, state) {
                                         print("-------------");
-                                        return BarWidget(
-                                            text:
-                                                "${state.cachedProductWithoutRelatedProductsModel[widget.productId]?.product?.countOfLikes ?? 0}",
-                                            svgPath: (state
-                                                        .cachedProductWithoutRelatedProductsModel[
-                                                            widget.productId]
-                                                        ?.product
-                                                        ?.isLiked ??
-                                                    false)
-                                                ? AppAssets.favoriteActiveSvg
-                                                : AppAssets.favoriteSvg,
-                                            onTap: () {
-                                              homeBloc.add(
-                                                  AddOrRemoveLikeForProductEvent(
-                                                      isFavourite: !(state
+                                        return state.getProductDetailWithoutSimilarRelatedProductsStatus ==
+                                                GetProductDetailWithoutSimilarRelatedProductsStatus
+                                                    .loading
+                                            ? Shimmer.fromColors(
+                                                baseColor: Colors.grey.shade400,
+                                                highlightColor:
+                                                    Colors.grey.shade100,
+                                                child: SvgPicture.asset(
+                                                  (state
                                                               .cachedProductWithoutRelatedProductsModel[
                                                                   widget
                                                                       .productId]
                                                               ?.product
                                                               ?.isLiked ??
-                                                          false),
-                                                      productId:
-                                                          widget.productId));
-                                              widget.clickOnFavorite;
-                                            });
+                                                          false)
+                                                      ? AppAssets
+                                                          .favoriteActiveSvg
+                                                      : AppAssets.favoriteSvg,
+                                                ),
+                                              )
+                                            : BarWidget(
+                                                text:
+                                                    "${state.cachedProductWithoutRelatedProductsModel[widget.productId]?.product?.countOfLikes ?? 0}",
+                                                svgPath: (state
+                                                            .cachedProductWithoutRelatedProductsModel[
+                                                                widget
+                                                                    .productId]
+                                                            ?.product
+                                                            ?.isLiked ??
+                                                        false)
+                                                    ? AppAssets
+                                                        .favoriteActiveSvg
+                                                    : AppAssets.favoriteSvg,
+                                                onTap: () {
+                                                  homeBloc.add(
+                                                      AddOrRemoveLikeForProductEvent(
+                                                          isFavourite: !(state
+                                                                  .cachedProductWithoutRelatedProductsModel[
+                                                                      widget
+                                                                          .productId]
+                                                                  ?.product
+                                                                  ?.isLiked ??
+                                                              false),
+                                                          productId: widget
+                                                              .productId));
+                                                  widget.clickOnFavorite;
+                                                });
                                       },
                                     ),
                                     state
