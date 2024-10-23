@@ -114,7 +114,7 @@ void main() {
               boutiqueSlugs.add(
                 tester
                         .widget<HomePageCard2>(boutiqueCardWidget)
-                        .boutniqe
+                        .boutique
                         .slug ??
                     '',
               );
@@ -199,7 +199,7 @@ void main() {
 
               slug = tester
                       .widget<HomePageCard2>(boutiqueCardWidget)
-                      .boutniqe
+                      .boutique
                       .slug ??
                   '';
               //////////////// check if  prefetched ///////////////////////////

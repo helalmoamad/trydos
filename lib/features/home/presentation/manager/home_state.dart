@@ -68,6 +68,8 @@ enum AddCommentStatus { init, loading, success, failure }
 
 enum GetProductsWithoutFiltersStatus { init, loading, success, failure }
 
+enum AddOrRemoveLikeOfProductStatus { init, loading, success, failure }
+
 enum GetProductListingStatus { init, loading, success, failure }
 
 @JsonSerializable(explicitToJson: true)
@@ -76,6 +78,8 @@ class HomeState extends Equatable {
   const HomeState({
     this.storiesForProduct,
     this.addItemInCartStatus,
+    this.searchWithOutFilterOffset,
+    this.searchWithFilterOffset,
     this.getProductDetailWithoutSimilarRelatedProductsStatus =
         GetProductDetailWithoutSimilarRelatedProductsStatus.init,
     this.getStartingSettingsStatus = GetStartingSettingsStatus.init,
@@ -127,6 +131,7 @@ class HomeState extends Equatable {
     this.countOfProductExpectedByFiltering,
     this.getCartItemsStatus = GetCartItemsStatus.init,
     this.getProductDetailWithoutRelatedProductsModel,
+    this.addOrRemoveLikeOfProductStatus = AddOrRemoveLikeOfProductStatus.init,
     this.getProductListingPaginationWithoutFiltersModel = const {},
     this.getProductListingWithFiltersPaginationWithPrefetchModels = const {},
     this.getProductFiltersWithPrefetchModel = const {},
@@ -162,6 +167,7 @@ class HomeState extends Equatable {
   final Map<String, get_filters.GetProductFiltersModel?> getProductFiltersModel;
   final Map<String, get_filters.GetProductFiltersModel?>
       getProductFiltersWithPrefetchModel;
+  final AddOrRemoveLikeOfProductStatus addOrRemoveLikeOfProductStatus;
   final Map<String, get_filters.GetProductFiltersModel?> appliedFiltersByUser;
   final Map<String, get_filters.GetProductFiltersModel?> choosedFiltersByUser;
   final int? selectedCollection;
@@ -173,6 +179,8 @@ class HomeState extends Equatable {
 
   // String? idForRequest;
   final List<String>? searchHistory;
+  final Map<String, String>? searchWithFilterOffset;
+  final Map<String, String>? searchWithOutFilterOffset;
   final Map<String, Map<int, List<String>>> addImagesToProductIdForCart;
   final Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>?
       productStatus;
@@ -283,6 +291,7 @@ class HomeState extends Equatable {
         CurrentColorSizeForCart,
         currentQuantityForCart,
         cachedProductWithoutRelatedProductsModel,
+        addOrRemoveLikeOfProductStatus
       ];
 
   HomeState copyWith(
@@ -290,6 +299,8 @@ class HomeState extends Equatable {
       final GetMainCategoriesStatus? getMainCategoriesStatus,
       final AddItemInCartStatus? addItemInCartStatus,
       final UpdateItemInCartStatus? updateItemInCartStatus,
+      final Map<String, String>? searchWithFilterOffset,
+      final Map<String, String>? searchWithOutFilterOffset,
       final Map<String, get_filters.GetProductFiltersModel?>?
           getProductFiltersWithPrefetchModel,
       bool? cashedOrginalBoutique,
@@ -306,6 +317,7 @@ class HomeState extends Equatable {
       final Map<String, PaginationModel<product.Products>?>?
           getProductListingWithFiltersPaginationWithPrefetchModels,
       final GetCommentForProductStatus? getCommentForProductStatus,
+      final AddOrRemoveLikeOfProductStatus? addOrRemoveLikeOfProductStatus,
       final bool? isGettingProductListingWithPagination,
       final GetCartItemsStatus? getCartItemsStatus,
       Map<int, int?>? currentStoryInEachCollection,
@@ -371,6 +383,8 @@ class HomeState extends Equatable {
           getCommentForProductModel ?? this.getCommentForProductModel,
       updateItemInCartStatus:
           updateItemInCartStatus ?? this.updateItemInCartStatus,
+      addOrRemoveLikeOfProductStatus:
+          addOrRemoveLikeOfProductStatus ?? this.addOrRemoveLikeOfProductStatus,
 
       sizes: sizes ?? this.sizes,
       getFullProductDetailsStatus:
@@ -476,6 +490,10 @@ class HomeState extends Equatable {
               this.cachedProductWithoutRelatedProductsModel,
       deleteItemInCartStatus:
           deleteItemInCartStatus ?? this.deleteItemInCartStatus,
+      searchWithFilterOffset:
+          searchWithFilterOffset ?? this.searchWithFilterOffset,
+      searchWithOutFilterOffset:
+          searchWithOutFilterOffset ?? this.searchWithOutFilterOffset,
       getProductDetailWithoutRelatedProductsModel:
           getProductDetailWithoutRelatedProductsModel ??
               this.getProductDetailWithoutRelatedProductsModel,

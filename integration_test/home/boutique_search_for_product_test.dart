@@ -51,7 +51,7 @@ void main() {
       ////////////////////////////
       // Get the boutique ID from the widget and print it for debugging
       final boutiqueId1 =
-          tester.widget<HomePageCard2>(boutiqueCard1).boutniqe.id!;
+          tester.widget<HomePageCard2>(boutiqueCard1).boutique.id!;
       print('//////// boutiqueCard1  : $boutiqueId1 //////////');
 
       ////////////// Tap on first Boutique HomePageCard //////////////

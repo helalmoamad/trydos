@@ -46,7 +46,8 @@ class _HomePageState extends State<HomePage> {
   late HomeBloc homeBloc;
   final ScrollController scrollController = ScrollController();
   Map<String, Key> reRenderingListViewKey = {};
-  Map<String, int> lastIndexRequestedInEachMainCategoryForPrefetchBoutiques = {};
+  Map<String, int> lastIndexRequestedInEachMainCategoryForPrefetchBoutiques =
+      {};
 
   @override
   void initState() {
@@ -55,12 +56,20 @@ class _HomePageState extends State<HomePage> {
 
     homeBloc.add(GetCartItemEvent());
     appBloc.add(ChangeIndexForSearch(0));
-
+    homeBloc.add(GetProductsWithFiltersEvent(
+        boutiqueSlug: "search",
+        cashedOrginalBoutique: true,
+        fromSearch: true,
+        getWithPagination: false,
+        offset: 1));
     homeBloc.add(ChangeAppliedFiltersEvent(
         boutiqueSlug: 'search',
         filtersAppliedByUser: null,
         resetAppliedFilters: true));
     homeBloc.add(ChangeSelectedFiltersEvent(
+      resetChoosedFilters: true,
+      requestToUpdateFilters: true,
+      fromHomePageSearch: true,
       boutiqueSlug: 'search',
       filtersChoosedByUser: null,
     ));
@@ -401,7 +410,7 @@ class _HomePageState extends State<HomePage> {
                                     .banners!
                                     .length >
                                 1,
-                            boutniqe: homeState
+                            boutique: homeState
                                 .getHomeBoutiquesPaginationObjectByMainCategory[
                                     currentSlug]!
                                 .items[index],
@@ -462,7 +471,8 @@ class _HomePageState extends State<HomePage> {
                               .getHomeBoutiquesPaginationObjectByMainCategory[
                                   currentSlug]
                               ?.paginationStatus ==
-                          PaginationStatus.loading && state.isGettingProductListingWithPagination) {
+                          PaginationStatus.loading &&
+                      state.isGettingProductListingWithPagination) {
                     return SliverToBoxAdapter(
                       child: Center(
                         child: TrydosLoader(),

@@ -24,7 +24,7 @@ class GetFullProductDetailsModel {
 
   factory GetFullProductDetailsModel.fromJson(Map<String, dynamic> json) => GetFullProductDetailsModel(
     productItem: json["data"] == null ? null : Products.fromJson(json["data"]),
-    getProductDetailWithoutRelatedProductsModel: json["data"] == null ? null : GetProductDetailWithoutRelatedProductsModel.fromJson(json["data"]),
+    getProductDetailWithoutRelatedProductsModel:  GetProductDetailWithoutRelatedProductsModel.fromJson(json),
   );
 
   Map<String, dynamic> toJson() => {

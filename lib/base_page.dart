@@ -49,7 +49,7 @@ import 'features/chat/presentation/manager/chat_event.dart';
 import 'features/chat/presentation/manager/chat_state.dart';
 import 'features/chat/presentation/utils/firebase_presence.dart';
 import 'features/home/presentation/manager/home_state.dart';
-import 'features/home/presentation/widgets/cart_page.dart';
+import 'features/home/presentation/pages/cart_page.dart';
 import 'service/firebase_analytics_service/firebase_analytics_service.dart';
 
 Widget get logo {

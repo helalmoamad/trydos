@@ -151,7 +151,7 @@ class Filter {
           ? []
           : List<Boutique>.from(
               json["boutiques"]!.map((x) => Boutique.fromJson(x))),
-      attributes: json["attributes"] == null
+      attributes: json["attributes"] == null || json["attributes"] == []
           ? []
           : List<Attribute>.from(
               json["attributes"]!.map((x) => Attribute.fromJson(x))),
@@ -179,7 +179,7 @@ class Filter {
       "categories": categories.isNullOrEmpty
           ? []
           : List<dynamic>.from(categories!.map((x) => x.toJson())),
-      "attributes": attributes == null
+      "attributes": attributes == null || attributes == []
           ? []
           : List<dynamic>.from(attributes!.map((x) => x.toJson())),
       "colors": colors == null ? [] : List<dynamic>.from(colors!.map((x) => x)),
@@ -260,7 +260,9 @@ class Boutique {
         id: json["id"],
         slug: json["slug"],
         name: json["name"],
-        banner: json["banner"] == null ? null : Banner.fromJson(json["banner"]),
+        banner: json["banner"] == null || json["banner"] == []
+            ? null
+            : Banner.fromJson(json["banner"]),
         image: json["image"],
       );
 
@@ -298,7 +300,7 @@ class Attribute {
   factory Attribute.fromJson(Map<String, dynamic> json) => Attribute(
         id: json["id"],
         name: json["name"],
-        options: json["options"] == null
+        options: json["options"] == null || json["options"] == []
             ? []
             : List<String>.from(json["options"]!.map((x) => x)),
       );
@@ -306,8 +308,9 @@ class Attribute {
   Map<String, dynamic> toJson() => {
         "id": id,
         "name": name,
-        "options":
-            options == null ? [] : List<dynamic>.from(options!.map((x) => x)),
+        "options": options == null || options == []
+            ? []
+            : List<dynamic>.from(options!.map((x) => x)),
       };
 }
 

@@ -29,8 +29,6 @@ class FileSaving {
       link: LinkDetails(link: fileUrl),
     )
         .then((value) {
-          print('cgchcgc ${fileUrl}');
-          print('qqqqqq ${value}');
       _prefsRepository.setAFilePathExist(fileUrl + ' ' + value, chatId);
       File file = File(value);
       action?.call(file);

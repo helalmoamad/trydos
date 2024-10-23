@@ -767,12 +767,10 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                               ?.name ==
                                                                           'ShareProduct') {
                                                                         BlocProvider.of<HomeBloc>(context).add(GetFullProductDetailsEvent(
-
                                                                             productId:
                                                                                 messages[index].shareProductContent?.productId.toString()));
                                                                         Navigator.of(context).push(MaterialPageRoute(
-                                                                            builder: (ctx) =>
-                                                                                ProductDetailsPage(
+                                                                            builder: (ctx) => ProductDetailsPage(
                                                                                   productIdForOpeningChatDirectly: messages[index].shareProductContent?.productId.toString(),
                                                                                 )));
                                                                       }
@@ -1443,24 +1441,28 @@ class _SinglePageChatState extends State<SinglePageChat> {
                 color: Color.fromARGB(255, 252, 243, 243),
                 border: Border(),
                 borderRadius: BorderRadius.circular(20.w)),
-            width: 300.w,
+            width: 250.w,
             height: 32.h,
             child: Row(
               children: [
                 Spacer(),
-                Text(
+                MyTextWidget(
                   message.deletedByUserId == _prefsRepository.myChatId
                       ? LocaleKeys.you_have_deleted_this_message.tr()
                       : LocaleKeys.this_message_has_been_deleted.tr(),
                   textAlign: TextAlign.center,
+                  style: textTheme.titleSmall?.lr.copyWith(
+                      fontSize: 12, height: 1.1, color: colorScheme.grey200),
                 ),
                 Spacer(),
-                Text(
+                MyTextWidget(
                   !message.createdAt!.isUtc
                       ? HelperFunctions.getDateInFormat(message.createdAt!)
                       : HelperFunctions.getZonedDateInFormat(
                           message.createdAt!),
                   textAlign: TextAlign.center,
+                  style: textTheme.titleSmall?.lr.copyWith(
+                      fontSize: 12, height: 1.1, color: colorScheme.grey200),
                 ),
                 Spacer()
               ],
