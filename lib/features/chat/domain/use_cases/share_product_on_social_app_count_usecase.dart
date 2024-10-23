@@ -30,7 +30,7 @@ class ShareProductOnAppsParams {
     required this.sharedCount,
   });
   Map<String, dynamic> get map => {
-        "app_name": "${appName}'",
+        "app_name": "${appName}",
         "product_id": "${productId}",
         "shared_count": sharedCount,
       };

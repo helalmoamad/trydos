@@ -116,6 +116,7 @@ class _ProductDetailsSheetBottomBarState
           previous.getCommentForProductStatus !=
               current.getCommentForProductStatus,
       builder: (context, state) {
+        print("***********");
         List<String> allimages = [];
 
         // حلقات متداخلة للوصول إلى جميع القيم
@@ -558,10 +559,41 @@ class _ProductDetailsSheetBottomBarState
                                       MainAxisAlignment.spaceBetween,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    BarWidget(
-                                        text: '110K',
-                                        svgPath: AppAssets.favoriteSvg,
-                                        onTap: widget.clickOnFavorite),
+                                    BlocBuilder<HomeBloc, HomeState>(
+                                      buildWhen: (previous, current) =>
+                                          previous
+                                              .addOrRemoveLikeOfProductStatus !=
+                                          current
+                                              .addOrRemoveLikeOfProductStatus,
+                                      builder: (context, state) {
+                                        print("-------------");
+                                        return BarWidget(
+                                            text:
+                                                "${state.cachedProductWithoutRelatedProductsModel[widget.productId]?.product?.countOfLikes ?? 0}",
+                                            svgPath: (state
+                                                        .cachedProductWithoutRelatedProductsModel[
+                                                            widget.productId]
+                                                        ?.product
+                                                        ?.isLiked ??
+                                                    false)
+                                                ? AppAssets.favoriteActiveSvg
+                                                : AppAssets.favoriteSvg,
+                                            onTap: () {
+                                              homeBloc.add(
+                                                  AddOrRemoveLikeForProductEvent(
+                                                      isFavourite: !(state
+                                                              .cachedProductWithoutRelatedProductsModel[
+                                                                  widget
+                                                                      .productId]
+                                                              ?.product
+                                                              ?.isLiked ??
+                                                          false),
+                                                      productId:
+                                                          widget.productId));
+                                              widget.clickOnFavorite;
+                                            });
+                                      },
+                                    ),
                                     state
                                                 .getCommentForProductModel[
                                                     widget.productId]
@@ -584,9 +616,13 @@ class _ProductDetailsSheetBottomBarState
                                             onTap: widget.clickOnComments),
                                     BlocBuilder<ChatBloc, ChatState>(
                                       buildWhen: (previous, current) =>
-                                          previous
-                                              .getSharedProductCountStatus !=
-                                          current.getSharedProductCountStatus,
+                                          previous.getSharedProductCountStatus !=
+                                              current
+                                                  .getSharedProductCountStatus ||
+                                          previous.getSharedProductCount?[
+                                                  widget.productId] !=
+                                              current.getSharedProductCount?[
+                                                  widget.productId],
                                       builder: (context, state) {
                                         return state.getSharedProductCount?[
                                                         widget.productId] ==

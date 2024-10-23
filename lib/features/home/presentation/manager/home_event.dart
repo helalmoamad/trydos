@@ -650,6 +650,15 @@ class GetAllowedCountriesEvent extends HomeEvent {
   List<Object?> get props => [];
 }
 
+class AddOrRemoveLikeForProductEvent extends HomeEvent {
+  final bool isFavourite;
+  final String productId;
+  AddOrRemoveLikeForProductEvent(
+      {required this.isFavourite, required this.productId});
+  @override
+  List<Object?> get props => [isFavourite, productId];
+}
+
 class UpdateListOfItemForAddToCartEvent extends HomeEvent {
   final ImageForAddToCart imageForAddToCart;
   final String operation;

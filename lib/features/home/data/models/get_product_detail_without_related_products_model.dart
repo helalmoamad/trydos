@@ -65,6 +65,9 @@ class Product {
   final Seller? seller;
   final Shop? shop;
   final bool? isFavSeller;
+  final bool? isLiked;
+  final int? countOfLikes;
+
   final int? countOfPieces;
   final List<dynamic>? reviews;
   final bool? hasWholeSale;
@@ -82,6 +85,8 @@ class Product {
     this.inStock,
     this.countOfPieces,
     this.variation,
+    this.isLiked,
+    this.countOfLikes,
     this.choiceOptions,
     this.hasDiscount,
     this.maxAllowedQty,
@@ -124,6 +129,8 @@ class Product {
     int? reviewsCount,
     dynamic sellerId,
     BoutiqueForCart? boutique,
+    bool? isLiked,
+    int? countOfLikes,
     Seller? seller,
     Shop? shop,
     bool? isFavSeller,
@@ -152,6 +159,8 @@ class Product {
         unitPrice: unitPrice ?? this.unitPrice,
         currentStock: currentStock ?? this.currentStock,
         leftStock: leftStock ?? this.leftStock,
+        isLiked: isLiked ?? this.isLiked,
+        countOfLikes: countOfLikes ?? this.countOfLikes,
         reviewsCount: reviewsCount ?? this.reviewsCount,
         sellerId: sellerId ?? this.sellerId,
         seller: seller ?? this.seller,
@@ -165,55 +174,57 @@ class Product {
         viewsCount: viewsCount ?? this.viewsCount,
         descriptors: descriptors ?? this.descriptors,
         labels: labels ?? this.labels,
-        isProductNotifiedForUser: isProductNotifiedForUser ?? this.isProductNotifiedForUser,
+        isProductNotifiedForUser:
+            isProductNotifiedForUser ?? this.isProductNotifiedForUser,
       );
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
-        id: json["id"],
-        description: json["description"],
-        countOfPieces: json["count_of_pieces"],
-        model: json["model"],
-        features: json["features"],
-        boutique: json["boutique"] == null
-            ? null
-            : BoutiqueForCart.fromJson(json["boutique"]),
-        maxAllowedQty: json["max_allowed_qty"].toString(),
-        inStock: json["in_stock"],
-        variation: json["variation"] == null
-            ? []
-            : List<Variation>.from(
-                json["variation"]!.map((x) => Variation.fromJson(x))),
-        choiceOptions: json["choice_options"] == null
-            ? []
-            : List<ChoiceOption>.from(
-                json["choice_options"]!.map((x) => ChoiceOption.fromJson(x))),
-        hasDiscount: json["has_discount"],
-        hasTax: json["has_tax"],
-        deliveryAt: json["delivery_at"],
-        tax: json["tax"].toString(),
-        unitPrice: json["unit_price"].toString(),
-        currentStock: json["current_stock"]?.toInt(),
-        leftStock: json["Left_stock"],
-        reviewsCount: json["reviews_count"],
-        sellerId: json["seller_id"],
-        seller: json["seller"] == null ? null : Seller.fromJson(json["seller"]),
-        shop: json["shop"] == null ? null : Shop.fromJson(json["shop"]),
-        isFavSeller: json["is_fav_seller"],
-        reviews: json["reviews"] == null
-            ? []
-            : List<dynamic>.from(json["reviews"]!.map((x) => x)),
-        hasWholeSale: json["has_whole_sale"],
-        wholeSaleLink: json["whole_sale_link"],
-        viewsCount: json["views_count"],
-        descriptors: json["descriptors"] == null
-            ? []
-            : List<DataDescriptor>.from(
-                json["descriptors"]!.map((x) => DataDescriptor.fromJson(x))),
-        labels: json["labels"] == null
-            ? []
-            : List<Label>.from(json["labels"]!.map((x) => Label.fromJson(x))),
-      isProductNotifiedForUser : json['is_product_notify_for_user'] ?? false
-      );
+      id: json["id"],
+      description: json["description"],
+      countOfPieces: json["count_of_pieces"],
+      model: json["model"],
+      features: json["features"],
+      boutique: json["boutique"] == null
+          ? null
+          : BoutiqueForCart.fromJson(json["boutique"]),
+      maxAllowedQty: json["max_allowed_qty"].toString(),
+      inStock: json["in_stock"],
+      variation: json["variation"] == null
+          ? []
+          : List<Variation>.from(
+              json["variation"]!.map((x) => Variation.fromJson(x))),
+      choiceOptions: json["choice_options"] == null
+          ? []
+          : List<ChoiceOption>.from(
+              json["choice_options"]!.map((x) => ChoiceOption.fromJson(x))),
+      hasDiscount: json["has_discount"],
+      hasTax: json["has_tax"],
+      deliveryAt: json["delivery_at"],
+      isLiked: json["is_liked"],
+      countOfLikes: json["count_of_likes"],
+      tax: json["tax"].toString(),
+      unitPrice: json["unit_price"].toString(),
+      currentStock: json["current_stock"]?.toInt(),
+      leftStock: json["Left_stock"],
+      reviewsCount: json["reviews_count"],
+      sellerId: json["seller_id"],
+      seller: json["seller"] == null ? null : Seller.fromJson(json["seller"]),
+      shop: json["shop"] == null ? null : Shop.fromJson(json["shop"]),
+      isFavSeller: json["is_fav_seller"],
+      reviews: json["reviews"] == null
+          ? []
+          : List<dynamic>.from(json["reviews"]!.map((x) => x)),
+      hasWholeSale: json["has_whole_sale"],
+      wholeSaleLink: json["whole_sale_link"],
+      viewsCount: json["views_count"],
+      descriptors: json["descriptors"] == null
+          ? []
+          : List<DataDescriptor>.from(
+              json["descriptors"]!.map((x) => DataDescriptor.fromJson(x))),
+      labels: json["labels"] == null
+          ? []
+          : List<Label>.from(json["labels"]!.map((x) => Label.fromJson(x))),
+      isProductNotifiedForUser: json['is_product_notify_for_user'] ?? false);
 
   Map<String, dynamic> toJson() => {
         "id": id,
@@ -231,6 +242,8 @@ class Product {
         "has_discount": hasDiscount,
         "has_tax": hasTax,
         "delivery_at": deliveryAt,
+        "is_liked": isLiked,
+        "count_of_likes": countOfLikes,
         "tax": tax,
         "unit_price": unitPrice,
         "current_stock": currentStock,
@@ -253,7 +266,7 @@ class Product {
         "labels": labels == null
             ? []
             : List<dynamic>.from(labels!.map((x) => x.toJson())),
-    "is_product_notify_for_user" : isProductNotifiedForUser
+        "is_product_notify_for_user": isProductNotifiedForUser
       };
 }
 
@@ -557,7 +570,7 @@ class Variation {
       );
 
   factory Variation.fromJson(Map<String, dynamic> json) => Variation(
-    variantNotifyForUser: json["variant_notify_for_user"] ?? false,
+        variantNotifyForUser: json["variant_notify_for_user"] ?? false,
         type: json["type"],
         price: json["price"]?.toDouble(),
         priceFormated: json["price_formated"],

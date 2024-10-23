@@ -48,13 +48,17 @@ class _SearchResultState extends ThemeState<SearchResult> {
       valueListenable: appearSearchResult,
       builder: (context, value, child) => BlocBuilder<HomeBloc, HomeState>(
         buildWhen: (p, c) =>
-            p.getProductListingWithFiltersPaginationModels !=
-            c.getProductListingWithFiltersPaginationModels,
+            p.getProductListingWithFiltersPaginationModels.values !=
+                c.getProductListingWithFiltersPaginationModels.values ||
+            p.cashedOrginalBoutique != c.cashedOrginalBoutique,
         builder: (context, state) {
-          String key = 'search';
+          String key =
+              'search' + (state.cashedOrginalBoutique ? 'withoutFilter' : "");
           if (state.getProductListingWithFiltersPaginationModels['${key}']
                   ?.paginationStatus ==
               PaginationStatus.loading) {
+            print(
+                "3################${state.getProductListingWithFiltersPaginationModels['${key}']?.paginationStatus}");
             return Column(children: [
               SizedBox(
                 height: 10,

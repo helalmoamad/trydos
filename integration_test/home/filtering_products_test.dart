@@ -77,7 +77,7 @@ void main() {
       );
 
       String boutiqueBestSellerSlug =
-          tester.widget<HomePageCard2>(boutiqueBestSaller).boutniqe.slug ?? '';
+          tester.widget<HomePageCard2>(boutiqueBestSaller).boutique.slug ?? '';
 
       print(
           '///////// boutique Slug : $boutiqueBestSellerSlug  ////////////////');

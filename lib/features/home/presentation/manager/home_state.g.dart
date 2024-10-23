@@ -12,6 +12,14 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           .toList(),
       addItemInCartStatus: $enumDecodeNullable(
           _$AddItemInCartStatusEnumMap, json['addItemInCartStatus']),
+      searchWithOutFilterOffset:
+          (json['searchWithOutFilterOffset'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(k, e as String),
+      ),
+      searchWithFilterOffset:
+          (json['searchWithFilterOffset'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(k, e as String),
+      ),
       getProductDetailWithoutSimilarRelatedProductsStatus: $enumDecodeNullable(
               _$GetProductDetailWithoutSimilarRelatedProductsStatusEnumMap,
               json['getProductDetailWithoutSimilarRelatedProductsStatus']) ??
@@ -241,6 +249,10 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               : GetProductDetailWithoutRelatedProductsModel.fromJson(
                   json['getProductDetailWithoutRelatedProductsModel']
                       as Map<String, dynamic>),
+      addOrRemoveLikeOfProductStatus: $enumDecodeNullable(
+              _$AddOrRemoveLikeOfProductStatusEnumMap,
+              json['addOrRemoveLikeOfProductStatus']) ??
+          AddOrRemoveLikeOfProductStatus.init,
       getProductListingPaginationWithoutFiltersModel:
           (json['getProductListingPaginationWithoutFiltersModel']
                       as Map<String, dynamic>?)
@@ -368,6 +380,8 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'getProductFiltersWithPrefetchModel': instance
           .getProductFiltersWithPrefetchModel
           .map((k, e) => MapEntry(k, e?.toJson())),
+      'addOrRemoveLikeOfProductStatus': _$AddOrRemoveLikeOfProductStatusEnumMap[
+          instance.addOrRemoveLikeOfProductStatus]!,
       'appliedFiltersByUser':
           instance.appliedFiltersByUser.map((k, e) => MapEntry(k, e?.toJson())),
       'choosedFiltersByUser':
@@ -380,6 +394,8 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'isGettingProductListingWithPaginationForAppearProduct':
           instance.isGettingProductListingWithPaginationForAppearProduct,
       'searchHistory': instance.searchHistory,
+      'searchWithFilterOffset': instance.searchWithFilterOffset,
+      'searchWithOutFilterOffset': instance.searchWithOutFilterOffset,
       'addImagesToProductIdForCart': instance.addImagesToProductIdForCart.map(
           (k, e) => MapEntry(k, e.map((k, e) => MapEntry(k.toString(), e)))),
       'productStatus': instance.productStatus?.map((k, e) => MapEntry(
@@ -535,4 +551,11 @@ const _$GetCartItemsStatusEnumMap = {
   GetCartItemsStatus.loading: 'loading',
   GetCartItemsStatus.success: 'success',
   GetCartItemsStatus.failure: 'failure',
+};
+
+const _$AddOrRemoveLikeOfProductStatusEnumMap = {
+  AddOrRemoveLikeOfProductStatus.init: 'init',
+  AddOrRemoveLikeOfProductStatus.loading: 'loading',
+  AddOrRemoveLikeOfProductStatus.success: 'success',
+  AddOrRemoveLikeOfProductStatus.failure: 'failure',
 };

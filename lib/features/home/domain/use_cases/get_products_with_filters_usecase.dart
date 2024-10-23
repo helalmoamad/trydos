@@ -62,7 +62,7 @@ class GetProductsWithFiltersParams {
         "search_text": searchText,
         "offset": offset,
         "limit": limit,
-        "scroll_id": scroll_id,
+        // "scroll_id": scroll_id,
         "boutique_slug": boutiqueSlug,
         "boutique_slugs": boutiqueSlugs.toString(),
         "category_slugs": categorySlugs.toString(),

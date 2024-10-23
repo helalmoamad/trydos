@@ -1972,13 +1972,18 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
         appName: event.socialMediaName,
         productId: event.productId,
         sharedCount: event.sharedCount));
+    emit(state.copyWith(
+        getSharedProductCountStatus: GetSharedProductCountStatus.loading));
+
     response.fold((l) => print("............"), (r) {
       Map<String, String>? getSharedProductCount =
           state.getSharedProductCount ?? {};
       int count =
           int.tryParse((getSharedProductCount[event.productId] ?? '0')) ?? 0;
       getSharedProductCount[event.productId] = '${count + 1}';
-      emit(state.copyWith(getSharedProductCount: getSharedProductCount));
+      emit(state.copyWith(
+          getSharedProductCount: getSharedProductCount,
+          getSharedProductCountStatus: GetSharedProductCountStatus.success));
       print("sharedpppppppppppppppppppppppppppppppppppppp" +
           "2222222222222222222222222222222222222222222222222222222222222222");
     });

@@ -115,12 +115,20 @@ class _SearchPageState extends ThemeState<SearchPage> {
           buildWhen: (previous, current) {
             return previous.searchHistory != current.searchHistory ||
                 previous.getProductFiltersStatus[key] !=
-                    current.getProductFiltersStatus[key] ||
+                    current.getProductFiltersStatus[key] ||previous.cashedOrginalBoutique!=current.cashedOrginalBoutique||
                 previous.countOfProductExpectedByFiltering?.values !=
                     current.countOfProductExpectedByFiltering?.values ||
-                previous.getProductListingWithFiltersPaginationModels[key]
+                previous
+                        .getProductListingWithFiltersPaginationModels['search' +
+                            (current.cashedOrginalBoutique
+                                ? 'withoutFilter'
+                                : "")]
                         ?.paginationStatus !=
-                    current.getProductListingWithFiltersPaginationModels[key]
+                    current
+                        .getProductListingWithFiltersPaginationModels['search' +
+                            (current.cashedOrginalBoutique
+                                ? 'withoutFilter'
+                                : "")]
                         ?.paginationStatus;
           },
           builder: (context, state) {
@@ -170,12 +178,18 @@ class _SearchPageState extends ThemeState<SearchPage> {
                   SliverToBoxAdapter(
                       child: SizedBox(
                     height: state.getProductListingWithFiltersPaginationModels[
-                                key] ==
+                                'search' +
+                                    (state.cashedOrginalBoutique
+                                        ? 'withoutFilter'
+                                        : "")] ==
                             null
                         ? 250.h
                         : state
                                 .getProductListingWithFiltersPaginationModels[
-                                    key]!
+                                    'search' +
+                                        (state.cashedOrginalBoutique
+                                            ? 'withoutFilter'
+                                            : "")]!
                                 .items
                                 .isNullOrEmpty
                             ? 250.h

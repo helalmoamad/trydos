@@ -384,11 +384,12 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                                       .getZonedDateInFormat(
                                                           chatTime!),
                                               maxLines: 1,
-                                              style: textTheme.titleMedium?.rr
+                                              style: textTheme.titleSmall?.lr
                                                   .copyWith(
-                                                      height: 1.33,
-                                                      color: const Color(
-                                                          0xff8E8D92)),
+                                                      fontSize: 12,
+                                                      height: 1.1,
+                                                      color:
+                                                          colorScheme.grey200),
                                             );
                                           },
                                         ),
@@ -642,11 +643,13 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                                                   TextOverflow
                                                                       .ellipsis,
                                                               style: textTheme
-                                                                  .titleLarge
+                                                                  .titleSmall
                                                                   ?.lr
                                                                   .copyWith(
+                                                                      fontSize:
+                                                                          12,
                                                                       height:
-                                                                          1.22,
+                                                                          1.1,
                                                                       color: colorScheme
                                                                           .grey200),
                                                             ),

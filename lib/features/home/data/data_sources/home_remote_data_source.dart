@@ -1,12 +1,16 @@
+import 'package:flutter/widgets.dart';
 import 'package:injectable/injectable.dart';
+import 'package:trydos/common/constant/configuration/elastic_url_routes.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/core/api/methods/get.dart';
 import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
+import 'package:trydos/features/home/data/models/get_count_likes_of_product_model.dart';
 import 'package:trydos/features/home/data/models/get_full_product_details_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
+import 'package:trydos/features/home/data/models/get_is_liked_of_product_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
@@ -45,7 +49,8 @@ class HomeRemoteDatasource {
 
   Future<GetProductDetailWithoutRelatedProductsModel>
       getProductDetailWithoutRelatedProducts(String productId) {
-    GetClient<GetProductDetailWithoutRelatedProductsModel> getProductDetailWithoutRelatedProducts =
+    GetClient<GetProductDetailWithoutRelatedProductsModel>
+        getProductDetailWithoutRelatedProducts =
         GetClient<GetProductDetailWithoutRelatedProductsModel>(
       serverName: ServerName.market,
       requestPrams: RequestConfig<GetProductDetailWithoutRelatedProductsModel>(
@@ -53,26 +58,24 @@ class HomeRemoteDatasource {
             productId),
         response: ResponseValue<GetProductDetailWithoutRelatedProductsModel>(
             fromJson: (response) {
-              print('qqqqqqq ${response.toString()}');
-              return GetProductDetailWithoutRelatedProductsModel.fromJson(response);
-            }),
+          print('qqqqqqq ${response.toString()}');
+          return GetProductDetailWithoutRelatedProductsModel.fromJson(response);
+        }),
       ),
     );
     return getProductDetailWithoutRelatedProducts();
   }
 
-  Future<GetFullProductDetailsModel>
-  getFullProductDetails(String productId) {
+  Future<GetFullProductDetailsModel> getFullProductDetails(String productId) {
     GetClient<GetFullProductDetailsModel> getFullProductDetails =
         GetClient<GetFullProductDetailsModel>(
       serverName: ServerName.market,
       requestPrams: RequestConfig<GetFullProductDetailsModel>(
-        endpoint: MarketEndPoints.getFullProductDetailsEP(
-            productId),
-        response: ResponseValue<GetFullProductDetailsModel>(
-            fromJson: (response) {
-              return GetFullProductDetailsModel.fromJson(response);
-            }),
+        endpoint: MarketEndPoints.getFullProductDetailsEP(productId),
+        response:
+            ResponseValue<GetFullProductDetailsModel>(fromJson: (response) {
+          return GetFullProductDetailsModel.fromJson(response);
+        }),
       ),
     );
     return getFullProductDetails();
@@ -84,11 +87,11 @@ class HomeRemoteDatasource {
       serverName: ServerName.market,
       requestPrams: RequestConfig<GetCommentForProductModel>(
         endpoint: MarketEndPoints.getCommentForProductEP(productId),
-        response: ResponseValue<GetCommentForProductModel>(
-            fromJson: (response) {
-              print('ddddddddddd ${response.toString()}');
-              return GetCommentForProductModel.fromJson(response);
-            }),
+        response:
+            ResponseValue<GetCommentForProductModel>(fromJson: (response) {
+          print('ddddddddddd ${response.toString()}');
+          return GetCommentForProductModel.fromJson(response);
+        }),
       ),
     );
     return getCommentForProduct();
@@ -115,6 +118,9 @@ class HomeRemoteDatasource {
       Map<String, dynamic> params) {
     PostClient<GetProductListingWithFiltersModel> getProductsWithFilters =
         PostClient<GetProductListingWithFiltersModel>(
+      /*  serverName: ServerName.elastic,
+      requestPrams: RequestConfig<GetProductListingWithFiltersModel>(
+        endpoint: ElasticEndPoints.searchWithFilterElasticEP,*/
       serverName: ServerName.market,
       requestPrams: RequestConfig<GetProductListingWithFiltersModel>(
         endpoint: MarketEndPoints.getProductListingWithFiltersEP,
@@ -193,6 +199,9 @@ class HomeRemoteDatasource {
       serverName: ServerName.market,
       requestPrams: RequestConfig<GetProductFiltersModel>(
         endpoint: MarketEndPoints.getProductFiltersEP,
+        /*  serverName: ServerName.elastic,
+      requestPrams: RequestConfig<GetProductFiltersModel>(
+        endpoint: ElasticEndPoints.searchWithoutFilterElasticEP,*/
         data: params,
         response: ResponseValue<GetProductFiltersModel>(
             fromJson: (response) => GetProductFiltersModel.fromJson(response)),
@@ -288,16 +297,16 @@ class HomeRemoteDatasource {
     return updateItemInCart();
   }
 
-  Future<bool> requestForNotificationWhenProductBecameAvailable(Map<String, dynamic> params) {
+  Future<bool> requestForNotificationWhenProductBecameAvailable(
+      Map<String, dynamic> params) {
     PostClient<bool> requestForNotificationWhenProductBecameAvailable =
         PostClient<bool>(
       serverName: ServerName.market,
       requestPrams: RequestConfig<bool>(
-        endpoint: MarketEndPoints.requestForNotificationWhenProductBecameAvailableEP,
+        endpoint:
+            MarketEndPoints.requestForNotificationWhenProductBecameAvailableEP,
         data: params,
-        response: ResponseValue<bool>(
-            returnValueOnSuccess: true
-        ),
+        response: ResponseValue<bool>(returnValueOnSuccess: true),
       ),
     );
     return requestForNotificationWhenProductBecameAvailable();
@@ -333,5 +342,29 @@ class HomeRemoteDatasource {
       ),
     );
     return verifyOtpSignIn();
+  }
+
+  Future<bool> addLikeOFProduct(Map<String, dynamic> params) {
+    PostClient<bool> addLikeOFProduct = PostClient<bool>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<bool>(
+        endpoint: MarketEndPoints.addLikeOFProductEP,
+        data: params,
+        response: ResponseValue<bool>(returnValueOnSuccess: true),
+      ),
+    );
+    return addLikeOFProduct();
+  }
+
+  Future<bool> deleteLikeOFProduct(Map<String, dynamic> params) {
+    PostClient<bool> deleteLikeOFProduct = PostClient<bool>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<bool>(
+        endpoint: MarketEndPoints.deleteLikeOFProductEP,
+        data: params,
+        response: ResponseValue<bool>(returnValueOnSuccess: true),
+      ),
+    );
+    return deleteLikeOFProduct();
   }
 }

@@ -28,7 +28,7 @@ import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/pages/home_page.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_display_pictures_page.dart';
-import 'package:trydos/features/home/presentation/widgets/cart_page.dart';
+import 'package:trydos/features/home/presentation/pages/cart_page.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/display_sizes_card.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_title.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_bottom_sheet.dart';
@@ -91,19 +91,21 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       homeBloc.add(GetProductDatailsWithoutRelatedProductsEvent(
           productId: productItem.id.toString()));
     }
-      Future.delayed(Duration(seconds: 3), () {
-        homeBloc
-            .add(
-            GetCommentForProductEvent(productId: widget.productIdForOpeningChatDirectly ?? productItem.id.toString()));
-        homeBloc
-            .add(GetStoryForProductEvent(productId: widget.productIdForOpeningChatDirectly ?? productItem.id.toString()));
-      });
+    Future.delayed(Duration(seconds: 3), () {
+      homeBloc.add(GetCommentForProductEvent(
+          productId: widget.productIdForOpeningChatDirectly ??
+              productItem.id.toString()));
+      homeBloc.add(GetStoryForProductEvent(
+          productId: widget.productIdForOpeningChatDirectly ??
+              productItem.id.toString()));
+    });
     if (GetIt.I<PrefsRepository>().chatToken != null) {
       BlocProvider.of<ChatBloc>(context).add(GetChatsEvent());
       BlocProvider.of<ChatBloc>(context).add(SaveContactsEvent());
     }
-    chatBloc
-        .add(GetSharedProductCountEvent(productId: widget.productIdForOpeningChatDirectly ?? productItem.id.toString()));
+    chatBloc.add(GetSharedProductCountEvent(
+        productId: widget.productIdForOpeningChatDirectly ??
+            productItem.id.toString()));
 
     super.initState();
   }
@@ -155,7 +157,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     p.getFullProductDetailsStatus !=
                     c.getFullProductDetailsStatus,
                 builder: (context, state) {
-                  if(widget.productItem == null) {
+                  if (widget.productItem == null) {
                     if (state.getFullProductDetailsStatus ==
                         GetFullProductDetailsStatus.loading) {
                       return Center(
@@ -507,112 +509,116 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               )),
           BlocBuilder<HomeBloc, HomeState>(
             buildWhen: (p, c) =>
-            p.getFullProductDetailsStatus !=
-                c.getFullProductDetailsStatus,
+                p.getFullProductDetailsStatus != c.getFullProductDetailsStatus,
             builder: (context, state) {
-              if(widget.productItem == null) {
+              if (widget.productItem == null) {
                 if (state.getFullProductDetailsStatus !=
                     GetFullProductDetailsStatus.success) {
-                    return SizedBox.shrink();
+                  return SizedBox.shrink();
                 }
                 productItem = state
                     .productContentForStatusOfOpeningProductDetailsDirectly!;
               }
-    return BlocBuilder<HomeBloc, HomeState>(
-              buildWhen: (previous, current) =>
-                  previous.CurrentColorSizeForCart?["size"] !=
-                      current.CurrentColorSizeForCart?["size"] ||
-                  previous.currentSelectedColorForEveryProduct !=
-                      current.currentSelectedColorForEveryProduct ||
-                  previous.getProductDetailWithoutSimilarRelatedProductsStatus !=
-                      current
-                          .getProductDetailWithoutSimilarRelatedProductsStatus,
-              builder: (context, state) {
-                String productId = productItem.id.toString();
-                int currentSelectedColor =
-                    state.currentSelectedColorForEveryProduct[productId] ??
-                        (productItem.syncColorImages?.length ?? 0) ~/ 2;
-                return ProductDetailsBottomSheet(
-                  productDescription:
-                      HtmlParser.parseHTML(productItem.details ?? "").text,
-                  countOfPieces: state.cachedProductWithoutRelatedProductsModel[
-                              productItem.id.toString()] !=
-                          null
-                      ? state
-                              .cachedProductWithoutRelatedProductsModel[
-                                  productItem.id.toString()]!
-                              .product!
-                              .countOfPieces ??
-                          0
-                      : 0,
-                  currentSize: state.CurrentColorSizeForCart != null
-                      ? state.CurrentColorSizeForCart!["size"] ?? ""
-                      : "",
-                  addToBagButtonShapeNotifier: addToBagButtonShapeNotifier,
-                  sizes: state.sizes ?? [],
-                  sizesQuantities: state.sizesQuantities ?? [],
-                  currentColornum: productItem.colors.isNullOrEmpty
-                      ? ''
-                      : productItem.colors![currentSelectedColor].color ?? "",
-                  boutiqueIcon: state.cachedProductWithoutRelatedProductsModel[
-                              productItem.id.toString()] !=
-                          null
-                      ? state
-                                  .cachedProductWithoutRelatedProductsModel[
-                                      productItem.id.toString()]!
-                                  .product!
-                                  .boutique !=
-                              null
-                          ? state
-                                      .cachedProductWithoutRelatedProductsModel[
-                                          productItem.id.toString()]!
-                                      .product!
-                                      .boutique!
-                                      .icon !=
+              return BlocBuilder<HomeBloc, HomeState>(
+                  buildWhen: (previous, current) =>
+                      previous.CurrentColorSizeForCart?["size"] !=
+                          current.CurrentColorSizeForCart?["size"] ||
+                      previous.currentSelectedColorForEveryProduct !=
+                          current.currentSelectedColorForEveryProduct ||
+                      previous.getProductDetailWithoutSimilarRelatedProductsStatus !=
+                          current
+                              .getProductDetailWithoutSimilarRelatedProductsStatus,
+                  builder: (context, state) {
+                    String productId = productItem.id.toString();
+                    int currentSelectedColor =
+                        state.currentSelectedColorForEveryProduct[productId] ??
+                            (productItem.syncColorImages?.length ?? 0) ~/ 2;
+                    return ProductDetailsBottomSheet(
+                      productDescription:
+                          HtmlParser.parseHTML(productItem.details ?? "").text,
+                      countOfPieces:
+                          state.cachedProductWithoutRelatedProductsModel[
+                                      productItem.id.toString()] !=
                                   null
                               ? state
                                       .cachedProductWithoutRelatedProductsModel[
                                           productItem.id.toString()]!
                                       .product!
-                                      .boutique!
-                                      .icon!
-                                      .filePath ??
-                                  ""
+                                      .countOfPieces ??
+                                  0
+                              : 0,
+                      currentSize: state.CurrentColorSizeForCart != null
+                          ? state.CurrentColorSizeForCart!["size"] ?? ""
+                          : "",
+                      addToBagButtonShapeNotifier: addToBagButtonShapeNotifier,
+                      sizes: state.sizes ?? [],
+                      sizesQuantities: state.sizesQuantities ?? [],
+                      currentColornum: productItem.colors.isNullOrEmpty
+                          ? ''
+                          : productItem.colors![currentSelectedColor].color ??
+                              "",
+                      boutiqueIcon: state
+                                      .cachedProductWithoutRelatedProductsModel[
+                                  productItem.id.toString()] !=
+                              null
+                          ? state
+                                      .cachedProductWithoutRelatedProductsModel[
+                                          productItem.id.toString()]!
+                                      .product!
+                                      .boutique !=
+                                  null
+                              ? state
+                                          .cachedProductWithoutRelatedProductsModel[
+                                              productItem.id.toString()]!
+                                          .product!
+                                          .boutique!
+                                          .icon !=
+                                      null
+                                  ? state
+                                          .cachedProductWithoutRelatedProductsModel[
+                                              productItem.id.toString()]!
+                                          .product!
+                                          .boutique!
+                                          .icon!
+                                          .filePath ??
+                                      ""
+                                  : ""
                               : ""
-                          : ""
-                      : "",
-                  boutiqueId: state.cachedProductWithoutRelatedProductsModel[
-                              productItem.id.toString()] !=
-                          null
-                      ? state
+                          : "",
+                      boutiqueId: state
+                                      .cachedProductWithoutRelatedProductsModel[
+                                  productItem.id.toString()] !=
+                              null
+                          ? state
+                                      .cachedProductWithoutRelatedProductsModel[
+                                          productItem.id.toString()]!
+                                      .product!
+                                      .boutique !=
+                                  null
+                              ? state
                                   .cachedProductWithoutRelatedProductsModel[
                                       productItem.id.toString()]!
                                   .product!
-                                  .boutique !=
-                              null
-                          ? state
+                                  .boutique!
+                                  .id!
+                              : 0
+                          : 0,
+                      currentColorName: productItem.colors.isNullOrEmpty
+                          ? ''
+                          : productItem.colors![currentSelectedColor].name ??
+                              "",
+                      productItem: productItem,
+                      currentColor: currentSelectedColor,
+                      maxAllowedToAddCart: state
                               .cachedProductWithoutRelatedProductsModel[
-                                  productItem.id.toString()]!
-                              .product!
-                              .boutique!
-                              .id!
-                          : 0
-                      : 0,
-                  currentColorName: productItem.colors.isNullOrEmpty
-                      ? ''
-                      : productItem.colors![currentSelectedColor].name ?? "",
-                  productItem: productItem,
-                  currentColor: currentSelectedColor,
-                  maxAllowedToAddCart: state
-                          .cachedProductWithoutRelatedProductsModel[
-                              productItem.id.toString()]
-                          ?.product
-                          ?.maxAllowedQty ??
-                      "0",
-                );
-              });
-  },
-),
+                                  productItem.id.toString()]
+                              ?.product
+                              ?.maxAllowedQty ??
+                          "0",
+                    );
+                  });
+            },
+          ),
           SlidingUpPanelForBuyersCameraShots(
               panelController: panelControllerForBuyersCameraShots,
               panelControllerForReels: panelControllerForReels),
