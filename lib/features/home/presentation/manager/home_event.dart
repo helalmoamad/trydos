@@ -539,6 +539,18 @@ class UpdateItemInCartEvent extends HomeEvent {
   List<Object?> get props => [];
 }
 
+class AddCommentEvent extends HomeEvent {
+  final String productId;
+  final String comment;
+  AddCommentEvent(
+      {required this.productId, required this.comment});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [productId , comment];
+
+}
+
 class AddQuantityForCartEvent extends HomeEvent {
   final String productId;
   final int quantity;

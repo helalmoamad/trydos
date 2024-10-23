@@ -98,10 +98,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         homeBloc
             .add(GetStoryForProductEvent(productId: widget.productIdForOpeningChatDirectly ?? productItem.id.toString()));
       });
-    if (GetIt.I<PrefsRepository>().chatToken != null) {
-      BlocProvider.of<ChatBloc>(context).add(GetChatsEvent());
-      BlocProvider.of<ChatBloc>(context).add(SaveContactsEvent());
-    }
     chatBloc
         .add(GetSharedProductCountEvent(productId: widget.productIdForOpeningChatDirectly ?? productItem.id.toString()));
 

@@ -36,6 +36,7 @@ import 'package:trydos/features/home/data/models/get_product_listing_without_fil
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 
 import 'package:trydos/features/home/domain/use_cases/GetCommentForProductUseCase.dart';
+import 'package:trydos/features/home/domain/use_cases/add_comment_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_allowed_country_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_brand_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_cart_item_usecase.dart';
@@ -106,6 +107,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.getCurrencyForCountryUseCase,
     this.getFullProductDetailsUseCase,
     this.getProductsWithoutFiltersUseCase,
+    this.addCommentUseCase,
     this.requestForNotificationWhenProductBecameAvailableUseCase,
     this.getProductsWithFiltersUseCase,
   ) : super(HomeState()) {
@@ -223,6 +225,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       _onRemoveItemToCartEvent,
     );
 
+    on<AddCommentEvent>(
+      _onAddCommentEvent,
+    );
+
     on<GetProductDatailsWithoutRelatedProductsEvent>(
       _onGetProductDatailsWithoutRelatedProductsEvent,
     );
@@ -244,6 +250,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final GetWidthAndHeightUseCase getWidthAndHeightUseCase;
   final GetHomeBoutiqesUseCase getHomeBoutiqesUseCase;
   final GetCartItemUseCase getCartItemUseCase;
+  final AddCommentUseCase addCommentUseCase;
   final GetCommentForProductUseCase getCommentForProductUseCase;
   final GetStoryForProductUseCase getStoryUseCase;
   final GetProductDetailWithoutRelatedProductsUseCase
@@ -3364,5 +3371,31 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         getFullProductDetailsStatus: GetFullProductDetailsStatus.success,
       ));
     });
+  }
+
+  FutureOr<void> _onAddCommentEvent(AddCommentEvent event, Emitter<HomeState> emit) async{
+    emit(state.copyWith(
+      addCommentStatus: AddCommentStatus.loading
+    ));
+    final response = await addCommentUseCase(AddCommentParams(productId: event.productId, comment: event.comment));
+
+    response.fold((l){
+      emit(state.copyWith(
+          addCommentStatus: AddCommentStatus.failure
+      ));
+    }, (r){
+      Map<String , GetCommentForProductModel> getCommentForProductModel = Map.of(state.getCommentForProductModel);
+      getCommentForProductModel[event.productId] = getCommentForProductModel[event.productId]!.copyWith(
+        data: getCommentForProductModel[event.productId]!.commentsForProduct!.copyWith(
+          comments: [r , ...getCommentForProductModel[event.productId]!.commentsForProduct!.comments ?? []],
+          commentsCount: getCommentForProductModel[event.productId]!.commentsForProduct!.commentsCount! + 1
+        )
+      );
+      emit(state.copyWith(
+          addCommentStatus: AddCommentStatus.success,
+        getCommentForProductModel: getCommentForProductModel
+      ));
+    });
+
   }
 }

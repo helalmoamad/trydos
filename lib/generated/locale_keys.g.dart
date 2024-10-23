@@ -16,6 +16,8 @@ abstract class  LocaleKeys {
   static const later_take_look = 'later_take_look';
   static const chat = 'chat';
   static const cart = 'cart';
+  static const add_comment = 'add_comment';
+  static const error_empty_comment = 'error_empty_comment';
   static const story = 'story';
   static const find_products = 'find_products';
   static const upload = 'upload';

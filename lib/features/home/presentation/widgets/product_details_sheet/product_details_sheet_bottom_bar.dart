@@ -114,7 +114,9 @@ class _ProductDetailsSheetBottomBarState
           previous.ListitemForAddToCart?.length !=
               current.ListitemForAddToCart?.length ||
           previous.getCommentForProductStatus !=
-              current.getCommentForProductStatus,
+              current.getCommentForProductStatus || previous.addCommentStatus !=
+              current.addCommentStatus
+      ,
       builder: (context, state) {
         List<String> allimages = [];
 
