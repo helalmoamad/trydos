@@ -539,6 +539,18 @@ class UpdateItemInCartEvent extends HomeEvent {
   List<Object?> get props => [];
 }
 
+class AddCommentEvent extends HomeEvent {
+  final String productId;
+  final String comment;
+  AddCommentEvent(
+      {required this.productId, required this.comment});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [productId , comment];
+
+}
+
 class AddQuantityForCartEvent extends HomeEvent {
   final String productId;
   final int quantity;
@@ -648,6 +660,15 @@ class GetAllowedCountriesEvent extends HomeEvent {
 
   @override
   List<Object?> get props => [];
+}
+
+class AddOrRemoveLikeForProductEvent extends HomeEvent {
+  final bool isFavourite;
+  final String productId;
+  AddOrRemoveLikeForProductEvent(
+      {required this.isFavourite, required this.productId});
+  @override
+  List<Object?> get props => [isFavourite, productId];
 }
 
 class UpdateListOfItemForAddToCartEvent extends HomeEvent {

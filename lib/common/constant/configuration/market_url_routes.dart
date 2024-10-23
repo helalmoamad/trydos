@@ -16,6 +16,8 @@ extension ScopeApi on String {
   String productsScope() => '$_api/${_currentVersion}/mobile/search/$this';
   String productScope() => '$_api/${_currentVersion}/mobile/product/$this';
   String mobileScope() => '$_api/${_currentVersion}/mobile/$this';
+  String likeScope() => '$_api/${_currentVersion}/product_likes/$this';
+
   String productScopeWeb() => '$_api/${_currentVersion}/web/product/$this';
   String homeScope() => '$_api/${_currentVersion}/mobile/home/$this';
   String cartScope() => '$_api/${_currentVersion}/cart/$this';
@@ -25,14 +27,16 @@ extension ScopeApi on String {
 
 abstract class MarketEndPoints {
   static String getProductDetailWithoutSimilarRelatedProducts(
-          String productId) => "details_without_similar_related_products/$productId".productScope();
-  static String getFullProductDetailsEP(
-      String productId) => "details/$productId".productScope();
+          String productId) =>
+      "details_without_similar_related_products/$productId".productScope();
+  static String getFullProductDetailsEP(String productId) =>
+      "details/$productId".productScope();
   static final sendOtpEP = 'send_otp'.phoneScope();
   static final getCartItemEP = 'cart_shipping'.cartScope();
   static final addItemCartItemEP = 'add'.cartScope();
   static final updateItemCartItemEP = 'update'.cartScope();
-  static final requestForNotificationWhenProductBecameAvailableEP = ''.notificationScope();
+  static final requestForNotificationWhenProductBecameAvailableEP =
+      ''.notificationScope();
   static final removeItemCartItemEP = 'remove'.cartScope();
   static final verifyOtpSignInEP = 'verify_otp_singin'.phoneScope();
   static final verifyOtpSignUpEP = 'verify_otp_signup'.phoneScope();
@@ -40,6 +44,9 @@ abstract class MarketEndPoints {
   static final verifyGuestPhoneEP = 'verify-guest-phone'.authFirebaseScope();
   static final registerEP = 'register'.authScope();
   static final registerGuestEP = 'register-guest'.authScope();
+  static final deleteLikeOFProductEP = 'delete'.likeScope();
+  static final addLikeOFProductEP = 'store'.likeScope();
+
   static final loginEP = 'login'.phoneScope();
   static final getAllowesdCountriesEP = "countries".countryScope();
   static final updateNameEP = 'update-name'.customerScope();
@@ -52,6 +59,7 @@ abstract class MarketEndPoints {
   static final getCategoryEP = 'categories'.homeScope();
 
   static final getHomeBoutiqesEP = 'boutiques'.homeScope();
+  static final addCommentEP = 'product_comment'.customerScope();
   static String getCommentForProductEP(String productId) =>
       'likesCommentsSharesDetails/$productId'.productScope();
   static final getMainCategoriesEP = 'mainCategories'.homeScope();

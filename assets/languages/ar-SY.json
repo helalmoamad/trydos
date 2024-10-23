@@ -14,6 +14,8 @@
   "later_take_look": "لاحقا, خذ نظرة في التطبيق",
   "chat": "دردشة",
   "cart": "سلة المشتريات",
+  "add_comment": "إضافة تعليق",
+  "error_empty_comment": "لايمكن إضافة تعليق فارغ",
   "story": "القصة",
   "find_products": "المقترحات",
   "upload": "تحميل",
@@ -136,6 +138,7 @@
   "click_to_add_story": "انقر لإضافة حالة جديدة",
   "insert_name_to_continue": "أدخل الاسم للمتابعة",
   "must_be_at_least_8_characters": "يجب ع الأقل 8 محارف",
-  "read_more":"قراءة المزيد...",
-  "read_less":"قراءة أقل..."
+  "read_more": "قراءة المزيد...",
+  "read_less": "قراءة أقل...",
+  "readd": "يقرأ"
 }

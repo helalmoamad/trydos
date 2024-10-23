@@ -5,8 +5,10 @@ import 'package:trydos/features/home/data/models/get_brand_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_category_model.dart';
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
+import 'package:trydos/features/home/data/models/get_count_likes_of_product_model.dart';
 import 'package:trydos/features/home/data/models/get_currency_for_country_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
+import 'package:trydos/features/home/data/models/get_is_liked_of_product_model.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 
@@ -29,6 +31,11 @@ abstract class HomeRepository {
 //Future<Either<Failure, GetCategoryModel>> getCategory();
 
   Future<Either<Failure, MainCategoriesResponseModel>> getMainCategories();
+  // Future<Either<Failure, GetIsLikedOFProductModel>> getIsLikedOFProduct(
+//      Map<String, dynamic> params);
+  Future<Either<Failure, bool>> addLikeOFProduct(Map<String, dynamic> params);
+  Future<Either<Failure, bool>> deleteLikeOFProduct(
+      Map<String, dynamic> params);
   Future<Either<Failure, GetProductFiltersModel>> getProductFilters(
       Map<String, dynamic> params);
   /* Future<Either<Failure, HomeSectionResponseModel>> getHomeSections(
@@ -43,8 +50,8 @@ abstract class HomeRepository {
       getProductsWithFilters(Map<String, dynamic> params);
   Future<Either<Failure, GetProductDetailWithoutRelatedProductsModel>>
       getProductDetailWithoutSimilarRelatedProducts(String productId);
-  Future<Either<Failure, GetFullProductDetailsModel>>
-  getFullProductDetails(String productId);
+  Future<Either<Failure, GetFullProductDetailsModel>> getFullProductDetails(
+      String productId);
   Future<Either<Failure, GetCommentForProductModel>> geCommentForProduct(
       String productId);
   Future<Either<Failure, AddItemToCartModel>> addItemToCart(
@@ -54,6 +61,7 @@ abstract class HomeRepository {
       Map<String, dynamic> params);
 
   Future<Either<Failure, bool>> removeItemToCart(Map<String, dynamic> params);
+  Future<Either<Failure, Comment>> addComment(Map<String, dynamic> params);
   Future<Either<Failure, bool>> requestForNotificationWhenProductBecameAvailable(Map<String, dynamic> params);
 
   /* Future<Either<Failure, SearchResultModel>> getSearchResult(

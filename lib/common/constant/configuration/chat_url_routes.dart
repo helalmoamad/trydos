@@ -29,7 +29,7 @@ extension ScopeApi on String {
       '$_api/${current ? _currentVersion : _previousVersion}/firebase_tokens${this != '' ? '/$this' : ''}';
 
   String elasticScope({bool current = true}) =>
-      '$_api/${current ? _currentVersion : _previousVersion}/elastic/$this}';
+      '$_api/${current ? _currentVersion : _previousVersion}/elastic/$this';
 }
 
 abstract class ChatEndPoints {

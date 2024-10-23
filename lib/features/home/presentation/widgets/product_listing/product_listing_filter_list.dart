@@ -119,6 +119,20 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                 current.isExpandedForListingPage ||
             previous.getProductFiltersStatus[key] !=
                 current.getProductFiltersStatus[key] ||
+            previous
+                    .getProductListingWithFiltersPaginationModels[
+                        '${widget.boutiqueSlug}' +
+                            'withoutFilter' +
+                            '${(widget.category ?? '')}']
+                    ?.paginationStatus !=
+                current
+                    .getProductListingWithFiltersPaginationModels[
+                        '${widget.boutiqueSlug}' +
+                            'withoutFilter' +
+                            '${(widget.category ?? '')}']
+                    ?.paginationStatus ||
+            previous.getProductListingStatus !=
+                current.getProductListingStatus ||
             previous.cashedOrginalBoutique != current.cashedOrginalBoutique,
         builder: (context, state) {
           isExpanded = state.isExpandedForListingPage ?? false;
@@ -315,6 +329,9 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
               currentAppliedFilterSllug == "Empty" &&
               state.getProductFiltersWithPrefetchModel['${widget.boutiqueSlug}' + 'Empty' + '${(widget.category ?? '')}']?.filters != null &&
               (state.getProductListingWithFiltersPaginationWithPrefetchModels["${widget.boutiqueSlug}" + "Empty" + "${widget.category ?? ""}"]?.paginationStatus == PaginationStatus.success)) {
+            print(
+                "*************************************888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888");
+
             filters = (state
                             .getProductListingWithFiltersPaginationWithPrefetchModels[
                                 '${widget.boutiqueSlug}' +
@@ -332,6 +349,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                             '${(widget.category ?? '')}']
                     ?.filters;
           } else {
+            print(
+                "8888888888888888888888888888888888888888888888888${state.cashedOrginalBoutique}88888888888888888888888888888888888888888888888888888888888888888888888888888");
             filters = (state
                                 .getProductListingWithFiltersPaginationModels[
                                     '${widget.boutiqueSlug}' +
@@ -2357,16 +2376,17 @@ class _FilterCircleWidgetState extends State<FilterCircleWidget> {
                   SizedBox(height: 5),
                   SizedBox(
                     width: widget.width,
-                  child: MyTextWidget(
-                    widget.categoryName,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                    textAlign: TextAlign.center,
-                    style: context.textTheme.titleMedium?.rq.copyWith(
-                        color: Color(0xff8E8E8E),
-                        letterSpacing: 0,
-                        height: 1.25),
-                  ),),
+                    child: MyTextWidget(
+                      widget.categoryName,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      textAlign: TextAlign.center,
+                      style: context.textTheme.titleMedium?.rq.copyWith(
+                          color: Color(0xff8E8E8E),
+                          letterSpacing: 0,
+                          height: 1.25),
+                    ),
+                  ),
                 }
               ],
             ),

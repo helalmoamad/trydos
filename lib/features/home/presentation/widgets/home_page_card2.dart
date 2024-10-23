@@ -23,11 +23,11 @@ class HomePageCard2 extends cupertino.StatefulWidget {
   HomePageCard2(
       {super.key,
       this.withSlidingImages = false,
-      required this.boutniqe,
+      required this.boutique,
       required this.category_Slug});
   final String category_Slug;
   final bool withSlidingImages;
-  final Boutique boutniqe;
+  final Boutique boutique;
 
   @override
   cupertino.State<HomePageCard2> createState() => _HomePageCard2State();
@@ -42,6 +42,8 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
 
   @override
   void initState() {
+    print(
+        "***********************************************************************************************${widget.boutique.slug}");
     autoScrollController = AutoScrollController();
     super.initState();
   }
@@ -83,12 +85,12 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
             HelperFunctions.slidingNavigation(
                 context,
                 ProductListingPage(
-                  boutniqe: widget.boutniqe,
+                  boutique: widget.boutique,
                   withSlidingImages: widget.withSlidingImages,
-                  boutiqueSlug: widget.boutniqe.slug!,
-                  boutiqueDescription: widget.boutniqe.description,
-                  boutiqueFirstBanner: widget.boutniqe.banners![0].filePath!,
-                  boutiqueIcon: widget.boutniqe.icon?.filePath!,
+                  boutiqueSlug: widget.boutique.slug!,
+                  boutiqueDescription: widget.boutique.description,
+                  boutiqueFirstBanner: widget.boutique.banners![0].filePath!,
+                  boutiqueIcon: widget.boutique.icon?.filePath!,
                 ));
           },
           child: Stack(
@@ -112,12 +114,12 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                     child: ValueListenableBuilder<int>(
                         valueListenable: changeBackgroundBlurImage,
                         builder: (context, index, _) {
-                          print((widget.boutniqe.banners?.length ?? 0) > 0);
-                          return ((widget.boutniqe.banners?.length ?? 0) > 0)
+                          print((widget.boutique.banners?.length ?? 0) > 0);
+                          return ((widget.boutique.banners?.length ?? 0) > 0)
                               ? MyCachedNetworkImage(
                                   imageFit: cupertino.BoxFit.cover,
                                   imageUrl:
-                                      widget.boutniqe.banners![index].filePath!,
+                                      widget.boutique.banners![index].filePath!,
                                   width: 1.sw,
                                   radius: 15,
                                   height: 235,
@@ -161,14 +163,14 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        widget.boutniqe.icon != null
+                        widget.boutique.icon != null
                             ? SvgNetworkWidget(
-                                svgUrl: widget.boutniqe.icon!.filePath!,
+                                svgUrl: widget.boutique.icon!.filePath!,
                                 height: 20,
                                 width: 40,
                               )
                             : MyTextWidget(
-                                widget.boutniqe.name!,
+                                widget.boutique.name!,
                                 style:
                                     context.textTheme.titleMedium?.rd.copyWith(
                                   fontSize: 16,
@@ -180,7 +182,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                         ),
                         Html(
                           shrinkWrap: true,
-                          data: widget.boutniqe.description ?? '',
+                          data: widget.boutique.description ?? '',
                           style: {
                             "body": Style(margin: Margins.all(0)),
                             "p": Style(
@@ -204,7 +206,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                         ? cupertino.Container(
                             //color: Colors.red,
                             child: CarouselSlider.builder(
-                                itemCount: widget.boutniqe.banners!.length,
+                                itemCount: widget.boutique.banners!.length,
                                 itemBuilder: (context, index, _) {
                                   return Padding(
                                     padding: EdgeInsetsDirectional.only(
@@ -230,7 +232,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                               ),
                                             ],
                                           ),
-                                          child: widget.boutniqe
+                                          child: widget.boutique
                                                       .banners?[index] !=
                                                   null
                                               ? ClipRRect(
@@ -238,7 +240,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                                       BorderRadius.circular(15),
                                                   child: MyCachedNetworkImage(
                                                     imageUrl: widget
-                                                        .boutniqe
+                                                        .boutique
                                                         .banners![index]
                                                         .filePath!,
                                                     imageFit: BoxFit.cover,
@@ -302,13 +304,13 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                 ),
                                 child: ClipRRect(
                                     borderRadius: BorderRadius.circular(15),
-                                    child: ((widget.boutniqe.banners?.length ??
+                                    child: ((widget.boutique.banners?.length ??
                                                 0) ==
                                             0)
                                         ? cupertino.SizedBox.shrink()
                                         : MyCachedNetworkImage(
                                             imageUrl: widget
-                                                .boutniqe.banners![0].filePath!,
+                                                .boutique.banners![0].filePath!,
                                             imageFit: BoxFit.cover,
                                             width: 1.sw,
                                             withInnerShadow: true,
@@ -348,23 +350,23 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                             HelperFunctions.slidingNavigation(
                                 context,
                                 ProductListingPage(
-                                  boutniqe: widget.boutniqe,
+                                  boutique: widget.boutique,
                                   withSlidingImages: widget.withSlidingImages,
-                                  boutiqueSlug: widget.boutniqe.slug!,
+                                  boutiqueSlug: widget.boutique.slug!,
                                   category: widget
-                                      .boutniqe
+                                      .boutique
                                       .mainCategoriesForProductIds![index]
                                       .categorySlug,
                                   boutiqueDescription:
-                                      widget.boutniqe.description!,
+                                      widget.boutique.description!,
                                   boutiqueFirstBanner:
-                                      widget.boutniqe.banners![0].filePath!,
-                                  boutiqueIcon: widget.boutniqe.icon!.filePath!,
+                                      widget.boutique.banners![0].filePath!,
+                                  boutiqueIcon: widget.boutique.icon!.filePath!,
                                 ));
                           },
                           child: SvgNetworkWidget(
                             svgUrl: widget
-                                .boutniqe
+                                .boutique
                                 .mainCategoriesForProductIds![index]
                                 .flatPhotoPath!
                                 .filePath!,
@@ -373,7 +375,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                           ));
                     },
                     itemCount:
-                        widget.boutniqe.mainCategoriesForProductIds!.length,
+                        widget.boutique.mainCategoriesForProductIds!.length,
                   ),
                 ),
 
@@ -413,7 +415,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                     resizeItems.value = (details.globalPosition.dx -
                             40 -
                             (9 -
-                                    widget.boutniqe
+                                    widget.boutique
                                         .childCategoriesForProductIds!.length) /
                                 2 *
                                 (40.w - 5.w)) ~/
@@ -430,7 +432,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                     resizeItems.value = (details.globalPosition.dx -
                             40 -
                             (9 -
-                                    widget.boutniqe
+                                    widget.boutique
                                         .childCategoriesForProductIds!.length) /
                                 2 *
                                 (40.w - 5.w)) ~/
@@ -455,13 +457,13 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                   min(
                                       9,
                                       widget
-                                          .boutniqe
+                                          .boutique
                                           .childCategoriesForProductIds!
                                           .length),
                                   (index) => AnimatedPositioned(
                                         left: (9 -
                                                     widget
-                                                        .boutniqe
+                                                        .boutique
                                                         .childCategoriesForProductIds!
                                                         .length) /
                                                 2 *
@@ -486,23 +488,23 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                             HelperFunctions.slidingNavigation(
                                                 context,
                                                 ProductListingPage(
-                                                  boutniqe: widget.boutniqe,
+                                                  boutique: widget.boutique,
                                                   withSlidingImages:
                                                       widget.withSlidingImages,
                                                   boutiqueSlug:
-                                                      widget.boutniqe.slug!,
+                                                      widget.boutique.slug!,
                                                   category: widget
-                                                      .boutniqe
+                                                      .boutique
                                                       .childCategoriesForProductIds![
                                                           index]
                                                       .categorySlug,
                                                   boutiqueDescription: widget
-                                                      .boutniqe.description,
+                                                      .boutique.description,
                                                   boutiqueFirstBanner: widget
-                                                      .boutniqe
+                                                      .boutique
                                                       .banners![0]
                                                       .filePath!,
-                                                  boutiqueIcon: widget.boutniqe
+                                                  boutiqueIcon: widget.boutique
                                                           .icon?.filePath ??
                                                       "",
                                                 ));
@@ -511,18 +513,18 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                             index: index,
                                             isFocused: focused == index,
                                             imageUrl: widget
-                                                .boutniqe
+                                                .boutique
                                                 .childCategoriesForProductIds![
                                                     index]
                                                 .mostViewedProductThumbnail!
                                                 .filePath!,
                                             name: widget
-                                                .boutniqe
+                                                .boutique
                                                 .childCategoriesForProductIds![
                                                     index]
                                                 .categoryName!,
                                             countProducts: widget
-                                                .boutniqe
+                                                .boutique
                                                 .childCategoriesForProductIds![
                                                     index]
                                                 .countProducts

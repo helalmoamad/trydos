@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gallery_3d/gallery3d.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:local_hero/local_hero.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/common/constant/constant.dart';
@@ -26,6 +27,7 @@ import 'package:flutter/cupertino.dart' as cupertino;
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_more_options_content.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_share_content.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/select_size_sheet.dart';
+import '../../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../../trydos_application.dart';
 import '../../manager/home_bloc.dart';
 import '../product_details_body/product_details_image_widget.dart';
@@ -488,7 +490,10 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                       ProductDetailsSheetMoreOptionsContent(
                                           scrollController: currentTab == 2
                                               ? controller
-                                              : null)
+                                              : null,
+
+                                        productId: widget.productItem.id.toString(),
+                                      )
                                     ],
                                   ),
                                 )
@@ -642,6 +647,10 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                           WidgetsBinding.instance.addPostFrameCallback((_) {
                             pageController.jumpToPage(1);
                           });
+                          if (GetIt.I<PrefsRepository>().chatToken != null) {
+                            BlocProvider.of<ChatBloc>(context).add(GetChatsEvent());
+                            BlocProvider.of<ChatBloc>(context).add(SaveContactsEvent());
+                          }
                         },
                         currentActiveTab: currentActiveTab,
                         sizeIsNotAvailableNotifier: sizeIsNotAvailableNotifier,

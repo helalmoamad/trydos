@@ -88,7 +88,7 @@ void main() {
       );
       ////////////////////////////
       final boutiqueId1 =
-          tester.widget<HomePageCard2>(boutiqueCard1).boutniqe.id!;
+          tester.widget<HomePageCard2>(boutiqueCard1).boutique.id!;
       ////////////////////////////
       print('//////// boutiqueCard1  : $boutiqueId1 //////////');
       ///////////// Tap on first  boutique  ///////////////
@@ -179,7 +179,7 @@ void main() {
       );
       ////////////////////////////
       final boutiqueId2 =
-          tester.widget<HomePageCard2>(boutiqueCard2).boutniqe.id!;
+          tester.widget<HomePageCard2>(boutiqueCard2).boutique.id!;
       ////////////////////////////
       print('//////// boutiqueId2  : $boutiqueId2 //////////');
       ////////////////////////////

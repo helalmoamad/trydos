@@ -12,9 +12,11 @@ import 'package:trydos/features/home/data/models/get_brand_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_category_model.dart';
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
+import 'package:trydos/features/home/data/models/get_count_likes_of_product_model.dart';
 import 'package:trydos/features/home/data/models/get_currency_for_country_model.dart';
 import 'package:trydos/features/home/data/models/get_full_product_details_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
+import 'package:trydos/features/home/data/models/get_is_liked_of_product_model.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
@@ -64,6 +66,19 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
       getProductsWithoutFilters(Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.getProductsWithoutFilters(params));
+  }
+
+  @override
+  Future<Either<Failure, bool>> addLikeOFProduct(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.addLikeOFProduct(params));
+  }
+
+  @override
+  Future<Either<Failure, bool>> deleteLikeOFProduct(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.deleteLikeOFProduct(params));
   }
 
   @override
@@ -157,14 +172,24 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   }
 
   @override
-  Future<Either<Failure, bool>> requestForNotificationWhenProductBecameAvailable(Map<String, dynamic> params) {
+  Future<Either<Failure, bool>>
+      requestForNotificationWhenProductBecameAvailable(
+          Map<String, dynamic> params) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.requestForNotificationWhenProductBecameAvailable(params));
+        tryCall: () => dataSource
+            .requestForNotificationWhenProductBecameAvailable(params));
   }
 
   @override
-  Future<Either<Failure, GetFullProductDetailsModel>> getFullProductDetails(String productId) {
+  Future<Either<Failure, GetFullProductDetailsModel>> getFullProductDetails(
+      String productId) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.getFullProductDetails(productId));
+  }
+
+  @override
+  Future<Either<Failure, Comment>> addComment(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.addComment(params));
   }
 }

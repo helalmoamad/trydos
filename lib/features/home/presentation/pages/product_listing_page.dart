@@ -46,7 +46,7 @@ import '../../../app/blocs/app_bloc/app_state.dart';
 import '../../../app/my_cached_network_image.dart';
 import '../../../app/my_text_widget.dart';
 import '../../../app/svg_network_widget.dart';
-import '../../data/models/get_home_boutiqes_model.dart' as boutique;
+import '../../data/models/get_home_boutiqes_model.dart' as boutiques;
 import '../manager/home_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -66,7 +66,7 @@ class ProductListingPage extends StatefulWidget {
   final String? boutiqueDescription;
   final String? boutiqueFirstBanner;
   final bool withSlidingImages;
-  final boutique.Boutique? boutniqe;
+  final boutiques.Boutique? boutique;
   final TextEditingController? controllerFormSearchPage;
   final bool fromSearch;
   final String? searchText;
@@ -78,7 +78,7 @@ class ProductListingPage extends StatefulWidget {
     this.controllerFormSearchPage,
     this.searchText,
     this.withSlidingImages = false,
-    this.boutniqe,
+    this.boutique,
     this.boutiqueFirstBanner,
     this.category,
     this.fromSearch = false,
@@ -120,7 +120,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
   Key gridViewKeyForRenderingForTheFiveFilters = UniqueKey();
   Key gridViewKeyForRendering = UniqueKey();
   bool _speechEnabled = false;
-
 
   void _startListening() async {
     if (!_speechEnabled) {
@@ -182,6 +181,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
   @override
   void initState() {
+    print("##############################//////////////////////////////////////////////////////////////////////////#${widget.boutiqueSlug}");
     itExpendForFirst = true;
     key = widget.boutiqueSlug + (widget.category ?? '');
     keyWithoutFilter = '${widget.boutiqueSlug}' +
@@ -272,7 +272,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
             limit: 10,
             cashedOrginalBoutique: !widget.fromSearch,
             boutiqueSlug: widget.boutiqueSlug,
-            getWithPagination: homeBloc.state.cashedOrginalBoutique,
+            getWithPagination: true,
             fromSearch: widget.fromSearch,
             category: widget.category,
             searchText: widget.fromSearch ? widget.searchText : null,
@@ -1625,7 +1625,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                               height: 135,
                                                                               //color: Colors.red,
                                                                               child: CarouselSlider.builder(
-                                                                                  itemCount: widget.boutniqe!.banners!.length,
+                                                                                  itemCount: widget.boutique!.banners!.length,
                                                                                   itemBuilder: (context, index, _) {
                                                                                     return Padding(
                                                                                       padding: EdgeInsets.only(
@@ -1649,7 +1649,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                         child: ClipRRect(
                                                                                             borderRadius: BorderRadius.circular(15),
                                                                                             child: MyCachedNetworkImage(
-                                                                                              imageUrl: widget.boutniqe!.banners![index].filePath!,
+                                                                                              imageUrl: widget.boutique!.banners![index].filePath!,
                                                                                               imageFit: BoxFit.cover,
                                                                                               width: 1.sw,
                                                                                               height: 155,
@@ -2283,6 +2283,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                 '${(widget.category ?? '')}']!
                                                         .items
                                                         .isNullOrEmpty)) {
+                                              print(
+                                                  "11111111111111111111111111${state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + 'withoutFilter' + '${(widget.category ?? '')}']?.paginationStatus}//${state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + 'withoutFilter' + '${(widget.category ?? '')}']!.items.isNullOrEmpty}////////////////////////////////////---------------------------------");
+
                                               return ProductListingLoading();
                                             }
                                             if ((state
@@ -2386,6 +2389,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                             .loading &&
                                                     !state
                                                         .cashedOrginalBoutique)) {
+                                              print(
+                                                  "//////////////////////////////////////---------------------------------");
                                               return ProductListingLoading(
                                                 key: TestVariables.kTestMode
                                                     ? Key(WidgetsKey
@@ -2491,7 +2496,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                   .toString(),
                                                               "previous_event_button_name":
                                                                   GetIt.I<PrefsRepository>()
-                                                                      .currentEvent??"",
+                                                                          .currentEvent ??
+                                                                      "",
                                                               "device_language":
                                                                   LanguageService
                                                                               .languageCode ==
