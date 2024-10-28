@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -21,6 +22,7 @@ class ProductDetailsTitle extends StatelessWidget {
   final Brand.Brand? brand;
 
   final String productName;
+  final String productId;
   final String thumbnail;
   final String colorName;
   final double orginalWidth;
@@ -30,6 +32,7 @@ class ProductDetailsTitle extends StatelessWidget {
       this.brand,
       required this.productName,
       required this.thumbnail,
+      required this.productId,
       required this.orginalHeight,
       required this.orginalWidth,
       required this.colorName});
@@ -40,8 +43,12 @@ class ProductDetailsTitle extends StatelessWidget {
       buildWhen: (p, c) =>
           p.getProductDetailWithoutSimilarRelatedProductsStatus !=
               c.getProductDetailWithoutSimilarRelatedProductsStatus ||
+          p.cachedProductWithoutRelatedProductsModel[productId] !=
+              c.cachedProductWithoutRelatedProductsModel[productId] ||
           p.currentSelectedColorForEveryProduct !=
-              c.currentSelectedColorForEveryProduct,
+              c.currentSelectedColorForEveryProduct ||
+          p.getAndAddCountViewOfProductStatus[productId] !=
+              c.getAndAddCountViewOfProductStatus[productId],
       builder: (context, state) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,42 +68,62 @@ class ProductDetailsTitle extends StatelessWidget {
                               : SizedBox.shrink()
                           : SizedBox.shrink()
                       : SizedBox.shrink(),
-                  state.getProductDetailWithoutSimilarRelatedProductsStatus ==
-                          GetProductDetailWithoutSimilarRelatedProductsStatus
-                              .loading
-                      ? Center(
-                          child: TrydosShimmerLoading(
-                            width: 18,
-                            height: 18,
-                            logoTextHeight: 6,
-                            circleDimensions: 10,
-                            logoTextWidth: 6,
+                  state.getAndAddCountViewOfProductStatus[productId] == null ||
+                          state.cachedProductWithoutRelatedProductsModel[
+                                  productId] ==
+                              null
+                      ? Container(
+                          width: 18,
+                          height: 18,
+                          child: Shimmer.fromColors(
+                            baseColor: Colors.grey.shade400,
+                            highlightColor: Colors.grey.shade100,
+                            child: SvgPicture.asset(AppAssets.eyeSvg),
                           ),
                         )
-                      : Row(
-                          children: [
-                            SvgPicture.asset(
-                              AppAssets.eyeSvg,
-                              height: 15,
-                              width: 15,
-                            ),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            MyTextWidget(
-                              state.getProductDetailWithoutRelatedProductsModel !=
-                                      null
-                                  ? state
-                                      .getProductDetailWithoutRelatedProductsModel!
-                                      .product!
-                                      .reviewsCount
-                                      .toString()
-                                  : "0",
-                              style: context.textTheme.titleMedium?.rq.copyWith(
-                                  color: Color(0xff505050), height: 1.26),
+                      : state
+                                  .cachedProductWithoutRelatedProductsModel[
+                                      productId]!
+                                  .product!
+                                  .viewsCount ==
+                              null
+                          ? Container(
+                              width: 18,
+                              height: 18,
+                              child: Shimmer.fromColors(
+                                baseColor: Colors.grey.shade400,
+                                highlightColor: Colors.grey.shade100,
+                                child: SvgPicture.asset(AppAssets.eyeSvg),
+                              ),
                             )
-                          ],
-                        )
+                          : Row(
+                              children: [
+                                SvgPicture.asset(
+                                  AppAssets.eyeSvg,
+                                  height: 15,
+                                  width: 15,
+                                ),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                MyTextWidget(
+                                  state.cachedProductWithoutRelatedProductsModel[
+                                              productId] !=
+                                          null
+                                      ? state
+                                          .cachedProductWithoutRelatedProductsModel[
+                                              productId]!
+                                          .product!
+                                          .viewsCount
+                                          .toString()
+                                      : "0",
+                                  style: context.textTheme.titleMedium?.rq
+                                      .copyWith(
+                                          color: Color(0xff505050),
+                                          height: 1.26),
+                                )
+                              ],
+                            )
                 ],
               ),
             ),

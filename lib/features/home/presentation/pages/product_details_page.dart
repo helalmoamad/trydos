@@ -91,15 +91,19 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       homeBloc.add(GetProductDatailsWithoutRelatedProductsEvent(
           productId: productItem.id.toString()));
     }
-      Future.delayed(Duration(seconds: 3), () {
-        homeBloc
-            .add(
-            GetCommentForProductEvent(productId: widget.productIdForOpeningChatDirectly ?? productItem.id.toString()));
-        homeBloc
-            .add(GetStoryForProductEvent(productId: widget.productIdForOpeningChatDirectly ?? productItem.id.toString()));
-      });
-    chatBloc
-        .add(GetSharedProductCountEvent(productId: widget.productIdForOpeningChatDirectly ?? productItem.id.toString()));
+    Future.delayed(Duration(seconds: 3), () {
+      homeBloc.add(GetAndAddCountViewOfProductEvent(
+          productId: productItem.id.toString()));
+      homeBloc.add(GetCommentForProductEvent(
+          productId: widget.productIdForOpeningChatDirectly ??
+              productItem.id.toString()));
+      homeBloc.add(GetStoryForProductEvent(
+          productId: widget.productIdForOpeningChatDirectly ??
+              productItem.id.toString()));
+    });
+    chatBloc.add(GetSharedProductCountEvent(
+        productId: widget.productIdForOpeningChatDirectly ??
+            productItem.id.toString()));
 
     super.initState();
   }
@@ -346,6 +350,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                               ],
                             ),
                             ProductDetailsTitle(
+                              productId: productItem.id.toString(),
                               orginalHeight: double.parse(
                                   productItem.thumbnail!.originalHeight!),
                               orginalWidth: double.parse(

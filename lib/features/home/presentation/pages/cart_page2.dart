@@ -39,6 +39,7 @@ class CartPage2 extends StatelessWidget {
 
     int indexes = 0;
     List<String> groupCartkeys = [];
+    List<String> groupOLdCartkeys = [];
     int? tapIndex;
     bool visibleAllCollection = true;
     List<String> visibleCollectionCartGroups = [];
@@ -52,7 +53,16 @@ class CartPage2 extends StatelessWidget {
               previous.getCartItemsStatus != current.getCartItemsStatus ||
               previous.getCurrencyForCountryModel !=
                   current.getCurrencyForCountryModel ||
-              previous.cartCollection!.values != current.cartCollection!.values,
+              previous.deleteItemInCartStatus !=
+                  current.deleteItemInCartStatus ||
+              previous.addItemInCartStatus != current.addItemInCartStatus ||
+              previous.updateItemInCartStatus !=
+                  current.updateItemInCartStatus ||
+              previous.cartCollection!.values !=
+                  current.cartCollection!.values ||
+              previous.getOldCartItemsStatus != current.getOldCartItemsStatus ||
+              previous.oldcartCollection?.values !=
+                  current.oldcartCollection?.values,
           builder: (context, state) {
             double totlaPrice = 0;
             String? priceSymbol;
@@ -89,10 +99,11 @@ class CartPage2 extends StatelessWidget {
               );
             }
             groupCartkeys = state.cartCollection!.keys.toList();
+            groupOLdCartkeys = state.oldcartCollection!.keys.toList();
             if (visibleAllCollection) {
               visibleCollectionCartGroups = state.cartCollection!.keys.toList();
               visibleCollectionOldCartGroups =
-                  state.cartCollection!.keys.toList();
+                  state.oldcartCollection!.keys.toList();
               visibleAllCollection = false;
             }
 
@@ -204,7 +215,7 @@ class CartPage2 extends StatelessWidget {
                       ),
                       Container(
                         margin: EdgeInsets.symmetric(horizontal: 10),
-                        alignment: Alignment.center,
+                        alignment: Alignment.topCenter,
                         color: Color(0xffFEFEFE),
                         width: 1.sw - 20,
                         height: 720.h,
@@ -214,11 +225,11 @@ class CartPage2 extends StatelessWidget {
                             productCollectionInCartPage2(
                               cartCollection: state.cartCollection,
                               changeCartCollections: changeCartCollections,
-                              getCartShippingItemsModel:
-                                  state.getCartShippingItemsModel,
+                              oldcartCollection: state.oldcartCollection,
                               groupCartkeys: groupCartkeys,
                               indexes: indexes,
                               priceSymbol: priceSymbol,
+                              isOLdCart: false,
                               quantityController: quantityController,
                               tapIndexs: tapIndex ?? 0,
                               visibleCollectionGroups:
@@ -227,21 +238,29 @@ class CartPage2 extends StatelessWidget {
                             SizedBox(
                               height: 20,
                             ),
-                            Center(
-                                child: MyTextWidget(
-                              "Old Cart",
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 24),
-                            )),
+                            state.oldcartCollection != null
+                                ? !state.oldcartCollection!.isEmpty
+                                    ? Center(
+                                        child: MyTextWidget(
+                                        "Old Cart",
+                                        style: TextStyle(
+                                            color: Colors.black, fontSize: 24),
+                                      ))
+                                    : SizedBox.shrink()
+                                : SizedBox.shrink(),
                             SizedBox(
-                              height: 20,
+                              height: state.oldcartCollection != null
+                                  ? !state.oldcartCollection!.isEmpty
+                                      ? 20
+                                      : 0
+                                  : 0,
                             ),
                             productCollectionInCartPage2(
                               cartCollection: state.cartCollection,
                               changeCartCollections: changeCartCollections,
-                              getCartShippingItemsModel:
-                                  state.getCartShippingItemsModel,
-                              groupCartkeys: groupCartkeys,
+                              oldcartCollection: state.oldcartCollection,
+                              groupCartkeys: groupOLdCartkeys,
+                              isOLdCart: true,
                               indexes: indexes,
                               priceSymbol: priceSymbol,
                               quantityController: quantityController,

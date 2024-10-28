@@ -8,9 +8,11 @@ import 'package:trydos/features/home/data/models/get_allowed_country_model.dart'
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
 import 'package:trydos/features/home/data/models/get_count_likes_of_product_model.dart';
+import 'package:trydos/features/home/data/models/get_count_view_of_product_model.dart';
 import 'package:trydos/features/home/data/models/get_full_product_details_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_is_liked_of_product_model.dart';
+import 'package:trydos/features/home/data/models/get_old_cart_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
@@ -210,17 +212,15 @@ class HomeRemoteDatasource {
     return getProductFilters();
   }
 
-
-  Future<Comment> addComment(
-      Map<String, dynamic> params) {
-    PostClient<Comment> addComment =
-        PostClient<Comment>(
+  Future<Comment> addComment(Map<String, dynamic> params) {
+    PostClient<Comment> addComment = PostClient<Comment>(
       serverName: ServerName.market,
       requestPrams: RequestConfig<Comment>(
         endpoint: MarketEndPoints.addCommentEP,
         data: params,
         response: ResponseValue<Comment>(
-            fromJson: (response) => Comment.fromJson(response['data']['comment'])),
+            fromJson: (response) =>
+                Comment.fromJson(response['data']['comment'])),
       ),
     );
     return addComment();
@@ -234,6 +234,19 @@ class HomeRemoteDatasource {
         endpoint: StoriesEndPoints.getStoriesForProsuctEP(productId),
         response: ResponseValue<GetStoryForProductModel>(
             fromJson: (response) => GetStoryForProductModel.fromJson(response)),
+      ),
+    );
+
+    return getStories();
+  }
+
+  Future<GetOldCartModel> getOldCartItems() {
+    GetClient<GetOldCartModel> getStories = GetClient<GetOldCartModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<GetOldCartModel>(
+        endpoint: MarketEndPoints.getOldCartItemsEP,
+        response: ResponseValue<GetOldCartModel>(
+            fromJson: (response) => GetOldCartModel.fromJson(response)),
       ),
     );
 
@@ -297,6 +310,22 @@ class HomeRemoteDatasource {
       ),
     );
     return removeItemToCart();
+  }
+
+  Future<GetCountViewOfProductModel> getAndAddCountViewOfProduct(
+      Map<String, dynamic> params) {
+    PostClient<GetCountViewOfProductModel> getAndAddCountViewOfProduct =
+        PostClient<GetCountViewOfProductModel>(
+      serverName: ServerName.elastic,
+      requestPrams: RequestConfig<GetCountViewOfProductModel>(
+        endpoint: ElasticEndPoints.getAndAddCountViewOfProductEP,
+        data: params,
+        response: ResponseValue<GetCountViewOfProductModel>(
+            fromJson: (response) =>
+                GetCountViewOfProductModel.fromJson(response)),
+      ),
+    );
+    return getAndAddCountViewOfProduct();
   }
 
   Future<UpdateItemInCartModel> updateItemInCart(Map<String, dynamic> params) {
