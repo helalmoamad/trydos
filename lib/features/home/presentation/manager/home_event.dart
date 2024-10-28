@@ -398,6 +398,13 @@ class GetCartItemEvent extends HomeEvent {
   List<Object?> get props => [];
 }
 
+class GetOldCartItemEvent extends HomeEvent {
+  const GetOldCartItemEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
 class AddItemToCartEvent extends HomeEvent {
   final String? color;
   final String image;
@@ -542,13 +549,11 @@ class UpdateItemInCartEvent extends HomeEvent {
 class AddCommentEvent extends HomeEvent {
   final String productId;
   final String comment;
-  AddCommentEvent(
-      {required this.productId, required this.comment});
+  AddCommentEvent({required this.productId, required this.comment});
 
   @override
   // TODO: implement props
-  List<Object?> get props => [productId , comment];
-
+  List<Object?> get props => [productId, comment];
 }
 
 class AddQuantityForCartEvent extends HomeEvent {
@@ -669,6 +674,13 @@ class AddOrRemoveLikeForProductEvent extends HomeEvent {
       {required this.isFavourite, required this.productId});
   @override
   List<Object?> get props => [isFavourite, productId];
+}
+
+class GetAndAddCountViewOfProductEvent extends HomeEvent {
+  final String productId;
+  GetAndAddCountViewOfProductEvent({required this.productId});
+  @override
+  List<Object?> get props => [productId];
 }
 
 class UpdateListOfItemForAddToCartEvent extends HomeEvent {

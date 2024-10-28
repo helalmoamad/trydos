@@ -6,9 +6,11 @@ import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_category_model.dart';
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
 import 'package:trydos/features/home/data/models/get_count_likes_of_product_model.dart';
+import 'package:trydos/features/home/data/models/get_count_view_of_product_model.dart';
 import 'package:trydos/features/home/data/models/get_currency_for_country_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_is_liked_of_product_model.dart';
+import 'package:trydos/features/home/data/models/get_old_cart_model.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 
@@ -56,13 +58,19 @@ abstract class HomeRepository {
       String productId);
   Future<Either<Failure, AddItemToCartModel>> addItemToCart(
       Map<String, dynamic> params);
+  Future<Either<Failure, GetOldCartModel>> getOldCartItems();
+
   Future<Either<Failure, GetCurrencyForCountryModel>> getCurrencyForCountry();
   Future<Either<Failure, UpdateItemInCartModel>> UpdateItemToCart(
       Map<String, dynamic> params);
+  Future<Either<Failure, GetCountViewOfProductModel>>
+      getAndAddCountViewOfProduct(Map<String, dynamic> params);
 
   Future<Either<Failure, bool>> removeItemToCart(Map<String, dynamic> params);
   Future<Either<Failure, Comment>> addComment(Map<String, dynamic> params);
-  Future<Either<Failure, bool>> requestForNotificationWhenProductBecameAvailable(Map<String, dynamic> params);
+  Future<Either<Failure, bool>>
+      requestForNotificationWhenProductBecameAvailable(
+          Map<String, dynamic> params);
 
   /* Future<Either<Failure, SearchResultModel>> getSearchResult(
       Map<String, dynamic> params);*/

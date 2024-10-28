@@ -21,6 +21,8 @@ extension ScopeApi on String {
   String productScopeWeb() => '$_api/${_currentVersion}/web/product/$this';
   String homeScope() => '$_api/${_currentVersion}/mobile/home/$this';
   String cartScope() => '$_api/${_currentVersion}/cart/$this';
+  String oldCartScope() => '$_api/${_currentVersion}/old-cart/$this';
+
   String searchScope() => '$_api/${_currentVersion}/products/$this';
   String notificationScope() => '$_api/${_currentVersion}/notifications';
 }
@@ -33,6 +35,7 @@ abstract class MarketEndPoints {
       "details/$productId".productScope();
   static final sendOtpEP = 'send_otp'.phoneScope();
   static final getCartItemEP = 'cart_shipping'.cartScope();
+  static final getOldCartItemsEP = 'get_old_cart'.oldCartScope();
   static final addItemCartItemEP = 'add'.cartScope();
   static final updateItemCartItemEP = 'update'.cartScope();
   static final requestForNotificationWhenProductBecameAvailableEP =

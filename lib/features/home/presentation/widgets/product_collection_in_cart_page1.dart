@@ -21,6 +21,7 @@ import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
+import 'package:trydos/features/home/data/models/get_old_cart_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
@@ -37,6 +38,9 @@ class productCollectionInCartPage1 extends StatelessWidget {
       required this.visibleCollectionGroups,
       required this.groupCartkeys,
       required this.priceSymbol,
+      required this.getOldCartItemsModel,
+      required this.oldCartCollection,
+      required this.isOldCart,
       required this.cartCollection,
       required this.getCartShippingItemsModel,
       required this.tapIndexs,
@@ -46,9 +50,12 @@ class productCollectionInCartPage1 extends StatelessWidget {
   final List<String> visibleCollectionGroups;
   final List<String> groupCartkeys;
   final Map<String, List<Cart>>? cartCollection;
-  final int tapIndexs;
-  final TextEditingController quantityController;
+  final Map<String, List<OldCart>>? oldCartCollection;
   final GetCartShippingItemsModel? getCartShippingItemsModel;
+  final int tapIndexs;
+  final bool isOldCart;
+  final TextEditingController quantityController;
+  final GetOldCartModel? getOldCartItemsModel;
   final String? priceSymbol;
   @override
   Widget build(BuildContext context) {
@@ -57,7 +64,8 @@ class productCollectionInCartPage1 extends StatelessWidget {
       buildWhen: (previous, current) =>
           previous.getCartItemsStatus != current.getCartItemsStatus ||
           previous.getCurrencyForCountryModel !=
-              current.getCurrencyForCountryModel ||
+              current.getCurrencyForCountryModel
+              ||previous.getOldCartItemsStatus!=current.getOldCartItemsStatus||
           previous.deleteItemInCartStatus != current.deleteItemInCartStatus ||
           previous.addItemInCartStatus != current.addItemInCartStatus ||
           previous.updateItemInCartStatus != current.updateItemInCartStatus,
@@ -66,14 +74,22 @@ class productCollectionInCartPage1 extends StatelessWidget {
           padding: EdgeInsets.symmetric(vertical: 0),
           shrinkWrap: true,
           physics: ClampingScrollPhysics(),
-          itemCount: cartCollection!.length,
+          itemCount:
+              isOldCart ? oldCartCollection?.length : cartCollection?.length,
           itemBuilder: (context, index) {
             double price = 0;
-            cartCollection!.values.toList()[index].forEach((element) {
-              price = price + element.offerPrice! * element.quantity!;
-            });
+            if (isOldCart) {
+              oldCartCollection!.values.toList()[index].forEach((element) {
+                price = price + element.offerPrice! * element.quantity!;
+              });
+            } else {
+              cartCollection!.values.toList()[index].forEach((element) {
+                price = price + element.offerPrice! * element.quantity!;
+              });
+            }
             price = price *
                 state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!;
+
             return Column(
               children: [
                 InkWell(
@@ -99,36 +115,62 @@ class productCollectionInCartPage1 extends StatelessWidget {
                       height: 48.h,
                       child: Row(
                         children: [
-                          Container(
-                            width: 30,
-                            child: cartCollection!.values
-                                        .toList()[index][0]
-                                        .boutique !=
-                                    null
-                                ? cartCollection!.values
-                                            .toList()[index][0]
-                                            .boutique!
-                                            .icon !=
-                                        null
-                                    ? SvgNetworkWidget(
-                                        svgUrl: cartCollection!.values
-                                                .toList()[index][0]
-                                                .boutique!
-                                                .icon!
-                                                .filePath ??
-                                            "",
-                                        width: 15,
-                                      )
-                                    : SizedBox.shrink()
-                                : SizedBox.shrink(),
-                          ),
+                          isOldCart
+                              ? Container(
+                                  width: 30,
+                                  child: oldCartCollection!.values
+                                              .toList()[index][0]
+                                              .boutique !=
+                                          null
+                                      ? oldCartCollection!.values
+                                                  .toList()[index][0]
+                                                  .boutique!
+                                                  .icon !=
+                                              null
+                                          ? SvgNetworkWidget(
+                                              svgUrl: oldCartCollection!.values
+                                                      .toList()[index][0]
+                                                      .boutique!
+                                                      .icon!
+                                                      .filePath ??
+                                                  "",
+                                              width: 15,
+                                            )
+                                          : SizedBox.shrink()
+                                      : SizedBox.shrink(),
+                                )
+                              : Container(
+                                  width: 30,
+                                  child: cartCollection!.values
+                                              .toList()[index][0]
+                                              .boutique !=
+                                          null
+                                      ? cartCollection!.values
+                                                  .toList()[index][0]
+                                                  .boutique!
+                                                  .icon !=
+                                              null
+                                          ? SvgNetworkWidget(
+                                              svgUrl: cartCollection!.values
+                                                      .toList()[index][0]
+                                                      .boutique!
+                                                      .icon!
+                                                      .filePath ??
+                                                  "",
+                                              width: 15,
+                                            )
+                                          : SizedBox.shrink()
+                                      : SizedBox.shrink(),
+                                ),
                           Spacer(),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               SvgPicture.asset(AppAssets.countItemSvg),
                               Text(
-                                  "  ${cartCollection!.values.toList()[index].length} ",
+                                  isOldCart
+                                      ? "  ${oldCartCollection!.values.toList()[index].length} "
+                                      : "  ${cartCollection!.values.toList()[index].length} ",
                                   style: context.textTheme.bodyMedium?.mr
                                       .copyWith(
                                           fontSize: 13,
@@ -185,17 +227,25 @@ class productCollectionInCartPage1 extends StatelessWidget {
                       : 0,
                   height: visibleCollectionGroups
                           .any((element) => element == groupCartkeys[index])
-                      ? cartCollection![groupCartkeys[index]]!.length * 180.h +
-                          15.h
+                      ? isOldCart
+                          ? oldCartCollection![groupCartkeys[index]]!.length *
+                              180.h
+                          : (cartCollection![groupCartkeys[index]]!.length *
+                                  180.h) +
+                              15.h
                       : 0,
                   child: ListView.builder(
                     physics: NeverScrollableScrollPhysics(),
                     shrinkWrap: false,
                     padding: EdgeInsets.only(top: 0),
-                    itemCount: cartCollection![groupCartkeys[index]]!.length,
+                    itemCount: isOldCart
+                        ? oldCartCollection![groupCartkeys[index]]!.length
+                        : cartCollection![groupCartkeys[index]]!.length,
                     itemBuilder: (context, indexes) {
-                      int quantity =
-                          cartCollection![groupCartkeys[index]]![indexes]
+                      int quantity = isOldCart
+                          ? oldCartCollection![groupCartkeys[index]]![indexes]
+                              .quantity!
+                          : cartCollection![groupCartkeys[index]]![indexes]
                               .quantity!;
 
                       return visibleCollectionGroups
@@ -232,32 +282,41 @@ class productCollectionInCartPage1 extends StatelessWidget {
                                                   children: [
                                                     AppElevatedButton(
                                                       onPressed: () {
-                                                        GetIt.I<HomeBloc>().add(UpdateItemInCartEvent(
-                                                            maxAllowed: double.tryParse(
-                                                                cartCollection![groupCartkeys[index]]![indexes].maxAllowedQty ??
-                                                                    "0"),
-                                                            countOfPieces:
-                                                                cartCollection![groupCartkeys[index]]![indexes]
-                                                                    .countOfPieces,
-                                                            currentSize: !cartCollection![groupCartkeys[index]]![indexes]
-                                                                    .variations
-                                                                    .isNullOrEmpty
-                                                                ? cartCollection![groupCartkeys[index]]![indexes].variations![0].size ??
-                                                                    ""
-                                                                : "",
-                                                            colorName: !cartCollection![groupCartkeys[index]]![indexes]
-                                                                    .variations
-                                                                    .isNullOrEmpty
-                                                                ? cartCollection![groupCartkeys[index]]![indexes]
-                                                                        .variations![0]
-                                                                        .color ??
-                                                                    ""
-                                                                : "",
-                                                            productId: cartCollection![groupCartkeys[index]]![indexes].productId.toString(),
-                                                            quantity: int.tryParse(quantityController.text)!,
-                                                            image: cartCollection?[groupCartkeys[index]]![indexes].image ?? "",
-                                                            cartId: cartCollection![groupCartkeys[index]]![indexes].id.toString(),
-                                                            boutiqueId: cartCollection![groupCartkeys[index]]![indexes].boutique!.id.toString()));
+                                                        GetIt.I<HomeBloc>().add(
+                                                            UpdateItemInCartEvent(
+                                                                maxAllowed: double.tryParse(isOldCart
+                                                                    ? oldCartCollection![groupCartkeys[index]]![indexes]
+                                                                            .maxAllowedQty ??
+                                                                        "0"
+                                                                    : cartCollection![groupCartkeys[index]]![indexes]
+                                                                            .maxAllowedQty ??
+                                                                        "0"),
+                                                                countOfPieces: isOldCart
+                                                                    ? oldCartCollection![groupCartkeys[index]]![
+                                                                            indexes]
+                                                                        .countOfPieces
+                                                                    : cartCollection![groupCartkeys[index]]![
+                                                                            indexes]
+                                                                        .countOfPieces,
+                                                                currentSize: isOldCart
+                                                                    ? !oldCartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty
+                                                                        ? oldCartCollection![groupCartkeys[index]]![indexes].variations![0].size ?? ""
+                                                                        : ""
+                                                                    : !cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty
+                                                                        ? cartCollection![groupCartkeys[index]]![indexes].variations![0].size ?? ""
+                                                                        : "",
+                                                                colorName: isOldCart
+                                                                    ? !oldCartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty
+                                                                        ? oldCartCollection![groupCartkeys[index]]![indexes].variations![0].color ?? ""
+                                                                        : ""
+                                                                    : !cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty
+                                                                        ? cartCollection![groupCartkeys[index]]![indexes].variations![0].color ?? ""
+                                                                        : "",
+                                                                productId: isOldCart ? oldCartCollection![groupCartkeys[index]]![indexes].productId.toString() : cartCollection![groupCartkeys[index]]![indexes].productId.toString(),
+                                                                quantity: int.tryParse(quantityController.text)!,
+                                                                image: isOldCart ? (oldCartCollection?[groupCartkeys[index]]![indexes].image ?? "") : cartCollection?[groupCartkeys[index]]![indexes].image ?? "",
+                                                                cartId: isOldCart ? oldCartCollection![groupCartkeys[index]]![indexes].id.toString() : cartCollection![groupCartkeys[index]]![indexes].id.toString(),
+                                                                boutiqueId: isOldCart ? oldCartCollection![groupCartkeys[index]]![indexes].boutique!.id.toString() : cartCollection![groupCartkeys[index]]![indexes].boutique!.id.toString()));
                                                         Navigator.pop(context);
                                                       },
                                                       text: "Yes",
@@ -292,32 +351,51 @@ class productCollectionInCartPage1 extends StatelessWidget {
                                             children: [
                                               AppElevatedButton(
                                                 onPressed: () {
-                                                  GetIt.I<HomeBloc>().add(RemoveItemFormCartEvent(
-                                                      countOfPieces:
-                                                          cartCollection![groupCartkeys[index]]![indexes]
-                                                              .countOfPieces,
-                                                      image:
-                                                          cartCollection![groupCartkeys[index]]![indexes]
-                                                                  .image ??
-                                                              '',
-                                                      currentSize:
-                                                          !cartCollection![groupCartkeys[index]]![indexes]
-                                                                  .variations
-                                                                  .isNullOrEmpty
-                                                              ? cartCollection![groupCartkeys[index]]![indexes].variations![0].size ??
-                                                                  ""
-                                                              : "",
-                                                      ColoName: !cartCollection![groupCartkeys[index]]![indexes]
-                                                              .variations
-                                                              .isNullOrEmpty
-                                                          ? cartCollection![groupCartkeys[index]]![indexes]
-                                                                  .variations![0]
-                                                                  .color ??
-                                                              ""
-                                                          : "",
-                                                      productId: cartCollection![groupCartkeys[index]]![indexes].productId.toString(),
-                                                      itemId: cartCollection![groupCartkeys[index]]![indexes].id.toString(),
-                                                      boutiqueId: cartCollection![groupCartkeys[index]]![indexes].boutique!.id.toString()));
+                                                  GetIt.I<HomeBloc>().add(
+                                                      RemoveItemFormCartEvent(
+                                                          countOfPieces: isOldCart
+                                                              ? oldCartCollection![groupCartkeys[index]]![indexes]
+                                                                  .countOfPieces
+                                                              : cartCollection![groupCartkeys[index]]![indexes]
+                                                                  .countOfPieces,
+                                                          image: isOldCart
+                                                              ? oldCartCollection![groupCartkeys[index]]![indexes].image ??
+                                                                  ''
+                                                              : cartCollection![groupCartkeys[index]]![indexes].image ??
+                                                                  '',
+                                                          currentSize: isOldCart
+                                                              ? !oldCartCollection![groupCartkeys[index]]![indexes]
+                                                                      .variations
+                                                                      .isNullOrEmpty
+                                                                  ? oldCartCollection![groupCartkeys[index]]![indexes].variations![0].size ??
+                                                                      ""
+                                                                  : ""
+                                                              : !cartCollection![groupCartkeys[index]]![indexes]
+                                                                      .variations
+                                                                      .isNullOrEmpty
+                                                                  ? cartCollection![groupCartkeys[index]]![indexes].variations![0].size ??
+                                                                      ""
+                                                                  : "",
+                                                          ColoName: isOldCart
+                                                              ? !oldCartCollection![groupCartkeys[index]]![indexes]
+                                                                      .variations
+                                                                      .isNullOrEmpty
+                                                                  ? oldCartCollection![groupCartkeys[index]]![indexes].variations![0].color ??
+                                                                      ""
+                                                                  : ""
+                                                              : !cartCollection![groupCartkeys[index]]![indexes]
+                                                                      .variations
+                                                                      .isNullOrEmpty
+                                                                  ? cartCollection![groupCartkeys[index]]![indexes].variations![0].color ??
+                                                                      ""
+                                                                  : "",
+                                                          productId: isOldCart
+                                                              ? oldCartCollection![groupCartkeys[index]]![indexes]
+                                                                  .productId
+                                                                  .toString()
+                                                              : cartCollection![groupCartkeys[index]]![indexes].productId.toString(),
+                                                          itemId: isOldCart ? oldCartCollection![groupCartkeys[index]]![indexes].id.toString() : cartCollection![groupCartkeys[index]]![indexes].id.toString(),
+                                                          boutiqueId: isOldCart ? oldCartCollection![groupCartkeys[index]]![indexes].boutique!.id.toString() : cartCollection![groupCartkeys[index]]![indexes].boutique!.id.toString()));
                                                   Navigator.pop(context);
                                                 },
                                                 text: "Yes",
@@ -335,62 +413,101 @@ class productCollectionInCartPage1 extends StatelessWidget {
                                     });
                               },
                               onTap: () {
-                                int indexess = state.productITemForCart![cartCollection![groupCartkeys[index]]![indexes].productId.toString()]!.syncColorImages.isNullOrEmpty
-                                    ? -1
-                                    : state.productITemForCart![cartCollection![groupCartkeys[index]]![indexes].productId.toString()]!.syncColorImages!
-                                        .indexOf(state
+                                int indexess = isOldCart
+                                    ? state
+                                            .productITemForCart![oldCartCollection![groupCartkeys[index]]![indexes]
+                                                .productId
+                                                .toString()]!
+                                            .syncColorImages
+                                            .isNullOrEmpty
+                                        ? -1
+                                        : state.productITemForCart![oldCartCollection![groupCartkeys[index]]![indexes].productId.toString()]!.syncColorImages!.indexOf(state
                                             .productITemForCart![
-                                                cartCollection![groupCartkeys[index]]![indexes]
+                                                oldCartCollection![groupCartkeys[index]]![indexes]
                                                     .productId
                                                     .toString()]!
                                             .syncColorImages!
                                             .firstWhere((element) =>
                                                 element.colorName ==
-                                                (!cartCollection![groupCartkeys[index]]![indexes]
+                                                (!oldCartCollection![groupCartkeys[index]]![indexes]
                                                         .variations
                                                         .isNullOrEmpty
-                                                    ? cartCollection![groupCartkeys[index]]![indexes]
+                                                    ? oldCartCollection![groupCartkeys[index]]![indexes]
                                                             .variations![0]
                                                             .color ??
                                                         ""
-                                                    : "")));
+                                                    : "")))
+                                    : state.productITemForCart![cartCollection![groupCartkeys[index]]![indexes].productId.toString()]!
+                                            .syncColorImages.isNullOrEmpty
+                                        ? -1
+                                        : state.productITemForCart![cartCollection![groupCartkeys[index]]![indexes].productId.toString()]!.syncColorImages!.indexOf(state.productITemForCart![cartCollection![groupCartkeys[index]]![indexes].productId.toString()]!.syncColorImages!.firstWhere((element) => element.colorName == (!cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty ? cartCollection![groupCartkeys[index]]![indexes].variations![0].color ?? "" : "")));
                                 if (indexess != -1) {
                                   BlocProvider.of<HomeBloc>(context).add(
                                       AddCurrentSelectedColorEvent(
                                           currentSelectedColor: indexess,
-                                          productId: cartCollection![
-                                                      groupCartkeys[index]]![
-                                                  indexes]
-                                              .productId
-                                              .toString()));
+                                          productId: isOldCart
+                                              ? oldCartCollection![
+                                                      groupCartkeys[
+                                                          index]]![indexes]
+                                                  .productId
+                                                  .toString()
+                                              : cartCollection![groupCartkeys[
+                                                      index]]![indexes]
+                                                  .productId
+                                                  .toString()));
                                 }
                                 HelperFunctions.slidingNavigation(
                                     context,
                                     ProductDetailsPage(
-                                      productItem: state
-                                          .productITemForCart![cartCollection![
-                                              groupCartkeys[index]]![indexes]
-                                          .productId
-                                          .toString()]!,
+                                      productItem: isOldCart
+                                          ? state.productITemForCart![
+                                              oldCartCollection![groupCartkeys[
+                                                      index]]![indexes]
+                                                  .productId
+                                                  .toString()]!
+                                          : state.productITemForCart![
+                                              cartCollection![groupCartkeys[
+                                                      index]]![indexes]
+                                                  .productId
+                                                  .toString()]!,
                                     ));
                               },
                               child: Container(
                                 margin: EdgeInsets.only(
                                     bottom: indexes ==
-                                            cartCollection![
-                                                        groupCartkeys[index]]!
-                                                    .length -
-                                                1 //length
+                                            (isOldCart
+                                                ? (oldCartCollection![
+                                                            groupCartkeys[
+                                                                index]]!
+                                                        .length -
+                                                    1)
+                                                : (cartCollection![
+                                                            groupCartkeys[
+                                                                index]]!
+                                                        .length -
+                                                    1)) //length
                                         ? 30
                                         : 0),
                                 width: 1.sw,
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(indexes ==
-                                          getCartShippingItemsModel!
-                                                  .data!.cart!.length -
-                                              1 //length
-                                      ? 15
-                                      : 15),
+                                  borderRadius: isOldCart
+                                      ? BorderRadius.circular(indexes ==
+                                              (getOldCartItemsModel
+                                                          ?.data
+                                                          ?.original
+                                                          ?.data
+                                                          ?.oldCart
+                                                          ?.length ??
+                                                      0) -
+                                                  1 //length
+                                          ? 15
+                                          : 15)
+                                      : BorderRadius.circular(indexes ==
+                                              getCartShippingItemsModel!
+                                                      .data!.cart!.length -
+                                                  1 //length
+                                          ? 15
+                                          : 15),
                                   boxShadow: [
                                     BoxShadow(
                                         offset: Offset(
@@ -398,29 +515,48 @@ class productCollectionInCartPage1 extends StatelessWidget {
                                             indexes == 0
                                                 ? 0
                                                 : indexes ==
-                                                        cartCollection![
-                                                                    groupCartkeys[
-                                                                        index]]!
-                                                                .length -
-                                                            1
+                                                        (isOldCart
+                                                            ? oldCartCollection![
+                                                                        groupCartkeys[
+                                                                            index]]!
+                                                                    .length -
+                                                                1
+                                                            : cartCollection![
+                                                                        groupCartkeys[
+                                                                            index]]!
+                                                                    .length -
+                                                                1)
                                                     ? -10
                                                     : 10),
                                         blurRadius: indexes ==
-                                                cartCollection![groupCartkeys[
-                                                            index]]!
-                                                        .length -
-                                                    1
+                                                (isOldCart
+                                                    ? oldCartCollection![
+                                                                groupCartkeys[
+                                                                    index]]!
+                                                            .length -
+                                                        1
+                                                    : cartCollection![
+                                                                groupCartkeys[
+                                                                    index]]!
+                                                            .length -
+                                                        1)
                                             ? 0
                                             : 5,
                                         color: Color(0xffF3F3F3),
                                         spreadRadius: indexes == 0
                                             ? 5
                                             : indexes ==
-                                                    cartCollection![
-                                                                groupCartkeys[
-                                                                    index]]!
-                                                            .length -
-                                                        1
+                                                    (isOldCart
+                                                        ? oldCartCollection![
+                                                                    groupCartkeys[
+                                                                        index]]!
+                                                                .length -
+                                                            1
+                                                        : cartCollection![
+                                                                    groupCartkeys[
+                                                                        index]]!
+                                                                .length -
+                                                            1)
                                                 ? 0
                                                 : 10),
                                   ],
@@ -451,10 +587,14 @@ class productCollectionInCartPage1 extends StatelessWidget {
                                             withBackGroundShadow: false,
                                             withInnerShadow: false,
                                             imageFit: BoxFit.cover,
-                                            imageUrl: cartCollection![
-                                                        groupCartkeys[index]]![
-                                                    indexes]
-                                                .image,
+                                            imageUrl: isOldCart
+                                                ? oldCartCollection![
+                                                        groupCartkeys[
+                                                            index]]![indexes]
+                                                    .image
+                                                : cartCollection![groupCartkeys[
+                                                        index]]![indexes]
+                                                    .image,
                                             width: 110.w,
                                             height: 161.h,
                                             radius: 15,
@@ -474,8 +614,25 @@ class productCollectionInCartPage1 extends StatelessWidget {
                                               alignment: Alignment.centerLeft,
                                               width: 50,
                                               height: 10,
-                                              child:
-                                                  cartCollection![groupCartkeys[
+                                              child: (isOldCart
+                                                  ? oldCartCollection![groupCartkeys[
+                                                                      index]]![
+                                                                  indexes]
+                                                              .brand !=
+                                                          null
+                                                      ? SvgPicture.network(
+                                                          oldCartCollection![
+                                                                  groupCartkeys[
+                                                                      index]]![indexes]
+                                                              .brand!
+                                                              .image!,
+                                                          fit: BoxFit.contain,
+                                                          color: Color(
+                                                            0xff1A171B,
+                                                          ),
+                                                        )
+                                                      : SizedBox.shrink()
+                                                  : cartCollection![groupCartkeys[
                                                                       index]]![
                                                                   indexes]
                                                               .brand !=
@@ -491,7 +648,7 @@ class productCollectionInCartPage1 extends StatelessWidget {
                                                             0xff1A171B,
                                                           ),
                                                         )
-                                                      : SizedBox.shrink(),
+                                                      : SizedBox.shrink()),
                                             ),
                                             SizedBox(
                                               height: 2,
@@ -501,10 +658,19 @@ class productCollectionInCartPage1 extends StatelessWidget {
                                               width: 200.w,
                                               height: 16,
                                               child: Text(
-                                                  cartCollection![groupCartkeys[
-                                                              index]]![indexes]
-                                                          .name ??
-                                                      "",
+                                                  isOldCart
+                                                      ? oldCartCollection![
+                                                                      groupCartkeys[
+                                                                          index]]![
+                                                                  indexes]
+                                                              .name ??
+                                                          ""
+                                                      : cartCollection![
+                                                                      groupCartkeys[
+                                                                          index]]![
+                                                                  indexes]
+                                                              .name ??
+                                                          "",
                                                   style: context
                                                       .textTheme.bodyMedium?.ra
                                                       .copyWith(
@@ -534,7 +700,9 @@ class productCollectionInCartPage1 extends StatelessWidget {
                                                       width: 5,
                                                     ),
                                                     Text(
-                                                      " Composed Of ${cartCollection![groupCartkeys[index]]![indexes].countOfPieces} Piece",
+                                                      isOldCart
+                                                          ? " Composed Of ${oldCartCollection![groupCartkeys[index]]![indexes].countOfPieces} Piece"
+                                                          : " Composed Of ${cartCollection![groupCartkeys[index]]![indexes].countOfPieces} Piece",
                                                       style: context.textTheme
                                                           .bodyMedium?.la
                                                           .copyWith(
@@ -550,23 +718,37 @@ class productCollectionInCartPage1 extends StatelessWidget {
                                                     ),
                                                   ],
                                                 )),
-                                            cartCollection![groupCartkeys[
-                                                        index]]![indexes]
-                                                    .variations
-                                                    .isNullOrEmpty
+                                            isOldCart &&
+                                                        oldCartCollection![groupCartkeys[index]]![indexes]
+                                                            .variations
+                                                            .isNullOrEmpty ||
+                                                    (!isOldCart &&
+                                                        cartCollection![groupCartkeys[index]]![
+                                                                indexes]
+                                                            .variations
+                                                            .isNullOrEmpty)
                                                 ? SizedBox.shrink()
-                                                : (cartCollection![groupCartkeys[
-                                                                        index]]![
-                                                                    indexes]
-                                                                .variations![0]
-                                                                .color ==
-                                                            "" ||
-                                                        cartCollection![groupCartkeys[
-                                                                        index]]![
-                                                                    indexes]
-                                                                .variations![0]
-                                                                .color ==
-                                                            null)
+                                                : !isOldCart &&
+                                                            (cartCollection![groupCartkeys[index]]![indexes]
+                                                                        .variations![
+                                                                            0]
+                                                                        .color ==
+                                                                    "" ||
+                                                                cartCollection![groupCartkeys[index]]![indexes]
+                                                                        .variations![
+                                                                            0]
+                                                                        .color ==
+                                                                    null) ||
+                                                        isOldCart &&
+                                                            (oldCartCollection![groupCartkeys[index]]![indexes]
+                                                                        .variations![
+                                                                            0]
+                                                                        .color ==
+                                                                    "" ||
+                                                                oldCartCollection![groupCartkeys[index]]![indexes]
+                                                                        .variations![0]
+                                                                        .color ==
+                                                                    null)
                                                     ? SizedBox.shrink()
                                                     : Container(
                                                         margin: EdgeInsets.only(
@@ -608,18 +790,26 @@ class productCollectionInCartPage1 extends StatelessWidget {
                                                                           1.33),
                                                             ),
                                                             Text(
-                                                              !cartCollection![groupCartkeys[
-                                                                              index]]![
-                                                                          indexes]
-                                                                      .variations
-                                                                      .isNullOrEmpty
-                                                                  ? cartCollection![groupCartkeys[index]]![
+                                                              isOldCart
+                                                                  ? !oldCartCollection![groupCartkeys[index]]![
                                                                               indexes]
-                                                                          .variations![
-                                                                              0]
-                                                                          .color ??
-                                                                      ""
-                                                                  : "",
+                                                                          .variations
+                                                                          .isNullOrEmpty
+                                                                      ? oldCartCollection![groupCartkeys[index]]![indexes]
+                                                                              .variations![
+                                                                                  0]
+                                                                              .color ??
+                                                                          ""
+                                                                      : ""
+                                                                  : !cartCollection![groupCartkeys[index]]![
+                                                                              indexes]
+                                                                          .variations
+                                                                          .isNullOrEmpty
+                                                                      ? cartCollection![groupCartkeys[index]]![indexes]
+                                                                              .variations![0]
+                                                                              .color ??
+                                                                          ""
+                                                                      : "",
                                                               style: context
                                                                   .textTheme
                                                                   .bodyMedium
@@ -635,23 +825,37 @@ class productCollectionInCartPage1 extends StatelessWidget {
                                                           ],
                                                         ),
                                                       ),
-                                            cartCollection![groupCartkeys[
-                                                        index]]![indexes]
-                                                    .variations
-                                                    .isNullOrEmpty
+                                            !isOldCart &&
+                                                        cartCollection![groupCartkeys[index]]![indexes]
+                                                            .variations
+                                                            .isNullOrEmpty ||
+                                                    isOldCart &&
+                                                        oldCartCollection![groupCartkeys[index]]![
+                                                                indexes]
+                                                            .variations
+                                                            .isNullOrEmpty
                                                 ? SizedBox.shrink()
-                                                : (cartCollection![groupCartkeys[
-                                                                        index]]![
-                                                                    indexes]
-                                                                .variations![0]
-                                                                .size ==
-                                                            "" ||
-                                                        cartCollection![groupCartkeys[
-                                                                        index]]![
-                                                                    indexes]
-                                                                .variations![0]
-                                                                .size ==
-                                                            null)
+                                                : (!isOldCart &&
+                                                            (cartCollection![groupCartkeys[index]]![indexes]
+                                                                        .variations![
+                                                                            0]
+                                                                        .size ==
+                                                                    "" ||
+                                                                cartCollection![groupCartkeys[index]]![indexes]
+                                                                        .variations![
+                                                                            0]
+                                                                        .size ==
+                                                                    null)) ||
+                                                        (isOldCart &&
+                                                            (oldCartCollection![groupCartkeys[index]]![indexes]
+                                                                        .variations![
+                                                                            0]
+                                                                        .size ==
+                                                                    "" ||
+                                                                oldCartCollection![groupCartkeys[index]]![indexes]
+                                                                        .variations![0]
+                                                                        .size ==
+                                                                    null))
                                                     ? SizedBox.shrink()
                                                     : Container(
                                                         margin: EdgeInsets.only(
@@ -695,18 +899,26 @@ class productCollectionInCartPage1 extends StatelessWidget {
                                                                           1.33),
                                                             ),
                                                             Text(
-                                                              !cartCollection![groupCartkeys[
-                                                                              index]]![
-                                                                          indexes]
-                                                                      .variations
-                                                                      .isNullOrEmpty
-                                                                  ? cartCollection![groupCartkeys[index]]![
+                                                              isOldCart
+                                                                  ? !oldCartCollection![groupCartkeys[index]]![
                                                                               indexes]
-                                                                          .variations![
-                                                                              0]
-                                                                          .size ??
-                                                                      ""
-                                                                  : "",
+                                                                          .variations
+                                                                          .isNullOrEmpty
+                                                                      ? oldCartCollection![groupCartkeys[index]]![indexes]
+                                                                              .variations![
+                                                                                  0]
+                                                                              .size ??
+                                                                          ""
+                                                                      : ""
+                                                                  : !cartCollection![groupCartkeys[index]]![
+                                                                              indexes]
+                                                                          .variations
+                                                                          .isNullOrEmpty
+                                                                      ? cartCollection![groupCartkeys[index]]![indexes]
+                                                                              .variations![0]
+                                                                              .size ??
+                                                                          ""
+                                                                      : "",
                                                               style: context
                                                                   .textTheme
                                                                   .bodyMedium
@@ -730,19 +942,32 @@ class productCollectionInCartPage1 extends StatelessWidget {
                                         child: Row(
                                           children: [
                                             Text(
-                                              (cartCollection![groupCartkeys[
-                                                              index]]![indexes]
-                                                          .price! *
-                                                      state
-                                                          .getCurrencyForCountryModel!
-                                                          .data!
-                                                          .currency!
-                                                          .exchangeRate! *
-                                                      quantity)
-                                                  .toStringAsFixed(state
-                                                          .startingSetting
-                                                          ?.decimalPointSetting ??
-                                                      2),
+                                              isOldCart
+                                                  ? (oldCartCollection![groupCartkeys[index]]![indexes]
+                                                              .price! *
+                                                          state
+                                                              .getCurrencyForCountryModel!
+                                                              .data!
+                                                              .currency!
+                                                              .exchangeRate! *
+                                                          quantity)
+                                                      .toStringAsFixed(state
+                                                              .startingSetting
+                                                              ?.decimalPointSetting ??
+                                                          2)
+                                                  : (cartCollection![groupCartkeys[index]]![
+                                                                  indexes]
+                                                              .price! *
+                                                          state
+                                                              .getCurrencyForCountryModel!
+                                                              .data!
+                                                              .currency!
+                                                              .exchangeRate! *
+                                                          quantity)
+                                                      .toStringAsFixed(state
+                                                              .startingSetting
+                                                              ?.decimalPointSetting ??
+                                                          2),
                                               style: context
                                                   .textTheme.bodyMedium?.ra
                                                   .copyWith(
@@ -757,7 +982,9 @@ class productCollectionInCartPage1 extends StatelessWidget {
                                               width: 5,
                                             ),
                                             Text(
-                                                "${(cartCollection![groupCartkeys[index]]![indexes].offerPrice! * quantity * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} ",
+                                                isOldCart
+                                                    ? "${(oldCartCollection![groupCartkeys[index]]![indexes].offerPrice! * quantity * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} "
+                                                    : "${(cartCollection![groupCartkeys[index]]![indexes].offerPrice! * quantity * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} ",
                                                 style: context
                                                     .textTheme.bodyMedium?.br
                                                     .copyWith(
@@ -795,7 +1022,9 @@ class productCollectionInCartPage1 extends StatelessWidget {
                                                   BorderRadiusDirectional
                                                       .circular(20)),
                                           child: Text(
-                                            "${cartCollection![groupCartkeys[index]]![indexes].quantity}",
+                                            isOldCart
+                                                ? "${oldCartCollection![groupCartkeys[index]]![indexes].quantity}"
+                                                : "${cartCollection![groupCartkeys[index]]![indexes].quantity}",
                                             style: context
                                                 .textTheme.bodyMedium?.ra
                                                 .copyWith(
@@ -819,16 +1048,28 @@ class productCollectionInCartPage1 extends StatelessWidget {
                                           ),
                                           width: 100.w,
                                           height: 40.h,
-                                          child: (cartCollection![groupCartkeys[
-                                                              index]]![indexes]
-                                                          .availableQuantity ??
-                                                      0) <
-                                                  (cartCollection![
-                                                                  groupCartkeys[
-                                                                      index]]![
-                                                              indexes]
-                                                          .quantity ??
-                                                      0)
+                                          child: !isOldCart &&
+                                                      ((cartCollection![groupCartkeys[
+                                                                          index]]![
+                                                                      indexes]
+                                                                  .availableQuantity ??
+                                                              0) <
+                                                          (cartCollection![groupCartkeys[
+                                                                          index]]![
+                                                                      indexes]
+                                                                  .quantity ??
+                                                              0)) ||
+                                                  isOldCart &&
+                                                      ((oldCartCollection![groupCartkeys[
+                                                                          index]]![
+                                                                      indexes]
+                                                                  .availableQuantity ??
+                                                              0) <
+                                                          (oldCartCollection![
+                                                                      groupCartkeys[
+                                                                          index]]![indexes]
+                                                                  .quantity ??
+                                                              0))
                                               ? Text(
                                                   " Out OF Stock",
                                                   style: context

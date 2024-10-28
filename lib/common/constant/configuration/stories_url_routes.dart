@@ -13,6 +13,7 @@ extension ScopeApi on String {
 
 abstract class StoriesEndPoints {
   static final loginEP = 'login'.usersScope();
+
   static final updateUserEP = 'update'.usersScope();
 // ----<stories scope>----
   static final getStoriesEP = 'users_stories'.storiesScope();

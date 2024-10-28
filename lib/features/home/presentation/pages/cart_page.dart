@@ -42,6 +42,7 @@ class _CartPageState extends State<CartPage> {
   late HomeBloc homeBloc;
   late AppBloc appBloc;
   List<String> groupCartkeys = [];
+  List<String> groupOldCartkeys = [];
   int? tapIndex;
   List<String> visibleCollectionCartGroups = [];
   List<String> visibleCollectionOldCartGroups = [];
@@ -70,6 +71,13 @@ class _CartPageState extends State<CartPage> {
                   previous.getCartItemsStatus != current.getCartItemsStatus ||
                   previous.getCurrencyForCountryModel !=
                       current.getCurrencyForCountryModel ||
+                  previous.deleteItemInCartStatus !=
+                      current.deleteItemInCartStatus ||
+                  previous.getOldCartItemsStatus !=
+                      current.getOldCartItemsStatus ||
+                  previous.addItemInCartStatus != current.addItemInCartStatus ||
+                  previous.updateItemInCartStatus !=
+                      current.updateItemInCartStatus ||
                   previous.cartCollection!.values.length !=
                       current.cartCollection!.values.length,
               builder: (context, state) {
@@ -100,11 +108,12 @@ class _CartPageState extends State<CartPage> {
                   );
                 }
                 groupCartkeys = state.cartCollection!.keys.toList();
+                groupOldCartkeys = state.oldcartCollection!.keys.toList();
                 if (visibleAllCollection ?? true) {
                   visibleCollectionCartGroups =
                       state.cartCollection!.keys.toList();
                   visibleCollectionOldCartGroups =
-                      state.cartCollection!.keys.toList();
+                      state.oldcartCollection!.keys.toList();
                   visibleAllCollection = false;
                 }
 
@@ -258,11 +267,15 @@ class _CartPageState extends State<CartPage> {
                           Container(
                             color: Color.fromARGB(255, 255, 255, 255),
                             child: Container(
+                              alignment: Alignment.topCenter,
                               height: 648.h,
                               child: ListView(
                                 shrinkWrap: true,
                                 children: [
                                   productCollectionInCartPage1(
+                                    getOldCartItemsModel: state.getOldCartModel,
+                                    isOldCart: false,
+                                    oldCartCollection: state.oldcartCollection,
                                     cartCollection: state.cartCollection,
                                     getCartShippingItemsModel:
                                         state.getCartShippingItemsModel,
@@ -278,22 +291,34 @@ class _CartPageState extends State<CartPage> {
                                   SizedBox(
                                     height: 20,
                                   ),
-                                  Center(
-                                      child: MyTextWidget(
-                                    "Old Cart",
-                                    style: TextStyle(
-                                        color: Colors.black, fontSize: 24),
-                                  )),
+                                  state.oldcartCollection != null
+                                      ? !state.oldcartCollection!.isEmpty
+                                          ? Center(
+                                              child: MyTextWidget(
+                                              "Old Cart",
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 24),
+                                            ))
+                                          : SizedBox.shrink()
+                                      : SizedBox.shrink(),
                                   SizedBox(
-                                    height: 20,
+                                    height: state.oldcartCollection != null
+                                        ? !state.oldcartCollection!.isEmpty
+                                            ? 20
+                                            : 0
+                                        : 0,
                                   ),
                                   productCollectionInCartPage1(
+                                    getOldCartItemsModel: state.getOldCartModel,
+                                    isOldCart: true,
+                                    oldCartCollection: state.oldcartCollection,
                                     cartCollection: state.cartCollection,
                                     getCartShippingItemsModel:
                                         state.getCartShippingItemsModel,
                                     changeCartCollections:
                                         changeCartCollections,
-                                    groupCartkeys: groupCartkeys,
+                                    groupCartkeys: groupOldCartkeys,
                                     priceSymbol: priceSymbol,
                                     quantityController: quantityController,
                                     tapIndexs: tapIndex ?? 0,
