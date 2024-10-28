@@ -13,10 +13,12 @@ import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_category_model.dart';
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
 import 'package:trydos/features/home/data/models/get_count_likes_of_product_model.dart';
+import 'package:trydos/features/home/data/models/get_count_view_of_product_model.dart';
 import 'package:trydos/features/home/data/models/get_currency_for_country_model.dart';
 import 'package:trydos/features/home/data/models/get_full_product_details_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_is_liked_of_product_model.dart';
+import 'package:trydos/features/home/data/models/get_old_cart_model.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
@@ -69,9 +71,22 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   }
 
   @override
+  Future<Either<Failure, GetCountViewOfProductModel>>
+      getAndAddCountViewOfProduct(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.getAndAddCountViewOfProduct(params));
+  }
+
+  @override
   Future<Either<Failure, bool>> addLikeOFProduct(Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.addLikeOFProduct(params));
+  }
+
+  @override
+  Future<Either<Failure, GetOldCartModel>> getOldCartItems() {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.getOldCartItems());
   }
 
   @override

@@ -1523,7 +1523,7 @@ Widget choosedOrAppliedFiltersWidget({
       double exchangeRate =
           state.getCurrencyForCountryModel?.data?.currency?.exchangeRate ?? 1;
       Widget widget = SizedBox(
-        height: 20,
+        height: 23,
         width: 30,
         child: ListView(
             key: TestVariables.kTestMode == false
@@ -1812,7 +1812,7 @@ Widget choosedOrAppliedFiltersWidget({
                                 imageUrl: filters!
                                     .boutiques![index].banner!.filePath!,
                                 imageFit: BoxFit.cover,
-                                height: 40,
+                                height:choosedFilter? 40:30,
                                 width: 60,
                                 circleDimensions: 8,
                                 logoTextHeight: 5,

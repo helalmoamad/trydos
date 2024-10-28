@@ -30,6 +30,7 @@ import 'package:trydos/features/home/data/models/get_product_listing_without_fil
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
+import 'package:trydos/features/search/presentation/widgets/search_with_image_related_gemini.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/language_service.dart';
 import 'package:tuple/tuple.dart';
@@ -181,7 +182,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
   @override
   void initState() {
-    print("##############################//////////////////////////////////////////////////////////////////////////#${widget.boutiqueSlug}");
+    print("%%%%%%%%%${GetIt.I<PrefsRepository>().marketToken}");
+    print(
+        "##############################//////////////////////////////////////////////////////////////////////////#${widget.boutiqueSlug}");
     itExpendForFirst = true;
     key = widget.boutiqueSlug + (widget.category ?? '');
     keyWithoutFilter = '${widget.boutiqueSlug}' +
@@ -305,195 +308,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
     htmlDescriptionHeight.value = context.size!.height;
   }
 
-  void SelecteImageForSearch() async {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return GalleryAndCameraDialogWidget(
-              onChooseFileFromGalleryAction: (AssetEntity? assetEntity) async {
-            if (assetEntity != null) {
-              File file = (await assetEntity.originFile)!;
-              String mimeStr = lookupMimeType(file.absolute.path) ?? '';
-              var fileType = mimeStr.split('/');
-
-              if (fileType[0] != 'image') {
-                Fluttertoast.showToast(
-                  fontSize: 18,
-                  timeInSecForIosWeb: 3,
-                  msg: "the video file is not supported",
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.TOP,
-                  backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                  textColor: Colors.white,
-                );
-                return;
-              }
-              final Uint8List imageBytes = file.readAsBytesSync();
-              final geminis.Gemini gemini = geminis.Gemini.instance;
-              homeBloc.add(ReplyFromGeminiEvent(
-                  sendRequestToGeminiStatus: SendRequestToGeminiStatus.loading,
-                  theReplyFromGemini: ""));
-
-              await gemini
-                  .textAndImage(
-                      text: LanguageService.languageCode == "ar"
-                          ? " حدد ماذا يوجد في هذه الصورة بكلمة واحدة فقط بصيغة المفرد الغائب الاجابة بالعربي"
-                          : "Identify what's in this picture with just one word in the singular absent answer in English",
-                      images: [
-                        imageBytes
-                      ])
-                  .then((value) => homeBloc.add(ReplyFromGeminiEvent(
-                      sendRequestToGeminiStatus:
-                          SendRequestToGeminiStatus.success,
-                      theReplyFromGemini:
-                          value?.content?.parts?[0].text?.split(".").first ??
-                              value?.content?.parts?[0].text ??
-                              "")))
-                  .onError(
-                    (error, stackTrace) {
-                      homeBloc.add(ReplyFromGeminiEvent(
-                          sendRequestToGeminiStatus:
-                              SendRequestToGeminiStatus.failure,
-                          theReplyFromGemini: ""));
-
-                      if (error.toString().contains("Failed host")) {
-                        Fluttertoast.showToast(
-                            fontSize: 18,
-                            timeInSecForIosWeb: 3,
-                            msg: "the internet is not available ",
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.TOP,
-                            backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                            textColor: Colors.white);
-                        return;
-                      }
-                      if (error
-                          .toString()
-                          .contains("The request was manually cancelled")) {
-                        Fluttertoast.showToast(
-                            fontSize: 18,
-                            timeInSecForIosWeb: 3,
-                            msg: "time out ",
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.TOP,
-                            backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                            textColor: Colors.white);
-                        return;
-                      }
-                      print("3333333333333333333333############${error}");
-                      Fluttertoast.showToast(
-                          msg: "this service is not available in your Country ",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.TOP,
-                          backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                          textColor: Colors.white,
-                          fontSize: 18,
-                          timeInSecForIosWeb: 3);
-                    },
-                  )
-                  .timeout(
-                      Duration(
-                        seconds: 20,
-                      ), onTimeout: () {
-                    gemini.cancelRequest();
-                    return homeBloc.add(ReplyFromGeminiEvent(
-                        sendRequestToGeminiStatus:
-                            SendRequestToGeminiStatus.failure,
-                        theReplyFromGemini: ""));
-                  });
-            }
-          }, onChooseFileFromCameraAction: (File? file) async {
-            if (file != null) {
-              String mimeStr = lookupMimeType(file.absolute.path) ?? '';
-              var fileType = mimeStr.split('/');
-              if (fileType[0] != 'image') {
-                Fluttertoast.showToast(
-                  fontSize: 18,
-                  timeInSecForIosWeb: 3,
-                  msg: "the video file is not supported",
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.TOP,
-                  backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                  textColor: Colors.white,
-                );
-                return;
-              }
-              final Uint8List imageBytes = file.readAsBytesSync();
-              final geminis.Gemini gemini = geminis.Gemini.instance;
-              homeBloc.add(ReplyFromGeminiEvent(
-                  sendRequestToGeminiStatus: SendRequestToGeminiStatus.loading,
-                  theReplyFromGemini: ""));
-              await gemini
-                  .textAndImage(
-                      text: LanguageService.languageCode == "ar"
-                          ? "اعطني كلمة واحد ماذا يوجد هذه الصورة"
-                          : "give me only word about what do you see in this image ",
-                      images: [
-                        imageBytes
-                      ])
-                  .then((value) => homeBloc.add(ReplyFromGeminiEvent(
-                      sendRequestToGeminiStatus:
-                          SendRequestToGeminiStatus.success,
-                      theReplyFromGemini:
-                          value?.content?.parts?[0].text?.split(".").first ??
-                              value?.content?.parts?[0].text ??
-                              "")))
-                  .onError((error, stackTrace) {
-                    print(
-                        "*******************************&%^&**(*&^%${error}#******************************TTTTTTTTTTTTTTTTTTTTTTtoo");
-
-                    homeBloc.add(ReplyFromGeminiEvent(
-                        sendRequestToGeminiStatus:
-                            SendRequestToGeminiStatus.failure,
-                        theReplyFromGemini: ""));
-
-                    if (error.toString().contains("Failed host")) {
-                      Fluttertoast.showToast(
-                          fontSize: 18,
-                          timeInSecForIosWeb: 3,
-                          msg: "the internet is not available ",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.TOP,
-                          backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                          textColor: Colors.white);
-                      return;
-                    }
-                    if (error
-                        .toString()
-                        .contains("The request was manually cancelled")) {
-                      Fluttertoast.showToast(
-                          fontSize: 18,
-                          timeInSecForIosWeb: 3,
-                          msg: "time out ",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.TOP,
-                          backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                          textColor: Colors.white);
-                      return;
-                    }
-                    Fluttertoast.showToast(
-                        fontSize: 18,
-                        timeInSecForIosWeb: 1,
-                        msg: "this service is not available in your Country ",
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.TOP,
-                        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                        textColor: Colors.white);
-                  })
-                  .timeout(
-                      Duration(
-                        seconds: 20,
-                      ), onTimeout: () {
-                    gemini.cancelRequest();
-                    return homeBloc.add(ReplyFromGeminiEvent(
-                        sendRequestToGeminiStatus:
-                            SendRequestToGeminiStatus.failure,
-                        theReplyFromGemini: ""));
-                  });
-            }
-          });
-        });
-  }
+ 
 
   bool resetSearchAfterSearchingWhileRemoveSearch = false;
 
@@ -968,7 +783,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                     InkWell(
                                                                       onTap:
                                                                           () async {
-                                                                        SelecteImageForSearch();
+                                                                    SearchWithImageRelatedGemini.SelecteImageForSearch(context: context);
                                                                       },
                                                                       child: state.sendRequestToGeminiStatus ==
                                                                               SendRequestToGeminiStatus.loading
@@ -1152,7 +967,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                       InkWell(
                                                                         onTap:
                                                                             () async {
-                                                                          SelecteImageForSearch();
+                                                                          SearchWithImageRelatedGemini.SelecteImageForSearch(context: context);
                                                                         },
                                                                         child: state.sendRequestToGeminiStatus ==
                                                                                 SendRequestToGeminiStatus.loading

@@ -206,7 +206,7 @@ class Product {
       unitPrice: json["unit_price"].toString(),
       currentStock: json["current_stock"]?.toInt(),
       leftStock: json["Left_stock"],
-      reviewsCount: json["reviews_count"],
+      // reviewsCount: json["reviews_count"],
       sellerId: json["seller_id"],
       seller: json["seller"] == null ? null : Seller.fromJson(json["seller"]),
       shop: json["shop"] == null ? null : Shop.fromJson(json["shop"]),
@@ -216,7 +216,7 @@ class Product {
           : List<dynamic>.from(json["reviews"]!.map((x) => x)),
       hasWholeSale: json["has_whole_sale"],
       wholeSaleLink: json["whole_sale_link"],
-      viewsCount: json["views_count"],
+      // viewsCount: json["views_count"],
       descriptors: json["descriptors"] == null
           ? []
           : List<DataDescriptor>.from(
@@ -250,7 +250,7 @@ class Product {
         "count_of_pieces": countOfPieces,
         "Left_stock": leftStock,
         "max_allowed_qty": maxAllowedQty,
-        "reviews_count": reviewsCount,
+        // "reviews_count": reviewsCount,
         "seller_id": sellerId,
         "seller": seller?.toJson(),
         "shop": shop?.toJson(),
@@ -259,7 +259,7 @@ class Product {
             reviews == null ? [] : List<dynamic>.from(reviews!.map((x) => x)),
         "has_whole_sale": hasWholeSale,
         "whole_sale_link": wholeSaleLink,
-        "views_count": viewsCount,
+        // "views_count": viewsCount,
         "descriptors": descriptors == null
             ? []
             : List<dynamic>.from(descriptors!.map((x) => x.toJson())),

@@ -15,6 +15,7 @@ extension ScopeApi on String {
 abstract class ElasticEndPoints {
   static final searchWithFilterElasticEP = 'products'.elasticScope();
   static final searchWithoutFilterElasticEP = 'products'.elasticScope();
+  static final getAndAddCountViewOfProductEP = 'view'.elasticScope();
 }
 
 abstract class ElasticUrls {

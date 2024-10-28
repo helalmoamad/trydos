@@ -27,6 +27,8 @@ import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
+import 'package:trydos/features/home/data/models/get_old_cart_model.dart'
+    as oldCart;
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart'
     as filters_model;
@@ -44,11 +46,13 @@ import 'package:trydos/features/home/domain/use_cases/get_allowed_country_usecas
 import 'package:trydos/features/home/domain/use_cases/get_brand_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_cart_item_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_category_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/get_count_view_of_product_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_currency_for_country_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_full_product_details_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_home_boutiqes_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_home_sections_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_main_categories_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/get_old_cart_item_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_product_detail_without_related_products_uswcase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_product_filters_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_products_usecase.dart';
@@ -96,6 +100,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.getStoryUseCase,
     this.removeItemToCartUseCase,
     this.getCartItemUseCase,
+    this.getOldCartItemUseCase,
     // this.getBrandUseCase,
     //  this.getCategoryUseCase,
     this.deleteLikeOfProductUsecase,
@@ -111,6 +116,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.getStartingSettingsUseCase,
     this.getCurrencyForCountryUseCase,
     this.getFullProductDetailsUseCase,
+    this.getAndAddCountViewOfProductUsecase,
     this.getProductsWithoutFiltersUseCase,
     this.addCommentUseCase,
     this.requestForNotificationWhenProductBecameAvailableUseCase,
@@ -121,6 +127,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<ResetAllSelectedAppliedFilterEvent>(
       _onResetAllSelectedAppliedFilterEvent,
     );
+    on<GetAndAddCountViewOfProductEvent>(
+      _onGetAndAddCountViewOfProductEvent,
+    );
+
     on<GetCurrencyForCountryEvent>(
       _onGetCurrencyForCountryEvent,
     );
@@ -231,6 +241,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<AddSizesFotColorsEvent>(
       _onAddSizesFotColorsEvent,
     );
+    on<GetOldCartItemEvent>(
+      _onGetOldCartItemEvent,
+    );
 
     on<RemoveItemFormCartEvent>(
       _onRemoveItemToCartEvent,
@@ -261,6 +274,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final GetWidthAndHeightUseCase getWidthAndHeightUseCase;
   final GetHomeBoutiqesUseCase getHomeBoutiqesUseCase;
   final GetCartItemUseCase getCartItemUseCase;
+  final GetOldCartItemUseCase getOldCartItemUseCase;
+  final GetAndAddCountViewOfProductUsecase getAndAddCountViewOfProductUsecase;
   final AddCommentUseCase addCommentUseCase;
   final GetCommentForProductUseCase getCommentForProductUseCase;
   final GetStoryForProductUseCase getStoryUseCase;
@@ -1496,6 +1511,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           isGettingProductListingWithPagination: false,
           ListitemForAddToCart: [],
           getMainCategoriesStatus: GetMainCategoriesStatus.init,
+          getAndAddCountViewOfProductStatus: {},
           getProductDetailWithoutSimilarRelatedProductsStatus:
               GetProductDetailWithoutSimilarRelatedProductsStatus.init,
           getStartingSettingsStatus: GetStartingSettingsStatus.init,
@@ -2266,6 +2282,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       }
       emit(state.copyWith(getCartItemsStatus: GetCartItemsStatus.failure));
     }, (r) {
+      add(GetOldCartItemEvent());
       carts = r.data!.cart!;
       carts.forEach((element) {
         if (cartCollection.containsKey(element.boutique!.id.toString())) {
@@ -2282,6 +2299,64 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           getCartShippingItemsModel: r,
           cartCollection: Map.of(cartCollection),
           getCartItemsStatus: GetCartItemsStatus.success));
+      // add(AddItemToCartEvent());
+    });
+  }
+
+  FutureOr<void> _onGetOldCartItemEvent(
+      GetOldCartItemEvent event, Emitter<HomeState> emit) async {
+    Map<String, List<oldCart.OldCart>> oldCartCollection = {};
+    List<oldCart.OldCart>? oldCarts;
+    emit(state.copyWith(getOldCartItemsStatus: GetOLdCartItemsStatus.loading));
+    final response = await getOldCartItemUseCase(NoParams());
+    response.fold((l) {
+      if (!isFailedTheFirstTime.contains('GetoldCartItemEvent')) {
+        add(GetOldCartItemEvent());
+        isFailedTheFirstTime.add('GetoldCartItemEvent');
+      }
+      emit(state.copyWith(getCartItemsStatus: GetCartItemsStatus.failure));
+    }, (r) {
+      Map<String, Products>? productITemForCart =
+          Map.of(state.productITemForCart ?? {});
+      List<String> productIdsInCart = [];
+      state.cartCollection?.forEach(
+        (key, value) {
+          value.forEach(
+            (element) {
+              productIdsInCart.add(element.productId.toString());
+            },
+          );
+        },
+      );
+      state.oldcartCollection?.forEach(
+        (key, value) {
+          value.forEach(
+            (element) {
+              productIdsInCart.add(element.productId.toString());
+            },
+          );
+        },
+      );
+      productITemForCart.removeWhere(
+        (key, value) => !productIdsInCart.contains(key),
+      );
+      oldCarts = r.data?.original?.data?.oldCart;
+      oldCarts?.forEach((element) {
+        if (oldCartCollection.containsKey(element.boutique!.id.toString())) {
+          oldCartCollection[element.boutique!.id.toString()]!.add(element);
+        } else {
+          oldCartCollection.addAll({
+            element.boutique!.id.toString(): [element]
+          });
+        }
+      });
+      apisMustNotToRequest.add('GetoldCartItemEvent');
+      isFailedTheFirstTime.remove('GetoldCartItemEvent');
+      emit(state.copyWith(
+          productITemForCart: productITemForCart,
+          getOldCartModel: r,
+          oldCartCollection: Map.of(oldCartCollection),
+          getOldCartItemsStatus: GetOLdCartItemsStatus.success));
       // add(AddItemToCartEvent());
     });
   }
@@ -2539,22 +2614,24 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     Map<String, Map<int, List<String>>> addImagesToProductIdForCart =
         Map.of(state.addImagesToProductIdForCart);
     List<String> preListImage = [];
-    if (!addImagesToProductIdForCart[event.productId]![int.parse(event.itemId)]
-        .isNullOrEmpty) {
-      addImagesToProductIdForCart[event.productId]![int.parse(event.itemId)]!
-          .forEach(
-        (element) {
-          if (element == event.image) {
-            preListImage.add(element);
-          }
-        },
-      );
-      addImagesToProductIdForCart[event.productId]![int.parse(event.itemId)]!
-          .removeWhere(
-        (element) => element == event.image,
-      );
+    if (addImagesToProductIdForCart[event.productId] != null) {
+      if (!addImagesToProductIdForCart[event.productId]![
+              int.parse(event.itemId)]
+          .isNullOrEmpty) {
+        addImagesToProductIdForCart[event.productId]![int.parse(event.itemId)]!
+            .forEach(
+          (element) {
+            if (element == event.image) {
+              preListImage.add(element);
+            }
+          },
+        );
+        addImagesToProductIdForCart[event.productId]![int.parse(event.itemId)]!
+            .removeWhere(
+          (element) => element == event.image,
+        );
+      }
     }
-
     emit(state.copyWith(
         cartCollection: cartCollection,
         addImagesToProductIdForCart: addImagesToProductIdForCart,
@@ -3424,6 +3501,64 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     }, (r) {});
   }
 
+  FutureOr<void> _onGetAndAddCountViewOfProductEvent(
+      GetAndAddCountViewOfProductEvent event, Emitter<HomeState> emit) async {
+    Map<String, GetAndAddCountViewOfProductStatus>
+        getAndAddCountViewOfProductStatus =
+        Map.of(state.getAndAddCountViewOfProductStatus);
+    if (getAndAddCountViewOfProductStatus.containsKey(event.productId)) {
+      getAndAddCountViewOfProductStatus[event.productId] =
+          GetAndAddCountViewOfProductStatus.loading;
+    } else {
+      getAndAddCountViewOfProductStatus
+          .addAll({event.productId: GetAndAddCountViewOfProductStatus.loading});
+    }
+    emit(state.copyWith(
+        getAndAddCountViewOfProductStatus: getAndAddCountViewOfProductStatus));
+    final response = await getAndAddCountViewOfProductUsecase(
+        getAndAddCountViewOfProductParams(
+            productId: event.productId,
+            userId: GetIt.I<PrefsRepository>().myMarketId));
+    response.fold((l) {
+      Map<String, GetAndAddCountViewOfProductStatus>
+          getAndAddCountViewOfProductStatus =
+          Map.of(state.getAndAddCountViewOfProductStatus);
+
+      getAndAddCountViewOfProductStatus[event.productId] =
+          GetAndAddCountViewOfProductStatus.failure;
+
+      emit(state.copyWith(
+          getAndAddCountViewOfProductStatus:
+              getAndAddCountViewOfProductStatus));
+      emit(state.copyWith(
+          getAndAddCountViewOfProductStatus:
+              getAndAddCountViewOfProductStatus));
+    }, (r) {
+      Map<String, GetAndAddCountViewOfProductStatus>
+          getAndAddCountViewOfProductStatus =
+          Map.of(state.getAndAddCountViewOfProductStatus);
+
+      getAndAddCountViewOfProductStatus[event.productId] =
+          GetAndAddCountViewOfProductStatus.success;
+      Map<String, GetProductDetailWithoutRelatedProductsModel>
+          cachedProductWithoutRelatedProductsModel =
+          Map.of(state.cachedProductWithoutRelatedProductsModel);
+      Product? product =
+          cachedProductWithoutRelatedProductsModel[event.productId]?.product;
+      int countViews = r.viewCount ?? 0;
+
+      product = product?.copyWith(viewsCount: countViews);
+      cachedProductWithoutRelatedProductsModel[event.productId] =
+          cachedProductWithoutRelatedProductsModel[event.productId]!
+              .copyWith(data: product);
+      emit(state.copyWith(
+          cachedProductWithoutRelatedProductsModel:
+              cachedProductWithoutRelatedProductsModel,
+          getAndAddCountViewOfProductStatus:
+              getAndAddCountViewOfProductStatus));
+    });
+  }
+
   prefetchImages(String url, BuildContext context) async {
     GetIt.I<PreCachingImageBloc>()
         .add(CacheImageEvent(imageUrl: url, context: context));
@@ -3472,29 +3607,36 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     });
   }
 
-  FutureOr<void> _onAddCommentEvent(AddCommentEvent event, Emitter<HomeState> emit) async{
-    emit(state.copyWith(
-      addCommentStatus: AddCommentStatus.loading
-    ));
-    final response = await addCommentUseCase(AddCommentParams(productId: event.productId, comment: event.comment));
+  FutureOr<void> _onAddCommentEvent(
+      AddCommentEvent event, Emitter<HomeState> emit) async {
+    emit(state.copyWith(addCommentStatus: AddCommentStatus.loading));
+    final response = await addCommentUseCase(
+        AddCommentParams(productId: event.productId, comment: event.comment));
 
-    response.fold((l){
-      emit(state.copyWith(
-          addCommentStatus: AddCommentStatus.failure
-      ));
-    }, (r){
-      Map<String , GetCommentForProductModel> getCommentForProductModel = Map.of(state.getCommentForProductModel);
-      getCommentForProductModel[event.productId] = getCommentForProductModel[event.productId]!.copyWith(
-        data: getCommentForProductModel[event.productId]!.commentsForProduct!.copyWith(
-          comments: [r , ...getCommentForProductModel[event.productId]!.commentsForProduct!.comments ?? []],
-          commentsCount: getCommentForProductModel[event.productId]!.commentsForProduct!.commentsCount! + 1
-        )
-      );
+    response.fold((l) {
+      emit(state.copyWith(addCommentStatus: AddCommentStatus.failure));
+    }, (r) {
+      Map<String, GetCommentForProductModel> getCommentForProductModel =
+          Map.of(state.getCommentForProductModel);
+      getCommentForProductModel[event.productId] =
+          getCommentForProductModel[event.productId]!.copyWith(
+              data: getCommentForProductModel[event.productId]!
+                  .commentsForProduct!
+                  .copyWith(
+                      comments: [
+            r,
+            ...getCommentForProductModel[event.productId]!
+                    .commentsForProduct!
+                    .comments ??
+                []
+          ],
+                      commentsCount: getCommentForProductModel[event.productId]!
+                              .commentsForProduct!
+                              .commentsCount! +
+                          1));
       emit(state.copyWith(
           addCommentStatus: AddCommentStatus.success,
-        getCommentForProductModel: getCommentForProductModel
-      ));
+          getCommentForProductModel: getCommentForProductModel));
     });
-
   }
 }

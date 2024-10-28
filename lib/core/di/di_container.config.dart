@@ -133,6 +133,8 @@ import '../../features/home/domain/use_cases/get_allowed_country_usecase.dart'
     as _i318;
 import '../../features/home/domain/use_cases/get_cart_item_usecase.dart'
     as _i307;
+import '../../features/home/domain/use_cases/get_count_view_of_product_usecase.dart'
+    as _i922;
 import '../../features/home/domain/use_cases/get_currency_for_country_usecase.dart'
     as _i762;
 import '../../features/home/domain/use_cases/get_full_product_details_usecase.dart'
@@ -141,6 +143,8 @@ import '../../features/home/domain/use_cases/get_home_boutiqes_usecase.dart'
     as _i518;
 import '../../features/home/domain/use_cases/get_main_categories_usecase.dart'
     as _i158;
+import '../../features/home/domain/use_cases/get_old_cart_item_usecase.dart'
+    as _i318;
 import '../../features/home/domain/use_cases/get_product_detail_without_related_products_uswcase.dart'
     as _i347;
 import '../../features/home/domain/use_cases/get_product_filters_usecase.dart'
@@ -269,14 +273,8 @@ Future<_i174.GetIt> $initGetIt(
       () => _i574.VerifyOtpSignInUseCase(gh<_i742.AuthRepository>()));
   gh.factory<_i282.VerifyOtpSignUpUseCase>(
       () => _i282.VerifyOtpSignUpUseCase(gh<_i742.AuthRepository>()));
-  gh.factory<_i68.AddCommentUseCase>(
-      () => _i68.AddCommentUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i1035.AddItemToCartUseCase>(
       () => _i1035.AddItemToCartUseCase(gh<_i0.HomeRepository>()));
-  gh.factory<_i33.AddLikeToProductUsecase>(
-      () => _i33.AddLikeToProductUsecase(gh<_i0.HomeRepository>()));
-  gh.factory<_i878.DeleteLikeOfProductUsecase>(
-      () => _i878.DeleteLikeOfProductUsecase(gh<_i0.HomeRepository>()));
   gh.factory<_i939.GetCommentForProductUseCase>(
       () => _i939.GetCommentForProductUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i318.GetAllowedCountryUseCase>(
@@ -285,8 +283,6 @@ Future<_i174.GetIt> $initGetIt(
       () => _i307.GetCartItemUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i762.GetCurrencyForCountryUseCase>(
       () => _i762.GetCurrencyForCountryUseCase(gh<_i0.HomeRepository>()));
-  gh.factory<_i149.GetFullProductDetailsUseCase>(
-      () => _i149.GetFullProductDetailsUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i518.GetHomeBoutiqesUseCase>(
       () => _i518.GetHomeBoutiqesUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i158.GetMainCategoriesUseCase>(
@@ -311,6 +307,18 @@ Future<_i174.GetIt> $initGetIt(
           gh<_i0.HomeRepository>()));
   gh.factory<_i802.UpdateItemInCartUseCase>(
       () => _i802.UpdateItemInCartUseCase(gh<_i0.HomeRepository>()));
+  gh.factory<_i33.AddLikeToProductUsecase>(
+      () => _i33.AddLikeToProductUsecase(gh<_i0.HomeRepository>()));
+  gh.factory<_i878.DeleteLikeOfProductUsecase>(
+      () => _i878.DeleteLikeOfProductUsecase(gh<_i0.HomeRepository>()));
+  gh.factory<_i149.GetFullProductDetailsUseCase>(
+      () => _i149.GetFullProductDetailsUseCase(gh<_i0.HomeRepository>()));
+  gh.factory<_i68.AddCommentUseCase>(
+      () => _i68.AddCommentUseCase(gh<_i0.HomeRepository>()));
+  gh.factory<_i318.GetOldCartItemUseCase>(
+      () => _i318.GetOldCartItemUseCase(gh<_i0.HomeRepository>()));
+  gh.factory<_i922.GetAndAddCountViewOfProductUsecase>(
+      () => _i922.GetAndAddCountViewOfProductUsecase(gh<_i0.HomeRepository>()));
   gh.lazySingleton<_i702.CommonUseRepository>(() =>
       _i77.CommonUseRepositoryImpl(gh<_i672.CommonUseRemoteDataSource>()));
   gh.lazySingleton<_i1032.CallsRepository>(
@@ -382,11 +390,22 @@ Future<_i174.GetIt> $initGetIt(
         gh<_i4.IncreaseViewersUseCase>(),
         gh<_i737.AddStoryToOurServerUseCase>(),
       ));
+  gh.lazySingleton<_i547.CallsBloc>(() => _i547.CallsBloc(
+        gh<_i711.RejectCallUseCase>(),
+        gh<_i643.MakeCallUseCase>(),
+        gh<_i177.GetMyCallsUseCase>(),
+        gh<_i961.WatchMissedCallUseCase>(),
+        gh<_i661.AnswerCallUseCase>(),
+        gh<_i767.GetMissedCalCountUseCase>(),
+        gh<_i1014.GetAgoraTokenUseCase>(),
+        gh<_i95.DeleteMessageUseCase>(),
+      ));
   gh.lazySingleton<_i801.HomeBloc>(() => _i801.HomeBloc(
         gh<_i158.GetMainCategoriesUseCase>(),
         gh<_i533.GetStoryForProductUseCase>(),
         gh<_i687.RemoveItemToCartUseCase>(),
         gh<_i307.GetCartItemUseCase>(),
+        gh<_i318.GetOldCartItemUseCase>(),
         gh<_i878.DeleteLikeOfProductUsecase>(),
         gh<_i33.AddLikeToProductUsecase>(),
         gh<_i802.UpdateItemInCartUseCase>(),
@@ -400,20 +419,11 @@ Future<_i174.GetIt> $initGetIt(
         gh<_i815.GetStartingSettingsUseCase>(),
         gh<_i762.GetCurrencyForCountryUseCase>(),
         gh<_i149.GetFullProductDetailsUseCase>(),
+        gh<_i922.GetAndAddCountViewOfProductUsecase>(),
         gh<_i397.GetProductsWithoutFiltersUseCase>(),
         gh<_i68.AddCommentUseCase>(),
         gh<_i715.RequestForNotificationWhenProductBecameAvailableUseCase>(),
         gh<_i955.GetProductsWithFiltersUseCase>(),
-      ));
-  gh.lazySingleton<_i547.CallsBloc>(() => _i547.CallsBloc(
-        gh<_i711.RejectCallUseCase>(),
-        gh<_i643.MakeCallUseCase>(),
-        gh<_i177.GetMyCallsUseCase>(),
-        gh<_i961.WatchMissedCallUseCase>(),
-        gh<_i661.AnswerCallUseCase>(),
-        gh<_i767.GetMissedCalCountUseCase>(),
-        gh<_i1014.GetAgoraTokenUseCase>(),
-        gh<_i95.DeleteMessageUseCase>(),
       ));
   gh.lazySingleton<_i243.ChatBloc>(() => _i243.ChatBloc(
         gh<_i418.GetContactsUseCase>(),

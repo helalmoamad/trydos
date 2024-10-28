@@ -10,6 +10,8 @@ import 'package:trydos/features/home/data/models/get_comment_for_product_model.d
 import 'package:trydos/features/home/data/models/get_currency_for_country_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart'
     as boutiques_model;
+import 'package:trydos/features/home/data/models/get_old_cart_model.dart'
+    as oldCart;
 
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 
@@ -52,6 +54,8 @@ enum GetMainCategoriesStatus { init, loading, success, failure }
 
 enum GetCartItemsStatus { init, loading, success, failure }
 
+enum GetOLdCartItemsStatus { init, loading, success, failure }
+
 enum GetStoriesForProductStatus { init, loading, success, failure }
 
 enum SendRequestToGeminiStatus { init, loading, success, failure }
@@ -72,11 +76,14 @@ enum AddOrRemoveLikeOfProductStatus { init, loading, success, failure }
 
 enum GetProductListingStatus { init, loading, success, failure }
 
+enum GetAndAddCountViewOfProductStatus { init, loading, success, failure }
+
 @JsonSerializable(explicitToJson: true)
 @immutable
 class HomeState extends Equatable {
   const HomeState({
     this.storiesForProduct,
+    this.getAndAddCountViewOfProductStatus = const {},
     this.addItemInCartStatus,
     this.searchWithOutFilterOffset,
     this.searchWithFilterOffset,
@@ -92,6 +99,9 @@ class HomeState extends Equatable {
     this.sizesQuantities = const [],
     this.isSizeRequestNotification = const [],
     this.deleteItemInCartStatus,
+    this.oldcartCollection,
+    this.getOldCartItemsStatus = GetOLdCartItemsStatus.init,
+    this.getOldCartModel,
     this.isGettingProductListingWithPagination = false,
     this.isGettingProductListingWithPaginationForAppearProduct = false,
     this.getProductFiltersStatus = const {},
@@ -149,7 +159,8 @@ class HomeState extends Equatable {
   final GetCommentForProductStatus getCommentForProductStatus;
   final Map<String, product.Products>? productITemForCart;
   final GetMainCategoriesStatus getMainCategoriesStatus;
-
+  final Map<String, GetAndAddCountViewOfProductStatus>
+      getAndAddCountViewOfProductStatus;
   final List<ImageForAddToCart>? ListitemForAddToCart;
   final GetAllowedCountriesModel? getAllowedCountriesModel;
   final Map<String, GetProductFiltersStatus> getProductFiltersStatus;
@@ -185,6 +196,7 @@ class HomeState extends Equatable {
   final Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>?
       productStatus;
   final Map<String, List<cart.Cart>>? cartCollection;
+  final Map<String, List<oldCart.OldCart>>? oldcartCollection;
 
   final Map<String, bool> reRequestTheseBoutiques;
   final Map<String, bool> reRequestTheseProductListingInBoutiques;
@@ -195,6 +207,7 @@ class HomeState extends Equatable {
   final String? theReplyFromGemini;
 
   final GetCartItemsStatus getCartItemsStatus;
+  final GetOLdCartItemsStatus getOldCartItemsStatus;
   final Products? productContentForStatusOfOpeningProductDetailsDirectly;
 
   final GetProductListingStatus getProductListingStatus;
@@ -210,6 +223,7 @@ class HomeState extends Equatable {
   final Map<String, PaginationModel<product.Products>>
       getProductListingPaginationWithoutFiltersModel;
   final cart.GetCartShippingItemsModel? getCartShippingItemsModel;
+  final oldCart.GetOldCartModel? getOldCartModel;
   final Map<String, GetCommentForProductModel> getCommentForProductModel;
 
   final MainCategoriesResponseModel? mainCategoriesResponseModel;
@@ -232,6 +246,9 @@ class HomeState extends Equatable {
         getCommentForProductStatus,
         productITemForCart,
         getMainCategoriesStatus,
+        oldcartCollection,
+        getOldCartModel,
+        getOldCartItemsStatus,
         ListitemForAddToCart,
         getAllowedCountriesModel,
         getProductFiltersStatus,
@@ -245,6 +262,7 @@ class HomeState extends Equatable {
         getProductListingWithFiltersPaginationWithPrefetchModels,
         getProductFiltersModel,
         getProductFiltersWithPrefetchModel,
+        getAndAddCountViewOfProductStatus,
         appliedFiltersByUser,
         choosedFiltersByUser,
         selectedCollection,
@@ -303,6 +321,8 @@ class HomeState extends Equatable {
       final Map<String, String>? searchWithOutFilterOffset,
       final Map<String, get_filters.GetProductFiltersModel?>?
           getProductFiltersWithPrefetchModel,
+      final Map<String, GetAndAddCountViewOfProductStatus>?
+          getAndAddCountViewOfProductStatus,
       bool? cashedOrginalBoutique,
       bool? isExpandedForLidtingPage,
 
@@ -320,8 +340,9 @@ class HomeState extends Equatable {
       final AddOrRemoveLikeOfProductStatus? addOrRemoveLikeOfProductStatus,
       final bool? isGettingProductListingWithPagination,
       final GetCartItemsStatus? getCartItemsStatus,
+      final GetOLdCartItemsStatus? getOldCartItemsStatus,
       Map<int, int?>? currentStoryInEachCollection,
-        final AddCommentStatus? addCommentStatus,
+      final AddCommentStatus? addCommentStatus,
       final GetProductDetailWithoutRelatedProductsModel?
           getProductDetailWithoutRelatedProductsModel,
       int? selectedCollection,
@@ -337,11 +358,13 @@ class HomeState extends Equatable {
           productStatus,
       Map<String, List<int>>? currentQuantityForCart,
       Map<String, List<cart.Cart>>? cartCollection,
+      Map<String, List<oldCart.OldCart>>? oldCartCollection,
       Map<String, String>? CurrentColorSizeForCart,
       final Map<String, bool>? reRequestTheseBoutiques,
       final SendRequestToGeminiStatus? sendRequestToGeminiStatus,
       final Map<String, product.Products>? productITemForCart,
       final cart.GetCartShippingItemsModel? getCartShippingItemsModel,
+      final oldCart.GetOldCartModel? getOldCartModel,
       final Map<String, bool>? reRequestTheseProductListingInBoutiques,
       final Map<String, bool>? reRequestProductWithFilters,
       final GetProductListingStatus? getProductListingStatus,
@@ -379,6 +402,8 @@ class HomeState extends Equatable {
       boutiquesForEveryMainCategoryThatDidPrefetch:
           boutiquesForEveryMainCategoryThatDidPrefetch ??
               this.boutiquesForEveryMainCategoryThatDidPrefetch,
+      getAndAddCountViewOfProductStatus: getAndAddCountViewOfProductStatus ??
+          this.getAndAddCountViewOfProductStatus,
       getCommentForProductModel:
           getCommentForProductModel ?? this.getCommentForProductModel,
       updateItemInCartStatus:
@@ -413,6 +438,11 @@ class HomeState extends Equatable {
       addImagesToProductIdForCart:
           addImagesToProductIdForCart ?? this.addImagesToProductIdForCart,
       cartCollection: cartCollection ?? this.cartCollection,
+      oldcartCollection: oldCartCollection ?? this.oldcartCollection,
+      getOldCartItemsStatus:
+          getOldCartItemsStatus ?? this.getOldCartItemsStatus,
+
+      getOldCartModel: getOldCartModel ?? this.getOldCartModel,
       getProductFiltersStatus:
           getProductFiltersStatus ?? this.getProductFiltersStatus,
       addItemInCartStatus: addItemInCartStatus ?? this.addItemInCartStatus,
