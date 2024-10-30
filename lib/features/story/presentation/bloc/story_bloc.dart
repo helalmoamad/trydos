@@ -20,6 +20,9 @@ import 'package:trydos/features/story/domain/useCases/increase_viewers_usecase.d
 import 'package:trydos/features/story/domain/useCases/upload_story_usecase.dart';
 import 'package:trydos/features/story/presentation/bloc/story_state.dart';
 import 'package:trydos/main.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../data/models/get_stories_model.dart';
 import '../../domain/useCases/add_story_to_our_server_usecase.dart';
 
@@ -53,7 +56,8 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
     on<UploadStoryEvent>(_uploadStoryEvent);
     on<AddStoryToOurServerEvent>(_AddStoryToOurServerEvent);
     on<IncreaseViewersEvent>(_IncreaseViewersEvent);
-    on<UpdateNameForUserInCollectionIfExistEvent>(_onUpdateNameForUserInCollectionIfExistEvent);
+    on<UpdateNameForUserInCollectionIfExistEvent>(
+        _onUpdateNameForUserInCollectionIfExistEvent);
     on<StoryEvent>((event, emit) {});
     on<GetStoryEvent>(
       _onGetStoryEvent,
@@ -82,39 +86,55 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
             usingOnUploadingFinishedFunction: false,
             usingSendProgressFunction: false));
     // Fluttertoast.showToast(msg: 'tosss');
-    response.fold((l) {
-      if (isFailedTheFirstTime.contains('UploadStoryCloudinaryEvent')) {
+    response.fold(
+      (l) {
+        if (isFailedTheFirstTime.contains('UploadStoryCloudinaryEvent')) {
+          isFailedTheFirstTime.remove('UploadStoryCloudinaryEvent');
+
+          emit(state.copyWith(
+              uploadStoryCloudinaryStatus:
+                  UploadStoryCloudinaryStatus.failure));
+        } else {
+          isFailedTheFirstTime.insert(
+              isFailedTheFirstTime.length, 'UploadStoryCloudinaryEvent');
+          GetIt.I<StoryBloc>().add(UploadStoryCloudinaryEvent(event.file));
+        }
+        ///////////////////////////
+        FirebaseAnalyticsService.logEventForSession(
+          eventName: AnalyticsEventsConst.programmingEvent,
+          executedEventName: AnalyticsExecutedEventNameConst.uploadStoryFailed,
+        );
+        // Fluttertoast.showToast(
+        //     msg: l.message,
+        //     textColor: Colors.white,
+        //     toastLength: Toast.LENGTH_LONG);
+      },
+      (r) {
         isFailedTheFirstTime.remove('UploadStoryCloudinaryEvent');
+        String fileName = event.file.path.split('/').last;
+        String mimeType = mime(fileName) ?? '';
+        String mimee = mimeType.split('/')[0];
+        bool isVideoFile;
 
-        emit(state.copyWith(
-            uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.failure));
-      } else {
-        isFailedTheFirstTime.insert(
-            isFailedTheFirstTime.length, 'UploadStoryCloudinaryEvent');
-        GetIt.I<StoryBloc>().add(UploadStoryCloudinaryEvent(event.file));
-      }
-      // Fluttertoast.showToast(
-      //     msg: l.message,
-      //     textColor: Colors.white,
-      //     toastLength: Toast.LENGTH_LONG);
-    }, (r) {
-      isFailedTheFirstTime.remove('UploadStoryCloudinaryEvent');
-      String fileName = event.file.path.split('/').last;
-      String mimeType = mime(fileName) ?? '';
-      String mimee = mimeType.split('/')[0];
-      bool isVideoFile;
-
-      if (mimee == 'image') {
-        isVideoFile = false;
-      } else {
-        isVideoFile = true;
-      }
-      add(AddStoryToOurServerEvent(
-          filePath: r.secureUrl!,
-          isVideo: isVideoFile ? 1 : 0,
-          width: r.width,
-          height: r.height));
-    });
+        if (mimee == 'image') {
+          isVideoFile = false;
+        } else {
+          isVideoFile = true;
+        }
+        add(
+          AddStoryToOurServerEvent(
+              filePath: r.secureUrl!,
+              isVideo: isVideoFile ? 1 : 0,
+              width: r.width,
+              height: r.height),
+        );
+        ///////////////////////////
+        FirebaseAnalyticsService.logEventForSession(
+          eventName: AnalyticsEventsConst.programmingEvent,
+          executedEventName: AnalyticsExecutedEventNameConst.uploadStorySuccess,
+        );
+      },
+    );
   }
 
   _uploadStoryEvent(UploadStoryEvent event, Emitter<StoryState> emit) async {
@@ -395,21 +415,20 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
   */
   }
 
-  FutureOr<void> _onUpdateNameForUserInCollectionIfExistEvent(UpdateNameForUserInCollectionIfExistEvent event, Emitter<StoryState> emit) {
-    int i=0;
+  FutureOr<void> _onUpdateNameForUserInCollectionIfExistEvent(
+      UpdateNameForUserInCollectionIfExistEvent event,
+      Emitter<StoryState> emit) {
+    int i = 0;
     emit(state.copyWith(
-      storiesCollections: state.storiesCollections.map((e) {
-        if(i == 0){
-          i++;
-          if(e.stories![0].userId == GetIt.I<PrefsRepository>().myStoriesId){
-            return e.copyWith(
-              name: event.name
-            );
-          }
-        }
+        storiesCollections: state.storiesCollections.map((e) {
+      if (i == 0) {
         i++;
-        return e;
-      }).toList()
-    ));
+        if (e.stories![0].userId == GetIt.I<PrefsRepository>().myStoriesId) {
+          return e.copyWith(name: event.name);
+        }
+      }
+      i++;
+      return e;
+    }).toList()));
   }
 }

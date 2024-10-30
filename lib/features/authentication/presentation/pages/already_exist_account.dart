@@ -137,18 +137,27 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                       ? Key(WidgetsKey.loginContinueButtonKey)
                       : null,
                   onTap: () {
-                    context.go(GRouter.config.applicationRoutes.kBasePage);
-                    BlocProvider.of<AuthBloc>(context).add(VerifyOtpSignInEvent(
-                      otp: prefsRepository.otpCode!,
-                      verificationId: prefsRepository.verificationId!,
-                      phone: widget.phoneNumber,
-                    ));
+                    Future.delayed(
+                      Duration(milliseconds: 100),
+                      () {
+                        context.go(GRouter.config.applicationRoutes.kBasePage);
+                        BlocProvider.of<AuthBloc>(context)
+                            .add(VerifyOtpSignInEvent(
+                          otp: prefsRepository.otpCode!,
+                          verificationId: prefsRepository.verificationId!,
+                          phone: widget.phoneNumber,
+                        ));
+                      },
+                    );
                     ////////////////////
                     FirebaseAnalyticsService.logEventForSession(
                       eventName: AnalyticsEventsConst.buttonClicked,
                       executedEventName:
                           AnalyticsExecutedEventNameConst.loginContinueButton,
                     );
+                    //////////////////////
+                    debugPrint(
+                        '////////// loginContinueButton  ///////////////');
                   },
                   child: Container(
                     width: 1.sw,
@@ -181,12 +190,20 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                   focusColor: Colors.transparent,
                   splashColor: Colors.transparent,
                   onTap: () async {
-                    if (GetIt.I<PrefsRepository>().isVerifiedPhone != false) {
-                      String? deviceId = await HelperFunctions.getDeviceId();
-                      BlocProvider.of<AuthBloc>(context)
-                          .add(RegisterGuestEvent(deviceId: deviceId!));
-                    }
-                    context.go(GRouter.config.applicationRoutes.kBasePage);
+                    Future.delayed(
+                      Duration(milliseconds: 100),
+                      () async {
+                        if (GetIt.I<PrefsRepository>().isVerifiedPhone !=
+                            false) {
+                          String? deviceId =
+                              await HelperFunctions.getDeviceId();
+                          BlocProvider.of<AuthBloc>(context)
+                              .add(RegisterGuestEvent(deviceId: deviceId!));
+                        }
+                        context.go(GRouter.config.applicationRoutes.kBasePage);
+                      },
+                    );
+
                     ////////////////////
                     FirebaseAnalyticsService.logEventForSession(
                       eventName: AnalyticsEventsConst.buttonClicked,
