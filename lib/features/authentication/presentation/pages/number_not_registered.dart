@@ -198,15 +198,23 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                             focusColor: Colors.transparent,
                             splashColor: Colors.transparent,
                             onTap: () async {
-                              if (GetIt.I<PrefsRepository>().isVerifiedPhone !=
-                                  false) {
-                                String? deviceId =
-                                    await HelperFunctions.getDeviceId();
-                                BlocProvider.of<AuthBloc>(context).add(
-                                    RegisterGuestEvent(deviceId: deviceId!));
-                              }
-                              context.go(
-                                  GRouter.config.applicationRoutes.kBasePage);
+                              Future.delayed(
+                                Duration(milliseconds: 100),
+                                () async {
+                                  if (GetIt.I<PrefsRepository>()
+                                          .isVerifiedPhone !=
+                                      false) {
+                                    String? deviceId =
+                                        await HelperFunctions.getDeviceId();
+                                    BlocProvider.of<AuthBloc>(context).add(
+                                        RegisterGuestEvent(
+                                            deviceId: deviceId!));
+                                  }
+                                  context.go(GRouter
+                                      .config.applicationRoutes.kBasePage);
+                                },
+                              );
+
                               ///////////////////
                               FirebaseAnalyticsService.logEventForSession(
                                 eventName: AnalyticsEventsConst.buttonClicked,

@@ -1,13 +1,13 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:overscroll_pop/overscroll_pop.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import 'package:flutter_carousel_slider/carousel_slider.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../presentation/pages/story_collection.dart';
 import '../bloc/story_state.dart';
 
@@ -106,6 +106,12 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                             carouselSliderController.jumpToPage(
                                 index: state.storiesCollections.length - 1);
                           }
+                          ///////////////////////////
+                          FirebaseAnalyticsService.logEventForSession(
+                            eventName: AnalyticsEventsConst.buttonClicked,
+                            executedEventName: AnalyticsExecutedEventNameConst
+                                .changeStoryInStroyScreenEvent,
+                          );
                         },
                         slideBuilder: (int index) {
                           currentPage = widget.initialPage;

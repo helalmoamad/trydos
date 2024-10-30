@@ -531,6 +531,46 @@ class PrefsRepositoryImpl extends PrefsRepository {
   Future<bool> setStoryUrl(String url) =>
       _preferences.setString(PrefsKey.storyUrl, url);
 
+  @override
+  Future<bool> setViewedProducts(String productId) async {
+    List<String> list = getviewedProductsProducts();
+    list.add(productId);
+    return await _preferences.setStringList(PrefsKey.viewedProducts, list);
+  }
+
+  @override
+  List<String> getviewedProductsProducts() {
+    List<String> list =
+        _preferences.getStringList(PrefsKey.viewedProducts) ?? [];
+
+    return list;
+  }
+
+  @override
+  Future<bool> removeViewedProducts() async {
+    return await _preferences.remove(PrefsKey.viewedProducts);
+  }
+
+  @override
+  Future<bool> setViewedBoutiques(String boutiqueId) async {
+    List<String> list = getviewedProductsBoutiques();
+    list.add(boutiqueId);
+    return await _preferences.setStringList(PrefsKey.viewedBoutiques, list);
+  }
+
+  @override
+  List<String> getviewedProductsBoutiques() {
+    List<String> list =
+        _preferences.getStringList(PrefsKey.viewedBoutiques) ?? [];
+
+    return list;
+  }
+
+  @override
+  Future<bool> removeViewedBoutiques() async {
+    return await _preferences.remove(PrefsKey.viewedBoutiques);
+  }
+
 // @override
 
 // List<Map<String,dynamic>> get localMessages {

@@ -51,4 +51,7 @@ abstract class PrefsKey {
   static const marketUrl = r'__$__marketUrl__$__';
   static const storyUrl = r'__$__storyUrl__$__';
   static const chatUrl = r'__$__chatUrl__$__';
+
+  static const viewedProducts = r'__$__viewedProducts__$__';
+  static const viewedBoutiques = r'__$__Boutiques__$__';
 }
