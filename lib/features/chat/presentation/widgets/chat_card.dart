@@ -522,7 +522,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                                                         ? AppAssets
                                                                             .sandClockSvg
                                                                         : (state.currentFailedMessage.contains(lastMessage.id))
-                                                                            ? AppAssets.MessageFailedSvg
+                                                                            ? AppAssets.messageFailedSvg
                                                                             : status?.isWatched ?? false
                                                                                 ? AppAssets.messageReadArrowSvg
                                                                                 : status?.isReceived == 1

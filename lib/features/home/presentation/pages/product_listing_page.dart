@@ -37,6 +37,7 @@ import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/data/model/pagination_model.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/app_widgets/app_bottom_navigation_bar.dart';
@@ -50,7 +51,6 @@ import '../../../app/svg_network_widget.dart';
 import '../../data/models/get_home_boutiqes_model.dart' as boutique;
 import '../manager/home_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
-
 import 'package:speech_to_text/speech_to_text.dart';
 import '../widgets/product_listing/product_item.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
@@ -314,7 +314,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
     htmlDescriptionHeight.value = context.size!.height;
   }
 
-  void SelecteImageForSearch() async {
+  void selecteImageForSearch() async {
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -335,6 +335,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
                   backgroundColor: const Color.fromARGB(255, 0, 0, 0),
                   textColor: Colors.white,
                 );
+                /////////////////////////////////////////////////////
+                FirebaseAnalyticsService.logEventForSession(
+                  eventName: AnalyticsEventsConst.programmingEvent,
+                  executedEventName:
+                      AnalyticsExecutedEventNameConst.videoNotSupported,
+                );
                 return;
               }
               final Uint8List imageBytes = file.readAsBytesSync();
@@ -343,73 +349,93 @@ class _ProductListingPageState extends State<ProductListingPage> {
                   sendRequestToGeminiStatus: SendRequestToGeminiStatus.loading,
                   theReplyFromGemini: ""));
 
-              await gemini
-                  .textAndImage(
-                      text: LanguageService.languageCode == "ar"
-                          ? " حدد ماذا يوجد في هذه الصورة بكلمة واحدة فقط بصيغة المفرد الغائب الاجابة بالعربي"
-                          : "Identify what's in this picture with just one word in the singular absent answer in English",
-                      images: [
-                        imageBytes
-                      ])
-                  .then((value) => homeBloc.add(ReplyFromGeminiEvent(
+              await gemini.textAndImage(
+                  text: LanguageService.languageCode == "ar"
+                      ? " حدد ماذا يوجد في هذه الصورة بكلمة واحدة فقط بصيغة المفرد الغائب الاجابة بالعربي"
+                      : "Identify what's in this picture with just one word in the singular absent answer in English",
+                  images: [imageBytes]).then((value) {
+                homeBloc.add(
+                  ReplyFromGeminiEvent(
                       sendRequestToGeminiStatus:
                           SendRequestToGeminiStatus.success,
                       theReplyFromGemini:
                           value?.content?.parts?[0].text?.split(".").first ??
                               value?.content?.parts?[0].text ??
-                              "")))
-                  .onError(
-                    (error, stackTrace) {
-                      homeBloc.add(ReplyFromGeminiEvent(
-                          sendRequestToGeminiStatus:
-                              SendRequestToGeminiStatus.failure,
-                          theReplyFromGemini: ""));
+                              ""),
+                );
+                /////////////////////////////////////////////////////
+                FirebaseAnalyticsService.logEventForSession(
+                  eventName: AnalyticsEventsConst.programmingEvent,
+                  executedEventName:
+                      AnalyticsExecutedEventNameConst.uploadSearchImageSuccess,
+                );
+              }).onError(
+                (error, stackTrace) {
+                  homeBloc.add(ReplyFromGeminiEvent(
+                      sendRequestToGeminiStatus:
+                          SendRequestToGeminiStatus.failure,
+                      theReplyFromGemini: ""));
 
-                      if (error.toString().contains("Failed host")) {
-                        Fluttertoast.showToast(
-                            fontSize: 18,
-                            timeInSecForIosWeb: 3,
-                            msg: "the internet is not available ",
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.TOP,
-                            backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                            textColor: Colors.white);
-                        return;
-                      }
-                      if (error
-                          .toString()
-                          .contains("The request was manually cancelled")) {
-                        Fluttertoast.showToast(
-                            fontSize: 18,
-                            timeInSecForIosWeb: 3,
-                            msg: "time out ",
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.TOP,
-                            backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                            textColor: Colors.white);
-                        return;
-                      }
-                      print("3333333333333333333333############${error}");
-                      Fluttertoast.showToast(
-                          msg: "this service is not available in your Country ",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.TOP,
-                          backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                          textColor: Colors.white,
-                          fontSize: 18,
-                          timeInSecForIosWeb: 3);
-                    },
-                  )
-                  .timeout(
-                      Duration(
-                        seconds: 20,
-                      ), onTimeout: () {
-                    gemini.cancelRequest();
-                    return homeBloc.add(ReplyFromGeminiEvent(
+                  if (error.toString().contains("Failed host")) {
+                    Fluttertoast.showToast(
+                        fontSize: 18,
+                        timeInSecForIosWeb: 3,
+                        msg: "the internet is not available ",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.TOP,
+                        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                        textColor: Colors.white);
+                    return;
+                  }
+                  if (error
+                      .toString()
+                      .contains("The request was manually cancelled")) {
+                    Fluttertoast.showToast(
+                        fontSize: 18,
+                        timeInSecForIosWeb: 3,
+                        msg: "time out ",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.TOP,
+                        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                        textColor: Colors.white);
+                    return;
+                  }
+                  print("3333333333333333333333############${error}");
+                  Fluttertoast.showToast(
+                      msg: "this service is not available in your Country ",
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.TOP,
+                      backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                      textColor: Colors.white,
+                      fontSize: 18,
+                      timeInSecForIosWeb: 3);
+                  /////////////////////////////////////////////////////
+                  FirebaseAnalyticsService.logEventForSession(
+                    eventName: AnalyticsEventsConst.programmingEvent,
+                    executedEventName:
+                        AnalyticsExecutedEventNameConst.uploadSearchImageFailed,
+                  );
+                },
+              ).timeout(
+                Duration(
+                  seconds: 20,
+                ),
+                onTimeout: () {
+                  gemini.cancelRequest();
+                  homeBloc.add(
+                    ReplyFromGeminiEvent(
                         sendRequestToGeminiStatus:
                             SendRequestToGeminiStatus.failure,
-                        theReplyFromGemini: ""));
-                  });
+                        theReplyFromGemini: ""),
+                  );
+                  /////////////////////////////////////////////////////
+                  FirebaseAnalyticsService.logEventForSession(
+                    eventName: AnalyticsEventsConst.programmingEvent,
+                    executedEventName:
+                        AnalyticsExecutedEventNameConst.uploadSearchImageFailed,
+                  );
+                },
+              );
             }
           }, onChooseFileFromCameraAction: (File? file) async {
             if (file != null) {
@@ -429,9 +455,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
               }
               final Uint8List imageBytes = file.readAsBytesSync();
               final geminis.Gemini gemini = geminis.Gemini.instance;
-              homeBloc.add(ReplyFromGeminiEvent(
-                  sendRequestToGeminiStatus: SendRequestToGeminiStatus.loading,
-                  theReplyFromGemini: ""));
+              homeBloc.add(
+                ReplyFromGeminiEvent(
+                    sendRequestToGeminiStatus:
+                        SendRequestToGeminiStatus.loading,
+                    theReplyFromGemini: ""),
+              );
               await gemini
                   .textAndImage(
                       text: LanguageService.languageCode == "ar"
@@ -544,14 +573,21 @@ class _ProductListingPageState extends State<ProductListingPage> {
           homeBloc.add(
               AddIsExpandedForLidtingPageEvent(isExpandedForLidting: false));
 
+          ////////////////////////////////////
+          FirebaseAnalyticsService.logEventForSession(
+            eventName: AnalyticsEventsConst.buttonClicked,
+            executedEventName: AnalyticsExecutedEventNameConst.backAppButton,
+          );
+
           return Future.value(false);
         } else {
           if (!widget.fromSearch) {
             homeBloc.add(ChangeAppliedFiltersEvent(
-                boutiqueSlug: widget.boutiqueSlug,
-                category: widget.category,
-                filtersAppliedByUser: null,
-                resetAppliedFilters: true));
+              boutiqueSlug: widget.boutiqueSlug,
+              category: widget.category,
+              filtersAppliedByUser: null,
+              resetAppliedFilters: true,
+            ));
             homeBloc.add(ChangeSelectedFiltersEvent(
               fromHomePageSearch: widget.fromSearch,
               boutiqueSlug: widget.boutiqueSlug,
@@ -568,12 +604,21 @@ class _ProductListingPageState extends State<ProductListingPage> {
               filtersChoosedByUser: GetProductFiltersModel(
                   filters: homeBloc.state.appliedFiltersByUser[key]?.filters),
             ));
-            homeBloc.add(ChangeAppliedFiltersEvent(
+            homeBloc.add(
+              ChangeAppliedFiltersEvent(
                 boutiqueSlug: widget.boutiqueSlug,
                 category: widget.category,
-                resetAppliedFilters: true));
+                resetAppliedFilters: true,
+              ),
+            );
           }
+          ////////////////////////////////////
+          FirebaseAnalyticsService.logEventForSession(
+            eventName: AnalyticsEventsConst.buttonClicked,
+            executedEventName: AnalyticsExecutedEventNameConst.backAppButton,
+          );
         }
+
         return Future.value(true);
       },
       child: SafeArea(
@@ -916,6 +961,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                           GetProductFiltersModel(
                                                                               filters: filters.copyWithSaveOtherField(prices: filters.prices, searchText: null))));
                                                                 }
+
                                                                 resetSearchAfterSearchingWhileRemoveSearch =
                                                                     false;
                                                                 focusNode
@@ -930,6 +976,16 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                 appBloc.add(
                                                                     HideBottomNavigationBar(
                                                                         false));
+                                                                ///////////////////////////
+                                                                FirebaseAnalyticsService
+                                                                    .logEventForSession(
+                                                                  eventName:
+                                                                      AnalyticsEventsConst
+                                                                          .buttonClicked,
+                                                                  executedEventName:
+                                                                      AnalyticsExecutedEventNameConst
+                                                                          .resetCloseIconButton,
+                                                                );
                                                                 return false;
                                                               },
                                                               textController:
@@ -977,7 +1033,15 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                     InkWell(
                                                                       onTap:
                                                                           () async {
-                                                                        SelecteImageForSearch();
+                                                                        selecteImageForSearch();
+                                                                        /////////////////////////////
+                                                                        FirebaseAnalyticsService
+                                                                            .logEventForSession(
+                                                                          eventName:
+                                                                              AnalyticsEventsConst.buttonClicked,
+                                                                          executedEventName:
+                                                                              AnalyticsExecutedEventNameConst.searchWithImageButton,
+                                                                        );
                                                                       },
                                                                       child: state.sendRequestToGeminiStatus ==
                                                                               SendRequestToGeminiStatus.loading
@@ -1006,9 +1070,16 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                 PermissionStatus.granted) {
                                                                               return;
                                                                             }
-                                                                            _speechToText.isNotListening
-                                                                                ? _startListening()
-                                                                                : _stopListening();
+                                                                            if (_speechToText.isNotListening) {
+                                                                              _startListening();
+                                                                              /////////////////////////////
+                                                                              FirebaseAnalyticsService.logEventForSession(
+                                                                                eventName: AnalyticsEventsConst.buttonClicked,
+                                                                                executedEventName: AnalyticsExecutedEventNameConst.searchWithVoiceButton,
+                                                                              );
+                                                                            } else {
+                                                                              _stopListening();
+                                                                            }
                                                                           },
                                                                           child:
                                                                               Container(
@@ -1161,7 +1232,15 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                       InkWell(
                                                                         onTap:
                                                                             () async {
-                                                                          SelecteImageForSearch();
+                                                                          selecteImageForSearch();
+                                                                          /////////////////////////////
+                                                                          FirebaseAnalyticsService
+                                                                              .logEventForSession(
+                                                                            eventName:
+                                                                                AnalyticsEventsConst.buttonClicked,
+                                                                            executedEventName:
+                                                                                AnalyticsExecutedEventNameConst.searchWithImageButton,
+                                                                          );
                                                                         },
                                                                         child: state.sendRequestToGeminiStatus ==
                                                                                 SendRequestToGeminiStatus.loading
@@ -1192,7 +1271,16 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                               if (status != PermissionStatus.granted) {
                                                                                 return;
                                                                               }
-                                                                              _speechToText.isNotListening ? _startListening() : _stopListening();
+                                                                              if (_speechToText.isNotListening) {
+                                                                                _startListening();
+                                                                                /////////////////////////////
+                                                                                FirebaseAnalyticsService.logEventForSession(
+                                                                                  eventName: AnalyticsEventsConst.buttonClicked,
+                                                                                  executedEventName: AnalyticsExecutedEventNameConst.searchWithVoiceButton,
+                                                                                );
+                                                                              } else {
+                                                                                _stopListening();
+                                                                              }
                                                                             },
                                                                             child:
                                                                                 Container(
@@ -1453,6 +1541,15 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
                                                                               resetSearchAfterSearchingWhileRemoveSearch = false;
                                                                               homeBloc.add(AddIsExpandedForLidtingPageEvent(isExpandedForLidting: true));
+                                                                              /////////////////////////////////////////
+                                                                              FirebaseAnalyticsService.logEventForSession(
+                                                                                eventName: AnalyticsEventsConst.buttonClicked,
+                                                                                executedEventName: AnalyticsExecutedEventNameConst.productListingFilterIconButton,
+                                                                              );
+                                                                              /////////////////////////////////////////
+                                                                              FirebaseAnalyticsService.logScreen(
+                                                                                screen: AnalyticsScreensConst.productListingFilterScreen,
+                                                                              );
                                                                             }
                                                                           },
                                                                           child:
@@ -1493,11 +1590,25 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                         //     category: widget.category,
                                                                         //     searchText: widget.searchText,
                                                                         //     filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
-                                                                        homeBloc.add(ChangeAppliedFiltersEvent(
+                                                                        homeBloc
+                                                                            .add(
+                                                                          ChangeAppliedFiltersEvent(
                                                                             boutiqueSlug:
                                                                                 widget.boutiqueSlug,
-                                                                            category: widget.category,
-                                                                            filtersAppliedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
+                                                                            category:
+                                                                                widget.category,
+                                                                            filtersAppliedByUser:
+                                                                                GetProductFiltersModel(filters: prefAppliedFilters),
+                                                                          ),
+                                                                        );
+                                                                        //////////////////////////////////
+                                                                        FirebaseAnalyticsService
+                                                                            .logEventForSession(
+                                                                          eventName:
+                                                                              AnalyticsEventsConst.buttonClicked,
+                                                                          executedEventName:
+                                                                              AnalyticsExecutedEventNameConst.filterCloseIconButton,
+                                                                        );
                                                                       }
                                                                       homeBloc.add(AddIsExpandedForLidtingPageEvent(
                                                                           isExpandedForLidting:
@@ -2486,27 +2597,48 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                 "554${GetIt.I<PrefsRepository>().serverTime}4555554444${prefsRepository.countryIso.toString()}444444444${LanguageService.languageCode == 'ar' ? 'ae' : LanguageService.languageCode}444444444444${GetIt.I<PrefsRepository>().currentEvent}44444444444444444444444444445555555555555555555555");
                                                           },
                                                         );
-                                                        FirebaseAnalyticsService
-                                                            .logEventForViewedProduct(
-                                                          eventName:
-                                                              AnalyticsEventsConst
-                                                                  .viewedProduct,
-                                                          productId:
-                                                              products[index]
+                                                        Future.delayed(
+                                                          Duration(
+                                                              milliseconds:
+                                                                  100),
+                                                        ).then(
+                                                          (value) {
+                                                            FirebaseAnalyticsService
+                                                                .logEventForViewedProduct(
+                                                              eventName:
+                                                                  AnalyticsEventsConst
+                                                                      .viewedProduct,
+                                                              productId: products[
+                                                                      index]
                                                                   .id
                                                                   .toString(),
-                                                          productName:
-                                                              products[index]
-                                                                  .name
-                                                                  .toString(),
-                                                          productCategoriesId:
-                                                              products[index]
-                                                                  .categories
-                                                                  ?.map(
-                                                                    (e) => e.id
-                                                                        .toString(),
-                                                                  )
-                                                                  .toList(),
+                                                              productName:
+                                                                  products[
+                                                                          index]
+                                                                      .name
+                                                                      .toString(),
+                                                              productCategoriesId:
+                                                                  products[
+                                                                          index]
+                                                                      .categories
+                                                                      ?.map(
+                                                                        (e) => e
+                                                                            .id
+                                                                            .toString(),
+                                                                      )
+                                                                      .toList(),
+                                                            );
+                                                          },
+                                                        );
+                                                        ////////////////////////////
+                                                        FirebaseAnalyticsService
+                                                            .logEventForSession(
+                                                          eventName:
+                                                              AnalyticsEventsConst
+                                                                  .buttonClicked,
+                                                          executedEventName:
+                                                              AnalyticsExecutedEventNameConst
+                                                                  .chooseProductButton,
                                                         );
 
                                                         // pushOverscrollRoute(
@@ -2663,24 +2795,35 @@ class _ProductListingPageState extends State<ProductListingPage> {
                     '/////////// Go to details  /////// ${products[index].categories?[0].name} ///////');
                 Future.delayed(
                   Duration(milliseconds: 100),
+                ).then(
+                  (value) {
+                    FirebaseAnalyticsService.logEventForViewedProduct(
+                      eventName: AnalyticsEventsConst.viewedProduct,
+                      productId: products[index].id.toString(),
+                      productName: products[index].name.toString(),
+                      productCategoriesId: products[index]
+                          .categories
+                          ?.map(
+                            (e) => e.id.toString(),
+                          )
+                          .toList(),
+                    );
+                  },
+                );
+                ////////////////////////////
+                FirebaseAnalyticsService.logEventForSession(
+                  eventName: AnalyticsEventsConst.buttonClicked,
+                  executedEventName:
+                      AnalyticsExecutedEventNameConst.chooseProductButton,
                 );
 
-                FirebaseAnalyticsService.logEventForViewedProduct(
-                  eventName: AnalyticsEventsConst.viewedProduct,
-                  productId: products[index].id.toString(),
-                  productName: products[index].name.toString(),
-                  productCategoriesId: products[index]
-                      .categories
-                      ?.map(
-                        (e) => e.id.toString(),
-                      )
-                      .toList(),
-                );
-
-                Navigator.of(context).push(MaterialPageRoute(
+                Navigator.of(context).push(
+                  MaterialPageRoute(
                     builder: (ctx) => ProductDetailsPage(
-                          productItem: products[index],
-                        )));
+                      productItem: products[index],
+                    ),
+                  ),
+                );
               },
               child: ProductItem(
                 key: TestVariables.kTestMode

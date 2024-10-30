@@ -42,8 +42,7 @@ class AnalyticsExecutedEventNameConst {
   static const scrollStoriesInHomeEvent = 'scroll_stories_in_home_event';
   static const changeStoryInStroyScreenEvent =
       'change_story_in_stroyscreen_event';
-  static const homeSearchBackCloseIconButton =
-      'home_search_back_closeicon_button';
+  static const searchCloseIconButton = 'search_close_icon_button';
   static const searchWithImageButton = 'search_with_image_button';
   static const uploadSearchImageSuccess = 'upload_search_image_success';
   static const videoNotSupported = 'video_not_supported';
@@ -53,13 +52,18 @@ class AnalyticsExecutedEventNameConst {
   static const resetHomeSearchButton = 'reset_home_search_button';
   static const applyHomeSearchResultButton = 'apply_home_search_result_button';
   static const searchWithVoiceButton = 'search_with_voice_button';
-
-  static const productListingSearchEvent = 'product_listing_search_event';
+  static const openSearchFieldButton = 'open_search_field_button';
+  static const chooseBoutiqueButton = 'choose_boutique_button';
+  static const chooseProductButton = 'choose_product_button';
   static const appliedFiltersEvent = 'applied_filters_event';
-  static const productListingFilterButton = 'product_listing_filter_button';
+  static const trydosAppbarBackIconButton = 'trydos_appbar_backicon_button';
+  static const productListingFilterIconButton =
+      'product_listing_filter_icon_button';
   static const backAppButton = 'back_app_button';
   static const applySearchResultButton = 'apply_search_result_button';
+  static const applyFilterButton = 'apply_filter_button';
   static const resetCloseIconButton = 'reset_closeicon_button';
   static const searchForFiltersEvent = 'search_for_filters_event';
   static const resetButton = 'reset_button';
+  static const filterCloseIconButton = 'filter_close_icon_button';
 }

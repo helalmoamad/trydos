@@ -595,12 +595,29 @@ class _TabsBarState extends State<TabsBar> {
                                   resetSearchAfterSearchingWhileRemoveSearch =
                                       false;
                                   widget.appearTrendingAndHistory.value = true;
+                                  ///////////////////////////
+                                  FirebaseAnalyticsService.logEventForSession(
+                                    eventName:
+                                        AnalyticsEventsConst.buttonClicked,
+                                    executedEventName:
+                                        AnalyticsExecutedEventNameConst
+                                            .resetCloseIconButton,
+                                  );
                                   return true;
                                 } else {
                                   appBloc.add(ChangeBasePage(0));
                                   homeBloc.add(
                                       ResetAllSelectedAppliedFilterEvent());
                                   appBloc.add(HideBottomNavigationBar(false));
+
+                                  ///////////////////////////
+                                  FirebaseAnalyticsService.logEventForSession(
+                                    eventName:
+                                        AnalyticsEventsConst.buttonClicked,
+                                    executedEventName:
+                                        AnalyticsExecutedEventNameConst
+                                            .searchCloseIconButton,
+                                  );
                                 }
                                 return false;
                               },
@@ -1000,7 +1017,7 @@ class _TabsBarState extends State<TabsBar> {
                                                       .logEventForSession(
                                                     eventName:
                                                         AnalyticsEventsConst
-                                                            .programmingEvent,
+                                                            .buttonClicked,
                                                     executedEventName:
                                                         AnalyticsExecutedEventNameConst
                                                             .chooseCategoryButton,

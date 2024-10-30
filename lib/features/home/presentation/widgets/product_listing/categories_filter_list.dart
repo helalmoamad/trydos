@@ -596,6 +596,7 @@ class CategoriesFilterList extends StatelessWidget {
                                 : null,
                             categories: categories,
                           );
+                          print('//////// reset  //////////////');
                         }
                         if (!workWithChoosedFilter) {
                           homeBloc.add(

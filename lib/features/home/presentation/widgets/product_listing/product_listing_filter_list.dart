@@ -1,8 +1,5 @@
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
-import 'package:flutter/rendering.dart' as rendring;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -125,6 +122,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
             previous.cashedOrginalBoutique != current.cashedOrginalBoutique,
         builder: (context, state) {
           isExpanded = state.isExpandedForListingPage ?? false;
+          print('//////// isExpanded : $isExpanded ///////////');
           if ((state.getProductFiltersStatus[key] ==
                   GetProductFiltersStatus.loading &&
               state.getProductFiltersStatus[key] == null)) {
@@ -1227,16 +1225,28 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                                       colors,
                                                                   prices:
                                                                       prices))));
-                                          homeBloc
-                                              .add(GetProductsWithFiltersEvent(
-                                            fromChoosed: true,
-                                            fromSearch: widget.fromSearch,
-                                            searchText:
-                                                widget.textController.text,
-                                            boutiqueSlug: widget.boutiqueSlug,
-                                            category: widget.category,
-                                            offset: 1,
-                                          ));
+                                          //////////////////////////////////////////
+                                          FirebaseAnalyticsService
+                                              .logEventForSession(
+                                            eventName: AnalyticsEventsConst
+                                                .buttonClicked,
+                                            executedEventName:
+                                                AnalyticsExecutedEventNameConst
+                                                    .applyFilterButton,
+                                          );
+
+                                          //////////////////////////
+                                          homeBloc.add(
+                                            GetProductsWithFiltersEvent(
+                                              fromChoosed: true,
+                                              fromSearch: widget.fromSearch,
+                                              searchText:
+                                                  widget.textController.text,
+                                              boutiqueSlug: widget.boutiqueSlug,
+                                              category: widget.category,
+                                              offset: 1,
+                                            ),
+                                          );
                                           print(
                                               "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
                                           widget.closeFilterPage.call();
@@ -1370,6 +1380,16 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                     category: widget.category,
                                                     offset: 1,
                                                   ));
+                                                  //////////////////////////////////////////
+                                                  FirebaseAnalyticsService
+                                                      .logEventForSession(
+                                                    eventName:
+                                                        AnalyticsEventsConst
+                                                            .buttonClicked,
+                                                    executedEventName:
+                                                        AnalyticsExecutedEventNameConst
+                                                            .resetButton,
+                                                  );
                                                 },
                                                 child: Stack(
                                                   children: [
@@ -1587,7 +1607,6 @@ Widget choosedOrAppliedFiltersWidget({
                       : Key(WidgetsKey.appliedFiltersProductListingCloseKey),
                   onTap: () {
                     controller?.clear();
-
                     homeBloc.add(ChangeAppliedFiltersEvent(
                       category: category,
                       resetAppliedFilters: true,
@@ -1601,14 +1620,22 @@ Widget choosedOrAppliedFiltersWidget({
                       fromHomePageSearch: fromSearch,
                     ));
 
-                    homeBloc.add(GetProductsWithFiltersEvent(
-                      fromSearch: fromSearch,
-                      boutiqueSlug: boutiqueSlug,
-                      cashedOrginalBoutique: true,
-                      searchText: null,
-                      category: category,
-                      offset: 1,
-                    ));
+                    homeBloc.add(
+                      GetProductsWithFiltersEvent(
+                        fromSearch: fromSearch,
+                        boutiqueSlug: boutiqueSlug,
+                        cashedOrginalBoutique: true,
+                        searchText: null,
+                        category: category,
+                        offset: 1,
+                      ),
+                    );
+                    ///////////////////////////////
+                    FirebaseAnalyticsService.logEventForSession(
+                      eventName: AnalyticsEventsConst.buttonClicked,
+                      executedEventName:
+                          AnalyticsExecutedEventNameConst.resetCloseIconButton,
+                    );
                   },
                   child: Center(
                     child: Row(

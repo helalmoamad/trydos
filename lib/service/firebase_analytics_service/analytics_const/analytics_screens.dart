@@ -19,6 +19,4 @@ class AnalyticsScreensConst {
   static const storyScreen = 'story_screen';
   static const productDetailsScreen = 'product_details_screen';
   static const productListingFilterScreen = 'product_listing_filter_screen';
-  static const applySearchRequestFailed = 'apply_search_request_failed';
-  static const applySearchRequestSuccess = 'apply_search_request_success';
 }

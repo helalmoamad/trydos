@@ -34,6 +34,8 @@ import 'package:trydos/features/home/presentation/widgets/product_details_sheet/
 import 'package:trydos/features/home/presentation/widgets/product_stories_section/story/widget/stories_list.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../generated/locale_keys.g.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
+import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../service/language_service.dart';
 
 import '../../../app/app_widgets/loading_indicator/trydos_loader.dart';
@@ -90,7 +92,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     });
     homeBloc.add(
         GetStoryForProductEvent(productId: widget.productItem.id.toString()));
-    if(GetIt.I<PrefsRepository>().chatToken != null) {
+    if (GetIt.I<PrefsRepository>().chatToken != null) {
       BlocProvider.of<ChatBloc>(context).add(GetChatsEvent());
       BlocProvider.of<ChatBloc>(context).add(SaveContactsEvent());
     }
@@ -107,6 +109,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       statusBarBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.dark,
     ));
+
+    FirebaseAnalyticsService.logScreen(
+      screen: AnalyticsScreensConst.productDetailsScreen,
+    );
     super.didChangeDependencies();
   }
 

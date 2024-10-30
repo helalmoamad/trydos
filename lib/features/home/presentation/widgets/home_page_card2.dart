@@ -17,6 +17,7 @@ import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/my_text_widget.dart';
 import '../../../app/svg_network_widget.dart';
@@ -69,10 +70,21 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
               ),
             );
             ////////////////////////////////////
-            FirebaseAnalyticsService.logEventForViewedBoutique(
-              eventName: AnalyticsEventsConst.viewedBoutique,
-              boutiqueId: widget.boutniqe.id.toString(),
-              boutiqueName: widget.boutniqe.name.toString(),
+            FirebaseAnalyticsService.logEventForSession(
+              eventName: AnalyticsEventsConst.buttonClicked,
+              executedEventName:
+                  AnalyticsExecutedEventNameConst.chooseBoutiqueButton,
+            );
+            ////////////////////////////////////
+            Future.delayed(
+              Duration(milliseconds: 100),
+              () {
+                FirebaseAnalyticsService.logEventForViewedBoutique(
+                  eventName: AnalyticsEventsConst.viewedBoutique,
+                  boutiqueId: widget.boutniqe.id.toString(),
+                  boutiqueName: widget.boutniqe.name.toString(),
+                );
+              },
             );
           },
           child: Stack(
