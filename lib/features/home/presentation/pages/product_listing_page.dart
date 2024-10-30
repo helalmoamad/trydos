@@ -38,6 +38,8 @@ import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/data/model/pagination_model.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/app_widgets/app_bottom_navigation_bar.dart';
 import '../../../app/app_widgets/loading_indicator/trydos_loader.dart';
@@ -50,7 +52,6 @@ import '../../../app/svg_network_widget.dart';
 import '../../data/models/get_home_boutiqes_model.dart' as boutiques;
 import '../manager/home_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
-
 import 'package:speech_to_text/speech_to_text.dart';
 import '../widgets/product_listing/product_item.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
@@ -286,6 +287,15 @@ class _ProductListingPageState extends State<ProductListingPage> {
   }
 
   @override
+  void didChangeDependencies() async {
+    FirebaseAnalyticsService.logScreen(
+      screen: AnalyticsScreensConst.productListingScreen,
+    );
+
+    super.didChangeDependencies();
+  }
+
+  @override
   void dispose() {
     appBloc.add(HideBottomNavigationBar(false));
     if (!widget.fromSearch) {
@@ -308,7 +318,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
     htmlDescriptionHeight.value = context.size!.height;
   }
 
- 
 
   bool resetSearchAfterSearchingWhileRemoveSearch = false;
 
@@ -350,14 +359,21 @@ class _ProductListingPageState extends State<ProductListingPage> {
           homeBloc.add(
               AddIsExpandedForLidtingPageEvent(isExpandedForLidting: false));
 
+          ////////////////////////////////////
+          FirebaseAnalyticsService.logEventForSession(
+            eventName: AnalyticsEventsConst.buttonClicked,
+            executedEventName: AnalyticsExecutedEventNameConst.backAppButton,
+          );
+
           return Future.value(false);
         } else {
           if (!widget.fromSearch) {
             homeBloc.add(ChangeAppliedFiltersEvent(
-                boutiqueSlug: widget.boutiqueSlug,
-                category: widget.category,
-                filtersAppliedByUser: null,
-                resetAppliedFilters: true));
+              boutiqueSlug: widget.boutiqueSlug,
+              category: widget.category,
+              filtersAppliedByUser: null,
+              resetAppliedFilters: true,
+            ));
             homeBloc.add(ChangeSelectedFiltersEvent(
               fromHomePageSearch: widget.fromSearch,
               boutiqueSlug: widget.boutiqueSlug,
@@ -374,12 +390,21 @@ class _ProductListingPageState extends State<ProductListingPage> {
               filtersChoosedByUser: GetProductFiltersModel(
                   filters: homeBloc.state.appliedFiltersByUser[key]?.filters),
             ));
-            homeBloc.add(ChangeAppliedFiltersEvent(
+            homeBloc.add(
+              ChangeAppliedFiltersEvent(
                 boutiqueSlug: widget.boutiqueSlug,
                 category: widget.category,
-                resetAppliedFilters: true));
+                resetAppliedFilters: true,
+              ),
+            );
           }
+          ////////////////////////////////////
+          FirebaseAnalyticsService.logEventForSession(
+            eventName: AnalyticsEventsConst.buttonClicked,
+            executedEventName: AnalyticsExecutedEventNameConst.backAppButton,
+          );
         }
+
         return Future.value(true);
       },
       child: SafeArea(
@@ -722,6 +747,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                           GetProductFiltersModel(
                                                                               filters: filters.copyWithSaveOtherField(prices: filters.prices, searchText: null))));
                                                                 }
+
                                                                 resetSearchAfterSearchingWhileRemoveSearch =
                                                                     false;
                                                                 focusNode
@@ -736,6 +762,16 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                 appBloc.add(
                                                                     HideBottomNavigationBar(
                                                                         false));
+                                                                ///////////////////////////
+                                                                FirebaseAnalyticsService
+                                                                    .logEventForSession(
+                                                                  eventName:
+                                                                      AnalyticsEventsConst
+                                                                          .buttonClicked,
+                                                                  executedEventName:
+                                                                      AnalyticsExecutedEventNameConst
+                                                                          .resetCloseIconButton,
+                                                                );
                                                                 return false;
                                                               },
                                                               textController:
@@ -784,6 +820,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                       onTap:
                                                                           () async {
                                                                     SearchWithImageRelatedGemini.SelecteImageForSearch(context: context);
+                                                                        /////////////////////////////
+                                                                        FirebaseAnalyticsService
+                                                                            .logEventForSession(
+                                                                          eventName:
+                                                                              AnalyticsEventsConst.buttonClicked,
+                                                                          executedEventName:
+                                                                              AnalyticsExecutedEventNameConst.searchWithImageButton,
+                                                                        );
                                                                       },
                                                                       child: state.sendRequestToGeminiStatus ==
                                                                               SendRequestToGeminiStatus.loading
@@ -812,9 +856,16 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                 PermissionStatus.granted) {
                                                                               return;
                                                                             }
-                                                                            _speechToText.isNotListening
-                                                                                ? _startListening()
-                                                                                : _stopListening();
+                                                                            if (_speechToText.isNotListening) {
+                                                                              _startListening();
+                                                                              /////////////////////////////
+                                                                              FirebaseAnalyticsService.logEventForSession(
+                                                                                eventName: AnalyticsEventsConst.buttonClicked,
+                                                                                executedEventName: AnalyticsExecutedEventNameConst.searchWithVoiceButton,
+                                                                              );
+                                                                            } else {
+                                                                              _stopListening();
+                                                                            }
                                                                           },
                                                                           child:
                                                                               Container(
@@ -968,6 +1019,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                         onTap:
                                                                             () async {
                                                                           SearchWithImageRelatedGemini.SelecteImageForSearch(context: context);
+                                                                          /////////////////////////////
+                                                                          FirebaseAnalyticsService
+                                                                              .logEventForSession(
+                                                                            eventName:
+                                                                                AnalyticsEventsConst.buttonClicked,
+                                                                            executedEventName:
+                                                                                AnalyticsExecutedEventNameConst.searchWithImageButton,
+                                                                          );
                                                                         },
                                                                         child: state.sendRequestToGeminiStatus ==
                                                                                 SendRequestToGeminiStatus.loading
@@ -998,7 +1057,16 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                               if (status != PermissionStatus.granted) {
                                                                                 return;
                                                                               }
-                                                                              _speechToText.isNotListening ? _startListening() : _stopListening();
+                                                                              if (_speechToText.isNotListening) {
+                                                                                _startListening();
+                                                                                /////////////////////////////
+                                                                                FirebaseAnalyticsService.logEventForSession(
+                                                                                  eventName: AnalyticsEventsConst.buttonClicked,
+                                                                                  executedEventName: AnalyticsExecutedEventNameConst.searchWithVoiceButton,
+                                                                                );
+                                                                              } else {
+                                                                                _stopListening();
+                                                                              }
                                                                             },
                                                                             child:
                                                                                 Container(
@@ -1259,6 +1327,15 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
                                                                               resetSearchAfterSearchingWhileRemoveSearch = false;
                                                                               homeBloc.add(AddIsExpandedForLidtingPageEvent(isExpandedForLidting: true));
+                                                                              /////////////////////////////////////////
+                                                                              FirebaseAnalyticsService.logEventForSession(
+                                                                                eventName: AnalyticsEventsConst.buttonClicked,
+                                                                                executedEventName: AnalyticsExecutedEventNameConst.productListingFilterIconButton,
+                                                                              );
+                                                                              /////////////////////////////////////////
+                                                                              FirebaseAnalyticsService.logScreen(
+                                                                                screen: AnalyticsScreensConst.productListingFilterScreen,
+                                                                              );
                                                                             }
                                                                           },
                                                                           child:
@@ -1299,11 +1376,25 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                         //     category: widget.category,
                                                                         //     searchText: widget.searchText,
                                                                         //     filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
-                                                                        homeBloc.add(ChangeAppliedFiltersEvent(
+                                                                        homeBloc
+                                                                            .add(
+                                                                          ChangeAppliedFiltersEvent(
                                                                             boutiqueSlug:
                                                                                 widget.boutiqueSlug,
-                                                                            category: widget.category,
-                                                                            filtersAppliedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
+                                                                            category:
+                                                                                widget.category,
+                                                                            filtersAppliedByUser:
+                                                                                GetProductFiltersModel(filters: prefAppliedFilters),
+                                                                          ),
+                                                                        );
+                                                                        //////////////////////////////////
+                                                                        FirebaseAnalyticsService
+                                                                            .logEventForSession(
+                                                                          eventName:
+                                                                              AnalyticsEventsConst.buttonClicked,
+                                                                          executedEventName:
+                                                                              AnalyticsExecutedEventNameConst.filterCloseIconButton,
+                                                                        );
                                                                       }
                                                                       homeBloc.add(AddIsExpandedForLidtingPageEvent(
                                                                           isExpandedForLidting:
@@ -2285,62 +2376,61 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                   (BuildContext context,
                                                       int index) {
                                                     return InkWell(
-                                                      onTap: () async {
+                                                      onTap: () {
                                                         Future.delayed(
-                                                            Duration(
-                                                                milliseconds:
-                                                                    100), () {
-                                                          print("${prefsRepository.myMarketId.toString()}" +
-                                                              "55555555555555555555555555555555555555555");
-                                                          print("${prefsRepository.myMarketName.toString()}" +
-                                                              "554${GetIt.I<PrefsRepository>().serverTime}4555554444${prefsRepository.countryIso.toString()}444444444${LanguageService.languageCode == 'ar' ? 'ae' : LanguageService.languageCode}444444444444${GetIt.I<PrefsRepository>().currentEvent}44444444444444444444444444445555555555555555555555");
-                                                        });
-                                                        await FirebaseAnalytics
-                                                            .instance
-                                                            .logEvent(
-                                                                name:
-                                                                    'button_clicked',
-                                                                parameters: {
-                                                              "time_stamp": DateTime
-                                                                      .now()
-                                                                  .toUtc()
-                                                                  .add(Duration(
-                                                                      minutes:
-                                                                          GetIt.I<PrefsRepository>().getdurtion ??
-                                                                              0))
+                                                          Duration(
+                                                              milliseconds:
+                                                                  100),
+                                                          () {
+                                                            print("${prefsRepository.myMarketId.toString()}" +
+                                                                "55555555555555555555555555555555555555555");
+                                                            print("${prefsRepository.myMarketName.toString()}" +
+                                                                "554${GetIt.I<PrefsRepository>().serverTime}4555554444${prefsRepository.countryIso.toString()}444444444${LanguageService.languageCode == 'ar' ? 'ae' : LanguageService.languageCode}444444444444${GetIt.I<PrefsRepository>().currentEvent}44444444444444444444444444445555555555555555555555");
+                                                          },
+                                                        );
+                                                        Future.delayed(
+                                                          Duration(
+                                                              milliseconds:
+                                                                  100),
+                                                        ).then(
+                                                          (value) {
+                                                            FirebaseAnalyticsService
+                                                                .logEventForViewedProduct(
+                                                              eventName:
+                                                                  AnalyticsEventsConst
+                                                                      .viewedProduct,
+                                                              productId: products[
+                                                                      index]
+                                                                  .id
                                                                   .toString(),
-                                                              "previous_event_button_name":
-                                                                  GetIt.I<PrefsRepository>()
-                                                                          .currentEvent ??
-                                                                      "",
-                                                              "device_language":
-                                                                  LanguageService
-                                                                              .languageCode ==
-                                                                          'ar'
-                                                                      ? 'ae'
-                                                                      : LanguageService
-                                                                          .languageCode,
-                                                              "country_name":
-                                                                  GetIt.I<PrefsRepository>()
-                                                                      .countryIso,
-                                                              'userID':
-                                                                  prefsRepository
-                                                                      .myMarketId
+                                                              productName:
+                                                                  products[
+                                                                          index]
+                                                                      .name
                                                                       .toString(),
-                                                              'user_name':
-                                                                  prefsRepository
-                                                                      .myMarketName
-                                                                      .toString(),
-                                                              'clicked_button_name':
-                                                                  'i love you Ahmad',
-                                                              "session_id": GetIt.I<
-                                                                      PrefsRepository>()
-                                                                  .sessionId,
-                                                            });
-                                                        await GetIt.I<
-                                                                PrefsRepository>()
-                                                            .setCurrentEvent(
-                                                                "i loveddssssssssssss44444444444444444ssssssssssssss you Ahmad in past");
+                                                              productCategoriesId:
+                                                                  products[
+                                                                          index]
+                                                                      .categories
+                                                                      ?.map(
+                                                                        (e) => e
+                                                                            .id
+                                                                            .toString(),
+                                                                      )
+                                                                      .toList(),
+                                                            );
+                                                          },
+                                                        );
+                                                        ////////////////////////////
+                                                        FirebaseAnalyticsService
+                                                            .logEventForSession(
+                                                          eventName:
+                                                              AnalyticsEventsConst
+                                                                  .buttonClicked,
+                                                          executedEventName:
+                                                              AnalyticsExecutedEventNameConst
+                                                                  .chooseProductButton,
+                                                        );
 
                                                         // pushOverscrollRoute(
                                                         //     context: context,
@@ -2491,74 +2581,40 @@ class _ProductListingPageState extends State<ProductListingPage> {
           childCount: products.length,
           (BuildContext context, int index) {
             return InkWell(
-              onTap: () async {
+              onTap: () {
                 print(
                     '/////////// Go to details  /////// ${products[index].categories?[0].name} ///////');
                 Future.delayed(
                   Duration(milliseconds: 100),
+                ).then(
+                  (value) {
+                    FirebaseAnalyticsService.logEventForViewedProduct(
+                      eventName: AnalyticsEventsConst.viewedProduct,
+                      productId: products[index].id.toString(),
+                      productName: products[index].name.toString(),
+                      productCategoriesId: products[index]
+                          .categories
+                          ?.map(
+                            (e) => e.id.toString(),
+                          )
+                          .toList(),
+                    );
+                  },
+                );
+                ////////////////////////////
+                FirebaseAnalyticsService.logEventForSession(
+                  eventName: AnalyticsEventsConst.buttonClicked,
+                  executedEventName:
+                      AnalyticsExecutedEventNameConst.chooseProductButton,
                 );
 
-                await FirebaseAnalyticsService.logEventForViewedProducts(
-                  eventName: AnalyticsEventsConst.viewedProducts,
-                  productId: products[index].id.toString(),
-                  productName: products[index].name.toString(),
-                  productCategoriesId: products[index]
-                      .categories
-                      ?.map(
-                        (e) => e.id.toString(),
-                      )
-                      .toList(),
-                );
-
-                // await FirebaseAnalytics
-                //     .instance
-                //     .logEvent(
-                //   name:
-                //       'button_clicked',
-                //   parameters: {
-                //     "time_stamp": DateTime
-                //             .now()
-                //         .toUtc()
-                //         .add(Duration(
-                //             minutes:
-                //                 GetIt.I<PrefsRepository>().getdurtion ??
-                //                     0))
-                //         .toString(),
-                //     "previous_event_button_name":
-                //         GetIt.I<PrefsRepository>()
-                //             .currentEvent,
-                //     "device_language":
-                //         LanguageService.languageCode ==
-                //                 'ar'
-                //             ? 'ae'
-                //             : LanguageService
-                //                 .languageCode,
-                //     "country_name":
-                //         GetIt.I<PrefsRepository>()
-                //             .countryIso,
-                //     'userID': prefsRepository
-                //         .myMarketId
-                //         .toString(),
-                //     'user_name':
-                //         prefsRepository
-                //             .myMarketName
-                //             .toString(),
-                //     'clicked_button_name':
-                //         'i love you Ahmad',
-                //     "session_id": GetIt.I<
-                //             PrefsRepository>()
-                //         .sessionId,
-                //   },
-                // );
-                // await GetIt.I<
-                //         PrefsRepository>()
-                //     .setCurrentEvent(
-                //         "i loveddssssssssssss44444444444444444ssssssssssssss you Ahmad in past");
-
-                Navigator.of(context).push(MaterialPageRoute(
+                Navigator.of(context).push(
+                  MaterialPageRoute(
                     builder: (ctx) => ProductDetailsPage(
-                          productItem: products[index],
-                        )));
+                      productItem: products[index],
+                    ),
+                  ),
+                );
               },
               child: ProductItem(
                 key: TestVariables.kTestMode

@@ -223,15 +223,15 @@ class _WelcomeSectionState extends State<WelcomeSection> {
             key: TestVariables.kTestMode
                 ? Key(WidgetsKey.laterTakeLookKey)
                 : null,
-            onTap: () async {
-              if (prefsRepository.isVerifiedPhone != false) {
-                String? deviceId = await HelperFunctions.getDeviceId();
-                BlocProvider.of<AuthBloc>(context)
-                    .add(RegisterGuestEvent(deviceId: deviceId!));
-              }
+            onTap: () {
               Future.delayed(
                 Duration(milliseconds: 100),
-                () {
+                () async {
+                  if (prefsRepository.isVerifiedPhone != false) {
+                    String? deviceId = await HelperFunctions.getDeviceId();
+                    BlocProvider.of<AuthBloc>(context)
+                        .add(RegisterGuestEvent(deviceId: deviceId!));
+                  }
                   context.go(GRouter.config.applicationRoutes.kBasePage);
                 },
               );

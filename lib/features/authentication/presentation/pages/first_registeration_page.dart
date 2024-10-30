@@ -122,22 +122,28 @@ class _RegistrationPageState extends State<RegistrationPage>
                             highlightColor: Colors.transparent,
                             splashColor: Colors.transparent,
                             onTap: () {
-                              if (index == 2) {
-                                pageContent.value = 0;
-                                pageController.animateToPage(0,
-                                    duration: Duration(milliseconds: 500),
-                                    curve: Curves.easeInOut);
-                                return;
-                              }
-                              if (index >= 3 && index <= 5) {
-                                pageContent.value = 2;
-                                pageController.animateToPage(2,
-                                    duration: Duration(milliseconds: 500),
-                                    curve: Curves.easeInOut);
-                                return;
-                              }
-                              context.go(
-                                  GRouter.config.applicationRoutes.kBasePage);
+                              Future.delayed(
+                                Duration(milliseconds: 100),
+                                () {
+                                  if (index == 2) {
+                                    pageContent.value = 0;
+                                    pageController.animateToPage(0,
+                                        duration: Duration(milliseconds: 500),
+                                        curve: Curves.easeInOut);
+                                    return;
+                                  }
+                                  if (index >= 3 && index <= 5) {
+                                    pageContent.value = 2;
+                                    pageController.animateToPage(2,
+                                        duration: Duration(milliseconds: 500),
+                                        curve: Curves.easeInOut);
+                                    return;
+                                  }
+                                  context.go(GRouter
+                                      .config.applicationRoutes.kBasePage);
+                                },
+                              );
+
                               //////////////////////////
                               FirebaseAnalyticsService.logEventForSession(
                                 eventName: AnalyticsEventsConst.buttonClicked,

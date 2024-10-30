@@ -265,9 +265,8 @@ void main() async {
   await GetIt.I<PrefsRepository>().removeMessageFromBackground();
   NotificationProcess().setupInteractedMessage();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
-  await FirebaseAnalytics.instance
-      .setSessionTimeoutDuration(Duration(seconds: 20));
+  FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
+  FirebaseAnalytics.instance.setSessionTimeoutDuration(Duration(seconds: 20));
   GetIt.I<PrefsRepository>().setTimerForOtpRunning(false);
   fetchServersUrlsFromSharedPreference();
   await NotificationProcess().fcmToken();

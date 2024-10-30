@@ -1,11 +1,9 @@
-import 'dart:developer';
 import 'dart:io';
 import 'package:dartz/dartz.dart' as dartz;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 import 'dart:ui' as ui;
@@ -18,19 +16,18 @@ import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.
 import 'package:trydos/features/app/app_widgets/update_user_name_widget.dart';
 import 'package:trydos/features/story/helper_functions/check_showing_stories.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
-import 'package:trydos/features/story/presentation/pages/story_collection.dart';
 import 'package:trydos/features/story/presentation/pages/story_collection_page_view.dart';
 import 'package:trydos/features/story/presentation/widget/story_item_widget.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
-
-//import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../routes/router.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/my_text_widget.dart';
-import '../../../app/trydos_shimmer_loading.dart';
 import '../../data/models/get_stories_model.dart';
 import '../bloc/story_state.dart';
 
@@ -47,11 +44,30 @@ class _StoriesListState extends State<StoriesList> {
   final ValueNotifier<dartz.Tuple2<int, int>> resizeStories =
       ValueNotifier(dartz.Tuple2(-1, -1));
 
+  double _lastScrollPosition = 0;
+
   @override
   void initState() {
-    listViewController.addListener(() {
-      disableResizing();
-    });
+    listViewController.addListener(
+      () {
+        if (resizeStories.value.value1 != -1 ||
+            resizeStories.value.value2 != -1) {
+          disableResizing();
+        }
+
+        double currentPosition = listViewController.position.pixels;
+        if ((currentPosition - _lastScrollPosition).abs() >= 20) {
+          debugPrint(listViewController.position.pixels.toString());
+          _lastScrollPosition = currentPosition;
+          /////////////////////////////
+          FirebaseAnalyticsService.logEventForSession(
+            eventName: AnalyticsEventsConst.buttonClicked,
+            executedEventName:
+                AnalyticsExecutedEventNameConst.scrollStoriesInHomeEvent,
+          );
+        }
+      },
+    );
     super.initState();
   }
 
@@ -138,21 +154,33 @@ class _StoriesListState extends State<StoriesList> {
                                                                 .myMarketName ==
                                                             null) {
                                                           showDialog(
-                                                              context: context,
-                                                              barrierDismissible:
-                                                                  false,
-                                                              builder:
-                                                                  (BuildContext
-                                                                      context) {
-                                                                return UpdateUserNameWidget();
-                                                              });
+                                                            context: context,
+                                                            barrierDismissible:
+                                                                false,
+                                                            builder:
+                                                                (BuildContext
+                                                                    context) {
+                                                              return UpdateUserNameWidget();
+                                                            },
+                                                          );
                                                         } else {
+                                                          FirebaseAnalyticsService
+                                                              .logEventForSession(
+                                                            eventName:
+                                                                AnalyticsEventsConst
+                                                                    .buttonClicked,
+                                                            executedEventName:
+                                                                AnalyticsExecutedEventNameConst
+                                                                    .uploadStoryButton,
+                                                          );
+                                                          //////////////////////////////////////
                                                           showDialog(
-                                                              context: context,
-                                                              builder:
-                                                                  (BuildContext
-                                                                      context) {
-                                                                return GalleryAndCameraDialogWidget(onChooseFileFromCameraAction:
+                                                            context: context,
+                                                            builder:
+                                                                (BuildContext
+                                                                    context) {
+                                                              return GalleryAndCameraDialogWidget(
+                                                                onChooseFileFromCameraAction:
                                                                     (File?
                                                                         file) async {
                                                                   if (file !=
@@ -173,8 +201,19 @@ class _StoriesListState extends State<StoriesList> {
                                                                     //
                                                                     //
                                                                     //   CloudinaryFile.fromFile(
+                                                                    ///////////////////////////////////////////
+                                                                    FirebaseAnalyticsService
+                                                                        .logEventForSession(
+                                                                      eventName:
+                                                                          AnalyticsEventsConst
+                                                                              .buttonClicked,
+                                                                      executedEventName:
+                                                                          AnalyticsExecutedEventNameConst
+                                                                              .confirmUploadStoryButton,
+                                                                    );
                                                                   }
-                                                                }, onChooseFileFromGalleryAction:
+                                                                },
+                                                                onChooseFileFromGalleryAction:
                                                                     (AssetEntity?
                                                                         assetEntity) async {
                                                                   if (assetEntity !=
@@ -186,8 +225,10 @@ class _StoriesListState extends State<StoriesList> {
                                                                         UploadStoryCloudinaryEvent(
                                                                             file));
                                                                   }
-                                                                });
-                                                              });
+                                                                },
+                                                              );
+                                                            },
+                                                          );
                                                         }
                                                       },
                                                     ),
@@ -371,6 +412,16 @@ class _StoriesListState extends State<StoriesList> {
                                                           fullscreenDialog:
                                                               true);
                                                       disableResizing();
+                                                      //////////////////////////////
+                                                      FirebaseAnalyticsService
+                                                          .logEventForSession(
+                                                        eventName:
+                                                            AnalyticsEventsConst
+                                                                .buttonClicked,
+                                                        executedEventName:
+                                                            AnalyticsExecutedEventNameConst
+                                                                .viewStoryButton,
+                                                      );
                                                     },
                                                     onTapOnUserImage: () {
                                                       resizeStories.value =
@@ -415,6 +466,16 @@ class _StoriesListState extends State<StoriesList> {
                                                           fullscreenDialog:
                                                               true);
                                                       // Navigator.push(context, MaterialPageRoute(builder: (_)=> StoryCollection(index ,   key: UniqueKey()),));
+                                                      //////////////////////////////
+                                                      FirebaseAnalyticsService
+                                                          .logEventForSession(
+                                                        eventName:
+                                                            AnalyticsEventsConst
+                                                                .buttonClicked,
+                                                        executedEventName:
+                                                            AnalyticsExecutedEventNameConst
+                                                                .viewStoryButton,
+                                                      );
                                                     },
                                                     onTapOnUserImage: () {
                                                       resizeStories.value =
