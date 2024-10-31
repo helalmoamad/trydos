@@ -101,6 +101,14 @@ abstract class PrefsRepository {
   Future<bool> setCurrentEvent(String currentEvent);
   Future<bool> removeCurrentEvent();
 
+  Future<bool> setViewedProducts(String productId);
+  List<String> getviewedProductsProducts();
+  Future<bool> removeViewedProducts();
+
+  Future<bool> setViewedBoutiques(String boutiqueId);
+  List<String> getviewedProductsBoutiques();
+  Future<bool> removeViewedBoutiques();
+
   Future<bool> setTheme(ThemeMode themeMode);
 
   Future<bool> setAFilePathExist(String filePath, String chatId);

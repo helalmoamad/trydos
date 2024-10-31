@@ -313,7 +313,7 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                                           child:
                                                               SvgPicture.asset(
                                                             AppAssets
-                                                                .MessageFailedSvg,
+                                                                .messageFailedSvg,
                                                             width: 10.sp,
                                                             height: 10.sp,
                                                           ),

@@ -91,7 +91,7 @@ class _ImageMessageState extends State<ImageMessage> {
     }
     chatBloc = BlocProvider.of<ChatBloc>(context);
     Timer(Duration(seconds: 4), () {
-      if(mounted) {
+      if (mounted) {
         setState(() {
           timer = true;
         });
@@ -218,9 +218,8 @@ class _ImageMessageState extends State<ImageMessage> {
                                           // _loadingImage.value = 2;
                                           if (file != null) {
                                             widget.imageFile = file;
-                                            if(mounted) {
-                                              setState(() {
-                                              });
+                                            if (mounted) {
+                                              setState(() {});
                                             }
                                           }
                                         });
@@ -316,7 +315,8 @@ class _ImageMessageState extends State<ImageMessage> {
                                               : HelperFunctions
                                                   .getZonedDateInFormat(
                                                       widget.createAt!),
-                                          style: context.textTheme.titleSmall?.rr
+                                          style: context
+                                              .textTheme.titleSmall?.rr
                                               .copyWith(
                                                   color: context
                                                       .colorScheme.white),
@@ -348,7 +348,7 @@ class _ImageMessageState extends State<ImageMessage> {
                                                           left: 5.w),
                                                       child: SvgPicture.asset(
                                                         AppAssets
-                                                            .MessageFailedSvg,
+                                                            .messageFailedSvg,
                                                         width: 10.sp,
                                                         height: 10.sp,
                                                       ),

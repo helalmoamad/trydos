@@ -10,24 +10,24 @@ import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/test_utils/widgets_keys.dart';
-
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/features/app/app_widgets/update_user_name_widget.dart';
 import 'package:trydos/features/app/language_dropdown.dart';
-
 import 'package:trydos/features/feed_back/presentation/pages/feed_back_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/files_exist_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/shared_preference_page.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
-
 import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../common/test_utils/test_var.dart';
 import '../../../core/domin/repositories/prefs_repository.dart';
 import '../../../core/utils/theme_state.dart';
 import '../../../routes/router.dart';
+import '../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import '../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../feed_back/presentation/pages/edit_urls_page.dart';
 import '../blocs/app_bloc/app_bloc.dart';
 import '../blocs/app_bloc/app_event.dart';
@@ -80,14 +80,23 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                       Navigator.of(context).pop();
                     }
                     if (state.currentIndex != 0) {
-                      homeBloc.add(GetHomeBoutiqesEvent(
+                      homeBloc.add(
+                        GetHomeBoutiqesEvent(
                           getWithPrefetchForBoutiques: false,
                           context: context,
                           offset: '1',
-                          categorySlug: 'Empty'));
+                          categorySlug: 'Empty',
+                        ),
+                      );
                     }
                     appBloc.add(ChangeBasePage(0));
                     homeBloc.add(ResetAllSelectedAppliedFilterEvent());
+                    /////////////////////////
+                    FirebaseAnalyticsService.logEventForSession(
+                      eventName: AnalyticsEventsConst.buttonClicked,
+                      executedEventName:
+                          AnalyticsExecutedEventNameConst.homeNavBarButton,
+                    );
                   },
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -124,6 +133,12 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                       Navigator.of(context).pop();
                     }
                     appBloc.add(ChangeBasePage(1));
+                    /////////////////////////
+                    FirebaseAnalyticsService.logEventForSession(
+                      eventName: AnalyticsEventsConst.buttonClicked,
+                      executedEventName:
+                          AnalyticsExecutedEventNameConst.cartNavBarButton,
+                    );
                   },
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -184,6 +199,12 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                         appBloc.add(ChangeBasePage(2));
                       }
                     }
+                    /////////////////////////
+                    FirebaseAnalyticsService.logEventForSession(
+                      eventName: AnalyticsEventsConst.buttonClicked,
+                      executedEventName:
+                          AnalyticsExecutedEventNameConst.chatNavBarButton,
+                    );
                   },
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -305,6 +326,12 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                     //appBloc.add(ChangeBasePage(0));
                     context
                         .go(GRouter.config.applicationRoutes.kRegistrationPage);
+                    /////////////////////////
+                    FirebaseAnalyticsService.logEventForSession(
+                      eventName: AnalyticsEventsConst.buttonClicked,
+                      executedEventName:
+                          AnalyticsExecutedEventNameConst.meNavBarButton,
+                    );
                   },
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,

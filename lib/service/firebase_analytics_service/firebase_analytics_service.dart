@@ -13,22 +13,29 @@ class FirebaseAnalyticsService {
     required String screen,
     Map<String, String>? extraParams,
   }) async {
-    await FirebaseAnalytics.instance.logScreenView(
-      screenName: screen,
-      parameters: {
-        'user_id': GetIt.I<PrefsRepository>().myMarketId ?? 'empty',
-        'session_id': GetIt.I<PrefsRepository>().sessionId.toString(),
-        'time_stamp': DateTime.now()
-            .toUtc()
-            .add(Duration(minutes: GetIt.I<PrefsRepository>().getdurtion ?? 0))
-            .toString(),
-        'device_language': LanguageService.languageCode == 'ar'
-            ? 'ae'
-            : LanguageService.languageCode,
-        'country_name': GetIt.I<PrefsRepository>().countryIso.toString(),
-        if (extraParams != null) ...extraParams,
-      },
-    );
+    try {
+      await FirebaseAnalytics.instance.logScreenView(
+        screenName: screen,
+        parameters: {
+          'our_user_id': GetIt.I<PrefsRepository>().myMarketId ?? 'empty',
+          'our_session_id': GetIt.I<PrefsRepository>().sessionId.toString(),
+          'time_stamp': DateTime.now()
+              .toUtc()
+              .add(
+                  Duration(minutes: GetIt.I<PrefsRepository>().getdurtion ?? 0))
+              .toString(),
+          'device_language': LanguageService.languageCode == 'ar'
+              ? 'ae'
+              : LanguageService.languageCode,
+          'country_name': GetIt.I<PrefsRepository>().countryIso.toString(),
+          if (extraParams != null) ...extraParams,
+        },
+      );
+    } catch (e, st) {
+      debugPrint(
+          '////logScreen Error ////////// ${e.toString()} //////////////////');
+      debugPrint(st.toString());
+    }
   }
 
   static Future<void> logEventForSession({
@@ -40,8 +47,8 @@ class FirebaseAnalyticsService {
       await FirebaseAnalytics.instance.logEvent(
         name: eventName,
         parameters: {
-          'user_id': GetIt.I<PrefsRepository>().myMarketId ?? 'empty',
-          'session_id': GetIt.I<PrefsRepository>().sessionId.toString(),
+          'our_user_id': GetIt.I<PrefsRepository>().myMarketId ?? 'empty',
+          'our_session_id': GetIt.I<PrefsRepository>().sessionId.toString(),
           'executed_event_name': executedEventName,
           'time_stamp': DateTime.now()
               .toUtc()
@@ -63,7 +70,8 @@ class FirebaseAnalyticsService {
       );
       ///////////////////////
     } catch (e, st) {
-      debugPrint(e.toString());
+      debugPrint(
+          '////log Event For Session Error ////////// ${e.toString()} //////////////////');
       debugPrint(st.toString());
     }
   }
@@ -76,7 +84,7 @@ class FirebaseAnalyticsService {
       await FirebaseAnalytics.instance.logEvent(
         name: AnalyticsEventsConst.startSession,
         parameters: {
-          'session_id': GetIt.I<PrefsRepository>().sessionId.toString(),
+          'our_session_id': GetIt.I<PrefsRepository>().sessionId.toString(),
           'session_startAt': DateTime.now()
               .toUtc()
               .add(
@@ -86,32 +94,77 @@ class FirebaseAnalyticsService {
       );
 
       await GetIt.I<PrefsRepository>().removeCurrentEvent();
+      await GetIt.I<PrefsRepository>().removeViewedProducts();
+      await GetIt.I<PrefsRepository>().removeViewedBoutiques();
     } catch (e, st) {
-      debugPrint(e.toString());
+      debugPrint(
+          '//// startAnalyticsSession Error ////////// ${e.toString()} //////////////////');
       debugPrint(st.toString());
     }
   }
 
-  static Future<void> logEventForViewedProducts({
+  static Future<void> logEventForViewedProduct({
     required String eventName,
     required String productId,
     required String productName,
     required List<String>? productCategoriesId,
     Map<String, String>? extraParams,
   }) async {
-    try {
-      await FirebaseAnalytics.instance.logEvent(
-        name: eventName,
-        parameters: {
-          'product_id': productId,
-          'product_name': productName,
-          'product_category': json.encode(productCategoriesId),
-          if (extraParams != null) ...extraParams,
-        },
-      );
-    } catch (e, st) {
-      debugPrint(e.toString());
-      debugPrint(st.toString());
+    List<String> viewedProducts =
+        GetIt.I<PrefsRepository>().getviewedProductsProducts();
+    if (!viewedProducts.contains(productId)) {
+      try {
+        await FirebaseAnalytics.instance.logEvent(
+          name: eventName,
+          parameters: {
+            'our_user_id': GetIt.I<PrefsRepository>().myMarketId ?? 'empty',
+            'product_id': productId,
+            'product_name': productName,
+            'product_category': json.encode(productCategoriesId),
+            if (extraParams != null) ...extraParams,
+          },
+        ).then(
+          (value) async {
+            await GetIt.I<PrefsRepository>().setViewedProducts(productId);
+          },
+        );
+      } catch (e, st) {
+        debugPrint(
+            '//// logEventForViewedProducts Error ////////// ${e.toString()} //////////////////');
+        debugPrint(st.toString());
+      }
+    }
+  }
+
+  static Future<void> logEventForViewedBoutique({
+    required String eventName,
+    required String boutiqueId,
+    required String boutiqueName,
+    Map<String, String>? extraParams,
+  }) async {
+    List<String> viewedBoutiques =
+        GetIt.I<PrefsRepository>().getviewedProductsBoutiques();
+
+    if (!viewedBoutiques.contains(boutiqueId)) {
+      try {
+        await FirebaseAnalytics.instance.logEvent(
+          name: eventName,
+          parameters: {
+            'our_user_id': GetIt.I<PrefsRepository>().myMarketId ?? 'empty',
+            'boutique_id': boutiqueId,
+            'boutique_name': boutiqueName,
+            if (extraParams != null) ...extraParams,
+          },
+        ).then(
+          (value) async {
+            await GetIt.I<PrefsRepository>().setViewedBoutiques(boutiqueId);
+          },
+        );
+      } catch (e, st) {
+        debugPrint(
+            '//// log Event For Viewed Boutiques Error ////////// ${e.toString()} //////////////////');
+        debugPrint(st.toString());
+      }
     }
   }
 }

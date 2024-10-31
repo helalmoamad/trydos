@@ -7,6 +7,9 @@ import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import '../../../../../service/language_service.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../my_text_widget.dart';
 import 'app_bar_params.dart';
 
@@ -103,6 +106,12 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
                   onTap: () {
                     appBarParams.onBack?.call();
                     Navigator.pop(context);
+                    /////////////////////////////////
+                    FirebaseAnalyticsService.logEventForSession(
+                      eventName: AnalyticsEventsConst.buttonClicked,
+                      executedEventName: AnalyticsExecutedEventNameConst
+                          .trydosAppbarBackIconButton,
+                    );
                   },
                   child: Container(
                     padding: EdgeInsets.all(8),

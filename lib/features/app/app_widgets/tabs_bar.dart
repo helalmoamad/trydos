@@ -1,20 +1,13 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-import 'package:permission_handler/permission_handler.dart';
-
 import 'package:speech_to_text/speech_to_text.dart';
-import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gemini/flutter_gemini.dart' as geminis;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:mime/mime.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
@@ -34,6 +27,9 @@ import '../../../common/constant/design/assets_provider.dart';
 import '../../../common/constant/design/constant_design.dart';
 import '../../../common/test_utils/widgets_keys.dart';
 import '../../../core/utils/responsive_padding.dart';
+import '../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import '../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../home/data/models/get_product_filters_model.dart';
 import '../../home/presentation/manager/home_bloc.dart';
 import '../../home/presentation/manager/home_state.dart';
@@ -83,14 +79,17 @@ class _TabsBarState extends State<TabsBar> {
                   .choosedFiltersByUser['search']
                   ?.filters ??
               Filter();
-          BlocProvider.of<HomeBloc>(context).add(ChangeSelectedFiltersEvent(
-              boutiqueSlug: 'search',
-              fromHomePageSearch: true,
-              filtersChoosedByUser: GetProductFiltersModel(
+          BlocProvider.of<HomeBloc>(context).add(
+            ChangeSelectedFiltersEvent(
+                boutiqueSlug: 'search',
+                fromHomePageSearch: true,
+                filtersChoosedByUser: GetProductFiltersModel(
                   filters: filters.copyWithSaveOtherField(
-                prices: filters.prices,
-                searchText: result.recognizedWords,
-              ))));
+                    prices: filters.prices,
+                    searchText: result.recognizedWords,
+                  ),
+                )),
+          );
           BlocProvider.of<HomeBloc>(context).add(ChangeAppliedFiltersEvent(
             boutiqueSlug: 'search',
             filtersAppliedByUser: GetProductFiltersModel(
@@ -329,12 +328,29 @@ class _TabsBarState extends State<TabsBar> {
                                   resetSearchAfterSearchingWhileRemoveSearch =
                                       false;
                                   widget.appearTrendingAndHistory.value = true;
+                                  ///////////////////////////
+                                  FirebaseAnalyticsService.logEventForSession(
+                                    eventName:
+                                        AnalyticsEventsConst.buttonClicked,
+                                    executedEventName:
+                                        AnalyticsExecutedEventNameConst
+                                            .resetCloseIconButton,
+                                  );
                                   return true;
                                 } else {
                                   appBloc.add(ChangeBasePage(0));
                                   homeBloc.add(
                                       ResetAllSelectedAppliedFilterEvent());
                                   appBloc.add(HideBottomNavigationBar(false));
+
+                                  ///////////////////////////
+                                  FirebaseAnalyticsService.logEventForSession(
+                                    eventName:
+                                        AnalyticsEventsConst.buttonClicked,
+                                    executedEventName:
+                                        AnalyticsExecutedEventNameConst
+                                            .searchCloseIconButton,
+                                  );
                                 }
                                 return false;
                               },
@@ -344,11 +360,18 @@ class _TabsBarState extends State<TabsBar> {
                                 appBloc.add(ChangeIndexForSearch(2));
                                 widget.buildSearchResult.value = 1;
                                 widget.appearTrendingAndHistory.value = true;
-
+                                //////////////////////////////////
                                 Future.delayed(Duration(milliseconds: 300), () {
                                   appBloc.add(ChangeBasePage(4));
                                   appBloc.add(HideBottomNavigationBar(true));
                                 });
+                                ////////////////////////////////
+                                FirebaseAnalyticsService.logEventForSession(
+                                  eventName: AnalyticsEventsConst.buttonClicked,
+                                  executedEventName:
+                                      AnalyticsExecutedEventNameConst
+                                          .homeSearchButton,
+                                );
                               },
                               suffixWidget: Center(
                                 key: TestVariables.kTestMode
@@ -497,6 +520,15 @@ class _TabsBarState extends State<TabsBar> {
                                           SearchWithImageRelatedGemini
                                               .SelecteImageForSearch(
                                                   context: context);
+                                          /////////////////////////////
+                                          FirebaseAnalyticsService
+                                              .logEventForSession(
+                                            eventName: AnalyticsEventsConst
+                                                .buttonClicked,
+                                            executedEventName:
+                                                AnalyticsExecutedEventNameConst
+                                                    .searchWithImageButton,
+                                          );
                                         },
                                         child: homeState
                                                     .sendRequestToGeminiStatus ==
@@ -528,11 +560,23 @@ class _TabsBarState extends State<TabsBar> {
                                                   PermissionStatus.granted) {
                                                 return;
                                               }*/
-                                              print(
-                                                  "**************************************//////");
-                                              _speechToText.isNotListening
-                                                  ? _startListening()
-                                                  : _stopListening();
+
+                                              if (_speechToText
+                                                  .isNotListening) {
+                                                _startListening();
+                                                /////////////////////////////
+                                                FirebaseAnalyticsService
+                                                    .logEventForSession(
+                                                  eventName:
+                                                      AnalyticsEventsConst
+                                                          .buttonClicked,
+                                                  executedEventName:
+                                                      AnalyticsExecutedEventNameConst
+                                                          .searchWithVoiceButton,
+                                                );
+                                              } else {
+                                                _stopListening();
+                                              }
                                             },
                                             child: Container(
                                               width: 20,
@@ -683,7 +727,9 @@ class _TabsBarState extends State<TabsBar> {
                                                         .tabIndex !=
                                                     index) {
                                                   appBloc.add(ChangeTab(index));
-                                                  homeBloc.add(GetHomeBoutiqesEvent(
+                                                  ///////////////////////
+                                                  homeBloc.add(
+                                                    GetHomeBoutiqesEvent(
                                                       getWithPrefetchForBoutiques:
                                                           true,
                                                       getWithPagination: false,
@@ -694,40 +740,42 @@ class _TabsBarState extends State<TabsBar> {
                                                           .mainCategories![
                                                               index]
                                                           .slug!,
-                                                      context: context));
+                                                      context: context,
+                                                    ),
+                                                  );
+                                                  ////////////////////////////
                                                   homeBloc.add(
-                                                      ChangeCurrentIndexForMainCategoryEvent(
-                                                          index: index));
+                                                    ChangeCurrentIndexForMainCategoryEvent(
+                                                      index: index,
+                                                    ),
+                                                  );
+                                                  ///////////////////////////
+                                                  FirebaseAnalyticsService
+                                                      .logEventForSession(
+                                                    eventName:
+                                                        AnalyticsEventsConst
+                                                            .buttonClicked,
+                                                    executedEventName:
+                                                        AnalyticsExecutedEventNameConst
+                                                            .chooseCategoryButton,
+                                                  );
                                                 } else {
                                                   appBloc.add(ChangeTab(-1));
-                                                  homeBloc.add(GetHomeBoutiqesEvent(
+                                                  homeBloc.add(
+                                                    GetHomeBoutiqesEvent(
                                                       getWithPrefetchForBoutiques:
                                                           true,
                                                       context: context,
                                                       categorySlug: "Empty",
                                                       offset: "1",
-                                                      getWithPagination:
-                                                          false));
+                                                      getWithPagination: false,
+                                                    ),
+                                                  );
                                                   homeBloc.add(
-                                                      ChangeCurrentIndexForMainCategoryEvent(
-                                                          index: -1));
+                                                    ChangeCurrentIndexForMainCategoryEvent(
+                                                        index: -1),
+                                                  );
                                                 }
-
-                                                /* appBloc.add(ChangeTab(index));
-                                                          BlocProvider.of<HomeBloc>(context).add(
-                                                                        GetHomeSectionsEvent(
-                                                                            mainCategory.slug.toString()));*/
-
-                                                /*   homeBloc.add(
-                                                  GetProductsWithoutFiltersEvent(
-                                                      offset: 1,
-                                                      category: homeState
-                                                          .mainCategoriesResponseModel!
-                                                          .data!
-                                                          .mainCategories![index]
-                                                          .slug!,
-                                                      selectedProssesType:
-                                                          'category'));*/
                                               },
                                               child: Column(
                                                 crossAxisAlignment:

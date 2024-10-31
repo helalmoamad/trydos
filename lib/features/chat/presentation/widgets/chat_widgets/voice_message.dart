@@ -96,7 +96,7 @@ class _VoiceMessageState extends State<VoiceMessage> {
   void initState() {
     chatBloc = BlocProvider.of<ChatBloc>(context);
     Timer(Duration(seconds: 4), () {
-      if(mounted) {
+      if (mounted) {
         setState(() {
           timer = true;
         });
@@ -563,8 +563,8 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                                             .getZonedDateInFormat(
                                                                 widget
                                                                     .createAt!),
-                                                    style: context
-                                                        .textTheme.titleSmall?.rr
+                                                    style: context.textTheme
+                                                        .titleSmall?.rr
                                                         .copyWith(
                                                             color: const Color(
                                                                 0xff505050)),
@@ -607,7 +607,7 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                                                       SvgPicture
                                                                           .asset(
                                                                     AppAssets
-                                                                        .MessageFailedSvg,
+                                                                        .messageFailedSvg,
                                                                     width:
                                                                         10.sp,
                                                                     height:

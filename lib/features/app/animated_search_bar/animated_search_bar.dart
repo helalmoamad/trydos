@@ -1,13 +1,13 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
-
 import '../../../common/constant/design/assets_provider.dart';
 import '../../../common/test_utils/widgets_keys.dart';
+import '../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import '../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../blocs/app_bloc/app_state.dart';
 
 class AnimatedSearchBar extends StatefulWidget {
@@ -95,10 +95,8 @@ class AnimatedSearchBar extends StatefulWidget {
   _AnimatedSearchBarState createState() => _AnimatedSearchBarState();
 }
 
-
 class _AnimatedSearchBarState extends State<AnimatedSearchBar>
     with SingleTickerProviderStateMixin {
-
   ///toggle - 0 => false or closed
   ///toggle 1 => true or open
   int toggle = 0;
@@ -329,23 +327,41 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
                                 if (toggle == 0) {
                                   print('qqqqqqqqqqqqqqqqqq');
                                   toggle = 1;
-                                  setState(() {
-                                    ///if the autoFocus is true, the keyboard will pop open, automatically
-                                    if (widget.autoFocus)
-                                      FocusScope.of(context)
-                                          .requestFocus(focusNode);
-                                  });
+                                  setState(
+                                    () {
+                                      ///if the autoFocus is true, the keyboard will pop open, automatically
+                                      if (widget.autoFocus)
+                                        FocusScope.of(context)
+                                            .requestFocus(focusNode);
+                                    },
+                                  );
 
                                   ///forward == expand
                                   _con.forward();
+                                  ////////////////////////////////////////////////
+                                  Future.delayed(
+                                    Duration(milliseconds: 300),
+                                    () {
+                                      FirebaseAnalyticsService
+                                          .logEventForSession(
+                                        eventName:
+                                            AnalyticsEventsConst.buttonClicked,
+                                        executedEventName:
+                                            AnalyticsExecutedEventNameConst
+                                                .openSearchFieldButton,
+                                      );
+                                    },
+                                  );
                                 } else {
                                   ///if the search bar is expanded
                                   toggle = 0;
 
                                   ///if the autoFocus is true, the keyboard will close, automatically
-                                  setState(() {
-                                    if (widget.autoFocus) unfocusKeyboard();
-                                  });
+                                  setState(
+                                    () {
+                                      if (widget.autoFocus) unfocusKeyboard();
+                                    },
+                                  );
 
                                   ///reverse == close
                                   _con.reverse();

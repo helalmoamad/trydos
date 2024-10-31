@@ -85,7 +85,7 @@ class _VideoMessageState extends State<VideoMessage> {
     }
     chatBloc = BlocProvider.of<ChatBloc>(context);
     Timer(Duration(seconds: 4), () {
-      if(mounted) {
+      if (mounted) {
         setState(() {
           timer = true;
         });
@@ -267,7 +267,7 @@ class _VideoMessageState extends State<VideoMessage> {
                                                         left: 5.w),
                                                     child: SvgPicture.asset(
                                                       AppAssets
-                                                          .MessageFailedSvg,
+                                                          .messageFailedSvg,
                                                       width: 10.sp,
                                                       height: 10.sp,
                                                     ),
