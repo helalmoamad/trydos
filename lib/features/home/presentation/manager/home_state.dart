@@ -297,7 +297,6 @@ class HomeState extends Equatable {
         addItemInCartStatus,
         appliedFiltersByUser,
         addImagesToProductIdForCart,
-        addItemInCartStatus,
         deleteItemInCartStatus,
         updateItemInCartStatus,
         currentSelectedColorForEveryProduct,

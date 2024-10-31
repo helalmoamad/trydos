@@ -79,7 +79,9 @@ class _CartPageState extends State<CartPage> {
                   previous.updateItemInCartStatus !=
                       current.updateItemInCartStatus ||
                   previous.cartCollection!.values.length !=
-                      current.cartCollection!.values.length,
+                      current.cartCollection!.values.length ||
+                  previous.oldcartCollection!.values.length !=
+                      current.oldcartCollection!.values.length,
               builder: (context, state) {
                 print(state.cartCollection?.keys.toList());
                 if (state.getCartItemsStatus == GetCartItemsStatus.failure &&
@@ -93,14 +95,7 @@ class _CartPageState extends State<CartPage> {
                     })),
                   );
                 }
-                if (state.cartCollection == null ||
-                    state.cartCollection!.isEmpty) {
-                  return Center(
-                    child: Container(
-                      child: MyTextWidget("no item in cart"),
-                    ),
-                  );
-                }
+
                 if (state.getCartShippingItemsModel == null &&
                     state.getCartItemsStatus != GetCartItemsStatus.success) {
                   return Center(
@@ -272,22 +267,34 @@ class _CartPageState extends State<CartPage> {
                               child: ListView(
                                 shrinkWrap: true,
                                 children: [
-                                  productCollectionInCartPage1(
-                                    getOldCartItemsModel: state.getOldCartModel,
-                                    isOldCart: false,
-                                    oldCartCollection: state.oldcartCollection,
-                                    cartCollection: state.cartCollection,
-                                    getCartShippingItemsModel:
-                                        state.getCartShippingItemsModel,
-                                    changeCartCollections:
-                                        changeCartCollections,
-                                    groupCartkeys: groupCartkeys,
-                                    priceSymbol: priceSymbol,
-                                    quantityController: quantityController,
-                                    tapIndexs: tapIndex ?? 0,
-                                    visibleCollectionGroups:
-                                        visibleCollectionCartGroups,
-                                  ),
+                                  if (state.cartCollection == null ||
+                                      state.cartCollection!.isEmpty) ...{
+                                    Center(
+                                      child: Container(
+                                        height: 40,
+                                        child: MyTextWidget("no item in cart"),
+                                      ),
+                                    )
+                                  } else ...{
+                                    productCollectionInCartPage1(
+                                      getOldCartItemsModel:
+                                          state.getOldCartModel,
+                                      isOldCart: false,
+                                      oldCartCollection:
+                                          state.oldcartCollection,
+                                      cartCollection: state.cartCollection,
+                                      getCartShippingItemsModel:
+                                          state.getCartShippingItemsModel,
+                                      changeCartCollections:
+                                          changeCartCollections,
+                                      groupCartkeys: groupCartkeys,
+                                      priceSymbol: priceSymbol,
+                                      quantityController: quantityController,
+                                      tapIndexs: tapIndex ?? 0,
+                                      visibleCollectionGroups:
+                                          visibleCollectionCartGroups,
+                                    )
+                                  },
                                   SizedBox(
                                     height: 20,
                                   ),

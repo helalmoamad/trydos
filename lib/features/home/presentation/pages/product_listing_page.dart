@@ -1964,58 +1964,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                         int index) {
                                                       return InkWell(
                                                         onTap: () async {
-                                                          Future.delayed(
-                                                              Duration(
-                                                                  milliseconds:
-                                                                      100), () {
-                                                            print("${prefsRepository.myMarketId.toString()}" +
-                                                                "55555555555555555555555555555555555555555");
-                                                            print("${prefsRepository.myMarketName.toString()}" +
-                                                                "554${GetIt.I<PrefsRepository>().serverTime}4555554444${prefsRepository.countryIso.toString()}444444444${LanguageService.languageCode == 'ar' ? 'ae' : LanguageService.languageCode}444444444444${GetIt.I<PrefsRepository>().currentEvent}44444444444444444444444444445555555555555555555555");
-                                                          });
-                                                          await FirebaseAnalytics
-                                                              .instance
-                                                              .logEvent(
-                                                                  name:
-                                                                      'button_clicked',
-                                                                  parameters: {
-                                                                "time_stamp": DateTime
-                                                                        .now()
-                                                                    .toUtc()
-                                                                    .add(Duration(
-                                                                        minutes:
-                                                                            GetIt.I<PrefsRepository>().getdurtion ??
-                                                                                0))
-                                                                    .toString(),
-                                                                "previous_event_button_name":
-                                                                    GetIt.I<PrefsRepository>()
-                                                                        .currentEvent,
-                                                                "device_language":
-                                                                    LanguageService.languageCode ==
-                                                                            'ar'
-                                                                        ? 'ae'
-                                                                        : LanguageService
-                                                                            .languageCode,
-                                                                "country_name":
-                                                                    GetIt.I<PrefsRepository>()
-                                                                        .countryIso,
-                                                                'userID': prefsRepository
-                                                                    .myMarketId
-                                                                    .toString(),
-                                                                'user_name':
-                                                                    prefsRepository
-                                                                        .myMarketName
-                                                                        .toString(),
-                                                                'clicked_button_name':
-                                                                    'i love you Ahmad',
-                                                                "session_id": GetIt.I<
-                                                                        PrefsRepository>()
-                                                                    .sessionId,
-                                                              });
-                                                          await GetIt.I<
-                                                                  PrefsRepository>()
-                                                              .setCurrentEvent(
-                                                                  "");
+                                                         
+                                                         
 
                                                           // pushOverscrollRoute(
                                                           //     context: context,
@@ -2042,7 +1992,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                       )));
                                                         },
                                                         child: ProductItem(
-                                                          key: TestVariables
+                                                        key: TestVariables
                                                                   .kTestMode
                                                               ? Key(
                                                                   '${WidgetsKey.productInBoutiqueListKey}$index')

@@ -111,12 +111,12 @@ class _ProductDetailsSheetBottomBarState
           previous.productStatus != current.productStatus ||
           previous.updateItemInCartStatus != current.updateItemInCartStatus ||
           previous.addItemInCartStatus != current.addItemInCartStatus ||
+          previous.deleteItemInCartStatus != current.deleteItemInCartStatus ||
           previous.ListitemForAddToCart?.length !=
               current.ListitemForAddToCart?.length ||
           previous.getCommentForProductStatus !=
-              current.getCommentForProductStatus || previous.addCommentStatus !=
-              current.addCommentStatus
-      ,
+              current.getCommentForProductStatus ||
+          previous.addCommentStatus != current.addCommentStatus,
       builder: (context, state) {
         print("***********");
         List<String> allimages = [];

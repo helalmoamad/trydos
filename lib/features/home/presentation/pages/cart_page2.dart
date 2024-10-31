@@ -85,13 +85,7 @@ class CartPage2 extends StatelessWidget {
                 BlocProvider.of<HomeBloc>(context).add(GetCartItemEvent());
               }));
             }
-            if (state.cartCollection == null || state.cartCollection!.isEmpty) {
-              return Center(
-                child: Container(
-                  child: MyTextWidget("no item in cart"),
-                ),
-              );
-            }
+
             if (state.getCartShippingItemsModel == null &&
                 state.getCartItemsStatus != GetCartItemsStatus.success) {
               return Center(
@@ -210,7 +204,7 @@ class CartPage2 extends StatelessWidget {
                         ),
                       ),
                       Container(
-                        height: 50.h,
+                        height: 49.h,
                         color: Color(0xffF4F4F4),
                       ),
                       Container(
@@ -222,19 +216,29 @@ class CartPage2 extends StatelessWidget {
                         child: ListView(
                           shrinkWrap: true,
                           children: [
-                            productCollectionInCartPage2(
-                              cartCollection: state.cartCollection,
-                              changeCartCollections: changeCartCollections,
-                              oldcartCollection: state.oldcartCollection,
-                              groupCartkeys: groupCartkeys,
-                              indexes: indexes,
-                              priceSymbol: priceSymbol,
-                              isOLdCart: false,
-                              quantityController: quantityController,
-                              tapIndexs: tapIndex ?? 0,
-                              visibleCollectionGroups:
-                                  visibleCollectionCartGroups,
-                            ),
+                            if (state.cartCollection == null ||
+                                state.cartCollection!.isEmpty) ...{
+                              Center(
+                                child: Container(
+                                  height: 40,
+                                  child: MyTextWidget("no item in cart"),
+                                ),
+                              )
+                            } else ...{
+                              productCollectionInCartPage2(
+                                cartCollection: state.cartCollection,
+                                changeCartCollections: changeCartCollections,
+                                oldcartCollection: state.oldcartCollection,
+                                groupCartkeys: groupCartkeys,
+                                indexes: indexes,
+                                priceSymbol: priceSymbol,
+                                isOLdCart: false,
+                                quantityController: quantityController,
+                                tapIndexs: tapIndex ?? 0,
+                                visibleCollectionGroups:
+                                    visibleCollectionCartGroups,
+                              )
+                            },
                             SizedBox(
                               height: 20,
                             ),

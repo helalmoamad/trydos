@@ -2316,6 +2316,16 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       }
       emit(state.copyWith(getCartItemsStatus: GetCartItemsStatus.failure));
     }, (r) {
+      oldCarts = r.data?.original?.data?.oldCart;
+      oldCarts?.forEach((element) {
+        if (oldCartCollection.containsKey(element.boutique?.id.toString())) {
+          oldCartCollection[element.boutique!.id.toString()]!.add(element);
+        } else {
+          oldCartCollection.addAll({
+            element.boutique!.id.toString(): [element]
+          });
+        }
+      });
       Map<String, Products>? productITemForCart =
           Map.of(state.productITemForCart ?? {});
       List<String> productIdsInCart = [];
@@ -2328,7 +2338,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           );
         },
       );
-      state.oldcartCollection?.forEach(
+      oldCartCollection.forEach(
         (key, value) {
           value.forEach(
             (element) {
@@ -2340,16 +2350,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       productITemForCart.removeWhere(
         (key, value) => !productIdsInCart.contains(key),
       );
-      oldCarts = r.data?.original?.data?.oldCart;
-      oldCarts?.forEach((element) {
-        if (oldCartCollection.containsKey(element.boutique!.id.toString())) {
-          oldCartCollection[element.boutique!.id.toString()]!.add(element);
-        } else {
-          oldCartCollection.addAll({
-            element.boutique!.id.toString(): [element]
-          });
-        }
-      });
       apisMustNotToRequest.add('GetoldCartItemEvent');
       isFailedTheFirstTime.remove('GetoldCartItemEvent');
       emit(state.copyWith(
