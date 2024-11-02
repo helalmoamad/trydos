@@ -11,7 +11,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:injectable/injectable.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/use_case/use_case.dart';
@@ -975,47 +974,42 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     if (state.appliedFiltersByUser[key] == null) {}
 
     final response = await getProductsWithFiltersUseCase(
-        GetProductsWithFiltersParams(
-            scroll_id: null,
-            brandSlugs:
-                filters.brands?.map((e) => '"${e.slug.toString()}"').toList(),
-            categorySlugs: event.category != null && event.category != ""
-                ? [
-                    ...(filters.categories
-                            ?.map((e) => '"${e.slug.toString()}"')
-                            .toList() ??
-                        []),
-                    '"${event.category}"'
-                  ]
-                : filters.categories
-                    ?.map((e) => '"${e.slug.toString()}"')
-                    .toList(),
-            boutiqueSlugs: event.fromSearch ?? false
-                ? filters.boutiques
-                    ?.map((e) => '"${e.slug.toString()}"')
-                    .toList()
-                : ['"${event.boutiqueSlug}"'],
-            offset: !event.getWithPagination
-                ? 1
-                : getProductListingWithFiltersPaginationModels[
-                        keyWithoutFilter]!
-                    .page,
-            /* !event.getWithPagination
+      GetProductsWithFiltersParams(
+        scroll_id: null,
+        brandSlugs:
+            filters.brands?.map((e) => '"${e.slug.toString()}"').toList(),
+        categorySlugs: event.category != null && event.category != ""
+            ? [
+                ...(filters.categories
+                        ?.map((e) => '"${e.slug.toString()}"')
+                        .toList() ??
+                    []),
+                '"${event.category}"'
+              ]
+            : filters.categories?.map((e) => '"${e.slug.toString()}"').toList(),
+        boutiqueSlugs: event.fromSearch ?? false
+            ? filters.boutiques?.map((e) => '"${e.slug.toString()}"').toList()
+            : ['"${event.boutiqueSlug}"'],
+        offset: !event.getWithPagination
+            ? 1
+            : getProductListingWithFiltersPaginationModels[keyWithoutFilter]!
+                .page,
+        /* !event.getWithPagination
                 ? null
                 : state.searchWithFilterOffset?[keyWithoutFilter] ?? ""*/
-            attributes: filters.attributes.isNullOrEmpty
-                ? null
-                : [
-                    {
-                      '"id"': filters.attributes![0].id,
-                      '"name"': filters.attributes![0].name,
-                      '"options"': filters.attributes![0].options,
-                    }
-                  ],
-            colors: filters.colors?.map((e) => '"${e.toString()}"').toList(),
-            limit: event.limit ?? 10,
-            prices: (prevAppliedFiltersByUser[key]?.filters?.prices?.maxPrice !=
-                        null &&
+        attributes: filters.attributes.isNullOrEmpty
+            ? null
+            : [
+                {
+                  '"id"': filters.attributes![0].id,
+                  '"name"': filters.attributes![0].name,
+                  '"options"': filters.attributes![0].options,
+                }
+              ],
+        colors: filters.colors?.map((e) => '"${e.toString()}"').toList(),
+        limit: event.limit ?? 10,
+        prices:
+            (prevAppliedFiltersByUser[key]?.filters?.prices?.maxPrice != null &&
                     prevAppliedFiltersByUser[key]?.filters?.prices?.minPrice !=
                         null)
                 ? [

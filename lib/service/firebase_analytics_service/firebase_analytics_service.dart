@@ -42,6 +42,7 @@ class FirebaseAnalyticsService {
     required String eventName,
     required String executedEventName,
     Map<String, String>? extraParams,
+    bool isForApi = false,
   }) async {
     try {
       await FirebaseAnalytics.instance.logEvent(
@@ -49,14 +50,15 @@ class FirebaseAnalyticsService {
         parameters: {
           'our_user_id': GetIt.I<PrefsRepository>().myMarketId ?? 'empty',
           'our_session_id': GetIt.I<PrefsRepository>().sessionId.toString(),
-          'executed_event_name': executedEventName,
+          'executed_event_name': isForApi ? 'null' : executedEventName,
           'time_stamp': DateTime.now()
               .toUtc()
               .add(
                   Duration(minutes: GetIt.I<PrefsRepository>().getdurtion ?? 0))
               .toString(),
-          'previous_event_name':
-              GetIt.I<PrefsRepository>().currentEvent.toString(),
+          'previous_event_name': isForApi
+              ? 'null'
+              : GetIt.I<PrefsRepository>().currentEvent.toString(),
           'device_language': LanguageService.languageCode == 'ar'
               ? 'ae'
               : LanguageService.languageCode,
@@ -65,7 +67,9 @@ class FirebaseAnalyticsService {
         },
       ).then(
         (value) async {
-          await GetIt.I<PrefsRepository>().setCurrentEvent(executedEventName);
+          if (!isForApi) {
+            await GetIt.I<PrefsRepository>().setCurrentEvent(executedEventName);
+          }
         },
       );
       ///////////////////////

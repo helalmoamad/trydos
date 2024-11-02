@@ -1,4 +1,5 @@
 class AnalyticsExecutedEventNameConst {
+  static const apiResponseEvent = 'api_response_event';
   ///////////////////// Auth  //////////////////////////
   static const haveAlreadyAccountButton = 'i_have_already_account_button';
   static const createNewAccountButton = 'create_new_account_button';
@@ -66,4 +67,5 @@ class AnalyticsExecutedEventNameConst {
   static const searchForFiltersEvent = 'search_for_filters_event';
   static const resetButton = 'reset_button';
   static const filterCloseIconButton = 'filter_close_icon_button';
+  static const resetByTapOnFilterButton = 'reset_by_tap_on_filter_button';
 }
