@@ -13,6 +13,9 @@ import 'package:trydos/features/home/presentation/widgets/product_details_body/r
 
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../../common/helper/helper_functions.dart';
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../app/my_text_widget.dart';
 import '../../../data/models/get_product_listing_without_filters_model.dart'
     as productListingModel;
@@ -102,6 +105,12 @@ class _BuyersCameraShotsState extends State<BuyersCameraShots> {
               onTap: () {
                 HelperFunctions.showDescriptionForProductDetails(
                     context: context);
+                //////////////////////////////
+                FirebaseAnalyticsService.logEventForSession(
+                  eventName: AnalyticsEventsConst.buttonClicked,
+                  executedEventName:
+                      AnalyticsExecutedEventNameConst.showBuyersCameraButton,
+                );
               },
               child: Row(
                 mainAxisSize: MainAxisSize.min,

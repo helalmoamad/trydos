@@ -159,8 +159,9 @@ class ProductDetailsTitle extends StatelessWidget {
                     width: 1,
                     height: 14,
                     decoration: BoxDecoration(
-                        color: Color(0xff8D8D8D),
-                        borderRadius: BorderRadius.circular(2)),
+                      color: Color(0xff8D8D8D),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5),
