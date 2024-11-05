@@ -116,26 +116,6 @@ class HomeRemoteDatasource {
     return getProductsWithoutFilters();
   }
 
-  Future<GetProductListingWithFiltersModel> getProductsWithFilters(
-      Map<String, dynamic> params) {
-    PostClient<GetProductListingWithFiltersModel> getProductsWithFilters =
-        PostClient<GetProductListingWithFiltersModel>(
-      /*  serverName: ServerName.elastic,
-      requestPrams: RequestConfig<GetProductListingWithFiltersModel>(
-        endpoint: ElasticEndPoints.searchWithFilterElasticEP,*/
-      serverName: ServerName.market,
-      requestPrams: RequestConfig<GetProductListingWithFiltersModel>(
-        endpoint: MarketEndPoints.getProductListingWithFiltersEP,
-        data: params,
-        response: ResponseValue<GetProductListingWithFiltersModel>(
-            fromJson: (response) =>
-                GetProductListingWithFiltersModel.fromJson(response)),
-      ),
-    );
-
-    return getProductsWithFilters();
-  }
-
   /* Future<GetCategoryModel> getCategory() {
     GetClient<GetCategoryModel> getCategory = GetClient<GetCategoryModel>(
       serverName: ServerName.market,
@@ -196,20 +176,40 @@ class HomeRemoteDatasource {
 
   Future<GetProductFiltersModel> getProductFilters(
       Map<String, dynamic> params) {
-    PostClient<GetProductFiltersModel> getProductFilters =
-        PostClient<GetProductFiltersModel>(
-      serverName: ServerName.market,
+    GetClient<GetProductFiltersModel> getProductFilters =
+        GetClient<GetProductFiltersModel>(
+      /*  serverName: ServerName.market,
       requestPrams: RequestConfig<GetProductFiltersModel>(
-        endpoint: MarketEndPoints.getProductFiltersEP,
-        /*  serverName: ServerName.elastic,
+        endpoint: MarketEndPoints.getProductFiltersEP,*/
+      serverName: ServerName.elastic,
       requestPrams: RequestConfig<GetProductFiltersModel>(
-        endpoint: ElasticEndPoints.searchWithoutFilterElasticEP,*/
-        data: params,
+        endpoint: ElasticEndPoints.searchWithoutFilterElasticEP,
+        queryParameters: params,
         response: ResponseValue<GetProductFiltersModel>(
             fromJson: (response) => GetProductFiltersModel.fromJson(response)),
       ),
     );
     return getProductFilters();
+  }
+
+  Future<GetProductListingWithFiltersModel> getProductsWithFilters(
+      Map<String, dynamic> params) {
+    GetClient<GetProductListingWithFiltersModel> getProductsWithFilters =
+        GetClient<GetProductListingWithFiltersModel>(
+      serverName: ServerName.elastic,
+      requestPrams: RequestConfig<GetProductListingWithFiltersModel>(
+        endpoint: ElasticEndPoints.searchWithFilterElasticEP,
+        /*serverName: ServerName.market,
+      requestPrams: RequestConfig<GetProductListingWithFiltersModel>(
+        endpoint: MarketEndPoints.getProductListingWithFiltersEP,*/
+        queryParameters: params,
+        response: ResponseValue<GetProductListingWithFiltersModel>(
+            fromJson: (response) =>
+                GetProductListingWithFiltersModel.fromJson(response)),
+      ),
+    );
+
+    return getProductsWithFilters();
   }
 
   Future<Comment> addComment(Map<String, dynamic> params) {
@@ -298,6 +298,18 @@ class HomeRemoteDatasource {
       ),
     );
     return addItemToCart();
+  }
+
+  Future<bool> hideItemsInOldCart(Map<String, dynamic> params) {
+    PostClient<bool> hideItemsInOldCart = PostClient<bool>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<bool>(
+        endpoint: MarketEndPoints.hideItemsInOldCartEP,
+        data: params,
+        response: ResponseValue<bool>(returnValueOnSuccess: true),
+      ),
+    );
+    return hideItemsInOldCart();
   }
 
   Future<bool> removeItemToCart(Map<String, dynamic> params) {

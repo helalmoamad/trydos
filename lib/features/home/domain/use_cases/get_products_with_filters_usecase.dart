@@ -29,7 +29,8 @@ class GetProductsWithFiltersParams {
   final List<String>? categories;
   final List<Map<String, dynamic>>? attributes;
   final String? searchText;
-  final int? offset;
+  //final int? offset;
+  final String? offset;
   final int? limit;
   final String? scroll_id;
   final String? boutiqueSlug;
@@ -61,7 +62,7 @@ class GetProductsWithFiltersParams {
         "colors": colors.toString(),
         "search_text": searchText,
         "offset": offset,
-        "limit": limit,
+        // "limit": limit,
         // "scroll_id": scroll_id,
         "boutique_slug": boutiqueSlug,
         "boutique_slugs": boutiqueSlugs.toString(),

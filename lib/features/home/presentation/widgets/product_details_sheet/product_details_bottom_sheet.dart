@@ -261,7 +261,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                     tag: 'cart',
                                     child: ProductDetailsImageWidget(
                                       width: 198.w,
-                                      height: 288.h,
+                                      height: 280.h,
                                       imageWidth: 320,
                                       imageHeight: 464,
                                       orginalWidth: double.tryParse(
@@ -289,7 +289,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                 : SizedBox(
                                     height: 288.h,
                                   ),
-                            10.verticalSpace,
+                            5.verticalSpace,
                             Material(
                               color: Colors.transparent,
                               child: gallery3dControllerForCircles != null
@@ -390,7 +390,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                       height: 70.w,
                                     ),
                             ),
-                            10.verticalSpace,
+                            5.verticalSpace,
                           },
                           Stack(
                             alignment: Alignment.topCenter,
@@ -488,11 +488,10 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                           idsOfChatCardsToShare:
                                               idsOfChatCardsToShare),
                                       ProductDetailsSheetMoreOptionsContent(
-                                          scrollController: currentTab == 2
-                                              ? controller
-                                              : null,
-
-                                        productId: widget.productItem.id.toString(),
+                                        scrollController:
+                                            currentTab == 2 ? controller : null,
+                                        productId:
+                                            widget.productItem.id.toString(),
                                       )
                                     ],
                                   ),
@@ -648,8 +647,10 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                             pageController.jumpToPage(1);
                           });
                           if (GetIt.I<PrefsRepository>().chatToken != null) {
-                            BlocProvider.of<ChatBloc>(context).add(GetChatsEvent());
-                            BlocProvider.of<ChatBloc>(context).add(SaveContactsEvent());
+                            BlocProvider.of<ChatBloc>(context)
+                                .add(GetChatsEvent());
+                            BlocProvider.of<ChatBloc>(context)
+                                .add(SaveContactsEvent());
                           }
                         },
                         currentActiveTab: currentActiveTab,

@@ -261,7 +261,8 @@ class Message {
                   ? null
                   : json["message_content"] == null
                       ? null
-                      : ShareProductContent.fromJson(jsonDecode(json["message_content"]["content"])[0]),
+                      : ShareProductContent.fromJson(
+                          jsonDecode(json["message_content"]["content"])[0]),
       messageStatus: json["message_status"] == null
           ? []
           : List<MessageStatus>.from(
@@ -411,7 +412,7 @@ class ShareProductContent {
 
   factory ShareProductContent.fromJson(Map<String, dynamic> json) =>
       ShareProductContent(
-        productId: json["product_id"],
+        productId: json["product_id"].toString(),
         productSlug: json["product_slug"],
         productDescription: json["product_description"],
         productImageUrl: json["product_image_url"],

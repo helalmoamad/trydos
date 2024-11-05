@@ -58,7 +58,12 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
     currentIndexInSizes = ValueNotifier(0);
 
     if ((homeBloc.state.sizes?.length ?? 0) > 0) {
-      int firstSizeSelected = max(0 , (homeBloc.state.CurrentColorSizeForCart?['size'] ?? '') == '' ? (homeBloc.state.sizes?.length ?? 0) ~/ 2 :  homeBloc.state.sizes!.indexWhere((size)=> homeBloc.state.CurrentColorSizeForCart?['size'] == size));
+      int firstSizeSelected = max(
+          0,
+          (homeBloc.state.CurrentColorSizeForCart?['size'] ?? '') == ''
+              ? (homeBloc.state.sizes?.length ?? 0) ~/ 2
+              : homeBloc.state.sizes!.indexWhere((size) =>
+                  homeBloc.state.CurrentColorSizeForCart?['size'] == size));
       homeBloc.add(AddCurrentColorSizeEvent(
           choice_1: homeBloc.state.sizes?[firstSizeSelected]));
       currentIndexInSizes.value = firstSizeSelected;
@@ -71,13 +76,14 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<HomeBloc, HomeState>(
-      buildWhen: (p, c) => p.currentSelectedColorForEveryProduct !=
+      buildWhen: (p, c) =>
+          p.currentSelectedColorForEveryProduct !=
               c.currentSelectedColorForEveryProduct ||
           p.sizes != c.sizes ||
           p.cartCollection != c.cartCollection,
       builder: (context, state) {
-          sizes = state.sizes ?? [];
-          sizesQuantities = state.sizesQuantities ?? [];
+        sizes = state.sizes ?? [];
+        sizesQuantities = state.sizesQuantities ?? [];
 
         if (sizes.length > 0) {
           homeBloc.add(AddCurrentColorSizeEvent(
@@ -108,7 +114,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const SizedBox(
-                height: 20,
+                height: 5,
               ),
               Row(
                 mainAxisSize: MainAxisSize.min,
@@ -129,9 +135,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                   )
                 ],
               ),
-              const SizedBox(
-                height: 14,
-              ),
+              const SizedBox(height: 5),
               SizedBox(
                 height: 8,
                 child: Padding(
@@ -197,9 +201,11 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                                 width: 70,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(180),
-                                    border: widget.selectedColor != null ? Border.all(
-                                        color: widget.selectedColor!,
-                                        width: 0.5) : null,
+                                    border: widget.selectedColor != null
+                                        ? Border.all(
+                                            color: widget.selectedColor!,
+                                            width: 0.5)
+                                        : null,
                                     boxShadow: [
                                       BoxShadow(
                                           color: colorScheme.white,

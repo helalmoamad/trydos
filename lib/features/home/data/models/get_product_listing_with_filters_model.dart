@@ -53,8 +53,8 @@ class GetProductListingWithFiltersModel {
 class Data {
   final int? totalSize;
   final int? limit;
-  // final String? offset;
-  final int? offset;
+  final String? offset;
+  //final int? offset;
   final List<product_without_filters.Products>? products;
   final List<filters.Brand>? brands;
   final List<filters.Attribute>? attributes;
@@ -81,8 +81,8 @@ class Data {
   Data copyWith({
     int? totalSize,
     int? limit,
-    //String? offset,
-    int? offset,
+    String? offset,
+    // int? offset,
     List<product_without_filters.Products>? products,
     List<filters.Brand>? brands,
     List<filters.Attribute>? attributes,

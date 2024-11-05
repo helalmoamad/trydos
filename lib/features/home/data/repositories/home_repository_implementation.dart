@@ -78,6 +78,13 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   }
 
   @override
+  Future<Either<Failure, bool>> hideItemsInOldCart(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.hideItemsInOldCart(params));
+  }
+
+  @override
   Future<Either<Failure, bool>> addLikeOFProduct(Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.addLikeOFProduct(params));

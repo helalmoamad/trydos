@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 
@@ -60,6 +61,8 @@ class CartPage2 extends StatelessWidget {
                   current.updateItemInCartStatus ||
               previous.cartCollection!.values !=
                   current.cartCollection!.values ||
+              previous.hideItemInOldCartStatus !=
+                  current.hideItemInOldCartStatus ||
               previous.getOldCartItemsStatus != current.getOldCartItemsStatus ||
               previous.oldcartCollection?.values !=
                   current.oldcartCollection?.values,
@@ -85,13 +88,7 @@ class CartPage2 extends StatelessWidget {
                 BlocProvider.of<HomeBloc>(context).add(GetCartItemEvent());
               }));
             }
-            if (state.cartCollection == null || state.cartCollection!.isEmpty) {
-              return Center(
-                child: Container(
-                  child: MyTextWidget("no item in cart"),
-                ),
-              );
-            }
+
             if (state.getCartShippingItemsModel == null &&
                 state.getCartItemsStatus != GetCartItemsStatus.success) {
               return Center(
@@ -210,7 +207,7 @@ class CartPage2 extends StatelessWidget {
                         ),
                       ),
                       Container(
-                        height: 50.h,
+                        height: 49.h,
                         color: Color(0xffF4F4F4),
                       ),
                       Container(
@@ -222,19 +219,29 @@ class CartPage2 extends StatelessWidget {
                         child: ListView(
                           shrinkWrap: true,
                           children: [
-                            productCollectionInCartPage2(
-                              cartCollection: state.cartCollection,
-                              changeCartCollections: changeCartCollections,
-                              oldcartCollection: state.oldcartCollection,
-                              groupCartkeys: groupCartkeys,
-                              indexes: indexes,
-                              priceSymbol: priceSymbol,
-                              isOLdCart: false,
-                              quantityController: quantityController,
-                              tapIndexs: tapIndex ?? 0,
-                              visibleCollectionGroups:
-                                  visibleCollectionCartGroups,
-                            ),
+                            if (state.cartCollection == null ||
+                                state.cartCollection!.isEmpty) ...{
+                              Center(
+                                child: Container(
+                                  height: 40,
+                                  child: MyTextWidget("no item in cart"),
+                                ),
+                              )
+                            } else ...{
+                              productCollectionInCartPage2(
+                                cartCollection: state.cartCollection,
+                                changeCartCollections: changeCartCollections,
+                                oldcartCollection: state.oldcartCollection,
+                                groupCartkeys: groupCartkeys,
+                                indexes: indexes,
+                                priceSymbol: priceSymbol,
+                                isOLdCart: false,
+                                quantityController: quantityController,
+                                tapIndexs: tapIndex ?? 0,
+                                visibleCollectionGroups:
+                                    visibleCollectionCartGroups,
+                              )
+                            },
                             SizedBox(
                               height: 20,
                             ),
@@ -248,13 +255,32 @@ class CartPage2 extends StatelessWidget {
                                       ))
                                     : SizedBox.shrink()
                                 : SizedBox.shrink(),
-                            SizedBox(
-                              height: state.oldcartCollection != null
-                                  ? !state.oldcartCollection!.isEmpty
-                                      ? 20
-                                      : 0
-                                  : 0,
-                            ),
+                            state.oldcartCollection != null
+                                ? !state.oldcartCollection!.isEmpty
+                                    ? Container(
+                                        height: 70.h,
+                                        padding: EdgeInsets.all(20.w),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            ElevatedButton(
+                                                onPressed: () {
+                                                  GetIt.I<HomeBloc>().add(
+                                                      HideItemInOldCartEvent(
+                                                    hideAll: true,
+                                                  ));
+                                                },
+                                                child: MyTextWidget(
+                                                  "Hide All",
+                                                  style: TextStyle(
+                                                      color: Colors.red,
+                                                      fontSize: 14),
+                                                ))
+                                          ],
+                                        ))
+                                    : SizedBox.shrink()
+                                : SizedBox.shrink(),
                             productCollectionInCartPage2(
                               cartCollection: state.cartCollection,
                               changeCartCollections: changeCartCollections,

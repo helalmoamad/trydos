@@ -104,17 +104,17 @@ class Original {
 }
 
 class OriginalData {
-  final int? subTotal;
+  final double? subTotal;
   final int? totalTax;
-  final int? totalDiscountOnProduct;
+  final double? totalDiscountOnProduct;
   final int? totalShippingCost;
   final int? couponDiscount;
   final int? codCost;
   final double? limitFree;
-  final int? estimatedTax;
-  final int? total;
+  final double? estimatedTax;
+  final double? total;
   final double? restForFreeShipping;
-  final int? totalCash;
+  final double? totalCash;
   final bool? hasCod;
   final bool? showMessageResetForShippingFree;
   final List<String>? availablePaymentMethod;
@@ -139,17 +139,17 @@ class OriginalData {
   });
 
   OriginalData copyWith({
-    int? subTotal,
+    double? subTotal,
     int? totalTax,
-    int? totalDiscountOnProduct,
+    double? totalDiscountOnProduct,
     int? totalShippingCost,
     int? couponDiscount,
     int? codCost,
     double? limitFree,
-    int? estimatedTax,
-    int? total,
+    double? estimatedTax,
+    double? total,
     double? restForFreeShipping,
-    int? totalCash,
+    double? totalCash,
     bool? hasCod,
     bool? showMessageResetForShippingFree,
     List<String>? availablePaymentMethod,
@@ -177,17 +177,17 @@ class OriginalData {
       );
 
   factory OriginalData.fromJson(Map<String, dynamic> json) => OriginalData(
-        subTotal: json["sub_total"],
+        subTotal: json["sub_total"]?.toDouble(),
         totalTax: json["total_tax"],
-        totalDiscountOnProduct: json["total_discount_on_product"],
+        totalDiscountOnProduct: json["total_discount_on_product"]?.toDouble(),
         totalShippingCost: json["total_shipping_cost"],
         couponDiscount: json["coupon_discount"],
         codCost: json["cod_cost"],
         limitFree: json["limitFree"]?.toDouble(),
-        estimatedTax: json["estimated_tax"],
-        total: json["total"],
+        estimatedTax: json["estimated_tax"]?.toDouble(),
+        total: json["total"]?.toDouble(),
         restForFreeShipping: json["rest_for_free_shipping"]?.toDouble(),
-        totalCash: json["total_cash"],
+        totalCash: json["total_cash"]?.toDouble(),
         hasCod: json["has_cod"],
         showMessageResetForShippingFree:
             json["show_message_reset_for_shipping_free"],
@@ -232,19 +232,18 @@ class OldCart {
   final List<Choice>? choices;
   final List<Variation>? variations;
   final String? variant;
-  final double? availableQuantity;
+  final int? availableQuantity;
   final String? maxAllowedQty;
   final String? vendorName;
   final int? quantity;
   final double? discount;
-  final double? price;
-  final double? offerPrice;
+  final double? priceOfVariant;
   final int? tax;
   final String? slug;
   final String? name;
-  final int? countOfPieces;
+  final dynamic countOfPieces;
   final Shop? shop;
-  final Brand? brand;
+  final dynamic brand;
   final Boutique? boutique;
   final String? thumbnail;
   final String? image;
@@ -265,8 +264,7 @@ class OldCart {
     this.vendorName,
     this.quantity,
     this.discount,
-    this.price,
-    this.offerPrice,
+    this.priceOfVariant,
     this.tax,
     this.slug,
     this.name,
@@ -289,19 +287,18 @@ class OldCart {
     List<Choice>? choices,
     List<Variation>? variations,
     String? variant,
-    double? availableQuantity,
+    int? availableQuantity,
     String? maxAllowedQty,
     String? vendorName,
     int? quantity,
     double? discount,
-    double? price,
-    double? offerPrice,
+    double? priceOfVariant,
     int? tax,
     String? slug,
     String? name,
-    int? countOfPieces,
+    dynamic countOfPieces,
     Shop? shop,
-    Brand? brand,
+    dynamic brand,
     Boutique? boutique,
     String? thumbnail,
     String? image,
@@ -322,8 +319,7 @@ class OldCart {
         vendorName: vendorName ?? this.vendorName,
         quantity: quantity ?? this.quantity,
         discount: discount ?? this.discount,
-        price: price ?? this.price,
-        offerPrice: offerPrice ?? this.offerPrice,
+        priceOfVariant: priceOfVariant ?? this.priceOfVariant,
         tax: tax ?? this.tax,
         slug: slug ?? this.slug,
         name: name ?? this.name,
@@ -353,19 +349,19 @@ class OldCart {
             : List<Variation>.from(
                 json["variations"]!.map((x) => Variation.fromJson(x))),
         variant: json["variant"],
-        availableQuantity: json["available_quantity"]?.toDouble(),
+        availableQuantity:
+            double.tryParse(json["available_quantity"].toString())!.round(),
         maxAllowedQty: json["max_allowed_qty"],
         vendorName: json["vendor_name"],
-        quantity: json["quantity"],
+        quantity: double.tryParse(json["quantity"].toString())!.round(),
         discount: json["discount"]?.toDouble(),
-        price: json["price"]?.toDouble(),
-        offerPrice: json["offer_price"]?.toDouble(),
+        priceOfVariant: double.tryParse(json["price_of_variant"].toString()),
         tax: json["tax"],
         slug: json["slug"],
         name: json["name"],
         countOfPieces: json["count_of_pieces"],
         shop: json["shop"] == null ? null : Shop.fromJson(json["shop"]),
-        brand: json["brand"] == null ? null : Brand.fromJson(json["brand"]),
+        brand: json["brand"],
         boutique: json["boutique"] == null
             ? null
             : Boutique.fromJson(json["boutique"]),
@@ -395,14 +391,13 @@ class OldCart {
         "vendor_name": vendorName,
         "quantity": quantity,
         "discount": discount,
-        "price": price,
-        "offer_price": offerPrice,
+        "price_of_variant": priceOfVariant,
         "tax": tax,
         "slug": slug,
         "name": name,
         "count_of_pieces": countOfPieces,
         "shop": shop?.toJson(),
-        "brand": brand?.toJson(),
+        "brand": brand,
         "boutique": boutique?.toJson(),
         "thumbnail": thumbnail,
         "image": image,
@@ -473,47 +468,6 @@ class Icon {
         "file_path": filePath,
         "original_width": originalWidth,
         "original_height": originalHeight,
-      };
-}
-
-class Brand {
-  final int? id;
-  final String? name;
-  final String? slug;
-  final String? image;
-
-  Brand({
-    this.id,
-    this.name,
-    this.slug,
-    this.image,
-  });
-
-  Brand copyWith({
-    int? id,
-    String? name,
-    String? slug,
-    String? image,
-  }) =>
-      Brand(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        slug: slug ?? this.slug,
-        image: image ?? this.image,
-      );
-
-  factory Brand.fromJson(Map<String, dynamic> json) => Brand(
-        id: json["id"],
-        name: json["name"],
-        slug: json["slug"],
-        image: json["image"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "name": name,
-        "slug": slug,
-        "image": image,
       };
 }
 
