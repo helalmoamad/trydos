@@ -133,6 +133,13 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                                 prevChoosedOrAppliedFilterToAddToIt?.colors ??
                                     []);
                             if (!isSelected) {
+                              FirebaseAnalyticsService.logEventForSession(
+                                eventName: AnalyticsEventsConst.buttonClicked,
+                                executedEventName:
+                                    AnalyticsExecutedEventNameConst
+                                        .addFilterButton,
+                              );
+                              //////////////////////////////
                               if (prevChoosedOrAppliedFilterToAddToIt == null) {
                                 prevChoosedOrAppliedFilterToAddToIt = Filter();
                               }

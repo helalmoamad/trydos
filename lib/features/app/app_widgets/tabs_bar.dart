@@ -393,7 +393,7 @@ class _TabsBarState extends State<TabsBar> {
                                     InkWell(
                                       onTap: () async {
                                         SearchWithImageRelatedGemini
-                                            .SelecteImageForSearch(
+                                            .selecteImageForSearch(
                                                 context: context);
                                       },
                                       child: homeState
@@ -518,7 +518,7 @@ class _TabsBarState extends State<TabsBar> {
                                       InkWell(
                                         onTap: () async {
                                           SearchWithImageRelatedGemini
-                                              .SelecteImageForSearch(
+                                              .selecteImageForSearch(
                                                   context: context);
                                           /////////////////////////////
                                           FirebaseAnalyticsService

@@ -318,7 +318,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
     htmlDescriptionHeight.value = context.size!.height;
   }
 
-
   bool resetSearchAfterSearchingWhileRemoveSearch = false;
 
   @override
@@ -819,7 +818,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                     InkWell(
                                                                       onTap:
                                                                           () async {
-                                                                    SearchWithImageRelatedGemini.SelecteImageForSearch(context: context);
+                                                                        SearchWithImageRelatedGemini.selecteImageForSearch(
+                                                                            context:
+                                                                                context);
                                                                         /////////////////////////////
                                                                         FirebaseAnalyticsService
                                                                             .logEventForSession(
@@ -1018,7 +1019,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                       InkWell(
                                                                         onTap:
                                                                             () async {
-                                                                          SearchWithImageRelatedGemini.SelecteImageForSearch(context: context);
+                                                                          SearchWithImageRelatedGemini.selecteImageForSearch(
+                                                                              context: context);
                                                                           /////////////////////////////
                                                                           FirebaseAnalyticsService
                                                                               .logEventForSession(
@@ -2064,49 +2066,49 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                             print("${prefsRepository.myMarketName.toString()}" +
                                                                 "554${GetIt.I<PrefsRepository>().serverTime}4555554444${prefsRepository.countryIso.toString()}444444444${LanguageService.languageCode == 'ar' ? 'ae' : LanguageService.languageCode}444444444444${GetIt.I<PrefsRepository>().currentEvent}44444444444444444444444444445555555555555555555555");
                                                           });
-                                                          await FirebaseAnalytics
-                                                              .instance
-                                                              .logEvent(
-                                                                  name:
-                                                                      'button_clicked',
-                                                                  parameters: {
-                                                                "time_stamp": DateTime
-                                                                        .now()
-                                                                    .toUtc()
-                                                                    .add(Duration(
-                                                                        minutes:
-                                                                            GetIt.I<PrefsRepository>().getdurtion ??
-                                                                                0))
+
+                                                          Future.delayed(
+                                                            Duration(
+                                                                milliseconds:
+                                                                    100),
+                                                          ).then(
+                                                            (value) {
+                                                              FirebaseAnalyticsService
+                                                                  .logEventForViewedProduct(
+                                                                eventName:
+                                                                    AnalyticsEventsConst
+                                                                        .viewedProduct,
+                                                                productId: products[
+                                                                        index]
+                                                                    .id
                                                                     .toString(),
-                                                                "previous_event_button_name":
-                                                                    GetIt.I<PrefsRepository>()
-                                                                        .currentEvent,
-                                                                "device_language":
-                                                                    LanguageService.languageCode ==
-                                                                            'ar'
-                                                                        ? 'ae'
-                                                                        : LanguageService
-                                                                            .languageCode,
-                                                                "country_name":
-                                                                    GetIt.I<PrefsRepository>()
-                                                                        .countryIso,
-                                                                'userID': prefsRepository
-                                                                    .myMarketId
+                                                                productName: products[
+                                                                        index]
+                                                                    .name
                                                                     .toString(),
-                                                                'user_name':
-                                                                    prefsRepository
-                                                                        .myMarketName
-                                                                        .toString(),
-                                                                'clicked_button_name':
-                                                                    'i love you Ahmad',
-                                                                "session_id": GetIt.I<
-                                                                        PrefsRepository>()
-                                                                    .sessionId,
-                                                              });
-                                                          await GetIt.I<
-                                                                  PrefsRepository>()
-                                                              .setCurrentEvent(
-                                                                  "");
+                                                                productCategoriesId:
+                                                                    products[
+                                                                            index]
+                                                                        .categories
+                                                                        ?.map(
+                                                                          (e) => e
+                                                                              .id
+                                                                              .toString(),
+                                                                        )
+                                                                        .toList(),
+                                                              );
+                                                            },
+                                                          );
+                                                          ////////////////////////////
+                                                          FirebaseAnalyticsService
+                                                              .logEventForSession(
+                                                            eventName:
+                                                                AnalyticsEventsConst
+                                                                    .buttonClicked,
+                                                            executedEventName:
+                                                                AnalyticsExecutedEventNameConst
+                                                                    .chooseProductButton,
+                                                          );
 
                                                           // pushOverscrollRoute(
                                                           //     context: context,
@@ -2124,13 +2126,17 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                           //     dragToPopDirection: DragToPopDirection.toBottom,
                                                           //     scrollToPopOption: ScrollToPopOption.start,
                                                           //     fullscreenDialog: true);
-                                                          Navigator.of(context).push(
-                                                              MaterialPageRoute(
-                                                                  builder: (ctx) =>
-                                                                      ProductDetailsPage(
-                                                                        productItem:
-                                                                            products[index],
-                                                                      )));
+                                                          Navigator.of(context)
+                                                              .push(
+                                                            MaterialPageRoute(
+                                                              builder: (ctx) =>
+                                                                  ProductDetailsPage(
+                                                                productItem:
+                                                                    products[
+                                                                        index],
+                                                              ),
+                                                            ),
+                                                          );
                                                         },
                                                         child: ProductItem(
                                                           key: TestVariables

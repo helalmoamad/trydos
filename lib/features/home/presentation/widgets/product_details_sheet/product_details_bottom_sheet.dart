@@ -28,6 +28,9 @@ import 'package:trydos/features/home/presentation/widgets/product_details_sheet/
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_share_content.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/select_size_sheet.dart';
 import '../../../../../core/domin/repositories/prefs_repository.dart';
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../../trydos_application.dart';
 import '../../manager/home_bloc.dart';
 import '../product_details_body/product_details_image_widget.dart';
@@ -488,11 +491,10 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                           idsOfChatCardsToShare:
                                               idsOfChatCardsToShare),
                                       ProductDetailsSheetMoreOptionsContent(
-                                          scrollController: currentTab == 2
-                                              ? controller
-                                              : null,
-
-                                        productId: widget.productItem.id.toString(),
+                                        scrollController:
+                                            currentTab == 2 ? controller : null,
+                                        productId:
+                                            widget.productItem.id.toString(),
                                       )
                                     ],
                                   ),
@@ -568,7 +570,8 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                           child: LocalHero(
                                             tag: 'cart',
                                             child: SvgPicture.asset(
-                                                AppAssets.bagsSvg),
+                                              AppAssets.bagsSvg,
+                                            ),
                                           ),
                                         ),
                                 ),
@@ -627,30 +630,62 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                         clickOnComments: () {
                           panelController.open();
                           currentActiveTab.value = 0;
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            pageController.jumpToPage(0);
-                          });
+                          WidgetsBinding.instance.addPostFrameCallback(
+                            (_) {
+                              pageController.jumpToPage(0);
+                            },
+                          );
+                          //////////////////////////////
+                          FirebaseAnalyticsService.logEventForSession(
+                            eventName: AnalyticsEventsConst.buttonClicked,
+                            executedEventName: AnalyticsExecutedEventNameConst
+                                .showCommentsButton,
+                          );
                         },
                         clickOnFavorite: () {
                           currentActiveTab.value = -1;
+                          //////////////////////////////
+                          FirebaseAnalyticsService.logEventForSession(
+                            eventName: AnalyticsEventsConst.buttonClicked,
+                            executedEventName: AnalyticsExecutedEventNameConst
+                                .likeProductButton,
+                          );
                         },
                         clickOnMoreOptions: () {
                           panelController.open();
                           currentActiveTab.value = 2;
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            pageController.jumpToPage(2);
-                          });
+                          WidgetsBinding.instance.addPostFrameCallback(
+                            (_) {
+                              pageController.jumpToPage(2);
+                            },
+                          );
+                          //////////////////////////////
+                          FirebaseAnalyticsService.logEventForSession(
+                            eventName: AnalyticsEventsConst.buttonClicked,
+                            executedEventName: AnalyticsExecutedEventNameConst
+                                .moreOptionsButton,
+                          );
                         },
                         clickOnShare: () {
                           panelController.open();
                           currentActiveTab.value = 1;
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            pageController.jumpToPage(1);
-                          });
+                          WidgetsBinding.instance.addPostFrameCallback(
+                            (_) {
+                              pageController.jumpToPage(1);
+                            },
+                          );
                           if (GetIt.I<PrefsRepository>().chatToken != null) {
-                            BlocProvider.of<ChatBloc>(context).add(GetChatsEvent());
-                            BlocProvider.of<ChatBloc>(context).add(SaveContactsEvent());
+                            BlocProvider.of<ChatBloc>(context)
+                                .add(GetChatsEvent());
+                            BlocProvider.of<ChatBloc>(context)
+                                .add(SaveContactsEvent());
                           }
+                          //////////////////////////////
+                          FirebaseAnalyticsService.logEventForSession(
+                            eventName: AnalyticsEventsConst.buttonClicked,
+                            executedEventName: AnalyticsExecutedEventNameConst
+                                .shareProductButton,
+                          );
                         },
                         currentActiveTab: currentActiveTab,
                         sizeIsNotAvailableNotifier: sizeIsNotAvailableNotifier,
@@ -676,6 +711,12 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                   channelIds: channelIds));
                           idsOfChatCardsToShare.value = [];
                           currentActiveTab.value = -1;
+                          //////////////////////////////
+                          FirebaseAnalyticsService.logEventForSession(
+                            eventName: AnalyticsEventsConst.buttonClicked,
+                            executedEventName: AnalyticsExecutedEventNameConst
+                                .sendProductToChatButton,
+                          );
                         },
                       );
               }),

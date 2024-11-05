@@ -68,4 +68,32 @@ class AnalyticsExecutedEventNameConst {
   static const resetButton = 'reset_button';
   static const filterCloseIconButton = 'filter_close_icon_button';
   static const resetByTapOnFilterButton = 'reset_by_tap_on_filter_button';
+  static const addFilterButton = 'add_filter_button';
+  ///////////////////// product details  //////////////////////////
+  static const showProductPhotosButton = 'show_product_photos_button';
+  static const showShoppingBagButton = 'show_shopping_bag_button';
+  static const readMoreButton = 'read_more_button';
+  static const readLessButton = 'read_less_button';
+  static const chooseAvailableSizeButton = 'choose_available_size_button';
+  static const chooseAvailableColorButton = 'choose_available_color_button';
+  static const atYourAddressButton = 'at_your_address_button';
+  static const showBuyersCameraButton = 'show_buyers_camera_button';
+  static const moreOptionsButton = 'more_options_button';
+  static const addCommentButton = 'add_comment_button';
+  static const confirmCommentButton = 'confirm_comment_button';
+  static const showCommentsButton = 'show_comments_button';
+  static const likeProductButton = 'like_product_button';
+  static const shareProductButton = 'share_product_button';
+  static const shareWithChatButton = 'share_with_chat_button';
+  static const sendProductToChatButton = 'send_product_to_chat_button';
+  static const shareWithFacebookButton = 'share_with_facebook_button';
+  static const shareWithWhatsappButton = 'share_with_whatsapp_button';
+  static const shareWithTelegramButton = 'share_with_telegram_button';
+  static const shareWithTwiterButton = 'share_with_twiter_button';
+  static const shareWithGmailButton = 'share_with_gmail_button';
+  static const addToBagButton = 'add_to_bag_button';
+  static const chooseSizeButton = 'choose_size_button';
+  static const increaseQtyButton = 'increase_qty_button';
+  static const decreaseQtyButton = 'decrease_qty_button';
+  static const addProductToBagButton = 'add_product_to_bag_button';
 }

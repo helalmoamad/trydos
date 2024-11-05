@@ -153,6 +153,13 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                                 prevChoosedOrAppliedFilterToAddToIt?.brands ??
                                     []);
                             if (!isSelected) {
+                              FirebaseAnalyticsService.logEventForSession(
+                                eventName: AnalyticsEventsConst.buttonClicked,
+                                executedEventName:
+                                    AnalyticsExecutedEventNameConst
+                                        .addFilterButton,
+                              );
+                              //////////////////////////////
                               dynamic item = widget.filters[index];
                               if (prevChoosedOrAppliedFilterToAddToIt == null) {
                                 prevChoosedOrAppliedFilterToAddToIt = Filter();

@@ -29,6 +29,9 @@ import 'package:trydos/features/home/presentation/widgets/product_collection_in_
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_image_widget.dart';
 import 'package:trydos/features/story/presentation/widget/try_again.dart';
 
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
+import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
+
 class CartPage extends StatefulWidget {
   final bool? fromeFilters;
   const CartPage({Key? key, this.fromeFilters});
@@ -56,6 +59,14 @@ class _CartPageState extends State<CartPage> {
     homeBloc = BlocProvider.of<HomeBloc>(context);
     homeBloc.add(GetCartItemEvent());
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    FirebaseAnalyticsService.logScreen(
+      screen: AnalyticsScreensConst.cartScreen,
+    );
+    super.didChangeDependencies();
   }
 
   @override

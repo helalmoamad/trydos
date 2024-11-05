@@ -209,6 +209,15 @@ class CategoriesFilterList extends StatelessWidget {
                                                   []);
 
                                           if (add) {
+                                            FirebaseAnalyticsService
+                                                .logEventForSession(
+                                              eventName: AnalyticsEventsConst
+                                                  .buttonClicked,
+                                              executedEventName:
+                                                  AnalyticsExecutedEventNameConst
+                                                      .addFilterButton,
+                                            );
+                                            //////////////////////////////
                                             expandingFiltersStack.value =
                                                 innerIndex;
                                             Category category = Category(
@@ -437,6 +446,15 @@ class CategoriesFilterList extends StatelessWidget {
                                                   []);
 
                                           if (add) {
+                                            FirebaseAnalyticsService
+                                                .logEventForSession(
+                                              eventName: AnalyticsEventsConst
+                                                  .buttonClicked,
+                                              executedEventName:
+                                                  AnalyticsExecutedEventNameConst
+                                                      .addFilterButton,
+                                            );
+                                            //////////////////////////////
                                             Category category =
                                                 filters.categories![index];
                                             if (prevChoosedOrAppliedFilterToAddToIt ==
@@ -579,6 +597,12 @@ class CategoriesFilterList extends StatelessWidget {
                             prevChoosedOrAppliedFilterToAddToIt?.categories ??
                                 []);
                         if (add) {
+                          FirebaseAnalyticsService.logEventForSession(
+                            eventName: AnalyticsEventsConst.buttonClicked,
+                            executedEventName:
+                                AnalyticsExecutedEventNameConst.addFilterButton,
+                          );
+                          //////////////////////////////
                           Category category = filters.categories![index];
                           if (prevChoosedOrAppliedFilterToAddToIt == null) {
                             prevChoosedOrAppliedFilterToAddToIt = Filter();

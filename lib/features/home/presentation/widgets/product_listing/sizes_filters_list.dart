@@ -156,6 +156,13 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                                           ?.attributes ??
                                       []);
                               if (!isSelected) {
+                                FirebaseAnalyticsService.logEventForSession(
+                                  eventName: AnalyticsEventsConst.buttonClicked,
+                                  executedEventName:
+                                      AnalyticsExecutedEventNameConst
+                                          .addFilterButton,
+                                );
+                                //////////////////////////////
                                 String size = widget.attribute.options![index];
                                 if (prevChoosedOrAppliedFilterToAddToIt ==
                                     null) {
