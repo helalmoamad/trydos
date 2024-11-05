@@ -11,6 +11,9 @@ import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../authentication/presentation/manager/auth_bloc.dart';
 
@@ -107,9 +110,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                         color: Color(0xffF8F8F8),
                         borderRadius: BorderRadius.circular(15),
                       ),
-                      child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
+                      child: Column(mainAxisSize: MainAxisSize.min, children: [
                         Padding(
                           padding: const EdgeInsets.only(top: 15.0),
                           child: Row(
@@ -123,8 +124,10 @@ class ProductShippingAndDelivery extends StatelessWidget {
                               ),
                               MyTextWidget(
                                 'Product Shipping & Delivery',
-                                style: context.textTheme.titleLarge?.rq.copyWith(
-                                    height: 16 / 13, color: Color(0xff8D8D8D)),
+                                style: context.textTheme.titleLarge?.rq
+                                    .copyWith(
+                                        height: 16 / 13,
+                                        color: Color(0xff8D8D8D)),
                               )
                             ],
                           ),
@@ -135,6 +138,12 @@ class ProductShippingAndDelivery extends StatelessWidget {
                         InkWell(
                           onTap: () {
                             isExpanded.value = !isExpanded.value;
+                            //////////////////////////////
+                            FirebaseAnalyticsService.logEventForSession(
+                              eventName: AnalyticsEventsConst.buttonClicked,
+                              executedEventName: AnalyticsExecutedEventNameConst
+                                  .atYourAddressButton,
+                            );
                           },
                           child: Container(
                             decoration: BoxDecoration(
@@ -144,11 +153,15 @@ class ProductShippingAndDelivery extends StatelessWidget {
                             margin: EdgeInsets.symmetric(horizontal: 30),
                             child: Center(
                               child: BlocBuilder<AuthBloc, AuthState>(
-                                buildWhen: (p , c)=> p.getCustomerCountryStatus != c.getCustomerCountryStatus,
+                                buildWhen: (p, c) =>
+                                    p.getCustomerCountryStatus !=
+                                    c.getCustomerCountryStatus,
                                 builder: (context, state) {
                                   if (state.getCustomerCountryStatus ==
                                       GetCustomerCountryStatus.loading) {
-                                    return TrydosLoader(size: 25,);
+                                    return TrydosLoader(
+                                      size: 25,
+                                    );
                                   }
                                   if (state.getCustomerCountryStatus ==
                                       GetCustomerCountryStatus.failure) {
@@ -165,7 +178,8 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                       children: [
                                         TextSpan(
                                           text: 'At Your Address In ',
-                                          style: context.textTheme.titleMedium?.lq
+                                          style: context
+                                              .textTheme.titleMedium?.lq
                                               .copyWith(
                                             color: const Color(0xff8d8d8d),
                                             height: 14 / 11,
@@ -173,7 +187,8 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                         ),
                                         TextSpan(
                                           text: state.countryName,
-                                          style: context.textTheme.titleMedium?.mq
+                                          style: context
+                                              .textTheme.titleMedium?.mq
                                               .copyWith(
                                             color: const Color(0xff8d8d8d),
                                             height: 14 / 11,
@@ -181,7 +196,8 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                         ),
                                         TextSpan(
                                           text: ' Expected Within ',
-                                          style: context.textTheme.titleMedium?.rq
+                                          style: context
+                                              .textTheme.titleMedium?.rq
                                               .copyWith(
                                             color: const Color(0xff8d8d8d),
                                             height: 14 / 11,
@@ -189,7 +205,8 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                         ),
                                         TextSpan(
                                           text: '4 Days',
-                                          style: context.textTheme.titleMedium?.mq
+                                          style: context
+                                              .textTheme.titleMedium?.mq
                                               .copyWith(
                                             color: const Color(0xff8d8d8d),
                                             height: 14 / 11,
@@ -248,7 +265,8 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                           TextSpan(
                                             text:
                                                 'Same Day Packing & Ship If Buy Before ',
-                                            style: context.textTheme.titleMedium?.lq
+                                            style: context
+                                                .textTheme.titleMedium?.lq
                                                 .copyWith(
                                               color: const Color(0xff8d8d8d),
                                               height: 14 / 11,
@@ -256,7 +274,8 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                           ),
                                           TextSpan(
                                             text: '13:00 ',
-                                            style: context.textTheme.titleMedium?.lq
+                                            style: context
+                                                .textTheme.titleMedium?.lq
                                                 .copyWith(
                                               color: const Color(0xff388CFF),
                                               height: 14 / 11,
@@ -264,7 +283,8 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                           ),
                                           TextSpan(
                                             text: 'Today',
-                                            style: context.textTheme.titleMedium?.lq
+                                            style: context
+                                                .textTheme.titleMedium?.lq
                                                 .copyWith(
                                               color: const Color(0xff8d8d8d),
                                               height: 14 / 11,
@@ -299,20 +319,25 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   BlocBuilder<AuthBloc, AuthState>(
-                                    buildWhen: (p , c)=> p.getCustomerCountryStatus != c.getCustomerCountryStatus,
+                                    buildWhen: (p, c) =>
+                                        p.getCustomerCountryStatus !=
+                                        c.getCustomerCountryStatus,
                                     builder: (context, state) {
                                       if (state.getCustomerCountryStatus ==
                                           GetCustomerCountryStatus.loading) {
-                                        return TrydosLoader(size: 25,);
+                                        return TrydosLoader(
+                                          size: 25,
+                                        );
                                       }
                                       if (state.getCustomerCountryStatus ==
                                           GetCustomerCountryStatus.failure) {
                                         return MyTextWidget(
                                           'Failed to get location',
-                                          style: context.textTheme.titleLarge?.rq
+                                          style: context
+                                              .textTheme.titleLarge?.rq
                                               .copyWith(
-                                              height: 16 / 13,
-                                              color: Color(0xff8D8D8D)),
+                                                  height: 16 / 13,
+                                                  color: Color(0xff8D8D8D)),
                                         );
                                       }
                                       return MyTextWidget(
@@ -331,7 +356,8 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                           TextSpan(
                                             text:
                                                 'Time Is Expected, It May Take More Or Less Than 2 Days',
-                                            style: context.textTheme.titleMedium?.lq
+                                            style: context
+                                                .textTheme.titleMedium?.lq
                                                 .copyWith(
                                               color: const Color(0xff8d8d8d),
                                               height: 14 / 11,
@@ -371,7 +397,8 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                         children: [
                                           TextSpan(
                                             text: '14. Jun. ',
-                                            style: context.textTheme.titleMedium?.mq
+                                            style: context
+                                                .textTheme.titleMedium?.mq
                                                 .copyWith(
                                               color: const Color(0xff8d8d8d),
                                               height: 14 / 11,
@@ -379,7 +406,8 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                           ),
                                           TextSpan(
                                             text: 'In Your Adress',
-                                            style: context.textTheme.titleMedium?.rq
+                                            style: context
+                                                .textTheme.titleMedium?.rq
                                                 .copyWith(
                                               color: const Color(0xff8d8d8d),
                                               height: 14 / 11,
@@ -399,7 +427,8 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                           TextSpan(
                                             text:
                                                 'Specify Your Address To Calculate The Delivery Time',
-                                            style: context.textTheme.titleMedium?.lq
+                                            style: context
+                                                .textTheme.titleMedium?.lq
                                                 .copyWith(
                                               color: const Color(0xff8d8d8d),
                                               height: 14 / 11,
@@ -460,7 +489,8 @@ class ProductShippingAndDelivery extends StatelessWidget {
                               TextSpan(
                                 text:
                                     'Shipping Is Completely Free Without Any Extras',
-                                style: context.textTheme.titleMedium?.lq.copyWith(
+                                style:
+                                    context.textTheme.titleMedium?.lq.copyWith(
                                   color: const Color(0xff8d8d8d),
                                   height: 14 / 11,
                                 ),
@@ -500,14 +530,16 @@ class ProductShippingAndDelivery extends StatelessWidget {
                             children: [
                               TextSpan(
                                 text: 'Within ',
-                                style: context.textTheme.titleMedium?.rq.copyWith(
+                                style:
+                                    context.textTheme.titleMedium?.rq.copyWith(
                                   color: const Color(0xff8d8d8d),
                                   height: 14 / 11,
                                 ),
                               ),
                               TextSpan(
                                 text: '3 Days',
-                                style: context.textTheme.titleMedium?.mq.copyWith(
+                                style:
+                                    context.textTheme.titleMedium?.mq.copyWith(
                                   color: const Color(0xff8d8d8d),
                                   height: 14 / 11,
                                 ),
@@ -515,7 +547,8 @@ class ProductShippingAndDelivery extends StatelessWidget {
                               TextSpan(
                                 text:
                                     ' After Receiving The Product, You Can Return It Without Conditions Or Reasons With Complete Ease And Get The Amount Back',
-                                style: context.textTheme.titleMedium?.rq.copyWith(
+                                style:
+                                    context.textTheme.titleMedium?.rq.copyWith(
                                   color: const Color(0xff8d8d8d),
                                   height: 14 / 11,
                                 ),
@@ -566,8 +599,8 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                   TextSpan(
                                     text:
                                         'Return Is Completely Free Without Any Extras',
-                                    style:
-                                        context.textTheme.titleMedium?.lq.copyWith(
+                                    style: context.textTheme.titleMedium?.lq
+                                        .copyWith(
                                       color: const Color(0xff8d8d8d),
                                       height: 14 / 11,
                                     ),

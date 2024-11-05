@@ -7,6 +7,8 @@ import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dar
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as listing;
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
+import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../service/language_service.dart';
 import '../../data/models/get_product_listing_without_filters_model.dart'
     as images;
@@ -24,6 +26,14 @@ class ProductDetailsDisplayPicturesPage extends StatefulWidget {
 class _ProductDetailsDisplayPicturesPageState
     extends State<ProductDetailsDisplayPicturesPage> {
   final ValueNotifier<int> selectedPicture = ValueNotifier(0);
+
+  @override
+  void didChangeDependencies() {
+    FirebaseAnalyticsService.logScreen(
+      screen: AnalyticsScreensConst.productPhotosScreen,
+    );
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {

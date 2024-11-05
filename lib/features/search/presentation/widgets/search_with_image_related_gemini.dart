@@ -13,14 +13,18 @@ import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/service/language_service.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
+
 class SearchWithImageRelatedGemini {
   static void SelecteImageForSearch(
       {required BuildContext context, required bool fromSearch}) async {
     showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return GalleryAndCameraDialogWidget(
-              onChooseFileFromGalleryAction: (AssetEntity? assetEntity) async {
+      context: context,
+      builder: (BuildContext context) {
+        return GalleryAndCameraDialogWidget(
+          onChooseFileFromGalleryAction: (AssetEntity? assetEntity) async {
             if (assetEntity != null) {
               File file = (await assetEntity.originFile)!;
               String mimeStr = lookupMimeType(file.absolute.path) ?? '';
@@ -36,7 +40,18 @@ class SearchWithImageRelatedGemini {
                   backgroundColor: const Color.fromARGB(255, 0, 0, 0),
                   textColor: Colors.white,
                 );
-                return;
+                /////////////////////////////
+                FirebaseAnalyticsService.logEventForSession(
+                  eventName: AnalyticsEventsConst.programmingEvent,
+                  executedEventName:
+                      AnalyticsExecutedEventNameConst.videoNotSupported,
+                );
+              } else {
+                FirebaseAnalyticsService.logEventForSession(
+                  eventName: AnalyticsEventsConst.buttonClicked,
+                  executedEventName: AnalyticsExecutedEventNameConst
+                      .confirmUploadSearchImageButton,
+                );
               }
               final Uint8List imageBytes = file.readAsBytesSync();
               final geminis.Gemini gemini = geminis.Gemini.instance;
@@ -53,14 +68,23 @@ class SearchWithImageRelatedGemini {
                       images: [
                         imageBytes
                       ])
-                  .then((value) => GetIt.I<HomeBloc>().add(ReplyFromGeminiEvent(
-                      fromSearch: fromSearch,
-                      sendRequestToGeminiStatus:
-                          SendRequestToGeminiStatus.success,
-                      theReplyFromGemini:
-                          value?.content?.parts?[0].text?.split(".").first ??
-                              value?.content?.parts?[0].text ??
-                              "")))
+                  .then((value) {
+
+            GetIt.I<HomeBloc>().add(ReplyFromGeminiEvent(
+            fromSearch: fromSearch,
+            sendRequestToGeminiStatus:
+            SendRequestToGeminiStatus.success,
+            theReplyFromGemini:
+            value?.content?.parts?[0].text?.split(".").first ??
+            value?.content?.parts?[0].text ??
+            ""));
+
+            FirebaseAnalyticsService.logEventForSession(
+            eventName: AnalyticsEventsConst.programmingEvent,
+            executedEventName: AnalyticsExecutedEventNameConst
+                .uploadSearchImageSuccess,
+            );
+            })
                   .onError(
                     (error, stackTrace) {
                       GetIt.I<HomeBloc>().add(ReplyFromGeminiEvent(
@@ -102,6 +126,12 @@ class SearchWithImageRelatedGemini {
                           textColor: Colors.white,
                           fontSize: 18,
                           timeInSecForIosWeb: 3);
+
+            FirebaseAnalyticsService.logEventForSession(
+            eventName: AnalyticsEventsConst.programmingEvent,
+            executedEventName:
+            AnalyticsExecutedEventNameConst.uploadSearchImageFailed,
+            );
                     },
                   )
                   .timeout(
@@ -109,14 +139,23 @@ class SearchWithImageRelatedGemini {
                         seconds: 20,
                       ), onTimeout: () {
                     gemini.cancelRequest();
-                    return GetIt.I<HomeBloc>().add(ReplyFromGeminiEvent(
+                     GetIt.I<HomeBloc>().add(ReplyFromGeminiEvent(
                         fromSearch: fromSearch,
                         sendRequestToGeminiStatus:
                             SendRequestToGeminiStatus.failure,
-                        theReplyFromGemini: ""));
-                  });
+                        theReplyFromGemini: ""),
+                  );
+                  /////////////////////////////
+                  FirebaseAnalyticsService.logEventForSession(
+                    eventName: AnalyticsEventsConst.programmingEvent,
+                    executedEventName:
+                        AnalyticsExecutedEventNameConst.uploadSearchImageFailed,
+                  );
+                },
+              );
             }
-          }, onChooseFileFromCameraAction: (File? file) async {
+          },
+          onChooseFileFromCameraAction: (File? file) async {
             if (file != null) {
               String mimeStr = lookupMimeType(file.absolute.path) ?? '';
               var fileType = mimeStr.split('/');
@@ -130,7 +169,18 @@ class SearchWithImageRelatedGemini {
                   backgroundColor: const Color.fromARGB(255, 0, 0, 0),
                   textColor: Colors.white,
                 );
-                return;
+                /////////////////////////////
+                FirebaseAnalyticsService.logEventForSession(
+                  eventName: AnalyticsEventsConst.programmingEvent,
+                  executedEventName:
+                      AnalyticsExecutedEventNameConst.videoNotSupported,
+                );
+              } else {
+                FirebaseAnalyticsService.logEventForSession(
+                  eventName: AnalyticsEventsConst.buttonClicked,
+                  executedEventName: AnalyticsExecutedEventNameConst
+                      .confirmUploadSearchImageButton,
+                );
               }
               final Uint8List imageBytes = file.readAsBytesSync();
               final geminis.Gemini gemini = geminis.Gemini.instance;
@@ -146,17 +196,25 @@ class SearchWithImageRelatedGemini {
                       images: [
                         imageBytes
                       ])
-                  .then((value) => GetIt.I<HomeBloc>().add(ReplyFromGeminiEvent(
+                  .then((value) { GetIt.I<HomeBloc>().add(ReplyFromGeminiEvent(
                       fromSearch: fromSearch,
                       sendRequestToGeminiStatus:
                           SendRequestToGeminiStatus.success,
                       theReplyFromGemini:
                           value?.content?.parts?[0].text?.split(".").first ??
                               value?.content?.parts?[0].text ??
-                              "")))
-                  .onError((error, stackTrace) {
-                    print(
-                        "*******************************&%^&**(*&^%${error}#******************************TTTTTTTTTTTTTTTTTTTTTTtoo");
+                              ""),
+                );
+                /////////////////////////////
+                FirebaseAnalyticsService.logEventForSession(
+                  eventName: AnalyticsEventsConst.programmingEvent,
+                  executedEventName:
+                      AnalyticsExecutedEventNameConst.uploadSearchImageSuccess,
+                );
+              }).onError(
+                (error, stackTrace) {
+                  print(
+                      "*******************************&%^&**(*&^%${error}#******************************TTTTTTTTTTTTTTTTTTTTTTtoo");
 
                     GetIt.I<HomeBloc>().add(ReplyFromGeminiEvent(
                         fromSearch: fromSearch,
@@ -164,52 +222,70 @@ class SearchWithImageRelatedGemini {
                             SendRequestToGeminiStatus.failure,
                         theReplyFromGemini: ""));
 
-                    if (error.toString().contains("Failed host")) {
-                      Fluttertoast.showToast(
-                          fontSize: 18,
-                          timeInSecForIosWeb: 3,
-                          msg: "the internet is not available ",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.TOP,
-                          backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                          textColor: Colors.white);
-                      return;
-                    }
-                    if (error
-                        .toString()
-                        .contains("The request was manually cancelled")) {
-                      Fluttertoast.showToast(
-                          fontSize: 18,
-                          timeInSecForIosWeb: 3,
-                          msg: "time out ",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.TOP,
-                          backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                          textColor: Colors.white);
-                      return;
-                    }
+                  if (error.toString().contains("Failed host")) {
                     Fluttertoast.showToast(
                         fontSize: 18,
-                        timeInSecForIosWeb: 1,
-                        msg: "this service is not available in your Country ",
+                        timeInSecForIosWeb: 3,
+                        msg: "the internet is not available ",
                         toastLength: Toast.LENGTH_SHORT,
                         gravity: ToastGravity.TOP,
                         backgroundColor: const Color.fromARGB(255, 0, 0, 0),
                         textColor: Colors.white);
-                  })
-                  .timeout(
-                      Duration(
-                        seconds: 20,
-                      ), onTimeout: () {
-                    gemini.cancelRequest();
-                    return GetIt.I<HomeBloc>().add(ReplyFromGeminiEvent(
-                        fromSearch: fromSearch,
+                    return;
+                  }
+                  if (error
+                      .toString()
+                      .contains("The request was manually cancelled")) {
+                    Fluttertoast.showToast(
+                        fontSize: 18,
+                        timeInSecForIosWeb: 3,
+                        msg: "time out ",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.TOP,
+                        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                        textColor: Colors.white);
+                    return;
+                  }
+                  Fluttertoast.showToast(
+                      fontSize: 18,
+                      timeInSecForIosWeb: 1,
+                      msg: "this service is not available in your Country ",
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.TOP,
+                      backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                      textColor: Colors.white);
+                  //////////////////////////////////////
+                  FirebaseAnalyticsService.logEventForSession(
+                    eventName: AnalyticsEventsConst.programmingEvent,
+                    executedEventName:
+                        AnalyticsExecutedEventNameConst.uploadSearchImageFailed,
+                  );
+                },
+              ).timeout(
+                Duration(
+                  seconds: 20,
+                ),
+                onTimeout: () {
+                  gemini.cancelRequest();
+                  GetIt.I<HomeBloc>().add(
+                    ReplyFromGeminiEvent(
+                      fromSearch: fromSearch,
                         sendRequestToGeminiStatus:
                             SendRequestToGeminiStatus.failure,
-                        theReplyFromGemini: ""));
-                  });
+                        theReplyFromGemini: ""),
+                  );
+                  //////////////////////////////////////
+                  FirebaseAnalyticsService.logEventForSession(
+                    eventName: AnalyticsEventsConst.programmingEvent,
+                    executedEventName:
+                        AnalyticsExecutedEventNameConst.uploadSearchImageFailed,
+                  );
+                },
+              );
             }
-          });
-        });
+          },
+        );
+      },
+    );
   }
 }

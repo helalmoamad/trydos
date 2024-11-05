@@ -19,6 +19,9 @@ import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../../core/utils/responsive_padding.dart';
 import '../../../../../core/utils/theme_state.dart';
 import '../../../../../generated/locale_keys.g.dart';
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../app/my_text_widget.dart';
 
 class ProductDetailsSheetMoreOptionsContent extends StatefulWidget {
@@ -45,7 +48,8 @@ class _ProductDetailsSheetMoreOptionsContentState
     return BlocBuilder<HomeBloc, HomeState>(
       buildWhen: (p, c) =>
           p.getCommentForProductModel[widget.productId] !=
-          c.getCommentForProductModel[widget.productId] || p.addCommentStatus != c.addCommentStatus,
+              c.getCommentForProductModel[widget.productId] ||
+          p.addCommentStatus != c.addCommentStatus,
       builder: (context, state) {
         if (state.getCommentForProductModel[widget.productId] == null) {
           return SizedBox.shrink();
@@ -75,26 +79,38 @@ class _ProductDetailsSheetMoreOptionsContentState
                     builder: (context, toggleValue, _) {
                       return toggleValue
                           ? Padding(
-                            padding: HWEdgeInsets.symmetric(horizontal: 15),
-                            child: AppTextField(
+                              padding: HWEdgeInsets.symmetric(horizontal: 15),
+                              child: AppTextField(
                                 hintText: LocaleKeys.add_comment.tr(),
                                 controller: addCommentController,
                                 suffixIcon: Padding(
-                                  padding: HWEdgeInsets.only(right: 20.0, top: 15 , bottom: 15),
+                                  padding: HWEdgeInsets.only(
+                                      right: 20.0, top: 15, bottom: 15),
                                   child: InkWell(
                                     onTap: () {
                                       if (addCommentController.text.isEmpty) {
-                                        showMessage(
-                                            LocaleKeys.error_empty_comment.tr());
+                                        showMessage(LocaleKeys
+                                            .error_empty_comment
+                                            .tr());
                                         return;
                                       }
-                                        BlocProvider.of<HomeBloc>(context).add(
-                                            AddCommentEvent(
-                                                productId: widget.productId,
-                                                comment: addCommentController
-                                                    .text));
+                                      BlocProvider.of<HomeBloc>(context).add(
+                                          AddCommentEvent(
+                                              productId: widget.productId,
+                                              comment:
+                                                  addCommentController.text));
                                       addCommentController.clear();
-                                      addCommentButtonToggleNotifier.value = false;
+                                      addCommentButtonToggleNotifier.value =
+                                          false;
+                                      //////////////////////////////////////////////////////////
+                                      FirebaseAnalyticsService
+                                          .logEventForSession(
+                                        eventName:
+                                            AnalyticsEventsConst.buttonClicked,
+                                        executedEventName:
+                                            AnalyticsExecutedEventNameConst
+                                                .confirmCommentButton,
+                                      );
                                     },
                                     child: SvgPicture.asset(
                                       AppAssets.submitArrowSvg,
@@ -104,19 +120,30 @@ class _ProductDetailsSheetMoreOptionsContentState
                                   ),
                                 ),
                               ),
-                          )
+                            )
                           : InkWell(
                               onTap: () {
-                                if(GetIt.I<PrefsRepository>().myMarketId == null){
+                                if (GetIt.I<PrefsRepository>().myMarketId ==
+                                    null) {
                                   showMessage('You must Login First!');
                                   return;
                                 }
                                 addCommentButtonToggleNotifier.value = true;
+                                //////////////////////////////
+                                FirebaseAnalyticsService.logEventForSession(
+                                  eventName: AnalyticsEventsConst.buttonClicked,
+                                  executedEventName:
+                                      AnalyticsExecutedEventNameConst
+                                          .addCommentButton,
+                                );
                               },
                               child: Row(
                                 children: [
                                   10.horizontalSpace,
-                                  SvgPicture.asset(AppAssets.chatMarkSvg , height: 25,),
+                                  SvgPicture.asset(
+                                    AppAssets.chatMarkSvg,
+                                    height: 25,
+                                  ),
                                   10.horizontalSpace,
                                   MyTextWidget(
                                     LocaleKeys.add_comment.tr(),
