@@ -17,6 +17,9 @@ import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 
 import '../../../../../core/utils/theme_state.dart';
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../data/models/get_product_listing_without_filters_model.dart'
     as productListingModel;
 import '../../manager/home_bloc.dart';
@@ -550,6 +553,16 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                             productId: widget
                                                                 .productItem.id
                                                                 .toString()));
+                                                    //////////////////////////////
+                                                    FirebaseAnalyticsService
+                                                        .logEventForSession(
+                                                      eventName:
+                                                          AnalyticsEventsConst
+                                                              .buttonClicked,
+                                                      executedEventName:
+                                                          AnalyticsExecutedEventNameConst
+                                                              .chooseAvailableColorButton,
+                                                    );
                                                   },
                                                   child: Column(
                                                     crossAxisAlignment:

@@ -17,6 +17,9 @@ import 'package:trydos/features/home/presentation/widgets/share_products_with_so
 import '../../../../../common/helper/helper_functions.dart';
 import '../../../../../core/utils/responsive_padding.dart';
 import '../../../../../generated/locale_keys.g.dart';
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../app/app_widgets/app_text_field.dart';
 import '../../../../app/my_cached_network_image.dart';
 import '../../../../app/my_text_widget.dart';
@@ -203,6 +206,15 @@ class _ProductDetailsSheetShareContentState
                                                   .add(displayedChats[index]
                                                       .id
                                                       .toString());
+                                              //////////////////////////////
+                                              FirebaseAnalyticsService
+                                                  .logEventForSession(
+                                                eventName: AnalyticsEventsConst
+                                                    .buttonClicked,
+                                                executedEventName:
+                                                    AnalyticsExecutedEventNameConst
+                                                        .shareWithChatButton,
+                                              );
                                             } else {
                                               widget.idsOfChatCardsToShare.value
                                                   .remove(displayedChats[index]

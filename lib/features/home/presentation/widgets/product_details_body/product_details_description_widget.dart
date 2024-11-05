@@ -9,6 +9,9 @@ import 'package:trydos/features/app/my_text_widget.dart';
 
 import '../../../../../core/utils/responsive_padding.dart';
 import '../../../../../generated/locale_keys.g.dart';
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 
 class ProductDetailsDescriptionWidget extends StatefulWidget {
   final String description;
@@ -68,27 +71,48 @@ class _ProductDetailsDescriptionWidgetState
                       ),
                     },
                   ),
-                    RichText(
-                        overflow: TextOverflow.ellipsis,
-                        text: TextSpan(children: [
-                          readMores
-                              ? TextSpan(
-                              text: !readMore
-                                  ? LocaleKeys.read_less.tr()
-                                  : LocaleKeys.read_more.tr(),
-                              style: context.textTheme.titleLarge?.rq.copyWith(
-                                  height: 1.23,
-                                  color: Color(0xff388CFF),
-                                  fontSize: 13),
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () {
-                                  readMoreNotifier.value =
-                                  !readMoreNotifier.value;
-                                })
-                              : TextSpan(
-                            text: " ",
-                          )
-                        ]))
+                  RichText(
+                      overflow: TextOverflow.ellipsis,
+                      text: TextSpan(children: [
+                        readMores
+                            ? TextSpan(
+                                text: !readMore
+                                    ? LocaleKeys.read_less.tr()
+                                    : LocaleKeys.read_more.tr(),
+                                style: context.textTheme.titleLarge?.rq
+                                    .copyWith(
+                                        height: 1.23,
+                                        color: Color(0xff388CFF),
+                                        fontSize: 13),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    readMoreNotifier.value =
+                                        !readMoreNotifier.value;
+                                    if (!readMoreNotifier.value) {
+                                      FirebaseAnalyticsService
+                                          .logEventForSession(
+                                        eventName:
+                                            AnalyticsEventsConst.buttonClicked,
+                                        executedEventName:
+                                            AnalyticsExecutedEventNameConst
+                                                .readMoreButton,
+                                      );
+                                    } else {
+                                      FirebaseAnalyticsService
+                                          .logEventForSession(
+                                        eventName:
+                                            AnalyticsEventsConst.buttonClicked,
+                                        executedEventName:
+                                            AnalyticsExecutedEventNameConst
+                                                .readLessButton,
+                                      );
+                                    }
+                                  },
+                              )
+                            : TextSpan(
+                                text: " ",
+                              )
+                      ]))
                 ],
               )
 

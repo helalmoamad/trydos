@@ -16,6 +16,9 @@ import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../data/models/get_product_filters_model.dart';
 import '../../manager/home_bloc.dart';
@@ -153,6 +156,13 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                                           ?.attributes ??
                                       []);
                               if (!isSelected) {
+                                FirebaseAnalyticsService.logEventForSession(
+                                  eventName: AnalyticsEventsConst.buttonClicked,
+                                  executedEventName:
+                                      AnalyticsExecutedEventNameConst
+                                          .addFilterButton,
+                                );
+                                //////////////////////////////
                                 String size = widget.attribute.options![index];
                                 if (prevChoosedOrAppliedFilterToAddToIt ==
                                     null) {
@@ -189,6 +199,14 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                                             ],
                                 );
                               } else {
+                                print('reset size');
+                                FirebaseAnalyticsService.logEventForSession(
+                                  eventName: AnalyticsEventsConst.buttonClicked,
+                                  executedEventName:
+                                      AnalyticsExecutedEventNameConst
+                                          .resetByTapOnFilterButton,
+                                );
+                                ////////////////////////////////////
                                 List<String> options =
                                     List.of(sizes[0].options ?? []);
                                 options.removeWhere(((element) =>

@@ -2072,6 +2072,59 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                         int index) {
                                                       return InkWell(
                                                         onTap: () async {
+                                                          Future.delayed(
+                                                              Duration(
+                                                                  milliseconds:
+                                                                      100), () {
+                                                            print("${prefsRepository.myMarketId.toString()}" +
+                                                                "55555555555555555555555555555555555555555");
+                                                            print("${prefsRepository.myMarketName.toString()}" +
+                                                                "554${GetIt.I<PrefsRepository>().serverTime}4555554444${prefsRepository.countryIso.toString()}444444444${LanguageService.languageCode == 'ar' ? 'ae' : LanguageService.languageCode}444444444444${GetIt.I<PrefsRepository>().currentEvent}44444444444444444444444444445555555555555555555555");
+                                                          });
+
+                                                          Future.delayed(
+                                                            Duration(
+                                                                milliseconds:
+                                                                    100),
+                                                          ).then(
+                                                            (value) {
+                                                              FirebaseAnalyticsService
+                                                                  .logEventForViewedProduct(
+                                                                eventName:
+                                                                    AnalyticsEventsConst
+                                                                        .viewedProduct,
+                                                                productId: products[
+                                                                        index]
+                                                                    .id
+                                                                    .toString(),
+                                                                productName: products[
+                                                                        index]
+                                                                    .name
+                                                                    .toString(),
+                                                                productCategoriesId:
+                                                                    products[
+                                                                            index]
+                                                                        .categories
+                                                                        ?.map(
+                                                                          (e) => e
+                                                                              .id
+                                                                              .toString(),
+                                                                        )
+                                                                        .toList(),
+                                                              );
+                                                            },
+                                                          );
+                                                          ////////////////////////////
+                                                          FirebaseAnalyticsService
+                                                              .logEventForSession(
+                                                            eventName:
+                                                                AnalyticsEventsConst
+                                                                    .buttonClicked,
+                                                            executedEventName:
+                                                                AnalyticsExecutedEventNameConst
+                                                                    .chooseProductButton,
+                                                          );
+
                                                           // pushOverscrollRoute(
                                                           //     context: context,
                                                           //     transitionDuration : Duration(milliseconds : 250),
@@ -2088,13 +2141,17 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                           //     dragToPopDirection: DragToPopDirection.toBottom,
                                                           //     scrollToPopOption: ScrollToPopOption.start,
                                                           //     fullscreenDialog: true);
-                                                          Navigator.of(context).push(
-                                                              MaterialPageRoute(
-                                                                  builder: (ctx) =>
-                                                                      ProductDetailsPage(
-                                                                        productItem:
-                                                                            products[index],
-                                                                      )));
+                                                          Navigator.of(context)
+                                                              .push(
+                                                            MaterialPageRoute(
+                                                              builder: (ctx) =>
+                                                                  ProductDetailsPage(
+                                                                productItem:
+                                                                    products[
+                                                                        index],
+                                                              ),
+                                                            ),
+                                                          );
                                                         },
                                                         child: ProductItem(
                                                           key: TestVariables

@@ -73,6 +73,7 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
               children: [
                 GestureDetector(
                   onTap: () {
+                    print('tab on price');
                     HomeBloc homeBloc = BlocProvider.of<HomeBloc>(context);
                     Filter? prevChoosedOrAppliedFilterToAddToIt =
                         homeBloc.state.appliedFiltersByUser[key]?.filters;

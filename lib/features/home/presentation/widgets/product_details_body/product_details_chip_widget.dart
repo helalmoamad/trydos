@@ -67,10 +67,11 @@ class ProductDetailsChipWidget extends StatelessWidget {
                             if (withIcon) ...{
                               MyTextWidget(
                                 descriptor!.descriptors![index].value!,
-                                style: context.textTheme.titleLarge?.rq.copyWith(
-                                    height: 1.23,
-                                    color: Color(0xff505050),
-                                    fontSize: 13.sp),
+                                style: context.textTheme.titleLarge?.rq
+                                    .copyWith(
+                                        height: 1.23,
+                                        color: Color(0xff505050),
+                                        fontSize: 13.sp),
                               ),
                               Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 5),

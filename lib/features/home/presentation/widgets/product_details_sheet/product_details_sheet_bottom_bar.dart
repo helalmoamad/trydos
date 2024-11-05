@@ -28,6 +28,9 @@ import 'package:trydos/features/home/presentation/widgets/product_details_sheet/
 
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../../core/utils/responsive_padding.dart';
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 
 class ProductDetailsSheetBottomBar extends StatefulWidget {
   const ProductDetailsSheetBottomBar(
@@ -227,8 +230,7 @@ class _ProductDetailsSheetBottomBarState
                                                     : GestureDetector(
                                                         onTapDown: (details) {
                                                           if (currentTab != 3) {
-                                                            print(
-                                                                "11111111${state.productStatus![widget.productId]}1111111111111111111");
+                                                            print('open panel');
 
                                                             if (state.productStatus![
                                                                     widget
@@ -242,6 +244,16 @@ class _ProductDetailsSheetBottomBarState
                                                                   .currentActiveTab
                                                                   .value = 3;
                                                             }
+                                                            //////////////////////////////
+                                                            FirebaseAnalyticsService
+                                                                .logEventForSession(
+                                                              eventName:
+                                                                  AnalyticsEventsConst
+                                                                      .buttonClicked,
+                                                              executedEventName:
+                                                                  AnalyticsExecutedEventNameConst
+                                                                      .addToBagButton,
+                                                            );
                                                           } else {
                                                             HapticFeedback
                                                                 .lightImpact();
@@ -255,14 +267,28 @@ class _ProductDetailsSheetBottomBarState
                                                                 widget
                                                                     .addToBagButtonShapeNotifier
                                                                     .value--;
-                                                                homeBloc.add(UpdateListOfItemForAddToCartEvent(
-                                                                    productId:
-                                                                        widget
-                                                                            .productId,
-                                                                    imageForAddToCart:
-                                                                        imageForAddToCart,
-                                                                    operation:
-                                                                        "-"));
+                                                                homeBloc.add(
+                                                                  UpdateListOfItemForAddToCartEvent(
+                                                                      productId:
+                                                                          widget
+                                                                              .productId,
+                                                                      imageForAddToCart:
+                                                                          imageForAddToCart,
+                                                                      operation:
+                                                                          "-"),
+                                                                );
+                                                                print(
+                                                                    '111111111111111');
+                                                                //////////////////////////////
+                                                                FirebaseAnalyticsService
+                                                                    .logEventForSession(
+                                                                  eventName:
+                                                                      AnalyticsEventsConst
+                                                                          .buttonClicked,
+                                                                  executedEventName:
+                                                                      AnalyticsExecutedEventNameConst
+                                                                          .decreaseQtyButton,
+                                                                );
                                                               } else if (details
                                                                       .localPosition
                                                                       .dx >=
@@ -281,6 +307,18 @@ class _ProductDetailsSheetBottomBarState
                                                                         imageForAddToCart,
                                                                     operation:
                                                                         "+"));
+                                                                print(
+                                                                    '22222222222222');
+                                                                //////////////////////////////
+                                                                FirebaseAnalyticsService
+                                                                    .logEventForSession(
+                                                                  eventName:
+                                                                      AnalyticsEventsConst
+                                                                          .buttonClicked,
+                                                                  executedEventName:
+                                                                      AnalyticsExecutedEventNameConst
+                                                                          .increaseQtyButton,
+                                                                );
                                                               } else {
                                                                 animationController
                                                                     .forward();
@@ -310,6 +348,18 @@ class _ProductDetailsSheetBottomBarState
                                                                         imageForAddToCart,
                                                                     operation:
                                                                         "remove"));
+                                                                print(
+                                                                    '33333333333333');
+                                                                //////////////////////////////
+                                                                FirebaseAnalyticsService
+                                                                    .logEventForSession(
+                                                                  eventName:
+                                                                      AnalyticsEventsConst
+                                                                          .buttonClicked,
+                                                                  executedEventName:
+                                                                      AnalyticsExecutedEventNameConst
+                                                                          .addProductToBagButton,
+                                                                );
                                                               }
                                                             } else {
                                                               animationController
@@ -324,6 +374,18 @@ class _ProductDetailsSheetBottomBarState
                                                                       imageForAddToCart,
                                                                   operation:
                                                                       "+"));
+                                                              print(
+                                                                  '44444444444');
+                                                              //////////////////////////////
+                                                              FirebaseAnalyticsService
+                                                                  .logEventForSession(
+                                                                eventName:
+                                                                    AnalyticsEventsConst
+                                                                        .buttonClicked,
+                                                                executedEventName:
+                                                                    AnalyticsExecutedEventNameConst
+                                                                        .increaseQtyButton,
+                                                              );
                                                             }
                                                           }
                                                         },
@@ -403,7 +465,18 @@ class _ProductDetailsSheetBottomBarState
                                                                                             height: 20,
                                                                                             child: ListView.builder(
                                                                                               itemBuilder: (context, index) {
-                                                                                                return Align(widthFactor: 1 - (itemCount / 12 * 0.3), child: MyCachedNetworkImage(circleDimensions: 15, imageUrl: allimages[index], width: 15, imageWidth: 70, imageHeight: 70, imageFit: BoxFit.cover, height: 20)); /*Container(
+                                                                                                return Align(
+                                                                                                  widthFactor: 1 - (itemCount / 12 * 0.3),
+                                                                                                  child: MyCachedNetworkImage(
+                                                                                                    circleDimensions: 15,
+                                                                                                    imageUrl: allimages[index],
+                                                                                                    width: 15,
+                                                                                                    imageWidth: 70,
+                                                                                                    imageHeight: 70,
+                                                                                                    imageFit: BoxFit.cover,
+                                                                                                    height: 20,
+                                                                                                  ),
+                                                                                                ); /*Container(
                                                                                           width: 15,
                                                                                           height: 20,
                                                                                           decoration: BoxDecoration(
@@ -633,7 +706,8 @@ class _ProductDetailsSheetBottomBarState
                                             highlightColor:
                                                 Colors.grey.shade100,
                                             child: SvgPicture.asset(
-                                                AppAssets.chatMarkSvg),
+                                              AppAssets.chatMarkSvg,
+                                            ),
                                           )
                                         : BarWidget(
                                             text:
