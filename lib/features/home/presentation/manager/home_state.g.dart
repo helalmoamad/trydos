@@ -19,6 +19,8 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               const {},
       addItemInCartStatus: $enumDecodeNullable(
           _$AddItemInCartStatusEnumMap, json['addItemInCartStatus']),
+      hideItemInOldCartStatus: $enumDecodeNullable(
+          _$HideItemInOldCartStatusEnumMap, json['hideItemInOldCartStatus']),
       searchWithOutFilterOffset:
           (json['searchWithOutFilterOffset'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
@@ -138,8 +140,10 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       theReplyFromGemini: json['theReplyFromGemini'] as String?,
       productITemForCart:
           (json['productITemForCart'] as Map<String, dynamic>?)?.map(
-        (k, e) => MapEntry(k, Products.fromJson(e as Map<String, dynamic>)),
-      ),
+                (k, e) =>
+                    MapEntry(k, Products.fromJson(e as Map<String, dynamic>)),
+              ) ??
+              const {},
       getCartShippingItemsModel: json['getCartShippingItemsModel'] == null
           ? null
           : GetCartShippingItemsModel.fromJson(
@@ -251,6 +255,8 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               : get_filters.Filter.fromJson(
                   json['prefAppliedFilterForExtendFilter']
                       as Map<String, dynamic>),
+      fromSearchForSearchWithGemini:
+          json['fromSearchForSearchWithGemini'] as bool? ?? false,
       ListitemForAddToCart: (json['ListitemForAddToCart'] as List<dynamic>?)
           ?.map((e) => ImageForAddToCart.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -368,9 +374,11 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'getCommentForProductStatus': _$GetCommentForProductStatusEnumMap[
           instance.getCommentForProductStatus]!,
       'productITemForCart':
-          instance.productITemForCart?.map((k, e) => MapEntry(k, e.toJson())),
+          instance.productITemForCart.map((k, e) => MapEntry(k, e.toJson())),
       'getMainCategoriesStatus':
           _$GetMainCategoriesStatusEnumMap[instance.getMainCategoriesStatus]!,
+      'hideItemInOldCartStatus':
+          _$HideItemInOldCartStatusEnumMap[instance.hideItemInOldCartStatus],
       'getAndAddCountViewOfProductStatus':
           instance.getAndAddCountViewOfProductStatus.map((k, e) =>
               MapEntry(k, _$GetAndAddCountViewOfProductStatusEnumMap[e]!)),
@@ -490,6 +498,7 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           instance.currentIndexForMainCategoryEvent,
       'startingSetting': instance.startingSetting?.toJson(),
       'CurrentColorSizeForCart': instance.CurrentColorSizeForCart,
+      'fromSearchForSearchWithGemini': instance.fromSearchForSearchWithGemini,
       'currentQuantityForCart': instance.currentQuantityForCart,
       'cachedProductWithoutRelatedProductsModel': instance
           .cachedProductWithoutRelatedProductsModel
@@ -508,6 +517,13 @@ const _$AddItemInCartStatusEnumMap = {
   AddItemInCartStatus.loading: 'loading',
   AddItemInCartStatus.success: 'success',
   AddItemInCartStatus.failure: 'failure',
+};
+
+const _$HideItemInOldCartStatusEnumMap = {
+  HideItemInOldCartStatus.init: 'init',
+  HideItemInOldCartStatus.loading: 'loading',
+  HideItemInOldCartStatus.success: 'success',
+  HideItemInOldCartStatus.failure: 'failure',
 };
 
 const _$GetProductDetailWithoutSimilarRelatedProductsStatusEnumMap = {

@@ -36,6 +36,8 @@ abstract class MarketEndPoints {
   static final sendOtpEP = 'send_otp'.phoneScope();
   static final getCartItemEP = 'cart_shipping'.cartScope();
   static final getOldCartItemsEP = 'get_old_cart'.oldCartScope();
+  static final hideItemsInOldCartEP = 'hide'.oldCartScope();
+
   static final addItemCartItemEP = 'add'.cartScope();
   static final updateItemCartItemEP = 'update'.cartScope();
   static final requestForNotificationWhenProductBecameAvailableEP =

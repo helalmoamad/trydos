@@ -14,7 +14,8 @@ import 'package:trydos/service/language_service.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 class SearchWithImageRelatedGemini {
-  static void SelecteImageForSearch({required BuildContext context}) async {
+  static void SelecteImageForSearch(
+      {required BuildContext context, required bool fromSearch}) async {
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -40,6 +41,7 @@ class SearchWithImageRelatedGemini {
               final Uint8List imageBytes = file.readAsBytesSync();
               final geminis.Gemini gemini = geminis.Gemini.instance;
               GetIt.I<HomeBloc>().add(ReplyFromGeminiEvent(
+                  fromSearch: fromSearch,
                   sendRequestToGeminiStatus: SendRequestToGeminiStatus.loading,
                   theReplyFromGemini: ""));
 
@@ -52,6 +54,7 @@ class SearchWithImageRelatedGemini {
                         imageBytes
                       ])
                   .then((value) => GetIt.I<HomeBloc>().add(ReplyFromGeminiEvent(
+                      fromSearch: fromSearch,
                       sendRequestToGeminiStatus:
                           SendRequestToGeminiStatus.success,
                       theReplyFromGemini:
@@ -61,6 +64,7 @@ class SearchWithImageRelatedGemini {
                   .onError(
                     (error, stackTrace) {
                       GetIt.I<HomeBloc>().add(ReplyFromGeminiEvent(
+                          fromSearch: fromSearch,
                           sendRequestToGeminiStatus:
                               SendRequestToGeminiStatus.failure,
                           theReplyFromGemini: ""));
@@ -106,6 +110,7 @@ class SearchWithImageRelatedGemini {
                       ), onTimeout: () {
                     gemini.cancelRequest();
                     return GetIt.I<HomeBloc>().add(ReplyFromGeminiEvent(
+                        fromSearch: fromSearch,
                         sendRequestToGeminiStatus:
                             SendRequestToGeminiStatus.failure,
                         theReplyFromGemini: ""));
@@ -130,6 +135,7 @@ class SearchWithImageRelatedGemini {
               final Uint8List imageBytes = file.readAsBytesSync();
               final geminis.Gemini gemini = geminis.Gemini.instance;
               GetIt.I<HomeBloc>().add(ReplyFromGeminiEvent(
+                  fromSearch: fromSearch,
                   sendRequestToGeminiStatus: SendRequestToGeminiStatus.loading,
                   theReplyFromGemini: ""));
               await gemini
@@ -141,6 +147,7 @@ class SearchWithImageRelatedGemini {
                         imageBytes
                       ])
                   .then((value) => GetIt.I<HomeBloc>().add(ReplyFromGeminiEvent(
+                      fromSearch: fromSearch,
                       sendRequestToGeminiStatus:
                           SendRequestToGeminiStatus.success,
                       theReplyFromGemini:
@@ -152,6 +159,7 @@ class SearchWithImageRelatedGemini {
                         "*******************************&%^&**(*&^%${error}#******************************TTTTTTTTTTTTTTTTTTTTTTtoo");
 
                     GetIt.I<HomeBloc>().add(ReplyFromGeminiEvent(
+                        fromSearch: fromSearch,
                         sendRequestToGeminiStatus:
                             SendRequestToGeminiStatus.failure,
                         theReplyFromGemini: ""));
@@ -195,6 +203,7 @@ class SearchWithImageRelatedGemini {
                       ), onTimeout: () {
                     gemini.cancelRequest();
                     return GetIt.I<HomeBloc>().add(ReplyFromGeminiEvent(
+                        fromSearch: fromSearch,
                         sendRequestToGeminiStatus:
                             SendRequestToGeminiStatus.failure,
                         theReplyFromGemini: ""));

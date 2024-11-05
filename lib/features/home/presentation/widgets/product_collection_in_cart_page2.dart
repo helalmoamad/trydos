@@ -65,6 +65,7 @@ class productCollectionInCartPage2 extends StatelessWidget {
           previous.getOldCartItemsStatus != current.getOldCartItemsStatus ||
           previous.getCurrencyForCountryModel !=
               current.getCurrencyForCountryModel ||
+          previous.hideItemInOldCartStatus != current.hideItemInOldCartStatus ||
           previous.getOldCartItemsStatus != current.getOldCartItemsStatus ||
           previous.deleteItemInCartStatus != current.deleteItemInCartStatus ||
           previous.addItemInCartStatus != current.addItemInCartStatus ||
@@ -274,15 +275,28 @@ class productCollectionInCartPage2 extends StatelessWidget {
                                                           AppElevatedButton(
                                                             onPressed: () {
                                                               BlocProvider.of<HomeBloc>(context).add(UpdateItemInCartEvent(
-                                                                  maxAllowed: double.tryParse(isOLdCart ? oldcartCollection![groupCartkeys[index]]![indexes].maxAllowedQty ?? "0" : cartCollection![groupCartkeys[index]]![indexes].maxAllowedQty ?? "0"),
-                                                                  countOfPieces:cartCollection![groupCartkeys[index]]![indexes].countOfPieces,
-                                                                  image:cartCollection![groupCartkeys[index]]![indexes].image ?? "",
-                                                                  currentSize:!cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty
-                                                                          ? cartCollection![groupCartkeys[index]]![indexes].variations![0].size ?? ""
-                                                                          : "",
-                                                                  colorName:  !cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty
-                                                                          ? cartCollection![groupCartkeys[index]]![indexes].variations![0].color ?? ""
-                                                                          : "",
+                                                                  maxAllowed: double.tryParse(isOLdCart
+                                                                      ? oldcartCollection![groupCartkeys[index]]![indexes].maxAllowedQty ??
+                                                                          "0"
+                                                                      : cartCollection![groupCartkeys[index]]![indexes].maxAllowedQty ??
+                                                                          "0"),
+                                                                  countOfPieces:
+                                                                      cartCollection![groupCartkeys[index]]![indexes]
+                                                                          .countOfPieces,
+                                                                  image:
+                                                                      cartCollection![groupCartkeys[index]]![indexes].image ??
+                                                                          "",
+                                                                  currentSize: !cartCollection![groupCartkeys[index]]![indexes]
+                                                                          .variations
+                                                                          .isNullOrEmpty
+                                                                      ? cartCollection![groupCartkeys[index]]![indexes].variations![0].size ??
+                                                                          ""
+                                                                      : "",
+                                                                  colorName: !cartCollection![groupCartkeys[index]]![indexes]
+                                                                          .variations
+                                                                          .isNullOrEmpty
+                                                                      ? cartCollection![groupCartkeys[index]]![indexes].variations![0].color ?? ""
+                                                                      : "",
                                                                   productId: cartCollection![groupCartkeys[index]]![indexes].productId.toString(),
                                                                   quantity: int.tryParse(quantityController.text)!,
                                                                   cartId: cartCollection![groupCartkeys[index]]![indexes].id.toString(),
@@ -310,56 +324,106 @@ class productCollectionInCartPage2 extends StatelessWidget {
                                     }
                                   },
                                   onLongPress: () {
-                                    if (!isOLdCart) {
-                                      showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            return AlertDialog(
-                                              title: MyTextWidget(
-                                                  "Delete Item From Cart",
-                                                  textDirection:
-                                                      TextDirection.ltr),
-                                              actions: <Widget>[
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    AppElevatedButton(
-                                                      onPressed: () {
-                                                        BlocProvider.of<HomeBloc>(context).add(
-                                                            RemoveItemFormCartEvent(
-                                                                countOfPieces: cartCollection![groupCartkeys[index]]![
-                                                                            indexes]
-                                                                        .countOfPieces,
-                                                                image: cartCollection![groupCartkeys[index]]![indexes]
-                                                                            .image ??
-                                                                        '',
-                                                                currentSize: !cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty
-                                                                        ? cartCollection![groupCartkeys[index]]![indexes].variations![0].size ?? ""
-                                                                        : "",
-                                                                ColoName:!cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty
-                                                                        ? cartCollection![groupCartkeys[index]]![indexes].variations![0].color ?? ""
-                                                                        : "",
-                                                                productId: cartCollection![groupCartkeys[index]]![indexes].productId.toString(),
-                                                                itemId: cartCollection![groupCartkeys[index]]![indexes].id.toString(),
-                                                                boutiqueId: cartCollection![groupCartkeys[index]]![indexes].boutique!.id.toString()));
-                                                        Navigator.pop(context);
-                                                      },
-                                                      text: "Yes",
-                                                    ),
-                                                    AppElevatedButton(
-                                                      onPressed: () {
-                                                        Navigator.pop(context);
-                                                      },
-                                                      text: 'Not Now',
+                                    showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return isOLdCart
+                                              ? AlertDialog(
+                                                  title: MyTextWidget(
+                                                      "Hide Item From Cart",
+                                                      textDirection:
+                                                          TextDirection.ltr),
+                                                  actions: <Widget>[
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        AppElevatedButton(
+                                                          onPressed: () {
+                                                            GetIt.I<HomeBloc>().add(HideItemInOldCartEvent(
+                                                                hideAll: false,
+                                                                oldCartId:
+                                                                    oldcartCollection![groupCartkeys[index]]![indexes]
+                                                                            .id ??
+                                                                        0,
+                                                                boutiqueId: oldcartCollection![
+                                                                            groupCartkeys[index]]![
+                                                                        indexes]
+                                                                    .boutique!
+                                                                    .id
+                                                                    .toString()));
+                                                            Navigator.pop(
+                                                                context);
+                                                          },
+                                                          text: "Yes",
+                                                        ),
+                                                        AppElevatedButton(
+                                                          onPressed: () {
+                                                            Navigator.pop(
+                                                                context);
+                                                          },
+                                                          text: 'Not Now',
+                                                        ),
+                                                      ],
                                                     ),
                                                   ],
-                                                ),
-                                              ],
-                                            );
-                                          });
-                                    }
+                                                )
+                                              : AlertDialog(
+                                                  title: MyTextWidget(
+                                                      "Delete Item From Cart",
+                                                      textDirection:
+                                                          TextDirection.ltr),
+                                                  actions: <Widget>[
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        AppElevatedButton(
+                                                          onPressed: () {
+                                                            BlocProvider.of<HomeBloc>(context).add(RemoveItemFormCartEvent(
+                                                                countOfPieces: cartCollection![groupCartkeys[index]]![indexes]
+                                                                    .countOfPieces,
+                                                                image: cartCollection![groupCartkeys[index]]![indexes].image ??
+                                                                    '',
+                                                                currentSize: !cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty
+                                                                    ? cartCollection![groupCartkeys[index]]![indexes].variations![0].size ??
+                                                                        ""
+                                                                    : "",
+                                                                ColoName: !cartCollection![groupCartkeys[index]]![indexes]
+                                                                        .variations
+                                                                        .isNullOrEmpty
+                                                                    ? cartCollection![groupCartkeys[index]]![indexes].variations![0].color ??
+                                                                        ""
+                                                                    : "",
+                                                                productId: cartCollection![groupCartkeys[index]]![indexes]
+                                                                    .productId
+                                                                    .toString(),
+                                                                itemId: cartCollection![groupCartkeys[index]]![indexes]
+                                                                    .id
+                                                                    .toString(),
+                                                                boutiqueId: cartCollection![groupCartkeys[index]]![indexes]
+                                                                    .boutique!
+                                                                    .id
+                                                                    .toString()));
+                                                            Navigator.pop(
+                                                                context);
+                                                          },
+                                                          text: "Yes",
+                                                        ),
+                                                        AppElevatedButton(
+                                                          onPressed: () {
+                                                            Navigator.pop(
+                                                                context);
+                                                          },
+                                                          text: 'Not Now',
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                );
+                                        });
                                   },
                                   onTap: () {
                                     int indexess = isOLdCart
@@ -584,18 +648,28 @@ class productCollectionInCartPage2 extends StatelessWidget {
                                                                   onPressed:
                                                                       () {
                                                                     BlocProvider.of<HomeBloc>(context).add(UpdateItemInCartEvent(
-                                                                        maxAllowed:double.tryParse(cartCollection![groupCartkeys[index]]![indexes].maxAllowedQty ?? "0"),
-                                                                        countOfPieces:cartCollection![groupCartkeys[index]]![indexs].countOfPieces,
-                                                                        image:cartCollection![groupCartkeys[index]]![indexes].image ?? "",
+                                                                        maxAllowed:
+                                                                            double.tryParse(cartCollection![groupCartkeys[index]]![indexes].maxAllowedQty ??
+                                                                                "0"),
+                                                                        countOfPieces:
+                                                                            cartCollection![groupCartkeys[index]]![indexs]
+                                                                                .countOfPieces,
+                                                                        image: cartCollection![groupCartkeys[index]]![indexes].image ??
+                                                                            "",
                                                                         currentSize: !cartCollection![groupCartkeys[index]]![indexs].variations.isNullOrEmpty
-                                                                                ? cartCollection![groupCartkeys[index]]![indexs].variations![0].size ?? ""
-                                                                                : "",
+                                                                            ? cartCollection![groupCartkeys[index]]![indexs].variations![0].size ??
+                                                                                ""
+                                                                            : "",
                                                                         colorName: !cartCollection![groupCartkeys[index]]![indexs].variations.isNullOrEmpty
-                                                                                ? cartCollection![groupCartkeys[index]]![indexs].variations![0].color ?? ""
-                                                                                : "",
-                                                                        productId:cartCollection![groupCartkeys[index]]![indexs].productId.toString(),
-                                                                        quantity: int.tryParse(quantityController.text)!,
-                                                                        cartId:  cartCollection![groupCartkeys[index]]![indexs].id.toString(),
+                                                                            ? cartCollection![groupCartkeys[index]]![indexs].variations![0].color ??
+                                                                                ""
+                                                                            : "",
+                                                                        productId: cartCollection![groupCartkeys[index]]![indexs]
+                                                                            .productId
+                                                                            .toString(),
+                                                                        quantity:
+                                                                            int.tryParse(quantityController.text)!,
+                                                                        cartId: cartCollection![groupCartkeys[index]]![indexs].id.toString(),
                                                                         boutiqueId: cartCollection![groupCartkeys[index]]![indexs].boutique!.id.toString()));
                                                                     Navigator.pop(
                                                                         context);
@@ -622,54 +696,107 @@ class productCollectionInCartPage2 extends StatelessWidget {
                                           }
                                         },
                                         onLongPress: () {
-                                          if (!isOLdCart) {
-                                            showDialog(
-                                                context: context,
-                                                builder:
-                                                    (BuildContext context) {
-                                                  return AlertDialog(
-                                                    title: MyTextWidget(
-                                                        "Delete Item From Cart",
-                                                        textDirection:
-                                                            TextDirection.ltr),
-                                                    actions: <Widget>[
-                                                      Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        children: [
-                                                          AppElevatedButton(
-                                                            onPressed: () {
-                                                              BlocProvider.of<HomeBloc>(context).add(RemoveItemFormCartEvent(
-                                                                  countOfPieces:cartCollection![groupCartkeys[index]]![indexes].countOfPieces,
-                                                                  image:cartCollection![groupCartkeys[index]]![indexes].image ?? '',
-                                                                  currentSize:!cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty
-                                                                          ? cartCollection![groupCartkeys[index]]![indexes].variations![0].size ?? ""
-                                                                          : "",
-                                                                  ColoName:  !cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty
-                                                                          ? cartCollection![groupCartkeys[index]]![indexes].variations![0].color ?? ""
-                                                                          : "",
-                                                                  productId:  cartCollection![groupCartkeys[index]]![indexes].productId.toString(),
-                                                                  itemId:cartCollection![groupCartkeys[index]]![indexes].id.toString(),
-                                                                  boutiqueId: cartCollection![groupCartkeys[index]]![indexes].boutique!.id.toString()));
-                                                              Navigator.pop(
-                                                                  context);
-                                                            },
-                                                            text: "Yes",
-                                                          ),
-                                                          AppElevatedButton(
-                                                            onPressed: () {
-                                                              Navigator.pop(
-                                                                  context);
-                                                            },
-                                                            text: 'Not Now',
+                                          showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return isOLdCart
+                                                    ? AlertDialog(
+                                                        title: MyTextWidget(
+                                                            "Hide Item From Cart",
+                                                            textDirection:
+                                                                TextDirection
+                                                                    .ltr),
+                                                        actions: <Widget>[
+                                                          Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
+                                                            children: [
+                                                              AppElevatedButton(
+                                                                onPressed: () {
+                                                                  GetIt.I<HomeBloc>().add(HideItemInOldCartEvent(
+                                                                      hideAll:
+                                                                          false,
+                                                                      oldCartId:
+                                                                          oldcartCollection![groupCartkeys[index]]![indexes].id ??
+                                                                              0,
+                                                                      boutiqueId: oldcartCollection![groupCartkeys[index]]![
+                                                                              indexes]
+                                                                          .boutique!
+                                                                          .id
+                                                                          .toString()));
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                },
+                                                                text: "Yes",
+                                                              ),
+                                                              AppElevatedButton(
+                                                                onPressed: () {
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                },
+                                                                text: 'Not Now',
+                                                              ),
+                                                            ],
                                                           ),
                                                         ],
-                                                      ),
-                                                    ],
-                                                  );
-                                                });
-                                          }
+                                                      )
+                                                    : AlertDialog(
+                                                        title: MyTextWidget(
+                                                            "Delete Item From Cart",
+                                                            textDirection:
+                                                                TextDirection
+                                                                    .ltr),
+                                                        actions: <Widget>[
+                                                          Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
+                                                            children: [
+                                                              AppElevatedButton(
+                                                                onPressed: () {
+                                                                  BlocProvider.of<HomeBloc>(context).add(RemoveItemFormCartEvent(
+                                                                      countOfPieces:
+                                                                          cartCollection![groupCartkeys[index]]![indexes]
+                                                                              .countOfPieces,
+                                                                      image:
+                                                                          cartCollection![groupCartkeys[index]]![indexes].image ??
+                                                                              '',
+                                                                      currentSize: !cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty
+                                                                          ? cartCollection![groupCartkeys[index]]![indexes].variations![0].size ??
+                                                                              ""
+                                                                          : "",
+                                                                      ColoName: !cartCollection![groupCartkeys[index]]![indexes].variations.isNullOrEmpty
+                                                                          ? cartCollection![groupCartkeys[index]]![indexes].variations![0].color ??
+                                                                              ""
+                                                                          : "",
+                                                                      productId: cartCollection![groupCartkeys[index]]![indexes]
+                                                                          .productId
+                                                                          .toString(),
+                                                                      itemId: cartCollection![groupCartkeys[index]]![indexes]
+                                                                          .id
+                                                                          .toString(),
+                                                                      boutiqueId: cartCollection![groupCartkeys[index]]![indexes]
+                                                                          .boutique!
+                                                                          .id
+                                                                          .toString()));
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                },
+                                                                text: "Yes",
+                                                              ),
+                                                              AppElevatedButton(
+                                                                onPressed: () {
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                },
+                                                                text: 'Not Now',
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ],
+                                                      );
+                                              });
                                         },
                                         onTap: () {
                                           int indexess = isOLdCart

@@ -349,10 +349,11 @@ class OldCart {
             : List<Variation>.from(
                 json["variations"]!.map((x) => Variation.fromJson(x))),
         variant: json["variant"],
-        availableQuantity: json["available_quantity"],
+        availableQuantity:
+            double.tryParse(json["available_quantity"].toString())!.round(),
         maxAllowedQty: json["max_allowed_qty"],
         vendorName: json["vendor_name"],
-        quantity: double.tryParse(json["quantity"])!.round(),
+        quantity: double.tryParse(json["quantity"].toString())!.round(),
         discount: json["discount"]?.toDouble(),
         priceOfVariant: double.tryParse(json["price_of_variant"].toString()),
         tax: json["tax"],

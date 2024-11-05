@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 
@@ -60,6 +61,8 @@ class CartPage2 extends StatelessWidget {
                   current.updateItemInCartStatus ||
               previous.cartCollection!.values !=
                   current.cartCollection!.values ||
+              previous.hideItemInOldCartStatus !=
+                  current.hideItemInOldCartStatus ||
               previous.getOldCartItemsStatus != current.getOldCartItemsStatus ||
               previous.oldcartCollection?.values !=
                   current.oldcartCollection?.values,
@@ -252,13 +255,32 @@ class CartPage2 extends StatelessWidget {
                                       ))
                                     : SizedBox.shrink()
                                 : SizedBox.shrink(),
-                            SizedBox(
-                              height: state.oldcartCollection != null
-                                  ? !state.oldcartCollection!.isEmpty
-                                      ? 20
-                                      : 0
-                                  : 0,
-                            ),
+                            state.oldcartCollection != null
+                                ? !state.oldcartCollection!.isEmpty
+                                    ? Container(
+                                        height: 70.h,
+                                        padding: EdgeInsets.all(20.w),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            ElevatedButton(
+                                                onPressed: () {
+                                                  GetIt.I<HomeBloc>().add(
+                                                      HideItemInOldCartEvent(
+                                                    hideAll: true,
+                                                  ));
+                                                },
+                                                child: MyTextWidget(
+                                                  "Hide All",
+                                                  style: TextStyle(
+                                                      color: Colors.red,
+                                                      fontSize: 14),
+                                                ))
+                                          ],
+                                        ))
+                                    : SizedBox.shrink()
+                                : SizedBox.shrink(),
                             productCollectionInCartPage2(
                               cartCollection: state.cartCollection,
                               changeCartCollections: changeCartCollections,

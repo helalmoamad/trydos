@@ -192,11 +192,16 @@ class _TabsBarState extends State<TabsBar> {
                         GetMainCategoriesStatus.loading &&
                     newState.getMainCategoriesStatus ==
                         GetMainCategoriesStatus.success) ||
-                oldState.sendRequestToGeminiStatus !=
-                    newState.sendRequestToGeminiStatus ||
-                oldState.theReplyFromGemini != newState.theReplyFromGemini,
+                ((oldState.sendRequestToGeminiStatus !=
+                        newState.sendRequestToGeminiStatus ||
+                    oldState.theReplyFromGemini !=
+                            newState.theReplyFromGemini &&
+                        newState.fromSearchForSearchWithGemini == true)),
             builder: (context, homeState) {
-              if (homeState.theReplyFromGemini != "") {
+              print(
+                  "////////////////////////fffffffffffffffffffffffffffffffffffffffffffffffffffffff/////////////////////////");
+              if (homeState.theReplyFromGemini != "" &&
+                  homeState.fromSearchForSearchWithGemini == true) {
                 widget.controller.text = homeState.theReplyFromGemini ?? "";
                 Filter filters = BlocProvider.of<HomeBloc>(context)
                         .state
@@ -291,6 +296,7 @@ class _TabsBarState extends State<TabsBar> {
                               onClickClose: () {
                                 if (widget.controller.text.length > 0) {
                                   homeBloc.add(ReplyFromGeminiEvent(
+                                      fromSearch: true,
                                       resetTheReply: true,
                                       theReplyFromGemini: ""));
                                   Filter filters = homeBloc
@@ -394,6 +400,7 @@ class _TabsBarState extends State<TabsBar> {
                                       onTap: () async {
                                         SearchWithImageRelatedGemini
                                             .SelecteImageForSearch(
+                                                fromSearch: true,
                                                 context: context);
                                       },
                                       child: homeState
@@ -519,6 +526,7 @@ class _TabsBarState extends State<TabsBar> {
                                         onTap: () async {
                                           SearchWithImageRelatedGemini
                                               .SelecteImageForSearch(
+                                                  fromSearch: true,
                                                   context: context);
                                           /////////////////////////////
                                           FirebaseAnalyticsService
@@ -635,6 +643,7 @@ class _TabsBarState extends State<TabsBar> {
                                 }
                                 if (text.length < 3) {
                                   homeBloc.add(ReplyFromGeminiEvent(
+                                      fromSearch: true,
                                       resetTheReply: true,
                                       theReplyFromGemini: ""));
                                   Filter filters = homeBloc
@@ -658,6 +667,7 @@ class _TabsBarState extends State<TabsBar> {
                                 if (text.length < 1 &&
                                     resetSearchAfterSearchingWhileRemoveSearch) {
                                   homeBloc.add(ReplyFromGeminiEvent(
+                                      fromSearch: true,
                                       resetTheReply: true,
                                       theReplyFromGemini: ""));
                                   resetSearchAfterSearchingWhileRemoveSearch =

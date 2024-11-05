@@ -610,6 +610,16 @@ class RemoveSearchTextfromHistoryEvent extends HomeEvent {
   List<Object?> get props => [];
 }
 
+class HideItemInOldCartEvent extends HomeEvent {
+  final int? oldCartId;
+  final bool? hideAll;
+  final String? boutiqueId;
+  HideItemInOldCartEvent({this.oldCartId, this.boutiqueId, this.hideAll});
+
+  @override
+  List<Object?> get props => [];
+}
+
 class AddIsExpandedForLidtingPageEvent extends HomeEvent {
   final bool isExpandedForLidting;
 
@@ -628,9 +638,11 @@ class GetCurrencyForCountryEvent extends HomeEvent {
 class ReplyFromGeminiEvent extends HomeEvent {
   final String theReplyFromGemini;
   final bool resetTheReply;
+  final bool fromSearch;
   final SendRequestToGeminiStatus? sendRequestToGeminiStatus;
   ReplyFromGeminiEvent(
       {required this.theReplyFromGemini,
+      required this.fromSearch,
       this.sendRequestToGeminiStatus,
       this.resetTheReply = false});
   @override

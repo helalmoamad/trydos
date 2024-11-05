@@ -183,7 +183,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
   @override
   void initState() {
-    print("%%%%%%%%%${GetIt.I<PrefsRepository>().marketToken}");
+    print("%%%%%%%%%${GetIt.I<PrefsRepository>().marketToken}*");
     print(
         "##############################//////////////////////////////////////////////////////////////////////////#${widget.boutiqueSlug}");
     itExpendForFirst = true;
@@ -306,6 +306,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
     appBloc.add(ShowOrHideBars(true));
     scrollController.dispose();
     homeBloc.add(ReplyFromGeminiEvent(
+        fromSearch: false,
         sendRequestToGeminiStatus: SendRequestToGeminiStatus.success,
         theReplyFromGemini: ""));
     super.dispose();
@@ -318,7 +319,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
     htmlDescriptionHeight.value = context.size!.height;
   }
 
-
   bool resetSearchAfterSearchingWhileRemoveSearch = false;
 
   @override
@@ -326,6 +326,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
     return WillPopScope(
       onWillPop: () async {
         homeBloc.add(ReplyFromGeminiEvent(
+            fromSearch: false,
             sendRequestToGeminiStatus: SendRequestToGeminiStatus.success,
             theReplyFromGemini: ""));
         if (widget.fromSearch) {
@@ -471,11 +472,16 @@ class _ProductListingPageState extends State<ProductListingPage> {
                           buildWhen: (p, c) =>
                               p.isExpandedForListingPage !=
                                   c.isExpandedForListingPage ||
-                              p.sendRequestToGeminiStatus !=
-                                  c.sendRequestToGeminiStatus ||
-                              p.theReplyFromGemini != c.theReplyFromGemini,
+                              ((p.sendRequestToGeminiStatus !=
+                                          c.sendRequestToGeminiStatus ||
+                                      p.theReplyFromGemini !=
+                                          c.theReplyFromGemini) &&
+                                  c.fromSearchForSearchWithGemini == false),
                           builder: (context, state) {
-                            if (state.theReplyFromGemini != "") {
+                            if (state.theReplyFromGemini != "" &&
+                                state.fromSearchForSearchWithGemini == false) {
+                              print(
+                                  "///////////////////////***********${widget.fromSearch}****##########################${widget.boutiqueSlug}");
                               controller.text = state.theReplyFromGemini ?? "";
                               Filter filters =
                                   BlocProvider.of<HomeBloc>(context)
@@ -485,6 +491,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                       Filter();
                               BlocProvider.of<HomeBloc>(context).add(
                                   ChangeSelectedFiltersEvent(
+                                      requestToUpdateFilters: false,
                                       boutiqueSlug: widget.boutiqueSlug,
                                       category: widget.category,
                                       fromHomePageSearch: widget.fromSearch,
@@ -511,7 +518,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                       boutiqueSlug: widget.boutiqueSlug,
                                       category: widget.category,
                                       resetChoosedFilters: false,
-                                      fromSearch: true,
+                                      fromSearch: widget.fromSearch,
                                       searchText: state.theReplyFromGemini));
                             }
                             print(
@@ -560,6 +567,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                     appBarParams: AppBarParams(
                                                         onBack: () {
                                                           homeBloc.add(ReplyFromGeminiEvent(
+                                                              fromSearch: false,
                                                               sendRequestToGeminiStatus:
                                                                   SendRequestToGeminiStatus
                                                                       .success,
@@ -819,7 +827,11 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                     InkWell(
                                                                       onTap:
                                                                           () async {
-                                                                    SearchWithImageRelatedGemini.SelecteImageForSearch(context: context);
+                                                                        SearchWithImageRelatedGemini.SelecteImageForSearch(
+                                                                            fromSearch:
+                                                                                false,
+                                                                            context:
+                                                                                context);
                                                                         /////////////////////////////
                                                                         FirebaseAnalyticsService
                                                                             .logEventForSession(
@@ -1018,7 +1030,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                       InkWell(
                                                                         onTap:
                                                                             () async {
-                                                                          SearchWithImageRelatedGemini.SelecteImageForSearch(context: context);
+                                                                          SearchWithImageRelatedGemini.SelecteImageForSearch(
+                                                                              fromSearch: false,
+                                                                              context: context);
                                                                           /////////////////////////////
                                                                           FirebaseAnalyticsService
                                                                               .logEventForSession(
@@ -1148,6 +1162,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                 }
                                                                 if (text.length >
                                                                     2) {
+                                                                  print(
+                                                                      "----------++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
                                                                   resetSearchAfterSearchingWhileRemoveSearch =
                                                                       true;
                                                                   Filter filters = homeBloc
@@ -1999,6 +2015,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                             } else if ((!isExpanded &&
                                                 !state.isGettingProductListingWithPaginationForAppearProduct &&
                                                 (appliedFiltersByUser?.filters?.searchText?.length ?? 0) < 3 &&
+                                                controller.text.length < 3 &&
                                                 ((appliedFiltersByUser?.filters?.categories?.length ?? 0) + (appliedFiltersByUser?.filters?.brands?.length ?? 0) + (appliedFiltersByUser?.filters?.colors?.length ?? 0) + (appliedFiltersByUser?.filters?.attributes?[0].options?.length ?? 0) == 0 && (appliedFiltersByUser?.filters?.prices?.minPrice == null)))) {
                                               currentAppliedFilterSllug =
                                                   "Empty";
@@ -2055,9 +2072,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                         int index) {
                                                       return InkWell(
                                                         onTap: () async {
-                                                         
-                                                         
-
                                                           // pushOverscrollRoute(
                                                           //     context: context,
                                                           //     transitionDuration : Duration(milliseconds : 250),
@@ -2083,7 +2097,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                       )));
                                                         },
                                                         child: ProductItem(
-                                                        key: TestVariables
+                                                          key: TestVariables
                                                                   .kTestMode
                                                               ? Key(
                                                                   '${WidgetsKey.productInBoutiqueListKey}$index')
