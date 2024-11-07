@@ -37,7 +37,7 @@ abstract class MarketEndPoints {
   static final getCartItemEP = 'cart_shipping'.cartScope();
   static final getOldCartItemsEP = 'get_old_cart'.oldCartScope();
   static final hideItemsInOldCartEP = 'hide'.oldCartScope();
-
+  static final convertItemInOldCartToCartEP = 'convert_to_cart'.oldCartScope();
   static final addItemCartItemEP = 'add'.cartScope();
   static final updateItemCartItemEP = 'update'.cartScope();
   static final requestForNotificationWhenProductBecameAvailableEP =

@@ -618,14 +618,8 @@ class _TabsBarState extends State<TabsBar> {
                                           .choosedFiltersByUser['search']
                                           ?.filters ??
                                       Filter();
-
-                                  homeBloc.add(GetProductsWithFiltersEvent(
-                                      fromChoosed: true,
-                                      offset: 1,
-                                      boutiqueSlug: 'search',
-                                      resetChoosedFilters: false,
-                                      fromSearch: true,
-                                      searchText: text));
+                                  print(
+                                      "**1111111111111111-------------------------------${text}");
                                   homeBloc.add(ChangeSelectedFiltersEvent(
                                     boutiqueSlug: 'search',
                                     requestToUpdateFilters: true,
@@ -638,6 +632,15 @@ class _TabsBarState extends State<TabsBar> {
                                       searchText: text,
                                     )),
                                   ));
+                                  homeBloc.add(GetProductsWithFiltersEvent(
+                                      fromChoosed: true,
+                                      offset: 1,
+                                      boutiqueSlug: 'search',
+                                      resetChoosedFilters: false,
+                                      fromSearch: true,
+                                      searchText: text));
+                                  print(
+                                      "**222222222222222-------------------------------${text}");
 
                                   widget.buildSearchResult.value = text.length;
                                 }

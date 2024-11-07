@@ -43,7 +43,7 @@ class GetHomeBoutiquesModel {
 class Data {
   final int? total;
   final int? limit;
-  final int? offset;
+  final String? offset;
   final List<Boutique>? boutiques;
 
   Data({
@@ -56,7 +56,7 @@ class Data {
   Data copyWith({
     int? total,
     int? limit,
-    int? offset,
+    String? offset,
     List<Boutique>? boutiques,
   }) =>
       Data(
@@ -244,7 +244,8 @@ class ChildCategoriesForProductId {
         categoryName: categoryName ?? this.categoryName,
         productName: productName ?? this.productName,
         countProducts: countProducts ?? this.countProducts,
-        mostViewedProductThumbnail: mostViewedProductThumbnail ?? this.mostViewedProductThumbnail,
+        mostViewedProductThumbnail:
+            mostViewedProductThumbnail ?? this.mostViewedProductThumbnail,
       );
 
   factory ChildCategoriesForProductId.fromJson(Map<String, dynamic> json) =>
@@ -254,7 +255,10 @@ class ChildCategoriesForProductId {
         categoryName: json["name"],
         productName: json["most_viewed_product_name"],
         countProducts: json["num_available_product"],
-        mostViewedProductThumbnail: json["most_viewed_product_thumbnail"] == null ? null : Icon.fromJson(json["most_viewed_product_thumbnail"]),
+        mostViewedProductThumbnail:
+            json["most_viewed_product_thumbnail"] == null
+                ? null
+                : Icon.fromJson(json["most_viewed_product_thumbnail"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -298,7 +302,9 @@ class MainCategoriesForProductId {
         categoryId: json["category_id"],
         categorySlug: json["category_slug"],
         categoryName: json["category_name"],
-        flatPhotoPath: json["flat_photo_path"] == null ? null : Icon.fromJson(json["flat_photo_path"]),
+        flatPhotoPath: json["flat_photo_path"] == null
+            ? null
+            : Icon.fromJson(json["flat_photo_path"]),
       );
 
   Map<String, dynamic> toJson() => {

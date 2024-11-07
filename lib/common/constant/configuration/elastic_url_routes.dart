@@ -9,13 +9,16 @@ extension ScopeApi on String {
 
   String noScope({bool current = false}) => '$_api/$this';
 
-  String elasticScope() => '$_api/products/$this';
+  String productsScope() => '$_api/products/$this';
+  String homeScope() => '$_api/home/$this';
 }
 
 abstract class ElasticEndPoints {
-  static final searchWithFilterElasticEP = 'products'.elasticScope();
-  static final searchWithoutFilterElasticEP = 'products'.elasticScope();
-  static final getAndAddCountViewOfProductEP = 'view'.elasticScope();
+  static final searchWithFilterElasticEP = 'search'.productsScope();
+  static final searchWithoutFilterElasticEP = 'search'.productsScope();
+  static final getAndAddCountViewOfProductEP = 'view'.productsScope();
+  static final getMainCategoriesEP = "mainCategories".homeScope();
+  static final getHomeBoutiquesEP = "boutiques".homeScope();
 }
 
 abstract class ElasticUrls {

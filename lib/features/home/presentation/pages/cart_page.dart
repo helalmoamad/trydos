@@ -79,23 +79,35 @@ class _CartPageState extends State<CartPage> {
         child: Scaffold(
             resizeToAvoidBottomInset: false,
             body: BlocBuilder<HomeBloc, HomeState>(
-              buildWhen: (previous, current) =>
-                  previous.getCartItemsStatus != current.getCartItemsStatus ||
-                  previous.getCurrencyForCountryModel !=
-                      current.getCurrencyForCountryModel ||
-                  previous.deleteItemInCartStatus !=
-                      current.deleteItemInCartStatus ||
-                  previous.getOldCartItemsStatus !=
-                      current.getOldCartItemsStatus ||
-                  previous.hideItemInOldCartStatus !=
-                      current.hideItemInOldCartStatus ||
-                  previous.addItemInCartStatus != current.addItemInCartStatus ||
-                  previous.updateItemInCartStatus !=
-                      current.updateItemInCartStatus ||
-                  previous.cartCollection!.values.length !=
-                      current.cartCollection?.values.length ||
-                  previous.oldcartCollection?.values.length !=
-                      current.oldcartCollection!.values.length,
+              buildWhen: (previous, current) {
+                if (previous.cartCollection!.values.length !=
+                        current.cartCollection!.values.length ||
+                    previous.cartCollection!.values.length !=
+                        current.cartCollection!.values.length) {
+                  visibleAllCollection = true;
+                  return true;
+                }
+                return previous.getCartItemsStatus !=
+                        current.getCartItemsStatus ||
+                    previous.getCurrencyForCountryModel !=
+                        current.getCurrencyForCountryModel ||
+                    previous.deleteItemInCartStatus !=
+                        current.deleteItemInCartStatus ||
+                    previous.getOldCartItemsStatus !=
+                        current.getOldCartItemsStatus ||
+                    previous.convertItemFromOldcartToCartStatus !=
+                        current.convertItemFromOldcartToCartStatus ||
+                    previous.hideItemInOldCartStatus !=
+                        current.hideItemInOldCartStatus ||
+                    previous.addItemInCartStatus !=
+                        current.addItemInCartStatus ||
+                    previous.updateItemInCartStatus !=
+                        current.updateItemInCartStatus ||
+                    previous.cartCollection!.values.length !=
+                        current.cartCollection?.values.length ||
+                    previous.oldcartCollection?.values.length !=
+                        current.oldcartCollection!.values.length;
+              },
               builder: (context, state) {
                 print(state.cartCollection?.keys.toList());
                 if (state.getCartItemsStatus == GetCartItemsStatus.failure &&

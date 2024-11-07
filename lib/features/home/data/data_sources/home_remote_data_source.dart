@@ -4,6 +4,7 @@ import 'package:trydos/common/constant/configuration/elastic_url_routes.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/core/api/methods/get.dart';
 import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
+import 'package:trydos/features/home/data/models/convert_item_from_oldCart_to_cart_model.dart';
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
@@ -149,9 +150,10 @@ class HomeRemoteDatasource {
     ////////////////////
     GetClient<MainCategoriesResponseModel> getMainCategories =
         GetClient<MainCategoriesResponseModel>(
-      serverName: ServerName.market,
+      serverName: ServerName.elastic,
       requestPrams: RequestConfig<MainCategoriesResponseModel>(
-        endpoint: MarketEndPoints.getMainCategoriesRelatedWithBoutiquesEP,
+        endpoint: ElasticEndPoints.getMainCategoriesEP,
+        // MarketEndPoints.getMainCategoriesRelatedWithBoutiquesEP,
         response: ResponseValue<MainCategoriesResponseModel>(
             fromJson: (response) =>
                 MainCategoriesResponseModel.fromJson(response)),
@@ -274,9 +276,10 @@ class HomeRemoteDatasource {
     ////////////////////
     GetClient<GetHomeBoutiquesModel> getHomeBoutiques =
         GetClient<GetHomeBoutiquesModel>(
-      serverName: ServerName.market,
+      serverName: ServerName.elastic,
       requestPrams: RequestConfig<GetHomeBoutiquesModel>(
-        endpoint: MarketEndPoints.getHomeBoutiqesEP,
+        endpoint: ElasticEndPoints.getHomeBoutiquesEP,
+        // MarketEndPoints.getHomeBoutiqesEP,
         queryParameters: params,
         response: ResponseValue<GetHomeBoutiquesModel>(
             fromJson: (response) => GetHomeBoutiquesModel.fromJson(response)),
@@ -310,6 +313,22 @@ class HomeRemoteDatasource {
       ),
     );
     return hideItemsInOldCart();
+  }
+
+  Future<ConvertItemFromOldCartToCartModel> convertItemInOldCartToCart(
+      Map<String, dynamic> params) {
+    PostClient<ConvertItemFromOldCartToCartModel> convertItemInOldCartToCart =
+        PostClient<ConvertItemFromOldCartToCartModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<ConvertItemFromOldCartToCartModel>(
+        endpoint: MarketEndPoints.convertItemInOldCartToCartEP,
+        data: params,
+        response: ResponseValue<ConvertItemFromOldCartToCartModel>(
+            fromJson: (response) =>
+                ConvertItemFromOldCartToCartModel.fromJson(response)),
+      ),
+    );
+    return convertItemInOldCartToCart();
   }
 
   Future<bool> removeItemToCart(Map<String, dynamic> params) {

@@ -33,6 +33,7 @@ import 'package:trydos/features/home/data/models/get_product_listing_without_fil
 import 'package:trydos/features/home/domain/use_cases/GetCommentForProductUseCase.dart';
 import 'package:trydos/features/home/domain/use_cases/add_comment_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/add_like_to_product_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/convert_item_from_oldCart_to_Cart_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/delete_like_of_product_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_allowed_country_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_cart_item_usecase.dart';
@@ -86,6 +87,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.getMainCategoriesUseCase,
     this.getStoryUseCase,
     this.removeItemToCartUseCase,
+    this.convertItemFromOldcartToCartUsecase,
     this.getCartItemUseCase,
     this.getOldCartItemUseCase,
     // this.getBrandUseCase,
@@ -117,6 +119,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     );
     on<GetAndAddCountViewOfProductEvent>(
       _onGetAndAddCountViewOfProductEvent,
+    );
+    on<ConvertItemFromOldcartToCartEvent>(
+      _onConvertItemFromOldcartToCartEvent,
     );
 
     on<GetCurrencyForCountryEvent>(
@@ -266,6 +271,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final GetHomeBoutiqesUseCase getHomeBoutiqesUseCase;
   final GetCartItemUseCase getCartItemUseCase;
   final GetOldCartItemUseCase getOldCartItemUseCase;
+  final ConvertItemFromOldcartToCartUsecase convertItemFromOldcartToCartUsecase;
   final GetAndAddCountViewOfProductUsecase getAndAddCountViewOfProductUsecase;
   final AddCommentUseCase addCommentUseCase;
   final GetCommentForProductUseCase getCommentForProductUseCase;
@@ -553,7 +559,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           return MapEntry(key, value);
         })));
     final response = await getHomeBoutiqesUseCase(GetHomeBoutiqesParams(
-        offset: event.offset, categorySlug: event.categorySlug));
+        offset: event.offset == '1' ? null : event.offset,
+        categorySlug:
+            event.categorySlug == "Empty" ? null : event.categorySlug));
 
     response.fold((l) {
       Map<String, PaginationModel<Boutique>>
@@ -653,6 +661,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                               .page +
                           1
                       : 2,
+                  offset: r.data?.offset,
                   items: !event.getWithPagination
                       ? [...r.data!.boutiques ?? []]
                       : [...boutiques, ...r.data!.boutiques ?? []]));
@@ -978,7 +987,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       appliedFiltersByUser: Map.of(appliedFilters),
     ));
     print(
-        "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%&${event.fromSearch}");
+        "%%%%%%%%%%%%%%%%%${event.searchText}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%${filters.searchText}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%&${event.fromSearch}");
     if (state.appliedFiltersByUser[key] == null) {}
 
     final response = await getProductsWithFiltersUseCase(
@@ -2470,7 +2479,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       int? quantity = event.quantity!.round() + CurrentQuantity[key]![0];
       if (quantity > (double.tryParse(event.maxAllowed ?? "0") ?? 0) &&
           (double.tryParse(event.maxAllowed ?? "0") ?? 0) != 0) {
-        showMessage("you reach the max allowed quantity of this Product",
+        showMessage(
+            "you reach the max allowed quantity \n (${double.tryParse(event.maxAllowed ?? "0")?.round()} items) of this Product \n you can Add only ${((double.tryParse(event.maxAllowed ?? "0") ?? 0) - (CurrentQuantity.isEmpty ? 0 : CurrentQuantity[key]![0])).round()} items",
             foreGroundColor: Colors.white,
             backGroundColor: Colors.black,
             showInRelease: true,
@@ -2497,7 +2507,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       if (event.quantity!.round() >
               (double.tryParse(event.maxAllowed ?? "0") ?? 0) &&
           (double.tryParse(event.maxAllowed ?? "0") ?? 0) != 0) {
-        showMessage("you reach the max allowed quantity of this Product",
+        showMessage(
+            "you reach the max allowed quantity \n (${double.tryParse(event.maxAllowed ?? "0")?.round()} items) of this Product \n you can Add only ${((double.tryParse(event.maxAllowed ?? "0") ?? 0) - (CurrentQuantity.isEmpty ? 0 : CurrentQuantity[key]![0])).round()} items",
             foreGroundColor: Colors.white,
             backGroundColor: Colors.black,
             showInRelease: true,
@@ -2531,10 +2542,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     );
     Map<String, List<Cart>>? cartCollection =
         Map.of(state.cartCollection ?? {});
-    if (cartCollection == {}) {
+    /* if (cartCollection == {}) {
       emit(state
           .copyWith(cartCollection: {"${event.boutiqueId.toString()}": []}));
-    }
+    }*/
     if (cartCollection.containsKey(event.boutiqueId.toString())) {
       cartCollection[event.boutiqueId.toString()]!.add(cart);
     } else {
@@ -2549,12 +2560,15 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         cartCollection: cartCollection,
         addItemInCartStatus: AddItemInCartStatus.loading));
 
-    final response = await addItemToCartUseCase(AddITemToCartParams(
+    final response = await addItemToCartUseCase(
+      AddITemToCartParams(
         image: event.image.split("/").last,
         choice_1: event.choice_1,
         color: event.color,
         id: event.products.id.toString(),
-        quantity: event.quantity));
+        quantity: event.quantity,
+      ),
+    );
 
     response.fold((l) {
       add(UpdateListOfItemForAddToCartEvent(
@@ -2741,7 +2755,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           cartCollection: cartCollection,
           deleteItemInCartStatus: DeleteItemInCartStatus.failure));
       showMessage(
-        "Item Wan't Deleted",
+        "Item Was't Deleted",
         foreGroundColor: Colors.white,
         backGroundColor: Colors.black,
       );
@@ -2815,7 +2829,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               : oldCartCollection,
           hideItemInOldCartStatus: HideItemInOldCartStatus.failure));
       showMessage(
-        "Item Wan't Hidden",
+        "Item Was't Hidden",
         foreGroundColor: Colors.white,
         backGroundColor: Colors.black,
       );
@@ -2826,6 +2840,143 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
       showMessage(
         "Item Was Hidden successfuly",
+        foreGroundColor: Colors.white,
+        backGroundColor: Colors.black,
+      );
+    });
+  }
+
+  FutureOr<void> _onConvertItemFromOldcartToCartEvent(
+      ConvertItemFromOldcartToCartEvent event, Emitter<HomeState> emit) async {
+    emit(state.copyWith(
+        convertItemFromOldcartToCartStatus:
+            ConvertItemFromOldcartToCartStatus.init));
+    Map<String, List<oldCart.OldCart>>? OldCartCollection =
+        state.oldcartCollection;
+    oldCart.OldCart? oldCartt;
+
+    oldCartt = state.oldcartCollection![event.boutiqueId]!.firstWhere(
+        (element) => element.id.toString() == event.oldCartId.toString());
+
+    OldCartCollection![event.boutiqueId]!.remove(oldCartt);
+    if (OldCartCollection[event.boutiqueId.toString()].isNullOrEmpty) {
+      OldCartCollection.remove(event.boutiqueId.toString());
+    }
+    CartBrand brand = CartBrand(image: oldCartt.brand?.image);
+    Cart cart = Cart(
+      id: oldCartt.id,
+      countOfPieces: oldCartt.countOfPieces,
+      image: oldCartt.image,
+      boutique: oldCartt.boutique,
+      offerPrice: oldCartt.priceOfVariant,
+      offerPriceFormatted: oldCartt.priceOfVariant.toString(),
+      name: oldCartt.name,
+      price: oldCartt.priceOfVariant,
+      quantity: oldCartt.quantity,
+      brand: brand,
+      variations: oldCartt.variations,
+      productId: oldCartt.productId,
+    );
+    Map<String, List<Cart>>? cartCollection =
+        Map.of(state.cartCollection ?? {});
+    /* if (cartCollection == {}) {
+      emit(state
+          .copyWith(cartCollection: {"${event.boutiqueId.toString()}": []}));
+    }*/
+    if (cartCollection.containsKey(event.boutiqueId.toString())) {
+      cartCollection[event.boutiqueId.toString()]!.add(cart);
+    } else {
+      Map<String, List<Cart>> cartMap = {
+        event.boutiqueId.toString(): [cart]
+      };
+
+      cartCollection.addAll(cartMap);
+    }
+
+    emit(state.copyWith(
+        cartCollection: cartCollection,
+        oldCartCollection: OldCartCollection,
+        convertItemFromOldcartToCartStatus:
+            ConvertItemFromOldcartToCartStatus.loading));
+    final response = await convertItemFromOldcartToCartUsecase(
+        ConvertItemFromOldcartToCartParams(oLdCartId: event.oldCartId));
+
+    response.fold((l) {
+      Map<String, List<Cart>>? cartCollection =
+          Map.of(state.cartCollection ?? {});
+      cartCollection[event.boutiqueId.toString()]!.remove(cart);
+      if (cartCollection[event.boutiqueId.toString()].isNullOrEmpty) {
+        cartCollection.remove(event.boutiqueId.toString());
+      }
+      Map<String, List<oldCart.OldCart>>? oldCartCollection =
+          Map.of(state.oldcartCollection!);
+
+      if (oldCartCollection[event.boutiqueId].isNullOrEmpty) {
+        oldCartCollection[event.boutiqueId!] = [];
+      }
+      oldCartCollection[event.boutiqueId]!.add(oldCartt!);
+
+      emit(state.copyWith(
+          cartCollection: cartCollection,
+          oldCartCollection: oldCartCollection,
+          convertItemFromOldcartToCartStatus:
+              ConvertItemFromOldcartToCartStatus.failure));
+      showMessage(
+        "Item Was't Converted to Cart",
+        foreGroundColor: Colors.white,
+        backGroundColor: Colors.black,
+      );
+    }, (r) {
+      Map<String, List<Cart>>? cartCollection = state.cartCollection;
+      Cart? cart;
+
+      cart = state.cartCollection![event.boutiqueId]!.firstWhere(
+          (element) => element.id.toString() == event.oldCartId.toString());
+
+      cartCollection![event.boutiqueId]!.remove(cart);
+      cartCollection[event.boutiqueId]!.add(cart.copyWith(
+          id: r.data?.id, offerPrice: r.data?.offerPrice?.toDouble()));
+      add(GetCartItemEvent());
+      Map<String, Map<int, List<String>>> addImagesToProductIdForCart =
+          Map.from(state.addImagesToProductIdForCart);
+      if (addImagesToProductIdForCart[cart.productId.toString()] == null) {
+        addImagesToProductIdForCart[cart.productId.toString()] = {};
+      }
+      if (!addImagesToProductIdForCart[cart.productId.toString()]![r.data?.id]
+          .isNullOrEmpty) {
+        for (int i = 0; i < oldCartt!.quantity!; i++) {
+          addImagesToProductIdForCart[oldCartt.productId.toString()]![
+                  r.data?.id]!
+              .add(oldCartt.image!);
+        }
+        ;
+      } else {
+        addImagesToProductIdForCart[oldCartt!.productId.toString()]![
+            r.data!.id!] = [];
+        for (int i = 0; i < oldCartt.quantity!; i++) {
+          addImagesToProductIdForCart[oldCartt.productId.toString()]![
+                  r.data?.id]!
+              .add(oldCartt.image!);
+        }
+        ;
+      }
+      print(
+          "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO${addImagesToProductIdForCart[oldCartt.productId.toString()]?.values.toList()}");
+      add(AddQuantityForCartEvent(
+          currentSize: oldCartt.variations![0].size ?? "",
+          colorName: oldCartt.variations![0].color ?? "",
+          cartId: r.data!.id!,
+          quantity: oldCartt.quantity ?? 0,
+          productId: oldCartt.productId.toString()));
+      emit(state.copyWith(
+        cartCollection: cartCollection,
+        addImagesToProductIdForCart: addImagesToProductIdForCart,
+        convertItemFromOldcartToCartStatus:
+            ConvertItemFromOldcartToCartStatus.success,
+      ));
+
+      showMessage(
+        "Item Converted to Cart successfuly",
         foreGroundColor: Colors.white,
         backGroundColor: Colors.black,
       );
@@ -2846,7 +2997,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       return;
     }
     if (event.quantity > (event.maxAllowed ?? 0) && event.maxAllowed != 0) {
-      showMessage("you reach the max allowed quantity of this Product",
+      showMessage(
+          "you reach the max allowed quantity \n (${(event.maxAllowed ?? 0.0).round()} items) of this Product",
           foreGroundColor: Colors.white,
           backGroundColor: Colors.black,
           showInRelease: true,
@@ -3181,6 +3333,19 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           boutiqueId: event.boutiqueId,
           choice_1: listitemForAddToCart[i].size,
           quantity: listitemForAddToCart[i].quantity));
+      //////////////////////////////
+      FirebaseAnalyticsService.logEventForSession(
+        eventName: AnalyticsEventsConst.programmingEvent,
+        executedEventName: AnalyticsExecutedEventNameConst.addedProductEvent,
+        extraParams: {
+          'product_id': event.id.toString(),
+          'max_allowed': event.maxAllowed.toString(),
+          'count_of_piece': listitemForAddToCart[i].countOfPieces.toString(),
+          'quantity': listitemForAddToCart[i].quantity.toString(),
+          'color': listitemForAddToCart[i].colorNum.toString(),
+          'choice_1': listitemForAddToCart[i].size.toString(),
+        },
+      );
     }
 
     emit(state.copyWith(ListitemForAddToCart: []));

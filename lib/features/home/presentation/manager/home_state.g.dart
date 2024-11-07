@@ -19,6 +19,9 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               const {},
       addItemInCartStatus: $enumDecodeNullable(
           _$AddItemInCartStatusEnumMap, json['addItemInCartStatus']),
+      convertItemFromOldcartToCartStatus: $enumDecodeNullable(
+          _$ConvertItemFromOldcartToCartStatusEnumMap,
+          json['convertItemFromOldcartToCartStatus']),
       hideItemInOldCartStatus: $enumDecodeNullable(
           _$HideItemInOldCartStatusEnumMap, json['hideItemInOldCartStatus']),
       searchWithOutFilterOffset:
@@ -375,6 +378,9 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           instance.getCommentForProductStatus]!,
       'productITemForCart':
           instance.productITemForCart.map((k, e) => MapEntry(k, e.toJson())),
+      'convertItemFromOldcartToCartStatus':
+          _$ConvertItemFromOldcartToCartStatusEnumMap[
+              instance.convertItemFromOldcartToCartStatus],
       'getMainCategoriesStatus':
           _$GetMainCategoriesStatusEnumMap[instance.getMainCategoriesStatus]!,
       'hideItemInOldCartStatus':
@@ -517,6 +523,13 @@ const _$AddItemInCartStatusEnumMap = {
   AddItemInCartStatus.loading: 'loading',
   AddItemInCartStatus.success: 'success',
   AddItemInCartStatus.failure: 'failure',
+};
+
+const _$ConvertItemFromOldcartToCartStatusEnumMap = {
+  ConvertItemFromOldcartToCartStatus.init: 'init',
+  ConvertItemFromOldcartToCartStatus.loading: 'loading',
+  ConvertItemFromOldcartToCartStatus.success: 'success',
+  ConvertItemFromOldcartToCartStatus.failure: 'failure',
 };
 
 const _$HideItemInOldCartStatusEnumMap = {

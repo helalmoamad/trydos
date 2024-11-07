@@ -108,11 +108,11 @@ class _HomePageState extends State<HomePage> {
             getWithPrefetchForBoutiques: false,
             categorySlug: selectedCategorySlug,
             offset: homeBloc
-                .state
-                .getHomeBoutiquesPaginationObjectByMainCategory[
-                    selectedCategorySlug]!
-                .page
-                .toString(),
+                    .state
+                    .getHomeBoutiquesPaginationObjectByMainCategory[
+                        selectedCategorySlug]!
+                    .offset ??
+                "",
             context: context,
             getWithPagination: true));
       }

@@ -65,6 +65,8 @@ class productCollectionInCartPage1 extends StatelessWidget {
           previous.getCartItemsStatus != current.getCartItemsStatus ||
           previous.getCurrencyForCountryModel !=
               current.getCurrencyForCountryModel ||
+          previous.convertItemFromOldcartToCartStatus !=
+              current.convertItemFromOldcartToCartStatus ||
           previous.hideItemInOldCartStatus != current.hideItemInOldCartStatus ||
           previous.getOldCartItemsStatus != current.getOldCartItemsStatus ||
           previous.deleteItemInCartStatus != current.deleteItemInCartStatus ||
@@ -350,41 +352,56 @@ class productCollectionInCartPage1 extends StatelessWidget {
                                       return isOldCart
                                           ? AlertDialog(
                                               title: MyTextWidget(
-                                                  "Hide Item From Cart",
+                                                  "What do you Want ?",
                                                   textDirection:
                                                       TextDirection.ltr),
                                               actions: <Widget>[
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    AppElevatedButton(
-                                                      onPressed: () {
-                                                        GetIt.I<HomeBloc>().add(HideItemInOldCartEvent(
-                                                            hideAll: false,
-                                                            oldCartId: oldCartCollection![
-                                                                            groupCartkeys[index]]![
-                                                                        indexes]
-                                                                    .id ??
-                                                                0,
-                                                            boutiqueId: oldCartCollection![
+                                                AppElevatedButton(
+                                                  onPressed: () {
+                                                    GetIt.I<HomeBloc>().add(ConvertItemFromOldcartToCartEvent(
+                                                        oldCartId: oldCartCollection![
+                                                                        groupCartkeys[
+                                                                            index]]![
+                                                                    indexes]
+                                                                .id ??
+                                                            0,
+                                                        boutiqueId: oldCartCollection![
                                                                     groupCartkeys[
-                                                                        index]]![indexes]
-                                                                .boutique!
-                                                                .id
-                                                                .toString()));
-                                                        Navigator.pop(context);
-                                                      },
-                                                      text: "Yes",
-                                                    ),
-                                                    AppElevatedButton(
-                                                      onPressed: () {
-                                                        Navigator.pop(context);
-                                                      },
-                                                      text: 'Not Now',
-                                                    ),
-                                                  ],
+                                                                        index]]![
+                                                                indexes]
+                                                            .boutique!
+                                                            .id
+                                                            .toString()));
+                                                    Navigator.pop(context);
+                                                  },
+                                                  text: "Convert Item To Cart",
+                                                ),
+                                                AppElevatedButton(
+                                                  onPressed: () {
+                                                    GetIt.I<HomeBloc>().add(HideItemInOldCartEvent(
+                                                        hideAll: false,
+                                                        oldCartId: oldCartCollection![
+                                                                        groupCartkeys[
+                                                                            index]]![
+                                                                    indexes]
+                                                                .id ??
+                                                            0,
+                                                        boutiqueId: oldCartCollection![
+                                                                    groupCartkeys[
+                                                                        index]]![
+                                                                indexes]
+                                                            .boutique!
+                                                            .id
+                                                            .toString()));
+                                                    Navigator.pop(context);
+                                                  },
+                                                  text: "Hide Item",
+                                                ),
+                                                AppElevatedButton(
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  text: 'excite',
                                                 ),
                                               ],
                                             )
@@ -1005,17 +1022,43 @@ class productCollectionInCartPage1 extends StatelessWidget {
                                                       decorationColor:
                                                           Color(0xffC4C2C2),
                                                       fontSize: 18,
-                                                      color: Color(0xffC4C2C2),
-                                                      decoration: TextDecoration
-                                                          .lineThrough),
+                                                      color: isOldCart ||
+                                                              cartCollection![groupCartkeys[index]]![
+                                                                          indexes]
+                                                                      .offerPrice ==
+                                                                  cartCollection![groupCartkeys[index]]![
+                                                                          indexes]
+                                                                      .price
+                                                          ? Color(0xff505050)
+                                                          : Color(0xffC4C2C2),
+                                                      decoration: isOldCart
+                                                          ? null
+                                                          : cartCollection![groupCartkeys[index]]![
+                                                                          indexes]
+                                                                      .offerPrice ==
+                                                                  cartCollection![groupCartkeys[index]]![
+                                                                          indexes]
+                                                                      .price
+                                                              ? null
+                                                              : TextDecoration
+                                                                  .lineThrough),
                                             ),
                                             SizedBox(
                                               width: 5,
                                             ),
                                             Text(
                                                 isOldCart
-                                                    ? "${(oldCartCollection![groupCartkeys[index]]![indexes].priceOfVariant! * quantity * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} "
-                                                    : "${(cartCollection![groupCartkeys[index]]![indexes].offerPrice! * quantity * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} ",
+                                                    ? ""
+                                                    : cartCollection![groupCartkeys[
+                                                                        index]]![
+                                                                    indexes]
+                                                                .offerPrice ==
+                                                            cartCollection![groupCartkeys[
+                                                                        index]]![
+                                                                    indexes]
+                                                                .price
+                                                        ? ""
+                                                        : "${(cartCollection![groupCartkeys[index]]![indexes].offerPrice! * quantity * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} ",
                                                 style: context
                                                     .textTheme.bodyMedium?.br
                                                     .copyWith(
