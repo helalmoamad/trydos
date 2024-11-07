@@ -16,7 +16,6 @@ import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
-import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
@@ -622,15 +621,20 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                         .filePath ??
                                     "",
                         onFinishBuying: (quantity) {
-                          homeBloc.add(AddMultiItemsToCartEvent(
+                          homeBloc.add(
+                            AddMultiItemsToCartEvent(
                               maxAllowed: widget.maxAllowedToAddCart,
                               boutiqueIcon: widget.boutiqueIcon,
                               boutiqueId: widget.boutiqueId,
                               products: widget.productItem,
-                              id: widget.productItem.id.toString()));
-                          setState(() {
-                            tag = 'cart';
-                          });
+                              id: widget.productItem.id.toString(),
+                            ),
+                          );
+                          setState(
+                            () {
+                              tag = 'cart';
+                            },
+                          );
                         },
                         panelController: panelController,
                         clickOnComments: () {
