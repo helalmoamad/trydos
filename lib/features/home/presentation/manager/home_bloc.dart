@@ -2549,12 +2549,15 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         cartCollection: cartCollection,
         addItemInCartStatus: AddItemInCartStatus.loading));
 
-    final response = await addItemToCartUseCase(AddITemToCartParams(
+    final response = await addItemToCartUseCase(
+      AddITemToCartParams(
         image: event.image.split("/").last,
         choice_1: event.choice_1,
         color: event.color,
         id: event.products.id.toString(),
-        quantity: event.quantity));
+        quantity: event.quantity,
+      ),
+    );
 
     response.fold((l) {
       add(UpdateListOfItemForAddToCartEvent(
@@ -3181,6 +3184,19 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           boutiqueId: event.boutiqueId,
           choice_1: listitemForAddToCart[i].size,
           quantity: listitemForAddToCart[i].quantity));
+      //////////////////////////////
+      FirebaseAnalyticsService.logEventForSession(
+        eventName: AnalyticsEventsConst.programmingEvent,
+        executedEventName: AnalyticsExecutedEventNameConst.addedProductEvent,
+        extraParams: {
+          'product_id': event.id.toString(),
+          'max_allowed': event.maxAllowed.toString(),
+          'count_of_piece': listitemForAddToCart[i].countOfPieces.toString(),
+          'quantity': listitemForAddToCart[i].quantity.toString(),
+          'color': listitemForAddToCart[i].colorNum.toString(),
+          'choice_1': listitemForAddToCart[i].size.toString(),
+        },
+      );
     }
 
     emit(state.copyWith(ListitemForAddToCart: []));
