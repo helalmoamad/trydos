@@ -127,6 +127,8 @@ import '../../features/home/domain/use_cases/add_item_to_cart_usecase.dart'
     as _i1035;
 import '../../features/home/domain/use_cases/add_like_to_product_usecase.dart'
     as _i33;
+import '../../features/home/domain/use_cases/convert_item_from_oldCart_to_Cart_usecase.dart'
+    as _i190;
 import '../../features/home/domain/use_cases/delete_like_of_product_usecase.dart'
     as _i878;
 import '../../features/home/domain/use_cases/get_allowed_country_usecase.dart'
@@ -323,12 +325,13 @@ Future<_i174.GetIt> $initGetIt(
       () => _i922.GetAndAddCountViewOfProductUsecase(gh<_i0.HomeRepository>()));
   gh.factory<_i104.HideItemsInOldCartUseCase>(
       () => _i104.HideItemsInOldCartUseCase(gh<_i0.HomeRepository>()));
-  gh.lazySingleton<_i702.CommonUseRepository>(() =>
-      _i77.CommonUseRepositoryImpl(gh<_i672.CommonUseRemoteDataSource>()));
+  gh.factory<_i190.ConvertItemFromOldcartToCartUsecase>(() =>
+      _i190.ConvertItemFromOldcartToCartUsecase(gh<_i0.HomeRepository>()));
   gh.lazySingleton<_i801.HomeBloc>(() => _i801.HomeBloc(
         gh<_i158.GetMainCategoriesUseCase>(),
         gh<_i533.GetStoryForProductUseCase>(),
         gh<_i687.RemoveItemToCartUseCase>(),
+        gh<_i190.ConvertItemFromOldcartToCartUsecase>(),
         gh<_i307.GetCartItemUseCase>(),
         gh<_i318.GetOldCartItemUseCase>(),
         gh<_i878.DeleteLikeOfProductUsecase>(),
@@ -351,6 +354,8 @@ Future<_i174.GetIt> $initGetIt(
         gh<_i715.RequestForNotificationWhenProductBecameAvailableUseCase>(),
         gh<_i955.GetProductsWithFiltersUseCase>(),
       ));
+  gh.lazySingleton<_i702.CommonUseRepository>(() =>
+      _i77.CommonUseRepositoryImpl(gh<_i672.CommonUseRemoteDataSource>()));
   gh.lazySingleton<_i1032.CallsRepository>(
       () => _i722.CallsRepositoryImpl(gh<_i1061.CallsRemoteDataSource>()));
   gh.lazySingleton<_i420.ChatRepository>(

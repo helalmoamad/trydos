@@ -45,8 +45,6 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
 
   @override
   void initState() {
-    print(
-        "***********************************************************************************************${widget.boutique.slug}");
     autoScrollController = AutoScrollController();
     super.initState();
   }
@@ -109,6 +107,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                     child: ValueListenableBuilder<int>(
                         valueListenable: changeBackgroundBlurImage,
                         builder: (context, index, _) {
+                          print(index);
                           print((widget.boutique.banners?.length ?? 0) > 0);
                           return ((widget.boutique.banners?.length ?? 0) > 0)
                               ? MyCachedNetworkImage(
@@ -361,10 +360,16 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                           },
                           child: SvgNetworkWidget(
                             svgUrl: widget
-                                .boutique
-                                .mainCategoriesForProductIds![index]
-                                .flatPhotoPath!
-                                .filePath!,
+                                        .boutique
+                                        .mainCategoriesForProductIds![index]
+                                        .flatPhotoPath !=
+                                    null
+                                ? widget
+                                    .boutique
+                                    .mainCategoriesForProductIds![index]
+                                    .flatPhotoPath!
+                                    .filePath!
+                                : "",
                             width: 12,
                             height: 12,
                           ));

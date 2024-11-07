@@ -56,6 +56,8 @@ enum GetCartItemsStatus { init, loading, success, failure }
 
 enum GetOLdCartItemsStatus { init, loading, success, failure }
 
+enum ConvertItemFromOldcartToCartStatus { init, loading, success, failure }
+
 enum GetStoriesForProductStatus { init, loading, success, failure }
 
 enum SendRequestToGeminiStatus { init, loading, success, failure }
@@ -87,6 +89,7 @@ class HomeState extends Equatable {
     this.storiesForProduct,
     this.getAndAddCountViewOfProductStatus = const {},
     this.addItemInCartStatus,
+    this.convertItemFromOldcartToCartStatus,
     this.hideItemInOldCartStatus,
     this.searchWithOutFilterOffset,
     this.searchWithFilterOffset,
@@ -162,6 +165,7 @@ class HomeState extends Equatable {
   final Map<String, int> currentSelectedColorForEveryProduct;
   final GetCommentForProductStatus getCommentForProductStatus;
   final Map<String, product.Products> productITemForCart;
+  final ConvertItemFromOldcartToCartStatus? convertItemFromOldcartToCartStatus;
   final GetMainCategoriesStatus getMainCategoriesStatus;
   final HideItemInOldCartStatus? hideItemInOldCartStatus;
   final Map<String, GetAndAddCountViewOfProductStatus>
@@ -253,6 +257,7 @@ class HomeState extends Equatable {
         productITemForCart,
         getMainCategoriesStatus,
         oldcartCollection,
+        convertItemFromOldcartToCartStatus,
         getOldCartModel,
         getOldCartItemsStatus,
         ListitemForAddToCart,
@@ -324,6 +329,8 @@ class HomeState extends Equatable {
       final GetMainCategoriesStatus? getMainCategoriesStatus,
       final AddItemInCartStatus? addItemInCartStatus,
       final HideItemInOldCartStatus? hideItemInOldCartStatus,
+      final ConvertItemFromOldcartToCartStatus?
+          convertItemFromOldcartToCartStatus,
       final UpdateItemInCartStatus? updateItemInCartStatus,
       final Map<String, String>? searchWithFilterOffset,
       final Map<String, String>? searchWithOutFilterOffset,
@@ -421,6 +428,8 @@ class HomeState extends Equatable {
           updateItemInCartStatus ?? this.updateItemInCartStatus,
       addOrRemoveLikeOfProductStatus:
           addOrRemoveLikeOfProductStatus ?? this.addOrRemoveLikeOfProductStatus,
+      convertItemFromOldcartToCartStatus: convertItemFromOldcartToCartStatus ??
+          this.convertItemFromOldcartToCartStatus,
 
       sizes: sizes ?? this.sizes,
       getFullProductDetailsStatus:

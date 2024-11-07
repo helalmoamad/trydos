@@ -521,16 +521,22 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                               : widget
                                                   .productItem
                                                   .colors![state
-                                                          .currentSelectedColorForEveryProduct[
-                                                      widget.productItem.id
-                                                          .toString()]!]
+                                                              .currentSelectedColorForEveryProduct[
+                                                          widget.productItem.id
+                                                              .toString()] ??
+                                                      (widget
+                                                                  .productItem
+                                                                  .syncColorImages
+                                                                  ?.length ??
+                                                              0) ~/
+                                                          2]
                                                   .name
                                                   .toString(),
                                           selectedColor: widget.productItem
                                                   .colors.isNullOrEmpty
                                               ? null
                                               : Color(int.parse(
-                                                  '0xff${widget.productItem.colors![state.currentSelectedColorForEveryProduct[widget.productItem.id.toString()]!].color!.substring(1)}')),
+                                                  '0xff${widget.productItem.colors![state.currentSelectedColorForEveryProduct[widget.productItem.id.toString()] ?? (widget.productItem.syncColorImages?.length ?? 0) ~/ 2].color!.substring(1)}')),
                                           sizeIsNotAvailableNotifier:
                                               sizeIsNotAvailableNotifier,
                                           addToBagButtonShapeNotifier: widget

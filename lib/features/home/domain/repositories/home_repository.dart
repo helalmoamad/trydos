@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
+import 'package:trydos/features/home/data/models/convert_item_from_oldCart_to_cart_model.dart';
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 import 'package:trydos/features/home/data/models/get_brand_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
@@ -67,6 +68,9 @@ abstract class HomeRepository {
       getAndAddCountViewOfProduct(Map<String, dynamic> params);
 
   Future<Either<Failure, bool>> hideItemsInOldCart(Map<String, dynamic> params);
+
+  Future<Either<Failure, ConvertItemFromOldCartToCartModel>>
+      convertItemInOldCartToCart(Map<String, dynamic> params);
   Future<Either<Failure, bool>> removeItemToCart(Map<String, dynamic> params);
   Future<Either<Failure, Comment>> addComment(Map<String, dynamic> params);
   Future<Either<Failure, bool>>

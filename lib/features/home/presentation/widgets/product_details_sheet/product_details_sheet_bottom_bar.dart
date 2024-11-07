@@ -131,7 +131,7 @@ class _ProductDetailsSheetBottomBarState
                 allimages.addAll(value);
               })
             : [];
-
+        print(")))${state.addImagesToProductIdForCart[widget.productId]}");
         return Container(
             color: colorScheme.white,
             child: Column(

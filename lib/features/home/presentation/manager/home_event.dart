@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:trydos/features/home/data/models/get_old_cart_model.dart'
+    as oldCarts;
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
@@ -615,6 +617,16 @@ class HideItemInOldCartEvent extends HomeEvent {
   final bool? hideAll;
   final String? boutiqueId;
   HideItemInOldCartEvent({this.oldCartId, this.boutiqueId, this.hideAll});
+
+  @override
+  List<Object?> get props => [];
+}
+
+class ConvertItemFromOldcartToCartEvent extends HomeEvent {
+  final int? oldCartId;
+
+  final String? boutiqueId;
+  ConvertItemFromOldcartToCartEvent({this.oldCartId, this.boutiqueId});
 
   @override
   List<Object?> get props => [];

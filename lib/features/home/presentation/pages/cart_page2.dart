@@ -50,22 +50,33 @@ class CartPage2 extends StatelessWidget {
       textDirection: TextDirection.ltr,
       child: Scaffold(
         body: BlocBuilder<HomeBloc, HomeState>(
-          buildWhen: (previous, current) =>
-              previous.getCartItemsStatus != current.getCartItemsStatus ||
-              previous.getCurrencyForCountryModel !=
-                  current.getCurrencyForCountryModel ||
-              previous.deleteItemInCartStatus !=
-                  current.deleteItemInCartStatus ||
-              previous.addItemInCartStatus != current.addItemInCartStatus ||
-              previous.updateItemInCartStatus !=
-                  current.updateItemInCartStatus ||
-              previous.cartCollection!.values !=
-                  current.cartCollection!.values ||
-              previous.hideItemInOldCartStatus !=
-                  current.hideItemInOldCartStatus ||
-              previous.getOldCartItemsStatus != current.getOldCartItemsStatus ||
-              previous.oldcartCollection?.values !=
-                  current.oldcartCollection?.values,
+          buildWhen: (previous, current) {
+            if (previous.cartCollection!.values.length !=
+                    current.cartCollection!.values.length ||
+                previous.cartCollection!.values.length !=
+                    current.cartCollection!.values.length) {
+              visibleAllCollection = true;
+              return true;
+            }
+            return previous.getCartItemsStatus != current.getCartItemsStatus ||
+                previous.getCurrencyForCountryModel !=
+                    current.getCurrencyForCountryModel ||
+                previous.deleteItemInCartStatus !=
+                    current.deleteItemInCartStatus ||
+                previous.convertItemFromOldcartToCartStatus !=
+                    current.convertItemFromOldcartToCartStatus ||
+                previous.addItemInCartStatus != current.addItemInCartStatus ||
+                previous.updateItemInCartStatus !=
+                    current.updateItemInCartStatus ||
+                previous.cartCollection!.values !=
+                    current.cartCollection!.values ||
+                previous.hideItemInOldCartStatus !=
+                    current.hideItemInOldCartStatus ||
+                previous.getOldCartItemsStatus !=
+                    current.getOldCartItemsStatus ||
+                previous.oldcartCollection?.values !=
+                    current.oldcartCollection?.values;
+          },
           builder: (context, state) {
             double totlaPrice = 0;
             String? priceSymbol;

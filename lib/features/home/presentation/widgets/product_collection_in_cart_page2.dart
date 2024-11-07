@@ -330,42 +330,53 @@ class productCollectionInCartPage2 extends StatelessWidget {
                                           return isOLdCart
                                               ? AlertDialog(
                                                   title: MyTextWidget(
-                                                      "Hide Item From Cart",
+                                                      "What do you Want ?",
                                                       textDirection:
                                                           TextDirection.ltr),
                                                   actions: <Widget>[
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceBetween,
-                                                      children: [
-                                                        AppElevatedButton(
-                                                          onPressed: () {
-                                                            GetIt.I<HomeBloc>().add(HideItemInOldCartEvent(
-                                                                hideAll: false,
-                                                                oldCartId:
-                                                                    oldcartCollection![groupCartkeys[index]]![indexes]
-                                                                            .id ??
-                                                                        0,
-                                                                boutiqueId: oldcartCollection![
+                                                    AppElevatedButton(
+                                                      onPressed: () {
+                                                        GetIt.I<HomeBloc>().add(ConvertItemFromOldcartToCartEvent(
+                                                            oldCartId: oldcartCollection![
                                                                             groupCartkeys[index]]![
                                                                         indexes]
-                                                                    .boutique!
-                                                                    .id
-                                                                    .toString()));
-                                                            Navigator.pop(
-                                                                context);
-                                                          },
-                                                          text: "Yes",
-                                                        ),
-                                                        AppElevatedButton(
-                                                          onPressed: () {
-                                                            Navigator.pop(
-                                                                context);
-                                                          },
-                                                          text: 'Not Now',
-                                                        ),
-                                                      ],
+                                                                    .id ??
+                                                                0,
+                                                            boutiqueId: oldcartCollection![
+                                                                    groupCartkeys[
+                                                                        index]]![indexes]
+                                                                .boutique!
+                                                                .id
+                                                                .toString()));
+                                                        Navigator.pop(context);
+                                                      },
+                                                      text:
+                                                          "Convert Item To Cart",
+                                                    ),
+                                                    AppElevatedButton(
+                                                      onPressed: () {
+                                                        GetIt.I<HomeBloc>().add(HideItemInOldCartEvent(
+                                                            hideAll: false,
+                                                            oldCartId: oldcartCollection![
+                                                                            groupCartkeys[index]]![
+                                                                        indexes]
+                                                                    .id ??
+                                                                0,
+                                                            boutiqueId: oldcartCollection![
+                                                                    groupCartkeys[
+                                                                        index]]![indexes]
+                                                                .boutique!
+                                                                .id
+                                                                .toString()));
+                                                        Navigator.pop(context);
+                                                      },
+                                                      text: "Hide Item",
+                                                    ),
+                                                    AppElevatedButton(
+                                                      onPressed: () {
+                                                        Navigator.pop(context);
+                                                      },
+                                                      text: 'excite',
                                                     ),
                                                   ],
                                                 )
@@ -702,42 +713,56 @@ class productCollectionInCartPage2 extends StatelessWidget {
                                                 return isOLdCart
                                                     ? AlertDialog(
                                                         title: MyTextWidget(
-                                                            "Hide Item From Cart",
+                                                            "What do you Want ?",
                                                             textDirection:
                                                                 TextDirection
                                                                     .ltr),
                                                         actions: <Widget>[
-                                                          Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .spaceBetween,
-                                                            children: [
-                                                              AppElevatedButton(
-                                                                onPressed: () {
-                                                                  GetIt.I<HomeBloc>().add(HideItemInOldCartEvent(
-                                                                      hideAll:
-                                                                          false,
-                                                                      oldCartId:
-                                                                          oldcartCollection![groupCartkeys[index]]![indexes].id ??
-                                                                              0,
-                                                                      boutiqueId: oldcartCollection![groupCartkeys[index]]![
-                                                                              indexes]
-                                                                          .boutique!
-                                                                          .id
-                                                                          .toString()));
-                                                                  Navigator.pop(
-                                                                      context);
-                                                                },
-                                                                text: "Yes",
-                                                              ),
-                                                              AppElevatedButton(
-                                                                onPressed: () {
-                                                                  Navigator.pop(
-                                                                      context);
-                                                                },
-                                                                text: 'Not Now',
-                                                              ),
-                                                            ],
+                                                          AppElevatedButton(
+                                                            onPressed: () {
+                                                              GetIt.I<HomeBloc>().add(ConvertItemFromOldcartToCartEvent(
+                                                                  oldCartId:
+                                                                      oldcartCollection![groupCartkeys[index]]![indexes]
+                                                                              .id ??
+                                                                          0,
+                                                                  boutiqueId: oldcartCollection![
+                                                                              groupCartkeys[index]]![
+                                                                          indexes]
+                                                                      .boutique!
+                                                                      .id
+                                                                      .toString()));
+                                                              Navigator.pop(
+                                                                  context);
+                                                            },
+                                                            text:
+                                                                "Convert Item To Cart",
+                                                          ),
+                                                          AppElevatedButton(
+                                                            onPressed: () {
+                                                              GetIt.I<HomeBloc>().add(HideItemInOldCartEvent(
+                                                                  hideAll:
+                                                                      false,
+                                                                  oldCartId:
+                                                                      oldcartCollection![groupCartkeys[index]]![indexes]
+                                                                              .id ??
+                                                                          0,
+                                                                  boutiqueId: oldcartCollection![
+                                                                              groupCartkeys[index]]![
+                                                                          indexes]
+                                                                      .boutique!
+                                                                      .id
+                                                                      .toString()));
+                                                              Navigator.pop(
+                                                                  context);
+                                                            },
+                                                            text: "Hide Item",
+                                                          ),
+                                                          AppElevatedButton(
+                                                            onPressed: () {
+                                                              Navigator.pop(
+                                                                  context);
+                                                            },
+                                                            text: 'excite',
                                                           ),
                                                         ],
                                                       )

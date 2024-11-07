@@ -60,9 +60,10 @@ class GetProductsWithFiltersParams {
         "attributes": attributes.toString(),
         "categories": categories.toString(),
         "colors": colors.toString(),
-        "search_text": searchText,
+        "search_text":
+            searchText == "" || searchText == null ? null : '"${searchText}"',
         "offset": offset,
-        // "limit": limit,
+        "limit": "10",
         // "scroll_id": scroll_id,
         "boutique_slug": boutiqueSlug,
         "boutique_slugs": boutiqueSlugs.toString(),

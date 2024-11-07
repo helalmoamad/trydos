@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
+
 GetOldCartModel getOldCartModelFromJson(String str) =>
     GetOldCartModel.fromJson(json.decode(str));
 
@@ -230,7 +232,7 @@ class OldCart {
   final String? cartGroupId;
   final int? productId;
   final List<Choice>? choices;
-  final List<Variation>? variations;
+  final List<VariationCart>? variations;
   final String? variant;
   final int? availableQuantity;
   final String? maxAllowedQty;
@@ -243,8 +245,8 @@ class OldCart {
   final String? name;
   final dynamic countOfPieces;
   final Shop? shop;
-  final dynamic brand;
-  final Boutique? boutique;
+  final Brand? brand;
+  final BoutiquesCart? boutique;
   final String? thumbnail;
   final String? image;
   final DateTime? createdAt;
@@ -285,7 +287,7 @@ class OldCart {
     String? cartGroupId,
     int? productId,
     List<Choice>? choices,
-    List<Variation>? variations,
+    List<VariationCart>? variations,
     String? variant,
     int? availableQuantity,
     String? maxAllowedQty,
@@ -298,8 +300,8 @@ class OldCart {
     String? name,
     dynamic countOfPieces,
     Shop? shop,
-    dynamic brand,
-    Boutique? boutique,
+    Brand? brand,
+    BoutiquesCart? boutique,
     String? thumbnail,
     String? image,
     DateTime? createdAt,
@@ -346,8 +348,8 @@ class OldCart {
                 json["choices"]!.map((x) => Choice.fromJson(x))),
         variations: json["variations"] == null
             ? []
-            : List<Variation>.from(
-                json["variations"]!.map((x) => Variation.fromJson(x))),
+            : List<VariationCart>.from(
+                json["variations"]!.map((x) => VariationCart.fromJson(x))),
         variant: json["variant"],
         availableQuantity:
             double.tryParse(json["available_quantity"].toString())!.round(),
@@ -361,10 +363,10 @@ class OldCart {
         name: json["name"],
         countOfPieces: json["count_of_pieces"],
         shop: json["shop"] == null ? null : Shop.fromJson(json["shop"]),
-        brand: json["brand"],
+        brand: json["brand"] == null ? null : Brand.fromJson(json["brand"]),
         boutique: json["boutique"] == null
             ? null
-            : Boutique.fromJson(json["boutique"]),
+            : BoutiquesCart.fromJson(json["boutique"]),
         thumbnail: json["thumbnail"],
         image: json["image"],
         createdAt: json["created_at"] == null
@@ -397,7 +399,7 @@ class OldCart {
         "name": name,
         "count_of_pieces": countOfPieces,
         "shop": shop?.toJson(),
-        "brand": brand,
+        "brand": brand?.toJson(),
         "boutique": boutique?.toJson(),
         "thumbnail": thumbnail,
         "image": image,
@@ -471,6 +473,47 @@ class Icon {
       };
 }
 
+class Brand {
+  final int? id;
+  final String? name;
+  final String? slug;
+  final String? image;
+
+  Brand({
+    this.id,
+    this.name,
+    this.slug,
+    this.image,
+  });
+
+  Brand copyWith({
+    int? id,
+    String? name,
+    String? slug,
+    String? image,
+  }) =>
+      Brand(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        slug: slug ?? this.slug,
+        image: image ?? this.image,
+      );
+
+  factory Brand.fromJson(Map<String, dynamic> json) => Brand(
+        id: json["id"],
+        name: json["name"],
+        slug: json["slug"],
+        image: json["image"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": name,
+        "slug": slug,
+        "image": image,
+      };
+}
+
 class Choice {
   final String? choice1;
 
@@ -520,34 +563,5 @@ class Shop {
   Map<String, dynamic> toJson() => {
         "image": image,
         "name": name,
-      };
-}
-
-class Variation {
-  final String? color;
-  final String? size;
-
-  Variation({
-    this.color,
-    this.size,
-  });
-
-  Variation copyWith({
-    String? color,
-    String? size,
-  }) =>
-      Variation(
-        color: color ?? this.color,
-        size: size ?? this.size,
-      );
-
-  factory Variation.fromJson(Map<String, dynamic> json) => Variation(
-        color: json["color"],
-        size: json["Size"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "color": color,
-        "Size": size,
       };
 }
