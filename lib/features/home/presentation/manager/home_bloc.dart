@@ -3336,7 +3336,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       //////////////////////////////
       FirebaseAnalyticsService.logEventForSession(
         eventName: AnalyticsEventsConst.programmingEvent,
-        executedEventName: AnalyticsExecutedEventNameConst.addedProductEvent,
+        executedEventName:
+            AnalyticsExecutedEventNameConst.addedProductToBagEvent,
         extraParams: {
           'product_id': event.id.toString(),
           'max_allowed': event.maxAllowed.toString(),

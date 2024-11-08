@@ -96,5 +96,5 @@ class AnalyticsExecutedEventNameConst {
   static const increaseQtyButton = 'increase_qty_button';
   static const decreaseQtyButton = 'decrease_qty_button';
   static const addProductToBagButton = 'add_product_to_bag_button';
-  static const addedProductEvent = 'added_product_event';
+  static const addedProductToBagEvent = 'added_product_to_bag_event';
 }
