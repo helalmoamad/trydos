@@ -3321,7 +3321,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         List.of(state.ListitemForAddToCart ?? []);
     listitemForAddToCart.removeWhere((element) => element.quantity == 0);
     for (var i = 0; i < listitemForAddToCart.length; i++) {
-      add(AddItemToCartEvent(
+      add(
+        AddItemToCartEvent(
           fishAddAllTheItems: i == listitemForAddToCart.length - 1,
           countOfPieces: listitemForAddToCart[i].countOfPieces,
           image: listitemForAddToCart[i].images!,
@@ -3332,7 +3333,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           boutiqueIcon: event.boutiqueIcon,
           boutiqueId: event.boutiqueId,
           choice_1: listitemForAddToCart[i].size,
-          quantity: listitemForAddToCart[i].quantity));
+          quantity: listitemForAddToCart[i].quantity,
+        ),
+      );
       //////////////////////////////
       FirebaseAnalyticsService.logEventForSession(
         eventName: AnalyticsEventsConst.programmingEvent,
@@ -3343,7 +3346,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           'max_allowed': event.maxAllowed.toString(),
           'count_of_piece': listitemForAddToCart[i].countOfPieces.toString(),
           'quantity': listitemForAddToCart[i].quantity.toString(),
-          'color': listitemForAddToCart[i].colorNum.toString(),
+          'color': listitemForAddToCart[i].colorName.toString(),
           'choice_1': listitemForAddToCart[i].size.toString(),
         },
       );
