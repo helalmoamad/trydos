@@ -396,11 +396,11 @@ class Chat {
 }
 
 class ShareProductContent {
-  final String productId;
-  final String productSlug;
-  final String productDescription;
-  final String productImageUrl;
-  final String productName;
+  final String? productId;
+  final String? productSlug;
+  final String? productDescription;
+  final String? productImageUrl;
+  final String? productName;
 
   ShareProductContent({
     required this.productId,

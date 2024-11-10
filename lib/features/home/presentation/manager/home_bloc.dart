@@ -45,6 +45,7 @@ import 'package:trydos/features/home/domain/use_cases/get_main_categories_usecas
 import 'package:trydos/features/home/domain/use_cases/get_old_cart_item_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_product_detail_without_related_products_uswcase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_product_filters_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/get_product_list_in_cart_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_products_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_products_with_filters_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_starting_settings_usecase.dart';
@@ -98,6 +99,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.addItemToCartUseCase,
     this.getCommentForProductUseCase,
     this.getHomeBoutiqesUseCase,
+    this.getProductsListInCartUseCase,
     this.getProductFiltersUseCase,
     this.getAllowedCountryUseCase,
     this.getWidthAndHeightUseCase,
@@ -135,6 +137,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     );
     on<UpdateListOfItemForAddToCartEvent>(
       _onUpdateListOfItemForAddToCartEvent,
+    );
+    on<GetProductsListInCartEvent>(
+      _onGetProductsListInCartEventEvent,
     );
 
     on<AddPrefAppliedFilterForExtendFilterEvent>(
@@ -274,6 +279,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final ConvertItemFromOldcartToCartUsecase convertItemFromOldcartToCartUsecase;
   final GetAndAddCountViewOfProductUsecase getAndAddCountViewOfProductUsecase;
   final AddCommentUseCase addCommentUseCase;
+  final GetProductsListInCartUseCase getProductsListInCartUseCase;
   final GetCommentForProductUseCase getCommentForProductUseCase;
   final GetStoryForProductUseCase getStoryUseCase;
   final GetProductDetailWithoutRelatedProductsUseCase
@@ -373,21 +379,24 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       for (var i = 0; i < r.data!.mainCategories!.length; i++) {
         categorySlugs.add(r.data!.mainCategories![i].slug ?? "");
       }
-
-      Future.delayed(Duration(seconds: 5), () {
-        for (var i = 0; i < min(categorySlugs.length, (1.sw - 55) ~/ 40); i++) {
-          if (state.boutiquesForEveryMainCategoryThatDidPrefetch[
-                  categorySlugs[i]] !=
-              true) {
-            add(GetHomeBoutiqesEvent(
-              getWithPrefetchForBoutiques: true,
-              context: event.context ?? navigatorKey.currentContext!,
-              categorySlug: categorySlugs[i],
-              offset: "1",
-            ));
+      if (event.getWithPrefech) {
+        Future.delayed(Duration(seconds: 5), () {
+          for (var i = 0;
+              i < min(categorySlugs.length, (1.sw - 55) ~/ 40);
+              i++) {
+            if (state.boutiquesForEveryMainCategoryThatDidPrefetch[
+                    categorySlugs[i]] !=
+                true) {
+              add(GetHomeBoutiqesEvent(
+                getWithPrefetchForBoutiques: true,
+                context: event.context ?? navigatorKey.currentContext!,
+                categorySlug: categorySlugs[i],
+                offset: "1",
+              ));
+            }
           }
-        }
-      });
+        });
+      }
     });
   }
 
@@ -1019,9 +1028,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             ? null
             : [
                 {
-                  '"id"': filters.attributes![0].id,
-                  '"name"': filters.attributes![0].name,
-                  '"options"': filters.attributes![0].options,
+                  '"id"': '"${filters.attributes![0].id}"',
+                  '"name"': '"${filters.attributes![0].name}"',
+                  '"options"': filters.attributes![0].options
+                      ?.map(
+                        (e) => '"${e}"',
+                      )
+                      .toList(),
                 }
               ],
         colors: filters.colors?.map((e) => '"${e.toString()}"').toList(),
@@ -1999,9 +2012,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           ? null
           : [
               {
-                '"id"': filters.attributes![0].id,
-                '"name"': filters.attributes![0].name,
-                '"options"': filters.attributes![0].options,
+                '"id"': '"${filters.attributes![0].id}"',
+                '"name"': '"${filters.attributes![0].name}"',
+                '"options"': filters.attributes![0].options
+                    ?.map(
+                      (e) => '"${e}"',
+                    )
+                    .toList(),
               }
             ],
       colors: filters.colors?.map((e) => '"${e.toString()}"').toList(),
@@ -2451,6 +2468,36 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           getOldCartModel: r,
           oldCartCollection: Map.of(oldCartCollection),
           getOldCartItemsStatus: GetOLdCartItemsStatus.success));
+    });
+  }
+
+  FutureOr<void> _onGetProductsListInCartEventEvent(
+      GetProductsListInCartEvent event, Emitter<HomeState> emit) async {
+    emit(state.copyWith(
+        getListOfProductsFoundedInCartStatus:
+            GetListOfProductsFoundedInCartStatus.loading));
+
+    /* if (productITemForCart.isNotEmpty) {
+      return;
+    }*/
+    final response = await getProductsListInCartUseCase(NoParams());
+    response.fold((l) {
+      emit(state.copyWith(
+          getListOfProductsFoundedInCartStatus:
+              GetListOfProductsFoundedInCartStatus.failure));
+    }, (r) {
+      Map<String, Products> productITemForCart = {};
+      r.data?.forEach(
+        (element) {
+          productITemForCart.addAll({element.id.toString(): element});
+        },
+      );
+
+      emit(state.copyWith(
+        getListOfProductsFoundedInCartStatus:
+            GetListOfProductsFoundedInCartStatus.success,
+        productITemForCart: productITemForCart,
+      ));
     });
   }
 
@@ -3605,9 +3652,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           ? null
           : [
               {
-                '"id"': event.attribute!.id,
-                '"name"': event.attribute!.name,
-                '"options"': event.attribute!.options,
+                '"id"': '"${event.attribute?.id}"',
+                '"name"': '"${event.attribute?.name}"',
+                '"options"': event.attribute?.options
+                    ?.map(
+                      (e) => '"${e}"',
+                    )
+                    .toList(),
               }
             ],
       colors: event.filterType == "color" ? ['"${event.filterSlug}"'] : null,

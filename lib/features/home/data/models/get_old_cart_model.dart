@@ -107,11 +107,11 @@ class Original {
 
 class OriginalData {
   final double? subTotal;
-  final int? totalTax;
+  final double? totalTax;
   final double? totalDiscountOnProduct;
-  final int? totalShippingCost;
-  final int? couponDiscount;
-  final int? codCost;
+  final double? totalShippingCost;
+  final double? couponDiscount;
+  final double? codCost;
   final double? limitFree;
   final double? estimatedTax;
   final double? total;
@@ -142,11 +142,11 @@ class OriginalData {
 
   OriginalData copyWith({
     double? subTotal,
-    int? totalTax,
+    double? totalTax,
     double? totalDiscountOnProduct,
-    int? totalShippingCost,
-    int? couponDiscount,
-    int? codCost,
+    double? totalShippingCost,
+    double? couponDiscount,
+    double? codCost,
     double? limitFree,
     double? estimatedTax,
     double? total,
@@ -180,11 +180,12 @@ class OriginalData {
 
   factory OriginalData.fromJson(Map<String, dynamic> json) => OriginalData(
         subTotal: json["sub_total"]?.toDouble(),
-        totalTax: json["total_tax"],
+        totalTax: double.tryParse(json["total_tax"].toString()),
         totalDiscountOnProduct: json["total_discount_on_product"]?.toDouble(),
-        totalShippingCost: json["total_shipping_cost"],
-        couponDiscount: json["coupon_discount"],
-        codCost: json["cod_cost"],
+        totalShippingCost:
+            double.tryParse(json["total_shipping_cost"].toString()),
+        couponDiscount: double.tryParse(json["coupon_discount"].toString()),
+        codCost: double.tryParse(json["cod_cost"].toString()),
         limitFree: json["limitFree"]?.toDouble(),
         estimatedTax: json["estimated_tax"]?.toDouble(),
         total: json["total"]?.toDouble(),

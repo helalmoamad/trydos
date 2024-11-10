@@ -139,7 +139,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                 },
                 onUpdateVisitedHistory: (controller, url, isReload) {
                   print(
-                      "/////////////////////////////////////////////////${url}");
+                      "//////////////////////////////////////1111111111111111111111///////////${url}");
 
                   log('ring? ${url?.queryParameters.containsKey('ring')}');
                   if (_audioPlayer.state == PlayerState.playing &&
@@ -190,7 +190,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                 initialUrlRequest: URLRequest(url: WebUri(source.toString())),
                 onPermissionRequest: (controller, request) async {
                   print(
-                      "///////*************7777777777777777777777777////////////////////////////////////////44/");
+                      "///////*************111111111111111117777777777777777777777777////////////////////////////////////////44/");
 
                   final resources = <PermissionResourceType>[];
                   if (request.resources
@@ -229,7 +229,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
 
                 onProgressChanged: (controller, progress) {
                   print(
-                      "/////////////////////////////////////////////////${progress}");
+                      "******************---------------------------------------------------------------------------------/////////////////////////////////////////////////${progress}");
 
                   setState(() {
                     loadingNotifier.value = progress;
@@ -240,7 +240,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                   valueListenable: loadingNotifier,
                   builder: (context, progress, child) {
                     print(
-                        "///////**********${progress}**4444444444444444*7777777777777777777777777/////////////////////////////////////////*************");
+                        "///////*111111111111111111111111111111111111*********${progress}**4444444444444444*7777777777777777777777777/////////////////////////////////////////*************");
 
                     if (progress < 100)
                       return Center(child: CircularProgressIndicator());

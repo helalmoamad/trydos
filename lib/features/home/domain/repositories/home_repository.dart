@@ -16,6 +16,7 @@ import 'package:trydos/features/home/data/models/get_product_detail_without_rela
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 
 import 'package:trydos/features/home/data/models/home_sections_response_model.dart';
+import 'package:trydos/features/home/data/models/list_of_products_in_cart_model.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
 import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
@@ -45,6 +46,9 @@ abstract class HomeRepository {
       Map<String, dynamic> params);*/
   Future<Either<Failure, GetHomeBoutiquesModel>> getHomeBoutiqes(
       Map<String, dynamic> params);
+  Future<Either<Failure, ListOfProductsFoundedInCartModel>>
+      getProductsListInCart();
+
   Future<Either<Failure, GetAllowedCountriesModel>> getAllowCountries();
   Future<Either<Failure, GetStoryForProductModel>> getStories(String productId);
   Future<Either<Failure, GetProductListingWithoutFiltersModel>>

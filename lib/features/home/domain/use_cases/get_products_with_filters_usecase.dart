@@ -57,7 +57,7 @@ class GetProductsWithFiltersParams {
         "category": category,
         "prices": prices.toString(),
         "brands": brands.toString(),
-        "attributes": attributes.toString(),
+        "attributes": "${attributes}",
         "categories": categories.toString(),
         "colors": colors.toString(),
         "search_text":

@@ -76,6 +76,11 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
               Expanded(
                 child: InkWell(
                   onTap: () {
+                    appBloc.add(ChangeTab(-1));
+                    homeBloc.add(
+                      ChangeCurrentIndexForMainCategoryEvent(index: -1),
+                    );
+
                     if (context.canPop()) {
                       Navigator.of(context).pop();
                     }

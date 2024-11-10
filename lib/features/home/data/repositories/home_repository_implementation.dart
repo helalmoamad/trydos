@@ -25,6 +25,7 @@ import 'package:trydos/features/home/data/models/get_product_listing_with_filter
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 
 import 'package:trydos/features/home/data/models/home_sections_response_model.dart';
+import 'package:trydos/features/home/data/models/list_of_products_in_cart_model.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
 import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
 
@@ -49,6 +50,12 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   @override
   Future<Either<Failure, MainCategoriesResponseModel>> getMainCategories() {
     return handlingExceptionRequest(tryCall: dataSource.getMainCategories);
+  }
+
+  @override
+  Future<Either<Failure, ListOfProductsFoundedInCartModel>>
+      getProductsListInCart() {
+    return handlingExceptionRequest(tryCall: dataSource.getProductsListInCart);
   }
 
   /*@override

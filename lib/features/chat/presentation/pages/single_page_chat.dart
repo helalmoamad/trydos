@@ -1644,8 +1644,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
           return SharedProductMessage(
             channelId: message.channelId!,
             imageUrl: message.shareProductContent!.productImageUrl,
-            productName: message.shareProductContent!.productName,
-            productDescription: message.shareProductContent!.productDescription,
+            productName: message.shareProductContent!.productName ?? "",
+            productDescription:
+                message.shareProductContent!.productDescription ?? "",
             imageFile: message.file,
             receivedAt: messageStatus?.receivedAt,
             createAt: message.createdAt,
