@@ -22,7 +22,8 @@ class GetStartingSettingsEvent extends HomeEvent {
 }
 
 class GetMainCategoriesEvent extends HomeEvent {
-  const GetMainCategoriesEvent({this.context});
+  final bool getWithPrefech;
+  const GetMainCategoriesEvent({this.context, this.getWithPrefech = true});
 
   final BuildContext? context;
   @override
@@ -120,6 +121,16 @@ class GetCommentForProductEvent extends HomeEvent {
   List<Object?> get props => [productId];
 }
 
+class GetProductsListInCartEvent extends HomeEvent {
+  const GetProductsListInCartEvent(
+      //  {this.getWithPagination = false}
+      );
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+}
+
 class GetHomeBoutiqesEvent extends HomeEvent {
   // final bool getWithPagination;
   final String offset;
@@ -190,6 +201,7 @@ class ChangeSelectedFiltersEvent extends HomeEvent {
   final bool fromHomePageSearch;
   final String boutiqueSlug;
   final String? category;
+  final bool? isExpandedForListing;
 
   ChangeSelectedFiltersEvent({
     this.filtersChoosedByUser,
@@ -198,12 +210,13 @@ class ChangeSelectedFiltersEvent extends HomeEvent {
     this.fromHomePageSearch = false,
     this.requestToUpdateFilters = true,
     this.category,
+    this.isExpandedForListing,
   });
 
   @override
   // TODO: implement props
   List<Object?> get props =>
-      [filtersChoosedByUser, boutiqueSlug, resetChoosedFilters, category];
+      [filtersChoosedByUser, boutiqueSlug, resetChoosedFilters, category , isExpandedForListing];
 }
 
 class ChangeAppliedFiltersEvent extends HomeEvent {
@@ -211,18 +224,19 @@ class ChangeAppliedFiltersEvent extends HomeEvent {
   final bool resetAppliedFilters;
   final String boutiqueSlug;
   final String? category;
-
+  final bool? isExpandedForListing;
   ChangeAppliedFiltersEvent({
     this.filtersAppliedByUser,
     required this.boutiqueSlug,
     this.resetAppliedFilters = false,
     this.category,
+    this.isExpandedForListing,
   });
 
   @override
   // TODO: implement props
   List<Object?> get props =>
-      [filtersAppliedByUser, boutiqueSlug, resetAppliedFilters, category];
+      [filtersAppliedByUser, boutiqueSlug, resetAppliedFilters, category , isExpandedForListing];
 }
 
 /*class GetProductsWithFiltersEventWithoutCancelingPreviousEvents

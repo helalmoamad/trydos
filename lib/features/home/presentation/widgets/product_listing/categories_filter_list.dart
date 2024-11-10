@@ -58,7 +58,12 @@ class CategoriesFilterList extends StatelessWidget {
         Filter filters = filterss;
         Filter? choosedFilters = state.choosedFiltersByUser[key]?.filters;
         Filter? appliedFilters = state.appliedFiltersByUser[key]?.filters;
-
+        if (((choosedFilters?.categories?.length ?? 0) == 0) &&
+            (appliedFilters?.categories?.length ?? 0) == 0) {
+          print(
+              "---------------+++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+          expandingFiltersStack.value = -1;
+        }
         print(filters.categories?.length ?? 0);
 
         return ListView.builder(
@@ -79,117 +84,154 @@ class CategoriesFilterList extends StatelessWidget {
               expandingFiltersStack.value = index;
             }
             bool isChildCategorySlug = false;
-            if (!(filters.categories?[index].isSubCategory ?? false)) {
-              filters.categories?[index].subCategories?.forEach((elements) {
-                if (!(workWithChoosedFilter)) {
-                  if (homeBloc
-                          .state.appliedFiltersByUser[key]?.filters?.categories
-                          ?.any((element) => (element.slug == elements.slug)) ??
-                      false) {
-                    isChildCategorySlug = true;
-                  }
-                } else {
-                  if (homeBloc
-                          .state.choosedFiltersByUser[key]?.filters?.categories
-                          ?.any((element) => (element.slug == elements.slug)) ??
-                      false) {
-                    isChildCategorySlug = true;
-                  }
-                }
-                ;
-              });
-            }
             if (!(filters.categories![index].subCategories?.isNullOrEmpty ??
-                true))
+                true)) {
+              List<SubCategory> subCategories =
+                  List.from(filters.categories![index].subCategories ?? []);
+              filters.categories![index].subCategories!.forEach(
+                (element) {
+                  subCategories.addAll(element.childes?.map(
+                        (e) => e.copyWith(
+                          isSubSubCategory: true,
+                        ),
+                      ) ??
+                      []);
+                },
+              );
+
+              subCategories = subCategories.toSet().toList().reversed.toList();
+              List<String> subCategoriesslugs = [];
+              subCategories.forEach(
+                (element) {
+                  subCategoriesslugs.add(element.slug ?? "");
+                },
+              );
+              subCategories.removeWhere(
+                (element) =>
+                    subCategoriesslugs.contains(element.slug) &&
+                    element.isSubSubCategory == false,
+              );
+              if (!(filters.categories?[index].isSubCategory ?? false)) {
+                subCategories?.forEach((elements) {
+                  if (!(workWithChoosedFilter)) {
+                    if (homeBloc.state.appliedFiltersByUser[key]?.filters
+                            ?.categories
+                            ?.any(
+                                (element) => (element.slug == elements.slug)) ??
+                        false) {
+                      isChildCategorySlug = true;
+                    }
+                  } else {
+                    if (homeBloc.state.choosedFiltersByUser[key]?.filters
+                            ?.categories
+                            ?.any(
+                                (element) => (element.slug == elements.slug)) ??
+                        false) {
+                      isChildCategorySlug = true;
+                    }
+                  }
+                  ;
+                });
+              }
+
               return ValueListenableBuilder<int>(
                   valueListenable: expandingFiltersStack,
                   builder: (context, currentExpandedIndex, child) {
+                    print("${(currentExpandedIndex == index)}");
+                    print("///////////////");
+                    print("${isChildCategorySlug}");
                     return AnimatedContainer(
                       curve: Curves.fastEaseInToSlowEaseOut,
                       duration: Duration(milliseconds: 300),
                       margin: EdgeInsetsDirectional.only(end: 5),
-                      width: (currentExpandedIndex == index) ||
-                              isChildCategorySlug
-                          ? (75 +
-                              filters.categories![index].subCategories!.length *
-                                  55)
-                          : 80.0,
+                      width:
+                          (currentExpandedIndex == index) || isChildCategorySlug
+                              ? (75 + subCategories!.length * 55)
+                              : 80.0,
                       height: 70.0,
                       child: Stack(
                         alignment: AlignmentDirectional.topStart,
                         children: [
                           ...List.generate(
-                            filters.categories![index].subCategories!.length,
+                            subCategories!.length,
                             (innerIndex) => AnimatedPositionedDirectional(
                                 curve: Curves.fastEaseInToSlowEaseOut,
                                 duration: Duration(milliseconds: 300),
-                                top: (currentExpandedIndex == index)
-                                    ? (70 - 50)
+                                top: (currentExpandedIndex == index ||
+                                        isChildCategorySlug)
+                                    ? subCategories![innerIndex]
+                                                .isSubSubCategory ??
+                                            false
+                                        ? 35
+                                        : (70 - 50)
                                     : (70 - 50) / 2,
-                                end: currentExpandedIndex == index
+                                end: currentExpandedIndex == index ||
+                                        isChildCategorySlug
                                     ? innerIndex * 55
-                                    : innerIndex >=
-                                            (filters.categories![index]
-                                                    .subCategories!.length -
-                                                2)
+                                    : innerIndex >= (subCategories!.length - 2)
                                         ? (innerIndex - 1) * 3
                                         : 0,
-                                child: filters
-                                            .categories![index]
-                                            .subCategories![innerIndex]
+                                child: subCategories[innerIndex]
                                             .mostViewedProductThumbnail !=
                                         null
                                     ? FilterCircleWidget(
+                                        isSubSubCategory:
+                                            subCategories![innerIndex]
+                                                    .isSubSubCategory ??
+                                                false,
                                         isSvg: false,
-                                        width: 50,
-                                        height: 50,
-                                        originalWidth: double.tryParse(filters
-                                            .categories![index]
-                                            .subCategories![innerIndex]
-                                            .mostViewedProductThumbnail!
-                                            .originalWidth
-                                            .toString()),
-                                        originalHeight: double.tryParse(filters
-                                            .categories![index]
-                                            .subCategories![innerIndex]
-                                            .mostViewedProductThumbnail!
-                                            .originalHeight
-                                            .toString()),
-                                        categoryName: filters.categories![index]
-                                            .subCategories![innerIndex].name
+                                        width: subCategories![innerIndex]
+                                                    .isSubSubCategory ??
+                                                false
+                                            ? 35
+                                            : 50,
+                                        height: subCategories![innerIndex]
+                                                    .isSubSubCategory ??
+                                                false
+                                            ? 35
+                                            : 50,
+                                        originalWidth: double.tryParse(
+                                            subCategories![innerIndex]
+                                                .mostViewedProductThumbnail!
+                                                .originalWidth
+                                                .toString()),
+                                        originalHeight: double.tryParse(
+                                            subCategories[innerIndex]
+                                                .mostViewedProductThumbnail!
+                                                .originalHeight
+                                                .toString()),
+                                        categoryName: subCategories[innerIndex]
+                                            .name
                                             .toString(),
-                                        imageUrl: filters
-                                            .categories![index]
-                                            .subCategories![innerIndex]
+                                        imageUrl: subCategories![innerIndex]
                                             .mostViewedProductThumbnail!
                                             .filePath
                                             .toString(),
                                         withBackGroundShadow: innerIndex != 0,
-                                        displayFilterMark: !workWithChoosedFilter
-                                            ? ((appliedFilters?.categories
-                                                        ?.isNullOrEmpty ??
-                                                    true)
-                                                ? false
-                                                : appliedFilters!.categories!
-                                                    .any((element) =>
-                                                        element.id ==
-                                                        filters
-                                                            .categories![index]
-                                                            .subCategories![
-                                                                innerIndex]
-                                                            .id))
-                                            : ((choosedFilters?.categories
-                                                        ?.isNullOrEmpty ??
-                                                    true)
-                                                ? false
-                                                : choosedFilters!.categories!
-                                                    .any((element) =>
-                                                        element.id ==
-                                                        filters
-                                                            .categories![index]
-                                                            .subCategories![
-                                                                innerIndex]
-                                                            .id)),
+                                        displayFilterMark:
+                                            !workWithChoosedFilter
+                                                ? ((appliedFilters?.categories
+                                                            ?.isNullOrEmpty ??
+                                                        true)
+                                                    ? false
+                                                    : appliedFilters!
+                                                        .categories!
+                                                        .any((element) =>
+                                                            element.id ==
+                                                            subCategories![
+                                                                    innerIndex]
+                                                                .id))
+                                                : ((choosedFilters?.categories
+                                                            ?.isNullOrEmpty ??
+                                                        true)
+                                                    ? false
+                                                    : choosedFilters!
+                                                        .categories!
+                                                        .any((element) =>
+                                                            element.id ==
+                                                            subCategories![
+                                                                    innerIndex]
+                                                                .id)),
                                         addOrRemoveSpecificFilter: (bool add) {
                                           scaleTheTopItemInFiltersStack.value =
                                               (currentExpandedIndex == index);
@@ -218,26 +260,19 @@ class CategoriesFilterList extends StatelessWidget {
                                                       .addFilterButton,
                                             );
                                             //////////////////////////////
-                                            expandingFiltersStack.value =
-                                                innerIndex;
+                                            // expandingFiltersStack.value =
+                                            //   innerIndex;
                                             Category category = Category(
-                                                slug: filters
-                                                    .categories![index]
-                                                    .subCategories![innerIndex]
+                                                slug: subCategories![innerIndex]
                                                     .slug,
                                                 isSubCategory: true,
-                                                id: filters
-                                                    .categories![index]
-                                                    .subCategories![innerIndex]
+                                                id: subCategories![innerIndex]
                                                     .id,
-                                                name: filters
-                                                    .categories![index]
-                                                    .subCategories![innerIndex]
+                                                name: subCategories![innerIndex]
                                                     .name,
-                                                flatPhotoPath: filters
-                                                    .categories![index]
-                                                    .subCategories![innerIndex]
-                                                    .flatPhotoPath);
+                                                flatPhotoPath:
+                                                    subCategories![innerIndex]
+                                                        .flatPhotoPath);
                                             if (prevChoosedOrAppliedFilterToAddToIt ==
                                                 null) {
                                               prevChoosedOrAppliedFilterToAddToIt =
@@ -285,17 +320,11 @@ class CategoriesFilterList extends StatelessWidget {
                                             //////////////////////////////
                                             categories.removeWhere(((element) =>
                                                 element.id ==
-                                                filters
-                                                    .categories![index]
-                                                    .subCategories![innerIndex]
-                                                    .id));
+                                                subCategories![innerIndex].id));
                                             bool mustDeleteParentCategory =
                                                 categories.any(((element) =>
-                                                    filters.categories![index]
-                                                        .subCategories!
-                                                        .any((sub) =>
-                                                            sub.id ==
-                                                            element.id)));
+                                                    subCategories!.any((sub) =>
+                                                        sub.id == element.id)));
                                             /*    if (mustDeleteParentCategory) {
                                       prevChoosedOrAppliedFilterToAddToIt
                                           .categories!
@@ -401,7 +430,7 @@ class CategoriesFilterList extends StatelessWidget {
                                                   null &&
                                               choosedFilters?.categories ==
                                                   null) {
-                                            expandingFiltersStack.value = 0;
+                                            expandingFiltersStack.value = -1;
                                           } else if (!workWithChoosedFilter
                                               ? ((appliedFilters?.categories
                                                           ?.isNullOrEmpty ??
@@ -503,10 +532,8 @@ class CategoriesFilterList extends StatelessWidget {
                                                 filters.categories![index].id));
 
                                             categories.removeWhere(((element) =>
-                                                filters.categories![index]
-                                                    .subCategories!
-                                                    .any((sub) =>
-                                                        sub.id == element.id)));
+                                                subCategories!.any((sub) =>
+                                                    sub.id == element.id)));
                                             prevChoosedOrAppliedFilterToAddToIt =
                                                 prevChoosedOrAppliedFilterToAddToIt!
                                                     .copyWithSaveOtherField(
@@ -562,7 +589,7 @@ class CategoriesFilterList extends StatelessWidget {
                       ),
                     );
                   });
-            else {
+            } else {
               return filters.categories![index].mostViewedProductThumbnail !=
                       null
                   ? FilterCircleWidget(

@@ -1848,7 +1848,7 @@ Widget choosedOrAppliedFiltersWidget({
                                 imageUrl: filters!
                                     .boutiques![index].banner!.filePath!,
                                 imageFit: BoxFit.cover,
-                                height:choosedFilter? 40:30,
+                                height: choosedFilter ? 40 : 30,
                                 width: 60,
                                 circleDimensions: 8,
                                 logoTextHeight: 5,
@@ -2332,6 +2332,7 @@ class FilterCircleWidget extends StatefulWidget {
       required this.addOrRemoveSpecificFilter,
       this.withBackGroundShadow = true,
       this.paddingValue = 10,
+      this.isSubSubCategory = false,
       this.scale = false,
       this.isTopItem = false,
       this.markWidth = 20,
@@ -2353,6 +2354,7 @@ class FilterCircleWidget extends StatefulWidget {
   final double? originalWidth;
   final double height;
   final double markHeight;
+  final bool? isSubSubCategory;
   final bool withBackGroundShadow;
   final bool scale;
   final bool displayFilterMark;
@@ -2371,6 +2373,8 @@ class _FilterCircleWidgetState extends State<FilterCircleWidget> {
     return Padding(
       padding: EdgeInsetsDirectional.only(end: widget.paddingValue),
       child: Container(
+        width: widget.isSubSubCategory! ? widget.width + 22 : null,
+        height: widget.isSubSubCategory! ? widget.height + 22 : null,
         child: Column(
           children: [
             Column(

@@ -334,7 +334,7 @@ class productCollectionInCartPage2 extends StatelessWidget {
                                                       textDirection:
                                                           TextDirection.ltr),
                                                   actions: <Widget>[
-                                                    AppElevatedButton(
+                                                    /*  AppElevatedButton(
                                                       onPressed: () {
                                                         GetIt.I<HomeBloc>().add(ConvertItemFromOldcartToCartEvent(
                                                             oldCartId: oldcartCollection![
@@ -352,7 +352,7 @@ class productCollectionInCartPage2 extends StatelessWidget {
                                                       },
                                                       text:
                                                           "Convert Item To Cart",
-                                                    ),
+                                                    ),*/
                                                     AppElevatedButton(
                                                       onPressed: () {
                                                         GetIt.I<HomeBloc>().add(HideItemInOldCartEvent(
@@ -718,7 +718,7 @@ class productCollectionInCartPage2 extends StatelessWidget {
                                                                 TextDirection
                                                                     .ltr),
                                                         actions: <Widget>[
-                                                          AppElevatedButton(
+                                                          /* AppElevatedButton(
                                                             onPressed: () {
                                                               GetIt.I<HomeBloc>().add(ConvertItemFromOldcartToCartEvent(
                                                                   oldCartId:
@@ -736,7 +736,7 @@ class productCollectionInCartPage2 extends StatelessWidget {
                                                             },
                                                             text:
                                                                 "Convert Item To Cart",
-                                                          ),
+                                                          ),*/
                                                           AppElevatedButton(
                                                             onPressed: () {
                                                               GetIt.I<HomeBloc>().add(HideItemInOldCartEvent(

@@ -83,11 +83,11 @@ class _ImageMessageState extends State<ImageMessage> {
   @override
   void initState() {
     if (widget.isSent) {
-      FileSaving().downloadFileToLocalStorage(
-        widget.imageUrl ??
-            widget.imageFile!.path + '?width=${200.w}&height=400',
-        widget.channelId,
-      );
+      // FileSaving().downloadFileToLocalStorage(
+      //   widget.imageUrl ??
+      //       widget.imageFile!.path + '?width=${200.w}&height=400',
+      //   widget.channelId,
+      // );
     }
     chatBloc = BlocProvider.of<ChatBloc>(context);
     Timer(Duration(seconds: 4), () {
@@ -211,8 +211,7 @@ class _ImageMessageState extends State<ImageMessage> {
                                       valueListenable: _loadingImage,
                                       builder: (context, status, _) {
                                         FileSaving().downloadFileToLocalStorage(
-                                            widget.imageUrl! +
-                                                '?width=${200.w}&height=400',
+                                            widget.imageUrl!,
                                             widget.channelId,
                                             action: (File? file) {
                                           // _loadingImage.value = 2;

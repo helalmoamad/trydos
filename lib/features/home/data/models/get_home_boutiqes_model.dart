@@ -273,6 +273,9 @@ class ChildCategoriesForProductId {
 
 class MainCategoriesForProductId {
   final int? categoryId;
+  final String? productName;
+  final int? countProducts;
+  final Icon? mostViewedProductThumbnail;
   final String? categorySlug;
   final String? categoryName;
   final Icon? flatPhotoPath;
@@ -280,6 +283,9 @@ class MainCategoriesForProductId {
   MainCategoriesForProductId({
     this.categoryId,
     this.categorySlug,
+    this.productName,
+    this.countProducts,
+    this.mostViewedProductThumbnail,
     this.categoryName,
     this.flatPhotoPath,
   });
@@ -288,29 +294,45 @@ class MainCategoriesForProductId {
     int? categoryId,
     String? categorySlug,
     String? categoryName,
+    String? productName,
+    int? countProducts,
+    Icon? mostViewedProductThumbnail,
     Icon? flatPhotoPath,
   }) =>
       MainCategoriesForProductId(
         categoryId: categoryId ?? this.categoryId,
         categorySlug: categorySlug ?? this.categorySlug,
         categoryName: categoryName ?? this.categoryName,
+        productName: productName ?? this.productName,
+        countProducts: countProducts ?? this.countProducts,
+        mostViewedProductThumbnail:
+            mostViewedProductThumbnail ?? this.mostViewedProductThumbnail,
         flatPhotoPath: flatPhotoPath ?? this.flatPhotoPath,
       );
 
   factory MainCategoriesForProductId.fromJson(Map<String, dynamic> json) =>
       MainCategoriesForProductId(
-        categoryId: json["category_id"],
-        categorySlug: json["category_slug"],
-        categoryName: json["category_name"],
+        categoryId: json["id"],
+        categorySlug: json["slug"],
+        categoryName: json["name"],
+        productName: json["most_viewed_product_name"],
+        countProducts: json["num_available_product"],
+        mostViewedProductThumbnail:
+            json["most_viewed_product_thumbnail"] == null
+                ? null
+                : Icon.fromJson(json["most_viewed_product_thumbnail"]),
         flatPhotoPath: json["flat_photo_path"] == null
             ? null
             : Icon.fromJson(json["flat_photo_path"]),
       );
 
   Map<String, dynamic> toJson() => {
-        "category_id": categoryId,
-        "category_slug": categorySlug,
-        "category_name": categoryName,
+        "id": categoryId,
+        "slug": categorySlug,
+        "name": categoryName,
         "flat_photo_path": flatPhotoPath?.toJson(),
+        "most_viewed_product_name": productName,
+        "num_available_product": countProducts,
+        "most_viewed_product_thumbnail": mostViewedProductThumbnail?.toJson(),
       };
 }
