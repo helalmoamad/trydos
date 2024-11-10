@@ -56,7 +56,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     this.updateChatUserNameUseCase,
     this.createUserUseCase,
     this.loginToChatUseCase,
-    this.loginToMarketUseCase,
     this.loginToStoriesUseCase,
     this.storeFcmUseCase,
     this.updateNameUseCase,
@@ -99,7 +98,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   final LoginToChatUseCase loginToChatUseCase;
-  final LoginToMarketUseCase loginToMarketUseCase;
   final LoginToStoriesUseCase loginToStoriesUseCase;
   final CreateUserUseCase createUserUseCase;
   final StoreFcmUseCase storeFcmUseCase;

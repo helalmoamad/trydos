@@ -3264,14 +3264,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     } else {
       appliedFilters[key] = event.filtersAppliedByUser;
     }
-    if (event.resetAppliedFilters) {
-      emit(state.copyWith(
-        theReplyFromGemini: "",
-      ));
-    }
     emit(
       state.copyWith(
+          theReplyFromGemini: event.resetAppliedFilters ? "" : null,
         appliedFiltersByUser: Map.of(appliedFilters),
+          isExpandedForLidtingPage: event.isExpandedForListing
       ),
     );
   }
@@ -3303,6 +3300,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     }
     emit(state.copyWith(
         choosedFiltersByUser: Map.of(choosedFilters),
+        isExpandedForLidtingPage: event.isExpandedForListing,
         theReplyFromGemini: event.resetChoosedFilters ? "" : null));
     if (event.requestToUpdateFilters) {
       add(GetProductFiltersEvent(

@@ -1627,7 +1627,17 @@ class _SinglePageChatState extends State<SinglePageChat> {
             imageFile: message.file,
             messageId: message.id.toString(),
             senderId: message.senderUserId!,
-            imageUrl: message.mediaMessageContent?[0].filePath,
+            imageUrl: message.mediaMessageContent?[0].filePath == null ? null : addSuitableWidthAndHeightToImage(
+                imageUrl: message.mediaMessageContent![0].filePath!,
+                width: 200.w,
+                // the width of the image in the ui
+                height: 400,
+                // the height of the image in the ui
+                ordinalWidth: 200.w, //double.tryParse(message.mediaMessageContent![0].originalWidth.toString()),
+                ordinalHeight: 400,
+                //double.tryParse(image.originalHeight.toString())
+            )
+            ,
             userMessageName: message.receiverUserId != _prefsRepository.myChatId
                 ? senderName
                 : receiverName,
@@ -1643,7 +1653,16 @@ class _SinglePageChatState extends State<SinglePageChat> {
         case 'ShareProduct':
           return SharedProductMessage(
             channelId: message.channelId!,
-            imageUrl: message.shareProductContent!.productImageUrl,
+            imageUrl: addSuitableWidthAndHeightToImage(
+      imageUrl: message.shareProductContent!.productImageUrl,
+      width: 1.sw - 100,
+      // the width of the image in the ui
+      height: 464,
+      // the height of the image in the ui
+      ordinalWidth: 1.sw - 100, //double.tryParse(message.mediaMessageContent![0].originalWidth.toString()),
+      ordinalHeight: 464,
+      //double.tryParse(image.originalHeight.toString())
+      ),
             productName: message.shareProductContent!.productName,
             productDescription: message.shareProductContent!.productDescription,
             imageFile: message.file,

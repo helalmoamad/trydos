@@ -190,6 +190,7 @@ class ChangeSelectedFiltersEvent extends HomeEvent {
   final bool fromHomePageSearch;
   final String boutiqueSlug;
   final String? category;
+  final bool? isExpandedForListing;
 
   ChangeSelectedFiltersEvent({
     this.filtersChoosedByUser,
@@ -198,12 +199,13 @@ class ChangeSelectedFiltersEvent extends HomeEvent {
     this.fromHomePageSearch = false,
     this.requestToUpdateFilters = true,
     this.category,
+    this.isExpandedForListing,
   });
 
   @override
   // TODO: implement props
   List<Object?> get props =>
-      [filtersChoosedByUser, boutiqueSlug, resetChoosedFilters, category];
+      [filtersChoosedByUser, boutiqueSlug, resetChoosedFilters, category , isExpandedForListing];
 }
 
 class ChangeAppliedFiltersEvent extends HomeEvent {
@@ -211,18 +213,19 @@ class ChangeAppliedFiltersEvent extends HomeEvent {
   final bool resetAppliedFilters;
   final String boutiqueSlug;
   final String? category;
-
+  final bool? isExpandedForListing;
   ChangeAppliedFiltersEvent({
     this.filtersAppliedByUser,
     required this.boutiqueSlug,
     this.resetAppliedFilters = false,
     this.category,
+    this.isExpandedForListing,
   });
 
   @override
   // TODO: implement props
   List<Object?> get props =>
-      [filtersAppliedByUser, boutiqueSlug, resetAppliedFilters, category];
+      [filtersAppliedByUser, boutiqueSlug, resetAppliedFilters, category , isExpandedForListing];
 }
 
 /*class GetProductsWithFiltersEventWithoutCancelingPreviousEvents
