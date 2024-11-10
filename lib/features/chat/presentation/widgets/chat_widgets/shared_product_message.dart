@@ -219,11 +219,12 @@ class _SharedProductMessageState extends State<SharedProductMessage> {
                                         child: ValueListenableBuilder<int>(
                                             valueListenable: _loadingImage,
                                             builder: (context, status, _) {
-                                              FileSaving().downloadFileToLocalStorage(
-                                                  widget.imageUrl! +
-                                                      '?width=${1.sw - 100}&height=464',
-                                                  widget.channelId,
-                                                  action: (File? file) {
+                                              FileSaving()
+                                                  .downloadFileToLocalStorage(
+                                                      widget.imageUrl! +
+                                                          '?width=${1.sw - 100}&height=464',
+                                                      widget.channelId,
+                                                      action: (File? file) {
                                                 // _loadingImage.value = 2;
                                                 if (file != null) {
                                                   widget.imageFile = file;
@@ -250,8 +251,8 @@ class _SharedProductMessageState extends State<SharedProductMessage> {
                                   alignment: Alignment.bottomCenter,
                                   children: [
                                     Container(
-          width: 1.sw - 100,
-          height: 464,
+                                      width: 1.sw - 100,
+                                      height: 464,
                                       // (snapshot.data!.width.w < 200.w)
                                       //     ? snapshot.data!.width.toDouble()
                                       //     : 200.w
@@ -409,7 +410,8 @@ class _SharedProductMessageState extends State<SharedProductMessage> {
                               //todo until i solve the translate
                               widget.isFirstMessage
                                   ? Transform.translate(
-                                      offset: Offset(widget.isSent ? 30.w : -30.w, 0),
+                                      offset: Offset(
+                                          widget.isSent ? 30.w : -30.w, 0),
                                       child: Stack(
                                         alignment: Alignment.center,
                                         children: [
@@ -489,21 +491,27 @@ class _SharedProductMessageState extends State<SharedProductMessage> {
                             ],
                           ),
                         ),
-                        MyTextWidget(
-                          widget.productName,
-                          style: context.textTheme.labelSmall?.mr,
+                        Container(
+                          constraints: BoxConstraints(maxWidth: 1.sw - 100,),
+                          child: MyTextWidget(
+                            widget.productName,
+                            style: context.textTheme.labelSmall?.mr,
+                          ),
                         ),
                         10.verticalSpace,
-                        Html(
-                          shrinkWrap: true,
-                          data: widget.productDescription,
-                          style: {
-                            "body": Style(margin: Margins.all(0)),
-                            "p": Style(
-                              maxLines: 1,
-                              margin: Margins.all(0),
-                            ),
-                          },
+                        Container(
+                          constraints: BoxConstraints(maxWidth: 1.sw - 100,),
+                          child: Html(
+                            shrinkWrap: true,
+                            data: widget.productDescription,
+                            style: {
+                              "body": Style(margin: Margins.all(0)),
+                              "p": Style(
+                                maxLines: 1,
+                                margin: Margins.all(0),
+                              ),
+                            },
+                          ),
                         ),
                       ],
                     ),

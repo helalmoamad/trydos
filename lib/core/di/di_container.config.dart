@@ -279,8 +279,14 @@ Future<_i174.GetIt> $initGetIt(
       () => _i574.VerifyOtpSignInUseCase(gh<_i742.AuthRepository>()));
   gh.factory<_i282.VerifyOtpSignUpUseCase>(
       () => _i282.VerifyOtpSignUpUseCase(gh<_i742.AuthRepository>()));
+  gh.factory<_i68.AddCommentUseCase>(
+      () => _i68.AddCommentUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i1035.AddItemToCartUseCase>(
       () => _i1035.AddItemToCartUseCase(gh<_i0.HomeRepository>()));
+  gh.factory<_i33.AddLikeToProductUsecase>(
+      () => _i33.AddLikeToProductUsecase(gh<_i0.HomeRepository>()));
+  gh.factory<_i878.DeleteLikeOfProductUsecase>(
+      () => _i878.DeleteLikeOfProductUsecase(gh<_i0.HomeRepository>()));
   gh.factory<_i939.GetCommentForProductUseCase>(
       () => _i939.GetCommentForProductUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i318.GetAllowedCountryUseCase>(
@@ -289,6 +295,8 @@ Future<_i174.GetIt> $initGetIt(
       () => _i307.GetCartItemUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i762.GetCurrencyForCountryUseCase>(
       () => _i762.GetCurrencyForCountryUseCase(gh<_i0.HomeRepository>()));
+  gh.factory<_i149.GetFullProductDetailsUseCase>(
+      () => _i149.GetFullProductDetailsUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i518.GetHomeBoutiqesUseCase>(
       () => _i518.GetHomeBoutiqesUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i158.GetMainCategoriesUseCase>(
@@ -313,22 +321,14 @@ Future<_i174.GetIt> $initGetIt(
           gh<_i0.HomeRepository>()));
   gh.factory<_i802.UpdateItemInCartUseCase>(
       () => _i802.UpdateItemInCartUseCase(gh<_i0.HomeRepository>()));
-  gh.factory<_i33.AddLikeToProductUsecase>(
-      () => _i33.AddLikeToProductUsecase(gh<_i0.HomeRepository>()));
-  gh.factory<_i878.DeleteLikeOfProductUsecase>(
-      () => _i878.DeleteLikeOfProductUsecase(gh<_i0.HomeRepository>()));
-  gh.factory<_i149.GetFullProductDetailsUseCase>(
-      () => _i149.GetFullProductDetailsUseCase(gh<_i0.HomeRepository>()));
-  gh.factory<_i68.AddCommentUseCase>(
-      () => _i68.AddCommentUseCase(gh<_i0.HomeRepository>()));
-  gh.factory<_i318.GetOldCartItemUseCase>(
-      () => _i318.GetOldCartItemUseCase(gh<_i0.HomeRepository>()));
-  gh.factory<_i922.GetAndAddCountViewOfProductUsecase>(
-      () => _i922.GetAndAddCountViewOfProductUsecase(gh<_i0.HomeRepository>()));
-  gh.factory<_i104.HideItemsInOldCartUseCase>(
-      () => _i104.HideItemsInOldCartUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i190.ConvertItemFromOldcartToCartUsecase>(() =>
       _i190.ConvertItemFromOldcartToCartUsecase(gh<_i0.HomeRepository>()));
+  gh.factory<_i922.GetAndAddCountViewOfProductUsecase>(
+      () => _i922.GetAndAddCountViewOfProductUsecase(gh<_i0.HomeRepository>()));
+  gh.factory<_i318.GetOldCartItemUseCase>(
+      () => _i318.GetOldCartItemUseCase(gh<_i0.HomeRepository>()));
+  gh.factory<_i104.HideItemsInOldCartUseCase>(
+      () => _i104.HideItemsInOldCartUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i749.GetProductsListInCartUseCase>(
       () => _i749.GetProductsListInCartUseCase(gh<_i0.HomeRepository>()));
   gh.lazySingleton<_i702.CommonUseRepository>(() =>
@@ -465,7 +465,6 @@ Future<_i174.GetIt> $initGetIt(
         gh<_i730.UpdateChatUserNameUseCase>(),
         gh<_i589.CreateUserUseCase>(),
         gh<_i919.LoginToChatUseCase>(),
-        gh<_i832.LoginToMarketUseCase>(),
         gh<_i656.LoginToStoriesUseCase>(),
         gh<_i142.StoreFcmUseCase>(),
         gh<_i58.UpdateNameUseCase>(),
