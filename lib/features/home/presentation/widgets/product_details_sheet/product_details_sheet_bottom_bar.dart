@@ -692,7 +692,18 @@ class _ProductDetailsSheetBottomBarState
                                                           productId: widget
                                                               .productId));
                                                   widget.clickOnFavorite;
-                                                });
+                                                  //////////////////////////////
+                                                  FirebaseAnalyticsService
+                                                      .logEventForSession(
+                                                    eventName:
+                                                        AnalyticsEventsConst
+                                                            .buttonClicked,
+                                                    executedEventName:
+                                                        AnalyticsExecutedEventNameConst
+                                                            .likeProductButton,
+                                                  );
+                                                },
+                                              );
                                       },
                                     ),
                                     state

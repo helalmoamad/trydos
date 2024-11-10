@@ -332,6 +332,15 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                     productId: widget
                                                         .productItem.id
                                                         .toString()));
+                                            //////////////////////////////
+                                            FirebaseAnalyticsService
+                                                .logEventForSession(
+                                              eventName: AnalyticsEventsConst
+                                                  .buttonClicked,
+                                              executedEventName:
+                                                  AnalyticsExecutedEventNameConst
+                                                      .slideChooseColorEvent,
+                                            );
                                           },
                                           itemConfig: GalleryItemConfig(
                                               width: 70.w,
@@ -654,12 +663,6 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                         },
                         clickOnFavorite: () {
                           currentActiveTab.value = -1;
-                          //////////////////////////////
-                          FirebaseAnalyticsService.logEventForSession(
-                            eventName: AnalyticsEventsConst.buttonClicked,
-                            executedEventName: AnalyticsExecutedEventNameConst
-                                .likeProductButton,
-                          );
                         },
                         clickOnMoreOptions: () {
                           panelController.open();

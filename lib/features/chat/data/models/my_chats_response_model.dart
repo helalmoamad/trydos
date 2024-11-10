@@ -413,7 +413,7 @@ class ShareProductContent {
   factory ShareProductContent.fromJson(Map<String, dynamic> json) =>
       ShareProductContent(
         productId: json["product_id"].toString(),
-        productSlug: json["product_slug"],
+        productSlug: json["product_slug"].toString(),
         productDescription: json["product_description"],
         productImageUrl: json["product_image_url"],
         productName: json["product_name"],

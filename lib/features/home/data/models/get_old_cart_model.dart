@@ -109,7 +109,7 @@ class OriginalData {
   final double? subTotal;
   final int? totalTax;
   final double? totalDiscountOnProduct;
-  final int? totalShippingCost;
+  final double? totalShippingCost;
   final int? couponDiscount;
   final int? codCost;
   final double? limitFree;
@@ -144,7 +144,7 @@ class OriginalData {
     double? subTotal,
     int? totalTax,
     double? totalDiscountOnProduct,
-    int? totalShippingCost,
+    double? totalShippingCost,
     int? couponDiscount,
     int? codCost,
     double? limitFree,
@@ -182,7 +182,8 @@ class OriginalData {
         subTotal: json["sub_total"]?.toDouble(),
         totalTax: json["total_tax"],
         totalDiscountOnProduct: json["total_discount_on_product"]?.toDouble(),
-        totalShippingCost: json["total_shipping_cost"],
+        totalShippingCost:
+            double.tryParse(json["total_shipping_cost"].toString()),
         couponDiscount: json["coupon_discount"],
         codCost: json["cod_cost"],
         limitFree: json["limitFree"]?.toDouble(),

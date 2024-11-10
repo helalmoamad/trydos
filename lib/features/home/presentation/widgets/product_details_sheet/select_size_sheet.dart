@@ -16,6 +16,9 @@ import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:tuple/tuple.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../../core/utils/theme_state.dart';
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 
 class SelectSizeContent extends StatefulWidget {
   const SelectSizeContent({
@@ -275,6 +278,14 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                                       widget.sizeIsNotAvailableNotifier.value =
                                           null;
                                     }
+                                    //////////////////////////////
+                                    FirebaseAnalyticsService.logEventForSession(
+                                      eventName:
+                                          AnalyticsEventsConst.buttonClicked,
+                                      executedEventName:
+                                          AnalyticsExecutedEventNameConst
+                                              .slideChooseSizeEvent,
+                                    );
                                   },
                                   viewportFraction: 0.22)),
                         ],

@@ -97,4 +97,6 @@ class AnalyticsExecutedEventNameConst {
   static const decreaseQtyButton = 'decrease_qty_button';
   static const addProductToBagButton = 'add_product_to_bag_button';
   static const addedProductToBagEvent = 'added_product_to_bag_event';
+  static const slideChooseSizeEvent = 'slide_choose_size_event';
+  static const slideChooseColorEvent = 'slide_choose_color_event';
 }
