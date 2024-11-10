@@ -254,9 +254,9 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
   }
 
   Future<void> _onGetStoryEvent(GetStoryEvent, Emitter<StoryState> emit) async {
-    if (apisMustNotToRequest.contains('GetStoryEvent')) {
+    /*if (apisMustNotToRequest.contains('GetStoryEvent')) {
       return;
-    }
+    }*/
     emit(state.copyWith(
         getStoriesStatus: state.getStoriesStatus == GetStoriesStatus.success
             ? state.getStoriesStatus

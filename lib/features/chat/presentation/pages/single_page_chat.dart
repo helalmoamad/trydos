@@ -1654,7 +1654,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
           return SharedProductMessage(
             channelId: message.channelId!,
             imageUrl: addSuitableWidthAndHeightToImage(
-      imageUrl: message.shareProductContent!.productImageUrl,
+      imageUrl: message.shareProductContent!.productImageUrl!,
       width: 1.sw - 100,
       // the width of the image in the ui
       height: 464,
@@ -1663,8 +1663,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
       ordinalHeight: 464,
       //double.tryParse(image.originalHeight.toString())
       ),
-            productName: message.shareProductContent!.productName,
-            productDescription: message.shareProductContent!.productDescription,
+            productName: message.shareProductContent!.productName ?? "",
+            productDescription:
+                message.shareProductContent!.productDescription ?? "",
             imageFile: message.file,
             receivedAt: messageStatus?.receivedAt,
             createAt: message.createdAt,

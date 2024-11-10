@@ -415,8 +415,9 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                     resizeItems.value = (details.globalPosition.dx -
                             40 -
                             (9 -
-                                    widget.boutique
-                                        .childCategoriesForProductIds!.length) /
+                                    widget.boutique.mainCategoriesForProductIds!
+                                        .length) /
+                                //childCategoriesForProductIds!.length) /
                                 2 *
                                 (40.w - 5.w)) ~/
                         35.w;
@@ -432,8 +433,11 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                     resizeItems.value = (details.globalPosition.dx -
                             40 -
                             (9 -
-                                    widget.boutique
-                                        .childCategoriesForProductIds!.length) /
+                                    widget
+                                        .boutique
+                                        .mainCategoriesForProductIds!
+                                        //.childCategoriesForProductIds!
+                                        .length) /
                                 2 *
                                 (40.w - 5.w)) ~/
                         35.w;
@@ -458,13 +462,15 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                       9,
                                       widget
                                           .boutique
-                                          .childCategoriesForProductIds!
+                                          .mainCategoriesForProductIds!
+                                          //  .childCategoriesForProductIds!
                                           .length),
                                   (index) => AnimatedPositioned(
                                         left: (9 -
                                                     widget
                                                         .boutique
-                                                        .childCategoriesForProductIds!
+                                                        .mainCategoriesForProductIds!
+                                                        //  .childCategoriesForProductIds!
                                                         .length) /
                                                 2 *
                                                 (40.w - 5.w) +
@@ -495,7 +501,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                                       widget.boutique.slug!,
                                                   category: widget
                                                       .boutique
-                                                      .childCategoriesForProductIds![
+                                                      .mainCategoriesForProductIds![
                                                           index]
                                                       .categorySlug,
                                                   boutiqueDescription: widget
@@ -513,21 +519,27 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                             index: index,
                                             isFocused: focused == index,
                                             imageUrl: widget
-                                                .boutique
-                                                .childCategoriesForProductIds![
-                                                    index]
-                                                .mostViewedProductThumbnail!
-                                                .filePath!,
+                                                    .boutique
+                                                    .mainCategoriesForProductIds![
+                                                        //  .childCategoriesForProductIds![
+                                                        index]
+                                                    .mostViewedProductThumbnail!
+                                                    .filePath ??
+                                                "",
                                             name: widget
-                                                .boutique
-                                                .childCategoriesForProductIds![
-                                                    index]
-                                                .categoryName!,
-                                            countProducts: widget
-                                                .boutique
-                                                .childCategoriesForProductIds![
-                                                    index]
-                                                .countProducts
+                                                    .boutique
+                                                    .mainCategoriesForProductIds![
+                                                        //.childCategoriesForProductIds![
+                                                        index]
+                                                    .categoryName ??
+                                                "",
+                                            countProducts: (widget
+                                                        .boutique
+                                                        .mainCategoriesForProductIds![
+                                                            //.childCategoriesForProductIds![
+                                                            index]
+                                                        .countProducts ??
+                                                    "")
                                                 .toString(),
                                           ),
                                         ),

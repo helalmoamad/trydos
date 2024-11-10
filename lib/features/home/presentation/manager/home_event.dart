@@ -22,7 +22,8 @@ class GetStartingSettingsEvent extends HomeEvent {
 }
 
 class GetMainCategoriesEvent extends HomeEvent {
-  const GetMainCategoriesEvent({this.context});
+  final bool getWithPrefech;
+  const GetMainCategoriesEvent({this.context, this.getWithPrefech = true});
 
   final BuildContext? context;
   @override
@@ -118,6 +119,16 @@ class GetCommentForProductEvent extends HomeEvent {
   @override
   // TODO: implement props
   List<Object?> get props => [productId];
+}
+
+class GetProductsListInCartEvent extends HomeEvent {
+  const GetProductsListInCartEvent(
+      //  {this.getWithPagination = false}
+      );
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
 }
 
 class GetHomeBoutiqesEvent extends HomeEvent {

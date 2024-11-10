@@ -379,11 +379,12 @@ class Category {
 class SubCategory {
   final int? id;
   final String? slug;
+  final bool? isSubSubCategory;
   final String? name;
   Banner? mostViewedProductThumbnail;
   final int? numAvailableProduct;
   final Banner? flatPhotoPath;
-  final List<Category>? childes;
+  final List<SubCategory>? childes;
   SubCategory({
     this.id,
     this.slug,
@@ -391,6 +392,7 @@ class SubCategory {
     this.name,
     this.numAvailableProduct,
     this.flatPhotoPath,
+    this.isSubSubCategory,
     this.childes,
   });
 
@@ -398,16 +400,18 @@ class SubCategory {
     int? id,
     String? slug,
     String? name,
+    bool? isSubSubCategory,
     int? numAvailableProduct,
     Banner? flatPhotoPath,
     Banner? mostViewedProductThumbnail,
-    List<Category>? childes,
+    List<SubCategory>? childes,
   }) =>
       SubCategory(
         id: id ?? this.id,
         slug: slug ?? this.slug,
         mostViewedProductThumbnail:
             mostViewedProductThumbnail ?? this.mostViewedProductThumbnail,
+        isSubSubCategory: isSubSubCategory ?? this.isSubSubCategory,
         name: name ?? this.name,
         numAvailableProduct: numAvailableProduct ?? this.numAvailableProduct,
         flatPhotoPath: flatPhotoPath ?? this.flatPhotoPath,
@@ -428,8 +432,8 @@ class SubCategory {
                 : Banner.fromJson(json["most_viewed_product_thumbnail"]),
         childes: json["childes"] == null
             ? []
-            : List<Category>.from(
-                json["childes"]!.map((x) => Category.fromJson(x))),
+            : List<SubCategory>.from(
+                json["childes"]!.map((x) => SubCategory.fromJson(x))),
       );
   Map<String, dynamic> toJson() => {
         "id": id,

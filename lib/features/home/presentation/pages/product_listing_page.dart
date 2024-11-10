@@ -1987,8 +1987,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                 ?.length ??
                                                 0) >
                                                 0) {
-                                              appliedFiltersByUser
-                                                  ?.filters?.colors?[0];
+                                              currentAppliedFilterSllug =
+                                                  appliedFiltersByUser
+                                                      ?.filters?.colors?[0];
                                             } else if (appliedFiltersByUser
                                                 ?.filters
                                                 ?.prices

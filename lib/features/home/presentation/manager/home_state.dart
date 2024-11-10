@@ -62,6 +62,8 @@ enum GetStoriesForProductStatus { init, loading, success, failure }
 
 enum SendRequestToGeminiStatus { init, loading, success, failure }
 
+enum GetListOfProductsFoundedInCartStatus { init, loading, success, failure }
+
 enum GetHomeBoutiqesStatus { init, loading, success, failure }
 
 enum HideItemInOldCartStatus { init, loading, success, failure }
@@ -143,6 +145,8 @@ class HomeState extends Equatable {
     this.prefAppliedFilterForExtendFilter,
     this.fromSearchForSearchWithGemini = false,
     this.ListitemForAddToCart,
+    this.getListOfProductsFoundedInCartStatus =
+        GetListOfProductsFoundedInCartStatus.init,
     this.getCurrencyForCountryModel,
     this.isExpandedForListingPage = false,
     this.countOfProductExpectedByFiltering,
@@ -205,6 +209,8 @@ class HomeState extends Equatable {
   final Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>?
       productStatus;
   final Map<String, List<cart.Cart>>? cartCollection;
+  final GetListOfProductsFoundedInCartStatus
+      getListOfProductsFoundedInCartStatus;
   final Map<String, List<oldCart.OldCart>>? oldcartCollection;
 
   final Map<String, bool> reRequestTheseBoutiques;
@@ -253,6 +259,7 @@ class HomeState extends Equatable {
         boutiquesForEveryMainCategoryThatDidPrefetch,
         getStartingSettingsStatus,
         currentSelectedColorForEveryProduct,
+        getListOfProductsFoundedInCartStatus,
         getCommentForProductStatus,
         productITemForCart,
         getMainCategoriesStatus,
@@ -333,6 +340,8 @@ class HomeState extends Equatable {
           convertItemFromOldcartToCartStatus,
       final UpdateItemInCartStatus? updateItemInCartStatus,
       final Map<String, String>? searchWithFilterOffset,
+      final GetListOfProductsFoundedInCartStatus?
+          getListOfProductsFoundedInCartStatus,
       final Map<String, String>? searchWithOutFilterOffset,
       final Map<String, get_filters.GetProductFiltersModel?>?
           getProductFiltersWithPrefetchModel,
@@ -449,6 +458,9 @@ class HomeState extends Equatable {
       isExpandedForListingPage:
           isExpandedForLidtingPage ?? this.isExpandedForListingPage,
       theReplyFromGemini: theReplyFromGemini ?? this.theReplyFromGemini,
+      getListOfProductsFoundedInCartStatus:
+          getListOfProductsFoundedInCartStatus ??
+              this.getListOfProductsFoundedInCartStatus,
       productContentForStatusOfOpeningProductDetailsDirectly:
           productContentForStatusOfOpeningProductDetailsDirectly ??
               this.productContentForStatusOfOpeningProductDetailsDirectly,

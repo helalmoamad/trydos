@@ -262,6 +262,10 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       ListitemForAddToCart: (json['ListitemForAddToCart'] as List<dynamic>?)
           ?.map((e) => ImageForAddToCart.fromJson(e as Map<String, dynamic>))
           .toList(),
+      getListOfProductsFoundedInCartStatus: $enumDecodeNullable(
+              _$GetListOfProductsFoundedInCartStatusEnumMap,
+              json['getListOfProductsFoundedInCartStatus']) ??
+          GetListOfProductsFoundedInCartStatus.init,
       getCurrencyForCountryModel: json['getCurrencyForCountryModel'] == null
           ? null
           : GetCurrencyForCountryModel.fromJson(
@@ -444,6 +448,9 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           k, _$GetProductDetailWithoutSimilarRelatedProductsStatusEnumMap[e]!)),
       'cartCollection': instance.cartCollection
           ?.map((k, e) => MapEntry(k, e.map((e) => e.toJson()).toList())),
+      'getListOfProductsFoundedInCartStatus':
+          _$GetListOfProductsFoundedInCartStatusEnumMap[
+              instance.getListOfProductsFoundedInCartStatus]!,
       'oldcartCollection': instance.oldcartCollection
           ?.map((k, e) => MapEntry(k, e.map((e) => e.toJson()).toList())),
       'reRequestTheseBoutiques': instance.reRequestTheseBoutiques,
@@ -627,6 +634,13 @@ const _$SendRequestToGeminiStatusEnumMap = {
   SendRequestToGeminiStatus.loading: 'loading',
   SendRequestToGeminiStatus.success: 'success',
   SendRequestToGeminiStatus.failure: 'failure',
+};
+
+const _$GetListOfProductsFoundedInCartStatusEnumMap = {
+  GetListOfProductsFoundedInCartStatus.init: 'init',
+  GetListOfProductsFoundedInCartStatus.loading: 'loading',
+  GetListOfProductsFoundedInCartStatus.success: 'success',
+  GetListOfProductsFoundedInCartStatus.failure: 'failure',
 };
 
 const _$GetCartItemsStatusEnumMap = {

@@ -15,6 +15,7 @@ import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_is_liked_of_product_model.dart';
 import 'package:trydos/features/home/data/models/get_old_cart_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
+import 'package:trydos/features/home/data/models/list_of_products_in_cart_model.dart';
 
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
@@ -287,6 +288,20 @@ class HomeRemoteDatasource {
     );
 
     return getHomeBoutiques();
+  }
+
+  Future<ListOfProductsFoundedInCartModel> getProductsListInCart() {
+    GetClient<ListOfProductsFoundedInCartModel> getProductsListInCart =
+        GetClient<ListOfProductsFoundedInCartModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<ListOfProductsFoundedInCartModel>(
+        endpoint: MarketEndPoints.getProductListInCartEP,
+        response: ResponseValue<ListOfProductsFoundedInCartModel>(
+            fromJson: (response) =>
+                ListOfProductsFoundedInCartModel.fromJson(response)),
+      ),
+    );
+    return getProductsListInCart();
   }
 
   Future<AddItemToCartModel> addItemToCart(Map<String, dynamic> params) {

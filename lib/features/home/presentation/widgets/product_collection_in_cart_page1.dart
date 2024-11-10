@@ -356,7 +356,7 @@ class productCollectionInCartPage1 extends StatelessWidget {
                                                   textDirection:
                                                       TextDirection.ltr),
                                               actions: <Widget>[
-                                                AppElevatedButton(
+                                                /*    AppElevatedButton(
                                                   onPressed: () {
                                                     GetIt.I<HomeBloc>().add(ConvertItemFromOldcartToCartEvent(
                                                         oldCartId: oldCartCollection![
@@ -375,7 +375,7 @@ class productCollectionInCartPage1 extends StatelessWidget {
                                                     Navigator.pop(context);
                                                   },
                                                   text: "Convert Item To Cart",
-                                                ),
+                                                ),*/
                                                 AppElevatedButton(
                                                   onPressed: () {
                                                     GetIt.I<HomeBloc>().add(HideItemInOldCartEvent(
