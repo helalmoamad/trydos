@@ -31,8 +31,12 @@ import 'package:trydos/features/home/presentation/pages/product_details_page.dar
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_image_widget.dart';
 import 'package:trydos/features/story/presentation/widget/try_again.dart';
 
-class productCollectionInCartPage2 extends StatelessWidget {
-  const productCollectionInCartPage2(
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
+
+class ProductCollectionInCartPage2 extends StatelessWidget {
+  const ProductCollectionInCartPage2(
       {super.key,
       required this.changeCartCollections,
       required this.visibleCollectionGroups,
@@ -106,6 +110,12 @@ class productCollectionInCartPage2 extends StatelessWidget {
                     }
 
                     changeCartCollections.value = !changeCartCollections.value;
+                    //////////////////////////////
+                    FirebaseAnalyticsService.logEventForSession(
+                      eventName: AnalyticsEventsConst.buttonClicked,
+                      executedEventName: AnalyticsExecutedEventNameConst
+                          .hideCartProductsButton,
+                    );
                   },
                   child: Container(
                       padding: EdgeInsets.symmetric(horizontal: 20),
@@ -241,6 +251,15 @@ class productCollectionInCartPage2 extends StatelessWidget {
                                 return InkWell(
                                   onDoubleTap: () {
                                     if (!isOLdCart) {
+                                      FirebaseAnalyticsService
+                                          .logEventForSession(
+                                        eventName:
+                                            AnalyticsEventsConst.buttonClicked,
+                                        executedEventName:
+                                            AnalyticsExecutedEventNameConst
+                                                .changeProductQtyButton,
+                                      );
+                                      //////////////////////////////
                                       showDialog(
                                           context: context,
                                           builder: (BuildContext context) {
@@ -303,6 +322,16 @@ class productCollectionInCartPage2 extends StatelessWidget {
                                                                   boutiqueId: cartCollection![groupCartkeys[index]]![indexes].boutique!.id.toString()));
                                                               Navigator.pop(
                                                                   context);
+                                                              //////////////////////////////
+                                                              FirebaseAnalyticsService
+                                                                  .logEventForSession(
+                                                                eventName:
+                                                                    AnalyticsEventsConst
+                                                                        .buttonClicked,
+                                                                executedEventName:
+                                                                    AnalyticsExecutedEventNameConst
+                                                                        .confirmProductQtyButton,
+                                                              );
                                                             },
                                                             text: "Yes",
                                                           ),
@@ -310,6 +339,16 @@ class productCollectionInCartPage2 extends StatelessWidget {
                                                             onPressed: () {
                                                               Navigator.pop(
                                                                   context);
+                                                              //////////////////////////////
+                                                              FirebaseAnalyticsService
+                                                                  .logEventForSession(
+                                                                eventName:
+                                                                    AnalyticsEventsConst
+                                                                        .buttonClicked,
+                                                                executedEventName:
+                                                                    AnalyticsExecutedEventNameConst
+                                                                        .dontChangeProductQtyButton,
+                                                              );
                                                             },
                                                             text: 'Not Now',
                                                           ),
@@ -324,6 +363,16 @@ class productCollectionInCartPage2 extends StatelessWidget {
                                     }
                                   },
                                   onLongPress: () {
+                                    if (!isOLdCart) {
+                                      FirebaseAnalyticsService
+                                          .logEventForSession(
+                                        eventName:
+                                            AnalyticsEventsConst.buttonClicked,
+                                        executedEventName:
+                                            AnalyticsExecutedEventNameConst
+                                                .deleteProductButton,
+                                      );
+                                    }
                                     showDialog(
                                         context: context,
                                         builder: (BuildContext context) {
@@ -369,6 +418,16 @@ class productCollectionInCartPage2 extends StatelessWidget {
                                                                 .id
                                                                 .toString()));
                                                         Navigator.pop(context);
+                                                        //////////////////////////////
+                                                        FirebaseAnalyticsService
+                                                            .logEventForSession(
+                                                          eventName:
+                                                              AnalyticsEventsConst
+                                                                  .buttonClicked,
+                                                          executedEventName:
+                                                              AnalyticsExecutedEventNameConst
+                                                                  .removeOldProductItemButton,
+                                                        );
                                                       },
                                                       text: "Hide Item",
                                                     ),
@@ -420,6 +479,16 @@ class productCollectionInCartPage2 extends StatelessWidget {
                                                                     .toString()));
                                                             Navigator.pop(
                                                                 context);
+                                                            //////////////////////////////
+                                                            FirebaseAnalyticsService
+                                                                .logEventForSession(
+                                                              eventName:
+                                                                  AnalyticsEventsConst
+                                                                      .buttonClicked,
+                                                              executedEventName:
+                                                                  AnalyticsExecutedEventNameConst
+                                                                      .confirmDeleteProductButton,
+                                                            );
                                                           },
                                                           text: "Yes",
                                                         ),
@@ -427,6 +496,16 @@ class productCollectionInCartPage2 extends StatelessWidget {
                                                           onPressed: () {
                                                             Navigator.pop(
                                                                 context);
+                                                                //////////////////////////////
+                                                      FirebaseAnalyticsService
+                                                          .logEventForSession(
+                                                        eventName:
+                                                            AnalyticsEventsConst
+                                                                .buttonClicked,
+                                                        executedEventName:
+                                                            AnalyticsExecutedEventNameConst
+                                                                .dontDeleteProductButton,
+                                                      );
                                                           },
                                                           text: 'Not Now',
                                                         ),
@@ -487,6 +566,13 @@ class productCollectionInCartPage2 extends StatelessWidget {
                                                       .productId
                                                       .toString()]!,
                                         ));
+                                         //////////////////////////////
+                                FirebaseAnalyticsService.logEventForSession(
+                                  eventName: AnalyticsEventsConst.buttonClicked,
+                                  executedEventName:
+                                      AnalyticsExecutedEventNameConst
+                                          .itemInCartButton,
+                                );
                                   },
                                   child: Stack(
                                     children: [

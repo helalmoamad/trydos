@@ -18,4 +18,5 @@ class AnalyticsScreensConst {
   static const productListingFilterScreen = 'product_listing_filter_screen';
   static const productDetailsScreen = 'product_details_screen';
   static const productPhotosScreen = 'product_photos_screen';
+  static const cartScreen2 = 'cart_screen_2';
 }

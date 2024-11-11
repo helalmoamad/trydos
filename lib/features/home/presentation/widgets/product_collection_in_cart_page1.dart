@@ -31,8 +31,12 @@ import 'package:trydos/features/home/presentation/pages/product_details_page.dar
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_image_widget.dart';
 import 'package:trydos/features/story/presentation/widget/try_again.dart';
 
-class productCollectionInCartPage1 extends StatelessWidget {
-  const productCollectionInCartPage1(
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
+
+class ProductCollectionInCartPage1 extends StatelessWidget {
+  const ProductCollectionInCartPage1(
       {super.key,
       required this.changeCartCollections,
       required this.visibleCollectionGroups,
@@ -108,6 +112,12 @@ class productCollectionInCartPage1 extends StatelessWidget {
                     }
 
                     changeCartCollections.value = !changeCartCollections.value;
+                    //////////////////////////////
+                    FirebaseAnalyticsService.logEventForSession(
+                      eventName: AnalyticsEventsConst.buttonClicked,
+                      executedEventName: AnalyticsExecutedEventNameConst
+                          .hideCartProductsButton,
+                    );
                   },
                   child: Container(
                       width: 1.sw - 20,
@@ -268,6 +278,14 @@ class productCollectionInCartPage1 extends StatelessWidget {
                           ? InkWell(
                               onDoubleTap: () {
                                 if (!isOldCart) {
+                                  FirebaseAnalyticsService.logEventForSession(
+                                    eventName:
+                                        AnalyticsEventsConst.buttonClicked,
+                                    executedEventName:
+                                        AnalyticsExecutedEventNameConst
+                                            .changeProductQtyButton,
+                                  );
+                                  //////////////////////////////
                                   showDialog(
                                       context: context,
                                       builder: (BuildContext context) {
@@ -325,6 +343,16 @@ class productCollectionInCartPage1 extends StatelessWidget {
                                                               boutiqueId: cartCollection![groupCartkeys[index]]![indexes].boutique!.id.toString()));
                                                           Navigator.pop(
                                                               context);
+                                                          //////////////////////////////
+                                                          FirebaseAnalyticsService
+                                                              .logEventForSession(
+                                                            eventName:
+                                                                AnalyticsEventsConst
+                                                                    .buttonClicked,
+                                                            executedEventName:
+                                                                AnalyticsExecutedEventNameConst
+                                                                    .confirmProductQtyButton,
+                                                          );
                                                         },
                                                         text: "Yes",
                                                       ),
@@ -332,6 +360,16 @@ class productCollectionInCartPage1 extends StatelessWidget {
                                                         onPressed: () {
                                                           Navigator.pop(
                                                               context);
+                                                          //////////////////////////////
+                                                          FirebaseAnalyticsService
+                                                              .logEventForSession(
+                                                            eventName:
+                                                                AnalyticsEventsConst
+                                                                    .buttonClicked,
+                                                            executedEventName:
+                                                                AnalyticsExecutedEventNameConst
+                                                                    .dontChangeProductQtyButton,
+                                                          );
                                                         },
                                                         text: 'Not Now',
                                                       ),
@@ -346,118 +384,158 @@ class productCollectionInCartPage1 extends StatelessWidget {
                                 }
                               },
                               onLongPress: () {
+                                if (!isOldCart) {
+                                  FirebaseAnalyticsService.logEventForSession(
+                                    eventName:
+                                        AnalyticsEventsConst.buttonClicked,
+                                    executedEventName:
+                                        AnalyticsExecutedEventNameConst
+                                            .deleteProductButton,
+                                  );
+                                }
                                 showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return isOldCart
-                                          ? AlertDialog(
-                                              title: MyTextWidget(
-                                                  "What do you Want ?",
-                                                  textDirection:
-                                                      TextDirection.ltr),
-                                              actions: <Widget>[
-                                                AppElevatedButton(
-                                                  onPressed: () {
-                                                    GetIt.I<HomeBloc>().add(ConvertItemFromOldcartToCartEvent(
-                                                        oldCartId: oldCartCollection![
-                                                                        groupCartkeys[
-                                                                            index]]![
-                                                                    indexes]
-                                                                .id ??
-                                                            0,
-                                                        boutiqueId: oldCartCollection![
-                                                                    groupCartkeys[
-                                                                        index]]![
-                                                                indexes]
-                                                            .boutique!
-                                                            .id
-                                                            .toString()));
-                                                    Navigator.pop(context);
-                                                  },
-                                                  text: "Convert Item To Cart",
-                                                ),
-                                                AppElevatedButton(
-                                                  onPressed: () {
-                                                    GetIt.I<HomeBloc>().add(HideItemInOldCartEvent(
-                                                        hideAll: false,
-                                                        oldCartId: oldCartCollection![
-                                                                        groupCartkeys[
-                                                                            index]]![
-                                                                    indexes]
-                                                                .id ??
-                                                            0,
-                                                        boutiqueId: oldCartCollection![
-                                                                    groupCartkeys[
-                                                                        index]]![
-                                                                indexes]
-                                                            .boutique!
-                                                            .id
-                                                            .toString()));
-                                                    Navigator.pop(context);
-                                                  },
-                                                  text: "Hide Item",
-                                                ),
-                                                AppElevatedButton(
-                                                  onPressed: () {
-                                                    Navigator.pop(context);
-                                                  },
-                                                  text: 'excite',
-                                                ),
-                                              ],
-                                            )
-                                          : AlertDialog(
-                                              title: MyTextWidget(
-                                                  "Delete Item From Cart",
-                                                  textDirection:
-                                                      TextDirection.ltr),
-                                              actions: <Widget>[
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    AppElevatedButton(
-                                                      onPressed: () {
-                                                        GetIt.I<HomeBloc>().add(RemoveItemFormCartEvent(
-                                                            countOfPieces:
-                                                                cartCollection![groupCartkeys[index]]![indexes]
-                                                                    .countOfPieces,
-                                                            image: cartCollection![groupCartkeys[index]]![indexes]
-                                                                    .image ??
-                                                                '',
-                                                            currentSize: !cartCollection![groupCartkeys[index]]![indexes]
-                                                                    .variations
-                                                                    .isNullOrEmpty
-                                                                ? cartCollection![groupCartkeys[index]]![indexes].variations![0].size ??
-                                                                    ""
-                                                                : "",
-                                                            ColoName: !cartCollection![groupCartkeys[index]]![indexes]
-                                                                    .variations
-                                                                    .isNullOrEmpty
-                                                                ? cartCollection![groupCartkeys[index]]![indexes].variations![0].color ??
-                                                                    ""
-                                                                : "",
-                                                            productId:
-                                                                cartCollection![groupCartkeys[index]]![indexes]
-                                                                    .productId
-                                                                    .toString(),
-                                                            itemId: cartCollection![groupCartkeys[index]]![indexes].id.toString(),
-                                                            boutiqueId: cartCollection![groupCartkeys[index]]![indexes].boutique!.id.toString()));
-                                                        Navigator.pop(context);
-                                                      },
-                                                      text: "Yes",
-                                                    ),
-                                                    AppElevatedButton(
-                                                      onPressed: () {
-                                                        Navigator.pop(context);
-                                                      },
-                                                      text: 'Not Now',
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
-                                            );
-                                    });
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return isOldCart
+                                        ? AlertDialog(
+                                            title: MyTextWidget(
+                                                "What do you Want ?",
+                                                textDirection:
+                                                    TextDirection.ltr),
+                                            actions: <Widget>[
+                                              AppElevatedButton(
+                                                onPressed: () {
+                                                  GetIt.I<HomeBloc>().add(ConvertItemFromOldcartToCartEvent(
+                                                      oldCartId: oldCartCollection![
+                                                                      groupCartkeys[
+                                                                          index]]![
+                                                                  indexes]
+                                                              .id ??
+                                                          0,
+                                                      boutiqueId: oldCartCollection![
+                                                                  groupCartkeys[
+                                                                      index]]![
+                                                              indexes]
+                                                          .boutique!
+                                                          .id
+                                                          .toString()));
+                                                  Navigator.pop(context);
+                                                },
+                                                text: "Convert Item To Cart",
+                                              ),
+                                              AppElevatedButton(
+                                                onPressed: () {
+                                                  GetIt.I<HomeBloc>().add(HideItemInOldCartEvent(
+                                                      hideAll: false,
+                                                      oldCartId: oldCartCollection![
+                                                                      groupCartkeys[
+                                                                          index]]![
+                                                                  indexes]
+                                                              .id ??
+                                                          0,
+                                                      boutiqueId: oldCartCollection![
+                                                                  groupCartkeys[
+                                                                      index]]![
+                                                              indexes]
+                                                          .boutique!
+                                                          .id
+                                                          .toString()));
+                                                  Navigator.pop(context);
+                                                  //////////////////////////////
+                                                  FirebaseAnalyticsService
+                                                      .logEventForSession(
+                                                    eventName:
+                                                        AnalyticsEventsConst
+                                                            .buttonClicked,
+                                                    executedEventName:
+                                                        AnalyticsExecutedEventNameConst
+                                                            .removeOldProductItemButton,
+                                                  );
+                                                },
+                                                text: "Hide Item",
+                                              ),
+                                              AppElevatedButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                text: 'excite',
+                                              ),
+                                            ],
+                                          )
+                                        : AlertDialog(
+                                            title: MyTextWidget(
+                                                "Delete Item From Cart",
+                                                textDirection:
+                                                    TextDirection.ltr),
+                                            actions: <Widget>[
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  AppElevatedButton(
+                                                    onPressed: () {
+                                                      GetIt.I<HomeBloc>().add(RemoveItemFormCartEvent(
+                                                          countOfPieces:
+                                                              cartCollection![groupCartkeys[index]]![indexes]
+                                                                  .countOfPieces,
+                                                          image: cartCollection![groupCartkeys[index]]![indexes]
+                                                                  .image ??
+                                                              '',
+                                                          currentSize: !cartCollection![groupCartkeys[index]]![indexes]
+                                                                  .variations
+                                                                  .isNullOrEmpty
+                                                              ? cartCollection![groupCartkeys[index]]![indexes].variations![0].size ??
+                                                                  ""
+                                                              : "",
+                                                          ColoName: !cartCollection![groupCartkeys[index]]![indexes]
+                                                                  .variations
+                                                                  .isNullOrEmpty
+                                                              ? cartCollection![groupCartkeys[index]]![indexes].variations![0].color ??
+                                                                  ""
+                                                              : "",
+                                                          productId:
+                                                              cartCollection![groupCartkeys[index]]![indexes]
+                                                                  .productId
+                                                                  .toString(),
+                                                          itemId: cartCollection![groupCartkeys[index]]![indexes].id.toString(),
+                                                          boutiqueId: cartCollection![groupCartkeys[index]]![indexes].boutique!.id.toString()));
+                                                      Navigator.pop(context);
+                                                      //////////////////////////////
+                                                      FirebaseAnalyticsService
+                                                          .logEventForSession(
+                                                        eventName:
+                                                            AnalyticsEventsConst
+                                                                .buttonClicked,
+                                                        executedEventName:
+                                                            AnalyticsExecutedEventNameConst
+                                                                .confirmDeleteProductButton,
+                                                      );
+                                                    },
+                                                    text: "Yes",
+                                                  ),
+                                                  AppElevatedButton(
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                      //////////////////////////////
+                                                      FirebaseAnalyticsService
+                                                          .logEventForSession(
+                                                        eventName:
+                                                            AnalyticsEventsConst
+                                                                .buttonClicked,
+                                                        executedEventName:
+                                                            AnalyticsExecutedEventNameConst
+                                                                .dontDeleteProductButton,
+                                                      );
+                                                    },
+                                                    text: 'Not Now',
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          );
+                                  },
+                                );
                               },
                               onTap: () {
                                 print(state.productITemForCart?.keys.toList());
@@ -519,6 +597,13 @@ class productCollectionInCartPage1 extends StatelessWidget {
                                                   .productId
                                                   .toString()]!,
                                     ));
+                                //////////////////////////////
+                                FirebaseAnalyticsService.logEventForSession(
+                                  eventName: AnalyticsEventsConst.buttonClicked,
+                                  executedEventName:
+                                      AnalyticsExecutedEventNameConst
+                                          .itemInCartButton,
+                                );
                               },
                               child: Container(
                                 margin: EdgeInsets.only(

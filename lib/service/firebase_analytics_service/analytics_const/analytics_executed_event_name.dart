@@ -99,4 +99,18 @@ class AnalyticsExecutedEventNameConst {
   static const addedProductToBagEvent = 'added_product_to_bag_event';
   static const slideChooseSizeEvent = 'slide_choose_size_event';
   static const slideChooseColorEvent = 'slide_choose_color_event';
+  static const notifyMeButton = 'notify_me_button';
+  //////////////////////
+  static const deleteProductButton = 'delete_product_button';
+  static const confirmDeleteProductButton = 'confirm_delete_product_button';
+  static const dontDeleteProductButton = 'dont_delete_product_button';
+  static const changeProductQtyButton = 'change_product_qty_button';
+  static const confirmProductQtyButton = 'confirm_product_qty_button';
+  static const dontChangeProductQtyButton = 'dont_change_product_qty_button';
+  static const removeOldProductsButton = 'remove_old_products_button';
+  static const removeOldProductItemButton = 'remove_old_product_item_button';
+  static const hideCartProductsButton = 'hide_cart_products_button';
+  static const appbarBackiconButton = 'appbar_backicon_button';
+  static const itemInCartButton = 'item_in_cart_button';
+  static const countItemIconButton = 'count_item_icon_button';
 }

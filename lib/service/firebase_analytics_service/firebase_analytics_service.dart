@@ -50,7 +50,7 @@ class FirebaseAnalyticsService {
         parameters: {
           'our_user_id': GetIt.I<PrefsRepository>().myMarketId ?? 'empty',
           'our_session_id': GetIt.I<PrefsRepository>().sessionId.toString(),
-          'executed_event_name': isForApi ? 'null' : executedEventName,
+          'executed_event_name': executedEventName,
           'time_stamp': DateTime.now()
               .toUtc()
               .add(

@@ -30,6 +30,8 @@ import 'package:trydos/features/home/presentation/widgets/product_collection_in_
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_image_widget.dart';
 import 'package:trydos/features/story/presentation/widget/try_again.dart';
 
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 
@@ -74,6 +76,15 @@ class _CartPageState extends State<CartPage> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: true,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) {
+          //////////////////////////////
+          FirebaseAnalyticsService.logEventForSession(
+            eventName: AnalyticsEventsConst.buttonClicked,
+            executedEventName: AnalyticsExecutedEventNameConst.backAppButton,
+          );
+        }
+      },
       child: Directionality(
         textDirection: TextDirection.ltr,
         child: Scaffold(
@@ -114,10 +125,14 @@ class _CartPageState extends State<CartPage> {
                     (state.getCartShippingItemsModel == null)) {
                   return Padding(
                     padding: EdgeInsets.only(top: 100),
-                    child: Center(child: TryAgainWidget(tryAgain: () {
-                      BlocProvider.of<HomeBloc>(context)
-                          .add(GetCartItemEvent());
-                    })),
+                    child: Center(
+                      child: TryAgainWidget(
+                        tryAgain: () {
+                          BlocProvider.of<HomeBloc>(context)
+                              .add(GetCartItemEvent());
+                        },
+                      ),
+                    ),
                   );
                 }
 
@@ -193,6 +208,15 @@ class _CartPageState extends State<CartPage> {
                                               homeBloc.add(
                                                   ResetAllSelectedAppliedFilterEvent());
                                             }
+                                            //////////////////////////////
+                                            FirebaseAnalyticsService
+                                                .logEventForSession(
+                                              eventName: AnalyticsEventsConst
+                                                  .buttonClicked,
+                                              executedEventName:
+                                                  AnalyticsExecutedEventNameConst
+                                                      .appbarBackiconButton,
+                                            );
                                           },
                                           child: Container(
                                             width: 40,
@@ -234,16 +258,28 @@ class _CartPageState extends State<CartPage> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       InkWell(
-                                          onTap: () {
-                                            HelperFunctions.slidingNavigation(
-                                                context,
-                                                CartPage2(
-                                                  getCartShippingItemsModel: state
-                                                      .getCartShippingItemsModel!,
-                                                ));
-                                          },
-                                          child: SvgPicture.asset(
-                                              AppAssets.countItemSvg)),
+                                        onTap: () {
+                                          HelperFunctions.slidingNavigation(
+                                            context,
+                                            CartPage2(
+                                              getCartShippingItemsModel: state
+                                                  .getCartShippingItemsModel!,
+                                            ),
+                                          );
+                                          //////////////////////////////
+                                          FirebaseAnalyticsService
+                                              .logEventForSession(
+                                            eventName: AnalyticsEventsConst
+                                                .buttonClicked,
+                                            executedEventName:
+                                                AnalyticsExecutedEventNameConst
+                                                    .countItemIconButton,
+                                          );
+                                        },
+                                        child: SvgPicture.asset(
+                                          AppAssets.countItemSvg,
+                                        ),
+                                      ),
                                       Text(" ${state.cartCollection!.length} ",
                                           style: context
                                               .textTheme.bodyMedium?.mr
@@ -307,7 +343,7 @@ class _CartPageState extends State<CartPage> {
                                       ),
                                     )
                                   } else ...{
-                                    productCollectionInCartPage1(
+                                    ProductCollectionInCartPage1(
                                       getOldCartItemsModel:
                                           state.getOldCartModel,
                                       isOldCart: false,
@@ -358,6 +394,16 @@ class _CartPageState extends State<CartPage> {
                                                             HideItemInOldCartEvent(
                                                           hideAll: true,
                                                         ));
+                                                        //////////////////////////////
+                                                        FirebaseAnalyticsService
+                                                            .logEventForSession(
+                                                          eventName:
+                                                              AnalyticsEventsConst
+                                                                  .buttonClicked,
+                                                          executedEventName:
+                                                              AnalyticsExecutedEventNameConst
+                                                                  .removeOldProductsButton,
+                                                        );
                                                       },
                                                       child: MyTextWidget(
                                                         "Hide All",
@@ -369,7 +415,7 @@ class _CartPageState extends State<CartPage> {
                                               ))
                                           : SizedBox.shrink()
                                       : SizedBox.shrink(),
-                                  productCollectionInCartPage1(
+                                  ProductCollectionInCartPage1(
                                     getOldCartItemsModel: state.getOldCartModel,
                                     isOldCart: true,
                                     oldCartCollection: state.oldcartCollection,

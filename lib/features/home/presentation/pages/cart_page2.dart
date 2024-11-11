@@ -26,13 +26,30 @@ import 'package:trydos/features/home/presentation/widgets/product_details_body/p
 import 'package:trydos/features/home/presentation/widgets/product_listing/my_gallery3d_widget.dart';
 import 'package:trydos/features/story/presentation/widget/try_again.dart';
 
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
+import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../service/language_service.dart';
 
-class CartPage2 extends StatelessWidget {
+class CartPage2 extends StatefulWidget {
   final GetCartShippingItemsModel getCartShippingItemsModel;
 
   const CartPage2({Key? key, required this.getCartShippingItemsModel})
       : super(key: key);
+
+  @override
+  State<CartPage2> createState() => _CartPage2State();
+}
+
+class _CartPage2State extends State<CartPage2> {
+  @override
+  void didChangeDependencies() {
+    FirebaseAnalyticsService.logScreen(
+      screen: AnalyticsScreensConst.cartScreen2,
+    );
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -142,6 +159,15 @@ class CartPage2 extends StatelessWidget {
                                     InkWell(
                                       onTap: () {
                                         Navigator.pop(context);
+                                        //////////////////////////////
+                                        FirebaseAnalyticsService
+                                            .logEventForSession(
+                                          eventName: AnalyticsEventsConst
+                                              .buttonClicked,
+                                          executedEventName:
+                                              AnalyticsExecutedEventNameConst
+                                                  .appbarBackiconButton,
+                                        );
                                       },
                                       child: SvgPicture.asset(
                                         AppAssets.backIconArrowSvg,
@@ -239,7 +265,7 @@ class CartPage2 extends StatelessWidget {
                                 ),
                               )
                             } else ...{
-                              productCollectionInCartPage2(
+                              ProductCollectionInCartPage2(
                                 cartCollection: state.cartCollection,
                                 changeCartCollections: changeCartCollections,
                                 oldcartCollection: state.oldcartCollection,
@@ -281,6 +307,16 @@ class CartPage2 extends StatelessWidget {
                                                       HideItemInOldCartEvent(
                                                     hideAll: true,
                                                   ));
+                                                  //////////////////////////////
+                                                  FirebaseAnalyticsService
+                                                      .logEventForSession(
+                                                    eventName:
+                                                        AnalyticsEventsConst
+                                                            .buttonClicked,
+                                                    executedEventName:
+                                                        AnalyticsExecutedEventNameConst
+                                                            .removeOldProductsButton,
+                                                  );
                                                 },
                                                 child: MyTextWidget(
                                                   "Hide All",
@@ -292,7 +328,7 @@ class CartPage2 extends StatelessWidget {
                                         ))
                                     : SizedBox.shrink()
                                 : SizedBox.shrink(),
-                            productCollectionInCartPage2(
+                            ProductCollectionInCartPage2(
                               cartCollection: state.cartCollection,
                               changeCartCollections: changeCartCollections,
                               oldcartCollection: state.oldcartCollection,
