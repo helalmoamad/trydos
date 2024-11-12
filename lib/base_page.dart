@@ -400,19 +400,10 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 
   void onMessage() {
     FirebaseMessaging.onMessage.listen((event) {
-      print(
-          "///////////////////////////////////////////////////////////////*******************************************");
       Map<String, dynamic> remoteMessage =
           convert.jsonDecode(event.data['data']);
-      print("//////////////////////////////////////////////${event.data}");
       if (remoteMessage['type'] == 'RefuseCallEvent') {
-        print(
-            "*/1555555555555555555555555555555555555555555555555*******************************************");
-
         Map<String, dynamic> data = remoteMessage;
-        print(remoteMessage);
-        print(
-            "*7777777777777777777777777777${data}********************************************${remoteMessage["type"]}");
 
         GetIt.I<PrefsRepository>().saveRequestsData(
             null, null, null, null, null, null, null,
@@ -460,9 +451,6 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
               uId: prefsRepository.myChatId!.toString()),
         ));
       } else if (remoteMessage['type'] == 'VoiceCallEvent') {
-        print(
-            "*/133333333333333${remoteMessage}33333333333333333333333333*******************************************");
-
         print(remoteMessage);
         GetIt.I<PrefsRepository>().saveRequestsData(
             null, null, null, null, null, null, null,
@@ -491,9 +479,6 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
               uId: prefsRepository.myChatId!.toString()),
         ));
       } else if (remoteMessage['type'] == 'AnswerCallEvent') {
-        print(
-            "*/4444444444444444444${remoteMessage}44444444444444444444444444*****************************************");
-
         Map<String, dynamic> data = remoteMessage;
         GetIt.I<PrefsRepository>().saveRequestsData(
             null, null, null, null, null, null, null,
@@ -547,10 +532,6 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
             data['last_message_id'],
             DateTime.parse(data['received_at'])));
       } else {
-        print(remoteMessage);
-        print(
-            "*/****************7777777777777*****************************${remoteMessage["message"]}");
-
         Message message = Message.fromJson(remoteMessage['message']);
         String prevMessageId = remoteMessage['prev_message_id'].toString();
         chatBloc.add(AddChannelToChannels(message: message));

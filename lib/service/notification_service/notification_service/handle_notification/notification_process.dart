@@ -43,6 +43,8 @@ class NotificationProcess {
 
   Future fcmToken() async {
     myFcmToken = await FirebaseMessaging.instance.getToken();
+    print(
+        "44444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444${myFcmToken}******");
     if (myFcmToken != null) {
       GetIt.I<PrefsRepository>().addFcmToken(myFcmToken!);
     }
