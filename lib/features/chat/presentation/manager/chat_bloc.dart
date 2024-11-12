@@ -10,6 +10,7 @@ import 'package:injectable/injectable.dart';
 import 'package:mime/mime.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/common/helper/show_message.dart';
+import 'package:trydos/core/api/methods/detect_server.dart';
 import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
@@ -467,6 +468,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
         productImageUrl: event.productImageUrl,
         productName: event.productName,
         productSlug: event.productSlug,
+        productImageWidth: event.originalImageWidth,
+        productImageHeight: event.originalImageHeight
       ),
     );
     response.fold(
@@ -611,6 +614,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           if (r.data!.missedFcmToken) {
             GetIt.I<AuthBloc>().add(StoreFcmTokenEvent(
                 userId: _prefsRepository.myChatId!,
+                serverName: ServerName.chat,
                 fcmToken: NotificationProcess.myFcmToken!));
           }
           isFailedTheFirstTime.remove('GetChatsEvent');
@@ -835,6 +839,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           channelId: event.channelId,
           senderParentMessageId: event.senderParentMessageId,
           file: event.file,
+          imageWidth : event.useCloudinaryToUpload ? r.width?.toDouble() : null ,
+          imageHeight : event.useCloudinaryToUpload ? r.height?.toDouble() : null ,
           parentMessageContent: event.parentMessageContent,
           mediaContent: [
             {

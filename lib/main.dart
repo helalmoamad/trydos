@@ -283,7 +283,7 @@ void main() async {
     apiKey: "AIzaSyDP0q_EapML_zg4ibE_p1NbWNlUa2DjefI",
   );
   gemini.Gemini.enableDebugging = true;
-  print(GetIt.I<PrefsRepository>().marketToken);
+  print('market token : ${(GetIt.I<PrefsRepository>().marketToken)}');
   await SentryFlutter.init(
     (options) {
       options.dsn = dotenv.env['SENTRY_DNS'];

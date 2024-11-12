@@ -98,6 +98,8 @@ class SendMessageEvent extends ChatEvent {
   final File? file;
   final int? senderParentMessageId;
   final bool createNewChat;
+  final double? imageWidth;
+  final double? imageHeight;
 
   const SendMessageEvent(
       {this.receiverUserId,
@@ -106,6 +108,8 @@ class SendMessageEvent extends ChatEvent {
       this.mediaContent,
       this.parentMessageId,
       this.file,
+      this.imageWidth,
+      this.imageHeight,
       this.senderParentMessageId,
       this.messageType,
       this.parentMessageContent,
@@ -487,6 +491,8 @@ class ShareProductWithContactsOrChannelsEvent extends ChatEvent {
   final String productSlug;
   final String productDescription;
   final String productImageUrl;
+  final String? originalImageWidth;
+  final String? originalImageHeight;
   final List<String> channelIds;
 
   ShareProductWithContactsOrChannelsEvent({
@@ -496,6 +502,8 @@ class ShareProductWithContactsOrChannelsEvent extends ChatEvent {
     required this.productDescription,
     required this.productImageUrl,
     required this.channelIds,
+    this.originalImageWidth,
+    this.originalImageHeight,
   });
 
   @override
@@ -506,6 +514,8 @@ class ShareProductWithContactsOrChannelsEvent extends ChatEvent {
         productName,
         productDescription,
         productImageUrl,
-        channelIds
+        channelIds,
+    originalImageWidth,
+    originalImageHeight,
       ];
 }

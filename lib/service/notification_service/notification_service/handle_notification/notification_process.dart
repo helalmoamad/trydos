@@ -7,13 +7,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart'
     as fln;
 import 'package:get_it/get_it.dart';
-import 'package:trydos/main.dart';
 import '../../../../base_page.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../features/chat/data/models/my_chats_response_model.dart';
 import '../../../../features/chat/presentation/manager/chat_bloc.dart';
 import '../../../../features/chat/presentation/manager/chat_event.dart';
 import '../../../../firebase_options.dart';
+import 'handling_market_notifications.dart';
 import 'i_notification_factory.dart';
 import 'local_notification_service.dart';
 import 'notification_type.dart';
@@ -82,9 +82,12 @@ class NotificationProcess {
   setupInteractedMessage() {
     print(
         "-*******444444444444444444444444444----------------*****************---------------***********---------");
-
     handleTappedNotificationOnTerminatedState();
     FirebaseMessaging.onMessageOpenedApp.listen((event) {
+      if(HandlingMarketNotifications.checkIfTheNotificationIsNotRelatedToChat(event)){
+        HandlingMarketNotifications.dealWithNotificationFromMarket(convert.jsonDecode(event.data['data']));
+        return;
+      }
       Map remoteMessage = convert.jsonDecode(event.data['data']);
       handleOpenChatPageFromNotificationInBackground(
           remoteMessage['prev_message_id'],
