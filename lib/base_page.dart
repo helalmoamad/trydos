@@ -15,6 +15,7 @@ import 'package:trydos/features/home/presentation/pages/product_details_page.dar
 import 'package:trydos/features/search/presentation/pages/search_page.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import 'package:trydos/service/notification_service/notification_service/handle_notification/handling_market_notifications.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/local_notification_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -400,6 +401,13 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 
   void onMessage() {
     FirebaseMessaging.onMessage.listen((event) {
+
+      if(HandlingMarketNotifications.checkIfTheNotificationIsNotRelatedToChat(event)) {
+        LocalNotificationService()
+            .showNotificationWithPayload(message: event);
+       return ;
+      }
+
       Map<String, dynamic> remoteMessage =
           convert.jsonDecode(event.data['data']);
       if (remoteMessage['type'] == 'RefuseCallEvent') {
