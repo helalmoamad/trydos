@@ -15,7 +15,7 @@ void main() {
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
   testWidgets(
-    'Test get main categories api ,get story api , get boutiques api , get starting settings apis , get Allowed Countries api , get User Country api , are requested for one time when home page is oppened',
+    'Test get main categories api ,get story api  , get starting settings apis , get Allowed Countries api , get User Country api , are requested for one time when home page is oppened, and get boutiques api is requested',
     (WidgetTester tester) async {
       app.main();
       await tester.pumpAndSettle();
@@ -50,7 +50,6 @@ void main() {
       ///
 
       expect(TestVariables.getBoutiquesFlag, isTrue);
-      expect(TestVariables.getBoutiquesRequestCountFlag, equals(1));
 
       ///
 

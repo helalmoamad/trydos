@@ -106,4 +106,5 @@ class WidgetsKey {
   static const homepageScrollKey = 'applied_filters_page_close_key';
   static const filterPageScrollKey = 'filter_page_scroll_key';
   static const productListingScrollKey = 'product_listing_scroll_key';
+  static const mainCategoriesItemKey = 'main_categories_item_ley';
 }

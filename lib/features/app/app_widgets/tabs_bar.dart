@@ -729,6 +729,10 @@ class _TabsBarState extends State<TabsBar> {
                                             .data!
                                             .mainCategories![index];
                                         return Padding(
+                                            key: TestVariables.kTestMode
+                                                ? Key(
+                                                    '${WidgetsKey.mainCategoriesItemKey}$index')
+                                                : null,
                                             padding:
                                                 HWEdgeInsetsDirectional.only(
                                                     end: 6),

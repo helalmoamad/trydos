@@ -91,7 +91,7 @@ void main() {
             index++;
           }
         } catch (e) {
-          // If the item isn't found, try scrolling to the right
+          // If the item isn't found, try scrolling
           try {
             double leftOrRight =
                 HelperFunctions.getInitLocale().toString().contains('en')
@@ -99,7 +99,7 @@ void main() {
                     : 200;
 
             await tester.drag(searchPageBoutiqueListWidget,
-                Offset(leftOrRight, 0)); // Scroll right by 200 pixels
+                Offset(leftOrRight, 0)); // Scroll by 200 pixels
             await tester.pumpAndSettle();
 
             print('scroll for $index');
@@ -144,7 +144,7 @@ void main() {
       await Future.delayed(const Duration(seconds: 2));
 
       ///////////////////// Search ////////////////////////////////
-      ///
+
       final Finder searchButtonInSearchPageKey =
           find.byKey(Key(WidgetsKey.searchButtonInSearchPageKey));
       final Finder scrollableFinder = find.byType(SearchPage);
