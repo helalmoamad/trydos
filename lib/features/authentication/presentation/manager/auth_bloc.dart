@@ -24,6 +24,7 @@ import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import '../../../../common/constant/countries.dart';
 import '../../../../common/helper/show_message.dart';
+import '../../../../core/api/methods/detect_server.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../main.dart';
 import '../../../../service/notification_service/notification_service/handle_notification/notification_process.dart';
@@ -92,8 +93,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         transformer: throttleDroppable(throttleDuration));
     on<GetCustomerInfoEvent>(_onGetCustomerInfoEvent,
         transformer: throttleDroppable(throttleDuration));
-    on<GetUserCountryEvent>(_onGetUserCountryEvent,
-        //transformer: throttleDroppable(throttleDuration)
+    on<GetUserCountryEvent>(
+      _onGetUserCountryEvent,
+      //transformer: throttleDroppable(throttleDuration)
     );
   }
 
@@ -172,7 +174,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           _prefsRepository.setMyChatName(name ?? 'No Name');
           _prefsRepository.setMyChatPhoto(photo);
         }
-        add(StoreFcmTokenEvent(userId: id!, fcmToken: event.fcmToken));
+        add(StoreFcmTokenEvent(
+            userId: id!,
+            fcmToken: event.fcmToken,
+            serverName: ServerName.chat));
         apisMustNotToRequest.remove('GetChatsEvent');
         GetIt.I<ChatBloc>().add(GetChatsEvent(limit: 10));
       },
@@ -182,11 +187,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   FutureOr<void> _onStoreFcmTokenEvent(
       StoreFcmTokenEvent event, Emitter<AuthState> emit) async {
     final response = await storeFcmUseCase(
-      StoreFcmParams(userId: event.userId, fcmToken: event.fcmToken),
+      StoreFcmParams(
+          userId: event.userId,
+          fcmToken: event.fcmToken,
+          serverName: event.serverName),
     );
     response.fold((l) {
       if (!isFailedTheFirstTime.contains('StoreFcmTokenEvent')) {
-        add(StoreFcmTokenEvent(userId: event.userId, fcmToken: event.fcmToken));
+        add(StoreFcmTokenEvent(
+            userId: event.userId,
+            fcmToken: event.fcmToken,
+            serverName: event.serverName));
         isFailedTheFirstTime.add('StoreFcmTokenEvent');
       }
       emit(state.copyWith(loginToChatStatus: LoginToChatStatus.failure));
@@ -295,6 +306,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             "*****************************-----------------------------${r.data!.token!}");
         _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
         _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());
+        add(StoreFcmTokenEvent(
+            userId: r.data!.user!.id!,
+            fcmToken: NotificationProcess.myFcmToken!,
+            serverName: ServerName.market));
         add(LoginToChatEvent(
             fcmToken: NotificationProcess.myFcmToken!,
             mobilePhone: r.data!.user!.phone,
@@ -357,6 +372,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
       _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());
+      add(StoreFcmTokenEvent(
+          userId: r.data!.user!.id!,
+          fcmToken: NotificationProcess.myFcmToken!,
+          serverName: ServerName.market));
       add(LoginToChatEvent(
           fcmToken: NotificationProcess.myFcmToken!,
           mobilePhone: r.data!.user!.phone,
@@ -407,7 +426,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       isFailedTheFirstTime.remove('RegisterGuestEvent');
       _prefsRepository.setMarketToken(r.data!.token!);
       _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
-
+      add(StoreFcmTokenEvent(
+          userId: r.data!.user!.id!,
+          fcmToken: NotificationProcess.myFcmToken!,
+          serverName: ServerName.market));
       emit(state.copyWith(
           registerGuestStatus: RegisterGuestStatus.success,
           marketUser: r.data!.user));
@@ -438,7 +460,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   FutureOr<void> _onGetCustomerInfoEvent(
       GetCustomerInfoEvent event, Emitter<AuthState> emit) async {
-    if (state.marketUser != null || state.getCustomerInfoStatus == GetCustomerInfoStatus.loading) return;
+    if (state.marketUser != null ||
+        state.getCustomerInfoStatus == GetCustomerInfoStatus.loading) return;
     emit(state.copyWith(getCustomerInfoStatus: GetCustomerInfoStatus.loading));
     final response = await getCustomerInfoUseCase(NoParams());
     response.fold((l) {

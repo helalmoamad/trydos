@@ -73,7 +73,17 @@ class _CartPageState extends State<CartPage> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: true,
+      onPopInvokedWithResult: (didPop, result) {
+        print(
+            "------------------------------------------------------------------------------------------------------");
+        if ((widget.fromeFilters ?? false)) {
+          context.pop();
+        } else {
+          appBloc.add(ChangeBasePage(0));
+          homeBloc.add(ResetAllSelectedAppliedFilterEvent());
+        }
+      },
+      canPop: false,
       child: Directionality(
         textDirection: TextDirection.ltr,
         child: Scaffold(

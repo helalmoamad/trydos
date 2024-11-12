@@ -117,7 +117,9 @@ class _SearchPageState extends ThemeState<SearchPage> {
           buildWhen: (previous, current) {
             return previous.searchHistory != current.searchHistory ||
                 previous.getProductFiltersStatus[key] !=
-                    current.getProductFiltersStatus[key] ||previous.cashedOrginalBoutique!=current.cashedOrginalBoutique||
+                    current.getProductFiltersStatus[key] ||
+                previous.cashedOrginalBoutique !=
+                    current.cashedOrginalBoutique ||
                 previous.countOfProductExpectedByFiltering?.values !=
                     current.countOfProductExpectedByFiltering?.values ||
                 previous

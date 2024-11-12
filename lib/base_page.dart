@@ -11,9 +11,11 @@ import 'package:trydos/features/app/country_dropdown.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import 'package:trydos/features/search/presentation/pages/search_page.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import 'package:trydos/service/notification_service/notification_service/handle_notification/handling_market_notifications.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/local_notification_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -169,6 +171,10 @@ handleOpenChatPageFromNotificationInBackground(String? prevMessageId,
   navigationToSinglePageChat(message.channel!);
 }
 
+navigationToProductDetailsPage(String productId) {
+
+}
+
 navigationToSinglePageChat(Chat chat) {
   GetIt.I<ChatBloc>()
       .add(ChangeGlobalUsedVariablesInBloc(currentOpenedChatId: chat.id));
@@ -320,7 +326,6 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
-    if (state == AppLifecycleState.paused) {}
     if (state == AppLifecycleState.resumed) {
       chatBloc.add(GetDateTimeEvent());
       DealWithMessagesStoredFromBackground();
@@ -396,19 +401,17 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 
   void onMessage() {
     FirebaseMessaging.onMessage.listen((event) {
-      print(
-          "///////////////////////////////////////////////////////////////*******************************************");
+
+      if(HandlingMarketNotifications.checkIfTheNotificationIsNotRelatedToChat(event)) {
+        LocalNotificationService()
+            .showNotificationWithPayload(message: event);
+       return ;
+      }
+
       Map<String, dynamic> remoteMessage =
           convert.jsonDecode(event.data['data']);
-      print("//////////////////////////////////////////////${event.data}");
       if (remoteMessage['type'] == 'RefuseCallEvent') {
-        print(
-            "*/1555555555555555555555555555555555555555555555555*******************************************");
-
         Map<String, dynamic> data = remoteMessage;
-        print(remoteMessage);
-        print(
-            "*7777777777777777777777777777${data}********************************************${remoteMessage["type"]}");
 
         GetIt.I<PrefsRepository>().saveRequestsData(
             null, null, null, null, null, null, null,
@@ -456,9 +459,6 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
               uId: prefsRepository.myChatId!.toString()),
         ));
       } else if (remoteMessage['type'] == 'VoiceCallEvent') {
-        print(
-            "*/133333333333333${remoteMessage}33333333333333333333333333*******************************************");
-
         print(remoteMessage);
         GetIt.I<PrefsRepository>().saveRequestsData(
             null, null, null, null, null, null, null,
@@ -487,9 +487,6 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
               uId: prefsRepository.myChatId!.toString()),
         ));
       } else if (remoteMessage['type'] == 'AnswerCallEvent') {
-        print(
-            "*/4444444444444444444${remoteMessage}44444444444444444444444444*****************************************");
-
         Map<String, dynamic> data = remoteMessage;
         GetIt.I<PrefsRepository>().saveRequestsData(
             null, null, null, null, null, null, null,
@@ -543,10 +540,6 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
             data['last_message_id'],
             DateTime.parse(data['received_at'])));
       } else {
-        print(remoteMessage);
-        print(
-            "*/****************7777777777777*****************************${remoteMessage["message"]}");
-
         Message message = Message.fromJson(remoteMessage['message']);
         String prevMessageId = remoteMessage['prev_message_id'].toString();
         chatBloc.add(AddChannelToChannels(message: message));
@@ -574,6 +567,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
 
   bool requestMainCategoriesDone = false;
+
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {

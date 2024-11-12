@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 
+import '../../../../core/api/methods/detect_server.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/use_case/use_case.dart';
 import '../../data/models/login_to_chat_response_model.dart';
@@ -23,13 +24,18 @@ class StoreFcmUseCase implements UseCase<StoreFcmTokenResponseModel, StoreFcmPar
 class StoreFcmParams {
   int userId;
   String fcmToken;
+  ServerName serverName ;
 
   StoreFcmParams({
     required this.userId,
     required this.fcmToken,
+    required this.serverName,
   });
   Map<String, dynamic> get map =>{
-    "user_id" :userId,
-    "token" :fcmToken,
+    "data": {
+      "user_id": userId,
+      "token": fcmToken,
+    },
+    "server_name" : serverName
   };
 }

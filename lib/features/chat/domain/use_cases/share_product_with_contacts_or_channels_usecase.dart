@@ -29,6 +29,8 @@ class ShareProductWithContactsOrChannelsParams {
   final String productImageUrl;
   final List<String> channelIds;
   final List<int?> receiverIds;
+  final String? productImageWidth;
+  final String? productImageHeight;
 
   ShareProductWithContactsOrChannelsParams({
     required this.productId,
@@ -38,6 +40,8 @@ class ShareProductWithContactsOrChannelsParams {
     required this.productImageUrl,
     required this.channelIds,
     required this.receiverIds,
+    this.productImageWidth,
+    this.productImageHeight,
   });
 
   Map<String, dynamic> get map => {
@@ -46,6 +50,8 @@ class ShareProductWithContactsOrChannelsParams {
           'product_slug': productSlug,
           'product_description': productDescription,
           'product_image_url': productImageUrl,
+          'product_image_width': productImageWidth,
+          'product_image_height': productImageHeight,
           'product_name': productName
         }],
         'channel_ids': channelIds,

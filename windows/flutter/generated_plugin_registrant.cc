@@ -10,6 +10,7 @@
 #include <connectivity_plus/connectivity_plus_windows_plugin.h>
 #include <file_saver/file_saver_plugin.h>
 #include <firebase_core/firebase_core_plugin_c_api.h>
+#include <flutter_inappwebview_windows/flutter_inappwebview_windows_plugin_c_api.h>
 #include <permission_handler_windows/permission_handler_windows_plugin.h>
 #include <sentry_flutter/sentry_flutter_plugin.h>
 #include <share_plus/share_plus_windows_plugin_c_api.h>
@@ -24,6 +25,8 @@ void RegisterPlugins(flutter::PluginRegistry* registry) {
       registry->GetRegistrarForPlugin("FileSaverPlugin"));
   FirebaseCorePluginCApiRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("FirebaseCorePluginCApi"));
+  FlutterInappwebviewWindowsPluginCApiRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("FlutterInappwebviewWindowsPluginCApi"));
   PermissionHandlerWindowsPluginRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("PermissionHandlerWindowsPlugin"));
   SentryFlutterPluginRegisterWithRegistrar(

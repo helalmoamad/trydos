@@ -51,7 +51,7 @@ class GetProductsFiltersParams {
 
   Map<String, dynamic> get map => {
         "category": category,
-        "prices": prices.toString(),
+        "price": prices.toString(),
         "brands": brands.toString(),
         "attributes": attributes.toString(),
         "colors": colors.toString(),
