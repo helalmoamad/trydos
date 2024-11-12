@@ -8,6 +8,8 @@ import 'package:go_router/go_router.dart';
 import 'package:trydos/base_page.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
+import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/authentication/presentation/widgets/create_account_section.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
@@ -306,6 +308,10 @@ class _RegistrationPageState extends State<RegistrationPage>
                                   duration: Duration(milliseconds: 500),
                                   curve: Curves.easeInOut);
                               return false;
+                            }
+                            if(BlocProvider.of<AppBloc>(context).state.currentIndex != 0){
+                              BlocProvider.of<AppBloc>(context).add(ChangeBasePage(0));
+                              return  false;
                             }
                             return true;
                           }),

@@ -183,10 +183,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
   @override
   void initState() {
-    print(
-        "%%%%%%%%%${GetIt.I<PrefsRepository>().marketToken}*****************");
-    print(
-        "11111111111111111%%%%%%%%%${GetIt.I<PrefsRepository>().getFcmTokens}*********");
+    print("%%%%%%%%%${GetIt.I<PrefsRepository>().marketToken}*");
     print(
         "##############################//////////////////////////////////////////////////////////////////////////#${widget.boutiqueSlug}");
     itExpendForFirst = true;
@@ -1345,13 +1342,17 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                               () {
                                                                             if (!isExpanded) {
                                                                               prefAppliedFilters = homeBloc.state.appliedFiltersByUser[key]?.filters;
-                                                                              homeBloc.add(ChangeAppliedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, resetAppliedFilters: true));
+                                                                              homeBloc.add(ChangeAppliedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, isExpandedForListing: true, resetAppliedFilters: true));
                                                                               homeBloc.add(AddPrefAppliedFilterForExtendFilterEvent(prefAppliedFilter: prefAppliedFilters));
 
-                                                                              homeBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, category: widget.category, requestToUpdateFilters: true, filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
+                                                                              homeBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, category: widget.category, requestToUpdateFilters: true, isExpandedForListing: true, filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
 
                                                                               resetSearchAfterSearchingWhileRemoveSearch = false;
-                                                                              homeBloc.add(AddIsExpandedForLidtingPageEvent(isExpandedForLidting: true));
+                                                                              // تم جعل الصفحة expanded باستخدام الأحداث السابقة لتجنب البناء المتكرر
+                                                                              // homeBloc
+                                                                              //     .add(
+                                                                              //     AddIsExpandedForLidtingPageEvent(
+                                                                              //         isExpandedForLidting: true));
                                                                               /////////////////////////////////////////
                                                                               FirebaseAnalyticsService.logEventForSession(
                                                                                 eventName: AnalyticsEventsConst.buttonClicked,
@@ -1406,6 +1407,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                           ChangeAppliedFiltersEvent(
                                                                             boutiqueSlug:
                                                                                 widget.boutiqueSlug,
+                                                                            isExpandedForListing:
+                                                                                false,
                                                                             category:
                                                                                 widget.category,
                                                                             filtersAppliedByUser:
@@ -1421,10 +1424,11 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                               AnalyticsExecutedEventNameConst.filterCloseIconButton,
                                                                         );
                                                                       }
-                                                                      homeBloc.add(AddIsExpandedForLidtingPageEvent(
-                                                                          isExpandedForLidting:
-                                                                              false));
-                                                                      ;
+                                                                      // تم جعل الصفحة not expanded باستخدام الأحداث السابقة لتجنب البناء المتكرر
+                                                                      // homeBloc.add(
+                                                                      //     AddIsExpandedForLidtingPageEvent(
+                                                                      //         isExpandedForLidting:
+                                                                      //         false));
 
                                                                       resetSearchAfterSearchingWhileRemoveSearch =
                                                                           false;
@@ -1936,7 +1940,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                           },
                                           builder: (context, state) {
                                             print(
-                                                "*****************${widget.boutiqueSlug}********************************${widget.fromSearch}....${'${widget.boutiqueSlug}' + 'withoutFilter' + '${(widget.category ?? '')}'}.............${state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + 'withoutFilter' + '${(widget.category ?? '')}']?.paginationStatus}");
+                                                "***************************************************${state.cashedOrginalBoutique}");
                                             isExpanded = state
                                                     .isExpandedForListingPage ??
                                                 false;
@@ -2032,7 +2036,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                     "null";
                                               }
                                             } else if ((!isExpanded &&
-                                                !widget.fromSearch &&
                                                 !state.isGettingProductListingWithPaginationForAppearProduct &&
                                                 (appliedFiltersByUser?.filters?.searchText?.length ?? 0) < 3 &&
                                                 controller.text.length < 3 &&
@@ -2203,7 +2206,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                             if (((state
                                                             .getProductListingWithFiltersPaginationModels[
                                                                 '${widget.boutiqueSlug}' +
-                                                                    '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
+                                                                    'withoutFilter' +
                                                                     '${(widget.category ?? '')}']
                                                             ?.paginationStatus ==
                                                         PaginationStatus
@@ -2211,7 +2214,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                     state
                                                         .getProductListingWithFiltersPaginationModels[
                                                             '${widget.boutiqueSlug}' +
-                                                                '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
+                                                                'withoutFilter' +
                                                                 '${(widget.category ?? '')}']!
                                                         .items
                                                         .isNullOrEmpty &&
@@ -2219,14 +2222,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                         .cashedOrginalBoutique) ||
                                                 (state.getProductListingWithFiltersPaginationModels[
                                                             '${widget.boutiqueSlug}' +
-                                                                '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
+                                                                'withoutFilter' +
                                                                 '${(widget.category ?? '')}'] ==
                                                         PaginationModel
                                                             .init() &&
                                                     state
                                                         .getProductListingWithFiltersPaginationModels[
                                                             '${widget.boutiqueSlug}' +
-                                                                '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
+                                                                'withoutFilter' +
                                                                 '${(widget.category ?? '')}']!
                                                         .items
                                                         .isNullOrEmpty)) {
