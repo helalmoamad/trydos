@@ -45,7 +45,7 @@ class FirebaseAnalyticsService {
     bool isForApi = false,
   }) async {
     try {
-      await FirebaseAnalytics.instance.logEvent(
+      /*  await FirebaseAnalytics.instance.logEvent(
         name: eventName,
         parameters: {
           'our_user_id': GetIt.I<PrefsRepository>().myMarketId ?? 'empty',
@@ -69,9 +69,9 @@ class FirebaseAnalyticsService {
         (value) async {
           if (!isForApi) {
             await GetIt.I<PrefsRepository>().setCurrentEvent(executedEventName);
-          }
+          
         },
-      );
+      );*/
       ///////////////////////
     } catch (e, st) {
       debugPrint(

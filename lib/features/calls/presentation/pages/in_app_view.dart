@@ -124,9 +124,13 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
           body: Stack(
             children: [
               InAppWebView(
-                // onLoadStop: (controller, url) {
-                //   // controller.dispose();
-                // },
+                /*   onLoadStop: (controller, url) {
+                  print(
+                      "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^${url}^^^^^^^^^^99999999999999999}");
+                  controller.dispose();
+                },*/
+                onReceivedError: (controller, request, error) =>
+                    print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^${error}"),
                 onReceivedHttpError: (controller, webResources, webErrors) {
                   print(
                       "*********************/////////////////////////////////////////////////${webErrors}");
@@ -162,12 +166,14 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                     });
                   }
                   if (url.toString().contains('end')) {
-                    print("54");
+                    print(
+                        "54............................................................................................");
                     controller.stopLoading();
                     controller.dispose();
                     if (context.canPop() && context.widget is! SinglePageChat) {
                       Navigator.of(context).pop();
                     }
+                    //    Navigator.of(context).pop();
                     // GetIt.I<CallsBloc>().add(RejectVideoCallEvent(
                     //     payload: {'Target': 'Application  From end'},
                     //     messageId: widget.messageId.toString()));

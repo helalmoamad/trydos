@@ -183,7 +183,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
   @override
   void initState() {
-    print("%%%%%%%%%${GetIt.I<PrefsRepository>().marketToken}*");
+    print(
+        "%%%%%%%%%${GetIt.I<PrefsRepository>().marketToken}*****************");
+    print(
+        "11111111111111111%%%%%%%%%${GetIt.I<PrefsRepository>().getFcmTokens}*********");
     print(
         "##############################//////////////////////////////////////////////////////////////////////////#${widget.boutiqueSlug}");
     itExpendForFirst = true;
@@ -323,8 +326,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
         homeBloc.add(ReplyFromGeminiEvent(
             fromSearch: false,
             sendRequestToGeminiStatus: SendRequestToGeminiStatus.success,
@@ -398,6 +402,11 @@ class _ProductListingPageState extends State<ProductListingPage> {
                 resetAppliedFilters: true,
               ),
             );
+          }
+          if (widget.fromSearch ||
+              (!widget.fromSearch &&
+                  homeBloc.state.cashedOrginalBoutique == true)) {
+            context.pop();
           }
           ////////////////////////////////////
           FirebaseAnalyticsService.logEventForSession(
@@ -1702,6 +1711,15 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                   appliedFiltersByUser?.filters
                                                       ?.brands?[0].slug;
                                             } else if ((appliedFiltersByUser
+                                                            ?.filters
+                                                            ?.boutiques
+                                                            ?.length ??
+                                                        0) >
+                                                    0 &&
+                                                widget.fromSearch) {
+                                              currentAppliedFilterSllug =
+                                                  "search";
+                                            } else if ((appliedFiltersByUser
                                                         ?.filters
                                                         ?.attributes?[0]
                                                         .options
@@ -1918,7 +1936,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                           },
                                           builder: (context, state) {
                                             print(
-                                                "***************************************************${state.cashedOrginalBoutique}");
+                                                "*****************${widget.boutiqueSlug}********************************${widget.fromSearch}....${'${widget.boutiqueSlug}' + 'withoutFilter' + '${(widget.category ?? '')}'}.............${state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + 'withoutFilter' + '${(widget.category ?? '')}']?.paginationStatus}");
                                             isExpanded = state
                                                     .isExpandedForListingPage ??
                                                 false;
@@ -2014,6 +2032,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                     "null";
                                               }
                                             } else if ((!isExpanded &&
+                                                !widget.fromSearch &&
                                                 !state.isGettingProductListingWithPaginationForAppearProduct &&
                                                 (appliedFiltersByUser?.filters?.searchText?.length ?? 0) < 3 &&
                                                 controller.text.length < 3 &&
@@ -2184,7 +2203,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                             if (((state
                                                             .getProductListingWithFiltersPaginationModels[
                                                                 '${widget.boutiqueSlug}' +
-                                                                    'withoutFilter' +
+                                                                    '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
                                                                     '${(widget.category ?? '')}']
                                                             ?.paginationStatus ==
                                                         PaginationStatus
@@ -2192,7 +2211,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                     state
                                                         .getProductListingWithFiltersPaginationModels[
                                                             '${widget.boutiqueSlug}' +
-                                                                'withoutFilter' +
+                                                                '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
                                                                 '${(widget.category ?? '')}']!
                                                         .items
                                                         .isNullOrEmpty &&
@@ -2200,14 +2219,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                         .cashedOrginalBoutique) ||
                                                 (state.getProductListingWithFiltersPaginationModels[
                                                             '${widget.boutiqueSlug}' +
-                                                                'withoutFilter' +
+                                                                '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
                                                                 '${(widget.category ?? '')}'] ==
                                                         PaginationModel
                                                             .init() &&
                                                     state
                                                         .getProductListingWithFiltersPaginationModels[
                                                             '${widget.boutiqueSlug}' +
-                                                                'withoutFilter' +
+                                                                '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
                                                                 '${(widget.category ?? '')}']!
                                                         .items
                                                         .isNullOrEmpty)) {

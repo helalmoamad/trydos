@@ -891,7 +891,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     //         ]
     //       : [],
     // );
-    if (!(event.cashedOrginalBoutique &&
+    print(
+        "&&&&&&&&&&&&&&&&&&&&${event.fromSearch}&${keyWithoutFilter}&&&&&&&&&&&&&&&&${((event.cashedOrginalBoutique && !(event.fromSearch ?? false)) && getProductListingWithFiltersPaginationModels[keyWithoutFilter]?.paginationStatus == PaginationStatus.success)}");
+    if (!((event.cashedOrginalBoutique && !(event.fromSearch ?? false)) &&
         getProductListingWithFiltersPaginationModels[keyWithoutFilter]
                 ?.paginationStatus ==
             PaginationStatus.success)) {

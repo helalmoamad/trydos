@@ -39,6 +39,8 @@ import 'features/chat/presentation/manager/chat_event.dart';
 @pragma('vm:entry-point')
 showCallKitIncoming(Map<String, dynamic> data, String currentUuid,
     {required bool isVideo}) async {
+  print("${data["message"]})");
+  print("))))))))))))))${data["message"]['channel']}");
   CallKitParams callKitParams = CallKitParams(
     id: currentUuid,
     nameCaller: data["message"]['channel']["channel_name"] ?? 'Un Known',
@@ -100,6 +102,11 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     HydratedBloc.storage = await HydratedStorage.build(
       storageDirectory: await getApplicationDocumentsDirectory(),
     );
+    if (!isLoadDotenvFile) {
+      await dotenv.load(fileName: ".env");
+    }
+    HttpOverrides.global = MyHttpOverrides();
+
     isHydratedStorageInitialized = true;
   }
   if (!isDependencyInitialized) {
@@ -107,10 +114,19 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     isDependencyInitialized = true;
   }
   try {
+    print(
+        "11111111111111111111111111111111111111///////////////////////////////////////////////////////////////*******************************************");
+
     Map<String, dynamic> remoteMessage =
         convert.jsonDecode(message.data['data']);
+    print("${remoteMessage}");
+    print(
+        "22222222222222222222222222222222**********************${remoteMessage['type']}***************************************7777777777777777777777777777777777777777777777777777");
     if (remoteMessage['type'] == 'VideoCallEvent' ||
         remoteMessage['type'] == 'VoiceCallEvent') {
+      print(
+          "444444444444444444444444444444444///////////////////////////////////////////////////////////////*******************************************");
+
       String currentUuid = const Uuid().v4();
       Map<String, dynamic> data = remoteMessage["message"];
       if (DateTime.now()
@@ -118,17 +134,35 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
                   DateTime.parse(data['created_at'])))
               .inMinutes >=
           1) {
+        print(
+            "وووووووووووووووووووووووووووو///////////////////////////////////////////////////////////////*******************************************");
+
         return;
       }
+      print(
+          "نننننننننننننننننننننننننننننننننننننن///////////////////////////////////////////////////////////////*******************************************");
+
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: '${message.data['type']} background  ${data['message_id']}');
+      print(
+          "نننننننننننننننننننننننننننننننننننننن///////////////////////////////////////////////////////////////*******************************************");
+
       GetIt.I<CallsBloc>()
           .add(UpdateCurrentActiveCallIdEvent(id: data["id"].toString()));
+      print(
+          "نننننننننننننننننننننننننننننننننننننن///////////////////////////////////////////////////////////////*******************************************");
+
       FlutterCallkitIncoming.onEvent.listen((CallEvent? event) async {
+        print(
+            "صصصصصصصصصصصصصصصصصصصصصصصصصصصصصصصصصصصصصصصصصصصصصصصصصصصصص///////////////////////////////////////////////////////////////*******************************************");
+
         switch (event!.event) {
           case Event.actionCallDecline:
             {
+              print(
+                  "ئئئئئئئئئئئئئئئئئئ///////////////////////////////////////////////////////////////*******************************************");
+
               HttpOverrides.global = MyHttpOverrides();
               if (!declineCallBecauseOfNotificationButton) {
                 GetIt.I<CallsBloc>().add(RejectVideoCallEvent(
@@ -140,6 +174,9 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
             break;
           case Event.actionCallTimeout:
             {
+              print(
+                  "///////////////////////////////////////////////////////////////*******************************************");
+
               //  HttpOverrides.global = MyHttpOverrides();
               //  GetIt.I<CallsBloc>().add(RejectVideoCallEvent(
               //  messageId: data["message"]["id"].toString()));
@@ -150,9 +187,12 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         }
         declineCallBecauseOfNotificationButton = false;
       });
-      showCallKitIncoming(data, currentUuid,
+      showCallKitIncoming(remoteMessage, currentUuid,
           isVideo: remoteMessage['type'] == 'VideoCallEvent');
     } else if (remoteMessage['type'] == 'RefuseCallEvent') {
+      print(
+          "555555555555555///////////////////////////////////////////////////////////////*******************************************");
+
       declineCallBecauseOfNotificationButton = true;
       Map<String, dynamic> data = remoteMessage;
 
@@ -170,6 +210,9 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       FlutterCallkitIncoming.endAllCalls();
       GetIt.I<CallsBloc>().add(UserInteractWithCall(rejectIt: true));
     } else if (remoteMessage['type'] == 'AnswerCallEvent') {
+      print(
+          "666666666666666666666666666666666666666666666666///////////////////////////////////////////////////////////////*******************************************");
+
       declineCallBecauseOfNotificationButton = true;
       Map<String, dynamic> data = remoteMessage;
       if (data['message_id'].toString() !=
@@ -227,6 +270,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 bool isDependencyInitialized = false;
 bool isHydratedStorageInitialized = false;
+bool isLoadDotenvFile = false;
 Timer? timer;
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 bool notificationClicked = false;
@@ -260,7 +304,7 @@ void main() async {
     configureDependencies(),
     NotificationProcess().init(),
   ]);
-
+  isLoadDotenvFile = true;
   await Eraser.clearAllAppNotifications();
   await GetIt.I<PrefsRepository>().removeMessageFromBackground();
   NotificationProcess().setupInteractedMessage();
