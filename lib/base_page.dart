@@ -11,6 +11,7 @@ import 'package:trydos/features/app/country_dropdown.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import 'package:trydos/features/search/presentation/pages/search_page.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
@@ -169,6 +170,10 @@ handleOpenChatPageFromNotificationInBackground(String? prevMessageId,
   navigationToSinglePageChat(message.channel!);
 }
 
+navigationToProductDetailsPage(String productId) {
+
+}
+
 navigationToSinglePageChat(Chat chat) {
   GetIt.I<ChatBloc>()
       .add(ChangeGlobalUsedVariablesInBloc(currentOpenedChatId: chat.id));
@@ -320,7 +325,6 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
-    if (state == AppLifecycleState.paused) {}
     if (state == AppLifecycleState.resumed) {
       chatBloc.add(GetDateTimeEvent());
       DealWithMessagesStoredFromBackground();
@@ -574,6 +578,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
 
   bool requestMainCategoriesDone = false;
+
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {

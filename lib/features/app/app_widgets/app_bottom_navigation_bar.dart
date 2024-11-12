@@ -193,10 +193,10 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                           .getNotificationSettings();
                       if (settings.authorizationStatus ==
                           AuthorizationStatus.denied) {
+                        openAppSettings();
                         showMessage(LocaleKeys
                             .please_enable_send_notification_for_this_app
                             .tr());
-                        openAppSettings();
                       } else {
                         if (context.canPop()) {
                           Navigator.of(context).pop();
