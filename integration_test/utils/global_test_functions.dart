@@ -98,7 +98,7 @@ class GlobalTestFunctions {
     await tester.pumpAndSettle();
   }
 
-  static Future<void> scrollAndTes({
+  static Future<void> scrollAndTest({
     required WidgetTester tester,
     required int index,
     required String widgetKey,

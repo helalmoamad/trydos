@@ -370,11 +370,11 @@ class _HomePageState extends State<HomePage> {
                                 ? Key(WidgetsKey.boutiquesFailureStatusKey)
                                 : null,
                             itemBuilder: (_, index) => Padding(
-                                padding:
-                                    HWEdgeInsets.symmetric(horizontal: 15.w),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  child: Shimmer.fromColors(
+                                  padding:
+                                      HWEdgeInsets.symmetric(horizontal: 15.w),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(20.0),
+                                    child: Shimmer.fromColors(
                                       baseColor: Colors.grey.shade300,
                                       highlightColor: Colors.grey.shade100,
                                       enabled: true,
@@ -426,8 +426,10 @@ class _HomePageState extends State<HomePage> {
                                             ),
                                           )
                                         ],
-                                      )),
-                                )),
+                                      ),
+                                    ),
+                                  ),
+                                ),
                             //HomePageCard(showWhite: index % 2 == 0),
                             separator: SizedBox(
                               height: 20,
