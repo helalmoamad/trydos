@@ -88,7 +88,7 @@ class NotificationProcess {
   setupInteractedMessage() {
     print(
         "-*******444444444444444444444444444----------------*****************---------------***********---------");
-    handleTappedNotificationOnTerminatedState();
+
     FirebaseMessaging.onMessageOpenedApp.listen((event) async {
       print(
           "11111111111111111@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@2222");
@@ -99,6 +99,7 @@ class NotificationProcess {
             convert.jsonDecode(event.data['body']), true);
         return;
       }
+      handleTappedNotificationOnTerminatedState();
       Map remoteMessage = convert.jsonDecode(event.data['data']);
       handleOpenChatPageFromNotificationInBackground(
           remoteMessage['prev_message_id'],

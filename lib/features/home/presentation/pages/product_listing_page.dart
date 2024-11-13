@@ -333,12 +333,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
-        if (widget.fromNotification) {
-          if (!Navigator.canPop(context)) {
-            context.go(GRouter.config.kRootRoute);
-            return;
-          }
-        }
         print(
             "555555555555555555555------------------------------------------------------------------------------");
 

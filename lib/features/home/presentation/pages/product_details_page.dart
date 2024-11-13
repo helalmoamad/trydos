@@ -121,6 +121,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
 
   @override
   void didChangeDependencies() {
+    context.go(GRouter.config.kRootRoute);
+    print("9999999999999999999999999999999999999999999999999999999");
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Theme.of(context).colorScheme.surface,
       statusBarBrightness: Brightness.light,
@@ -138,8 +140,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     return PopScope(
       onPopInvoked: (didPop) {
         if (widget.fromNotification) {
-          context.go(GRouter.config.kRootRoute);
-
           return;
         }
         if (Navigator.of(context).canPop()) {

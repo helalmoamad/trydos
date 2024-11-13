@@ -138,16 +138,6 @@ class GRouter {
           },
           routes: [
             GoRoute(
-              path: _config.applicationRoutes.kHomePagename,
-              pageBuilder: (BuildContext context, GoRouterState state) {
-                debugPrint(state.uri.queryParameters.toString());
-                return _builderPage(
-                  child: HomePage(),
-                  state: state,
-                );
-              },
-            ),
-            GoRoute(
               path: _config.applicationRoutes.kProductListingPageName,
               pageBuilder: (BuildContext context, GoRouterState state) {
                 debugPrint(state.uri.queryParameters.toString());

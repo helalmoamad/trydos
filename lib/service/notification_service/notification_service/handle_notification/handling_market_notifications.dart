@@ -39,7 +39,7 @@ class HandlingMarketNotifications {
         ));
       } catch (e) {}
     } else {
-      if (data["type"] == "product cart expiration availabe") {
+      if (data["type"] == "product cart expiration") {
         try {
           BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context)
               .add(GetFullProductDetailsEvent(productId: "5544"));
@@ -91,15 +91,11 @@ class HandlingMarketNotifications {
           ));
         } catch (e) {}
       }
-      if (data["type"] == "product cart expiration") {
+      if (data["type"] == "product cart expiration boutique") {
         try {
-          navigatorKey.currentState!.context
-              .go(GRouter.config.applicationRoutes.kProductListingPagePath +
-                  """?boutiqueSlug=${'men-section-66'}
-      &boutiqueIcon=${""}
-      &boutiqueDescription=${"00000"}
-      &boutiqueFirstBanner=${"0000000"}&fromNotification='${fromBackGround == true ? 1 : 0}'
-      &withSlidingImages=${false}""");
+          navigatorKey.currentState!.context.go(GRouter
+                  .config.applicationRoutes.kProductListingPagePath +
+              '?boutiqueSlug=men-section-66&boutiqueIcon=""  &boutiqueDescription="0000"&boutiqueFirstBanner="000"00&fromNotification=${fromBackGround == true ? "1" : "0"}&withSlidingImages=${"false"}');
         } catch (e) {}
       }
     }
