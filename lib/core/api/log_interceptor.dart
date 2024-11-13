@@ -23,15 +23,15 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
     if (kDebugMode) {
       log(_prefsRepository.chatToken.toString());
       log('story ${_prefsRepository.storiesToken.toString()}');
-      // prettyPrinterI(
-      //   "***|| INFO Request ${options.path} ||***"
-      //   "\n HTTP Method: ${options.method}"
-      //   "\n token : ${options.headers[HttpHeaders.authorizationHeader]?.substring(0, 20)}"
-      //   "\n param : ${options.data}"
-      //   "\n url: ${options.path}"
-      //   "\n Header: ${options.headers}"
-      //   "\n timeout: ${options.connectTimeout! ~/ 1000}s",
-      // );
+      prettyPrinterI(
+        "***|| INFO Request ${options.path} ||***"
+        "\n HTTP Method: ${options.method}"
+        "\n token : ${options.headers[HttpHeaders.authorizationHeader]?.substring(0, 20)}"
+        "\n param : ${options.data}"
+        "\n url: ${options.path}"
+        "\n Header: ${options.headers}"
+        "\n timeout: ${options.connectTimeout! ~/ 1000}s",
+      );
     }
     _prefsRepository.saveRequestsData(
         'This From Request   ${options.path}',
@@ -57,18 +57,18 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
       final requestRoute = response.requestOptions.path;
 
       if (statusType == _StatusType.failed) {
-        // prettyPrinterError(
-        //     '***|| ${statusType.name.toUpperCase()} Response into -> $requestRoute ||***');
+        prettyPrinterError(
+            '***|| ${statusType.name.toUpperCase()} Response into -> $requestRoute ||***');
       } else {
-        // prettyPrinterV(
-        //     '***|| ${statusType.name.toUpperCase()} Response into -> $requestRoute ||***');
+        prettyPrinterV(
+            '***|| ${statusType.name.toUpperCase()} Response into -> $requestRoute ||***');
       }
-      // prettyPrinterWtf(
-      //   "***|| INFO Response Request $requestRoute ${statusType == _StatusType.succeed ? '✊' : ''} ||***"
-      //   "\n Status code: ${response.statusCode}"
-      //   "\n Status message: ${response.statusMessage}"
-      //   "\n Data: ${response.data}",
-      // );
+      prettyPrinterWtf(
+        "***|| INFO Response Request $requestRoute ${statusType == _StatusType.succeed ? '✊' : ''} ||***"
+        "\n Status code: ${response.statusCode}"
+        "\n Status message: ${response.statusMessage}"
+        "\n Data: ${response.data}",
+      );
     }
     //////////////////// For analytics /////////////////////////////
     String apiStatus = '';

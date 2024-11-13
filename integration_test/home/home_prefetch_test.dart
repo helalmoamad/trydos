@@ -16,6 +16,42 @@ void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
+  Future<void> enterCategoryAndCheckIfBoutiquesPreFetched({
+    required WidgetTester tester,
+    required int categoryIndex,
+  }) async {
+    Finder categoryItemWidget =
+        find.byKey(Key('${WidgetsKey.mainCategoriesItemKey}$categoryIndex'));
+    await tester.tap(categoryItemWidget);
+    await tester.pump();
+    await Future.delayed(const Duration(microseconds: 100));
+    //////////////////////////////////////////////////////////////
+    Finder boutiquesFailureStatus =
+        find.byKey(Key(WidgetsKey.boutiquesFailureStatusKey));
+    await GlobalTestFunctions.findNoWidget(
+      tester: tester,
+      actual: boutiquesFailureStatus,
+      withDelayAndPumpAndSettle: false,
+      successMessage: 'Boutiques not Null Success',
+      failedMessage: 'Boutiques not Null failed',
+    );
+    // ///////////  Find boutiques List  /////////
+    final Finder boutiquesSuccessStatus =
+        find.byKey(Key(WidgetsKey.boutiquesSuccessStatusKey));
+    //////////////////////////////
+    await GlobalTestFunctions.findWidget(
+      tester: tester,
+      actual: boutiquesSuccessStatus,
+      withDelayAndPumpAndSettle: false,
+      successMessage: 'Find Boutiques HomePageCard2 Success',
+      failedMessage: 'Find Boutiques HomePageCard2 failed',
+    );
+    //////////////////////////////
+    await tester.pumpAndSettle();
+    await Future.delayed(const Duration(seconds: 2));
+    //////////////////////////////
+  }
+
   Future<void> enterBoutiqueAndCheckIfProductsPreFetched({
     required WidgetTester tester,
     required int boutiqueIndex,
@@ -142,6 +178,23 @@ void main() {
           }
           print(
               '////////// categoriesSlugs length : ${categoriesSlugs.length} /////////');
+          await Future.delayed(const Duration(seconds: 2));
+          print(
+              '/// ${homeState.boutiquesForEveryMainCategoryThatDidPrefetch}');
+          ///////////////// check if visible categories are pre-fetched and enter each category  ////////////////
+          for (int i = 0; i < categoriesSlugs.length; i++) {
+            print('categoriesSlugs :  ${categoriesSlugs[i]}');
+            bool check = homeState.boutiquesForEveryMainCategoryThatDidPrefetch[
+                    categoriesSlugs[i]] ==
+                true;
+            print('categoriesSlugs isTrue :  $check');
+            expect(check, isTrue);
+            /////////////////////////////////////////////////
+            await enterCategoryAndCheckIfBoutiquesPreFetched(
+              tester: tester,
+              categoryIndex: i,
+            );
+          }
 
           ////////////// Find Boutiques HomePageCard //////////////
           // final Finder boutiquesSuccessStatus =
