@@ -388,7 +388,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                     categorySlugs[i]] !=
                 true) {
               add(GetHomeBoutiqesEvent(
-                getWithPrefetchForBoutiques: true,
+                getWithPrefetchForBoutiques: false,
                 context: event.context ?? navigatorKey.currentContext!,
                 categorySlug: categorySlugs[i],
                 offset: "1",
@@ -3316,9 +3316,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     emit(
       state.copyWith(
           theReplyFromGemini: event.resetAppliedFilters ? "" : null,
-        appliedFiltersByUser: Map.of(appliedFilters),
-          isExpandedForLidtingPage: event.isExpandedForListing
-      ),
+          appliedFiltersByUser: Map.of(appliedFilters),
+          isExpandedForLidtingPage: event.isExpandedForListing),
     );
   }
 

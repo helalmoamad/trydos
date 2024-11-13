@@ -19,6 +19,7 @@ import 'package:eraser/eraser.dart';
 import 'package:trydos/common/constant/configuration/chat_url_routes.dart';
 import 'package:trydos/common/constant/configuration/market_url_routes.dart';
 import 'package:trydos/common/constant/configuration/stories_url_routes.dart';
+import 'package:trydos/service/notification_service/notification_service/handle_notification/handling_market_notifications.dart';
 import 'package:uuid/uuid.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
@@ -114,6 +115,14 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     isDependencyInitialized = true;
   }
   try {
+    print(
+        "1111111111111111111111111111111111111111**********************************************************************${message.data}");
+
+    if (HandlingMarketNotifications.checkIfTheNotificationIsNotRelatedToChat(
+        message)) {
+      LocalNotificationService().showNotificationWithPayload(message: message);
+      return;
+    }
     Map<String, dynamic> remoteMessage =
         convert.jsonDecode(message.data['data']);
     if (remoteMessage['type'] == 'VideoCallEvent' ||
@@ -138,20 +147,27 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         switch (event!.event) {
           case Event.actionCallDecline:
             {
-              HttpOverrides.global = MyHttpOverrides();
+              /*  HttpOverrides.global = MyHttpOverrides();
+              if (!declineCallBecauseOfNotificationButton) {
+                GetIt.I<CallsBloc>().add(RejectVideoCallEvent(
+                    duration: 0,
+                    payload: {'Target': 'Application  From terminated'},
+                    messageId: data["id"].toString()));
+              }*/
+            }
+            break;
+          case Event.actionCallTimeout:
+            {
+              /*   HttpOverrides.global = MyHttpOverrides();
               if (!declineCallBecauseOfNotificationButton) {
                 GetIt.I<CallsBloc>().add(RejectVideoCallEvent(
                     duration: 0,
                     payload: {'Target': 'Application  From terminated'},
                     messageId: data["id"].toString()));
               }
-            }
-            break;
-          case Event.actionCallTimeout:
-            {
               //  HttpOverrides.global = MyHttpOverrides();
               //  GetIt.I<CallsBloc>().add(RejectVideoCallEvent(
-              //  messageId: data["message"]["id"].toString()));
+              //  messageId: data["message"]["id"].toString()));*/
             }
             break;
           default:

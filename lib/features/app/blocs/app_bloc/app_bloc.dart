@@ -10,6 +10,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
             currentIndex: 0,
             tabIndex: -1,
             tabIndexInChat: 0,
+            isFromNotificationToNavigator: false,
             showBars: true,
             hideBottomNavigationBar: false,
             replyOnMe: false,

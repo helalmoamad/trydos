@@ -61,7 +61,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
             HelperFunctions.slidingNavigation(
                 context,
                 ProductListingPage(
-                  boutique: widget.boutique,
+                  banner: widget.boutique.banners,
                   withSlidingImages: widget.withSlidingImages,
                   boutiqueSlug: widget.boutique.slug!,
                   boutiqueDescription: widget.boutique.description,
@@ -344,7 +344,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                             HelperFunctions.slidingNavigation(
                                 context,
                                 ProductListingPage(
-                                  boutique: widget.boutique,
+                                  banner: widget.boutique.banners,
                                   withSlidingImages: widget.withSlidingImages,
                                   boutiqueSlug: widget.boutique.slug!,
                                   category: widget
@@ -494,7 +494,8 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                             HelperFunctions.slidingNavigation(
                                                 context,
                                                 ProductListingPage(
-                                                  boutique: widget.boutique,
+                                                  banner:
+                                                      widget.boutique.banners,
                                                   withSlidingImages:
                                                       widget.withSlidingImages,
                                                   boutiqueSlug:

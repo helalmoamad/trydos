@@ -63,14 +63,19 @@ class LocalNotificationService {
   @pragma('vm:entry-point')
   Future<void> showNotificationWithPayload(
       {required RemoteMessage message}) async {
-    if(HandlingMarketNotifications.checkIfTheNotificationIsNotRelatedToChat(message)){
+    if (HandlingMarketNotifications.checkIfTheNotificationIsNotRelatedToChat(
+        message)) {
+      print("************///////////////////");
+      String title = "${convert.jsonDecode(message.data['body'])["type"]}";
+      String body =
+          "${convert.jsonDecode(message.data['body'])["description"]}";
+      print("1111111111111111111************///////////////////");
       await _localNotificationPlugin.show(
-          0,
-          'Title',
-          'Body',
-          _notificationDetails(),
-          payload: convert.jsonEncode(message.data['message']));
-      return ;
+          0, title, body, _notificationDetails(),
+          payload:
+              convert.jsonEncode(convert.jsonDecode(message.data['body'])));
+      print("22222222222************///////////////////");
+      return;
     }
     Map RemoteMessage = convert.jsonDecode(message.data['data']);
     chat.Message myMessage = chat.Message.fromJson(RemoteMessage["message"]);
@@ -138,8 +143,9 @@ class LocalNotificationService {
         onlyAlertOnce: true,
       );
 
-      NotificationDetails platformChannelSpecifics =
-          NotificationDetails(android: androidPlatformChannelSpecifics , iOS: IosNotificationDetails);
+      NotificationDetails platformChannelSpecifics = NotificationDetails(
+          android: androidPlatformChannelSpecifics,
+          iOS: IosNotificationDetails);
       await _localNotificationPlugin.show(
         5,
         isUploadingSuccess ? 'upload story success' : 'upload story failed',
@@ -149,11 +155,11 @@ class LocalNotificationService {
     }
   }
 
-
   @pragma('vm:entry-point')
   static void _onSelectNotification(NotificationResponse notificationResponse) {
-    if(!notificationResponse.payload!.contains(',,')){
-      HandlingMarketNotifications.dealWithNotificationFromMarket(convert.jsonDecode(notificationResponse.payload.toString()));
+    if (!notificationResponse.payload!.contains(',,')) {
+      HandlingMarketNotifications.dealWithNotificationFromMarket(
+          convert.jsonDecode(notificationResponse.payload.toString()), true);
       return;
     }
     chat.Message myMessage = chat.Message.fromJson(

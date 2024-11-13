@@ -3,18 +3,23 @@ class RouterConfiguration {
 
   final String kRootRoute = '/';
   final applicationRoutes = _ApplicationRoutes();
-
 }
 
-class _ApplicationRoutes{
-  final String test='/test';
+class _ApplicationRoutes {
+  final String test = '/test';
   final String kBasePage = '/BasePage';
   final String kWebView = '/WebView';
+
   final String kRoomCallPage = '/RoomCallPage';
   final String kAnswerCall = '/AnswerCall';
   final String kSinglePageChatPageName = 'SinglePageChatPage';
   final String kSinglePageChatPagePath = '/BasePage/SinglePageChatPage';
-  final String kLoginPage = '/LoginPage';
+  final String kProductListingPageName = 'ProductListingPage';
+  final String kProductListingPagePath = '/BasePage/ProductListingPage';
+  final String kHomePagePath = '/HomePage';
+  final String kHomePagename = 'HomePage';
+
+  final String kLoginPagePath = '/LoginPage';
   final String kRegistrationPageName = 'RegistrationPage';
   final String kRegistrationPagePath = '/BasePage/RegistrationPage';
   final String kMyContactsPageName = 'MyContacts';
@@ -22,9 +27,10 @@ class _ApplicationRoutes{
   final String kLoginSuccessfullyPage = '/LoginSuccessfullyPage';
   final String kUserExistName = 'UserExist';
   final String kNumberNotRegisteredName = 'NumberNotRegistered';
-  final String kNumberNotRegisteredPage = '/BasePage/RegistrationPage/NumberNotRegistered';
+  final String kNumberNotRegisteredPage =
+      '/BasePage/RegistrationPage/NumberNotRegistered';
   final String kUserExistPage = '/BasePage/RegistrationPage/UserExist';
-  final String kHomePage = '/HomePage';
+
   final String kChatPage = '/ChatPage';
   final String kRegistrationPage = '/RegistrationPage';
   final String kRegistrationCompletedPage = '/RegistrationCompletedPage';
@@ -35,4 +41,3 @@ class _ApplicationRoutes{
   // final String kPageViewStoryCollectionsPageName = 'PageViewStoryCollectionsPage';
   // final String kPageViewStoryCollectionsPagePath = '/BasePage/PageViewStoryCollectionsPage';
 }
-

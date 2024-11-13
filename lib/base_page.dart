@@ -171,9 +171,7 @@ handleOpenChatPageFromNotificationInBackground(String? prevMessageId,
   navigationToSinglePageChat(message.channel!);
 }
 
-navigationToProductDetailsPage(String productId) {
-
-}
+navigationToProductDetailsPage(String productId) {}
 
 navigationToSinglePageChat(Chat chat) {
   GetIt.I<ChatBloc>()
@@ -401,18 +399,26 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 
   void onMessage() {
     FirebaseMessaging.onMessage.listen((event) {
+      print(
+          "1111111111111111111111111111111111111111**********************************************************************${event.data}");
 
-      if(HandlingMarketNotifications.checkIfTheNotificationIsNotRelatedToChat(event)) {
-        LocalNotificationService()
-            .showNotificationWithPayload(message: event);
-       return ;
+      if (HandlingMarketNotifications.checkIfTheNotificationIsNotRelatedToChat(
+          event)) {
+        LocalNotificationService().showNotificationWithPayload(message: event);
+        return;
       }
 
       Map<String, dynamic> remoteMessage =
           convert.jsonDecode(event.data['data']);
+      print(
+          "1111111111111111111111111111111111111111**********************************************************************${remoteMessage}");
+      print(
+          "2222222222222222222222222222222222222222222111111**********************************************************************${remoteMessage['type']}");
+
       if (remoteMessage['type'] == 'RefuseCallEvent') {
         Map<String, dynamic> data = remoteMessage;
-
+        print(
+            "33333333333333333333333333333**********************************************************************${data}");
         GetIt.I<PrefsRepository>().saveRequestsData(
             null, null, null, null, null, null, null,
             error: 'RefuseCall for message ForeGround ${data['message_id']}');
@@ -426,6 +432,9 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
             callsBloc.state.currentActiveCallId != '-1') {
           return;
         }
+        print(
+            "34444444444444444444444444444***************************************************************${data}");
+
         FlutterCallkitIncoming.endAllCalls();
         callsBloc.add(UserInteractWithCall(rejectIt: true));
         if (navigatorKey.currentState!.context.canPop() &&
