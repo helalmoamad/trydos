@@ -116,7 +116,7 @@ dependencies:
       url: https://helalmohamad@bitbucket.org/trydos/overscroll_pop-0.1.0.git
   vibration: 1.8.4
   webview_flutter: 4.4.2
-  flutter_inappwebview: 6.0.0
+  flutter_inappwebview: 6.1.5
   firebase_database: ^10.4.0
   hydrated_bloc: ^9.1.5
   http_mock_adapter: ^0.5.0

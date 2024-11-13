@@ -401,6 +401,8 @@ class ShareProductContent {
   final String? productDescription;
   final String? productImageUrl;
   final String? productName;
+  final double? imageWidth;
+  final double? imageHeight;
 
   ShareProductContent({
     required this.productId,
@@ -408,6 +410,8 @@ class ShareProductContent {
     required this.productDescription,
     required this.productImageUrl,
     required this.productName,
+    this.imageWidth,
+    this.imageHeight,
   });
 
   factory ShareProductContent.fromJson(Map<String, dynamic> json) =>
@@ -417,6 +421,8 @@ class ShareProductContent {
         productDescription: json["product_description"],
         productImageUrl: json["product_image_url"],
         productName: json["product_name"],
+        imageWidth: double.tryParse(json["product_image_width"].toString()),
+        imageHeight: double.tryParse(json["product_image_height"].toString()),
       );
 
   Map<String, dynamic> toJson() => {
@@ -425,6 +431,8 @@ class ShareProductContent {
         "product_description": productDescription,
         "product_image_url": productImageUrl,
         "product_name": productName,
+        "product_image_width": imageWidth,
+        "product_image_height": imageHeight,
       };
 }
 

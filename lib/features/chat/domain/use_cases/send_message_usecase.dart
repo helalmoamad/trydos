@@ -29,6 +29,8 @@ class SendMessageParams{
   final String? parentMessageId;
   final String? messageType;
   final bool? isForward;
+  final double? imageWidth;
+  final double? imageHeight;
   final Map<String , dynamic >? extraFields;
 
   SendMessageParams({
@@ -39,6 +41,8 @@ class SendMessageParams{
     this.messageType,
     this.isForward,
     this.extraFields,
+    this.imageWidth,
+    this.imageHeight,
   });
   Map<String, dynamic> get map=> {
     "receiver_user_id": receiverUserId,
@@ -46,6 +50,8 @@ class SendMessageParams{
     "parent_message_id": parentMessageId,
     "message_type": messageType,
     "is_forward":isForward,
-    "extra_fields":extraFields
+    "extra_fields":extraFields,
+    "image_original_width":imageWidth,
+    "image_original_Height":imageHeight,
   };
   }

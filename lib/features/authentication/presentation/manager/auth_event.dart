@@ -43,15 +43,17 @@ class LoginToChatEvent extends AuthEvent {
 class StoreFcmTokenEvent extends AuthEvent {
   final int userId;
   final String fcmToken;
+  final ServerName serverName ;
 
   const StoreFcmTokenEvent({
     required this.userId,
     required this.fcmToken,
+    required this.serverName,
   });
 
   @override
   // TODO: implement props
-  List<Object?> get props => [userId, fcmToken];
+  List<Object?> get props => [userId, fcmToken, serverName];
 }
 
 class DeleteFcmTokenEvent extends AuthEvent {

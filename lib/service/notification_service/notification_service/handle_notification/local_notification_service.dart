@@ -20,6 +20,8 @@ import '../../../../features/chat/data/models/my_chats_response_model.dart'
     as chat;
 import 'dart:convert' as convert;
 
+import 'handling_market_notifications.dart';
+
 @pragma('vm:entry-point')
 class LocalNotificationService {
   static final _localNotificationPlugin = FlutterLocalNotificationsPlugin();
@@ -61,6 +63,15 @@ class LocalNotificationService {
   @pragma('vm:entry-point')
   Future<void> showNotificationWithPayload(
       {required RemoteMessage message}) async {
+    if(HandlingMarketNotifications.checkIfTheNotificationIsNotRelatedToChat(message)){
+      await _localNotificationPlugin.show(
+          0,
+          'Title',
+          'Body',
+          _notificationDetails(),
+          payload: convert.jsonEncode(message.data['message']));
+      return ;
+    }
     Map RemoteMessage = convert.jsonDecode(message.data['data']);
     chat.Message myMessage = chat.Message.fromJson(RemoteMessage["message"]);
     String prevMessageId = RemoteMessage['prev_message_id'].toString();
@@ -104,7 +115,6 @@ class LocalNotificationService {
               maxProgress: maxProgress,
               progress: progress,
               autoCancel: false);
-      final IosNotificationDetails = DarwinNotificationDetails();
 
       NotificationDetails platformChannelSpecifics =
           NotificationDetails(android: androidPlatformChannelSpecifics);
@@ -115,6 +125,7 @@ class LocalNotificationService {
         platformChannelSpecifics,
       );
     } else {
+      final IosNotificationDetails = DarwinNotificationDetails();
       _localNotificationPlugin.cancel(5);
       AndroidNotificationDetails androidPlatformChannelSpecifics =
           const AndroidNotificationDetails(
@@ -128,7 +139,7 @@ class LocalNotificationService {
       );
 
       NotificationDetails platformChannelSpecifics =
-          NotificationDetails(android: androidPlatformChannelSpecifics);
+          NotificationDetails(android: androidPlatformChannelSpecifics , iOS: IosNotificationDetails);
       await _localNotificationPlugin.show(
         5,
         isUploadingSuccess ? 'upload story success' : 'upload story failed',
@@ -138,8 +149,13 @@ class LocalNotificationService {
     }
   }
 
+
   @pragma('vm:entry-point')
   static void _onSelectNotification(NotificationResponse notificationResponse) {
+    if(!notificationResponse.payload!.contains(',,')){
+      HandlingMarketNotifications.dealWithNotificationFromMarket(convert.jsonDecode(notificationResponse.payload.toString()));
+      return;
+    }
     chat.Message myMessage = chat.Message.fromJson(
         convert.jsonDecode(notificationResponse.payload!.split(',,')[0]));
     String prevMessageId = notificationResponse.payload!.split(',,')[1];

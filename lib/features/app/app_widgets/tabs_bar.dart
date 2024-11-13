@@ -738,61 +738,63 @@ class _TabsBarState extends State<TabsBar> {
                                                     end: 6),
                                             child: InkWell(
                                               onTap: () {
-                                                if (BlocProvider.of<AppBloc>(
-                                                            context)
-                                                        .state
-                                                        .tabIndex !=
-                                                    index) {
-                                                  appBloc.add(ChangeTab(index));
-                                                  ///////////////////////
-                                                  homeBloc.add(
-                                                    GetHomeBoutiqesEvent(
-                                                      getWithPrefetchForBoutiques:
-                                                          true,
-                                                      getWithPagination: false,
-                                                      offset: "1",
-                                                      categorySlug: homeState
-                                                          .mainCategoriesResponseModel!
-                                                          .data!
-                                                          .mainCategories![
-                                                              index]
-                                                          .slug!,
-                                                      context: context,
-                                                    ),
-                                                  );
-                                                  ////////////////////////////
-                                                  homeBloc.add(
-                                                    ChangeCurrentIndexForMainCategoryEvent(
-                                                      index: index,
-                                                    ),
-                                                  );
-                                                  ///////////////////////////
-                                                  FirebaseAnalyticsService
-                                                      .logEventForSession(
-                                                    eventName:
-                                                        AnalyticsEventsConst
-                                                            .buttonClicked,
-                                                    executedEventName:
-                                                        AnalyticsExecutedEventNameConst
-                                                            .chooseCategoryButton,
-                                                  );
-                                                } else {
-                                                  appBloc.add(ChangeTab(-1));
-                                                  homeBloc.add(
-                                                    GetHomeBoutiqesEvent(
-                                                      getWithPrefetchForBoutiques:
-                                                          true,
-                                                      context: context,
-                                                      categorySlug: "Empty",
-                                                      offset: "1",
-                                                      getWithPagination: false,
-                                                    ),
-                                                  );
-                                                  homeBloc.add(
-                                                    ChangeCurrentIndexForMainCategoryEvent(
-                                                        index: -1),
-                                                  );
-                                                }
+                                                print(
+                                                    '/// ${homeState.boutiquesForEveryMainCategoryThatDidPrefetch}');
+                                                // if (BlocProvider.of<AppBloc>(
+                                                //             context)
+                                                //         .state
+                                                //         .tabIndex !=
+                                                //     index) {
+                                                //   appBloc.add(ChangeTab(index));
+                                                //   ///////////////////////
+                                                //   homeBloc.add(
+                                                //     GetHomeBoutiqesEvent(
+                                                //       getWithPrefetchForBoutiques:
+                                                //           true,
+                                                //       getWithPagination: false,
+                                                //       offset: "1",
+                                                //       categorySlug: homeState
+                                                //           .mainCategoriesResponseModel!
+                                                //           .data!
+                                                //           .mainCategories![
+                                                //               index]
+                                                //           .slug!,
+                                                //       context: context,
+                                                //     ),
+                                                //   );
+                                                //   ////////////////////////////
+                                                //   homeBloc.add(
+                                                //     ChangeCurrentIndexForMainCategoryEvent(
+                                                //       index: index,
+                                                //     ),
+                                                //   );
+                                                //   ///////////////////////////
+                                                //   FirebaseAnalyticsService
+                                                //       .logEventForSession(
+                                                //     eventName:
+                                                //         AnalyticsEventsConst
+                                                //             .buttonClicked,
+                                                //     executedEventName:
+                                                //         AnalyticsExecutedEventNameConst
+                                                //             .chooseCategoryButton,
+                                                //   );
+                                                // } else {
+                                                //   appBloc.add(ChangeTab(-1));
+                                                //   homeBloc.add(
+                                                //     GetHomeBoutiqesEvent(
+                                                //       getWithPrefetchForBoutiques:
+                                                //           true,
+                                                //       context: context,
+                                                //       categorySlug: "Empty",
+                                                //       offset: "1",
+                                                //       getWithPagination: false,
+                                                //     ),
+                                                //   );
+                                                //   homeBloc.add(
+                                                //     ChangeCurrentIndexForMainCategoryEvent(
+                                                //         index: -1),
+                                                //   );
+                                                // }
                                               },
                                               child: Column(
                                                 crossAxisAlignment:

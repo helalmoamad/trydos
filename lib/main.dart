@@ -39,6 +39,8 @@ import 'features/chat/presentation/manager/chat_event.dart';
 @pragma('vm:entry-point')
 showCallKitIncoming(Map<String, dynamic> data, String currentUuid,
     {required bool isVideo}) async {
+  print("${data["message"]})");
+  print("))))))))))))))${data["message"]['channel']}");
   CallKitParams callKitParams = CallKitParams(
     id: currentUuid,
     nameCaller: data["message"]['channel']["channel_name"] ?? 'Un Known',
@@ -100,6 +102,11 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     HydratedBloc.storage = await HydratedStorage.build(
       storageDirectory: await getApplicationDocumentsDirectory(),
     );
+    if (!isLoadDotenvFile) {
+      await dotenv.load(fileName: ".env");
+    }
+    HttpOverrides.global = MyHttpOverrides();
+
     isHydratedStorageInitialized = true;
   }
   if (!isDependencyInitialized) {
@@ -123,8 +130,10 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: '${message.data['type']} background  ${data['message_id']}');
+
       GetIt.I<CallsBloc>()
           .add(UpdateCurrentActiveCallIdEvent(id: data["id"].toString()));
+
       FlutterCallkitIncoming.onEvent.listen((CallEvent? event) async {
         switch (event!.event) {
           case Event.actionCallDecline:
@@ -150,7 +159,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         }
         declineCallBecauseOfNotificationButton = false;
       });
-      showCallKitIncoming(data, currentUuid,
+      showCallKitIncoming(remoteMessage, currentUuid,
           isVideo: remoteMessage['type'] == 'VideoCallEvent');
     } else if (remoteMessage['type'] == 'RefuseCallEvent') {
       declineCallBecauseOfNotificationButton = true;
@@ -197,10 +206,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       GetIt.I<PrefsRepository>()
           .setRemovedChatFromBackground(data['channel_id'].toString());
     } else {
-      print(remoteMessage);
-      print(
-          "*/*********************************************${remoteMessage['message']}");
-
       if (remoteMessage['message'] == null) return;
       Message myMessage = Message.fromJson(remoteMessage['message']);
       if (myMessage.senderUserId != GetIt.I<PrefsRepository>().myChatId) {
@@ -227,6 +232,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 bool isDependencyInitialized = false;
 bool isHydratedStorageInitialized = false;
+bool isLoadDotenvFile = false;
 Timer? timer;
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 bool notificationClicked = false;
@@ -260,7 +266,7 @@ void main() async {
     configureDependencies(),
     NotificationProcess().init(),
   ]);
-
+  isLoadDotenvFile = true;
   await Eraser.clearAllAppNotifications();
   await GetIt.I<PrefsRepository>().removeMessageFromBackground();
   NotificationProcess().setupInteractedMessage();
@@ -277,7 +283,7 @@ void main() async {
     apiKey: "AIzaSyDP0q_EapML_zg4ibE_p1NbWNlUa2DjefI",
   );
   gemini.Gemini.enableDebugging = true;
-  print(GetIt.I<PrefsRepository>().marketToken);
+  print('market token : ${(GetIt.I<PrefsRepository>().marketToken)}');
   await SentryFlutter.init(
     (options) {
       options.dsn = dotenv.env['SENTRY_DNS'];
