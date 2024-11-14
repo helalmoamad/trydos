@@ -43,8 +43,7 @@ class NotificationProcess {
 
   Future fcmToken() async {
     myFcmToken = await FirebaseMessaging.instance.getToken();
-    print(
-        "44444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444${myFcmToken}******");
+    print("myFcmToken : ${myFcmToken}");
     if (myFcmToken != null) {
       GetIt.I<PrefsRepository>().addFcmToken(myFcmToken!);
     }
@@ -84,8 +83,10 @@ class NotificationProcess {
         "-*******444444444444444444444444444----------------*****************---------------***********---------");
     handleTappedNotificationOnTerminatedState();
     FirebaseMessaging.onMessageOpenedApp.listen((event) {
-      if(HandlingMarketNotifications.checkIfTheNotificationIsNotRelatedToChat(event)){
-        HandlingMarketNotifications.dealWithNotificationFromMarket(convert.jsonDecode(event.data['data']));
+      if (HandlingMarketNotifications.checkIfTheNotificationIsNotRelatedToChat(
+          event)) {
+        HandlingMarketNotifications.dealWithNotificationFromMarket(
+            convert.jsonDecode(event.data['data']));
         return;
       }
       Map remoteMessage = convert.jsonDecode(event.data['data']);
