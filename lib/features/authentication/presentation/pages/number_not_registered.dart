@@ -155,7 +155,7 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                           Spacer(),
                           InkWell(
                             key: TestVariables.kTestMode
-                                ? Key(WidgetsKey.createNewAccountContinueKey)
+                                ? Key(WidgetsKeys.createNewAccountContinueKey)
                                 : null,
                             onTap: () {
                               pageContent.value = 1;

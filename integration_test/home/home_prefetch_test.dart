@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/common/test_utils/widgets_keys.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
@@ -19,15 +20,16 @@ void main() {
   Future<void> chooseCategoryAndCheckIfBoutiquesPreFetched({
     required WidgetTester tester,
     required int categoryIndex,
+    required Future<void> Function() operations,
   }) async {
     Finder categoryItemWidget =
-        find.byKey(Key('${WidgetsKey.mainCategoriesItemKey}$categoryIndex'));
+        find.byKey(Key('${WidgetsKeys.mainCategoriesItemKey}$categoryIndex'));
     await tester.tap(categoryItemWidget);
     await tester.pump();
     await Future.delayed(const Duration(microseconds: 100));
     //////////////////////////////////////////////////////////////
     Finder boutiquesFailureStatus =
-        find.byKey(Key(WidgetsKey.boutiquesFailureStatusKey));
+        find.byKey(Key(WidgetsKeys.boutiquesFailureStatusKey));
     await GlobalTestFunctions.findNoWidget(
       tester: tester,
       actual: boutiquesFailureStatus,
@@ -35,9 +37,9 @@ void main() {
       successMessage: 'Boutiques not Null Success',
       failedMessage: 'Boutiques not Null failed',
     );
-    // ///////////  Find boutiques List  /////////
+    ///////////  Find boutiques List  /////////
     final Finder boutiquesSuccessStatus =
-        find.byKey(Key(WidgetsKey.boutiquesSuccessStatusKey));
+        find.byKey(Key(WidgetsKeys.boutiquesSuccessStatusKey));
     //////////////////////////////
     await GlobalTestFunctions.findWidget(
       tester: tester,
@@ -50,15 +52,17 @@ void main() {
     await tester.pumpAndSettle();
     await Future.delayed(const Duration(seconds: 2));
     //////////////////////////////
+    await operations.call();
   }
 
   Future<void> enterBoutiqueAndCheckIfProductsPreFetched({
     required WidgetTester tester,
     required int boutiqueIndex,
     required HomeState homeState,
+    required Future<void> Function() operations,
   }) async {
     Finder boutiqueCardWidget =
-        find.byKey(Key('${WidgetsKey.boutiqueCardKey}$boutiqueIndex'));
+        find.byKey(Key('${WidgetsKeys.boutiqueCardKey}$boutiqueIndex'));
 
     Offset topLeft = tester.getTopLeft(boutiqueCardWidget);
 
@@ -67,7 +71,7 @@ void main() {
     await tester.pump();
     await Future.delayed(const Duration(seconds: 2));
     Finder boutiqueProductListingLoadingWidget =
-        find.byKey(Key(WidgetsKey.boutiqueProductListingLoadingKey));
+        find.byKey(Key(WidgetsKeys.boutiqueProductListingLoadingKey));
     // ///////////  no loading  /////////
     await GlobalTestFunctions.findNoWidget(
       tester: tester,
@@ -88,7 +92,7 @@ void main() {
     expect(homeState.getProductFiltersModel, isNot(equals({})));
     // ///////////  Find product List and filters  /////////
     Finder productListFilterWidget =
-        find.byKey(Key(WidgetsKey.productListFilterKey));
+        find.byKey(Key(WidgetsKeys.productListFilterKey));
     ///////////////////////////////
     await GlobalTestFunctions.findWidget(
       tester: tester,
@@ -99,7 +103,7 @@ void main() {
     );
     //////////////////////////////
     final Finder productsList = find.byKey(
-      Key(WidgetsKey.productsListKey),
+      Key(WidgetsKeys.productsListKey),
     );
     await GlobalTestFunctions.findWidget(
       tester: tester,
@@ -111,10 +115,112 @@ void main() {
     //////////////////////////////
     await tester.pumpAndSettle();
     await Future.delayed(const Duration(seconds: 2));
-    ////////////// Go Back ////////////////
-    Finder appBarGoBackArrow = find.byKey(Key(WidgetsKey.appBarGoBackArrowKey));
-    await tester.tap(appBarGoBackArrow);
+//////////////////////////////
+    await operations().then(
+      (value) async {
+        ////////////// Go Back ////////////////
+        Finder appBarGoBackArrow =
+            find.byKey(Key(WidgetsKeys.appBarGoBackArrowKey));
+        await tester.tap(appBarGoBackArrow);
+        await tester.pumpAndSettle();
+      },
+    );
+  }
+
+  Future<void> checkFirstFiveFiltersArePreFetched({
+    required WidgetTester tester,
+  }) async {
+    double leftOrRight =
+        HelperFunctions.getInitLocale().toString().contains('en') ? -200 : 200;
+
+    await tester.drag(find.byKey(Key(WidgetsKeys.productListFilterKey)),
+        Offset(leftOrRight, 0)); // Scroll by 200 pixels
     await tester.pumpAndSettle();
+
+    int preFetchedCount = 0;
+    int catIndex = 0;
+    int brandIndex = 0;
+    int sizeIndex = 0;
+    int colorIndex = 0;
+    int priceIndex = 0;
+    while (preFetchedCount <= 5) {
+      final isCatVisible = find
+          .byKey(Key(
+              '${WidgetsKeys.categoryCircleWithOutSubProductListingFilterKey}$catIndex'))
+          .evaluate()
+          .isNotEmpty;
+      if (isCatVisible) {
+        print('category with index $catIndex is visible.');
+        catIndex++;
+        preFetchedCount++;
+      } else {
+        print('category with index $catIndex is not visible.');
+        final isBrandVisible = find
+            .byKey(Key(
+                '${WidgetsKeys.brandCircleProductListingFilterKey}$brandIndex'))
+            .evaluate()
+            .isNotEmpty;
+        if (isBrandVisible) {
+          print('brand with index $brandIndex is visible.');
+          brandIndex++;
+          preFetchedCount++;
+        } else {
+          print('brand with index $brandIndex is not visible.');
+          final isSizeVisible = find
+              .byKey(Key(
+                  '${WidgetsKeys.sizeCircleProductListingFilterKey}$sizeIndex'))
+              .evaluate()
+              .isNotEmpty;
+          if (isSizeVisible) {
+            print('size with index $sizeIndex is visible.');
+            sizeIndex++;
+            preFetchedCount++;
+          } else {
+            print('size with index $sizeIndex is not visible.');
+            final isColorVisible = find
+                .byKey(Key(
+                    '${WidgetsKeys.colorCircleProductListingFilterKey}$colorIndex'))
+                .evaluate()
+                .isNotEmpty;
+            if (isColorVisible) {
+              print('color with index $colorIndex is visible.');
+              colorIndex++;
+              preFetchedCount++;
+            } else {
+              print('color with index $colorIndex is not visible.');
+              final isPriceVisible = find
+                  .byKey(Key(
+                      '${WidgetsKeys.priceCircleProductListingFilterKey}$priceIndex'))
+                  .evaluate()
+                  .isNotEmpty;
+              if (isPriceVisible) {
+                print('price with index $priceIndex is visible.');
+                priceIndex++;
+                preFetchedCount++;
+              } else {
+                print('price with index $priceIndex is not visible.');
+                try {
+                  double leftOrRight =
+                      HelperFunctions.getInitLocale().toString().contains('en')
+                          ? -200
+                          : 200;
+
+                  await tester.drag(
+                      find.byKey(Key(WidgetsKeys.productListFilterKey)),
+                      Offset(leftOrRight, 0)); // Scroll by 200 pixels
+                  await tester.pumpAndSettle();
+                  continue;
+                } catch (e) {
+                  print('Reached the end of the list ///');
+                  break;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    print('/////  preFetchedCount :  $preFetchedCount ////////////////////');
   }
 
   group(
@@ -128,61 +234,129 @@ void main() {
           TestVariables.kTestMode = true;
           /////////////  Register As Guest  /////////////
           await SharedScenarios.registerGuest(tester: tester);
-          ////////////// Find Main Categories Tab //////////////
-          final Finder mainCategoriesTabNull =
-              find.byKey(Key(WidgetsKey.mainCategoriesTabNullKey));
+          //////////////////////////////////////////////////////////////
+          Finder boutiquesFailureStatus =
+              find.byKey(Key(WidgetsKeys.boutiquesFailureStatusKey));
           await GlobalTestFunctions.findNoWidget(
             tester: tester,
-            actual: mainCategoriesTabNull,
+            actual: boutiquesFailureStatus,
             withDelayAndPumpAndSettle: false,
-            successMessage: 'Main Categories not Null Success',
-            failedMessage: 'Main Categories not Null failed',
+            successMessage: 'Boutiques not Null Success',
+            failedMessage: 'Boutiques not Null failed',
           );
-          ////////////////////////////
-          final Finder mainCategoriesTab =
-              find.byKey(Key(WidgetsKey.mainCategoriesTabKey));
+          ///////////  Find boutiques List  /////////
+          final Finder boutiquesSuccessStatus =
+              find.byKey(Key(WidgetsKeys.boutiquesSuccessStatusKey));
+          //////////////////////////////
           await GlobalTestFunctions.findWidget(
             tester: tester,
-            actual: mainCategoriesTab,
+            actual: boutiquesSuccessStatus,
             withDelayAndPumpAndSettle: false,
-            successMessage: 'Find main Categories Tab Success',
-            failedMessage: 'Find main Categories Tab failed',
+            successMessage: 'Find Boutiques HomePageCard2 Success',
+            failedMessage: 'Find Boutiques HomePageCard2 failed',
           );
-          //////////// get all visible main Categories slugs ////////////////
-          int index1 = 0;
-          List<String> categoriesSlugs = [];
+          //////////////////////////////
+          await tester.pumpAndSettle();
+          await Future.delayed(const Duration(seconds: 2));
 
-          HomeBloc homeBloc = GetIt.I<HomeBloc>();
-          HomeState homeState = homeBloc.state;
-
+          //////////// get all visible boutiques slugs ////////////////
+          int index = 0;
+          List<String> boutiqueSlugs = [];
           while (true) {
-            Finder mainCategoriesItemWidget =
-                find.byKey(Key('${WidgetsKey.mainCategoriesItemKey}$index1'));
-
+            Finder boutiqueCardWidget =
+                find.byKey(Key('${WidgetsKeys.boutiqueCardKey}$index'));
             try {
-              expect(mainCategoriesItemWidget, findsOneWidget);
-
-              MainCategory mainCategory = homeState
-                  .mainCategoriesResponseModel!.data!.mainCategories![index1];
+              expect(boutiqueCardWidget, findsOneWidget);
               ///////////////////
-              categoriesSlugs.add(mainCategory.slug ?? '');
+              boutiqueSlugs.add(
+                tester
+                        .widget<HomePageCard2>(boutiqueCardWidget)
+                        .boutique
+                        .slug ??
+                    '',
+              );
               //////////////////
               print(
-                  '////////// categoriesSlug $index1 : ${categoriesSlugs[index1]} /////////');
+                  '////////// boutiquesSlug $index : ${boutiqueSlugs[index]} /////////');
               //////////////////
-              index1++;
+              index++;
             } catch (e) {
-              print('////////// No categoriesSlug is visible /////////');
+              print('////////// No boutiquesSlug is visible /////////');
               break;
             }
           }
           print(
-              '////////// categoriesSlugs length : ${categoriesSlugs.length} /////////');
-          await Future.delayed(const Duration(seconds: 2));
-          homeState = homeBloc.state;
-          print(
-              '/// ${homeState.boutiquesForEveryMainCategoryThatDidPrefetch}');
-          ///////////////// check if visible categories are pre-fetched and enter each category  ////////////////
+              '////////// boutiquesSlugs length : ${boutiqueSlugs.length} /////////');
+          await Future.delayed(const Duration(microseconds: 500));
+
+          HomeBloc homeBloc = GetIt.I<HomeBloc>();
+          HomeState homeState = homeBloc.state;
+
+          await enterBoutiqueAndCheckIfProductsPreFetched(
+            tester: tester,
+            boutiqueIndex: 0,
+            homeState: homeState,
+            operations: () async {
+              await checkFirstFiveFiltersArePreFetched(tester: tester);
+            },
+          );
+
+          ////////////// Find Main Categories Tab //////////////
+          // final Finder mainCategoriesTabNull =
+          //     find.byKey(Key(WidgetsKeys.mainCategoriesTabNullKey));
+          // await GlobalTestFunctions.findNoWidget(
+          //   tester: tester,
+          //   actual: mainCategoriesTabNull,
+          //   withDelayAndPumpAndSettle: false,
+          //   successMessage: 'Main Categories not Null Success',
+          //   failedMessage: 'Main Categories not Null failed',
+          // );
+          // ////////////////////////////
+          // final Finder mainCategoriesTab =
+          //     find.byKey(Key(WidgetsKeys.mainCategoriesTabKey));
+          // await GlobalTestFunctions.findWidget(
+          //   tester: tester,
+          //   actual: mainCategoriesTab,
+          //   withDelayAndPumpAndSettle: false,
+          //   successMessage: 'Find main Categories Tab Success',
+          //   failedMessage: 'Find main Categories Tab failed',
+          // );
+          // //////////// get all visible main Categories slugs ////////////////
+          // int index1 = 0;
+          // // add empty slug //
+          // List<String> categoriesSlugs = [];
+
+          // HomeBloc homeBloc = GetIt.I<HomeBloc>();
+          // HomeState homeState = homeBloc.state;
+
+          // while (true) {
+          //   Finder mainCategoriesItemWidget =
+          //       find.byKey(Key('${WidgetsKeys.mainCategoriesItemKey}$index1'));
+
+          //   try {
+          //     expect(mainCategoriesItemWidget, findsOneWidget);
+
+          //     MainCategory mainCategory = homeState
+          //         .mainCategoriesResponseModel!.data!.mainCategories![index1];
+          //     ///////////////////
+          //     categoriesSlugs.add(mainCategory.slug ?? '');
+          //     //////////////////
+          //     print(
+          //         '////////// categoriesSlug $index1 : ${categoriesSlugs[index1]} /////////');
+          //     //////////////////
+          //     index1++;
+          //   } catch (e) {
+          //     print('////////// No categoriesSlug is visible /////////');
+          //     break;
+          //   }
+          // }
+          // print(
+          //     '////////// categoriesSlugs length : ${categoriesSlugs.length} /////////');
+          // await Future.delayed(const Duration(seconds: 2));
+          // homeState = homeBloc.state;
+          // print(
+          //     '/// ${homeState.boutiquesForEveryMainCategoryThatDidPrefetch}');
+          // ///////////////// check if visible categories are pre-fetched and enter each category  ////////////////
           // for (int i = 0; i < categoriesSlugs.length; i++) {
           //   print('categoriesSlugs :  ${categoriesSlugs[i]}');
           //   bool check = homeState.boutiquesForEveryMainCategoryThatDidPrefetch[
@@ -194,64 +368,55 @@ void main() {
           //   await chooseCategoryAndCheckIfBoutiquesPreFetched(
           //     tester: tester,
           //     categoryIndex: i,
-          //   );
-          // }
-
-          ////////////// Find Boutiques HomePageCard //////////////
-          // final Finder boutiquesSuccessStatus =
-          //     find.byKey(Key(WidgetsKey.boutiquesSuccessStatusKey));
-          // await GlobalTestFunctions.findWidget(
-          //   tester: tester,
-          //   actual: boutiquesSuccessStatus,
-          //   withDelayAndPumpAndSettle: false,
-          //   successMessage: 'Find Boutiques HomePageCard2 Success',
-          //   failedMessage: 'Find Boutiques HomePageCard2 failed',
-          // );
-          // //////////// get all visible boutiques slugs ////////////////
-          // int index = 0;
-          // List<String> boutiqueSlugs = [];
-          // while (true) {
-          //   Finder boutiqueCardWidget =
-          //       find.byKey(Key('${WidgetsKey.boutiqueCardKey}$index'));
-
-          //   try {
-          //     expect(boutiqueCardWidget, findsOneWidget);
-          //     ///////////////////
-          //     boutiqueSlugs.add(
-          //       tester
-          //               .widget<HomePageCard2>(boutiqueCardWidget)
-          //               .boutique
-          //               .slug ??
-          //           '',
-          //     );
-          //     //////////////////
-          //     print(
-          //         '////////// boutiquesSlug $index : ${boutiqueSlugs[index]} /////////');
-          //     //////////////////
-          //     index++;
-          //   } catch (e) {
-          //     print('////////// No boutiquesSlug is visible /////////');
-          //     break;
-          //   }
-          // }
-          // print(
-          //     '////////// boutiquesSlugs length : ${boutiqueSlugs.length} /////////');
-          // await Future.delayed(const Duration(seconds: 2));
-          // HomeBloc homeBloc = GetIt.I<HomeBloc>();
-          // HomeState homeState = homeBloc.state;
-
-          // ///////////////// check if visible boutiques are pre-fetched and enter each boutique  ////////////////
-          // for (int i = 0; i < boutiqueSlugs.length; i++) {
-          //   print('boutiqueSlugs :  ${boutiqueSlugs[i]}');
-          //   bool check =
-          //       homeState.boutiquesThatDidPrefetch[boutiqueSlugs[i]] == true;
-          //   print('boutiqueSlugs isTrue :  $check');
-          //   expect(check, isTrue);
-          //   /////////////////////////////////////////////////
-          //   await enterBoutiqueAndCheckIfProductsPreFetched(
-          //     tester: tester,
-          //     boutiqueIndex: i,
-          //     homeState: homeState,
+          //     operations: () async {
+          //       //////////// get all visible boutiques slugs ////////////////
+          //       int index = 0;
+          //       List<String> boutiqueSlugs = [];
+          //       while (true) {
+          //         Finder boutiqueCardWidget =
+          //             find.byKey(Key('${WidgetsKeys.boutiqueCardKey}$index'));
+          //         try {
+          //           expect(boutiqueCardWidget, findsOneWidget);
+          //           ///////////////////
+          //           boutiqueSlugs.add(
+          //             tester
+          //                     .widget<HomePageCard2>(boutiqueCardWidget)
+          //                     .boutique
+          //                     .slug ??
+          //                 '',
+          //           );
+          //           //////////////////
+          //           print(
+          //               '////////// boutiquesSlug $index : ${boutiqueSlugs[index]} /////////');
+          //           //////////////////
+          //           index++;
+          //         } catch (e) {
+          //           print('////////// No boutiquesSlug is visible /////////');
+          //           break;
+          //         }
+          //       }
+          //       print(
+          //           '////////// boutiquesSlugs length : ${boutiqueSlugs.length} /////////');
+          //       await Future.delayed(const Duration(microseconds: 500));
+          //       homeBloc = GetIt.I<HomeBloc>();
+          //       homeState = homeBloc.state;
+          //       ///////////////// check if visible boutiques are pre-fetched and enter each boutique  ////////////////
+          //       for (int i = 0; i < boutiqueSlugs.length; i++) {
+          //         print('boutiqueSlugs :  ${boutiqueSlugs[i]}');
+          //         bool check =
+          //             homeState.boutiquesThatDidPrefetch[boutiqueSlugs[i]] ==
+          //                 true;
+          //         print('boutiqueSlugs isTrue :  $check');
+          //         expect(check, isTrue);
+          //         /////////////////////////////////////////////////
+          //         await enterBoutiqueAndCheckIfProductsPreFetched(
+          //           tester: tester,
+          //           boutiqueIndex: i,
+          //           homeState: homeState,
+          //           operations: () async {},
+          //         );
+          //       }
+          //     },
           //   );
           // }
           await Future.delayed(const Duration(seconds: 2));
@@ -268,7 +433,7 @@ void main() {
           await SharedScenarios.registerGuest(tester: tester);
           ////////////// Find Boutiques HomePageCard //////////////
           final Finder boutiquesSuccessStatus =
-              find.byKey(Key(WidgetsKey.boutiquesSuccessStatusKey));
+              find.byKey(Key(WidgetsKeys.boutiquesSuccessStatusKey));
           await GlobalTestFunctions.findWidget(
             tester: tester,
             actual: boutiquesSuccessStatus,
@@ -279,7 +444,7 @@ void main() {
 
           int index = 0;
           String slug = '';
-          Finder homeScroll = find.byKey(Key(WidgetsKey.homepageScrollKey));
+          Finder homeScroll = find.byKey(Key(WidgetsKeys.homepageScrollKey));
 
           HomeBloc homeBloc = GetIt.I<HomeBloc>();
           HomeState homeState = homeBloc.state;
@@ -298,7 +463,7 @@ void main() {
 
           while (true) {
             Finder boutiqueCardWidget =
-                find.byKey(Key('${WidgetsKey.boutiqueCardKey}$index'));
+                find.byKey(Key('${WidgetsKeys.boutiqueCardKey}$index'));
 
             try {
               expect(boutiqueCardWidget, findsOneWidget);
@@ -323,6 +488,7 @@ void main() {
                 tester: tester,
                 boutiqueIndex: index,
                 homeState: homeState,
+                operations: () async {},
               );
               await Future.delayed(const Duration(seconds: 2));
 
@@ -357,9 +523,9 @@ void main() {
           //////////////// Scroll to start ////////////////////////
 
           Finder boutiqueCardWidget =
-              find.byKey(Key('${WidgetsKey.boutiqueCardKey}0'));
+              find.byKey(Key('${WidgetsKeys.boutiqueCardKey}0'));
 
-          homeScroll = find.byKey(Key(WidgetsKey.homepageScrollKey));
+          homeScroll = find.byKey(Key(WidgetsKeys.homepageScrollKey));
 
           expect(homeScroll, findsOneWidget);
 

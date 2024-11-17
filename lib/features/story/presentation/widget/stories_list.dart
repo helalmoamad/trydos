@@ -96,7 +96,7 @@ class _StoriesListState extends State<StoriesList> {
                       case GetStoriesStatus.success:
                         return SizedBox(
                             key: TestVariables.kTestMode
-                                ? Key(WidgetsKey.storiesSuccessStatusKey)
+                                ? Key(WidgetsKeys.storiesSuccessStatusKey)
                                 : null,
                             height: 220,
                             child: Directionality(

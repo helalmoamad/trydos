@@ -230,7 +230,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                     SlidableActionWidget(
                       key: TestVariables.kTestMode
                           ? Key(
-                              '${WidgetsKey.deleteChatConversationIconKey}${widget.index}')
+                              '${WidgetsKeys.deleteChatConversationIconKey}${widget.index}')
                           : null,
                       text: LocaleKeys.delete.tr(),
                       onTap: () {

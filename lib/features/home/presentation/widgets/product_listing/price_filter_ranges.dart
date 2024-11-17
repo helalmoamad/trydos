@@ -8,6 +8,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
+import '../../../../../common/test_utils/test_var.dart';
+import '../../../../../common/test_utils/widgets_keys.dart';
 import '../../../data/models/get_product_filters_model.dart';
 import '../../manager/home_bloc.dart';
 import '../../manager/home_event.dart';
@@ -72,6 +74,10 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
             return Stack(
               children: [
                 GestureDetector(
+                  key: TestVariables.kTestMode == false
+                      ? null
+                      : Key(
+                          '${WidgetsKeys.priceCircleProductListingFilterKey}$index'),
                   onTap: () {
                     print('tab on price');
                     HomeBloc homeBloc = BlocProvider.of<HomeBloc>(context);

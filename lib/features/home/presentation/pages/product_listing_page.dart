@@ -546,7 +546,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
                             return CustomScrollView(
                                 key: TestVariables.kTestMode
-                                    ? Key(WidgetsKey.productListingScrollKey)
+                                    ? Key(WidgetsKeys.productListingScrollKey)
                                     : null,
                                 controller: scrollController,
                                 physics: state.getProductFiltersModel[key]
@@ -696,7 +696,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                 AnimatedSearchBar(
                                                               key: TestVariables
                                                                       .kTestMode
-                                                                  ? Key(WidgetsKey
+                                                                  ? Key(WidgetsKeys
                                                                       .productListingSearchInputKey)
                                                                   : null,
                                                               autoFocus: false,
@@ -1336,7 +1336,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                         child:
                                                                             InkWell(
                                                                           key: TestVariables.kTestMode
-                                                                              ? Key(WidgetsKey.filterIconKey)
+                                                                              ? Key(WidgetsKeys.filterIconKey)
                                                                               : null,
                                                                           onTap:
                                                                               () {
@@ -1453,7 +1453,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                     color: Color(0xff3C3C3C),
                                                                                   )
                                                                                 : SvgPicture.asset(
-                                                                                    key: TestVariables.kTestMode ? Key(WidgetsKey.closeFilterPageKey) : null,
+                                                                                    key: TestVariables.kTestMode ? Key(WidgetsKeys.closeFilterPageKey) : null,
                                                                                     AppAssets.closeSvg,
                                                                                     width: 15,
                                                                                     height: 15,
@@ -1843,7 +1843,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                         expandingFiltersStack:
                                                             expandingFiltersStack,
                                                         key: TestVariables.kTestMode
-                                                            ? Key(WidgetsKey
+                                                            ? Key(WidgetsKeys
                                                                 .productListFilterKey)
                                                             : null,
                                                         textController:
@@ -2074,7 +2074,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
                                               return SliverPadding(
                                                 key: TestVariables.kTestMode
-                                                    ? Key(WidgetsKey
+                                                    ? Key(WidgetsKeys
                                                         .productsListKey)
                                                     : gridViewKeyForRendering,
                                                 padding: const EdgeInsets.only(
@@ -2180,7 +2180,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                           key: TestVariables
                                                                   .kTestMode
                                                               ? Key(
-                                                                  '${WidgetsKey.productInBoutiqueListKey}$index')
+                                                                  '${WidgetsKeys.productInBoutiqueListKey}$index')
                                                               : null,
                                                           slidingModeItem:
                                                               slidingMode,
@@ -2343,7 +2343,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                   "//////////////////////////////////////---------------------------------");
                                               return ProductListingLoading(
                                                 key: TestVariables.kTestMode
-                                                    ? Key(WidgetsKey
+                                                    ? Key(WidgetsKeys
                                                         .boutiqueProductListingLoadingKey)
                                                     : null,
                                               );
@@ -2401,7 +2401,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                             //                                             }
                                             return SliverPadding(
                                               key: TestVariables.kTestMode
-                                                  ? Key(WidgetsKey
+                                                  ? Key(WidgetsKeys
                                                       .productsListKey)
                                                   : gridViewKeyForRendering,
                                               padding: const EdgeInsets.only(
@@ -2505,7 +2505,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                         key: TestVariables
                                                                 .kTestMode
                                                             ? Key(
-                                                                '${WidgetsKey.productInBoutiqueListKey}$index')
+                                                                '${WidgetsKeys.productInBoutiqueListKey}$index')
                                                             : null,
                                                         slidingModeItem:
                                                             slidingMode,
@@ -2612,7 +2612,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
     required Tuple2<int, int> slidingMode,
   }) {
     return SliverPadding(
-      key: TestVariables.kTestMode ? Key(WidgetsKey.productsListKey) : null,
+      key: TestVariables.kTestMode ? Key(WidgetsKeys.productsListKey) : null,
       padding: const EdgeInsets.only(top: 10),
       sliver: SliverGrid(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -2662,7 +2662,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
               },
               child: ProductItem(
                 key: TestVariables.kTestMode
-                    ? Key('${WidgetsKey.productInBoutiqueListKey}$index')
+                    ? Key('${WidgetsKeys.productInBoutiqueListKey}$index')
                     : null,
                 slidingModeItem: slidingMode,
                 productItem: products[index],

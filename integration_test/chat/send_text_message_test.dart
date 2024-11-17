@@ -53,7 +53,7 @@ void main() {
       await SharedScenarios.testTokensAreNotNull(isJustForMarketToken: false);
       ////////////////////////////
       final Finder chatNavBarButton = find.byKey(Key(
-        WidgetsKey.chatNavBarKey,
+        WidgetsKeys.chatNavBarKey,
       ));
       await Future.delayed(const Duration(seconds: 1));
       await tester.tap(chatNavBarButton);
@@ -71,7 +71,7 @@ void main() {
       await Future.delayed(const Duration(seconds: 5));
       ////////////////////////////
       final Finder myContactsFloatingActionButton = find.byKey(Key(
-        WidgetsKey.myContactsFloatingActionKey,
+        WidgetsKeys.myContactsFloatingActionKey,
       ));
       await Future.delayed(const Duration(seconds: 1));
       await tester.tap(myContactsFloatingActionButton);
@@ -90,7 +90,7 @@ void main() {
       ////////////////////////////
       final Finder contactCardButton = find.byKey(
         Key(
-          '${WidgetsKey.contactCardKey}0',
+          '${WidgetsKeys.contactCardKey}0',
         ),
       );
       await Future.delayed(const Duration(seconds: 1));
@@ -112,8 +112,9 @@ void main() {
 
       ///////////  Replay message  ////////////
       final Finder messageCardWidget =
-          find.byKey(Key('${WidgetsKey.messageCardKey}0'));
-      final Finder replayTextWidget = find.byKey(Key(WidgetsKey.replayTextKey));
+          find.byKey(Key('${WidgetsKeys.messageCardKey}0'));
+      final Finder replayTextWidget =
+          find.byKey(Key(WidgetsKeys.replayTextKey));
       // /////////////////////////////
       await GlobalTestFunctions.findWidget(
         tester: tester,
@@ -145,9 +146,9 @@ void main() {
       );
       //////////////////////////////////////////////
       final Finder sendMessageTextField =
-          find.byKey(Key(WidgetsKey.sendMessageTextFieldKey));
+          find.byKey(Key(WidgetsKeys.sendMessageTextFieldKey));
       final Finder sendMessageInChatButton =
-          find.byKey(Key(WidgetsKey.sendMessageInChatButtonKey));
+          find.byKey(Key(WidgetsKeys.sendMessageInChatButtonKey));
       await tester.enterText(
           sendMessageTextField, 'test replay to my text message');
       await Future.delayed(const Duration(seconds: 2));
@@ -155,7 +156,7 @@ void main() {
       await tester.pumpAndSettle();
       // ////////////////////////////
       final Finder replayOnMeMessage =
-          find.byKey(Key('${WidgetsKey.replayOnMeMessageKey}0'));
+          find.byKey(Key('${WidgetsKeys.replayOnMeMessageKey}0'));
       // ////////////////////////////
       await GlobalTestFunctions.findWidget(
         tester: tester,
@@ -166,7 +167,7 @@ void main() {
       );
       // ////////////////////////////
       final Finder messageSentArrow2 =
-          find.byKey(Key('${WidgetsKey.messageSentArrowKey}0'));
+          find.byKey(Key('${WidgetsKeys.messageSentArrowKey}0'));
       ////////////////////////////
       await GlobalTestFunctions.waitFor(tester, messageSentArrow2);
       //////////////////////////
@@ -198,7 +199,7 @@ void main() {
       await tester.pumpAndSettle();
       ////////////////////////////
       final Finder forWardMessageWidget =
-          find.byKey(Key('${WidgetsKey.forWardMessageKey}0'));
+          find.byKey(Key('${WidgetsKeys.forWardMessageKey}0'));
 
       await GlobalTestFunctions.waitFor(tester, forWardMessageWidget);
 
@@ -226,7 +227,7 @@ void main() {
       await Future.delayed(const Duration(seconds: 2));
       ////////////////////////////
       final Finder chatConversationCard =
-          find.byKey(Key('${WidgetsKey.chatConversationCardKey}0'));
+          find.byKey(Key('${WidgetsKeys.chatConversationCardKey}0'));
       ////////////////////////////
       await GlobalTestFunctions.findWidget(
         tester: tester,
@@ -240,7 +241,7 @@ void main() {
       await tester.pumpAndSettle();
       ////////////////////////////
       final Finder textMessage =
-          find.byKey(Key('${WidgetsKey.textMessageCardKey}0'));
+          find.byKey(Key('${WidgetsKeys.textMessageCardKey}0'));
       ////////////////////////////
       await GlobalTestFunctions.findWidget(
         tester: tester,
@@ -251,7 +252,7 @@ void main() {
       );
       ////////////////////////////////////////
       final Finder forwardedArrow =
-          find.byKey(Key('${WidgetsKey.forwardedArrowKey}0'));
+          find.byKey(Key('${WidgetsKeys.forwardedArrowKey}0'));
       ////////////////////////////
       await GlobalTestFunctions.waitFor(tester, forwardedArrow);
       //////////////////////////
@@ -264,7 +265,7 @@ void main() {
       );
       ////////////////////////////
       final Finder messageSentArrow =
-          find.byKey(Key('${WidgetsKey.messageSentArrowKey}0'));
+          find.byKey(Key('${WidgetsKeys.messageSentArrowKey}0'));
       ////////////////////////////
       await GlobalTestFunctions.waitFor(tester, messageSentArrow);
       //////////////////////////
@@ -341,7 +342,7 @@ void main() {
 
       ////////////// Delete conversation  //////////////
       final Finder backFromChatButton =
-          find.byKey(Key(WidgetsKey.backFromChatKey));
+          find.byKey(Key(WidgetsKeys.backFromChatKey));
       await Future.delayed(const Duration(seconds: 2));
       await tester.tap(backFromChatButton);
       await tester.pumpAndSettle();
@@ -365,7 +366,7 @@ void main() {
         failedMessage: 'Find chatConversationCard failed',
       );
       final Finder deleteChatConversationIcon =
-          find.byKey(Key('${WidgetsKey.deleteChatConversationIconKey}0'));
+          find.byKey(Key('${WidgetsKeys.deleteChatConversationIconKey}0'));
       ////////////////////////////
       await tester.dragUntilVisible(
         deleteChatConversationIcon,

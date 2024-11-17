@@ -144,7 +144,7 @@ class _VerificationMethodsState extends State<VerificationMethods> {
                 Expanded(
                   child: InkWell(
                     key: TestVariables.kTestMode
-                        ? Key(WidgetsKey.chooseWhatsappButtonKey)
+                        ? Key(WidgetsKeys.chooseWhatsappButtonKey)
                         : null,
                     highlightColor: Colors.transparent,
                     splashColor: Colors.transparent,

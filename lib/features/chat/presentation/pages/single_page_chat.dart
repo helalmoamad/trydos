@@ -205,7 +205,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                           builder: (context, clicked, _) {
                             return InkWell(
                               key: TestVariables.kTestMode
-                                  ? Key(WidgetsKey.backFromChatKey)
+                                  ? Key(WidgetsKeys.backFromChatKey)
                                   : null,
                               onTap: () {
                                 BlocProvider.of<AppBloc>(context).add(
@@ -324,7 +324,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                           children: [
                             InkWell(
                               key: TestVariables.kTestMode
-                                  ? Key(WidgetsKey.goToProfileButtonKey)
+                                  ? Key(WidgetsKeys.goToProfileButtonKey)
                                   : null,
                               onTap: () {
                                 Navigator.of(context).push(MaterialPageRoute(
@@ -626,7 +626,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                       key: TestVariables
                                                               .kTestMode
                                                           ? Key(
-                                                              WidgetsKey
+                                                              WidgetsKeys
                                                                   .messagesListKey,
                                                             )
                                                           : null,
@@ -704,7 +704,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                     key: TestVariables
                                                                             .kTestMode
                                                                         ? Key(
-                                                                            '${WidgetsKey.messagesListCardKey}$index')
+                                                                            '${WidgetsKeys.messagesListCardKey}$index')
                                                                         : null,
                                                                     onLongPress:
                                                                         () {
@@ -882,7 +882,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                                                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                                                                           children: [
                                                                                                             MessageActionWidget(
-                                                                                                              key: TestVariables.kTestMode ? Key('${WidgetsKey.forWardMessageKey}$index') : null,
+                                                                                                              key: TestVariables.kTestMode ? Key('${WidgetsKeys.forWardMessageKey}$index') : null,
                                                                                                               onTap: () => forwardMessageMethod(messages.firstWhere((element) => element.id == messageId)),
                                                                                                               iconUrl: AppAssets.goBackIconSvg,
                                                                                                               myIndex: lan ? 0 : 5,
@@ -901,13 +901,13 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                                                               focusedIndex: focusedIndex,
                                                                                                             ),
                                                                                                             MessageActionWidget(
-                                                                                                              key: TestVariables.kTestMode ? Key('${WidgetsKey.deleteMessageKey}$index') : null,
+                                                                                                              key: TestVariables.kTestMode ? Key('${WidgetsKeys.deleteMessageKey}$index') : null,
                                                                                                               onTap: () {
                                                                                                                 showDialog(
                                                                                                                   context: context,
                                                                                                                   builder: (context) => AlertDialog(title: Text(LocaleKeys.delete_message.tr()), actions: [
                                                                                                                     MaterialButton(
-                                                                                                                      key: TestVariables.kTestMode ? Key('${WidgetsKey.deleteOnlyMeButtonKey}$index') : null,
+                                                                                                                      key: TestVariables.kTestMode ? Key('${WidgetsKeys.deleteOnlyMeButtonKey}$index') : null,
                                                                                                                       onPressed: () {
                                                                                                                         callsBloc.add(DeleteMessageEvent(type: "message", deleteFromBoth: 0, messageId: messages[index].id!, channelId: widget.chatId, deleteFromId: _prefsRepository.myChatId!));
                                                                                                                         Navigator.of(context).pop();
@@ -1555,7 +1555,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
         return ReplayOnMeMessage(
             messageType: message.messageType?.name ?? "",
             key: TestVariables.kTestMode
-                ? Key('${WidgetsKey.replayOnMeMessageKey}$listIndex')
+                ? Key('${WidgetsKeys.replayOnMeMessageKey}$listIndex')
                 : null,
             index: listIndex,
             messageId: message.parentMessageId!,
@@ -1600,7 +1600,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
         case 'TextMessage':
           return TextMessage(
               key: TestVariables.kTestMode
-                  ? Key('${WidgetsKey.textMessageCardKey}$listIndex')
+                  ? Key('${WidgetsKeys.textMessageCardKey}$listIndex')
                   : null,
               index: listIndex,
               receivedAt: messageStatus?.receivedAt,
@@ -1627,17 +1627,19 @@ class _SinglePageChatState extends State<SinglePageChat> {
             imageFile: message.file,
             messageId: message.id.toString(),
             senderId: message.senderUserId!,
-            imageUrl: message.mediaMessageContent?[0].filePath == null ? null : addSuitableWidthAndHeightToImage(
-                imageUrl: message.mediaMessageContent![0].filePath!,
-                width: 200.w,
-                // the width of the image in the ui
-                height: 400,
-                // the height of the image in the ui
-                ordinalWidth: 200.w, //double.tryParse(message.mediaMessageContent![0].originalWidth.toString()),
-                ordinalHeight: 400,
-                //double.tryParse(image.originalHeight.toString())
-            )
-            ,
+            imageUrl: message.mediaMessageContent?[0].filePath == null
+                ? null
+                : addSuitableWidthAndHeightToImage(
+                    imageUrl: message.mediaMessageContent![0].filePath!,
+                    width: 200.w,
+                    // the width of the image in the ui
+                    height: 400,
+                    // the height of the image in the ui
+                    ordinalWidth: 200
+                        .w, //double.tryParse(message.mediaMessageContent![0].originalWidth.toString()),
+                    ordinalHeight: 400,
+                    //double.tryParse(image.originalHeight.toString())
+                  ),
             userMessageName: message.receiverUserId != _prefsRepository.myChatId
                 ? senderName
                 : receiverName,
@@ -1654,15 +1656,17 @@ class _SinglePageChatState extends State<SinglePageChat> {
           return SharedProductMessage(
             channelId: message.channelId!,
             imageUrl: addSuitableWidthAndHeightToImage(
-      imageUrl: message.shareProductContent!.productImageUrl!,
-      width: message.shareProductContent!.imageWidth ?? 1.sw - 100,
-      // the width of the image in the ui
-      height: message.shareProductContent!.imageHeight ?? 464,
-      // the height of the image in the ui
-      ordinalWidth: message.shareProductContent!.imageWidth ?? 1.sw - 100, //double.tryParse(message.mediaMessageContent![0].originalWidth.toString()),
-      ordinalHeight: message.shareProductContent!.imageHeight ?? 464,
-      //double.tryParse(image.originalHeight.toString())
-      ),
+              imageUrl: message.shareProductContent!.productImageUrl!,
+              width: message.shareProductContent!.imageWidth ?? 1.sw - 100,
+              // the width of the image in the ui
+              height: message.shareProductContent!.imageHeight ?? 464,
+              // the height of the image in the ui
+              ordinalWidth: message.shareProductContent!.imageWidth ??
+                  1.sw -
+                      100, //double.tryParse(message.mediaMessageContent![0].originalWidth.toString()),
+              ordinalHeight: message.shareProductContent!.imageHeight ?? 464,
+              //double.tryParse(image.originalHeight.toString())
+            ),
             productName: message.shareProductContent!.productName ?? "",
             productDescription:
                 message.shareProductContent!.productDescription ?? "",

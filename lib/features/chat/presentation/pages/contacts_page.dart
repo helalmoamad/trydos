@@ -203,7 +203,7 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
                               return ContactCard(
                                 key: TestVariables.kTestMode
                                     ? Key(
-                                        '${WidgetsKey.contactCardKey}$index',
+                                        '${WidgetsKeys.contactCardKey}$index',
                                       )
                                     : null,
                                 index: index,

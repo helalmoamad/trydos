@@ -375,7 +375,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                   child: Container(
                                     height: 65,
                                     key: TestVariables.kTestMode
-                                        ? Key(WidgetsKey
+                                        ? Key(WidgetsKeys
                                             .searchButtonInSearchPageKey)
                                         : null,
                                     decoration: BoxDecoration(

@@ -261,7 +261,7 @@ class _HomePageState extends State<HomePage> {
           onRefresh: _refreshData,
           child: CustomScrollView(
             key: TestVariables.kTestMode
-                ? Key(WidgetsKey.homepageScrollKey)
+                ? Key(WidgetsKeys.homepageScrollKey)
                 : null,
             controller: scrollController,
             physics: const ClampingScrollPhysics(
@@ -367,7 +367,7 @@ class _HomePageState extends State<HomePage> {
                                       0))) {
                         return sliverListSeparated(
                             key: TestVariables.kTestMode
-                                ? Key(WidgetsKey.boutiquesFailureStatusKey)
+                                ? Key(WidgetsKeys.boutiquesFailureStatusKey)
                                 : null,
                             itemBuilder: (_, index) => Padding(
                                   padding:
@@ -438,13 +438,13 @@ class _HomePageState extends State<HomePage> {
                       }
                       return sliverListSeparated(
                         key: TestVariables.kTestMode
-                            ? Key(WidgetsKey.boutiquesSuccessStatusKey)
+                            ? Key(WidgetsKeys.boutiquesSuccessStatusKey)
                             : reRenderingListViewKey[currentSlug],
                         itemBuilder: (_, index) => Padding(
                             padding: HWEdgeInsets.symmetric(horizontal: 15.w),
                             child: HomePageCard2(
                               key: TestVariables.kTestMode
-                                  ? Key('${WidgetsKey.boutiqueCardKey}$index')
+                                  ? Key('${WidgetsKeys.boutiqueCardKey}$index')
                                   : null,
                               category_Slug: currentSlug,
                               withSlidingImages: homeState

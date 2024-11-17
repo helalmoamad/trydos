@@ -26,7 +26,7 @@ void main() {
       ////////////////////////////
       final Finder chatNavBarButton = find.byKey(
         Key(
-          WidgetsKey.chatNavBarKey,
+          WidgetsKeys.chatNavBarKey,
         ),
       );
       await Future.delayed(const Duration(seconds: 1));

@@ -101,7 +101,7 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
               children: [
                 InkWell(
                   key: TestVariables.kTestMode
-                      ? Key(WidgetsKey.appBarGoBackArrowKey)
+                      ? Key(WidgetsKeys.appBarGoBackArrowKey)
                       : null,
                   onTap: () {
                     appBarParams.onBack?.call();

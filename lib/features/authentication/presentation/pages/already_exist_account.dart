@@ -134,7 +134,7 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                 Spacer(),
                 InkWell(
                   key: TestVariables.kTestMode
-                      ? Key(WidgetsKey.loginContinueButtonKey)
+                      ? Key(WidgetsKeys.loginContinueButtonKey)
                       : null,
                   onTap: () {
                     Future.delayed(
@@ -185,7 +185,7 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                 20.verticalSpace,
                 InkWell(
                   key: TestVariables.kTestMode
-                      ? Key(WidgetsKey.takeLookButtonKey)
+                      ? Key(WidgetsKeys.takeLookButtonKey)
                       : null,
                   focusColor: Colors.transparent,
                   splashColor: Colors.transparent,

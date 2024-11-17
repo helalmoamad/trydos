@@ -51,7 +51,7 @@ void main() {
       await SharedScenarios.testTokensAreNotNull(isJustForMarketToken: false);
       ////////////////////////////
       final Finder chatNavBarButton = find.byKey(Key(
-        WidgetsKey.chatNavBarKey,
+        WidgetsKeys.chatNavBarKey,
       ));
       await Future.delayed(const Duration(seconds: 1));
       await tester.tap(chatNavBarButton);
@@ -92,12 +92,12 @@ void main() {
       await tester.pumpAndSettle();
       ////////////////////////////
       final Finder messagesList = find.byKey(Key(
-        WidgetsKey.messagesListKey,
+        WidgetsKeys.messagesListKey,
       ));
       ////////////////////////////
       int initialItemCount = 0;
       while (tester.any(find
-          .byKey(Key('${WidgetsKey.messagesListCardKey}$initialItemCount')))) {
+          .byKey(Key('${WidgetsKeys.messagesListCardKey}$initialItemCount')))) {
         initialItemCount++;
       }
       ///////////////////////////
@@ -114,7 +114,7 @@ void main() {
       ///////////////////////////
       int finalItemCount = initialItemCount;
       while (tester.any(find
-          .byKey(Key('${WidgetsKey.messagesListCardKey}$finalItemCount')))) {
+          .byKey(Key('${WidgetsKeys.messagesListCardKey}$finalItemCount')))) {
         finalItemCount++;
       }
       ///////////////////////////

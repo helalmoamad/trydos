@@ -1,4 +1,4 @@
-class WidgetsKey {
+class WidgetsKeys {
   static const haveAccountButtonKey = 'have_already_account_button';
   static const createNewAccountButtonKey = 'create_new_account_button';
   static const agreeContinueButtonKey = 'agree_continue_button';
@@ -107,4 +107,10 @@ class WidgetsKey {
   static const filterPageScrollKey = 'filter_page_scroll_key';
   static const productListingScrollKey = 'product_listing_scroll_key';
   static const mainCategoriesItemKey = 'main_categories_item_ley';
+  static const sizeCircleProductListingFilterKey =
+      'size_circle_product_listing_filter_key';
+  static const colorCircleProductListingFilterKey =
+      'color_circle_product_listing_filter_key';
+  static const priceCircleProductListingFilterKey =
+      'price_circle_product_listing_filter_key';
 }

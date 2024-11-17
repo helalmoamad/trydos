@@ -193,7 +193,7 @@ class ChatPageContentState extends State<ChatPageContent> {
                               return ChatCard(
                                 key: TestVariables.kTestMode
                                     ? Key(
-                                        '${WidgetsKey.chatConversationCardKey}$index',
+                                        '${WidgetsKeys.chatConversationCardKey}$index',
                                       )
                                     : null,
                                 onSendForwardMessage:

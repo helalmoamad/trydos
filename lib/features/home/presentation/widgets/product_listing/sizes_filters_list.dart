@@ -16,6 +16,8 @@ import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 
+import '../../../../../common/test_utils/test_var.dart';
+import '../../../../../common/test_utils/widgets_keys.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
@@ -144,6 +146,10 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                       return Stack(
                         children: [
                           GestureDetector(
+                            key: TestVariables.kTestMode == false
+                                ? null
+                                : Key(
+                                    '${WidgetsKeys.sizeCircleProductListingFilterKey}$index'),
                             onTap: () {
                               Filter? prevChoosedOrAppliedFilterToAddToIt =
                                   widget.hideTitle

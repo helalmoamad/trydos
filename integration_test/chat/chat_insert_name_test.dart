@@ -41,7 +41,7 @@ void main() {
         failedMessage: 'Find Adding Name failed',
       );
       //////////////////////////
-      final Finder nameField = find.byKey(Key(WidgetsKey.registerCancelKey));
+      final Finder nameField = find.byKey(Key(WidgetsKeys.registerCancelKey));
       await tester.tap(nameField);
       await tester.pumpAndSettle();
       //////////////////////////
@@ -61,7 +61,7 @@ void main() {
       await tester.pumpAndSettle();
       ////////////////////////////
       final Finder chatNavBarButton = find.byKey(Key(
-        WidgetsKey.chatNavBarKey,
+        WidgetsKeys.chatNavBarKey,
       ));
       await Future.delayed(const Duration(seconds: 1));
       await tester.tap(chatNavBarButton);

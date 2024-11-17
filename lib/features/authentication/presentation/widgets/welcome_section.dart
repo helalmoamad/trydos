@@ -91,7 +91,7 @@ class _WelcomeSectionState extends State<WelcomeSection> {
           ),
           InkWell(
             key: TestVariables.kTestMode
-                ? Key(WidgetsKey.haveAccountButtonKey)
+                ? Key(WidgetsKeys.haveAccountButtonKey)
                 : null,
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
@@ -157,7 +157,7 @@ class _WelcomeSectionState extends State<WelcomeSection> {
           ),
           InkWell(
             key: TestVariables.kTestMode
-                ? Key(WidgetsKey.createNewAccountButtonKey)
+                ? Key(WidgetsKeys.createNewAccountButtonKey)
                 : null,
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
@@ -221,7 +221,7 @@ class _WelcomeSectionState extends State<WelcomeSection> {
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
             key: TestVariables.kTestMode
-                ? Key(WidgetsKey.laterTakeLookKey)
+                ? Key(WidgetsKeys.laterTakeLookKey)
                 : null,
             onTap: () {
               Future.delayed(

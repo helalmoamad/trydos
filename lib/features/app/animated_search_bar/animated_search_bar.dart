@@ -313,7 +313,7 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
                         color: Colors.transparent,
                         borderRadius: BorderRadius.circular(15.0),
                         child: GestureDetector(
-                          key: Key(WidgetsKey.productListingSearchIconKey),
+                          key: Key(WidgetsKeys.productListingSearchIconKey),
 
                           ///if toggle is 1, which means it's open. so show the back icon, which will close it.
                           ///if the toggle is 0, which means it's closed, so tapping on it will expand the widget.

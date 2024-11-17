@@ -327,7 +327,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                             return MyTextWidget(
                                                               key: TestVariables
                                                                       .kTestMode
-                                                                  ? Key(WidgetsKey
+                                                                  ? Key(WidgetsKeys
                                                                       .otpRemainingTimeKey)
                                                                   : null,
                                                               '0${remainingTime?.min ?? '0'} : $seconds ',
@@ -353,7 +353,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                       child: MyTextWidget(
                                                         key: TestVariables
                                                                 .kTestMode
-                                                            ? Key(WidgetsKey
+                                                            ? Key(WidgetsKeys
                                                                 .resendCodeButtonKey)
                                                             : null,
                                                         LocaleKeys.resend_code

@@ -171,9 +171,7 @@ handleOpenChatPageFromNotificationInBackground(String? prevMessageId,
   navigationToSinglePageChat(message.channel!);
 }
 
-navigationToProductDetailsPage(String productId) {
-
-}
+navigationToProductDetailsPage(String productId) {}
 
 navigationToSinglePageChat(Chat chat) {
   GetIt.I<ChatBloc>()
@@ -401,11 +399,10 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 
   void onMessage() {
     FirebaseMessaging.onMessage.listen((event) {
-
-      if(HandlingMarketNotifications.checkIfTheNotificationIsNotRelatedToChat(event)) {
-        LocalNotificationService()
-            .showNotificationWithPayload(message: event);
-       return ;
+      if (HandlingMarketNotifications.checkIfTheNotificationIsNotRelatedToChat(
+          event)) {
+        LocalNotificationService().showNotificationWithPayload(message: event);
+        return;
       }
 
       Map<String, dynamic> remoteMessage =
@@ -704,7 +701,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                 Center(
                                                     child: CountryDropdown(
                                                   key: TestVariables.kTestMode
-                                                      ? Key(WidgetsKey
+                                                      ? Key(WidgetsKeys
                                                           .countryDropDownKey)
                                                       : null,
                                                   countries: homestate
@@ -720,7 +717,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                 SizedBox(height: 80),
                                                 ElevatedButton(
                                                   key: TestVariables.kTestMode
-                                                      ? Key(WidgetsKey
+                                                      ? Key(WidgetsKeys
                                                           .chooseCountryButtonKey)
                                                       : null,
                                                   onPressed: () {

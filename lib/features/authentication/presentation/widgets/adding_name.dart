@@ -163,7 +163,7 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
                       builder: (context, display, _) {
                         return NameFormField(
                           key: TestVariables.kTestMode
-                              ? Key(WidgetsKey.nameFormFieldKey)
+                              ? Key(WidgetsKeys.nameFormFieldKey)
                               : null,
                           validator: ((value) {
                             if (value!.length < 8) {
@@ -189,7 +189,7 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
                                   )
                                 : InkWell(
                                     key: TestVariables.kTestMode
-                                        ? Key(WidgetsKey.confirmNameButtonKey)
+                                        ? Key(WidgetsKeys.confirmNameButtonKey)
                                         : null,
                                     onTap: () {
                                       if (!widget.fromLogin) {

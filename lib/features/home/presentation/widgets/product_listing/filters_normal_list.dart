@@ -69,7 +69,7 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
           if (!widget.hideTitle) ...{
             Row(
               key: TestVariables.kTestMode
-                  ? Key(WidgetsKey.filterByBrandHeadKey)
+                  ? Key(WidgetsKeys.filterByBrandHeadKey)
                   : null,
               children: [
                 FilterSelectedMark(width: 20, height: 20),
@@ -93,7 +93,7 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                       GetProductFiltersStatus.loading) {
                     return Row(
                       key: TestVariables.kTestMode
-                          ? Key(WidgetsKey.getBrandsLoadingKey)
+                          ? Key(WidgetsKeys.getBrandsLoadingKey)
                           : null,
                       children: [
                         SizedBox(
@@ -242,7 +242,7 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                                 key: TestVariables.kTestMode == false
                                     ? null
                                     : Key(
-                                        '${WidgetsKey.brandCircleProductListingFilterKey}$index'),
+                                        '${WidgetsKeys.brandCircleProductListingFilterKey}$index'),
                                 width: 70,
                                 height: 70,
                                 decoration: BoxDecoration(
@@ -293,7 +293,7 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                           key: TestVariables.kTestMode == false
                               ? null
                               : Key(
-                                  '${WidgetsKey.brandProductListingFilterNameKey}$index'),
+                                  '${WidgetsKeys.brandProductListingFilterNameKey}$index'),
                           widget.isBrandFilter
                               ? widget.filters[index].name
                               : 'T-shirt',

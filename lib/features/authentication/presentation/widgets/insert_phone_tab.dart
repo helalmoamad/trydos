@@ -184,7 +184,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                 builder: (context, display, _) {
                   return PhoneFormField(
                     key: TestVariables.kTestMode
-                        ? Key(WidgetsKey.loginPhoneFormFieldKey)
+                        ? Key(WidgetsKeys.loginPhoneFormFieldKey)
                         : null,
                     focusNode: widget.focusNode,
                     onChange: (String? text) {
@@ -262,7 +262,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                             )
                           : InkWell(
                               key: TestVariables.kTestMode
-                                  ? Key(WidgetsKey.loginConfirmPhoneButtonKey)
+                                  ? Key(WidgetsKeys.loginConfirmPhoneButtonKey)
                                   : null,
                               onTap: () {
                                 widget.moveToNextStep

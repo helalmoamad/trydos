@@ -41,7 +41,7 @@ void main() {
       //////////////////////////
       await Future.delayed(const Duration(seconds: 2));
       final Finder createNewAccountContinueButton =
-          find.byKey(Key(WidgetsKey.createNewAccountContinueKey));
+          find.byKey(Key(WidgetsKeys.createNewAccountContinueKey));
       await tester.tap(createNewAccountContinueButton);
       await tester.pumpAndSettle();
       //////////////////////////

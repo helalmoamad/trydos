@@ -62,7 +62,7 @@ void main() {
           );
           ////////////////////////////
           final Finder loginContinueButtonKey =
-              find.byKey(Key(WidgetsKey.loginContinueButtonKey));
+              find.byKey(Key(WidgetsKeys.loginContinueButtonKey));
           await Future.delayed(const Duration(seconds: 1));
           await tester.tap(loginContinueButtonKey);
           await tester.pumpAndSettle();
@@ -116,7 +116,7 @@ void main() {
           );
           ////////////////////////////
           final Finder takeLookButtonKey =
-              find.byKey(Key(WidgetsKey.takeLookButtonKey));
+              find.byKey(Key(WidgetsKeys.takeLookButtonKey));
           await Future.delayed(const Duration(seconds: 1));
           await tester.tap(takeLookButtonKey);
           await tester.pumpAndSettle();

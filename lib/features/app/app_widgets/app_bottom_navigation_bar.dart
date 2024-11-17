@@ -174,7 +174,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
               Expanded(
                 child: InkWell(
                   key: TestVariables.kTestMode
-                      ? Key(WidgetsKey.chatNavBarKey)
+                      ? Key(WidgetsKeys.chatNavBarKey)
                       : null,
                   onTap: () async {
                     if (prefsRepository.isVerifiedPhone != true) {

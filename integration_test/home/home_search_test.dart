@@ -29,7 +29,7 @@ void main() {
       await SharedScenarios.registerGuest(tester: tester);
       ////////////// Find Home Search Icon //////////////
       final Finder homeSearchIconWidget =
-          find.byKey(Key(WidgetsKey.homeSearchIconKey));
+          find.byKey(Key(WidgetsKeys.homeSearchIconKey));
 
       await GlobalTestFunctions.findWidget(
         tester: tester,
@@ -51,7 +51,7 @@ void main() {
       );
       //////////////////  Scroll until find best saller /////////////////////////////////////
       final Finder searchPageBoutiqueListWidget =
-          find.byKey(Key(WidgetsKey.searchPageBoutiqueListKey));
+          find.byKey(Key(WidgetsKeys.searchPageBoutiqueListKey));
 
       await GlobalTestFunctions.findWidget(
         tester: tester,
@@ -69,7 +69,7 @@ void main() {
       while (!isFound) {
         // Try to find the boutique name widget by key with index
         Finder searchPageBoutiqueNameWidget =
-            find.byKey(Key('${WidgetsKey.searchPageBoutiqueNameKey}$index'));
+            find.byKey(Key('${WidgetsKeys.searchPageBoutiqueNameKey}$index'));
         try {
           expect(searchPageBoutiqueNameWidget, findsOneWidget);
 
@@ -137,7 +137,7 @@ void main() {
       await Future.delayed(const Duration(seconds: 2));
 
       final Finder searchBoutiqueNameWidget =
-          find.byKey(Key('${WidgetsKey.searchPageBoutiqueNameKey}$index'));
+          find.byKey(Key('${WidgetsKeys.searchPageBoutiqueNameKey}$index'));
 
       await tester.tap(searchBoutiqueNameWidget);
       await tester.pumpAndSettle();
@@ -146,7 +146,7 @@ void main() {
       ///////////////////// Search ////////////////////////////////
 
       final Finder searchButtonInSearchPageKey =
-          find.byKey(Key(WidgetsKey.searchButtonInSearchPageKey));
+          find.byKey(Key(WidgetsKeys.searchButtonInSearchPageKey));
       final Finder scrollableFinder = find.byType(SearchPage);
 
       await tester.drag(scrollableFinder, const Offset(0, 2000));
@@ -160,7 +160,7 @@ void main() {
       /////////////////////////////////////////////////////
       /////////////////////  product listing filter icon button ////////////////////////
       final Finder filterIconButton = find.byKey(
-        Key(WidgetsKey.filterIconKey),
+        Key(WidgetsKeys.filterIconKey),
       );
 
       expect(filterIconButton, findsOneWidget);

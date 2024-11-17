@@ -53,7 +53,7 @@ void main() {
       await SharedScenarios.testTokensAreNotNull(isJustForMarketToken: false);
       ////////////////////////////
       final Finder chatNavBarButton = find.byKey(Key(
-        WidgetsKey.chatNavBarKey,
+        WidgetsKeys.chatNavBarKey,
       ));
       await Future.delayed(const Duration(seconds: 1));
       await tester.tap(chatNavBarButton);
@@ -95,7 +95,7 @@ void main() {
       /////////// show profile for the user ///////////
       final Finder goToProfileButton = find.byKey(
         Key(
-          WidgetsKey.goToProfileButtonKey,
+          WidgetsKeys.goToProfileButtonKey,
         ),
       );
       await Future.delayed(const Duration(seconds: 1));
@@ -113,15 +113,15 @@ void main() {
       //////////////////////////
       ////////////////////////////
       final Finder imageCountInEachChat = find.byKey(Key(
-        WidgetsKey.imageCountInEachChatKey,
+        WidgetsKeys.imageCountInEachChatKey,
       ));
       ////////////////////////////
       final Finder videoCountInEachChat = find.byKey(Key(
-        WidgetsKey.videoCountInEachChatKey,
+        WidgetsKeys.videoCountInEachChatKey,
       ));
       ////////////////////////////
       final Finder fileCountInEachChat = find.byKey(Key(
-        WidgetsKey.fileCountInEachChatKey,
+        WidgetsKeys.fileCountInEachChatKey,
       ));
       ////////////////////////////
       await GlobalTestFunctions.findWidget(
@@ -160,7 +160,7 @@ void main() {
       await Future.delayed(const Duration(seconds: 5));
       final Finder backFromProfile = find.byKey(
         Key(
-          WidgetsKey.backFromProfileKey,
+          WidgetsKeys.backFromProfileKey,
         ),
       );
       await tester.tap(backFromProfile);

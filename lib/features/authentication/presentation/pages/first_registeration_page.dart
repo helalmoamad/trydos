@@ -119,7 +119,7 @@ class _RegistrationPageState extends State<RegistrationPage>
                         if (index > 1)
                           return InkWell(
                             key: TestVariables.kTestMode
-                                ? Key(WidgetsKey.registerCancelKey)
+                                ? Key(WidgetsKeys.registerCancelKey)
                                 : null,
                             highlightColor: Colors.transparent,
                             splashColor: Colors.transparent,
@@ -309,9 +309,13 @@ class _RegistrationPageState extends State<RegistrationPage>
                                   curve: Curves.easeInOut);
                               return false;
                             }
-                            if(BlocProvider.of<AppBloc>(context).state.currentIndex != 0){
-                              BlocProvider.of<AppBloc>(context).add(ChangeBasePage(0));
-                              return  false;
+                            if (BlocProvider.of<AppBloc>(context)
+                                    .state
+                                    .currentIndex !=
+                                0) {
+                              BlocProvider.of<AppBloc>(context)
+                                  .add(ChangeBasePage(0));
+                              return false;
                             }
                             return true;
                           }),

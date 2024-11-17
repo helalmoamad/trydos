@@ -108,7 +108,7 @@ class CreateAccountSection extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: InkWell(
             key: TestVariables.kTestMode
-                ? Key(WidgetsKey.agreeContinueButtonKey)
+                ? Key(WidgetsKeys.agreeContinueButtonKey)
                 : null,
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,

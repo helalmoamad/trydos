@@ -251,7 +251,7 @@ class _TabsBarState extends State<TabsBar> {
                   ),
                   child: Row(
                       key: TestVariables.kTestMode
-                          ? Key(WidgetsKey.mainCategoriesTabNullKey)
+                          ? Key(WidgetsKeys.mainCategoriesTabNullKey)
                           : null,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: List.generate(
@@ -381,7 +381,7 @@ class _TabsBarState extends State<TabsBar> {
                               },
                               suffixWidget: Center(
                                 key: TestVariables.kTestMode
-                                    ? Key(WidgetsKey.homeSearchIconKey)
+                                    ? Key(WidgetsKeys.homeSearchIconKey)
                                     : null,
                                 child: SvgPicture.asset(
                                   AppAssets.searchOutlinedSvg,
@@ -714,7 +714,8 @@ class _TabsBarState extends State<TabsBar> {
                                         right: 15,
                                       ),
                                       key: TestVariables.kTestMode
-                                          ? Key(WidgetsKey.mainCategoriesTabKey)
+                                          ? Key(
+                                              WidgetsKeys.mainCategoriesTabKey)
                                           : null,
                                       scrollDirection: Axis.horizontal,
                                       itemCount: (homeState
@@ -731,70 +732,68 @@ class _TabsBarState extends State<TabsBar> {
                                         return Padding(
                                             key: TestVariables.kTestMode
                                                 ? Key(
-                                                    '${WidgetsKey.mainCategoriesItemKey}$index')
+                                                    '${WidgetsKeys.mainCategoriesItemKey}$index')
                                                 : null,
                                             padding:
                                                 HWEdgeInsetsDirectional.only(
                                                     end: 6),
                                             child: InkWell(
                                               onTap: () {
-                                                print(
-                                                    '/// ${homeState.boutiquesForEveryMainCategoryThatDidPrefetch}');
-                                                // if (BlocProvider.of<AppBloc>(
-                                                //             context)
-                                                //         .state
-                                                //         .tabIndex !=
-                                                //     index) {
-                                                //   appBloc.add(ChangeTab(index));
-                                                //   ///////////////////////
-                                                //   homeBloc.add(
-                                                //     GetHomeBoutiqesEvent(
-                                                //       getWithPrefetchForBoutiques:
-                                                //           true,
-                                                //       getWithPagination: false,
-                                                //       offset: "1",
-                                                //       categorySlug: homeState
-                                                //           .mainCategoriesResponseModel!
-                                                //           .data!
-                                                //           .mainCategories![
-                                                //               index]
-                                                //           .slug!,
-                                                //       context: context,
-                                                //     ),
-                                                //   );
-                                                //   ////////////////////////////
-                                                //   homeBloc.add(
-                                                //     ChangeCurrentIndexForMainCategoryEvent(
-                                                //       index: index,
-                                                //     ),
-                                                //   );
-                                                //   ///////////////////////////
-                                                //   FirebaseAnalyticsService
-                                                //       .logEventForSession(
-                                                //     eventName:
-                                                //         AnalyticsEventsConst
-                                                //             .buttonClicked,
-                                                //     executedEventName:
-                                                //         AnalyticsExecutedEventNameConst
-                                                //             .chooseCategoryButton,
-                                                //   );
-                                                // } else {
-                                                //   appBloc.add(ChangeTab(-1));
-                                                //   homeBloc.add(
-                                                //     GetHomeBoutiqesEvent(
-                                                //       getWithPrefetchForBoutiques:
-                                                //           true,
-                                                //       context: context,
-                                                //       categorySlug: "Empty",
-                                                //       offset: "1",
-                                                //       getWithPagination: false,
-                                                //     ),
-                                                //   );
-                                                //   homeBloc.add(
-                                                //     ChangeCurrentIndexForMainCategoryEvent(
-                                                //         index: -1),
-                                                //   );
-                                                // }
+                                                if (BlocProvider.of<AppBloc>(
+                                                            context)
+                                                        .state
+                                                        .tabIndex !=
+                                                    index) {
+                                                  appBloc.add(ChangeTab(index));
+                                                  ///////////////////////
+                                                  homeBloc.add(
+                                                    GetHomeBoutiqesEvent(
+                                                      getWithPrefetchForBoutiques:
+                                                          true,
+                                                      getWithPagination: false,
+                                                      offset: "1",
+                                                      categorySlug: homeState
+                                                          .mainCategoriesResponseModel!
+                                                          .data!
+                                                          .mainCategories![
+                                                              index]
+                                                          .slug!,
+                                                      context: context,
+                                                    ),
+                                                  );
+                                                  ////////////////////////////
+                                                  homeBloc.add(
+                                                    ChangeCurrentIndexForMainCategoryEvent(
+                                                      index: index,
+                                                    ),
+                                                  );
+                                                  ///////////////////////////
+                                                  FirebaseAnalyticsService
+                                                      .logEventForSession(
+                                                    eventName:
+                                                        AnalyticsEventsConst
+                                                            .buttonClicked,
+                                                    executedEventName:
+                                                        AnalyticsExecutedEventNameConst
+                                                            .chooseCategoryButton,
+                                                  );
+                                                } else {
+                                                  appBloc.add(ChangeTab(-1));
+                                                  homeBloc.add(
+                                                    GetHomeBoutiqesEvent(
+                                                      getWithPrefetchForBoutiques:
+                                                          true,
+                                                      context: context,
+                                                      categorySlug: "Empty",
+                                                      offset: "1",
+                                                      getWithPagination: false,
+                                                    ),
+                                                  );
+                                                  homeBloc.add(
+                                                    ChangeCurrentIndexForMainCategoryEvent(
+                                                        index: -1),
+                                                  );
+                                                }
                                               },
                                               child: Column(
                                                 crossAxisAlignment:

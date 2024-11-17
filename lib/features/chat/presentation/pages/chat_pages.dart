@@ -157,7 +157,7 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
               floatingActionButton: FloatingActionButton(
                 key: TestVariables.kTestMode
                     ? Key(
-                        WidgetsKey.myContactsFloatingActionKey,
+                        WidgetsKeys.myContactsFloatingActionKey,
                       )
                     : null,
                 onPressed: () {

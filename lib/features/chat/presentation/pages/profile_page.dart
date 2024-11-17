@@ -355,7 +355,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                           5.horizontalSpace,
                                           MyTextWidget(
                                             key: TestVariables.kTestMode
-                                                ? Key(WidgetsKey
+                                                ? Key(WidgetsKeys
                                                     .imageCountInEachChatKey)
                                                 : null,
                                             state.imageCountInEachChat
@@ -378,7 +378,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                           5.horizontalSpace,
                                           MyTextWidget(
                                             key: TestVariables.kTestMode
-                                                ? Key(WidgetsKey
+                                                ? Key(WidgetsKeys
                                                     .videoCountInEachChatKey)
                                                 : null,
                                             state.videoCountInEachChat
@@ -401,7 +401,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                           5.horizontalSpace,
                                           MyTextWidget(
                                             key: TestVariables.kTestMode
-                                                ? Key(WidgetsKey
+                                                ? Key(WidgetsKeys
                                                     .fileCountInEachChatKey)
                                                 : null,
                                             state.fileCountInEachChat
@@ -552,7 +552,7 @@ class _ProfilePageState extends State<ProfilePage> {
               child: InkWell(
                 key: TestVariables.kTestMode
                     ? Key(
-                        WidgetsKey.backFromProfileKey,
+                        WidgetsKeys.backFromProfileKey,
                       )
                     : null,
                 onTap: () {

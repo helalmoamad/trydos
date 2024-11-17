@@ -209,7 +209,7 @@ class _TextMessageState extends ThemeState<TextMessage> {
                             Container(
                               key: TestVariables.kTestMode
                                   ? Key(
-                                      '${WidgetsKey.messageCardKey}${widget.index}')
+                                      '${WidgetsKeys.messageCardKey}${widget.index}')
                                   : null,
                               constraints: BoxConstraints(
                                   minHeight: !widget.withShadow ? 71 : 48),
@@ -378,7 +378,7 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                                                       key: TestVariables
                                                                               .kTestMode
                                                                           ? Key(
-                                                                              '${WidgetsKey.messageSentArrowKey}${widget.index}',
+                                                                              '${WidgetsKeys.messageSentArrowKey}${widget.index}',
                                                                             )
                                                                           : null,
                                                                       AppAssets
@@ -395,7 +395,7 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                               SvgPicture.asset(
                                                 key: TestVariables.kTestMode
                                                     ? Key(
-                                                        '${WidgetsKey.forwardedArrowKey}${widget.index}',
+                                                        '${WidgetsKeys.forwardedArrowKey}${widget.index}',
                                                       )
                                                     : null,
                                                 AppAssets.forwardedSvg,

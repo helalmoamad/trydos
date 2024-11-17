@@ -430,7 +430,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                           padding: EdgeInsetsDirectional.only(start: 25),
                           child: Row(
                             key: TestVariables.kTestMode
-                                ? Key(WidgetsKey.filterByCategoryHeadKey)
+                                ? Key(WidgetsKeys.filterByCategoryHeadKey)
                                 : null,
                             children: [
                               FilterSelectedMark(width: 20, height: 20),
@@ -455,7 +455,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                   GetProductFiltersStatus.loading)
                                 Row(
                                   key: TestVariables.kTestMode
-                                      ? Key(WidgetsKey.getCategoriesLoadingKey)
+                                      ? Key(WidgetsKeys.getCategoriesLoadingKey)
                                       : null,
                                   children: [
                                     SizedBox(
@@ -610,15 +610,15 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                  */
                         ScrollConfiguration(
                           key: TestVariables.kTestMode
-                              ? Key(WidgetsKey.filterPageScrollKey)
+                              ? Key(WidgetsKeys.filterPageScrollKey)
                               : null,
                           behavior: CupertinoScrollBehavior(),
                           child: Expanded(
                             child: InViewNotifierList(
                                 key: TestVariables.kTestMode == false
                                     ? null
-                                    : Key(
-                                        WidgetsKey.productListingFilterListKey),
+                                    : Key(WidgetsKeys
+                                        .productListingFilterListKey),
                                 isInViewPortCondition: (double deltaTop,
                                     double deltaBottom, double vpWidth) {
                                   print(
@@ -670,7 +670,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                 key: TestVariables.kTestMode ==
                                                         false
                                                     ? null
-                                                    : Key(WidgetsKey
+                                                    : Key(WidgetsKeys
                                                         .categoriesProductListingFilterListKey),
                                                 boutiqueSlug:
                                                     widget.boutiqueSlug,
@@ -692,7 +692,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                                 .kTestMode ==
                                                             false
                                                         ? null
-                                                        : Key(WidgetsKey
+                                                        : Key(WidgetsKeys
                                                             .brandsProductListingFilterListKey),
                                                     hideTitle: true,
                                                     boutiqueSlug:
@@ -717,7 +717,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                                     .kTestMode ==
                                                                 false
                                                             ? null
-                                                            : Key(WidgetsKey
+                                                            : Key(WidgetsKeys
                                                                 .sizesProductListingFilterListKey),
                                                         hideTitle: true,
                                                         boutiqueSlug:
@@ -741,7 +741,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                                         .kTestMode ==
                                                                     false
                                                                 ? null
-                                                                : Key(WidgetsKey
+                                                                : Key(WidgetsKeys
                                                                     .colorsProductListingFilterListKey),
                                                             hideTitle: true,
                                                             boutiqueSlug: widget
@@ -767,7 +767,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                                         .kTestMode ==
                                                                     false
                                                                 ? null
-                                                                : Key(WidgetsKey
+                                                                : Key(WidgetsKeys
                                                                     .pricesProductListingFilterListKey),
                                                             decimalPoint: state
                                                                     .startingSetting
@@ -1099,7 +1099,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                       flex: 5,
                                       child: InkWell(
                                         key: TestVariables.kTestMode
-                                            ? Key(WidgetsKey
+                                            ? Key(WidgetsKeys
                                                 .applayFilterButtonKey)
                                             : null,
                                         onTap: () {
@@ -1446,7 +1446,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                         child: MyTextWidget(
                                                           key: TestVariables
                                                                   .kTestMode
-                                                              ? Key(WidgetsKey
+                                                              ? Key(WidgetsKeys
                                                                   .resetFiltersKey)
                                                               : null,
                                                           'Reset',
@@ -1551,7 +1551,7 @@ Widget choosedOrAppliedFiltersWidget({
         child: ListView(
             key: TestVariables.kTestMode == false
                 ? null
-                : Key(WidgetsKey.appliedFiltersProductListingKey),
+                : Key(WidgetsKeys.appliedFiltersProductListingKey),
             shrinkWrap: true,
             physics: ClampingScrollPhysics(),
             scrollDirection: Axis.horizontal,
@@ -1560,7 +1560,7 @@ Widget choosedOrAppliedFiltersWidget({
                 InkWell(
                   key: TestVariables.kTestMode == false
                       ? null
-                      : Key(WidgetsKey.appliedFiltersProductListingCloseKey),
+                      : Key(WidgetsKeys.appliedFiltersProductListingCloseKey),
                   onTap: () {
                     controller?.clear();
                     homeBloc.add(AddPrefAppliedFilterForExtendFilterEvent(
@@ -1623,7 +1623,7 @@ Widget choosedOrAppliedFiltersWidget({
                 InkWell(
                   key: TestVariables.kTestMode == false
                       ? null
-                      : Key(WidgetsKey.appliedFiltersProductListingCloseKey),
+                      : Key(WidgetsKeys.appliedFiltersProductListingCloseKey),
                   onTap: () {
                     controller?.clear();
                     homeBloc.add(ChangeAppliedFiltersEvent(
@@ -1858,7 +1858,7 @@ Widget choosedOrAppliedFiltersWidget({
                               ),
                               MyTextWidget(
                                 key: TestVariables.kTestMode
-                                    ? Key(WidgetsKey
+                                    ? Key(WidgetsKeys
                                         .appliedFiltersBoutiqueNameKey)
                                     : null,
                                 filters.boutiques![index].name.toString(),

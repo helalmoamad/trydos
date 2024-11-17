@@ -3316,9 +3316,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     emit(
       state.copyWith(
           theReplyFromGemini: event.resetAppliedFilters ? "" : null,
-        appliedFiltersByUser: Map.of(appliedFilters),
-          isExpandedForLidtingPage: event.isExpandedForListing
-      ),
+          appliedFiltersByUser: Map.of(appliedFilters),
+          isExpandedForLidtingPage: event.isExpandedForListing),
     );
   }
 

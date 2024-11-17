@@ -24,7 +24,7 @@ void main() {
       await SharedScenarios.registerGuest(tester: tester);
       ////////////////////////////
       final Finder boutiquesSuccessStatus =
-          find.byKey(Key(WidgetsKey.boutiquesSuccessStatusKey));
+          find.byKey(Key(WidgetsKeys.boutiquesSuccessStatusKey));
       await GlobalTestFunctions.findWidget(
         tester: tester,
         actual: boutiquesSuccessStatus,
@@ -34,7 +34,7 @@ void main() {
       );
       //////////////////////////
       final Finder boutiqueCardButton = find.byKey(
-        Key('${WidgetsKey.boutiqueCardKey}0'),
+        Key('${WidgetsKeys.boutiqueCardKey}0'),
       );
       await Future.delayed(const Duration(seconds: 2));
       await tester.tap(boutiqueCardButton);
@@ -52,7 +52,7 @@ void main() {
         failedMessage: 'Find ProductListingPage  failed',
       );
       final Finder productListFilterWidget =
-          find.byKey(Key(WidgetsKey.productListFilterKey));
+          find.byKey(Key(WidgetsKeys.productListFilterKey));
       // /////////////////////////////
       await GlobalTestFunctions.findWidget(
         tester: tester,
@@ -63,7 +63,7 @@ void main() {
       );
       /////////////////////////////
       final Finder productInBoutiqueButton = find.byKey(
-        Key('${WidgetsKey.productInBoutiqueListKey}0'),
+        Key('${WidgetsKeys.productInBoutiqueListKey}0'),
       );
       await Future.delayed(const Duration(seconds: 2));
       await tester.tap(productInBoutiqueButton);

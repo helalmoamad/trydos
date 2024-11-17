@@ -56,7 +56,7 @@ void main() {
       await SharedScenarios.registerGuest(tester: tester);
       ////////////// Find Boutiques HomePageCard //////////////
       final Finder boutiquesSuccessStatus =
-          find.byKey(Key(WidgetsKey.boutiquesSuccessStatusKey));
+          find.byKey(Key(WidgetsKeys.boutiquesSuccessStatusKey));
       await GlobalTestFunctions.findWidget(
         tester: tester,
         actual: boutiquesSuccessStatus,
@@ -68,7 +68,7 @@ void main() {
       final boutiqueBestSaller =
           find.widgetWithText(HomePageCard2, 'best saller test');
 
-      final homeScroll = find.byKey(Key(WidgetsKey.homepageScrollKey));
+      final homeScroll = find.byKey(Key(WidgetsKeys.homepageScrollKey));
 
       await scrollToFindWidget(
         tester: tester,
@@ -87,7 +87,7 @@ void main() {
       await tester.pumpAndSettle();
       ////////////// Find list of filters  //////////////
       final Finder productListFilterWidget =
-          find.byKey(Key(WidgetsKey.productListFilterKey));
+          find.byKey(Key(WidgetsKeys.productListFilterKey));
 
       ///////////////////////////////
 
@@ -102,16 +102,16 @@ void main() {
       ///////// Find categorys , brands , filters ///////////////////
 
       final Finder categoriesProductListingFilterListWidget =
-          find.byKey(Key(WidgetsKey.categoriesProductListingFilterListKey));
+          find.byKey(Key(WidgetsKeys.categoriesProductListingFilterListKey));
       expect(categoriesProductListingFilterListWidget,
           findsOneWidget); // Ensure categories filter widget is found.
       ///////////////////////////
       final Finder brandsProductListingFilterListWidget =
-          find.byKey(Key(WidgetsKey.brandsProductListingFilterListKey));
+          find.byKey(Key(WidgetsKeys.brandsProductListingFilterListKey));
       expect(brandsProductListingFilterListWidget, findsOneWidget);
       ///////// Find products for  boutique ///////////////////
       final Finder productsList = find.byKey(
-        Key(WidgetsKey.productsListKey),
+        Key(WidgetsKeys.productsListKey),
       );
       await GlobalTestFunctions.findWidget(
         tester: tester,
@@ -124,7 +124,7 @@ void main() {
       //////////// filter by category and check the results//////
 
       final Finder categoryCircleFilterWidget = find.byKey(
-        Key('${WidgetsKey.categoryCircleWithOutSubProductListingFilterKey}0'),
+        Key('${WidgetsKeys.categoryCircleWithOutSubProductListingFilterKey}0'),
       );
 
       expect(categoryCircleFilterWidget, findsOneWidget);
@@ -140,7 +140,7 @@ void main() {
       await tester.pump();
       /////////////  Loading for products  /////////////
       final Finder boutiqueProductListingLoading = find.byKey(
-        Key(WidgetsKey.boutiqueProductListingLoadingKey),
+        Key(WidgetsKeys.boutiqueProductListingLoadingKey),
       );
       ///////////////////////////////
       await GlobalTestFunctions.findWidget(
@@ -164,7 +164,7 @@ void main() {
       List<String> productsNameAfterFilter = [];
 
       Finder productListingScroll =
-          find.byKey(Key(WidgetsKey.productListingScrollKey));
+          find.byKey(Key(WidgetsKeys.productListingScrollKey));
 
       bool reachedEnd = false;
       //////////////////// Scroll and test ////////////////////////////////////
@@ -172,7 +172,7 @@ void main() {
       while (!reachedEnd) {
         try {
           Finder productWidget = find.byKey(
-              Key('${WidgetsKey.productInBoutiqueListKey}$productIndex1'));
+              Key('${WidgetsKeys.productInBoutiqueListKey}$productIndex1'));
           //////////////////////////////////
           String productBoutCategoryName = tester
               .widget<ProductItem>(productWidget)
@@ -199,8 +199,8 @@ void main() {
         }
         productIndex1++;
         // Try to scroll until the next product card becomes visible
-        Finder finderWidget = find
-            .byKey(Key('${WidgetsKey.productInBoutiqueListKey}$productIndex1'));
+        Finder finderWidget = find.byKey(
+            Key('${WidgetsKeys.productInBoutiqueListKey}$productIndex1'));
         if (finderWidget.evaluate().isEmpty) {
           try {
             await tester.drag(productListingScroll, const Offset(0, -400));
@@ -224,7 +224,7 @@ void main() {
 
       //////////////// Find Applied filters widget /////////////////////////
       final Finder appliedFiltersProductListingWidget = find.byKey(
-        Key(WidgetsKey.appliedFiltersProductListingKey),
+        Key(WidgetsKeys.appliedFiltersProductListingKey),
       );
       ///////////////////////////////
       await GlobalTestFunctions.findWidget(
@@ -236,7 +236,7 @@ void main() {
       );
       ///////////// cancel the filter /////////////
       final Finder appliedFiltersProductListingCloseButton = find.byKey(
-        Key(WidgetsKey.appliedFiltersProductListingCloseKey),
+        Key(WidgetsKeys.appliedFiltersProductListingCloseKey),
       );
       expect(appliedFiltersProductListingCloseButton, findsOneWidget);
       await tester.tap(appliedFiltersProductListingCloseButton);
@@ -247,11 +247,11 @@ void main() {
       ////////// filter by brand until one product result //////
 
       final Finder brandCircleFilterWidget = find.byKey(
-        Key('${WidgetsKey.brandCircleProductListingFilterKey}0'),
+        Key('${WidgetsKeys.brandCircleProductListingFilterKey}0'),
       );
 
       final Finder brandFilterNameWidget = find.byKey(
-        Key('${WidgetsKey.brandProductListingFilterNameKey}0'),
+        Key('${WidgetsKeys.brandProductListingFilterNameKey}0'),
       );
 
       String brandName =
@@ -273,7 +273,7 @@ void main() {
       String productBrandFilterName = '';
 
       productListingScroll =
-          find.byKey(Key(WidgetsKey.productListingScrollKey));
+          find.byKey(Key(WidgetsKeys.productListingScrollKey));
 
       reachedEnd = false;
       //////////////////// Scroll and test ////////////////////////////////////
@@ -281,7 +281,7 @@ void main() {
       while (!reachedEnd) {
         try {
           Key productKey =
-              Key('${WidgetsKey.productInBoutiqueListKey}$productIndex2');
+              Key('${WidgetsKeys.productInBoutiqueListKey}$productIndex2');
           ///////////////////////
           String productBoutBrandName = tester
               .widget<ProductItem>(find.byKey(productKey))
@@ -307,8 +307,8 @@ void main() {
         }
         productIndex2++;
         // Try to scroll until the next product card becomes visible
-        Finder finderWidget = find
-            .byKey(Key('${WidgetsKey.productInBoutiqueListKey}$productIndex2'));
+        Finder finderWidget = find.byKey(
+            Key('${WidgetsKeys.productInBoutiqueListKey}$productIndex2'));
         if (finderWidget.evaluate().isEmpty) {
           try {
             await tester.drag(productListingScroll, const Offset(0, -400));
@@ -332,7 +332,7 @@ void main() {
 
       ////////// check there are no filters  //////////////////
       final Finder productListingFilterListWidget =
-          find.byKey(Key(WidgetsKey.productListingFilterListKey));
+          find.byKey(Key(WidgetsKeys.productListingFilterListKey));
 
       await GlobalTestFunctions.findWidget(
         tester: tester,
@@ -351,7 +351,7 @@ void main() {
       );
 
       final Finder filterIconButton = find.byKey(
-        Key(WidgetsKey.filterIconKey),
+        Key(WidgetsKeys.filterIconKey),
       );
 
       expect(filterIconButton, findsNothing);
@@ -378,17 +378,17 @@ void main() {
       await tester.pump();
       /////////////  Loading for categoris and brands  /////////////
       final Finder getCategoriesLoading = find.byKey(
-        Key(WidgetsKey.getCategoriesLoadingKey),
+        Key(WidgetsKeys.getCategoriesLoadingKey),
       );
       final Finder getBrandsLoadingKey = find.byKey(
-        Key(WidgetsKey.getCategoriesLoadingKey),
+        Key(WidgetsKeys.getCategoriesLoadingKey),
       );
 
       final Finder filterByCategoryHead = find.byKey(
-        Key(WidgetsKey.filterByCategoryHeadKey),
+        Key(WidgetsKeys.filterByCategoryHeadKey),
       );
       final Finder filterByBrandHead = find.byKey(
-        Key(WidgetsKey.filterByBrandHeadKey),
+        Key(WidgetsKeys.filterByBrandHeadKey),
       );
       ///////////////////////////////
       expect(getCategoriesLoading, findsOneWidget);
@@ -406,7 +406,7 @@ void main() {
       //////////// filter by category in filter page //////
 
       final Finder categoryCircleFilterWidget2 = find.byKey(
-        Key('${WidgetsKey.categoryCircleWithOutSubProductListingFilterKey}0'),
+        Key('${WidgetsKeys.categoryCircleWithOutSubProductListingFilterKey}0'),
       );
 
       String categoryName2 = tester
@@ -429,11 +429,11 @@ void main() {
       //////////////  Applay Filter Button /////////////////
 
       final Finder applayFilterButtonWidget = find.byKey(
-        Key(WidgetsKey.applayFilterButtonKey),
+        Key(WidgetsKeys.applayFilterButtonKey),
       );
 
       final Finder scrollableFinder = find.byKey(
-        Key(WidgetsKey.filterPageScrollKey),
+        Key(WidgetsKeys.filterPageScrollKey),
       );
 
       ////////////// Scroll to find filter button ///////////////////
@@ -453,7 +453,7 @@ void main() {
       List<String> productsCategoryAfterFilter2 = [];
 
       productListingScroll =
-          find.byKey(Key(WidgetsKey.productListingScrollKey));
+          find.byKey(Key(WidgetsKeys.productListingScrollKey));
 
       reachedEnd = false;
       //////////////////// Scroll and test ////////////////////////////////////
@@ -461,7 +461,7 @@ void main() {
       while (!reachedEnd) {
         try {
           Key productKey =
-              Key('${WidgetsKey.productInBoutiqueListKey}$productIndex3');
+              Key('${WidgetsKeys.productInBoutiqueListKey}$productIndex3');
           ///////////////////////
           String productBoutCategoryName = tester
               .widget<ProductItem>(find.byKey(productKey))
@@ -489,8 +489,8 @@ void main() {
         }
         productIndex3++;
         // Try to scroll until the next product card becomes visible
-        Finder finderWidget = find
-            .byKey(Key('${WidgetsKey.productInBoutiqueListKey}$productIndex3'));
+        Finder finderWidget = find.byKey(
+            Key('${WidgetsKeys.productInBoutiqueListKey}$productIndex3'));
         if (finderWidget.evaluate().isEmpty) {
           try {
             await tester.drag(productListingScroll, const Offset(0, -400));
@@ -520,7 +520,7 @@ void main() {
       await tester.pumpAndSettle();
 
       final Finder resetFiltersButtonWidget = find.byKey(
-        Key(WidgetsKey.resetFiltersKey),
+        Key(WidgetsKeys.resetFiltersKey),
       );
 
       expect(resetFiltersButtonWidget, findsOneWidget);
@@ -561,7 +561,7 @@ void main() {
       List<String> productsBrandAfterFilter2 = [];
 
       productListingScroll =
-          find.byKey(Key(WidgetsKey.productListingScrollKey));
+          find.byKey(Key(WidgetsKeys.productListingScrollKey));
 
       reachedEnd = false;
       //////////////////// Scroll and test ////////////////////////////////////
@@ -569,7 +569,7 @@ void main() {
       while (!reachedEnd) {
         try {
           Key productKey =
-              Key('${WidgetsKey.productInBoutiqueListKey}$productIndex4');
+              Key('${WidgetsKeys.productInBoutiqueListKey}$productIndex4');
           ///////////////////////
           String productBoutBrandName = tester
               .widget<ProductItem>(find.byKey(productKey))
@@ -597,8 +597,8 @@ void main() {
         }
         productIndex4++;
         // Try to scroll until the next product card becomes visible
-        Finder finderWidget = find
-            .byKey(Key('${WidgetsKey.productInBoutiqueListKey}$productIndex4'));
+        Finder finderWidget = find.byKey(
+            Key('${WidgetsKeys.productInBoutiqueListKey}$productIndex4'));
         if (finderWidget.evaluate().isEmpty) {
           try {
             await tester.drag(productListingScroll, const Offset(0, -400));
@@ -662,7 +662,7 @@ void main() {
       //////////////////////  Tap on close icon after filter ///////////////////////////////////////
 
       final Finder closeFilterPageIcon = find.byKey(
-        Key(WidgetsKey.closeFilterPageKey),
+        Key(WidgetsKeys.closeFilterPageKey),
       );
 
       expect(closeFilterPageIcon, findsOneWidget);
@@ -705,7 +705,7 @@ void main() {
       await tester.drag(scrollableFinder, const Offset(0, 2000));
       await tester.pumpAndSettle();
       final Finder appliedFiltersPageCloseButton = find.byKey(
-        Key(WidgetsKey.appliedFiltersPageCloseKey),
+        Key(WidgetsKeys.appliedFiltersPageCloseKey),
       );
       expect(appliedFiltersPageCloseButton, findsOneWidget);
       await tester.tap(appliedFiltersPageCloseButton);

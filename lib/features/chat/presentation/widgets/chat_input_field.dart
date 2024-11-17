@@ -137,7 +137,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                       child: state.replyType == 'text'
                           ? Row(
                               key: TestVariables.kTestMode
-                                  ? Key(WidgetsKey.replayTextKey)
+                                  ? Key(WidgetsKeys.replayTextKey)
                                   : null,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -658,7 +658,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         child: AppTextField(
                                           key: TestVariables.kTestMode
                                               ? Key(
-                                                  WidgetsKey
+                                                  WidgetsKeys
                                                       .sendMessageTextFieldKey,
                                                 )
                                               : null,
@@ -801,7 +801,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                       InkWell(
                                         key: TestVariables.kTestMode
                                             ? Key(
-                                                WidgetsKey
+                                                WidgetsKeys
                                                     .sendMessageInChatButtonKey,
                                               )
                                             : null,

@@ -103,7 +103,7 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                     SizedBox(
                       height: 60,
                       key: TestVariables.kTestMode
-                          ? Key(WidgetsKey.searchPageBoutiqueListKey)
+                          ? Key(WidgetsKeys.searchPageBoutiqueListKey)
                           : null,
                       child: ScrollConfiguration(
                         behavior: CupertinoScrollBehavior(),
@@ -217,7 +217,7 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                                         child: MyTextWidget(
                                       key: TestVariables.kTestMode
                                           ? Key(
-                                              '${WidgetsKey.searchPageBoutiqueNameKey}$index')
+                                              '${WidgetsKeys.searchPageBoutiqueNameKey}$index')
                                           : null,
                                       filters.boutiques![index].name!,
                                       style: context.textTheme.titleLarge?.rq
