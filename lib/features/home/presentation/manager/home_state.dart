@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
+
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart'
     as cart;
@@ -196,6 +197,7 @@ class HomeState extends Equatable {
   final Map<String, get_filters.GetProductFiltersModel?> choosedFiltersByUser;
   final int? selectedCollection;
   final int currentPage;
+
   final bool? isExpandedForListingPage;
 
   final bool isGettingProductListingWithPagination;
@@ -371,7 +373,7 @@ class HomeState extends Equatable {
       final GetProductDetailWithoutRelatedProductsModel?
           getProductDetailWithoutRelatedProductsModel,
       int? selectedCollection,
-      Products? productContentForStatusOfOpeningProductDetailsDirectly,
+      final Products? productContentForStatusOfOpeningProductDetailsDirectly,
       List<String>? sizes,
       List<int>? sizesQuantities,
       List<String>? isSizeRequestNotification,
@@ -450,6 +452,7 @@ class HomeState extends Equatable {
       isGettingProductListingWithPagination:
           isGettingProductListingWithPagination ??
               this.isGettingProductListingWithPagination,
+
       boutiquesThatDidPrefetch:
           boutiquesThatDidPrefetch ?? this.boutiquesThatDidPrefetch,
       // idForRequest: idForRequest ?? this.idForRequest,

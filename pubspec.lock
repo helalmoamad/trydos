@@ -610,26 +610,26 @@ packages:
     dependency: "direct main"
     description:
       name: firebase_core
-      sha256: "96607c0e829a581c2a483c658f04e8b159964c3bae2730f73297070bc85d40bb"
+      sha256: "26de145bb9688a90962faec6f838247377b0b0d32cc0abecd9a4e43525fc856c"
       url: "https://pub.dev"
     source: hosted
-    version: "2.24.2"
+    version: "2.32.0"
   firebase_core_platform_interface:
     dependency: transitive
     description:
       name: firebase_core_platform_interface
-      sha256: "3c3a1e92d6f4916c32deea79c4a7587aa0e9dbbe5889c7a16afcf005a485ee02"
+      sha256: e30da58198a6d4b49d5bce4e852f985c32cb10db329ebef9473db2b9f09ce810
       url: "https://pub.dev"
     source: hosted
-    version: "5.2.0"
+    version: "5.3.0"
   firebase_core_web:
     dependency: transitive
     description:
       name: firebase_core_web
-      sha256: d585bdf3c656c3f7821ba1bd44da5f13365d22fcecaf5eb75c4295246aaa83c0
+      sha256: f967a7138f5d2ffb1ce15950e2a382924239eaa521150a8f144af34e68b3b3e5
       url: "https://pub.dev"
     source: hosted
-    version: "2.10.0"
+    version: "2.18.1"
   firebase_database:
     dependency: "direct main"
     description:
@@ -718,11 +718,10 @@ packages:
   flutter_carousel_slider:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "8674bfc111e82b1f69e50cc556b19c8004864865"
-      url: "https://helalmohamad@bitbucket.org/trydos/flutter_carousel_slider-1.1.0.git"
-    source: git
+      name: flutter_carousel_slider
+      sha256: "4cd0691b98ebbf8b40361e01779b3a211002c963d3709630e775fba699d3b821"
+      url: "https://pub.dev"
+    source: hosted
     version: "1.1.0"
   flutter_countdown_timer:
     dependency: "direct main"
@@ -756,11 +755,10 @@ packages:
   flutter_gallery_3d:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "99a87a4c9b5b8ac9bd2433e102b8e4132ac6ea05"
-      url: "https://helalmohamad@bitbucket.org/trydos/flutter_gallery_3d-1.1.1.git"
-    source: git
+      name: flutter_gallery_3d
+      sha256: "1c8b5d15c4e8ab653558e2c73f7291bb7367c860749b721bcc8d625a920c5c34"
+      url: "https://pub.dev"
+    source: hosted
     version: "1.1.1"
   flutter_gemini:
     dependency: "direct main"
@@ -870,26 +868,26 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_local_notifications
-      sha256: c500d5d9e7e553f06b61877ca6b9c8b92c570a4c8db371038702e8ce57f8a50f
+      sha256: ef41ae901e7529e52934feba19ed82827b11baa67336829564aeab3129460610
       url: "https://pub.dev"
     source: hosted
-    version: "17.2.2"
+    version: "18.0.1"
   flutter_local_notifications_linux:
     dependency: transitive
     description:
       name: flutter_local_notifications_linux
-      sha256: c49bd06165cad9beeb79090b18cd1eb0296f4bf4b23b84426e37dd7c027fc3af
+      sha256: "8f685642876742c941b29c32030f6f4f6dacd0e4eaecb3efbb187d6a3812ca01"
       url: "https://pub.dev"
     source: hosted
-    version: "4.0.1"
+    version: "5.0.0"
   flutter_local_notifications_platform_interface:
     dependency: transitive
     description:
       name: flutter_local_notifications_platform_interface
-      sha256: "85f8d07fe708c1bdcf45037f2c0109753b26ae077e9d9e899d55971711a4ea66"
+      sha256: "6c5b83c86bf819cdb177a9247a3722067dd8cc6313827ce7c77a4b238a26fd52"
       url: "https://pub.dev"
     source: hosted
-    version: "7.2.0"
+    version: "8.0.0"
   flutter_localizations:
     dependency: transitive
     description: flutter
@@ -1414,12 +1412,11 @@ packages:
   overscroll_pop:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "3bcac982fdb3333af6c846d83170cdd8fa190e87"
-      url: "https://helalmohamad@bitbucket.org/trydos/overscroll_pop-0.1.0.git"
-    source: git
-    version: "0.1.0"
+      name: overscroll_pop
+      sha256: "2304ad974aa5c2310f6bd7b2f1e8aad40a19e3a0cfd6ecf5e53a498c0ae2e891"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.1"
   package_config:
     dependency: transitive
     description:
@@ -1820,11 +1817,10 @@ packages:
   sliding_up_panel:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "40dfb3cc000fbe8cd97f2c4cdb6b04b784c94620"
-      url: "https://helalmohamad@bitbucket.org/trydos/sliding_up_panel-2.0.0-1.git"
-    source: git
+      name: sliding_up_panel
+      sha256: "578e90956a6212d1e406373250b2436a0f3afece29aee3c24c8360094d6cf968"
+      url: "https://pub.dev"
+    source: hosted
     version: "2.0.0+1"
   source_gen:
     dependency: transitive
@@ -2182,10 +2178,10 @@ packages:
     dependency: transitive
     description:
       name: vm_service
-      sha256: "5c5f338a667b4c644744b661f309fb8080bb94b18a7e91ef1dbd343bed00ed6d"
+      sha256: f652077d0bdf60abe4c1f6377448e8655008eef28f128bc023f7b5e8dfeb48fc
       url: "https://pub.dev"
     source: hosted
-    version: "14.2.5"
+    version: "14.2.4"
   watcher:
     dependency: transitive
     description:

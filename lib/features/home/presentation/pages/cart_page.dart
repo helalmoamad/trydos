@@ -59,6 +59,7 @@ class _CartPageState extends State<CartPage> {
   List<String> visibleCollectionOldCartGroups = [];
   TextEditingController quantityController = TextEditingController();
   bool? visibleAllCollection;
+  bool? fromForGroundNotification;
   @override
   void initState() {
     visibleAllCollection = true;
@@ -66,6 +67,10 @@ class _CartPageState extends State<CartPage> {
 
     homeBloc = BlocProvider.of<HomeBloc>(context);
     homeBloc.add(GetCartItemEvent());
+    fromForGroundNotification =
+        appBloc.state.isFromForGroundNotification ?? false;
+    print("${widget.fromeNotification}" + "${fromForGroundNotification}");
+
     super.initState();
   }
 
@@ -83,30 +88,24 @@ class _CartPageState extends State<CartPage> {
       textDirection: TextDirection.ltr,
       child: WillPopScope(
         onWillPop: () async {
-          if (widget.fromeNotification ?? false) {
-            context.go(GRouter.config.kRootRoute);
-
-            return false;
-          }
           // didCallOnWillPop = true;
           if (Navigator.canPop(context)) {
-            if (widget.fromeFilters ?? false) {
-              if (Navigator.of(context).canPop()) {
-                Navigator.of(context).pop();
-                return false;
-                // منع الإغلاق بعد تنفيذ pop
-              }
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+
+              appBloc.add(ChangeBasePage(0));
+              return false;
+              // منع الإغلاق بعد تنفيذ pop
             }
 
             // يسمح بالإغلاق إذا لم تنطبق أي من الشروط
 
-            print("212222222222222222222222222222222222222222");
             appBloc.add(ChangeBasePage(0));
             homeBloc.add(ResetAllSelectedAppliedFilterEvent());
             return false;
           } else {
             appBloc.add(ChangeBasePage(0));
-            return false;
+            return true;
           }
         },
         child: Scaffold(
@@ -218,33 +217,24 @@ class _CartPageState extends State<CartPage> {
                                       children: [
                                         InkWell(
                                           onTap: () {
+                                            // didCallOnWillPop = true;
                                             if (Navigator.canPop(context)) {
-                                              if (widget.fromeFilters ??
-                                                  false) {
-                                                if (Navigator.of(context)
-                                                    .canPop()) {
-                                                  Navigator.of(context).pop();
-                                                  // منع الإغلاق بعد تنفيذ pop
-                                                }
-                                              } else if (widget
-                                                      .fromeNotification ??
-                                                  false) {
-                                                if (Navigator.of(context)
-                                                    .canPop()) {
-                                                  Navigator.of(context).pop();
-                                                  // منع الإغلاق بعد تنفيذ pop
-                                                }
+                                              if (Navigator.of(context)
+                                                  .canPop()) {
+                                                Navigator.of(context).pop();
+                                                return;
+                                                // منع الإغلاق بعد تنفيذ pop
                                               }
 
                                               // يسمح بالإغلاق إذا لم تنطبق أي من الشروط
 
-                                              print(
-                                                  "212222222222222222222222222222222222222222");
                                               appBloc.add(ChangeBasePage(0));
                                               homeBloc.add(
                                                   ResetAllSelectedAppliedFilterEvent());
+                                              return;
                                             } else {
                                               appBloc.add(ChangeBasePage(0));
+                                              return;
                                             }
                                           },
                                           child: Container(

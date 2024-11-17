@@ -43,7 +43,8 @@ class CategoriesFilterList extends StatelessWidget {
     HomeBloc homeBloc = BlocProvider.of<HomeBloc>(context);
 
     String key = boutiqueSlug + (category ?? '');
-
+    print(
+        "##############################################################${key}");
     return BlocBuilder<HomeBloc, HomeState>(
       buildWhen: (previous, current) =>
           previous.appliedFiltersByUser[key] !=
@@ -217,10 +218,10 @@ class CategoriesFilterList extends StatelessWidget {
                                                     : appliedFilters!
                                                         .categories!
                                                         .any((element) =>
-                                                            element.id ==
+                                                            element.slug ==
                                                             subCategories![
                                                                     innerIndex]
-                                                                .id))
+                                                                .slug))
                                                 : ((choosedFilters?.categories
                                                             ?.isNullOrEmpty ??
                                                         true)
@@ -228,10 +229,10 @@ class CategoriesFilterList extends StatelessWidget {
                                                     : choosedFilters!
                                                         .categories!
                                                         .any((element) =>
-                                                            element.id ==
+                                                            element.slug ==
                                                             subCategories![
                                                                     innerIndex]
-                                                                .id)),
+                                                                .slug)),
                                         addOrRemoveSpecificFilter: (bool add) {
                                           scaleTheTopItemInFiltersStack.value =
                                               (currentExpandedIndex == index);
@@ -424,7 +425,7 @@ class CategoriesFilterList extends StatelessWidget {
                                         scale: scale,
                                         paddingValue: 2,
                                         isExpanded: (currentExpandedIndex == index),
-                                        displayFilterMark: (isChildCategorySlug || (!workWithChoosedFilter ? ((appliedFilters?.categories?.isNullOrEmpty ?? true) ? false : appliedFilters!.categories!.any((element) => element.id == filters.categories![index].id)) : ((choosedFilters?.categories?.isNullOrEmpty ?? true) ? false : choosedFilters!.categories!.any((element) => element.id == filters.categories![index].id)))),
+                                        displayFilterMark: (isChildCategorySlug || (!workWithChoosedFilter ? ((appliedFilters?.categories?.isNullOrEmpty ?? true) ? false : appliedFilters!.categories!.any((element) => element.slug == filters.categories![index].slug)) : ((choosedFilters?.categories?.isNullOrEmpty ?? true) ? false : choosedFilters!.categories!.any((element) => element.slug == filters.categories![index].slug)))),
                                         addOrRemoveSpecificFilter: (bool add) {
                                           if (appliedFilters?.categories ==
                                                   null &&
@@ -610,11 +611,13 @@ class CategoriesFilterList extends StatelessWidget {
                           ? ((appliedFilters?.categories?.isNullOrEmpty ?? true)
                               ? false
                               : appliedFilters!.categories!.any((element) =>
-                                  element.id == filters.categories![index].id))
+                                  element.slug ==
+                                  filters.categories![index].slug))
                           : ((choosedFilters?.categories?.isNullOrEmpty ?? true)
                               ? false
                               : choosedFilters!.categories!.any((element) =>
-                                  element.id == filters.categories![index].id)),
+                                  element.slug ==
+                                  filters.categories![index].slug)),
                       addOrRemoveSpecificFilter: (bool add) {
                         Filter? prevChoosedOrAppliedFilterToAddToIt =
                             !workWithChoosedFilter

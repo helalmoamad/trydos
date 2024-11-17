@@ -10,7 +10,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
             currentIndex: 0,
             tabIndex: -1,
             tabIndexInChat: 0,
-            isFromNotificationToNavigator: false,
+            isFromForGroundNotification: false,
             showBars: true,
             hideBottomNavigationBar: false,
             replyOnMe: false,
@@ -21,6 +21,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     on<ChangeIndexForSearch>(_onChangeIndexForSearch);
     on<ChangeTab>(_onChangeTab);
     on<ChangeTabInChat>(_onChangeTabInChat);
+    on<IsFromNotificationByForGround>(_onIsFromNotificationByForGround);
 
     on<ShowOrHideBars>(_onShowOrHideBars);
     on<HideBottomNavigationBar>(_onHideBottomNavigationBar);
@@ -41,6 +42,14 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     Emitter<AppState> emit,
   ) {
     emit(state.copyWith(currentIndexForSearch: event.index));
+  }
+
+  _onIsFromNotificationByForGround(
+    IsFromNotificationByForGround event,
+    Emitter<AppState> emit,
+  ) {
+    emit(state.copyWith(
+        isFromNotificationByForGround: event.isFromNotificationByForGround));
   }
 
   _onChangeTab(

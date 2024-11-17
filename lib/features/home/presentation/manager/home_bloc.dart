@@ -52,6 +52,7 @@ import 'package:trydos/features/home/domain/use_cases/get_starting_settings_usec
 import 'package:trydos/features/home/domain/use_cases/hide_item_from_oldCart_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/remove_item_from_cart_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/request_for_notification_when_product_became_available_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/store_fcm_token_of_market_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/update_item_from_cart_usecase.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
 import 'package:trydos/features/story/domain/useCases/get_width_and_height_usecase.dart';
@@ -91,6 +92,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.convertItemFromOldcartToCartUsecase,
     this.getCartItemUseCase,
     this.getOldCartItemUseCase,
+    this.storeFcmTokenOfMarketUseCase,
     // this.getBrandUseCase,
     //  this.getCategoryUseCase,
     this.deleteLikeOfProductUsecase,
@@ -147,6 +149,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     );
     on<RequestForNotificationWhenProductBecameAvailableEvent>(
       _onRequestForNotificationWhenProductBecameAvailableEvent,
+    );
+    on<StoreFcmTokenOfMarketEvent>(
+      _onStoreFcmTokenOfMarketEvent,
     );
     on<AddQuantityForCartEvent>(
       _onAddCurrentQuantityForCartEvent,
@@ -280,6 +285,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final GetAndAddCountViewOfProductUsecase getAndAddCountViewOfProductUsecase;
   final AddCommentUseCase addCommentUseCase;
   final GetProductsListInCartUseCase getProductsListInCartUseCase;
+  final StoreFcmTokenOfMarketUseCase storeFcmTokenOfMarketUseCase;
   final GetCommentForProductUseCase getCommentForProductUseCase;
   final GetStoryForProductUseCase getStoryUseCase;
   final GetProductDetailWithoutRelatedProductsUseCase
@@ -379,6 +385,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       for (var i = 0; i < r.data!.mainCategories!.length; i++) {
         categorySlugs.add(r.data!.mainCategories![i].slug ?? "");
       }
+      print(
+          "12222222222222222222222221111${categorySlugs}11///////////////////////////////////////////////////////////////////////////////////////");
+
       if (event.getWithPrefech) {
         Future.delayed(Duration(seconds: 5), () {
           for (var i = 0;
@@ -426,8 +435,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       AddCurrentSelectedColorEvent event, Emitter<HomeState> emit) {
     Map<String, int> currentSelectedColorForEveryProduct =
         Map.of(state.currentSelectedColorForEveryProduct);
-    currentSelectedColorForEveryProduct[event.productId] =
-        event.currentSelectedColor;
+    if (currentSelectedColorForEveryProduct[event.productId] == null) {
+      currentSelectedColorForEveryProduct
+          .addAll({event.productId: event.currentSelectedColor});
+    } else {
+      currentSelectedColorForEveryProduct[event.productId] =
+          event.currentSelectedColor;
+    }
+
     emit(state.copyWith(
         currentSelectedColorForEveryProduct:
             Map.of(currentSelectedColorForEveryProduct)));
@@ -567,6 +582,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                 value.copyWith(paginationStatus: PaginationStatus.loading));
           return MapEntry(key, value);
         })));
+
     final response = await getHomeBoutiqesUseCase(GetHomeBoutiqesParams(
         offset: event.offset == '1' ? null : event.offset,
         categorySlug:
@@ -3946,6 +3962,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       emit(state.copyWith(
           getFullProductDetailsStatus: GetFullProductDetailsStatus.failure));
     }, (r) {
+      if (r.productItem?.id == null) {
+        emit(state.copyWith(
+          productContentForStatusOfOpeningProductDetailsDirectly: Products(),
+          getFullProductDetailsStatus: GetFullProductDetailsStatus.success,
+        ));
+
+        return;
+      }
       Map<String, GetProductDetailWithoutRelatedProductsModel> cachedData =
           Map.of(state.cachedProductWithoutRelatedProductsModel);
       Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>
@@ -3994,5 +4018,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           addCommentStatus: AddCommentStatus.success,
           getCommentForProductModel: getCommentForProductModel));
     });
+  }
+
+  FutureOr<void> _onStoreFcmTokenOfMarketEvent(
+      StoreFcmTokenOfMarketEvent event, Emitter<HomeState> emit) async {
+    final response = await storeFcmTokenOfMarketUseCase(
+        StoreFcmTokenOfMarketUseCaseParams(
+            fcmToken: event.fcmToken, userId: event.userId));
+
+    response.fold((l) {}, (r) {});
   }
 }

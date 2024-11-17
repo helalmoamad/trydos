@@ -1,0 +1,34 @@
+import 'package:dartz/dartz.dart';
+import 'package:injectable/injectable.dart';
+
+import '../../../../core/error/failures.dart';
+import '../../../../core/use_case/use_case.dart';
+import '../../data/models/get_comment_for_product_model.dart';
+import '../repositories/home_repository.dart';
+
+@injectable
+class StoreFcmTokenOfMarketUseCase
+    implements UseCase<bool, StoreFcmTokenOfMarketUseCaseParams> {
+  StoreFcmTokenOfMarketUseCase(this.repository);
+
+  final HomeRepository repository;
+
+  @override
+  Future<Either<Failure, bool>> call(
+      StoreFcmTokenOfMarketUseCaseParams params) async {
+    return repository.storeFcmTokenOfMarket(params.map);
+  }
+}
+
+class StoreFcmTokenOfMarketUseCaseParams {
+  final String fcmToken;
+  final int userId;
+
+  StoreFcmTokenOfMarketUseCaseParams(
+      {required this.fcmToken, required this.userId});
+
+  Map<String, dynamic> get map => {
+        "device_token": fcmToken,
+        "user_id": userId,
+      };
+}

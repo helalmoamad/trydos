@@ -19,6 +19,7 @@ import 'package:eraser/eraser.dart';
 import 'package:trydos/common/constant/configuration/chat_url_routes.dart';
 import 'package:trydos/common/constant/configuration/market_url_routes.dart';
 import 'package:trydos/common/constant/configuration/stories_url_routes.dart';
+import 'package:trydos/service/local_notification_service.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/handling_market_notifications.dart';
 import 'package:uuid/uuid.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -115,12 +116,10 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     isDependencyInitialized = true;
   }
   try {
-    print(
-        "1111111111111111111111111111111111111111**********************************************************************${message.data}");
-
     if (HandlingMarketNotifications.checkIfTheNotificationIsNotRelatedToChat(
         message)) {
-      LocalNotificationService().showNotificationWithPayload(message: message);
+      LocalNotificationService()
+          .showNotificationWithPayload(message: message, fromBackGround: 1);
       return;
     }
     Map<String, dynamic> remoteMessage =
@@ -237,7 +236,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
               1 &&
           myMessage.senderUserId != GetIt.I<PrefsRepository>().myChatId) {
         LocalNotificationService()
-            .showNotificationWithPayload(message: message);
+            .showNotificationWithPayload(message: message, fromBackGround: 1);
       }
     }
   } catch (e, st) {
@@ -285,7 +284,7 @@ void main() async {
   isLoadDotenvFile = true;
   await Eraser.clearAllAppNotifications();
   await GetIt.I<PrefsRepository>().removeMessageFromBackground();
-  NotificationProcess().setupInteractedMessage();
+  await NotificationProcess().setupInteractedMessage();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
   FirebaseAnalytics.instance.setSessionTimeoutDuration(Duration(seconds: 20));
@@ -293,6 +292,10 @@ void main() async {
   fetchServersUrlsFromSharedPreference();
   await NotificationProcess().fcmToken();
   isDependencyInitialized = true;
+  await FirebaseMessaging.instance.subscribeToTopic("boutique_created");
+  await FirebaseMessaging.instance.subscribeToTopic("category_created");
+  await FirebaseMessaging.instance.getInitialMessage().then((value) =>
+      print("######################3------------------@@@@@@@@@@@2${value}"));
   GetIt.I<AuthBloc>().add(GetUserCountryEvent());
 
   gemini.Gemini.init(

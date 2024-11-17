@@ -71,7 +71,7 @@ class ProductListingPage extends StatefulWidget {
   final String? boutiqueDescription;
   final String? boutiqueFirstBanner;
   final bool withSlidingImages;
-  final List<boutiques.Icon>? banner;
+  final List<boutiques.BunnerBoutique>? banner;
   final TextEditingController? controllerFormSearchPage;
   final bool fromSearch;
   final bool fromNotification;
@@ -189,7 +189,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
   @override
   void initState() {
     print("%%%%%%%%%${GetIt.I<PrefsRepository>().marketToken}*");
-    print("%%%%%%%%%${GetIt.I<PrefsRepository>().marketToken}*");
+    print("%%%%%%%%%${GetIt.I<PrefsRepository>().getFcmTokens}*");
     itExpendForFirst = true;
     key = widget.boutiqueSlug + (widget.category ?? '');
     keyWithoutFilter = '${widget.boutiqueSlug}' +
@@ -203,6 +203,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
     }
     Timer.periodic(Duration(milliseconds: 100), postFrameCallback);
     appBloc = BlocProvider.of<AppBloc>(context);
+
     homeBloc = BlocProvider.of<HomeBloc>(context);
     print("###################?? "
         "}#####//////${widget.fromNotification}////////////////////////////////////////////////////////////////////#${widget.boutiqueSlug}");
@@ -330,11 +331,13 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) async {
-        print(
-            "555555555555555555555------------------------------------------------------------------------------");
+    return WillPopScope(
+      onWillPop: () async {
+        if (widget.fromNotification) {
+          context.go(GRouter.config.kRootRoute);
+
+          return Future.value(false);
+        }
 
         homeBloc.add(ReplyFromGeminiEvent(
             fromSearch: false,
@@ -376,14 +379,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
             eventName: AnalyticsEventsConst.buttonClicked,
             executedEventName: AnalyticsExecutedEventNameConst.backAppButton,
           );
-          print(
-              "1111111111111111-----------777777777777777777777777-------------------------------------------------------------------------");
-
           return Future.value(false);
         } else {
-          print(
-              "22222222222222222222222------------------------------------------------------------------------------");
-
           if (!widget.fromSearch) {
             homeBloc.add(ChangeAppliedFiltersEvent(
               boutiqueSlug: widget.boutiqueSlug,
@@ -422,6 +419,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
               (!widget.fromSearch &&
                   homeBloc.state.cashedOrginalBoutique == true)) {
             Navigator.of(context).pop();
+
             appBloc.add(ChangeBasePage(0));
           }
           ////////////////////////////////////
@@ -431,7 +429,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
           );
         }
 
-        return Future.value(true);
+        return Future.value(false);
       },
       child: SafeArea(
         child: Material(
@@ -503,6 +501,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                           c.theReplyFromGemini) &&
                                   c.fromSearchForSearchWithGemini == false),
                           builder: (context, state) {
+                            print(
+                                "////////////////////////////////////////%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5${state.boutiquesForEveryMainCategoryThatDidPrefetch}");
+
                             if (state.theReplyFromGemini != "" &&
                                 state.fromSearchForSearchWithGemini == false) {
                               print(

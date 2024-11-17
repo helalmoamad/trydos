@@ -240,14 +240,13 @@ class PrefsRepositoryImpl extends PrefsRepository {
   String? getTheLocalPathForFile(String filePath, String chatId) {
     List<String> files = getExistenceFiles();
 
-    String path =
-        files.firstWhere((element) {
-          if( element.contains('"${chatId}"' + ":" )){
-            Map paths = convert.jsonDecode(element);
-            return paths[chatId].toString().startsWith(filePath);
-          }
-          return false;
-        });
+    String path = files.firstWhere((element) {
+      if (element.contains('"${chatId}"' + ":")) {
+        Map paths = convert.jsonDecode(element);
+        return paths[chatId].toString().startsWith(filePath);
+      }
+      return false;
+    });
 
     Map paths = convert.jsonDecode(path);
     return paths[chatId].toString().split(' ').length > 1
@@ -569,6 +568,17 @@ class PrefsRepositoryImpl extends PrefsRepository {
   @override
   Future<bool> removeViewedBoutiques() async {
     return await _preferences.remove(PrefsKey.viewedBoutiques);
+  }
+
+  @override
+  String? get getNotificationTypeOfMarketFromTerminated =>
+      _preferences.getString(PrefsKey.notificationTypeFromTerminated);
+
+  @override
+  Future<bool> setNotificationTypesOfMarketFromTerminated(
+      String? notificationTypeFromTerminated) async {
+    return await _preferences.setString(PrefsKey.notificationTypeFromTerminated,
+        notificationTypeFromTerminated ?? "");
   }
 
 // @override

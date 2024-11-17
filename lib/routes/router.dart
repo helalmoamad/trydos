@@ -8,8 +8,6 @@ import 'package:trydos/features/authentication/presentation/pages/login_successf
 import 'package:trydos/features/authentication/presentation/pages/register_completed.dart';
 import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
 import 'package:trydos/features/home/presentation/pages/cart_page.dart';
-import 'package:trydos/features/home/presentation/pages/home_page.dart';
-import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/splash_page.dart';
 import '../base_page.dart';
 import '../features/authentication/presentation/pages/already_exist_account.dart';
@@ -128,36 +126,6 @@ class GRouter {
               state: state,
             );
           }),
-      GoRoute(
-          path: _config.applicationRoutes.kBasePage,
-          pageBuilder: (BuildContext context, GoRouterState state) {
-            return _builderPage(
-              child: const BasePage(),
-              state: state,
-            );
-          },
-          routes: [
-            GoRoute(
-              path: _config.applicationRoutes.kProductListingPageName,
-              pageBuilder: (BuildContext context, GoRouterState state) {
-                debugPrint(state.uri.queryParameters.toString());
-                return _builderPage(
-                  child: ProductListingPage(
-                    boutiqueSlug: state.uri.queryParameters['boutiqueSlug']!,
-                    boutiqueDescription:
-                        state.uri.queryParameters['boutiqueDescription']!,
-                    boutiqueFirstBanner:
-                        state.uri.queryParameters['boutiqueFirstBanner']!,
-                    boutiqueIcon: state.uri.queryParameters['boutiqueIcon']!,
-                    fromNotification:
-                        (state.uri.queryParameters['fromNotification']!) == "1",
-                  ),
-                  state: state,
-                );
-              },
-            ),
-          ]),
-
       GoRoute(
           path: _config.applicationRoutes.kBasePage,
           pageBuilder: (BuildContext context, GoRouterState state) {

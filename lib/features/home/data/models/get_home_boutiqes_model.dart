@@ -89,11 +89,11 @@ class Data {
 class Boutique {
   final int? id;
   final String? name;
-  final Icon? icon;
+  final BunnerBoutique? icon;
   final String? slug;
   final int? position;
   final String? description;
-  final List<Icon>? banners;
+  final List<BunnerBoutique>? banners;
   final List<MainCategoriesForProductId>? mainCategoriesForProductIds;
   final List<ChildCategoriesForProductId>? childCategoriesForProductIds;
 
@@ -112,11 +112,11 @@ class Boutique {
   Boutique copyWith({
     int? id,
     String? name,
-    Icon? icon,
+    BunnerBoutique? icon,
     String? slug,
     int? position,
     String? description,
-    List<Icon>? banners,
+    List<BunnerBoutique>? banners,
     List<MainCategoriesForProductId>? mainCategoriesForProductIds,
     List<ChildCategoriesForProductId>? childCategoriesForProductIds,
   }) =>
@@ -137,13 +137,15 @@ class Boutique {
   factory Boutique.fromJson(Map<String, dynamic> json) => Boutique(
         id: json["id"],
         name: json["name"],
-        icon: json["icon"] == null ? null : Icon.fromJson(json["icon"]),
+        icon:
+            json["icon"] == null ? null : BunnerBoutique.fromJson(json["icon"]),
         slug: json["slug"],
         position: json["position"],
         description: json["description"],
         banners: json["banners"] == null
             ? []
-            : List<Icon>.from(json["banners"]!.map((x) => Icon.fromJson(x))),
+            : List<BunnerBoutique>.from(
+                json["banners"]!.map((x) => BunnerBoutique.fromJson(x))),
         mainCategoriesForProductIds: json["mainCategoriesForProductIds"] == null
             ? []
             : List<MainCategoriesForProductId>.from(
@@ -178,29 +180,29 @@ class Boutique {
       };
 }
 
-class Icon {
+class BunnerBoutique {
   final String? filePath;
   final String? originalWidth;
   final String? originalHeight;
 
-  Icon({
+  BunnerBoutique({
     this.filePath,
     this.originalWidth,
     this.originalHeight,
   });
 
-  Icon copyWith({
+  BunnerBoutique copyWith({
     String? filePath,
     String? originalWidth,
     String? originalHeight,
   }) =>
-      Icon(
+      BunnerBoutique(
         filePath: filePath ?? this.filePath,
         originalWidth: originalWidth ?? this.originalWidth,
         originalHeight: originalHeight ?? this.originalHeight,
       );
 
-  factory Icon.fromJson(Map<String, dynamic> json) => Icon(
+  factory BunnerBoutique.fromJson(Map<String, dynamic> json) => BunnerBoutique(
         filePath: json["file_path"],
         originalWidth: json["original_width"],
         originalHeight: json["original_height"],
@@ -219,7 +221,7 @@ class ChildCategoriesForProductId {
   final String? categoryName;
   final String? productName;
   final int? countProducts;
-  final Icon? mostViewedProductThumbnail;
+  final BunnerBoutique? mostViewedProductThumbnail;
 
   ChildCategoriesForProductId({
     this.categoryId,
@@ -236,7 +238,7 @@ class ChildCategoriesForProductId {
     String? categoryName,
     String? productName,
     int? countProducts,
-    Icon? mostViewedProductThumbnail,
+    BunnerBoutique? mostViewedProductThumbnail,
   }) =>
       ChildCategoriesForProductId(
         categoryId: categoryId ?? this.categoryId,
@@ -255,10 +257,10 @@ class ChildCategoriesForProductId {
         categoryName: json["name"],
         productName: json["most_viewed_product_name"],
         countProducts: json["num_available_product"],
-        mostViewedProductThumbnail:
-            json["most_viewed_product_thumbnail"] == null
-                ? null
-                : Icon.fromJson(json["most_viewed_product_thumbnail"]),
+        mostViewedProductThumbnail: json["most_viewed_product_thumbnail"] ==
+                null
+            ? null
+            : BunnerBoutique.fromJson(json["most_viewed_product_thumbnail"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -275,10 +277,10 @@ class MainCategoriesForProductId {
   final int? categoryId;
   final String? productName;
   final int? countProducts;
-  final Icon? mostViewedProductThumbnail;
+  final BunnerBoutique? mostViewedProductThumbnail;
   final String? categorySlug;
   final String? categoryName;
-  final Icon? flatPhotoPath;
+  final BunnerBoutique? flatPhotoPath;
 
   MainCategoriesForProductId({
     this.categoryId,
@@ -296,8 +298,8 @@ class MainCategoriesForProductId {
     String? categoryName,
     String? productName,
     int? countProducts,
-    Icon? mostViewedProductThumbnail,
-    Icon? flatPhotoPath,
+    BunnerBoutique? mostViewedProductThumbnail,
+    BunnerBoutique? flatPhotoPath,
   }) =>
       MainCategoriesForProductId(
         categoryId: categoryId ?? this.categoryId,
@@ -317,13 +319,13 @@ class MainCategoriesForProductId {
         categoryName: json["name"],
         productName: json["most_viewed_product_name"],
         countProducts: json["num_available_product"],
-        mostViewedProductThumbnail:
-            json["most_viewed_product_thumbnail"] == null
-                ? null
-                : Icon.fromJson(json["most_viewed_product_thumbnail"]),
+        mostViewedProductThumbnail: json["most_viewed_product_thumbnail"] ==
+                null
+            ? null
+            : BunnerBoutique.fromJson(json["most_viewed_product_thumbnail"]),
         flatPhotoPath: json["flat_photo_path"] == null
             ? null
-            : Icon.fromJson(json["flat_photo_path"]),
+            : BunnerBoutique.fromJson(json["flat_photo_path"]),
       );
 
   Map<String, dynamic> toJson() => {

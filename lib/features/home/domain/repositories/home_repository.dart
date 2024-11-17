@@ -48,6 +48,8 @@ abstract class HomeRepository {
       Map<String, dynamic> params);
   Future<Either<Failure, ListOfProductsFoundedInCartModel>>
       getProductsListInCart();
+  Future<Either<Failure, bool>> storeFcmTokenOfMarket(
+      Map<String, dynamic> params);
 
   Future<Either<Failure, GetAllowedCountriesModel>> getAllowCountries();
   Future<Either<Failure, GetStoryForProductModel>> getStories(String productId);

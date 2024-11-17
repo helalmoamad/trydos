@@ -84,9 +84,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   late productListingModel.Products productItem;
   late HomeBloc homeBloc;
   late ChatBloc chatBloc;
+  late AppBloc appBloc;
   final ValueNotifier<int> addToBagButtonShapeNotifier = ValueNotifier(0);
   bool enable = true;
-
+  bool FromForGroundNotification = false;
   double? valueOnY;
   final PanelController panelControllerForBuyersCameraShots = PanelController();
   final PanelController panelControllerForReels = PanelController();
@@ -98,6 +99,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     }
     homeBloc = BlocProvider.of<HomeBloc>(context);
     chatBloc = BlocProvider.of<ChatBloc>(context);
+    appBloc = BlocProvider.of<AppBloc>(context);
+    appBloc.add(IsFromNotificationByForGround(widget.fromNotification));
     if (widget.productItem != null) {
       homeBloc.add(GetProductDatailsWithoutRelatedProductsEvent(
           productId: productItem.id.toString()));
@@ -121,8 +124,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
 
   @override
   void didChangeDependencies() {
-    context.go(GRouter.config.kRootRoute);
-    print("9999999999999999999999999999999999999999999999999999999");
+    // context.go(GRouter.config.kRootRoute);
+
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Theme.of(context).colorScheme.surface,
       statusBarBrightness: Brightness.light,
@@ -137,14 +140,20 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      onPopInvoked: (didPop) {
+    return WillPopScope(
+      onWillPop: () {
         if (widget.fromNotification) {
-          return;
+          context.go(GRouter.config.kRootRoute);
+
+          return Future.value(false);
         }
         if (Navigator.of(context).canPop()) {
           Navigator.of(context).pop();
+
+          return Future.value(false);
         }
+
+        return Future.value(true);
       },
       child: SafeArea(
         child: Stack(
@@ -197,7 +206,18 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     if (state.getFullProductDetailsStatus ==
                         GetFullProductDetailsStatus.failure) {
                       return Center(
-                        child: MyTextWidget('Failed To Get Product Details'),
+                        child: MyTextWidget(
+                            'Failed To Get Product Details or Product Is Not Available In Your Country'),
+                      );
+                    }
+                    if (state.getFullProductDetailsStatus ==
+                            GetFullProductDetailsStatus.success &&
+                        state.productContentForStatusOfOpeningProductDetailsDirectly
+                                ?.id ==
+                            null) {
+                      return Center(
+                        child: MyTextWidget(
+                            ' Product Is Not Available In Your Country'),
                       );
                     }
                     productItem = state
@@ -207,6 +227,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     buildWhen: (p, c) =>
                         p.getStoriesForProductStatus !=
                             c.getStoriesForProductStatus ||
+                        p.getFullProductDetailsStatus !=
+                            c.getFullProductDetailsStatus ||
                         p.getProductDetailWithoutSimilarRelatedProductsStatus !=
                             c
                                 .getProductDetailWithoutSimilarRelatedProductsStatus ||
@@ -217,20 +239,20 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     builder: (context, state) {
                       String productId = productItem.id.toString();
                       /*     if (state
-                            .getProductDetailWithoutSimilarRelatedProductsStatus ==
-                        GetProductDetailWithoutSimilarRelatedProductsStatus
-                            .failure) {
-                      return Center(
-                        child: ElevatedButton(
-                            onPressed: () {
-                              homeBloc.add(
-                                  GetProductDatailsWithoutRelatedProductsEvent(
-                                      productId:
-                                          productItem.id.toString()));
-                            },
-                            child: MyTextWidget(LocaleKeys.try_again.tr())),
-                      );
-                    }*/
+                                .getProductDetailWithoutSimilarRelatedProductsStatus ==
+                            GetProductDetailWithoutSimilarRelatedProductsStatus
+                                .failure) {
+                          return Center(
+                            child: ElevatedButton(
+                                onPressed: () {
+                                  homeBloc.add(
+                                      GetProductDatailsWithoutRelatedProductsEvent(
+                                          productId:
+                                              productItem.id.toString()));
+                                },
+                                child: MyTextWidget(LocaleKeys.try_again.tr())),
+                          );
+                        }*/
 
                       int currentSelectedColor = state
                               .currentSelectedColorForEveryProduct[productId] ??
@@ -555,7 +577,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               builder: (context, state) {
                 if (widget.productItem == null) {
                   if (state.getFullProductDetailsStatus !=
-                      GetFullProductDetailsStatus.success) {
+                          GetFullProductDetailsStatus.success ||
+                      (state.productContentForStatusOfOpeningProductDetailsDirectly
+                                  ?.id ==
+                              null &&
+                          state.getFullProductDetailsStatus ==
+                              GetFullProductDetailsStatus.success)) {
                     return SizedBox.shrink();
                   }
                   productItem = state

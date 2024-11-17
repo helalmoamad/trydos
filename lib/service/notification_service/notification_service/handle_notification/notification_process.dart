@@ -86,17 +86,11 @@ class NotificationProcess {
   }
 
   setupInteractedMessage() {
-    print(
-        "-*******444444444444444444444444444----------------*****************---------------***********---------");
-
     FirebaseMessaging.onMessageOpenedApp.listen((event) async {
-      print(
-          "11111111111111111@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@2222");
-
       if (HandlingMarketNotifications.checkIfTheNotificationIsNotRelatedToChat(
           event)) {
         HandlingMarketNotifications.dealWithNotificationFromMarket(
-            convert.jsonDecode(event.data['body']), true);
+            convert.jsonDecode(event.data["body"] ?? ""), true);
         return;
       }
       handleTappedNotificationOnTerminatedState();

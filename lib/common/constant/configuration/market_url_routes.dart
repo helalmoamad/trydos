@@ -27,8 +27,7 @@ extension ScopeApi on String {
   String notificationScope() => '$_api/${_currentVersion}/notifications';
 
   String firebaseTokensScope({bool current = false}) =>
-      '$_api/${_currentVersion}/firebase_tokens${this != '' ? '/$this' : ''}';
-
+      '$_api/${_currentVersion}/firebase_device_tokens${this != '' ? '/$this' : ''}';
 }
 
 abstract class MarketEndPoints {
@@ -38,11 +37,11 @@ abstract class MarketEndPoints {
   static String getFullProductDetailsEP(String productId) =>
       "details/$productId".productScope();
 
-
   static final sendOtpEP = 'send_otp'.phoneScope();
   static final getCartItemEP = 'cart_shipping'.cartScope();
   static final getProductListInCartEP =
       'product_list_in_cart_and_old_cart'.cartScope();
+  static final storeFcmOfMarketEP = 'firebase_device_tokens'.countryScope();
 
   static final getOldCartItemsEP = 'get_old_cart'.oldCartScope();
   static final hideItemsInOldCartEP = 'hide'.oldCartScope();
@@ -87,7 +86,6 @@ abstract class MarketEndPoints {
   static final getProductListingWithFiltersEP = 'with_filter'.productsScope();
 
   static final storeFcmEP = ''.firebaseTokensScope();
-
 }
 
 abstract class MarketUrls {

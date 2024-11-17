@@ -16,7 +16,8 @@ class _ApplicationRoutes {
   final String kSinglePageChatPagePath = '/BasePage/SinglePageChatPage';
   final String kProductListingPageName = 'ProductListingPage';
   final String kProductListingPagePath = '/BasePage/ProductListingPage';
-
+  final String kDetailPagePath = '/BasePage/DetailPage';
+  final String kDetailPageName = 'BasePage/DetailPage';
   final String kLoginPagePath = '/LoginPage';
   final String kRegistrationPageName = 'RegistrationPage';
   final String kRegistrationPagePath = '/BasePage/RegistrationPage';

@@ -5,6 +5,7 @@ import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/core/api/methods/get.dart';
 import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
 import 'package:trydos/features/home/data/models/convert_item_from_oldCart_to_cart_model.dart';
+
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
@@ -445,6 +446,17 @@ class HomeRemoteDatasource {
       ),
     );
     return addLikeOFProduct();
+  }
+
+  Future<bool> storeFcmTokenOfMarket(Map<String, dynamic> params) {
+    PostClient<bool> storeFcmTokenOfMarket = PostClient<bool>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<bool>(
+          endpoint: MarketEndPoints.storeFcmOfMarketEP,
+          data: params,
+          response: ResponseValue<bool>(returnValueOnSuccess: true)),
+    );
+    return storeFcmTokenOfMarket();
   }
 
   Future<bool> deleteLikeOFProduct(Map<String, dynamic> params) {
