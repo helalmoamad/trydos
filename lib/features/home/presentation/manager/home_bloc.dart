@@ -14,8 +14,11 @@ import 'package:injectable/injectable.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/use_case/use_case.dart';
+import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
+import 'package:trydos/features/app/app_elvated_button.dart';
 import 'package:trydos/features/app/blocs/pre_caching_image_bloc/pre_caching_image_bloc.dart';
+import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 
@@ -30,6 +33,7 @@ import 'package:trydos/features/home/data/models/get_product_listing_with_filter
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as product;
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
+import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
 import 'package:trydos/features/home/domain/use_cases/GetCommentForProductUseCase.dart';
 import 'package:trydos/features/home/domain/use_cases/add_comment_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/add_like_to_product_usecase.dart';
@@ -326,6 +330,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       emit(state.copyWith(
           getStartingSettingsStatus: GetStartingSettingsStatus.failure));
     }, (r) {
+      print(
+          "---------------------------------------------------------------------------------------------------------${r.data?.startingSetting?.notificationTypes}");
       apisMustNotToRequest.add('GetStartingSettingsEvent');
       isFailedTheFirstTime.remove('GetStartingSettingsEvent');
       // if (r.data!.startingSetting!.smartLook ?? false) {
@@ -2673,13 +2679,75 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           productId: event.products.id.toString(),
           resetTheList: true));
       emit(state.copyWith(addItemInCartStatus: AddItemInCartStatus.success));
-      if (r.data == null || r.data == "") {
+      if (r.data == null || r.data == "" || (r.data?.status ?? 0) != 1) {
+        showDialog(
+          context: navigatorKey.currentState!.context,
+          builder: (context) => Directionality(
+            textDirection: TextDirection.ltr,
+            child: AlertDialog(
+                title: MyTextWidget("${r.message}",
+                    style: context.textTheme.labelMedium
+                        ?.copyWith(color: Colors.red, height: 1.25),
+                    textDirection: TextDirection.ltr),
+                actions: <Widget>[
+                  SingleChildScrollView(
+                      child: Column(
+                    children: [
+                      MyTextWidget(
+                        "Do You Want To Notify You When your choose available ?",
+                        style: context.textTheme.bodyMedium
+                            ?.copyWith(color: Colors.black, height: 1.25),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            AppElevatedButton(
+                                child: Text(
+                                  "Not Now",
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                                onPressed: () {
+                                  print(state.startingSetting
+                                      ?.notificationTypes?[0].name);
+                                  Navigator.of(context).pop();
+                                }),
+                            AppElevatedButton(
+                                child: Text(
+                                  "Notify Me",
+                                  style: TextStyle(color: Colors.green),
+                                ),
+                                onPressed: () {
+                                  add(RequestForNotificationWhenProductBecameAvailableEvent(
+                                      event.products.id.toString(),
+                                      state.startingSetting?.notificationTypes
+                                              ?.firstWhere(
+                                                  (type) =>
+                                                      type.name ==
+                                                      'product availability',
+                                                  orElse: () =>
+                                                      NotificationType(id: -1))
+                                              .id ??
+                                          -1,
+                                      event.choice_1 ?? "",
+                                      event.colorName));
+                                  Navigator.of(context).pop();
+                                }),
+                          ]),
+                    ],
+                  ))
+                ]),
+          ),
+        );
+
         state.cartCollection![event.boutiqueId.toString()]!.remove(cart);
         if (state.cartCollection![event.boutiqueId.toString()].isNullOrEmpty) {
           state.cartCollection!.remove(event.boutiqueId.toString());
         }
         emit(state.copyWith(cartCollection: state.cartCollection));
-        if (event.fishAddAllTheItems) {
+        /* if (event.fishAddAllTheItems) {
           showMessage(r.message!,
               foreGroundColor: Colors.white,
               backGroundColor: Colors.black,
@@ -2687,7 +2755,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               timeShowing: Toast.LENGTH_SHORT);
           isFailedTheFirstTime.remove('AddCartItemEvent');
           add(GetCartItemEvent());
-        }
+        }*/
 
         return;
       }
@@ -3111,7 +3179,69 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     }, (r) {
       emit(state.copyWith(
           updateItemInCartStatus: UpdateItemInCartStatus.success));
-      if (r.data == null || r.data == "") {
+      if ((r.data == null || r.data == "") || (r.data?.status ?? 0) != 1) {
+        showDialog(
+          context: navigatorKey.currentState!.context,
+          builder: (context) => Directionality(
+            textDirection: TextDirection.ltr,
+            child: AlertDialog(
+                title: MyTextWidget("${r.message}",
+                    style: context.textTheme.labelMedium
+                        ?.copyWith(color: Colors.red, height: 1.25),
+                    textDirection: TextDirection.ltr),
+                actions: <Widget>[
+                  SingleChildScrollView(
+                      child: Column(
+                    children: [
+                      MyTextWidget(
+                        "Do You Want To Notify You When your choose available ?",
+                        style: context.textTheme.bodyMedium
+                            ?.copyWith(color: Colors.black, height: 1.25),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            AppElevatedButton(
+                                child: Text(
+                                  "Not Now",
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                                onPressed: () {
+                                  print(state.startingSetting
+                                      ?.notificationTypes?[0].name);
+                                  Navigator.of(context).pop();
+                                }),
+                            AppElevatedButton(
+                                child: Text(
+                                  "Notify Me",
+                                  style: TextStyle(color: Colors.green),
+                                ),
+                                onPressed: () {
+                                  add(RequestForNotificationWhenProductBecameAvailableEvent(
+                                      event.productId,
+                                      state.startingSetting?.notificationTypes
+                                              ?.firstWhere(
+                                                  (type) =>
+                                                      type.name ==
+                                                      'product availability',
+                                                  orElse: () =>
+                                                      NotificationType(id: -1))
+                                              .id ??
+                                          -1,
+                                      event.currentSize,
+                                      event.colorName));
+                                  Navigator.of(context).pop();
+                                }),
+                          ]),
+                    ],
+                  ))
+                ]),
+          ),
+        );
+
         state.cartCollection![event.boutiqueId] =
             state.cartCollection![event.boutiqueId]!.map((e) {
           if (e.id.toString() == event.cartId) {
@@ -3126,12 +3256,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         ));
         if (event.fishAddAllTheItems) {
           add(GetCartItemEvent());
-          showMessage(r.message!,
+          /*   showMessage(r.message!,
               foreGroundColor: Colors.white,
               backGroundColor: Colors.black,
               showInRelease: true,
               timeShowing: Toast.LENGTH_SHORT);
-          isFailedTheFirstTime.remove('AddCartItemEvent');
+          isFailedTheFirstTime.remove('AddCartItemEvent');*/
         }
         isFailedTheFirstTime.remove('UpdateCartItemEvent');
         return;
@@ -3851,13 +3981,20 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   FutureOr<void> _onRequestForNotificationWhenProductBecameAvailableEvent(
       RequestForNotificationWhenProductBecameAvailableEvent event,
       Emitter<HomeState> emit) async {
-    List<String> isSizeRequestNotification =
-        List.of(state.isSizeRequestNotification);
-    isSizeRequestNotification.add(event.size);
-    String variant = event.selectedColorName == ''
-        ? event.size
-        : "${event.selectedColorName}-${event.size}";
-    emit(state.copyWith(isSizeRequestNotification: isSizeRequestNotification));
+    List<String> isSizeRequestNotification = [];
+    String variant = "";
+    if (event.size != "") {
+      isSizeRequestNotification = List.of(state.isSizeRequestNotification);
+      isSizeRequestNotification.add(event.size);
+      variant = event.selectedColorName == ''
+          ? event.size
+          : "${event.selectedColorName}-${event.size}";
+      emit(
+          state.copyWith(isSizeRequestNotification: isSizeRequestNotification));
+    } else {
+      variant = event.selectedColorName == '' ? "" : event.selectedColorName;
+    }
+
     final response =
         await requestForNotificationWhenProductBecameAvailableUseCase(
             RequestForNotificationWhenProductBecameAvailableParams(
@@ -3866,11 +4003,26 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                 variant,
                 prefsRepository.myMarketId!));
     response.fold((l) {
-      isSizeRequestNotification = List.of(state.isSizeRequestNotification);
-      isSizeRequestNotification.remove(event.size);
-      emit(
-          state.copyWith(isSizeRequestNotification: isSizeRequestNotification));
-    }, (r) {});
+      showMessage("your Request faild",
+          foreGroundColor: Colors.white,
+          backGroundColor: Colors.black,
+          showInRelease: true,
+          timeShowing: Toast.LENGTH_SHORT);
+      isFailedTheFirstTime.remove('AddCartItemEvent');
+      if (event.size != "") {
+        isSizeRequestNotification = List.of(state.isSizeRequestNotification);
+        isSizeRequestNotification.remove(event.size);
+        emit(state.copyWith(
+            isSizeRequestNotification: isSizeRequestNotification));
+      }
+    }, (r) {
+      showMessage("your Request Add Successfuly",
+          foreGroundColor: Colors.white,
+          backGroundColor: Colors.black,
+          showInRelease: true,
+          timeShowing: Toast.LENGTH_SHORT);
+      isFailedTheFirstTime.remove('AddCartItemEvent');
+    });
   }
 
   FutureOr<void> _onGetAndAddCountViewOfProductEvent(

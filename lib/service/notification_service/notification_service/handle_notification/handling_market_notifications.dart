@@ -160,17 +160,16 @@ class HandlingMarketNotifications {
         try {
           BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
               ChangeSelectedFiltersEvent(
-                  boutiqueSlug: "search" + data["category_slug"],
+                  boutiqueSlug: "search",
                   fromHomePageSearch: true,
                   resetChoosedFilters: true,
                   requestToUpdateFilters: false));
           BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
               ChangeAppliedFiltersEvent(
-                  boutiqueSlug: "search" + data["category_slug"],
-                  resetAppliedFilters: true));
+                  boutiqueSlug: "search", resetAppliedFilters: true));
           BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context)
               .add(ChangeAppliedFiltersEvent(
-                  boutiqueSlug: "search" + data["category_slug"],
+                  boutiqueSlug: "search",
                   filtersAppliedByUser: GetProductFiltersModel(
                       filters: Filter(categories: [
                     Category(

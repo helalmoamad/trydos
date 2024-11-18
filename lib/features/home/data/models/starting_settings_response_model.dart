@@ -4,9 +4,13 @@
 
 import 'dart:convert';
 
-StartingSettingsResponseModel startingSettingsResponseModelFromJson(String str) => StartingSettingsResponseModel.fromJson(json.decode(str));
+StartingSettingsResponseModel startingSettingsResponseModelFromJson(
+        String str) =>
+    StartingSettingsResponseModel.fromJson(json.decode(str));
 
-String startingSettingsResponseModelToJson(StartingSettingsResponseModel data) => json.encode(data.toJson());
+String startingSettingsResponseModelToJson(
+        StartingSettingsResponseModel data) =>
+    json.encode(data.toJson());
 
 class StartingSettingsResponseModel {
   final String? message;
@@ -26,15 +30,16 @@ class StartingSettingsResponseModel {
         data: data ?? this.data,
       );
 
-  factory StartingSettingsResponseModel.fromJson(Map<String, dynamic> json) => StartingSettingsResponseModel(
-    message: json["message"],
-    data: json["data"] == null ? null : Data.fromJson(json["data"]),
-  );
+  factory StartingSettingsResponseModel.fromJson(Map<String, dynamic> json) =>
+      StartingSettingsResponseModel(
+        message: json["message"],
+        data: json["data"] == null ? null : Data.fromJson(json["data"]),
+      );
 
   Map<String, dynamic> toJson() => {
-    "message": message,
-    "data": data?.toJson(),
-  };
+        "message": message,
+        "data": data?.toJson(),
+      };
 }
 
 class Data {
@@ -64,18 +69,20 @@ class Data {
       );
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-    startingSetting: json["starting-setting"] == null ? null : StartingSetting.fromJson(json["starting-setting"]),
-    advertiseTop: json["advertise_top"],
-    returnAndExchange: json["return_and_exchange"],
-    shipping: json["shipping"],
-  );
+        startingSetting: json["starting-setting"] == null
+            ? null
+            : StartingSetting.fromJson(json["starting-setting"]),
+        advertiseTop: json["advertise_top"],
+        returnAndExchange: json["return_and_exchange"],
+        shipping: json["shipping"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "starting-setting": startingSetting?.toJson(),
-    "advertise_top": advertiseTop,
-    "return_and_exchange": returnAndExchange,
-    "shipping": shipping,
-  };
+        "starting-setting": startingSetting?.toJson(),
+        "advertise_top": advertiseTop,
+        "return_and_exchange": returnAndExchange,
+        "shipping": shipping,
+      };
 }
 
 class StartingSetting {
@@ -277,44 +284,59 @@ class StartingSetting {
         mainGreyColor: mainGreyColor ?? this.mainGreyColor,
         mainCatGreyColor: mainCatGreyColor ?? this.mainCatGreyColor,
         newSoftGreyColorAux: newSoftGreyColorAux ?? this.newSoftGreyColorAux,
-        applyCouponButtonColor: applyCouponButtonColor ?? this.applyCouponButtonColor,
+        applyCouponButtonColor:
+            applyCouponButtonColor ?? this.applyCouponButtonColor,
         flashDealForeColor: flashDealForeColor ?? this.flashDealForeColor,
         flashDealBackColor: flashDealBackColor ?? this.flashDealBackColor,
         offersTheme: offersTheme ?? this.offersTheme,
         squareCurvedLogoUrl: squareCurvedLogoUrl ?? this.squareCurvedLogoUrl,
         squareLogoUrl: squareLogoUrl ?? this.squareLogoUrl,
-        rectangularCurvedLogoUrl: rectangularCurvedLogoUrl ?? this.rectangularCurvedLogoUrl,
-        showPaymentUsingCards: showPaymentUsingCards ?? this.showPaymentUsingCards,
-        showPaymentUsingPostPay: showPaymentUsingPostPay ?? this.showPaymentUsingPostPay,
+        rectangularCurvedLogoUrl:
+            rectangularCurvedLogoUrl ?? this.rectangularCurvedLogoUrl,
+        showPaymentUsingCards:
+            showPaymentUsingCards ?? this.showPaymentUsingCards,
+        showPaymentUsingPostPay:
+            showPaymentUsingPostPay ?? this.showPaymentUsingPostPay,
         showCashPayment: showCashPayment ?? this.showCashPayment,
         showFlashDeal: showFlashDeal ?? this.showFlashDeal,
         androidMinVersion: androidMinVersion ?? this.androidMinVersion,
         iosMinVersion: iosMinVersion ?? this.iosMinVersion,
         closedHour: closedHour ?? this.closedHour,
         messageTimeEndWork: messageTimeEndWork ?? this.messageTimeEndWork,
-        descriptionOnPageProductDetails: descriptionOnPageProductDetails ?? this.descriptionOnPageProductDetails,
+        descriptionOnPageProductDetails: descriptionOnPageProductDetails ??
+            this.descriptionOnPageProductDetails,
         collectionGrid: collectionGrid ?? this.collectionGrid,
         showNotifications: showNotifications ?? this.showNotifications,
         showFeedBack: showFeedBack ?? this.showFeedBack,
-        showContactWithWhatsapp: showContactWithWhatsapp ?? this.showContactWithWhatsapp,
-        defaultCountryDialCode: defaultCountryDialCode ?? this.defaultCountryDialCode,
+        showContactWithWhatsapp:
+            showContactWithWhatsapp ?? this.showContactWithWhatsapp,
+        defaultCountryDialCode:
+            defaultCountryDialCode ?? this.defaultCountryDialCode,
         enableCrashylitcs: enableCrashylitcs ?? this.enableCrashylitcs,
-        enableFirebaseMessaging: enableFirebaseMessaging ?? this.enableFirebaseMessaging,
+        enableFirebaseMessaging:
+            enableFirebaseMessaging ?? this.enableFirebaseMessaging,
         returnMoneyWithCard: returnMoneyWithCard ?? this.returnMoneyWithCard,
-        returnMoneyWithWallet: returnMoneyWithWallet ?? this.returnMoneyWithWallet,
-        orderStatusCanCanceled: orderStatusCanCanceled ?? this.orderStatusCanCanceled,
-        orderStatusCanCanceledItem: orderStatusCanCanceledItem ?? this.orderStatusCanCanceledItem,
-        verificationWithWhatsappEnable: verificationWithWhatsappEnable ?? this.verificationWithWhatsappEnable,
-        verificationWithSmsEnable: verificationWithSmsEnable ?? this.verificationWithSmsEnable,
+        returnMoneyWithWallet:
+            returnMoneyWithWallet ?? this.returnMoneyWithWallet,
+        orderStatusCanCanceled:
+            orderStatusCanCanceled ?? this.orderStatusCanCanceled,
+        orderStatusCanCanceledItem:
+            orderStatusCanCanceledItem ?? this.orderStatusCanCanceledItem,
+        verificationWithWhatsappEnable: verificationWithWhatsappEnable ??
+            this.verificationWithWhatsappEnable,
+        verificationWithSmsEnable:
+            verificationWithSmsEnable ?? this.verificationWithSmsEnable,
         isSystemSupportEmail: isSystemSupportEmail ?? this.isSystemSupportEmail,
         showSubCategoryTitle: showSubCategoryTitle ?? this.showSubCategoryTitle,
         enableInviteBanner: enableInviteBanner ?? this.enableInviteBanner,
         countries: countries ?? this.countries,
         defaultCountry: defaultCountry ?? this.defaultCountry,
         addressType: addressType ?? this.addressType,
-        systemDefaultCurrency: systemDefaultCurrency ?? this.systemDefaultCurrency,
+        systemDefaultCurrency:
+            systemDefaultCurrency ?? this.systemDefaultCurrency,
         canInviteFriends: canInviteFriends ?? this.canInviteFriends,
-        showButtonWhatsappCashOnDelivery: showButtonWhatsappCashOnDelivery ?? this.showButtonWhatsappCashOnDelivery,
+        showButtonWhatsappCashOnDelivery: showButtonWhatsappCashOnDelivery ??
+            this.showButtonWhatsappCashOnDelivery,
         smartLook: smartLook ?? this.smartLook,
         language: language ?? this.language,
         notificationTypes: notificationTypes ?? this.notificationTypes,
@@ -323,129 +345,173 @@ class StartingSetting {
         postPaySuccessUrl: postPaySuccessUrl ?? this.postPaySuccessUrl,
       );
 
-  factory StartingSetting.fromJson(Map<String, dynamic> json) => StartingSetting(
-    primaryColor: json["primaryColor"],
-    mainBackgroundColor: json["mainBackgroundColor"],
-    titleColor: json["titleColor"],
-    subCategoriesColor: json["subCategoriesColor"],
-    buyNowButtonColor: json["buyNowButtonColor"],
-    priceColor: json["priceColor"],
-    shareButtonColor: json["shareButtonColor"],
-    includingTaxColor: json["includingTaxColor"],
-    giftBackColor: json["giftBackColor"],
-    categoryHeaderColor: json["categoryHeaderColor"],
-    newSoftGreyColor: json["newSoftGreyColor"],
-    mainGreyColor: json["mainGreyColor"],
-    mainCatGreyColor: json["mainCatGreyColor"],
-    newSoftGreyColorAux: json["newSoftGreyColorAux"],
-    applyCouponButtonColor: json["applyCouponButtonColor"],
-    flashDealForeColor: json["flash_deal_foreColor"],
-    flashDealBackColor: json["flash_deal_backColor"],
-    offersTheme: json["offersTheme"] == null ? null : OffersTheme.fromJson(json["offersTheme"]),
-    squareCurvedLogoUrl: json["square_curved_logo_url"],
-    squareLogoUrl: json["square_logo_url"],
-    rectangularCurvedLogoUrl: json["rectangular_curved_logo_url"],
-    showPaymentUsingCards: json["show_payment_using_cards"],
-    showPaymentUsingPostPay: json["show_payment_using_post_pay"],
-    showCashPayment: json["show_Cash_payment"],
-    showFlashDeal: json["show_flash_deal"],
-    androidMinVersion: json["android_min_version"],
-    iosMinVersion: json["ios_min_version"],
-    closedHour: json["closed_hour"],
-    messageTimeEndWork: json["message_time_end_work"],
-    descriptionOnPageProductDetails: json["description_on_page_product_details"],
-    collectionGrid: json["collection_grid"],
-    showNotifications: json["show_notifications"],
-    decimalPointSetting: json["decimal_point_settings"],
-    showFeedBack: json["show_feedBack"],
-    showContactWithWhatsapp: json["show_contact_with_whatsapp"],
-    defaultCountryDialCode: json["default_country_dial_code"],
-    enableCrashylitcs: json["enable_crashylitcs"],
-    enableFirebaseMessaging: json["enable_Firebase_Messaging"],
-    returnMoneyWithCard: json["return_money_with_card"],
-    returnMoneyWithWallet: json["return_money_with_wallet"],
-    orderStatusCanCanceled: json["order_status_can_canceled"] == null ? [] : List<String>.from(json["order_status_can_canceled"]!.map((x) => x)),
-    orderStatusCanCanceledItem: json["order_status_can_canceled_item"] == null ? [] : List<String>.from(json["order_status_can_canceled_item"]!.map((x) => x)),
-    verificationWithWhatsappEnable: json["verification_with_whatsapp_enable"],
-    verificationWithSmsEnable: json["verification_with_sms_enable"],
-    isSystemSupportEmail: json["is_system_support_email"],
-    showSubCategoryTitle: json["show_subCategory_title"],
-    enableInviteBanner: json["enable_invite_banner"],
-    countries: json["countries"] == null ? [] : List<Country>.from(json["countries"]!.map((x) => Country.fromJson(x))),
-    defaultCountry: json["default_country"] == null ? null : Country.fromJson(json["default_country"]),
-    addressType: json["address_type"] == null ? [] : List<String>.from(json["address_type"]!.map((x) => x)),
-    systemDefaultCurrency: json["system_default_currency"],
-    canInviteFriends: json["can_invite_friends"],
-    showButtonWhatsappCashOnDelivery: json["show_button_whatsapp_cash_on_delivery"],
-    smartLook: json["smart_look"],
-    language: json["language"] == null ? [] : List<Language>.from(json["language"]!.map((x) => Language.fromJson(x))),
-    notificationTypes: json["notificationTypes"] == null ? [] : List<NotificationType>.from(json["notificationTypes"]!.map((x) => NotificationType.fromJson(x))),
-    currencyList: json["currency_list"] == null ? [] : List<CurrencyList>.from(json["currency_list"]!.map((x) => CurrencyList.fromJson(x))),
-    telrSuccessUrl: json["telr_success_url"],
-    postPaySuccessUrl: json["post_pay_success_url"],
-  );
+  factory StartingSetting.fromJson(Map<String, dynamic> json) =>
+      StartingSetting(
+        primaryColor: json["primaryColor"],
+        mainBackgroundColor: json["mainBackgroundColor"],
+        titleColor: json["titleColor"],
+        subCategoriesColor: json["subCategoriesColor"],
+        buyNowButtonColor: json["buyNowButtonColor"],
+        priceColor: json["priceColor"],
+        shareButtonColor: json["shareButtonColor"],
+        includingTaxColor: json["includingTaxColor"],
+        giftBackColor: json["giftBackColor"],
+        categoryHeaderColor: json["categoryHeaderColor"],
+        newSoftGreyColor: json["newSoftGreyColor"],
+        mainGreyColor: json["mainGreyColor"],
+        mainCatGreyColor: json["mainCatGreyColor"],
+        newSoftGreyColorAux: json["newSoftGreyColorAux"],
+        applyCouponButtonColor: json["applyCouponButtonColor"],
+        flashDealForeColor: json["flash_deal_foreColor"],
+        flashDealBackColor: json["flash_deal_backColor"],
+        offersTheme: json["offersTheme"] == null
+            ? null
+            : OffersTheme.fromJson(json["offersTheme"]),
+        squareCurvedLogoUrl: json["square_curved_logo_url"],
+        squareLogoUrl: json["square_logo_url"],
+        rectangularCurvedLogoUrl: json["rectangular_curved_logo_url"],
+        showPaymentUsingCards: json["show_payment_using_cards"],
+        showPaymentUsingPostPay: json["show_payment_using_post_pay"],
+        showCashPayment: json["show_Cash_payment"],
+        showFlashDeal: json["show_flash_deal"],
+        androidMinVersion: json["android_min_version"],
+        iosMinVersion: json["ios_min_version"],
+        closedHour: json["closed_hour"],
+        messageTimeEndWork: json["message_time_end_work"],
+        descriptionOnPageProductDetails:
+            json["description_on_page_product_details"],
+        collectionGrid: json["collection_grid"],
+        showNotifications: json["show_notifications"],
+        decimalPointSetting: json["decimal_point_settings"],
+        showFeedBack: json["show_feedBack"],
+        showContactWithWhatsapp: json["show_contact_with_whatsapp"],
+        defaultCountryDialCode: json["default_country_dial_code"],
+        enableCrashylitcs: json["enable_crashylitcs"],
+        enableFirebaseMessaging: json["enable_Firebase_Messaging"],
+        returnMoneyWithCard: json["return_money_with_card"],
+        returnMoneyWithWallet: json["return_money_with_wallet"],
+        orderStatusCanCanceled: json["order_status_can_canceled"] == null
+            ? []
+            : List<String>.from(
+                json["order_status_can_canceled"]!.map((x) => x)),
+        orderStatusCanCanceledItem:
+            json["order_status_can_canceled_item"] == null
+                ? []
+                : List<String>.from(
+                    json["order_status_can_canceled_item"]!.map((x) => x)),
+        verificationWithWhatsappEnable:
+            json["verification_with_whatsapp_enable"],
+        verificationWithSmsEnable: json["verification_with_sms_enable"],
+        isSystemSupportEmail: json["is_system_support_email"],
+        showSubCategoryTitle: json["show_subCategory_title"],
+        enableInviteBanner: json["enable_invite_banner"],
+        countries: json["countries"] == null
+            ? []
+            : List<Country>.from(
+                json["countries"]!.map((x) => Country.fromJson(x))),
+        defaultCountry: json["default_country"] == null
+            ? null
+            : Country.fromJson(json["default_country"]),
+        addressType: json["address_type"] == null
+            ? []
+            : List<String>.from(json["address_type"]!.map((x) => x)),
+        systemDefaultCurrency: json["system_default_currency"],
+        canInviteFriends: json["can_invite_friends"],
+        showButtonWhatsappCashOnDelivery:
+            json["show_button_whatsapp_cash_on_delivery"],
+        smartLook: json["smart_look"],
+        language: json["language"] == null
+            ? []
+            : List<Language>.from(
+                json["language"]!.map((x) => Language.fromJson(x))),
+        notificationTypes: json["notificationTypes"] == null
+            ? []
+            : List<NotificationType>.from(json["notificationTypes"]!
+                .map((x) => NotificationType.fromJson(x))),
+        currencyList: json["currency_list"] == null
+            ? []
+            : List<CurrencyList>.from(
+                json["currency_list"]!.map((x) => CurrencyList.fromJson(x))),
+        telrSuccessUrl: json["telr_success_url"],
+        postPaySuccessUrl: json["post_pay_success_url"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "primaryColor": primaryColor,
-    "mainBackgroundColor": mainBackgroundColor,
-    "titleColor": titleColor,
-    "subCategoriesColor": subCategoriesColor,
-    "buyNowButtonColor": buyNowButtonColor,
-    "priceColor": priceColor,
-    "shareButtonColor": shareButtonColor,
-    "includingTaxColor": includingTaxColor,
-    "giftBackColor": giftBackColor,
-    "categoryHeaderColor": categoryHeaderColor,
-    "newSoftGreyColor": newSoftGreyColor,
-    "mainGreyColor": mainGreyColor,
-    "mainCatGreyColor": mainCatGreyColor,
-    "newSoftGreyColorAux": newSoftGreyColorAux,
-    "applyCouponButtonColor": applyCouponButtonColor,
-    "flash_deal_foreColor": flashDealForeColor,
-    "decimal_point_settings": decimalPointSetting,
-    "flash_deal_backColor": flashDealBackColor,
-    "offersTheme": offersTheme?.toJson(),
-    "square_curved_logo_url": squareCurvedLogoUrl,
-    "square_logo_url": squareLogoUrl,
-    "rectangular_curved_logo_url": rectangularCurvedLogoUrl,
-    "show_payment_using_cards": showPaymentUsingCards,
-    "show_payment_using_post_pay": showPaymentUsingPostPay,
-    "show_Cash_payment": showCashPayment,
-    "show_flash_deal": showFlashDeal,
-    "android_min_version": androidMinVersion,
-    "ios_min_version": iosMinVersion,
-    "closed_hour": closedHour,
-    "message_time_end_work": messageTimeEndWork,
-    "description_on_page_product_details": descriptionOnPageProductDetails,
-    "collection_grid": collectionGrid,
-    "show_notifications": showNotifications,
-    "show_feedBack": showFeedBack,
-    "show_contact_with_whatsapp": showContactWithWhatsapp,
-    "default_country_dial_code": defaultCountryDialCode,
-    "enable_crashylitcs": enableCrashylitcs,
-    "enable_Firebase_Messaging": enableFirebaseMessaging,
-    "return_money_with_card": returnMoneyWithCard,
-    "return_money_with_wallet": returnMoneyWithWallet,
-    "order_status_can_canceled": orderStatusCanCanceled == null ? [] : List<dynamic>.from(orderStatusCanCanceled!.map((x) => x)),
-    "order_status_can_canceled_item": orderStatusCanCanceledItem == null ? [] : List<dynamic>.from(orderStatusCanCanceledItem!.map((x) => x)),
-    "verification_with_whatsapp_enable": verificationWithWhatsappEnable,
-    "verification_with_sms_enable": verificationWithSmsEnable,
-    "is_system_support_email": isSystemSupportEmail,
-    "show_subCategory_title": showSubCategoryTitle,
-    "enable_invite_banner": enableInviteBanner,
-    "countries": countries == null ? [] : List<dynamic>.from(countries!.map((x) => x.toJson())),
-    "default_country": defaultCountry?.toJson(),
-    "address_type": addressType == null ? [] : List<dynamic>.from(addressType!.map((x) => x)),
-    "system_default_currency": systemDefaultCurrency,
-    "can_invite_friends": canInviteFriends,
-    "show_button_whatsapp_cash_on_delivery": showButtonWhatsappCashOnDelivery,
-    "smart_look": smartLook,
-    "language": language == null ? [] : List<dynamic>.from(language!.map((x) => x.toJson())),
-    "notificationTypes": notificationTypes == null ? [] : List<dynamic>.from(notificationTypes!.map((x) => x.toJson())),
-    "currency_list": currencyList == null ? [] : List<dynamic>.from(currencyList!.map((x) => x.toJson())),
-    "telr_success_url": telrSuccessUrl,
-    "post_pay_success_url": postPaySuccessUrl,
-  };
+        "primaryColor": primaryColor,
+        "mainBackgroundColor": mainBackgroundColor,
+        "titleColor": titleColor,
+        "subCategoriesColor": subCategoriesColor,
+        "buyNowButtonColor": buyNowButtonColor,
+        "priceColor": priceColor,
+        "shareButtonColor": shareButtonColor,
+        "includingTaxColor": includingTaxColor,
+        "giftBackColor": giftBackColor,
+        "categoryHeaderColor": categoryHeaderColor,
+        "newSoftGreyColor": newSoftGreyColor,
+        "mainGreyColor": mainGreyColor,
+        "mainCatGreyColor": mainCatGreyColor,
+        "newSoftGreyColorAux": newSoftGreyColorAux,
+        "applyCouponButtonColor": applyCouponButtonColor,
+        "flash_deal_foreColor": flashDealForeColor,
+        "decimal_point_settings": decimalPointSetting,
+        "flash_deal_backColor": flashDealBackColor,
+        "offersTheme": offersTheme?.toJson(),
+        "square_curved_logo_url": squareCurvedLogoUrl,
+        "square_logo_url": squareLogoUrl,
+        "rectangular_curved_logo_url": rectangularCurvedLogoUrl,
+        "show_payment_using_cards": showPaymentUsingCards,
+        "show_payment_using_post_pay": showPaymentUsingPostPay,
+        "show_Cash_payment": showCashPayment,
+        "show_flash_deal": showFlashDeal,
+        "android_min_version": androidMinVersion,
+        "ios_min_version": iosMinVersion,
+        "closed_hour": closedHour,
+        "message_time_end_work": messageTimeEndWork,
+        "description_on_page_product_details": descriptionOnPageProductDetails,
+        "collection_grid": collectionGrid,
+        "show_notifications": showNotifications,
+        "show_feedBack": showFeedBack,
+        "show_contact_with_whatsapp": showContactWithWhatsapp,
+        "default_country_dial_code": defaultCountryDialCode,
+        "enable_crashylitcs": enableCrashylitcs,
+        "enable_Firebase_Messaging": enableFirebaseMessaging,
+        "return_money_with_card": returnMoneyWithCard,
+        "return_money_with_wallet": returnMoneyWithWallet,
+        "order_status_can_canceled": orderStatusCanCanceled == null
+            ? []
+            : List<dynamic>.from(orderStatusCanCanceled!.map((x) => x)),
+        "order_status_can_canceled_item": orderStatusCanCanceledItem == null
+            ? []
+            : List<dynamic>.from(orderStatusCanCanceledItem!.map((x) => x)),
+        "verification_with_whatsapp_enable": verificationWithWhatsappEnable,
+        "verification_with_sms_enable": verificationWithSmsEnable,
+        "is_system_support_email": isSystemSupportEmail,
+        "show_subCategory_title": showSubCategoryTitle,
+        "enable_invite_banner": enableInviteBanner,
+        "countries": countries == null
+            ? []
+            : List<dynamic>.from(countries!.map((x) => x.toJson())),
+        "default_country": defaultCountry?.toJson(),
+        "address_type": addressType == null
+            ? []
+            : List<dynamic>.from(addressType!.map((x) => x)),
+        "system_default_currency": systemDefaultCurrency,
+        "can_invite_friends": canInviteFriends,
+        "show_button_whatsapp_cash_on_delivery":
+            showButtonWhatsappCashOnDelivery,
+        "smart_look": smartLook,
+        "language": language == null
+            ? []
+            : List<dynamic>.from(language!.map((x) => x.toJson())),
+        "notificationTypes": notificationTypes == null
+            ? []
+            : List<dynamic>.from(notificationTypes!.map((x) => x.toJson())),
+        "currency_list": currencyList == null
+            ? []
+            : List<dynamic>.from(currencyList!.map((x) => x.toJson())),
+        "telr_success_url": telrSuccessUrl,
+        "post_pay_success_url": postPaySuccessUrl,
+      };
 }
 
 class Country {
@@ -511,36 +577,38 @@ class Country {
       );
 
   factory Country.fromJson(Map<String, dynamic> json) => Country(
-    id: json["id"],
-    iso: json["iso"],
-    name: json["name"],
-    nicename: json["nicename"],
-    iso3: json["iso3"],
-    numcode: json["numcode"],
-    phonecode: json["phonecode"],
-    status: json["status"],
-    isAccess: json["isAccess"],
-    otpByWhatsapp: json["otp_by_whatsapp"],
-    otpBySms: json["otp_by_sms"],
-    createdAt: json["created_at"],
-    updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
-  );
+        id: json["id"],
+        iso: json["iso"],
+        name: json["name"],
+        nicename: json["nicename"],
+        iso3: json["iso3"],
+        numcode: json["numcode"],
+        phonecode: json["phonecode"],
+        status: json["status"],
+        isAccess: json["isAccess"],
+        otpByWhatsapp: json["otp_by_whatsapp"],
+        otpBySms: json["otp_by_sms"],
+        createdAt: json["created_at"],
+        updatedAt: json["updated_at"] == null
+            ? null
+            : DateTime.parse(json["updated_at"]),
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "iso": iso,
-    "name": name,
-    "nicename": nicename,
-    "iso3": iso3,
-    "numcode": numcode,
-    "phonecode": phonecode,
-    "status": status,
-    "isAccess": isAccess,
-    "otp_by_whatsapp": otpByWhatsapp,
-    "otp_by_sms": otpBySms,
-    "created_at": createdAt,
-    "updated_at": updatedAt?.toIso8601String(),
-  };
+        "id": id,
+        "iso": iso,
+        "name": name,
+        "nicename": nicename,
+        "iso3": iso3,
+        "numcode": numcode,
+        "phonecode": phonecode,
+        "status": status,
+        "isAccess": isAccess,
+        "otp_by_whatsapp": otpByWhatsapp,
+        "otp_by_sms": otpBySms,
+        "created_at": createdAt,
+        "updated_at": updatedAt?.toIso8601String(),
+      };
 }
 
 class CurrencyList {
@@ -590,28 +658,32 @@ class CurrencyList {
       );
 
   factory CurrencyList.fromJson(Map<String, dynamic> json) => CurrencyList(
-    id: json["id"],
-    name: json["name"],
-    symbol: json["symbol"],
-    code: json["code"],
-    exchangeRate: json["exchange_rate"]?.toDouble(),
-    status: json["status"],
-    showInWebsite: json["show_in_website"],
-    createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
-    updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
-  );
+        id: json["id"],
+        name: json["name"],
+        symbol: json["symbol"],
+        code: json["code"],
+        exchangeRate: json["exchange_rate"]?.toDouble(),
+        status: json["status"],
+        showInWebsite: json["show_in_website"],
+        createdAt: json["created_at"] == null
+            ? null
+            : DateTime.parse(json["created_at"]),
+        updatedAt: json["updated_at"] == null
+            ? null
+            : DateTime.parse(json["updated_at"]),
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "name": name,
-    "symbol": symbol,
-    "code": code,
-    "exchange_rate": exchangeRate,
-    "status": status,
-    "show_in_website": showInWebsite,
-    "created_at": createdAt?.toIso8601String(),
-    "updated_at": updatedAt?.toIso8601String(),
-  };
+        "id": id,
+        "name": name,
+        "symbol": symbol,
+        "code": code,
+        "exchange_rate": exchangeRate,
+        "status": status,
+        "show_in_website": showInWebsite,
+        "created_at": createdAt?.toIso8601String(),
+        "updated_at": updatedAt?.toIso8601String(),
+      };
 }
 
 class Language {
@@ -633,14 +705,14 @@ class Language {
       );
 
   factory Language.fromJson(Map<String, dynamic> json) => Language(
-    code: json["code"],
-    name: json["name"],
-  );
+        code: json["code"],
+        name: json["name"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "code": code,
-    "name": name,
-  };
+        "code": code,
+        "name": name,
+      };
 }
 
 class NotificationType {
@@ -653,7 +725,7 @@ class NotificationType {
   });
 
   NotificationType copyWith({
-    int ? id,
+    int? id,
     String? name,
   }) =>
       NotificationType(
@@ -661,15 +733,16 @@ class NotificationType {
         name: name ?? this.name,
       );
 
-  factory NotificationType.fromJson(Map<String, dynamic> json) => NotificationType(
-    id: json["id"],
-    name: json["name"],
-  );
+  factory NotificationType.fromJson(Map<String, dynamic> json) =>
+      NotificationType(
+        id: json["id"],
+        name: json["name"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "name": name,
-  };
+        "id": id,
+        "name": name,
+      };
 }
 
 class OffersTheme {
@@ -699,18 +772,26 @@ class OffersTheme {
       );
 
   factory OffersTheme.fromJson(Map<String, dynamic> json) => OffersTheme(
-    everyThingMustGo: json["everyThingMustGo"] == null ? null : ClearanceSale.fromJson(json["everyThingMustGo"]),
-    hardClearance: json["hardClearance"] == null ? null : ClearanceSale.fromJson(json["hardClearance"]),
-    clearanceSale: json["clearanceSale"] == null ? null : ClearanceSale.fromJson(json["clearanceSale"]),
-    freshSale: json["freshSale"] == null ? null : ClearanceSale.fromJson(json["freshSale"]),
-  );
+        everyThingMustGo: json["everyThingMustGo"] == null
+            ? null
+            : ClearanceSale.fromJson(json["everyThingMustGo"]),
+        hardClearance: json["hardClearance"] == null
+            ? null
+            : ClearanceSale.fromJson(json["hardClearance"]),
+        clearanceSale: json["clearanceSale"] == null
+            ? null
+            : ClearanceSale.fromJson(json["clearanceSale"]),
+        freshSale: json["freshSale"] == null
+            ? null
+            : ClearanceSale.fromJson(json["freshSale"]),
+      );
 
   Map<String, dynamic> toJson() => {
-    "everyThingMustGo": everyThingMustGo?.toJson(),
-    "hardClearance": hardClearance?.toJson(),
-    "clearanceSale": clearanceSale?.toJson(),
-    "freshSale": freshSale?.toJson(),
-  };
+        "everyThingMustGo": everyThingMustGo?.toJson(),
+        "hardClearance": hardClearance?.toJson(),
+        "clearanceSale": clearanceSale?.toJson(),
+        "freshSale": freshSale?.toJson(),
+      };
 }
 
 class ClearanceSale {
@@ -732,12 +813,12 @@ class ClearanceSale {
       );
 
   factory ClearanceSale.fromJson(Map<String, dynamic> json) => ClearanceSale(
-    backgroundColor: json["backgroundColor"],
-    foregroundColor: json["foregroundColor"],
-  );
+        backgroundColor: json["backgroundColor"],
+        foregroundColor: json["foregroundColor"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "backgroundColor": backgroundColor,
-    "foregroundColor": foregroundColor,
-  };
+        "backgroundColor": backgroundColor,
+        "foregroundColor": foregroundColor,
+      };
 }

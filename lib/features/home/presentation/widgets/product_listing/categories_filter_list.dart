@@ -45,6 +45,9 @@ class CategoriesFilterList extends StatelessWidget {
     String key = boutiqueSlug + (category ?? '');
     print(
         "##############################################################${key}");
+    if (fromSearch) {
+      key = boutiqueSlug;
+    }
     return BlocBuilder<HomeBloc, HomeState>(
       buildWhen: (previous, current) =>
           previous.appliedFiltersByUser[key] !=
