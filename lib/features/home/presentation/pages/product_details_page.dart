@@ -237,6 +237,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         p.cachedProductWithoutRelatedProductsModel !=
                             c.cachedProductWithoutRelatedProductsModel,
                     builder: (context, state) {
+                      print(".........................................");
                       String productId = productItem.id.toString();
                       /*     if (state
                                 .getProductDetailWithoutSimilarRelatedProductsStatus ==

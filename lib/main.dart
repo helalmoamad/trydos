@@ -247,6 +247,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 bool isDependencyInitialized = false;
 bool isHydratedStorageInitialized = false;
+
 bool isLoadDotenvFile = false;
 Timer? timer;
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
