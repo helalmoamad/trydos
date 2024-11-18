@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:math';
 import 'dart:ui';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,6 +25,8 @@ import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/widgets/sliver_list_seprated.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/service/notification_service/notification_service/handle_notification/handling_market_notifications.dart';
+import 'package:trydos/service/notification_service/notification_service/handle_notification/request_permission_notification.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
@@ -48,8 +52,27 @@ class _HomePageState extends State<HomePage> {
   Map<String, int> lastIndexRequestedInEachMainCategoryForPrefetchBoutiques =
       {};
   String selectedCategorySlug = "Empty";
+  /*getInitialForNotification() async {
+    RemoteMessage? initialMessage =
+        await FirebaseMessaging.instance.getInitialMessage();
+    if (initialMessage != null) {
+      Future.delayed(
+        Duration(seconds: 1),
+        () {
+          if (HandlingMarketNotifications
+              .checkIfTheNotificationIsNotRelatedToChat(initialMessage)) {
+            HandlingMarketNotifications.dealWithNotificationFromMarket(
+                jsonDecode(initialMessage.data['body']), true);
+            return;
+          }
+        },
+      );
+    }
+  }*/
+
   @override
   void initState() {
+    PermissionServices().requestNotificationPermission();
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
 
@@ -121,6 +144,16 @@ class _HomePageState extends State<HomePage> {
         appBloc.add(ShowOrHideBars(true));
       }
     });
+
+    String notificationTypesOfMarketFromTerminated =
+        GetIt.I<PrefsRepository>().getNotificationTypeOfMarketFromTerminated ??
+            "";
+
+    if (notificationTypesOfMarketFromTerminated != "") {
+      Map data = jsonDecode(notificationTypesOfMarketFromTerminated);
+      HandlingMarketNotifications.dealWithNotificationFromMarket(data, true);
+    }
+    //  getInitialForNotification();
     super.initState();
   }
 

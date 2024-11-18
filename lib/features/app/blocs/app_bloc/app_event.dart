@@ -42,6 +42,16 @@ class ChangeTabInChat extends AppEvent {
   List<Object?> get props => [index];
 }
 
+class IsFromNotificationByForGround extends AppEvent {
+  IsFromNotificationByForGround(this.isFromNotificationByForGround);
+
+  final bool? isFromNotificationByForGround;
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [isFromNotificationByForGround];
+}
+
 class ShowOrHideBars extends AppEvent {
   ShowOrHideBars(this.show);
 

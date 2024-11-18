@@ -4,9 +4,15 @@ import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart'
     as fln;
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
+import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
+import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
+import 'package:trydos/main.dart';
+import 'package:trydos/routes/router.dart';
 import '../../../../base_page.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../features/chat/data/models/my_chats_response_model.dart';
@@ -79,16 +85,14 @@ class NotificationProcess {
   }
 
   setupInteractedMessage() {
-    print(
-        "-*******444444444444444444444444444----------------*****************---------------***********---------");
-    handleTappedNotificationOnTerminatedState();
-    FirebaseMessaging.onMessageOpenedApp.listen((event) {
+    FirebaseMessaging.onMessageOpenedApp.listen((event) async {
       if (HandlingMarketNotifications.checkIfTheNotificationIsNotRelatedToChat(
           event)) {
         HandlingMarketNotifications.dealWithNotificationFromMarket(
-            convert.jsonDecode(event.data['data']));
+            convert.jsonDecode(event.data["body"] ?? ""), true);
         return;
       }
+      handleTappedNotificationOnTerminatedState();
       Map remoteMessage = convert.jsonDecode(event.data['data']);
       handleOpenChatPageFromNotificationInBackground(
           remoteMessage['prev_message_id'],

@@ -9,6 +9,7 @@ class AppState {
       required this.showBars,
       this.currentIndexForSearch,
       required this.hideBottomNavigationBar,
+      this.isFromForGroundNotification,
       this.messageId,
       this.pusherActivityIds = const {},
       this.pusherActivityDescription = const {},
@@ -18,6 +19,7 @@ class AppState {
       this.imageUrl}) {}
 
   final int currentIndex;
+  final bool? isFromForGroundNotification;
   final int tabIndex;
   final int tabIndexInChat;
   final bool showBars;
@@ -43,6 +45,7 @@ class AppState {
     final String? replyType,
     final int? senderParentMessageId,
     int? tabIndexInChat,
+    final bool? isFromNotificationByForGround,
     final DateTime? time,
     final String? message,
     final Map<int, dynamic>? pusherActivityIds,
@@ -58,6 +61,8 @@ class AppState {
       currentIndexForSearch:
           currentIndexForSearch ?? this.currentIndexForSearch,
       replyType: replyType ?? this.replyType,
+      isFromForGroundNotification:
+          isFromNotificationByForGround ?? this.isFromForGroundNotification,
       thereIsReply: thereIsReply ?? this.thereIsReply,
       replyOnMe: replyOnMe ?? this.replyOnMe,
       tabIndexInChat: tabIndexInChat ?? this.tabIndexInChat,

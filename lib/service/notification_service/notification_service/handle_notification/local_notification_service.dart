@@ -1,14 +1,19 @@
 import 'dart:async';
-import 'dart:developer';
+
 import 'dart:io';
 import 'dart:math';
+
+import 'dart:ui' as ui;
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/main.dart';
 import 'package:trydos/routes/router.dart';
 import '../../../../base_page.dart';
@@ -46,7 +51,15 @@ class LocalNotificationService {
       android: androidInitializationSettings,
       iOS: iosInitializationSettings,
     );
-
+    await _localNotificationPlugin
+        .getNotificationAppLaunchDetails()
+        .then((value) {
+      if ((value?.notificationResponse?.payload?.split(",,,").length ?? 0) >
+          0) {
+        GetIt.I<PrefsRepository>().setNotificationTypesOfMarketFromTerminated(
+            value?.notificationResponse?.payload?.split(',,,')[0] ?? "");
+      }
+    });
     await _localNotificationPlugin
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
@@ -62,22 +75,72 @@ class LocalNotificationService {
 
   @pragma('vm:entry-point')
   Future<void> showNotificationWithPayload(
-      {required RemoteMessage message}) async {
-    if(HandlingMarketNotifications.checkIfTheNotificationIsNotRelatedToChat(message)){
+      {required RemoteMessage message, required int fromBackGround}) async {
+    final Random random = Random();
+    final int notificationId = random.nextInt(1000000);
+    if (HandlingMarketNotifications.checkIfTheNotificationIsNotRelatedToChat(
+        message)) {
+      String imageUrl = "";
+      Map? data = convert.jsonDecode(message.data["body"] ?? "") ?? {};
+
+      if (data?["type"] ==
+              TypeOfNotificationForMarket[
+                  TypeOfNotificationForMarketEnum.product_availability] ||
+          data?["type"] ==
+              TypeOfNotificationForMarket[
+                  TypeOfNotificationForMarketEnum.product_comment] ||
+          data?["type"] ==
+              TypeOfNotificationForMarket[
+                  TypeOfNotificationForMarketEnum.category_created] ||
+          data?["type"] ==
+              TypeOfNotificationForMarket[
+                  TypeOfNotificationForMarketEnum.product_discount] ||
+          data?["type"] ==
+              TypeOfNotificationForMarket[
+                  TypeOfNotificationForMarketEnum.product_cart_expiration]) {
+        imageUrl = data?["image"] ?? "";
+      }
+      if (data?["type"] ==
+          TypeOfNotificationForMarket[
+              TypeOfNotificationForMarketEnum.boutique_created]) {
+        List<BunnerBoutique>? boutiqueBannerList = List<BunnerBoutique>.from(
+            data?["banner"]!.map((x) => BunnerBoutique.fromJson(x)));
+        imageUrl = boutiqueBannerList[0].filePath ?? "";
+      }
+
+      Uint8List? pngImage;
+
+      try {
+        if (imageUrl != "" && imageUrl.split(".").length > 0) {
+          final ByteData bytes = await NetworkAssetBundle(Uri.parse(imageUrl))
+              .load("")
+              .onError((error, stackTrace) => ByteData(0));
+
+          final Uint8List buffer = bytes.buffer.asUint8List();
+          final ui.Codec codec = await ui.instantiateImageCodec(buffer);
+          final ui.FrameInfo fi = await codec.getNextFrame();
+          final ui.Image image = fi.image;
+
+          final ByteData? byteData =
+              await image.toByteData(format: ui.ImageByteFormat.png);
+          pngImage = byteData!.buffer.asUint8List();
+        }
+      } catch (e) {}
+      String title = "${data?["type"]}";
+      String body = "${data?["description"]}";
+      print("##################################${notificationId}");
       await _localNotificationPlugin.show(
-          0,
-          'Title',
-          'Body',
-          _notificationDetails(),
-          payload: convert.jsonEncode(message.data['message']));
-      return ;
+          notificationId, title, body, _notificationDetails(pngImage),
+          payload: '${message.data["body"] ?? ""},,,${fromBackGround}');
+
+      return;
     }
     Map RemoteMessage = convert.jsonDecode(message.data['data']);
     chat.Message myMessage = chat.Message.fromJson(RemoteMessage["message"]);
     String prevMessageId = RemoteMessage['prev_message_id'].toString();
     String type = myMessage.messageType!.name.toString();
     await _localNotificationPlugin.show(
-        0,
+        notificationId,
         myMessage.channel?.channelName ?? 'No Channel Name',
         type == 'TextMessage'
             ? myMessage.messageContent!.content.toString()
@@ -88,7 +151,7 @@ class LocalNotificationService {
                     : type == 'VideoMessage'
                         ? 'Video'
                         : 'File',
-        _notificationDetails(),
+        _notificationDetails(null),
         payload:
             '${convert.jsonEncode(RemoteMessage['message'])},,${prevMessageId}');
   }
@@ -138,8 +201,9 @@ class LocalNotificationService {
         onlyAlertOnce: true,
       );
 
-      NotificationDetails platformChannelSpecifics =
-          NotificationDetails(android: androidPlatformChannelSpecifics , iOS: IosNotificationDetails);
+      NotificationDetails platformChannelSpecifics = NotificationDetails(
+          android: androidPlatformChannelSpecifics,
+          iOS: IosNotificationDetails);
       await _localNotificationPlugin.show(
         5,
         isUploadingSuccess ? 'upload story success' : 'upload story failed',
@@ -149,11 +213,12 @@ class LocalNotificationService {
     }
   }
 
-
   @pragma('vm:entry-point')
   static void _onSelectNotification(NotificationResponse notificationResponse) {
-    if(!notificationResponse.payload!.contains(',,')){
-      HandlingMarketNotifications.dealWithNotificationFromMarket(convert.jsonDecode(notificationResponse.payload.toString()));
+    if (notificationResponse.payload!.split(",,,").length > 0) {
+      HandlingMarketNotifications.dealWithNotificationFromMarket(
+          convert.jsonDecode(notificationResponse.payload!.split(',,,')[0]),
+          notificationResponse.payload!.split(',,,')[1] == "1");
       return;
     }
     chat.Message myMessage = chat.Message.fromJson(
@@ -164,20 +229,23 @@ class LocalNotificationService {
         message: myMessage);
   }
 
-  _notificationDetails() {
+  _notificationDetails(Uint8List? pngImage) {
     final channel = LocalNotificationService().getAndroidChannel;
 
     AndroidNotificationDetails androidNotificationDetails =
-        AndroidNotificationDetails(
-      channel.id,
-      channel.name,
-      channelDescription: channel.description,
-      ticker: 'ticker',
-      importance: channel.importance,
-      priority: Priority.max,
-      playSound: channel.playSound,
-      enableVibration: channel.enableVibration,
-    );
+        AndroidNotificationDetails(channel.id, channel.name,
+            channelDescription: channel.description,
+            ticker: 'ticker',
+            importance: Importance.high,
+            priority: Priority.high,
+            playSound: channel.playSound,
+            enableVibration: channel.enableVibration,
+            autoCancel: false,
+            largeIcon:
+                (pngImage == null) ? null : ByteArrayAndroidBitmap(pngImage),
+            styleInformation: (pngImage == null)
+                ? null
+                : BigPictureStyleInformation(ByteArrayAndroidBitmap(pngImage)));
     const DarwinNotificationDetails iosNotificationDetails =
         DarwinNotificationDetails();
 
@@ -189,7 +257,7 @@ class LocalNotificationService {
       AndroidNotificationChannel(
         _androidChannelId,
         _androidChannelName, // title
-        importance: Importance.max,
+        importance: Importance.high,
         playSound: true,
         enableVibration: true,
       );

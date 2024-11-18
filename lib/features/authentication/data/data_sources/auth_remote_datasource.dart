@@ -51,7 +51,9 @@ class AuthRemoteDatasource {
         PostClient<StoreFcmTokenResponseModel>(
       serverName: params['server_name'],
       requestPrams: RequestConfig<StoreFcmTokenResponseModel>(
-        endpoint: params['server_name'] == ServerName.chat ? ChatEndPoints.storeFcmEP : MarketEndPoints.storeFcmEP,
+        endpoint: params['server_name'] == ServerName.chat
+            ? ChatEndPoints.storeFcmEP
+            : MarketEndPoints.storeFcmEP,
         data: params['data'],
         response: ResponseValue<StoreFcmTokenResponseModel>(
             fromJson: (response) =>

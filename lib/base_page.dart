@@ -11,7 +11,6 @@ import 'package:trydos/features/app/country_dropdown.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
-import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import 'package:trydos/features/search/presentation/pages/search_page.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
@@ -39,6 +38,7 @@ import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/pages/home_page.dart';
 import 'package:trydos/main.dart';
 import 'package:trydos/routes/router.dart';
+import 'package:trydos/service/notification_service/notification_service/handle_notification/request_permission_notification.dart';
 import 'common/constant/design/assets_provider.dart';
 import 'common/test_utils/widgets_keys.dart';
 import 'features/app/app_widgets/tabs_bar.dart';
@@ -366,10 +366,8 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     appBloc = BlocProvider.of<AppBloc>(context);
     callsBloc = BlocProvider.of<CallsBloc>(context);
 
-    if (prefsRepository.chatToken != null) {
-      onMessage();
-    }
-// [ Permission.systemAlertWindow,Permission.notification].request();
+    onMessage();
+
     if (homeBloc.state.startingSetting != null) {
       showUpgradeApp = false;
       debugPrint('version gets successfully');
@@ -401,15 +399,16 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     FirebaseMessaging.onMessage.listen((event) {
       if (HandlingMarketNotifications.checkIfTheNotificationIsNotRelatedToChat(
           event)) {
-        LocalNotificationService().showNotificationWithPayload(message: event);
+        LocalNotificationService()
+            .showNotificationWithPayload(message: event, fromBackGround: 0);
         return;
       }
 
       Map<String, dynamic> remoteMessage =
           convert.jsonDecode(event.data['data']);
+
       if (remoteMessage['type'] == 'RefuseCallEvent') {
         Map<String, dynamic> data = remoteMessage;
-
         GetIt.I<PrefsRepository>().saveRequestsData(
             null, null, null, null, null, null, null,
             error: 'RefuseCall for message ForeGround ${data['message_id']}');
@@ -423,6 +422,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
             callsBloc.state.currentActiveCallId != '-1') {
           return;
         }
+
         FlutterCallkitIncoming.endAllCalls();
         callsBloc.add(UserInteractWithCall(rejectIt: true));
         if (navigatorKey.currentState!.context.canPop() &&
@@ -555,7 +555,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                 1 &&
             message.senderUserId != prefsRepository.myChatId) {
           LocalNotificationService()
-              .showNotificationWithPayload(message: event);
+              .showNotificationWithPayload(message: event, fromBackGround: 0);
         }
       }
     });

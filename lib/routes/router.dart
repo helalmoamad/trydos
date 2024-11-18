@@ -7,6 +7,7 @@ import 'package:trydos/features/authentication/presentation/pages/first_register
 import 'package:trydos/features/authentication/presentation/pages/login_successfully.dart';
 import 'package:trydos/features/authentication/presentation/pages/register_completed.dart';
 import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
+import 'package:trydos/features/home/presentation/pages/cart_page.dart';
 import 'package:trydos/splash_page.dart';
 import '../base_page.dart';
 import '../features/authentication/presentation/pages/already_exist_account.dart';
@@ -159,6 +160,7 @@ class GRouter {
                 );
               },
             ),
+
             GoRoute(
                 path: _config.applicationRoutes.kRegistrationPageName,
                 pageBuilder: (BuildContext context, GoRouterState state) {

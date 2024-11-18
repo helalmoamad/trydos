@@ -14,15 +14,22 @@ class NotificationService {
     var initializationSettingIos = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
-      onDidReceiveLocalNotification:
-          (int id, String? title, String? body, String? payload) async {},
     );
     var initializeSettings = InitializationSettings(
         iOS: initializationSettingIos, android: initializationSettingsAndroid);
 
     notificationsPlugin.initialize(initializeSettings,
+        onDidReceiveBackgroundNotificationResponse: (details) => print(
+            "111111111111111fffffffffffffffffffRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR${details.payload}"),
         onDidReceiveNotificationResponse:
-            (NotificationResponse notificationResponse) async {});
+            (NotificationResponse notificationResponse) async {
+          print(
+              "fffffffffffffffffffRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR${notificationResponse.payload}");
+        });
+    notificationsPlugin.getNotificationAppLaunchDetails().then(
+          (value) => print(
+              "fffffffffffffffffffRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR${value?.notificationResponse?.payload}"),
+        );
   }
 
   Future<void> uploadingNotification(maxProgress, progress, isUploading) async {

@@ -304,11 +304,11 @@ class Category {
   final String? slug;
   final String? name;
   final int? numAvailableProduct;
-  final Banner? flatPhotoPath;
+  final CategoryBanner? flatPhotoPath;
 
   final bool isSubCategory;
   final bool isSelected;
-  Banner? mostViewedProductThumbnail;
+  CategoryBanner? mostViewedProductThumbnail;
   final List<SubCategory>? subCategories;
 
   Category({
@@ -328,8 +328,8 @@ class Category {
     String? slug,
     String? name,
     int? numAvailableProduct,
-    Banner? flatPhotoPath,
-    Banner? mostViewedProductThumbnail,
+    CategoryBanner? flatPhotoPath,
+    CategoryBanner? mostViewedProductThumbnail,
     final bool? isSelected,
     List<SubCategory>? subCategories,
   }) =>
@@ -352,11 +352,11 @@ class Category {
       name: json["name"],
       mostViewedProductThumbnail: json["most_viewed_product_thumbnail"] == null
           ? null
-          : Banner.fromJson(json["most_viewed_product_thumbnail"]),
+          : CategoryBanner.fromJson(json["most_viewed_product_thumbnail"]),
       numAvailableProduct: json["num_available_product"],
       flatPhotoPath: json["flat_photo_path"] == null
           ? null
-          : Banner.fromJson(json["flat_photo_path"]),
+          : CategoryBanner.fromJson(json["flat_photo_path"]),
       subCategories: json["childes"] == null || json["childes"] == []
           ? []
           : List<SubCategory>.from(
@@ -381,9 +381,9 @@ class SubCategory {
   final String? slug;
   final bool? isSubSubCategory;
   final String? name;
-  Banner? mostViewedProductThumbnail;
+  CategoryBanner? mostViewedProductThumbnail;
   final int? numAvailableProduct;
-  final Banner? flatPhotoPath;
+  final CategoryBanner? flatPhotoPath;
   final List<SubCategory>? childes;
   SubCategory({
     this.id,
@@ -402,8 +402,8 @@ class SubCategory {
     String? name,
     bool? isSubSubCategory,
     int? numAvailableProduct,
-    Banner? flatPhotoPath,
-    Banner? mostViewedProductThumbnail,
+    CategoryBanner? flatPhotoPath,
+    CategoryBanner? mostViewedProductThumbnail,
     List<SubCategory>? childes,
   }) =>
       SubCategory(
@@ -425,11 +425,11 @@ class SubCategory {
         numAvailableProduct: json["num_available_product"],
         flatPhotoPath: json["flat_photo_path"] == null
             ? null
-            : Banner.fromJson(json["flat_photo_path"]),
-        mostViewedProductThumbnail:
-            json["most_viewed_product_thumbnail"] == null
-                ? null
-                : Banner.fromJson(json["most_viewed_product_thumbnail"]),
+            : CategoryBanner.fromJson(json["flat_photo_path"]),
+        mostViewedProductThumbnail: json["most_viewed_product_thumbnail"] ==
+                null
+            ? null
+            : CategoryBanner.fromJson(json["most_viewed_product_thumbnail"]),
         childes: json["childes"] == null
             ? []
             : List<SubCategory>.from(

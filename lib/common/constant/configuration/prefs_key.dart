@@ -1,6 +1,9 @@
 abstract class PrefsKey {
   static const userMarketId = r'__$__userMarketId__$__';
   static const currentEvent = r'__$__current event__$__';
+  static const notificationTypeFromTerminated =
+      r'__$__notificationTypeFromTerminated__$__';
+
   static const currentCountry = r'__$__currentCountry__$__';
 
   static const userChatId = r'__$__userChatId__$__';

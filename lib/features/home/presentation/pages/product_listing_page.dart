@@ -12,7 +12,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mime/mime.dart';
+import 'package:trydos/base_page.dart';
 import 'package:trydos/common/constant/design/constant_design.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
@@ -31,6 +33,7 @@ import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import 'package:trydos/features/search/presentation/widgets/search_with_image_related_gemini.dart';
+import 'package:trydos/routes/router.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/language_service.dart';
 import 'package:tuple/tuple.dart';
@@ -68,19 +71,21 @@ class ProductListingPage extends StatefulWidget {
   final String? boutiqueDescription;
   final String? boutiqueFirstBanner;
   final bool withSlidingImages;
-  final boutiques.Boutique? boutique;
+  final List<boutiques.BunnerBoutique>? banner;
   final TextEditingController? controllerFormSearchPage;
   final bool fromSearch;
+  final bool fromNotification;
   final String? searchText;
 
   const ProductListingPage({
     super.key,
     required this.boutiqueSlug,
+    this.fromNotification = false,
     this.boutiqueDescription,
     this.controllerFormSearchPage,
     this.searchText,
     this.withSlidingImages = false,
-    this.boutique,
+    this.banner,
     this.boutiqueFirstBanner,
     this.category,
     this.fromSearch = false,
@@ -184,8 +189,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
   @override
   void initState() {
     print("%%%%%%%%%${GetIt.I<PrefsRepository>().marketToken}*");
-    print(
-        "##############################//////////////////////////////////////////////////////////////////////////#${widget.boutiqueSlug}");
+    print("%%%%%%%%%${GetIt.I<PrefsRepository>().getFcmTokens}*");
     itExpendForFirst = true;
     key = widget.boutiqueSlug + (widget.category ?? '');
     keyWithoutFilter = '${widget.boutiqueSlug}' +
@@ -199,7 +203,11 @@ class _ProductListingPageState extends State<ProductListingPage> {
     }
     Timer.periodic(Duration(milliseconds: 100), postFrameCallback);
     appBloc = BlocProvider.of<AppBloc>(context);
+
     homeBloc = BlocProvider.of<HomeBloc>(context);
+    print("###################?? "
+        "}#####//////${widget.fromNotification}////////////////////////////////////////////////////////////////////#${widget.boutiqueSlug}");
+
     appBloc.add(HideBottomNavigationBar(false));
     appBloc.add(ShowOrHideBars(true));
     appBloc.add(ChangeIndexForSearch(1));
@@ -323,9 +331,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) async {
+    return WillPopScope(
+      onWillPop: () async {
+        if (widget.fromNotification) {
+          context.go(GRouter.config.kRootRoute);
+
+          return Future.value(false);
+        }
+
         homeBloc.add(ReplyFromGeminiEvent(
             fromSearch: false,
             sendRequestToGeminiStatus: SendRequestToGeminiStatus.success,
@@ -366,7 +379,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
             eventName: AnalyticsEventsConst.buttonClicked,
             executedEventName: AnalyticsExecutedEventNameConst.backAppButton,
           );
-
           return Future.value(false);
         } else {
           if (!widget.fromSearch) {
@@ -400,10 +412,15 @@ class _ProductListingPageState extends State<ProductListingPage> {
               ),
             );
           }
+          print(
+              "1111111111111111------------------------------------------------------------------------------------");
+
           if (widget.fromSearch ||
               (!widget.fromSearch &&
                   homeBloc.state.cashedOrginalBoutique == true)) {
-            context.pop();
+            Navigator.of(context).pop();
+
+            appBloc.add(ChangeBasePage(0));
           }
           ////////////////////////////////////
           FirebaseAnalyticsService.logEventForSession(
@@ -412,7 +429,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
           );
         }
 
-        return Future.value(true);
+        return Future.value(false);
       },
       child: SafeArea(
         child: Material(
@@ -484,6 +501,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                           c.theReplyFromGemini) &&
                                   c.fromSearchForSearchWithGemini == false),
                           builder: (context, state) {
+                            print(
+                                "////////////////////////////////////////%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5${state.boutiquesForEveryMainCategoryThatDidPrefetch}");
+
                             if (state.theReplyFromGemini != "" &&
                                 state.fromSearchForSearchWithGemini == false) {
                               print(
@@ -572,6 +592,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                   child: TrydosAppBar(
                                                     appBarParams: AppBarParams(
                                                         onBack: () {
+                                                          appBloc.add(
+                                                              ChangeBasePage(
+                                                                  0));
                                                           homeBloc.add(ReplyFromGeminiEvent(
                                                               fromSearch: false,
                                                               sendRequestToGeminiStatus:
@@ -1560,7 +1583,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                               height: 135,
                                                                               //color: Colors.red,
                                                                               child: CarouselSlider.builder(
-                                                                                  itemCount: widget.boutique!.banners!.length,
+                                                                                  itemCount: widget.banner!.length,
                                                                                   itemBuilder: (context, index, _) {
                                                                                     return Padding(
                                                                                       padding: EdgeInsets.only(
@@ -1584,7 +1607,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                         child: ClipRRect(
                                                                                             borderRadius: BorderRadius.circular(15),
                                                                                             child: MyCachedNetworkImage(
-                                                                                              imageUrl: widget.boutique!.banners![index].filePath!,
+                                                                                              imageUrl: widget.banner![index].filePath!,
                                                                                               imageFit: BoxFit.cover,
                                                                                               width: 1.sw,
                                                                                               height: 155,

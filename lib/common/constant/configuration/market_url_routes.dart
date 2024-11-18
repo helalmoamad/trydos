@@ -24,10 +24,11 @@ extension ScopeApi on String {
   String oldCartScope() => '$_api/${_currentVersion}/old-cart/$this';
 
   String searchScope() => '$_api/${_currentVersion}/products/$this';
-  String notificationScope() => '$_api/${_currentVersion}/notifications';
+  String notificationScope() =>
+      '$_api/${_currentVersion}/product_notification/$this';
 
   String firebaseTokensScope({bool current = false}) =>
-      '$_api/${_currentVersion}/firebase_tokens${this != '' ? '/$this' : ''}';
+      '$_api/${_currentVersion}/firebase_device_tokens${this != '' ? '/$this' : ''}';
 }
 
 abstract class MarketEndPoints {
@@ -41,6 +42,7 @@ abstract class MarketEndPoints {
   static final getCartItemEP = 'cart_shipping'.cartScope();
   static final getProductListInCartEP =
       'product_list_in_cart_and_old_cart'.cartScope();
+  static final storeFcmOfMarketEP = 'firebase_device_tokens'.countryScope();
 
   static final getOldCartItemsEP = 'get_old_cart'.oldCartScope();
   static final hideItemsInOldCartEP = 'hide'.oldCartScope();
@@ -48,7 +50,7 @@ abstract class MarketEndPoints {
   static final addItemCartItemEP = 'add'.cartScope();
   static final updateItemCartItemEP = 'update'.cartScope();
   static final requestForNotificationWhenProductBecameAvailableEP =
-      ''.notificationScope();
+      'store'.notificationScope();
   static final removeItemCartItemEP = 'remove'.cartScope();
   static final verifyOtpSignInEP = 'verify_otp_singin'.phoneScope();
   static final verifyOtpSignUpEP = 'verify_otp_signup'.phoneScope();

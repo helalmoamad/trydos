@@ -81,7 +81,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                       ChangeCurrentIndexForMainCategoryEvent(index: -1),
                     );
 
-                    if (context.canPop()) {
+                    if (Navigator.of(context).canPop()) {
                       Navigator.of(context).pop();
                     }
                     if (state.currentIndex != 0) {

@@ -131,6 +131,18 @@ class GetProductsListInCartEvent extends HomeEvent {
   List<Object?> get props => [];
 }
 
+class StoreFcmTokenOfMarketEvent extends HomeEvent {
+  final int userId;
+  final String fcmToken;
+
+  const StoreFcmTokenOfMarketEvent(
+      {required this.userId, required this.fcmToken});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [userId, fcmToken];
+}
+
 class GetHomeBoutiqesEvent extends HomeEvent {
   // final bool getWithPagination;
   final String offset;
@@ -215,8 +227,13 @@ class ChangeSelectedFiltersEvent extends HomeEvent {
 
   @override
   // TODO: implement props
-  List<Object?> get props =>
-      [filtersChoosedByUser, boutiqueSlug, resetChoosedFilters, category , isExpandedForListing];
+  List<Object?> get props => [
+        filtersChoosedByUser,
+        boutiqueSlug,
+        resetChoosedFilters,
+        category,
+        isExpandedForListing
+      ];
 }
 
 class ChangeAppliedFiltersEvent extends HomeEvent {
@@ -235,8 +252,13 @@ class ChangeAppliedFiltersEvent extends HomeEvent {
 
   @override
   // TODO: implement props
-  List<Object?> get props =>
-      [filtersAppliedByUser, boutiqueSlug, resetAppliedFilters, category , isExpandedForListing];
+  List<Object?> get props => [
+        filtersAppliedByUser,
+        boutiqueSlug,
+        resetAppliedFilters,
+        category,
+        isExpandedForListing
+      ];
 }
 
 /*class GetProductsWithFiltersEventWithoutCancelingPreviousEvents

@@ -128,9 +128,14 @@ class _ChatCardState extends ThemeState<ChatCard> {
     print('_prefsRepository.myChatId ${_prefsRepository.myChatId}');
 
     ChannelMember? me = !widget.chat.channelMembers.isNullOrEmpty
-        ? widget.chat.channelMembers!.firstWhere(
-            (element) => element.userId == _prefsRepository.myChatId)
+        ? widget.chat.channelMembers?.firstWhere(
+            (element) => element.userId == _prefsRepository.myChatId,
+            orElse: () => ChannelMember(),
+          )
         : null;
+    if (me?.userId == null) {
+      me = null;
+    }
     // User? sender = me.user;
     // String senderName;
     // if (sender == null) {

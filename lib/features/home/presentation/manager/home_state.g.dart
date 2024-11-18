@@ -255,8 +255,9 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       prefAppliedFilterForExtendFilter:
           json['prefAppliedFilterForExtendFilter'] == null
               ? null
-              : get_filters.Filter.fromJson(json['prefAppliedFilterForExtendFilter']
-                  as Map<String, dynamic>),
+              : get_filters.Filter.fromJson(
+                  json['prefAppliedFilterForExtendFilter']
+                      as Map<String, dynamic>),
       fromSearchForSearchWithGemini:
           json['fromSearchForSearchWithGemini'] as bool? ?? false,
       ListitemForAddToCart: (json['ListitemForAddToCart'] as List<dynamic>?)

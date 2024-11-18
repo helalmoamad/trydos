@@ -8,6 +8,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
+
+import 'package:trydos/base_page.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 
@@ -29,13 +32,17 @@ import 'package:trydos/features/home/presentation/pages/cart_page2.dart';
 import 'package:trydos/features/home/presentation/widgets/product_collection_in_cart_page1.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_image_widget.dart';
 import 'package:trydos/features/story/presentation/widget/try_again.dart';
+import 'package:trydos/main.dart';
+import 'package:trydos/routes/router.dart';
 
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 
 class CartPage extends StatefulWidget {
   final bool? fromeFilters;
-  const CartPage({Key? key, this.fromeFilters});
+  final bool? fromeNotification;
+
+  const CartPage({Key? key, this.fromeFilters, this.fromeNotification});
   @override
   State<CartPage> createState() => _CartPageState();
 }
@@ -52,6 +59,7 @@ class _CartPageState extends State<CartPage> {
   List<String> visibleCollectionOldCartGroups = [];
   TextEditingController quantityController = TextEditingController();
   bool? visibleAllCollection;
+  bool? fromForGroundNotification;
   @override
   void initState() {
     visibleAllCollection = true;
@@ -59,6 +67,10 @@ class _CartPageState extends State<CartPage> {
 
     homeBloc = BlocProvider.of<HomeBloc>(context);
     homeBloc.add(GetCartItemEvent());
+    fromForGroundNotification =
+        appBloc.state.isFromForGroundNotification ?? false;
+    print("${widget.fromeNotification}" + "${fromForGroundNotification}");
+
     super.initState();
   }
 
@@ -72,20 +84,30 @@ class _CartPageState extends State<CartPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      onPopInvokedWithResult: (didPop, result) {
-        print(
-            "------------------------------------------------------------------------------------------------------");
-        if ((widget.fromeFilters ?? false)) {
-          context.pop();
-        } else {
-          appBloc.add(ChangeBasePage(0));
-          homeBloc.add(ResetAllSelectedAppliedFilterEvent());
-        }
-      },
-      canPop: false,
-      child: Directionality(
-        textDirection: TextDirection.ltr,
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: WillPopScope(
+        onWillPop: () async {
+          // didCallOnWillPop = true;
+          if (Navigator.canPop(context)) {
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+
+              appBloc.add(ChangeBasePage(0));
+              return false;
+              // منع الإغلاق بعد تنفيذ pop
+            }
+
+            // يسمح بالإغلاق إذا لم تنطبق أي من الشروط
+
+            appBloc.add(ChangeBasePage(0));
+            homeBloc.add(ResetAllSelectedAppliedFilterEvent());
+            return false;
+          } else {
+            appBloc.add(ChangeBasePage(0));
+            return true;
+          }
+        },
         child: Scaffold(
             resizeToAvoidBottomInset: false,
             body: BlocBuilder<HomeBloc, HomeState>(
@@ -195,13 +217,24 @@ class _CartPageState extends State<CartPage> {
                                       children: [
                                         InkWell(
                                           onTap: () {
-                                            if ((widget.fromeFilters ??
-                                                false)) {
-                                              context.pop();
-                                            } else {
+                                            // didCallOnWillPop = true;
+                                            if (Navigator.canPop(context)) {
+                                              if (Navigator.of(context)
+                                                  .canPop()) {
+                                                Navigator.of(context).pop();
+                                                return;
+                                                // منع الإغلاق بعد تنفيذ pop
+                                              }
+
+                                              // يسمح بالإغلاق إذا لم تنطبق أي من الشروط
+
                                               appBloc.add(ChangeBasePage(0));
                                               homeBloc.add(
                                                   ResetAllSelectedAppliedFilterEvent());
+                                              return;
+                                            } else {
+                                              appBloc.add(ChangeBasePage(0));
+                                              return;
                                             }
                                           },
                                           child: Container(

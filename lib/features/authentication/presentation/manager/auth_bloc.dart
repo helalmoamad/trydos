@@ -306,10 +306,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             "*****************************-----------------------------${r.data!.token!}");
         _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
         _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());
-        add(StoreFcmTokenEvent(
-            userId: r.data!.user!.id!,
-            fcmToken: NotificationProcess.myFcmToken!,
-            serverName: ServerName.market));
+
         add(LoginToChatEvent(
             fcmToken: NotificationProcess.myFcmToken!,
             mobilePhone: r.data!.user!.phone,
@@ -372,10 +369,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
       _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());
-      add(StoreFcmTokenEvent(
+
+      GetIt.I<HomeBloc>().add(StoreFcmTokenOfMarketEvent(
           userId: r.data!.user!.id!,
-          fcmToken: NotificationProcess.myFcmToken!,
-          serverName: ServerName.market));
+          fcmToken: NotificationProcess.myFcmToken!));
+
       add(LoginToChatEvent(
           fcmToken: NotificationProcess.myFcmToken!,
           mobilePhone: r.data!.user!.phone,
@@ -426,10 +424,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       isFailedTheFirstTime.remove('RegisterGuestEvent');
       _prefsRepository.setMarketToken(r.data!.token!);
       _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
-      add(StoreFcmTokenEvent(
+
+      GetIt.I<HomeBloc>().add(StoreFcmTokenOfMarketEvent(
           userId: r.data!.user!.id!,
-          fcmToken: NotificationProcess.myFcmToken!,
-          serverName: ServerName.market));
+          fcmToken: NotificationProcess.myFcmToken!));
       emit(state.copyWith(
           registerGuestStatus: RegisterGuestStatus.success,
           marketUser: r.data!.user));

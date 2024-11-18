@@ -189,29 +189,29 @@ class Filter {
   }
 }
 
-class Banner {
+class CategoryBanner {
   final String? filePath;
   final String? originalWidth;
   final String? originalHeight;
 
-  Banner({
+  CategoryBanner({
     this.filePath,
     this.originalWidth,
     this.originalHeight,
   });
 
-  Banner copyWith({
+  CategoryBanner copyWith({
     String? filePath,
     String? originalWidth,
     String? originalHeight,
   }) =>
-      Banner(
+      CategoryBanner(
         filePath: filePath ?? this.filePath,
         originalWidth: originalWidth ?? this.originalWidth,
         originalHeight: originalHeight ?? this.originalHeight,
       );
 
-  factory Banner.fromJson(Map<String, dynamic> json) => Banner(
+  factory CategoryBanner.fromJson(Map<String, dynamic> json) => CategoryBanner(
         filePath: json["file_path"],
         originalWidth: json["original_width"],
         originalHeight: json["original_height"],
@@ -228,7 +228,7 @@ class Boutique {
   final int? id;
   final String? slug;
   final String? name;
-  final Banner? banner;
+  final CategoryBanner? banner;
   final String? image;
   final bool? isSelected;
 
@@ -244,7 +244,7 @@ class Boutique {
           {int? id,
           String? slug,
           String? name,
-          Banner? banner,
+          CategoryBanner? banner,
           String? image,
           final bool? isSelected}) =>
       Boutique(
@@ -262,7 +262,7 @@ class Boutique {
         name: json["name"],
         banner: json["banner"] == null || json["banner"] == []
             ? null
-            : Banner.fromJson(json["banner"]),
+            : CategoryBanner.fromJson(json["banner"]),
         image: json["image"],
       );
 
