@@ -211,10 +211,10 @@ void main() {
   }
 
   group(
-    'Test prefetch boutiques',
+    'Test Home prefetch',
     () {
       testWidgets(
-        'Test prefetch boutiques data for the visible boutiques when home page is oppened',
+        'Test prefetch visible Main Categories when home page is oppened and for each one test prefetch visible boutiques data',
         (WidgetTester tester) async {
           app.main();
           await tester.pumpAndSettle();
