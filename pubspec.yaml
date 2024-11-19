@@ -46,7 +46,7 @@ dependencies:
   flutter_launcher_icons: ^0.13.1
   flutter_gallery_3d:
     git:
-        url: https://helalmohamad@bitbucket.org/trydos/flutter_gallery_3d-1.1.1.git
+        url: https://trydos-app-admin@bitbucket.org/trydos-app/trydos-flutter_gallery_3d-1.1.1.git
   fluttertoast: ^8.2.2
   like_button: ^2.0.5
   dartz: ^0.10.1
@@ -98,7 +98,7 @@ dependencies:
   form_field_validator: ^1.1.0
   flutter_carousel_slider: 
     git:
-      url: https://helalmohamad@bitbucket.org/trydos/flutter_carousel_slider-1.1.0.git
+      url: https://trydos-app-admin@bitbucket.org/trydos-app/trydos-flutter_carousel_slider-1.1.0.git
   video_player: ^2.8.1
   flutter_spinkit: ^5.2.0
   dio_http2_adapter: ^2.5.3
@@ -113,7 +113,7 @@ dependencies:
   store_redirect: ^2.0.1
   overscroll_pop:
     git:
-      url: https://helalmohamad@bitbucket.org/trydos/overscroll_pop-0.1.0.git
+      url: https://trydos-app-admin@bitbucket.org/trydos-app/trydos-overscroll_pop-0.1.0.git
   vibration: 1.8.4
   webview_flutter: 4.4.2
   flutter_inappwebview: 6.0.0
@@ -128,7 +128,7 @@ dependencies:
   cupertino_icons: ^1.0.6
   sliding_up_panel: 
     git:
-      url: https://helalmohamad@bitbucket.org/trydos/sliding_up_panel-2.0.0-1.git
+      url: https://trydos-app-admin@bitbucket.org/trydos-app/sliding_up_panel-2.0.0.git
 
   local_hero: ^0.3.0
   flutter_html: ^3.0.0-beta.2
