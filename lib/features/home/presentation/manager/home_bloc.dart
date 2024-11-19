@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -2640,6 +2641,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         quantity: event.quantity,
       ),
     );
+    /*  await FirebaseMessaging.instance
+          .subscribeToTopic("product_discount_${event.products.slug}");
+      await FirebaseMessaging.instance
+          .subscribeToTopic("product_comment_${event.products.slug}");*/
 
     response.fold((l) {
       add(UpdateListOfItemForAddToCartEvent(
@@ -3702,6 +3707,17 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         : await deleteLikeOfProductUsecase(DeleteLikeOfParams(
             productId: event.productId,
             userId: GetIt.I<PrefsRepository>().myMarketId));
+    /*   if (event.isFavourite) {
+        await FirebaseMessaging.instance
+            .subscribeToTopic("product_discount_${event.productSlug}");
+        await FirebaseMessaging.instance
+            .subscribeToTopic("product_comment_${event.productSlug}");
+      } else {
+        await FirebaseMessaging.instance
+            .unsubscribeFromTopic("product_discount_${event.productSlug}");
+        await FirebaseMessaging.instance
+            .unsubscribeFromTopic("product_comment_${event.productSlug}");
+      }*/
     response.fold((l) {
       Map<String, GetProductDetailWithoutRelatedProductsModel>
           cachedProductWithoutRelatedProductsModel =
@@ -4003,12 +4019,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                 variant,
                 prefsRepository.myMarketId!));
     response.fold((l) {
-      showMessage("your Request faild",
+      showMessage(l.message,
           foreGroundColor: Colors.white,
           backGroundColor: Colors.black,
           showInRelease: true,
           timeShowing: Toast.LENGTH_SHORT);
-      isFailedTheFirstTime.remove('AddCartItemEvent');
+
       if (event.size != "") {
         isSizeRequestNotification = List.of(state.isSizeRequestNotification);
         isSizeRequestNotification.remove(event.size);
@@ -4021,7 +4037,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           backGroundColor: Colors.black,
           showInRelease: true,
           timeShowing: Toast.LENGTH_SHORT);
-      isFailedTheFirstTime.remove('AddCartItemEvent');
     });
   }
 
@@ -4144,7 +4159,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     emit(state.copyWith(addCommentStatus: AddCommentStatus.loading));
     final response = await addCommentUseCase(
         AddCommentParams(productId: event.productId, comment: event.comment));
-
+    /*  await FirebaseMessaging.instance
+          .subscribeToTopic("product_discount_${event.productSlug}");
+      await FirebaseMessaging.instance
+          .subscribeToTopic("product_comment_${event.productSlug}");*/
     response.fold((l) {
       emit(state.copyWith(addCommentStatus: AddCommentStatus.failure));
     }, (r) {

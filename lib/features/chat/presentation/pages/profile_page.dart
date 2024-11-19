@@ -16,6 +16,7 @@ import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
 import 'package:trydos/features/chat/presentation/pages/media_in_profile.dart';
+import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 
 import '../../../../common/constant/configuration/chat_url_routes.dart';
@@ -36,17 +37,23 @@ class ProfilePage extends StatefulWidget {
   const ProfilePage(
       {Key? key,
       required this.receiverName,
-      required this.fullReceiverName,
       required this.receiverPhone,
-      this.receiverPhoto,
+      required this.senderPhoto,
+      required this.fullReceiverName,
+      required this.dataLength,
+      required this.senderName,
+      required this.receiverPhoto,
       required this.chatId})
       : super(key: key);
   final String receiverName;
-
+  final String receiverPhone;
   final String chatId;
+  final String senderName;
+  final int dataLength;
+  final String? senderPhoto;
   final String fullReceiverName;
   final String? receiverPhoto;
-  final String receiverPhone;
+
   @override
   State<ProfilePage> createState() => _ProfilePageState();
 }
@@ -284,7 +291,22 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                       InkWell(
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.of(context)
+                              .pushReplacement(MaterialPageRoute(
+                                  builder: (context) => SinglePageChat(
+                                        chatId: widget.chatId,
+                                        fullReceiverName:
+                                            widget.fullReceiverName,
+                                        receiverName: widget.receiverName,
+                                        senderName: widget.senderName,
+                                        dataLength: widget.dataLength,
+                                        senderPhoto: widget.senderPhoto,
+                                        receiverPhoto: widget.receiverPhoto,
+                                        fromSearch: true,
+                                        receiverPhone: widget.receiverPhone,
+                                      )));
+                        },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
