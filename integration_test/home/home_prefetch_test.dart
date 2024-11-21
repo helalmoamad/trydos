@@ -221,7 +221,6 @@ void main() {
           TestVariables.kTestMode = true;
           /////////////  Register As Guest  /////////////
           await SharedScenarios.registerGuest(tester: tester);
-
           //////////// Find Main Categories Tab //////////////
           final Finder mainCategoriesTabNull =
               find.byKey(Key(WidgetsKeys.mainCategoriesTabNullKey));

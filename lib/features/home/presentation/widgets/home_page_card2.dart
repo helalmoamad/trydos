@@ -59,15 +59,16 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
           highlightColor: Colors.transparent,
           onTap: () {
             HelperFunctions.slidingNavigation(
-                context,
-                ProductListingPage(
-                  banner: widget.boutique.banners,
-                  withSlidingImages: widget.withSlidingImages,
-                  boutiqueSlug: widget.boutique.slug!,
-                  boutiqueDescription: widget.boutique.description,
-                  boutiqueFirstBanner: widget.boutique.banners![0].filePath!,
-                  boutiqueIcon: widget.boutique.icon?.filePath!,
-                ));
+              context,
+              ProductListingPage(
+                banner: widget.boutique.banners,
+                withSlidingImages: widget.withSlidingImages,
+                boutiqueSlug: widget.boutique.slug!,
+                boutiqueDescription: widget.boutique.description,
+                boutiqueFirstBanner: widget.boutique.banners![0].filePath!,
+                boutiqueIcon: widget.boutique.icon?.filePath!,
+              ),
+            );
             ////////////////////////////////////
             FirebaseAnalyticsService.logEventForSession(
               eventName: AnalyticsEventsConst.buttonClicked,

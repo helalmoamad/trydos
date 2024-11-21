@@ -142,7 +142,7 @@ class HomeState extends Equatable {
     this.searchHistory,
     this.cashedOrginalBoutique = false,
     this.getAllowedCountriesModel,
-    this.currentIndexForMainCategoryEvent = 0,
+    this.currentIndexForMainCategoryEvent = -1,
     this.prefAppliedFilterForExtendFilter,
     this.fromSearchForSearchWithGemini = false,
     this.ListitemForAddToCart,
