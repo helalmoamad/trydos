@@ -455,6 +455,7 @@ class AddItemToCartEvent extends HomeEvent {
   final String? maxAllowed;
   final bool fishAddAllTheItems;
   final Products products;
+  final String productSlugForTopic;
 
   AddItemToCartEvent(
       {this.quantity,
@@ -463,6 +464,7 @@ class AddItemToCartEvent extends HomeEvent {
       this.boutiqueId,
       required this.maxAllowed,
       required this.image,
+      required this.productSlugForTopic,
       required this.countOfPieces,
       required this.colorName,
       this.color,
@@ -477,7 +479,7 @@ class AddMultiItemsToCartEvent extends HomeEvent {
   final String? id;
 
   final String? boutiqueIcon;
-
+  final String productSlugForTopic;
   final int? boutiqueId;
   final String? maxAllowed;
 
@@ -487,6 +489,7 @@ class AddMultiItemsToCartEvent extends HomeEvent {
       {this.id,
       this.boutiqueIcon,
       required this.maxAllowed,
+      required this.productSlugForTopic,
       this.boutiqueId,
       required this.products});
 
@@ -587,9 +590,11 @@ class UpdateItemInCartEvent extends HomeEvent {
 class AddCommentEvent extends HomeEvent {
   final String productId;
   final String productSlug;
+  final String productSlugForTopic;
   final String comment;
   AddCommentEvent(
       {required this.productId,
+      required this.productSlugForTopic,
       required this.comment,
       required this.productSlug});
 
@@ -734,10 +739,12 @@ class GetAllowedCountriesEvent extends HomeEvent {
 class AddOrRemoveLikeForProductEvent extends HomeEvent {
   final bool isFavourite;
   final String productId;
+  final String productSlugForTopic;
   final String productSlug;
   AddOrRemoveLikeForProductEvent(
       {required this.isFavourite,
       required this.productId,
+      required this.productSlugForTopic,
       required this.productSlug});
   @override
   List<Object?> get props => [isFavourite, productId];

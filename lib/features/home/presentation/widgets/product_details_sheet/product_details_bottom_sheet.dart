@@ -43,6 +43,7 @@ class ProductDetailsBottomSheet extends StatefulWidget {
   final int boutiqueId;
   final String boutiqueIcon;
   final String currentColorName;
+  final String productSlugForTopic;
   final String productDescription;
   final String currentColornum;
   final String currentSize;
@@ -58,6 +59,7 @@ class ProductDetailsBottomSheet extends StatefulWidget {
       required this.addToBagButtonShapeNotifier,
       required this.boutiqueIcon,
       required this.sizes,
+      required this.productSlugForTopic,
       required this.productDescription,
       required this.maxAllowedToAddCart,
       required this.sizesQuantities,
@@ -490,6 +492,8 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                           idsOfChatCardsToShare:
                                               idsOfChatCardsToShare),
                                       ProductDetailsSheetMoreOptionsContent(
+                                        productSlugForTopic:
+                                            widget.productSlugForTopic,
                                         productSlug:
                                             widget.productItem.slug ?? "",
                                         scrollController:
@@ -628,6 +632,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                             AddMultiItemsToCartEvent(
                               maxAllowed: widget.maxAllowedToAddCart,
                               boutiqueIcon: widget.boutiqueIcon,
+                              productSlugForTopic: widget.productSlugForTopic,
                               boutiqueId: widget.boutiqueId,
                               products: widget.productItem,
                               id: widget.productItem.id.toString(),

@@ -96,6 +96,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
 
   final ValueNotifier<int> rebuildMessage = ValueNotifier(-1);
   final ValueNotifier<int> currentFocusedIcon = ValueNotifier(-2);
+  final ValueNotifier<Map<String, int>> currentIndextForEachMessage =
+      ValueNotifier({});
   final ValueNotifier<bool> clickBackButton = ValueNotifier(false);
   late AutoScrollController autoScrollController;
 
@@ -114,7 +116,14 @@ class _SinglePageChatState extends State<SinglePageChat> {
   AudioPlayer _audioPlayer = AudioPlayer();
 
   Map<String, int> messagesIndexes = {};
-
+  List<String> mee = [
+    "32752",
+    "32755",
+    "32756",
+    "32759",
+    "32765",
+  ];
+  int ii = 0;
   void playSound() async {
     await _audioPlayer.play(
         AssetSource(Platform.isIOS
@@ -593,34 +602,50 @@ class _SinglePageChatState extends State<SinglePageChat> {
                         SizedBox(
                           height: 5,
                         ),
-                        SafeArea(
-                            child: Material(
-                          color: Colors.transparent,
-                          child: Padding(
-                            padding: HWEdgeInsets.symmetric(horizontal: 20.0)
-                                .copyWith(bottom: 10),
-                            child: AppTextField(
-                              filledColor: Color(0xffF8F8F8),
-                              bordersColor: Color(0xffF8F8F8),
-                              hintText: 'Search',
-                              roundingCornersValue: 30,
-                              onChange: (String text) {
-                                scrollToIndex(5);
-                              },
-                              textStyle: context.textTheme.titleMedium?.lr
-                                  .copyWith(color: const Color(0xff8D8D8D)),
-                              hintTextStyle: context.textTheme.bodySmall?.lr
-                                  .copyWith(color: const Color(0xff8D8D8D)),
-                              prefixIcon: Padding(
-                                padding: HWEdgeInsetsDirectional.only(
-                                    top: 15, bottom: 15),
-                                child: SvgPicture.asset(
-                                  AppAssets.searchOutlinedSvg,
+                        ValueListenableBuilder<Map<String, int>>(
+                          valueListenable: currentIndextForEachMessage,
+                          builder: (context, currentIndextForMessages, _) {
+                            print({
+                              "***************************-----------------------------------------${currentIndextForMessages.length}"
+                            });
+                            currentFocusedIcon.value = -2;
+                            return SafeArea(
+                                child: Material(
+                              color: Colors.transparent,
+                              child: Padding(
+                                padding:
+                                    HWEdgeInsets.symmetric(horizontal: 20.0)
+                                        .copyWith(bottom: 10),
+                                child: AppTextField(
+                                  filledColor: Color(0xffF8F8F8),
+                                  bordersColor: Color(0xffF8F8F8),
+                                  hintText: 'Search',
+                                  roundingCornersValue: 30,
+                                  onChange: (String text) {
+                                    scrollToIndex(
+                                        currentIndextForMessages["327418"] ??
+                                            -1,
+                                        currentId:
+                                            currentIndextForMessages.keys.last,
+                                        forSearchText: true,
+                                        parentMessageId: "327418");
+                                  },
+                                  textStyle: context.textTheme.titleMedium?.lr
+                                      .copyWith(color: const Color(0xff8D8D8D)),
+                                  hintTextStyle: context.textTheme.bodySmall?.lr
+                                      .copyWith(color: const Color(0xff8D8D8D)),
+                                  prefixIcon: Padding(
+                                    padding: HWEdgeInsetsDirectional.only(
+                                        top: 15, bottom: 15),
+                                    child: SvgPicture.asset(
+                                      AppAssets.searchOutlinedSvg,
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                        ))
+                            ));
+                          },
+                        )
                       }
                     ],
                   ),
@@ -767,6 +792,18 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                 .id
                                                                 .toString()] =
                                                             index;
+                                                        print(
+                                                            "1111112222222222222222111111111111111111111111${messagesIndexes.length}");
+                                                        WidgetsBinding.instance
+                                                            .addPostFrameCallback(
+                                                                (_) {
+                                                          // الكود الذي تريد تنفيذه بعد انتهاء عملية إعادة البناء
+                                                          currentIndextForEachMessage
+                                                              .value = {
+                                                            ...messagesIndexes
+                                                          };
+                                                        });
+
                                                         return AutoScrollTag(
                                                             key: ValueKey(
                                                                 messageId),
@@ -1463,6 +1500,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
   void scrollToIndex(int index,
       {String? currentId,
       String? parentMessageId,
+      bool? forSearchText,
       Duration? duration,
       AutoScrollPosition? preferPosition}) {
     if (index == -1) {
@@ -1480,13 +1518,15 @@ class _SinglePageChatState extends State<SinglePageChat> {
         .then((value) {
       currentScrolledIndex = index;
       rebuildMessage.value = index;
-      Future.delayed(
-        Duration(milliseconds: 800),
-        () {
-          currentScrolledIndex = -1;
-          rebuildMessage.value = -1;
-        },
-      );
+      if (!(forSearchText ?? false)) {
+        Future.delayed(
+          Duration(milliseconds: 800),
+          () {
+            currentScrolledIndex = -1;
+            rebuildMessage.value = -1;
+          },
+        );
+      }
     });
   }
 
