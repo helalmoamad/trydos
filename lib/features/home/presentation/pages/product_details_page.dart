@@ -422,7 +422,19 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                   productItem.thumbnail!.originalWidth!),
                               brand: productItem.brand,
                               productName: productItem.name ?? "",
-                              thumbnail: productItem.thumbnail!.filePath ?? '',
+                              thumbnail: (!productItem
+                                          .syncColorImages.isNullOrEmpty &&
+                                      !productItem.syncColorImages![0].images
+                                          .isNullOrEmpty)
+                                  ? (productItem
+                                          .syncColorImages![
+                                              currentSelectedColor]
+                                          .images![0]
+                                          .filePath ??
+                                      widget.productItem?.thumbnail?.filePath ??
+                                      "")
+                                  : widget.productItem?.thumbnail?.filePath ??
+                                      "",
                               colorName:
                                   !productItem.syncColorImages.isNullOrEmpty &&
                                           !productItem.syncColorImages![0]

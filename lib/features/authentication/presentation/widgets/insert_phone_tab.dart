@@ -286,7 +286,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                                   ]),
                             ),
                     ),
-                    hintText: LocaleKeys.phone_numbber.tr(),
+                    hintText: LocaleKeys.phone_number.tr(),
                     controller: form.controllers[0],
                   );
                 })),

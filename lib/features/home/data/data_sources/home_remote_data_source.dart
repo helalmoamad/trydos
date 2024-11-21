@@ -15,6 +15,7 @@ import 'package:trydos/features/home/data/models/get_full_product_details_model.
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_is_liked_of_product_model.dart';
 import 'package:trydos/features/home/data/models/get_old_cart_model.dart';
+import 'package:trydos/features/home/data/models/get_only_message_from_api_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 import 'package:trydos/features/home/data/models/list_of_products_in_cart_model.dart';
 
@@ -389,16 +390,20 @@ class HomeRemoteDatasource {
     return updateItemInCart();
   }
 
-  Future<bool> requestForNotificationWhenProductBecameAvailable(
-      Map<String, dynamic> params) {
-    PostClient<bool> requestForNotificationWhenProductBecameAvailable =
-        PostClient<bool>(
+  Future<ReadOnlyMessageFromApiModel>
+      requestForNotificationWhenProductBecameAvailable(
+          Map<String, dynamic> params) {
+    PostClient<ReadOnlyMessageFromApiModel>
+        requestForNotificationWhenProductBecameAvailable =
+        PostClient<ReadOnlyMessageFromApiModel>(
       serverName: ServerName.market,
-      requestPrams: RequestConfig<bool>(
+      requestPrams: RequestConfig<ReadOnlyMessageFromApiModel>(
         endpoint:
             MarketEndPoints.requestForNotificationWhenProductBecameAvailableEP,
         data: params,
-        response: ResponseValue<bool>(returnValueOnSuccess: true),
+        response: ResponseValue<ReadOnlyMessageFromApiModel>(
+            fromJson: (response) =>
+                ReadOnlyMessageFromApiModel.fromJson(response)),
       ),
     );
     return requestForNotificationWhenProductBecameAvailable();

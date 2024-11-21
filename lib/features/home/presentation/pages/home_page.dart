@@ -398,6 +398,11 @@ class _HomePageState extends State<HomePage> {
                                               .length ??
                                           0) ==
                                       0))) {
+                        print("${currentSlug}" +
+                            ".111111111111111111111222222222222222222222222223333333333333333333333333.........${homeState.boutiquesForEveryMainCategoryThatDidPrefetch[currentSlug] != true}" +
+                            "/////////${homeState.getHomeBoutiquesPaginationObjectByMainCategory[currentSlug] == null}" +
+                            "22${(homeState.getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]?.paginationStatus == PaginationStatus.loading || homeState.getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]?.paginationStatus == PaginationStatus.initial)}" +
+                            "${(homeState.getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]?.items.length ?? 0) == 0}8888");
                         return sliverListSeparated(
                             key: TestVariables.kTestMode
                                 ? Key(WidgetsKeys.boutiquesFailureStatusKey)

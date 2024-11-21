@@ -46,6 +46,7 @@ class ProductDetailsSheetBottomBar extends StatefulWidget {
       required this.colorName,
       required this.colorNum,
       required this.size,
+      required this.productSlug,
       required this.countOfPieces,
       required this.currentActiveTab,
       required this.sizeIsNotAvailableNotifier,
@@ -59,6 +60,7 @@ class ProductDetailsSheetBottomBar extends StatefulWidget {
   final String imageUrl;
   final int countOfPieces;
   final String productId;
+  final String productSlug;
   final String colorName;
   final String colorNum;
   final String size;
@@ -682,6 +684,8 @@ class _ProductDetailsSheetBottomBarState
                                                 onTap: () {
                                                   homeBloc.add(
                                                       AddOrRemoveLikeForProductEvent(
+                                                          productSlug: widget
+                                                              .productSlug,
                                                           isFavourite: !(state
                                                                   .cachedProductWithoutRelatedProductsModel[
                                                                       widget
