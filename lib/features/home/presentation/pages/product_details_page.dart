@@ -616,6 +616,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         state.currentSelectedColorForEveryProduct[productId] ??
                             (productItem.syncColorImages?.length ?? 0) ~/ 2;
                     return ProductDetailsBottomSheet(
+                      productSlugForTopic: state
+                              .cachedProductWithoutRelatedProductsModel[
+                                  productItem.id.toString()]
+                              ?.product
+                              ?.slugEnTopic ??
+                          "",
                       productDescription:
                           HtmlParser.parseHTML(productItem.details ?? "").text,
                       countOfPieces:
