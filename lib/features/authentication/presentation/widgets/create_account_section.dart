@@ -180,7 +180,11 @@ class CreateAccountSection extends StatelessWidget {
                   BlocProvider.of<AuthBloc>(context)
                       .add(RegisterGuestEvent(deviceId: deviceId!));
                 }
-                context.go(GRouter.config.applicationRoutes.kBasePage);
+                if (Navigator.of(context).canPop()) {
+                  Navigator.of(context).pop();
+                } else {
+                  context.go(GRouter.config.applicationRoutes.kBasePage);
+                }
               },
             );
 

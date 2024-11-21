@@ -295,8 +295,6 @@ void main() async {
   isDependencyInitialized = true;
   await FirebaseMessaging.instance.subscribeToTopic("boutique_created");
   await FirebaseMessaging.instance.subscribeToTopic("category_created");
-  await FirebaseMessaging.instance.getInitialMessage().then((value) =>
-      print("######################3------------------@@@@@@@@@@@2${value}"));
   GetIt.I<AuthBloc>().add(GetUserCountryEvent());
 
   gemini.Gemini.init(

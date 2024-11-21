@@ -17,10 +17,11 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
   const TrydosAppBar({
     Key? key,
     required this.appBarParams,
+    this.heightAppBar,
   }) : super(key: key);
 
   final AppBarParams appBarParams;
-
+  final double? heightAppBar;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -63,7 +64,8 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(56);
+  Size get preferredSize =>
+      Size.fromHeight((heightAppBar ?? null) == null ? 56 : heightAppBar ?? 56);
 
   Widget title(BuildContext context) {
     return Transform.translate(

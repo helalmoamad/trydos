@@ -12,6 +12,7 @@ import 'package:trydos/features/home/data/models/get_currency_for_country_model.
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_is_liked_of_product_model.dart';
 import 'package:trydos/features/home/data/models/get_old_cart_model.dart';
+import 'package:trydos/features/home/data/models/get_only_message_from_api_model.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 
@@ -79,7 +80,7 @@ abstract class HomeRepository {
       convertItemInOldCartToCart(Map<String, dynamic> params);
   Future<Either<Failure, bool>> removeItemToCart(Map<String, dynamic> params);
   Future<Either<Failure, Comment>> addComment(Map<String, dynamic> params);
-  Future<Either<Failure, bool>>
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>>
       requestForNotificationWhenProductBecameAvailable(
           Map<String, dynamic> params);
 

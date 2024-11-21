@@ -490,6 +490,8 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                           idsOfChatCardsToShare:
                                               idsOfChatCardsToShare),
                                       ProductDetailsSheetMoreOptionsContent(
+                                        productSlug:
+                                            widget.productItem.slug ?? "",
                                         scrollController:
                                             currentTab == 2 ? controller : null,
                                         productId:
@@ -602,6 +604,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
               builder: (context, channelIds, _) {
                 return channelIds.isEmpty
                     ? ProductDetailsSheetBottomBar(
+                        productSlug: widget.productItem.slug ?? "",
                         countOfPieces: widget.countOfPieces,
                         colorNum: widget.currentColornum,
                         size: widget.currentSize,
@@ -712,14 +715,19 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                       widget.productItem.slug.toString(),
                                   productDescription:
                                       widget.productItem.details.toString(),
-                                  originalImageWidth: gallery3dControllerForCircles != null
-                                      ? (orginalWidth?[currentIndexInSlider]).toString()
-                                      : widget
-                                      .productItem.images![0].originalWidth,
-                                  originalImageHeight: gallery3dControllerForCircles != null
-                                      ? (orginalHeight?[currentIndexInSlider]).toString()
-                                      : widget
-                                      .productItem.images![0].originalHeight,
+                                  originalImageWidth:
+                                      gallery3dControllerForCircles != null
+                                          ? (orginalWidth?[currentIndexInSlider])
+                                              .toString()
+                                          : widget.productItem.images![0]
+                                              .originalWidth,
+                                  originalImageHeight:
+                                      gallery3dControllerForCircles != null
+                                          ? (orginalHeight?[
+                                                  currentIndexInSlider])
+                                              .toString()
+                                          : widget.productItem.images![0]
+                                              .originalHeight,
                                   productImageUrl:
                                       gallery3dControllerForCircles != null
                                           ? images[currentIndexInSlider]

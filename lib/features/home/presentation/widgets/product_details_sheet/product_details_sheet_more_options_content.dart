@@ -26,11 +26,15 @@ import '../../../../app/my_text_widget.dart';
 
 class ProductDetailsSheetMoreOptionsContent extends StatefulWidget {
   const ProductDetailsSheetMoreOptionsContent(
-      {super.key, this.scrollController, required this.productId});
+      {super.key,
+      this.scrollController,
+      required this.productSlug,
+      required this.productId});
 
   final ScrollController? scrollController;
 
   final String productId;
+  final String productSlug;
 
   @override
   State<ProductDetailsSheetMoreOptionsContent> createState() =>
@@ -96,6 +100,7 @@ class _ProductDetailsSheetMoreOptionsContentState
                                       }
                                       BlocProvider.of<HomeBloc>(context).add(
                                           AddCommentEvent(
+                                              productSlug: widget.productSlug,
                                               productId: widget.productId,
                                               comment:
                                                   addCommentController.text));

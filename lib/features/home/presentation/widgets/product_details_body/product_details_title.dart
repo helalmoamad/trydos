@@ -50,6 +50,7 @@ class ProductDetailsTitle extends StatelessWidget {
           p.getAndAddCountViewOfProductStatus[productId] !=
               c.getAndAddCountViewOfProductStatus[productId],
       builder: (context, state) {
+        print("%%%%%%%%%%%%%%%%%%%%${thumbnail}");
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

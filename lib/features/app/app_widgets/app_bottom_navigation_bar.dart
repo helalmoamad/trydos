@@ -15,6 +15,7 @@ import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/features/app/app_widgets/update_user_name_widget.dart';
 import 'package:trydos/features/app/language_dropdown.dart';
+import 'package:trydos/features/authentication/presentation/pages/first_registeration_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/feed_back_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/files_exist_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/shared_preference_page.dart';
@@ -329,8 +330,10 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                   onTap: () {
                     // if (prefsRepository.chatToken != null) return;
                     //appBloc.add(ChangeBasePage(0));
-                    context
-                        .go(GRouter.config.applicationRoutes.kRegistrationPage);
+                    Navigator.of(context).push(PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          RegistrationPage(),
+                    ));
                     /////////////////////////
                     FirebaseAnalyticsService.logEventForSession(
                       eventName: AnalyticsEventsConst.buttonClicked,

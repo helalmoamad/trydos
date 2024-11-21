@@ -21,6 +21,7 @@ import 'package:trydos/features/home/data/models/get_full_product_details_model.
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_is_liked_of_product_model.dart';
 import 'package:trydos/features/home/data/models/get_old_cart_model.dart';
+import 'package:trydos/features/home/data/models/get_only_message_from_api_model.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
@@ -209,7 +210,7 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   }
 
   @override
-  Future<Either<Failure, bool>>
+  Future<Either<Failure, ReadOnlyMessageFromApiModel>>
       requestForNotificationWhenProductBecameAvailable(
           Map<String, dynamic> params) {
     return handlingExceptionRequest(
