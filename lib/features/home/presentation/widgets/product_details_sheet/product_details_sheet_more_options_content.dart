@@ -29,13 +29,14 @@ class ProductDetailsSheetMoreOptionsContent extends StatefulWidget {
       {super.key,
       this.scrollController,
       required this.productSlug,
+      required this.productSlugForTopic,
       required this.productId});
 
   final ScrollController? scrollController;
 
   final String productId;
   final String productSlug;
-
+  final String productSlugForTopic;
   @override
   State<ProductDetailsSheetMoreOptionsContent> createState() =>
       _ProductDetailsSheetMoreOptionsContentState();
@@ -100,6 +101,8 @@ class _ProductDetailsSheetMoreOptionsContentState
                                       }
                                       BlocProvider.of<HomeBloc>(context).add(
                                           AddCommentEvent(
+                                              productSlugForTopic:
+                                                  widget.productSlugForTopic,
                                               productSlug: widget.productSlug,
                                               productId: widget.productId,
                                               comment:

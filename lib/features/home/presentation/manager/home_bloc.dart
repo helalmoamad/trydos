@@ -2641,10 +2641,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         quantity: event.quantity,
       ),
     );
-    /*  await FirebaseMessaging.instance
-          .subscribeToTopic("product_discount_${event.products.slug}");
-      await FirebaseMessaging.instance
-          .subscribeToTopic("product_comment_${event.products.slug}");*/
+    await FirebaseMessaging.instance
+        .subscribeToTopic("product_discount_${event.productSlugForTopic}");
+    await FirebaseMessaging.instance
+        .subscribeToTopic("product_comment_${event.productSlugForTopic}");
 
     response.fold((l) {
       add(UpdateListOfItemForAddToCartEvent(
@@ -2657,6 +2657,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             fishAddAllTheItems: event.fishAddAllTheItems,
             countOfPieces: event.countOfPieces,
             colorName: event.colorName,
+            productSlugForTopic: event.productSlugForTopic,
             image: event.image,
             products: event.products,
             choice_1: event.choice_1,
@@ -3522,6 +3523,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           fishAddAllTheItems: i == listitemForAddToCart.length - 1,
           countOfPieces: listitemForAddToCart[i].countOfPieces,
           image: listitemForAddToCart[i].images!,
+          productSlugForTopic: event.productSlugForTopic,
           color: listitemForAddToCart[i].colorNum,
           colorName: listitemForAddToCart[i].colorName!,
           products: event.products,
@@ -3707,17 +3709,19 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         : await deleteLikeOfProductUsecase(DeleteLikeOfParams(
             productId: event.productId,
             userId: GetIt.I<PrefsRepository>().myMarketId));
-    /*   if (event.isFavourite) {
-        await FirebaseMessaging.instance
-            .subscribeToTopic("product_discount_${event.productSlug}");
-        await FirebaseMessaging.instance
-            .subscribeToTopic("product_comment_${event.productSlug}");
-      } else {
-        await FirebaseMessaging.instance
-            .unsubscribeFromTopic("product_discount_${event.productSlug}");
-        await FirebaseMessaging.instance
-            .unsubscribeFromTopic("product_comment_${event.productSlug}");
-      }*/
+    if (event.isFavourite) {
+      await FirebaseMessaging.instance
+          .subscribeToTopic("product_discount_${event.productSlugForTopic}");
+      await FirebaseMessaging.instance
+          .subscribeToTopic("product_comment_${event.productSlugForTopic}");
+      print(
+          "//////////////////////////////////////////////product_comment_${event.productSlugForTopic}");
+    } else {
+      await FirebaseMessaging.instance.unsubscribeFromTopic(
+          "product_discount_${event.productSlugForTopic}");
+      await FirebaseMessaging.instance
+          .unsubscribeFromTopic("product_comment_${event.productSlugForTopic}");
+    }
     response.fold((l) {
       Map<String, GetProductDetailWithoutRelatedProductsModel>
           cachedProductWithoutRelatedProductsModel =
@@ -4156,13 +4160,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   FutureOr<void> _onAddCommentEvent(
       AddCommentEvent event, Emitter<HomeState> emit) async {
+    print("${event.productSlug}");
     emit(state.copyWith(addCommentStatus: AddCommentStatus.loading));
     final response = await addCommentUseCase(
         AddCommentParams(productId: event.productId, comment: event.comment));
-    /*  await FirebaseMessaging.instance
-          .subscribeToTopic("product_discount_${event.productSlug}");
-      await FirebaseMessaging.instance
-          .subscribeToTopic("product_comment_${event.productSlug}");*/
+    await FirebaseMessaging.instance
+        .subscribeToTopic("product_discount_${event.productSlugForTopic}");
+    await FirebaseMessaging.instance
+        .subscribeToTopic("product_comment_${event.productSlugForTopic}");
     response.fold((l) {
       emit(state.copyWith(addCommentStatus: AddCommentStatus.failure));
     }, (r) {

@@ -682,19 +682,25 @@ class _ProductDetailsSheetBottomBarState
                                                         .favoriteActiveSvg
                                                     : AppAssets.favoriteSvg,
                                                 onTap: () {
-                                                  homeBloc.add(
-                                                      AddOrRemoveLikeForProductEvent(
-                                                          productSlug: widget
-                                                              .productSlug,
-                                                          isFavourite: !(state
-                                                                  .cachedProductWithoutRelatedProductsModel[
-                                                                      widget
-                                                                          .productId]
-                                                                  ?.product
-                                                                  ?.isLiked ??
-                                                              false),
-                                                          productId: widget
-                                                              .productId));
+                                                  homeBloc.add(AddOrRemoveLikeForProductEvent(
+                                                      productSlugForTopic: state
+                                                              .cachedProductWithoutRelatedProductsModel[
+                                                                  widget
+                                                                      .productId]
+                                                              ?.product
+                                                              ?.slugEnTopic ??
+                                                          "",
+                                                      productSlug:
+                                                          widget.productSlug,
+                                                      isFavourite: !(state
+                                                              .cachedProductWithoutRelatedProductsModel[
+                                                                  widget
+                                                                      .productId]
+                                                              ?.product
+                                                              ?.isLiked ??
+                                                          false),
+                                                      productId:
+                                                          widget.productId));
                                                   widget.clickOnFavorite;
                                                 });
                                       },

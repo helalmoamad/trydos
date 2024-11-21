@@ -57,6 +57,7 @@ class Product {
   final String? deliveryAt;
   final String? tax;
   final String? unitPrice;
+  final String? slugEnTopic;
   final int? currentStock;
   final int? leftStock;
   final int? reviewsCount;
@@ -86,6 +87,7 @@ class Product {
     this.countOfPieces,
     this.variation,
     this.isLiked,
+    this.slugEnTopic,
     this.countOfLikes,
     this.choiceOptions,
     this.hasDiscount,
@@ -115,6 +117,7 @@ class Product {
     dynamic description,
     dynamic model,
     dynamic features,
+    String? slugEnTopic,
     bool? inStock,
     List<Variation>? variation,
     List<ChoiceOption>? choiceOptions,
@@ -146,6 +149,7 @@ class Product {
       Product(
         id: id ?? this.id,
         description: description ?? this.description,
+        slugEnTopic: slugEnTopic ?? this.slugEnTopic,
         model: model ?? this.model,
         features: features ?? this.features,
         inStock: inStock ?? this.inStock,
@@ -184,6 +188,7 @@ class Product {
       countOfPieces: json["count_of_pieces"],
       model: json["model"],
       features: json["features"],
+      slugEnTopic: json["slug_en_topic"],
       boutique: json["boutique"] == null
           ? null
           : BoutiqueForCart.fromJson(json["boutique"]),
@@ -242,6 +247,7 @@ class Product {
         "has_discount": hasDiscount,
         "has_tax": hasTax,
         "delivery_at": deliveryAt,
+        "slug_en_topic": slugEnTopic,
         "is_liked": isLiked,
         "count_of_likes": countOfLikes,
         "tax": tax,
