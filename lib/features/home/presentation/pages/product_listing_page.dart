@@ -2095,135 +2095,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                           "${widget.category ?? ""}"]!
                                                   .items;
 
-                                              return SliverPadding(
-                                                key: TestVariables.kTestMode
-                                                    ? Key(WidgetsKeys
-                                                        .productsListKey)
-                                                    : gridViewKeyForRendering,
-                                                padding: const EdgeInsets.only(
-                                                    top: 10),
-                                                sliver: SliverGrid(
-                                                  gridDelegate:
-                                                      SliverGridDelegateWithFixedCrossAxisCount(
-                                                    crossAxisCount: 2,
-                                                    childAspectRatio:
-                                                        200.w / 350,
-                                                    crossAxisSpacing: 10,
-                                                    mainAxisSpacing: 15,
-                                                  ),
-                                                  delegate:
-                                                      SliverChildBuilderDelegate(
-                                                    childCount: products.length,
-                                                    (BuildContext context,
-                                                        int index) {
-                                                      return InkWell(
-                                                        onTap: () async {
-                                                          Future.delayed(
-                                                              Duration(
-                                                                  milliseconds:
-                                                                      100), () {
-                                                            print("${prefsRepository.myMarketId.toString()}" +
-                                                                "55555555555555555555555555555555555555555");
-                                                            print("${prefsRepository.myMarketName.toString()}" +
-                                                                "554${GetIt.I<PrefsRepository>().serverTime}4555554444${prefsRepository.countryIso.toString()}444444444${LanguageService.languageCode == 'ar' ? 'ae' : LanguageService.languageCode}444444444444${GetIt.I<PrefsRepository>().currentEvent}44444444444444444444444444445555555555555555555555");
-                                                          });
-
-                                                          Future.delayed(
-                                                            Duration(
-                                                                milliseconds:
-                                                                    100),
-                                                          ).then(
-                                                            (value) {
-                                                              FirebaseAnalyticsService
-                                                                  .logEventForViewedProduct(
-                                                                eventName:
-                                                                    AnalyticsEventsConst
-                                                                        .viewedProduct,
-                                                                productId: products[
-                                                                        index]
-                                                                    .id
-                                                                    .toString(),
-                                                                productName: products[
-                                                                        index]
-                                                                    .name
-                                                                    .toString(),
-                                                                productCategoriesId:
-                                                                    products[
-                                                                            index]
-                                                                        .categories
-                                                                        ?.map(
-                                                                          (e) => e
-                                                                              .id
-                                                                              .toString(),
-                                                                        )
-                                                                        .toList(),
-                                                              );
-                                                            },
-                                                          );
-                                                          ////////////////////////////
-                                                          FirebaseAnalyticsService
-                                                              .logEventForSession(
-                                                            eventName:
-                                                                AnalyticsEventsConst
-                                                                    .buttonClicked,
-                                                            executedEventName:
-                                                                AnalyticsExecutedEventNameConst
-                                                                    .chooseProductButton,
-                                                          );
-
-                                                          // pushOverscrollRoute(
-                                                          //     context: context,
-                                                          //     transitionDuration : Duration(milliseconds : 250),
-                                                          //     reverseTransitionDuration : Duration(milliseconds : 400),
-                                                          //     child: ProductDetailsPage(
-                                                          //       productItem: state
-                                                          //           .getProductListingWithoutFiltersModel!
-                                                          //           .data!
-                                                          //           .products![index]
-                                                          //     ),
-                                                          //     workNormally: true,
-                                                          //     withRoundedCorners: true,
-                                                          //     isArabicLanguage: LanguageService.rtl,
-                                                          //     dragToPopDirection: DragToPopDirection.toBottom,
-                                                          //     scrollToPopOption: ScrollToPopOption.start,
-                                                          //     fullscreenDialog: true);
-                                                          Navigator.of(context)
-                                                              .push(
-                                                            MaterialPageRoute(
-                                                              builder: (ctx) =>
-                                                                  ProductDetailsPage(
-                                                                productItem:
-                                                                    products[
-                                                                        index],
-                                                              ),
-                                                            ),
-                                                          );
-                                                        },
-                                                        child: ProductItem(
-                                                          key: TestVariables
-                                                                  .kTestMode
-                                                              ? Key(
-                                                                  '${WidgetsKeys.productInBoutiqueListKey}$index')
-                                                              : null,
-                                                          slidingModeItem:
-                                                              slidingMode,
-                                                          productItem:
-                                                              products[index],
-                                                          itemIndex: index,
-                                                          setThisEnabled: (int
-                                                                  index,
-                                                              int slideMode) {
-                                                            setThisEnabledNotifier
-                                                                    .value =
-                                                                Tuple2(index,
-                                                                    slideMode);
-                                                          },
-                                                        ),
-                                                      );
-                                                    },
-                                                  ),
-                                                ),
-                                              );
+                                              return buildProductList(
+                                                  products: products,
+                                                  slidingMode: slidingMode);
                                             }
 
                                             if (((state
@@ -2422,133 +2296,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                             // [];
                                             //
                                             //                                             }
-                                            return SliverPadding(
-                                              key: TestVariables.kTestMode
-                                                  ? Key(WidgetsKeys
-                                                      .productsListKey)
-                                                  : gridViewKeyForRendering,
-                                              padding: const EdgeInsets.only(
-                                                  top: 10),
-                                              sliver: SliverGrid(
-                                                gridDelegate:
-                                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                                  crossAxisCount: 2,
-                                                  childAspectRatio: 200.w / 350,
-                                                  crossAxisSpacing: 10,
-                                                  mainAxisSpacing: 15,
-                                                ),
-                                                delegate:
-                                                    SliverChildBuilderDelegate(
-                                                  childCount: products.length,
-                                                  (BuildContext context,
-                                                      int index) {
-                                                    return InkWell(
-                                                      onTap: () {
-                                                        Future.delayed(
-                                                          Duration(
-                                                              milliseconds:
-                                                                  100),
-                                                          () {
-                                                            print("${prefsRepository.myMarketId.toString()}" +
-                                                                "55555555555555555555555555555555555555555");
-                                                            print("${prefsRepository.myMarketName.toString()}" +
-                                                                "554${GetIt.I<PrefsRepository>().serverTime}4555554444${prefsRepository.countryIso.toString()}444444444${LanguageService.languageCode == 'ar' ? 'ae' : LanguageService.languageCode}444444444444${GetIt.I<PrefsRepository>().currentEvent}44444444444444444444444444445555555555555555555555");
-                                                          },
-                                                        );
-                                                        Future.delayed(
-                                                          Duration(
-                                                              milliseconds:
-                                                                  100),
-                                                        ).then(
-                                                          (value) {
-                                                            FirebaseAnalyticsService
-                                                                .logEventForViewedProduct(
-                                                              eventName:
-                                                                  AnalyticsEventsConst
-                                                                      .viewedProduct,
-                                                              productId: products[
-                                                                      index]
-                                                                  .id
-                                                                  .toString(),
-                                                              productName:
-                                                                  products[
-                                                                          index]
-                                                                      .name
-                                                                      .toString(),
-                                                              productCategoriesId:
-                                                                  products[
-                                                                          index]
-                                                                      .categories
-                                                                      ?.map(
-                                                                        (e) => e
-                                                                            .id
-                                                                            .toString(),
-                                                                      )
-                                                                      .toList(),
-                                                            );
-                                                          },
-                                                        );
-                                                        ////////////////////////////
-                                                        FirebaseAnalyticsService
-                                                            .logEventForSession(
-                                                          eventName:
-                                                              AnalyticsEventsConst
-                                                                  .buttonClicked,
-                                                          executedEventName:
-                                                              AnalyticsExecutedEventNameConst
-                                                                  .chooseProductButton,
-                                                        );
-
-                                                        // pushOverscrollRoute(
-                                                        //     context: context,
-                                                        //     transitionDuration : Duration(milliseconds : 250),
-                                                        //     reverseTransitionDuration : Duration(milliseconds : 400),
-                                                        //     child: ProductDetailsPage(
-                                                        //       productItem: state
-                                                        //           .getProductListingWithoutFiltersModel!
-                                                        //           .data!
-                                                        //           .products![index]
-                                                        //     ),
-                                                        //     workNormally: true,
-                                                        //     withRoundedCorners: true,
-                                                        //     isArabicLanguage: LanguageService.rtl,
-                                                        //     dragToPopDirection: DragToPopDirection.toBottom,
-                                                        //     scrollToPopOption: ScrollToPopOption.start,
-                                                        //     fullscreenDialog: true);
-                                                        Navigator.of(context).push(
-                                                            MaterialPageRoute(
-                                                                builder: (ctx) =>
-                                                                    ProductDetailsPage(
-                                                                      productItem:
-                                                                          products[
-                                                                              index],
-                                                                    )));
-                                                      },
-                                                      child: ProductItem(
-                                                        key: TestVariables
-                                                                .kTestMode
-                                                            ? Key(
-                                                                '${WidgetsKeys.productInBoutiqueListKey}$index')
-                                                            : null,
-                                                        slidingModeItem:
-                                                            slidingMode,
-                                                        productItem:
-                                                            products[index],
-                                                        itemIndex: index,
-                                                        setThisEnabled:
-                                                            (int index,
-                                                                int slideMode) {
-                                                          setThisEnabledNotifier
-                                                                  .value =
-                                                              Tuple2(index,
-                                                                  slideMode);
-                                                        },
-                                                      ),
-                                                    );
-                                                  },
-                                                ),
-                                              ),
-                                            );
+                                            return buildProductList(
+                                                products: products,
+                                                slidingMode: slidingMode);
                                           },
                                         ),
                                   BlocBuilder<HomeBloc, HomeState>(
@@ -2648,9 +2398,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
           childCount: products.length,
           (BuildContext context, int index) {
             return InkWell(
+              key: TestVariables.kTestMode
+                  ? Key('${WidgetsKeys.productItemInListKey}$index')
+                  : null,
               onTap: () {
-                print(
-                    '/////////// Go to details  /////// ${products[index].categories?[0].name} ///////');
+                debugPrint(
+                    '/////////// Go to details  /////// ${products[index].name} ///////');
                 Future.delayed(
                   Duration(milliseconds: 100),
                 ).then(
@@ -2684,9 +2437,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
                 );
               },
               child: ProductItem(
-                key: TestVariables.kTestMode
-                    ? Key('${WidgetsKeys.productInBoutiqueListKey}$index')
-                    : null,
                 slidingModeItem: slidingMode,
                 productItem: products[index],
                 itemIndex: index,

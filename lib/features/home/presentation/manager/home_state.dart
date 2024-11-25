@@ -145,7 +145,7 @@ class HomeState extends Equatable {
     this.currentIndexForMainCategoryEvent = -1,
     this.prefAppliedFilterForExtendFilter,
     this.fromSearchForSearchWithGemini = false,
-    this.ListitemForAddToCart,
+    this.listitemForAddToCart,
     this.getListOfProductsFoundedInCartStatus =
         GetListOfProductsFoundedInCartStatus.init,
     this.getCurrencyForCountryModel,
@@ -175,7 +175,7 @@ class HomeState extends Equatable {
   final HideItemInOldCartStatus? hideItemInOldCartStatus;
   final Map<String, GetAndAddCountViewOfProductStatus>
       getAndAddCountViewOfProductStatus;
-  final List<ImageForAddToCart>? ListitemForAddToCart;
+  final List<ImageForAddToCart>? listitemForAddToCart;
   final GetAllowedCountriesModel? getAllowedCountriesModel;
   final Map<String, GetProductFiltersStatus> getProductFiltersStatus;
   final Map<String, PaginationModel<product.Products>?>
@@ -269,7 +269,7 @@ class HomeState extends Equatable {
         convertItemFromOldcartToCartStatus,
         getOldCartModel,
         getOldCartItemsStatus,
-        ListitemForAddToCart,
+        listitemForAddToCart,
         getAllowedCountriesModel,
         getProductFiltersStatus,
         getProductListingWithFiltersPaginationModels,
@@ -359,7 +359,7 @@ class HomeState extends Equatable {
       final Map<String, bool>? boutiquesThatDidPrefetch,
       final Map<String, bool>? boutiquesForEveryMainCategoryThatDidPrefetch,
       Map<String, Map<int, List<String>>>? addImagesToProductIdForCart,
-      final List<ImageForAddToCart>? ListitemForAddToCart,
+      final List<ImageForAddToCart>? listitemForAddToCart,
       final GetAllowedCountriesModel? getAllowedCountriesModel,
       final Map<String, PaginationModel<product.Products>?>?
           getProductListingWithFiltersPaginationWithPrefetchModels,
@@ -469,7 +469,7 @@ class HomeState extends Equatable {
               this.productContentForStatusOfOpeningProductDetailsDirectly,
       countOfProductExpectedByFiltering: countOfProductExpectedByFiltering ??
           this.countOfProductExpectedByFiltering,
-      ListitemForAddToCart: ListitemForAddToCart ?? this.ListitemForAddToCart,
+      listitemForAddToCart: listitemForAddToCart ?? this.listitemForAddToCart,
       addImagesToProductIdForCart:
           addImagesToProductIdForCart ?? this.addImagesToProductIdForCart,
       cartCollection: cartCollection ?? this.cartCollection,

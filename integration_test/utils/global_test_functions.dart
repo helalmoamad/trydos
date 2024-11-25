@@ -97,4 +97,28 @@ class GlobalTestFunctions {
     await tester.enterText(otpItem6, number);
     await tester.pumpAndSettle();
   }
+
+  static Future<void> scrollToFindWidget({
+    required WidgetTester tester,
+    required Finder widgetToFind,
+    required Finder widgetToScroll,
+  }) async {
+    while (true) {
+      try {
+        expect(widgetToFind, findsOneWidget);
+        print('//// Find  widget  /////');
+        break;
+      } catch (e) {
+        try {
+          await tester.drag(widgetToScroll, const Offset(0, -400));
+          print('//// scroll down  /////');
+          await tester.pumpAndSettle();
+          continue;
+        } catch (e) {
+          print('scroll fails, we have reached the end of the list');
+          break;
+        }
+      }
+    }
+  }
 }

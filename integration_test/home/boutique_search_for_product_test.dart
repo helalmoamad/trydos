@@ -85,7 +85,7 @@ void main() {
 
       //////////// Get first product name & ID before search //////////////
       // Get the name and ID of the first product in the list before searching
-      final productKey = Key('${WidgetsKeys.productInBoutiqueListKey}0');
+      final productKey = Key('${WidgetsKeys.productItemInListKey}0');
 
       String productNameBeforeSearch = tester
           .widget<ProductItem>(find.byKey(productKey))
@@ -161,7 +161,7 @@ void main() {
       List<String> productIdsAfterSearchList = [];
       while (true) {
         final productKey =
-            Key('${WidgetsKeys.productInBoutiqueListKey}$productIndex2');
+            Key('${WidgetsKeys.productItemInListKey}$productIndex2');
         if (find.byKey(productKey).evaluate().isEmpty) {
           break;
         }

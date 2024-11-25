@@ -27,6 +27,8 @@ import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/notify_for_quantity_available_button.dart';
 
 import '../../../../../common/constant/design/assets_provider.dart';
+import '../../../../../common/test_utils/test_var.dart';
+import '../../../../../common/test_utils/widgets_keys.dart';
 import '../../../../../core/utils/responsive_padding.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
@@ -117,8 +119,8 @@ class _ProductDetailsSheetBottomBarState
           previous.updateItemInCartStatus != current.updateItemInCartStatus ||
           previous.addItemInCartStatus != current.addItemInCartStatus ||
           previous.deleteItemInCartStatus != current.deleteItemInCartStatus ||
-          previous.ListitemForAddToCart?.length !=
-              current.ListitemForAddToCart?.length ||
+          previous.listitemForAddToCart?.length !=
+              current.listitemForAddToCart?.length ||
           previous.getCommentForProductStatus !=
               current.getCommentForProductStatus ||
           previous.addCommentStatus != current.addCommentStatus,
@@ -230,10 +232,14 @@ class _ProductDetailsSheetBottomBarState
                                                         ],
                                                       )
                                                     : GestureDetector(
+                                                        key: TestVariables
+                                                                .kTestMode
+                                                            ? Key(WidgetsKeys
+                                                                .addToBagButtonKey)
+                                                            : null,
                                                         onTapDown: (details) {
                                                           if (currentTab != 3) {
                                                             print('open panel');
-
                                                             if (state.productStatus![
                                                                     widget
                                                                         .productId] ==
@@ -271,13 +277,14 @@ class _ProductDetailsSheetBottomBarState
                                                                     .value--;
                                                                 homeBloc.add(
                                                                   UpdateListOfItemForAddToCartEvent(
-                                                                      productId:
-                                                                          widget
-                                                                              .productId,
-                                                                      imageForAddToCart:
-                                                                          imageForAddToCart,
-                                                                      operation:
-                                                                          "-"),
+                                                                    productId:
+                                                                        widget
+                                                                            .productId,
+                                                                    imageForAddToCart:
+                                                                        imageForAddToCart,
+                                                                    operation:
+                                                                        "-",
+                                                                  ),
                                                                 );
                                                                 print(
                                                                     '111111111111111');
@@ -301,14 +308,17 @@ class _ProductDetailsSheetBottomBarState
                                                                 widget
                                                                     .addToBagButtonShapeNotifier
                                                                     .value++;
-                                                                homeBloc.add(UpdateListOfItemForAddToCartEvent(
+                                                                homeBloc.add(
+                                                                  UpdateListOfItemForAddToCartEvent(
                                                                     productId:
                                                                         widget
                                                                             .productId,
                                                                     imageForAddToCart:
                                                                         imageForAddToCart,
                                                                     operation:
-                                                                        "+"));
+                                                                        "+",
+                                                                  ),
+                                                                );
                                                                 print(
                                                                     '22222222222222');
                                                                 //////////////////////////////
@@ -444,7 +454,7 @@ class _ProductDetailsSheetBottomBarState
                                                                                               height: 20,
                                                                                               child: ListView.builder(
                                                                                                 itemBuilder: (context, index) {
-                                                                                                  return Align(widthFactor: 1 - (itemCount / 12 * 0.3), child: MyCachedNetworkImage(circleDimensions: 15, imageUrl: state.ListitemForAddToCart != null ? state.ListitemForAddToCart![index].images! : "", width: 15, imageWidth: 70, imageHeight: 70, imageFit: BoxFit.cover, height: 20)); /*Container(
+                                                                                                  return Align(widthFactor: 1 - (itemCount / 12 * 0.3), child: MyCachedNetworkImage(circleDimensions: 15, imageUrl: state.listitemForAddToCart != null ? state.listitemForAddToCart![index].images! : "", width: 15, imageWidth: 70, imageHeight: 70, imageFit: BoxFit.cover, height: 20)); /*Container(
                                                                                           width: 15,
                                                                                           height: 20,
                                                                                           decoration: BoxDecoration(
@@ -459,7 +469,7 @@ class _ProductDetailsSheetBottomBarState
                                                                                                 reverse: true,
                                                                                                 shrinkWrap: true,
                                                                                                 scrollDirection: Axis.horizontal,
-                                                                                                itemCount: state.ListitemForAddToCart != null ? state.ListitemForAddToCart!.length : 0,
+                                                                                                itemCount: state.listitemForAddToCart != null ? state.listitemForAddToCart!.length : 0,
                                                                                               ),
                                                                                             ),
                                                                                           },

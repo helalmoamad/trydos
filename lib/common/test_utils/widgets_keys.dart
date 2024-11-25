@@ -25,7 +25,7 @@ class WidgetsKeys {
   static const myContactsFloatingActionKey =
       'my_contacts_floating_action_button_key';
   static const boutiqueCardKey = 'boutique_card_key';
-  static const productInBoutiqueListKey = 'product_in_boutique_list_key';
+  static const productItemInListKey = 'product_item_in_list_key';
   static const contactCardKey = 'contact_card_key';
   static const messageCardKey = 'message_card_key';
   static const textMessageCardKey = 'text_message_key';
@@ -113,4 +113,6 @@ class WidgetsKeys {
       'color_circle_product_listing_filter_key';
   static const priceCircleProductListingFilterKey =
       'price_circle_product_listing_filter_key';
+
+  static const addToBagButtonKey = 'add_to_bag_button_key';
 }

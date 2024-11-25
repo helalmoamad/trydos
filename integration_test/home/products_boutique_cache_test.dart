@@ -115,8 +115,8 @@ void main() {
       /////////////////////////////////
       while (!reachedEnd) {
         try {
-          Finder productWidget = find.byKey(
-              Key('${WidgetsKeys.productInBoutiqueListKey}$productIndex1'));
+          Finder productWidget = find
+              .byKey(Key('${WidgetsKeys.productItemInListKey}$productIndex1'));
           //////////////////////////////////
           String productBoutId = tester
               .widget<ProductItem>(productWidget)
@@ -145,8 +145,8 @@ void main() {
         }
         productIndex1++;
         // Try to scroll until the next product card becomes visible
-        Finder finderWidget = find.byKey(
-            Key('${WidgetsKeys.productInBoutiqueListKey}$productIndex1'));
+        Finder finderWidget = find
+            .byKey(Key('${WidgetsKeys.productItemInListKey}$productIndex1'));
         if (finderWidget.evaluate().isEmpty) {
           try {
             await tester.drag(productListingScroll, const Offset(0, -400));
@@ -200,8 +200,8 @@ void main() {
 
       while (!reachedEnd) {
         try {
-          Finder productWidget = find.byKey(
-              Key('${WidgetsKeys.productInBoutiqueListKey}$productIndex2'));
+          Finder productWidget = find
+              .byKey(Key('${WidgetsKeys.productItemInListKey}$productIndex2'));
           //////////////////////////////////
           String productBoutId = tester
               .widget<ProductItem>(productWidget)
@@ -225,8 +225,8 @@ void main() {
         }
         productIndex2++;
         // Try to scroll until the next product card becomes visible
-        Finder finderWidget = find.byKey(
-            Key('${WidgetsKeys.productInBoutiqueListKey}$productIndex2'));
+        Finder finderWidget = find
+            .byKey(Key('${WidgetsKeys.productItemInListKey}$productIndex2'));
         if (finderWidget.evaluate().isEmpty) {
           try {
             await tester.drag(productListingScroll, const Offset(0, -400));
@@ -273,8 +273,8 @@ void main() {
 
       while (!reachedEnd) {
         try {
-          Finder productWidget = find.byKey(
-              Key('${WidgetsKeys.productInBoutiqueListKey}$productIndex1'));
+          Finder productWidget = find
+              .byKey(Key('${WidgetsKeys.productItemInListKey}$productIndex1'));
           //////////////////////////////////
           String productBoutId = tester
               .widget<ProductItem>(productWidget)
@@ -303,8 +303,8 @@ void main() {
         }
         productIndex1++;
         // Try to scroll until the next product card becomes visible
-        Finder finderWidget = find.byKey(
-            Key('${WidgetsKeys.productInBoutiqueListKey}$productIndex1'));
+        Finder finderWidget = find
+            .byKey(Key('${WidgetsKeys.productItemInListKey}$productIndex1'));
         if (finderWidget.evaluate().isEmpty) {
           try {
             await tester.drag(productListingScroll, const Offset(0, -400));

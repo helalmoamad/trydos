@@ -1615,7 +1615,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           appliedFiltersByUser: {},
           cashedOrginalBoutique: false,
           isGettingProductListingWithPagination: false,
-          ListitemForAddToCart: [],
+          listitemForAddToCart: [],
           getMainCategoriesStatus: GetMainCategoriesStatus.init,
           getAndAddCountViewOfProductStatus: {},
           getProductDetailWithoutSimilarRelatedProductsStatus:
@@ -3516,7 +3516,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       AddMultiItemsToCartEvent event, Emitter<HomeState> emit) {
     print("//////////////////////////////////////111${event.maxAllowed}");
     List<ImageForAddToCart>? listitemForAddToCart =
-        List.of(state.ListitemForAddToCart ?? []);
+        List.of(state.listitemForAddToCart ?? []);
     listitemForAddToCart.removeWhere((element) => element.quantity == 0);
     for (var i = 0; i < listitemForAddToCart.length; i++) {
       add(AddItemToCartEvent(
@@ -3547,78 +3547,89 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       );
     }
 
-    emit(state.copyWith(ListitemForAddToCart: []));
+    emit(state.copyWith(listitemForAddToCart: []));
   }
 
   FutureOr<void> _onGetAllowedCountriesEvent(
       GetAllowedCountriesEvent event, Emitter<HomeState> emit) async {
     final response = await getAllowedCountryUseCase(NoParams());
-    response.fold((l) {
-      if (!isFailedTheFirstTime.contains('GetAllowCountryEvent')) {
-        add(GetAllowedCountriesEvent());
-        isFailedTheFirstTime.add('GetAllowCountryEvent');
-      }
-    }, (r) {
-      isFailedTheFirstTime.remove('GetAllowCountryEvent');
+    response.fold(
+      (l) {
+        if (!isFailedTheFirstTime.contains('GetAllowCountryEvent')) {
+          add(GetAllowedCountriesEvent());
+          isFailedTheFirstTime.add('GetAllowCountryEvent');
+        }
+      },
+      (r) {
+        isFailedTheFirstTime.remove('GetAllowCountryEvent');
 
-      emit(state.copyWith(
-        getAllowedCountriesModel: r,
-      ));
-    });
+        emit(
+          state.copyWith(
+            getAllowedCountriesModel: r,
+          ),
+        );
+      },
+    );
   }
 
   FutureOr<void> _onUpdateListOfItemForAddToCartEvent(
       UpdateListOfItemForAddToCartEvent event, Emitter<HomeState> emit) async {
     if (event.resetTheList) {
-      emit(state.copyWith(ListitemForAddToCart: []));
+      emit(state.copyWith(listitemForAddToCart: []));
       return;
     }
     ImageForAddToCart imageForAddToCart = ImageForAddToCart(
-        colorNum: event.imageForAddToCart.colorNum,
-        colorName: event.imageForAddToCart.colorName,
-        quantity: event.imageForAddToCart.quantity,
-        countOfPieces: event.imageForAddToCart.countOfPieces,
-        images: event.imageForAddToCart.images,
-        size: state.CurrentColorSizeForCart != null
-            ? state.CurrentColorSizeForCart!["size"]
-            : "");
-    List<ImageForAddToCart>? ListitemForAddToCart =
-        state.ListitemForAddToCart ?? [];
+      colorNum: event.imageForAddToCart.colorNum,
+      colorName: event.imageForAddToCart.colorName,
+      quantity: event.imageForAddToCart.quantity,
+      countOfPieces: event.imageForAddToCart.countOfPieces,
+      images: event.imageForAddToCart.images,
+      size: state.CurrentColorSizeForCart != null
+          ? state.CurrentColorSizeForCart!["size"]
+          : "",
+    );
+    List<ImageForAddToCart>? listitemForAddToCart =
+        state.listitemForAddToCart ?? [];
     if (event.operation == "+") {
-      if (ListitemForAddToCart.isNullOrEmpty) {
-        ListitemForAddToCart.addAll([imageForAddToCart]);
-        emit(state.copyWith(ListitemForAddToCart: ListitemForAddToCart));
+      if (listitemForAddToCart.isNullOrEmpty) {
+        listitemForAddToCart.addAll([imageForAddToCart]);
+        emit(state.copyWith(listitemForAddToCart: listitemForAddToCart));
+        print('//////////// 1 : $listitemForAddToCart////////////');
         return;
       }
-      ListitemForAddToCart.forEach((element) {
-        if (element.images == imageForAddToCart.images &&
-            element.colorName == imageForAddToCart.colorName &&
-            element.size == imageForAddToCart.size) {
-          element.quantity = element.quantity! + 1;
-          ListitemForAddToCart!.addAll([
-            ImageForAddToCart(
-                countOfPieces: element.countOfPieces,
-                isDuplicate: true,
-                quantity: 0,
-                size: element.size,
-                colorName: element.colorName,
-                images: element.images)
-          ]);
-        } else {
-          if (!ListitemForAddToCart!.any((element) =>
-              (element.images == imageForAddToCart.images &&
-                  element.colorName == imageForAddToCart.colorName &&
-                  element.size == imageForAddToCart.size))) {
-            ListitemForAddToCart.add(imageForAddToCart);
+      listitemForAddToCart.forEach(
+        (element) {
+          if (element.images == imageForAddToCart.images &&
+              element.colorName == imageForAddToCart.colorName &&
+              element.size == imageForAddToCart.size) {
+            element.quantity = element.quantity! + 1;
+            listitemForAddToCart!.addAll([
+              ImageForAddToCart(
+                  countOfPieces: element.countOfPieces,
+                  isDuplicate: true,
+                  quantity: 0,
+                  size: element.size,
+                  colorName: element.colorName,
+                  images: element.images)
+            ]);
+            print('//////////// 2 : $listitemForAddToCart////////////');
+          } else {
+            if (!listitemForAddToCart!.any((element) =>
+                (element.images == imageForAddToCart.images &&
+                    element.colorName == imageForAddToCart.colorName &&
+                    element.size == imageForAddToCart.size))) {
+              listitemForAddToCart.add(imageForAddToCart);
+            }
+            print('//////////// 3 : $listitemForAddToCart////////////');
           }
-        }
-      });
+        },
+      );
     } else {
-      if (ListitemForAddToCart.last.isDuplicate == true) {
-        ImageForAddToCart itemLast = ListitemForAddToCart.last;
+      if (listitemForAddToCart.last.isDuplicate == true) {
+        ImageForAddToCart itemLast = listitemForAddToCart.last;
 
         if (itemLast.isDuplicate == true) {
-          ListitemForAddToCart = ListitemForAddToCart.map((e) {
+          listitemForAddToCart = listitemForAddToCart.map((e) {
             if (e.quantity! > 0 &&
                 e.colorName == itemLast.colorName &&
                 e.size == itemLast.size &&
@@ -3632,13 +3643,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             }
             return e;
           }).toList();
-          ListitemForAddToCart.removeLast();
+          listitemForAddToCart.removeLast();
         }
       } else {
-        ListitemForAddToCart.removeLast();
+        listitemForAddToCart.removeLast();
       }
     }
-    emit(state.copyWith(ListitemForAddToCart: ListitemForAddToCart));
+    emit(state.copyWith(listitemForAddToCart: listitemForAddToCart));
   }
 
   FutureOr<void> _onGetSearchListingResultEventEvent(

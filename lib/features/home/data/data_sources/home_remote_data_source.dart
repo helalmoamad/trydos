@@ -434,8 +434,8 @@ class HomeRemoteDatasource {
       requestPrams: RequestConfig<GetAllowedCountriesModel>(
         endpoint: MarketEndPoints.getAllowesdCountriesEP,
         response: ResponseValue<GetAllowedCountriesModel>(
-            fromJson: (response) =>
-                GetAllowedCountriesModel.fromJson(response)),
+          fromJson: (response) => GetAllowedCountriesModel.fromJson(response),
+        ),
       ),
     );
     return verifyOtpSignIn();

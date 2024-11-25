@@ -63,7 +63,7 @@ void main() {
       );
       /////////////////////////////
       final Finder productInBoutiqueButton = find.byKey(
-        Key('${WidgetsKeys.productInBoutiqueListKey}0'),
+        Key('${WidgetsKeys.productItemInListKey}0'),
       );
       await Future.delayed(const Duration(seconds: 2));
       await tester.tap(productInBoutiqueButton);

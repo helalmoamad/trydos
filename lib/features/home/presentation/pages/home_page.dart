@@ -72,7 +72,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    PermissionServices().requestNotificationPermission();
+    TestVariables.kTestMode
+        ? null
+        : PermissionServices().requestNotificationPermission();
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
 

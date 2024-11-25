@@ -260,7 +260,7 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
                       as Map<String, dynamic>),
       fromSearchForSearchWithGemini:
           json['fromSearchForSearchWithGemini'] as bool? ?? false,
-      ListitemForAddToCart: (json['ListitemForAddToCart'] as List<dynamic>?)
+      listitemForAddToCart: (json['ListitemForAddToCart'] as List<dynamic>?)
           ?.map((e) => ImageForAddToCart.fromJson(e as Map<String, dynamic>))
           .toList(),
       getListOfProductsFoundedInCartStatus: $enumDecodeNullable(
@@ -393,7 +393,7 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           instance.getAndAddCountViewOfProductStatus.map((k, e) =>
               MapEntry(k, _$GetAndAddCountViewOfProductStatusEnumMap[e]!)),
       'ListitemForAddToCart':
-          instance.ListitemForAddToCart?.map((e) => e.toJson()).toList(),
+          instance.listitemForAddToCart?.map((e) => e.toJson()).toList(),
       'getAllowedCountriesModel': instance.getAllowedCountriesModel?.toJson(),
       'getProductFiltersStatus': instance.getProductFiltersStatus
           .map((k, e) => MapEntry(k, _$GetProductFiltersStatusEnumMap[e]!)),
