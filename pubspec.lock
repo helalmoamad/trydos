@@ -720,8 +720,8 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "862a7a83e41d255382c65439f1f95812f59e439f"
-      url: "https://trydos-app-admin@bitbucket.org/trydos-app/trydos-flutter_carousel_slider-1.1.0.git"
+      resolved-ref: "0d9271b6a09c35d520b425051b6e054f2045dace"
+      url: "https://gitlab.com/trydos_app/trydos-app-trydos-flutter_carousel_slider-1.1.0.git"
     source: git
     version: "1.1.0"
   flutter_countdown_timer:
@@ -758,8 +758,8 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "79a2d5fb2340c0dbe109d8ebdd2d2dcbdf556c86"
-      url: "https://trydos-app-admin@bitbucket.org/trydos-app/trydos-flutter_gallery_3d-1.1.1.git"
+      resolved-ref: c36d69309b3493ab4eed713c5a33f38e085b9dd1
+      url: "https://gitlab.com/trydos_app/trydos-app-flutter_gallery_3d-1.1.1.git"
     source: git
     version: "1.1.1"
   flutter_gemini:
@@ -1408,8 +1408,8 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: bc48ae9f48543917a0b57bbae17806fccb128477
-      url: "https://trydos-app-admin@bitbucket.org/trydos-app/trydos-overscroll_pop-0.1.0.git"
+      resolved-ref: "51e6029dd511f1268490f4c1f22d4f6012bf2e70"
+      url: "https://gitlab.com/trydos_app/trydos-app-trydos-overscroll_pop-0.1.0.git"
     source: git
     version: "0.1.0"
   package_config:
@@ -1814,8 +1814,8 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "978a528ace0035fbd5bccf6281503e68de4bb050"
-      url: "https://trydos-app-admin@bitbucket.org/trydos-app/sliding_up_panel-2.0.0.git"
+      resolved-ref: "4d0915d55aaed0972f6db5f3c2ab9333d324de80"
+      url: "https://gitlab.com/trydos_app/trydos-app-sliding_up_panel-2.0.0.git"
     source: git
     version: "2.0.0+1"
   source_gen:
