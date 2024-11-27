@@ -11,6 +11,7 @@ class AnalyticsExecutedEventNameConst {
   static const chooseSmsButton = 'choose_sms_button';
   static const timerHasExpiredEvent = 'timer_has_expired_event';
   static const resendOtpButton = 'resend_otp_button';
+  static const changeMethodButton = 'change_method_button';
   static const verifyOtpSignInEvent = 'verify_otp_signin_event';
   static const verifyOtpSignUpEvent = 'verify_otp_signup_event';
   static const pleaseWait5SecondsEvent = 'please_wait_5_seconds_event';

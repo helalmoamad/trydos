@@ -381,7 +381,19 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                   : const SizedBox.shrink(),
                                               resend
                                                   ? InkWell(
-                                                      onTap: widget.goBack,
+                                                      onTap: () {
+                                                        widget.goBack();
+                                                        ////////////////////
+                                                        FirebaseAnalyticsService
+                                                            .logEventForSession(
+                                                          eventName:
+                                                              AnalyticsEventsConst
+                                                                  .buttonClicked,
+                                                          executedEventName:
+                                                              AnalyticsExecutedEventNameConst
+                                                                  .changeMethodButton,
+                                                        );
+                                                      },
                                                       child: MyTextWidget(
                                                         LocaleKeys.change_method
                                                             .tr(),
