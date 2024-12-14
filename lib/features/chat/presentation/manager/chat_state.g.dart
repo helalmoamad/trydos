@@ -20,6 +20,11 @@ ChatState _$ChatStateFromJson(Map<String, dynamic> json) => ChatState(
               _$ResendMessageStatusEnumMap, json['resendMessageStatus']) ??
           ResendMessageStatus.init,
       width: (json['width'] as num?)?.toInt() ?? 0,
+      resultOfSearchTextInChat: json['resultOfSearchTextInChat'] == null
+          ? const PaginationModel.init()
+          : PaginationModel<String>.fromJson(
+              json['resultOfSearchTextInChat'] as Map<String, dynamic>,
+              (value) => value as String),
       duration: json['duration'] == null
           ? null
           : Duration(microseconds: (json['duration'] as num).toInt()),
@@ -171,6 +176,9 @@ Map<String, dynamic> _$ChatStateToJson(ChatState instance) => <String, dynamic>{
       'currentMessage': instance.currentMessage,
       'currentFailedMessage': instance.currentFailedMessage,
       'currentFailedMediaMessage': instance.currentFailedMediaMessage,
+      'resultOfSearchTextInChat': instance.resultOfSearchTextInChat?.toJson(
+        (value) => value,
+      ),
       'channelId': instance.channelId,
       'messageType': instance.messageType,
       'userConnectedStatuse': instance.userConnectedStatuse,

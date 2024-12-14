@@ -215,7 +215,7 @@ class LocalNotificationService {
 
   @pragma('vm:entry-point')
   static void _onSelectNotification(NotificationResponse notificationResponse) {
-    if (notificationResponse.payload!.split(",,,").length > 0) {
+    if (notificationResponse.payload!.split(",,,").toList().length > 1) {
       HandlingMarketNotifications.dealWithNotificationFromMarket(
           convert.jsonDecode(notificationResponse.payload!.split(',,,')[0]),
           notificationResponse.payload!.split(',,,')[1] == "1");

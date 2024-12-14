@@ -8,6 +8,7 @@ import 'package:trydos/core/api/methods/detect_server.dart';
 import 'package:trydos/features/authentication/data/models/create_user_response_model.dart';
 import 'package:trydos/features/chat/data/models/change_chat_property_model.dart';
 import 'package:trydos/features/chat/data/models/my_contacts_response_model.dart';
+import 'package:trydos/features/chat/data/models/result_of_search_text_in_chat_model.dart';
 import 'package:trydos/features/chat/data/models/shared_product_count_model.dart';
 import 'package:trydos/features/chat/data/models/upload_file_response_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
@@ -298,5 +299,23 @@ class ChatRemoteDataSource {
           response: ResponseValue<bool>(returnValueOnSuccess: true)),
     );
     return sendErrorChatToServer();
+  }
+
+  Future<ResultOfSearchTextInChatModel> searchForMessageTextInChat(
+      Map<String, dynamic> params) {
+    PostClient<ResultOfSearchTextInChatModel> searchForMessageTextInChat =
+        PostClient<ResultOfSearchTextInChatModel>(
+      serverName: ServerName.chat,
+      requestPrams: RequestConfig<ResultOfSearchTextInChatModel>(
+        receiveTimeout: const Duration(minutes: 1),
+        sendTimeout: const Duration(minutes: 1),
+        endpoint: ChatEndPoints.searchForMessageTextInChatEP,
+        data: params,
+        response: ResponseValue<ResultOfSearchTextInChatModel>(
+            fromJson: (response) =>
+                ResultOfSearchTextInChatModel.fromJson(response)),
+      ),
+    );
+    return searchForMessageTextInChat();
   }
 }

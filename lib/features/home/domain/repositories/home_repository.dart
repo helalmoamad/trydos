@@ -35,7 +35,8 @@ abstract class HomeRepository {
   // Future<Either<Failure, GetBrandModel>> getBrand();
 //Future<Either<Failure, GetCategoryModel>> getCategory();
 
-  Future<Either<Failure, MainCategoriesResponseModel>> getMainCategories();
+  Future<Either<Failure, MainCategoriesResponseModel>> getMainCategories(
+      Map<String, dynamic> params);
   // Future<Either<Failure, GetIsLikedOFProductModel>> getIsLikedOFProduct(
 //      Map<String, dynamic> params);
   Future<Either<Failure, bool>> addLikeOFProduct(Map<String, dynamic> params);

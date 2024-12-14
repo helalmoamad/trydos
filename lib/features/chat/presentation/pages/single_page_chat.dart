@@ -6,6 +6,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:eraser/eraser.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
@@ -26,6 +27,7 @@ import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/features/app/app_widgets/app_text_field.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
+import 'package:trydos/features/app/loading_indicator.dart';
 import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
 import 'package:trydos/features/chat/presentation/pages/profile_page.dart';
 import 'package:trydos/features/chat/presentation/utils/firebase_presence.dart';
@@ -96,12 +98,17 @@ class _SinglePageChatState extends State<SinglePageChat> {
 
   final ValueNotifier<int> rebuildMessage = ValueNotifier(-1);
   final ValueNotifier<int> currentFocusedIcon = ValueNotifier(-2);
+
   final ValueNotifier<Map<String, int>> currentIndextForEachMessage =
       ValueNotifier({});
+
   final ValueNotifier<bool> clickBackButton = ValueNotifier(false);
+  final TextEditingController controller = TextEditingController();
   late AutoScrollController autoScrollController;
 
   void _scrollToBottom() {
+    print(
+        "##################################################################################################33");
     autoScrollController.jumpTo(0);
   }
 
@@ -109,6 +116,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
   List<Widget> data = [];
   Map<String, List<Message>> messagesByDate = {};
   bool rebuild = true;
+  bool rebuildForScrollWhenGetAllMessage = false;
+  bool rebuildForScrollFirstWord = true;
+
   DateTime lastDate = DateTime.now();
   late CallsBloc callsBloc;
   int countMessagesReceivedToMeNow = 0;
@@ -116,14 +126,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
   AudioPlayer _audioPlayer = AudioPlayer();
 
   Map<String, int> messagesIndexes = {};
-  List<String> mee = [
-    "32752",
-    "32755",
-    "32756",
-    "32759",
-    "32765",
-  ];
-  int ii = 0;
+  List<String> searchResults = [];
+
+  int indexForEveryTextInSearchResult = 0;
   void playSound() async {
     await _audioPlayer.play(
         AssetSource(Platform.isIOS
@@ -134,6 +139,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
 
   @override
   void initState() {
+    print("%%%%%%%%%${GetIt.I<PrefsRepository>().chatToken}*");
     rebuildMessage.value = -2;
     Eraser.clearAllAppNotifications();
     callsBloc = BlocProvider.of<CallsBloc>(context);
@@ -147,14 +153,14 @@ class _SinglePageChatState extends State<SinglePageChat> {
     //  if (int.tryParse(widget.chatId) != null) {
     //  chatBloc.add(GetMediaCountEvent(channelId: widget.chatId.toString()));
     // }
-
+    chatBloc.add(SearchTextInChatEvent(
+        channel_id: widget.chatId, searchText: "", clearSearch: true));
     autoScrollController.addListener(() {
       if (rebuild) {
         rebuildMessage.value = -1;
       }
       if ((autoScrollController.offset >=
           autoScrollController.position.maxScrollExtent - 400)) {
-        debugPrint('///////////// _loadMoreMessages ///////////////////');
         _loadMoreMessages();
       }
     });
@@ -176,6 +182,33 @@ class _SinglePageChatState extends State<SinglePageChat> {
   @override
   Widget build(BuildContext context) {
     int duration = GetIt.I<PrefsRepository>().getdurtion ?? 0;
+    MoveToUpToScrollSearch(PaginationStatus resultOfSearchTextInChat,
+        Map<String, int> currentIndextForMessages) {
+      if ((searchResults.isNullOrEmpty ||
+              indexForEveryTextInSearchResult > (searchResults.length - 5)) &&
+          resultOfSearchTextInChat != PaginationStatus.loading &&
+          controller.text.length > 0) {
+        chatBloc.add(SearchTextInChatEvent(
+            getWithPagination: true,
+            channel_id: widget.chatId,
+            searchText: controller.text));
+      }
+      if (indexForEveryTextInSearchResult < searchResults.length) {
+        indexForEveryTextInSearchResult = indexForEveryTextInSearchResult + 1;
+      } else if (resultOfSearchTextInChat == PaginationStatus.success) {
+        indexForEveryTextInSearchResult = 0;
+      }
+
+      if (searchResults.length > 0) {
+        scrollToIndex(
+            currentIndextForMessages[
+                    searchResults[indexForEveryTextInSearchResult]] ??
+                -1,
+            currentId: currentIndextForMessages.keys.first,
+            forSearchText: true,
+            parentMessageId: searchResults[indexForEveryTextInSearchResult]);
+      }
+    }
 
     ChannelMember? member;
     Locale locale = Localizations.localeOf(context);
@@ -193,6 +226,13 @@ class _SinglePageChatState extends State<SinglePageChat> {
     });
     return WillPopScope(
       onWillPop: () {
+        if (controller.text.length > 0) {
+          controller.clear();
+          try {
+            _scrollToBottom();
+          } catch (e) {}
+          return Future.value(false);
+        }
         BlocProvider.of<AppBloc>(context)
             .add(RefreshChatInputField(false, 'null', false));
         chatBloc
@@ -605,45 +645,157 @@ class _SinglePageChatState extends State<SinglePageChat> {
                         ValueListenableBuilder<Map<String, int>>(
                           valueListenable: currentIndextForEachMessage,
                           builder: (context, currentIndextForMessages, _) {
-                            print({
-                              "***************************-----------------------------------------${currentIndextForMessages.length}"
-                            });
                             currentFocusedIcon.value = -2;
-                            return SafeArea(
-                                child: Material(
-                              color: Colors.transparent,
-                              child: Padding(
-                                padding:
-                                    HWEdgeInsets.symmetric(horizontal: 20.0)
-                                        .copyWith(bottom: 10),
-                                child: AppTextField(
-                                  filledColor: Color(0xffF8F8F8),
-                                  bordersColor: Color(0xffF8F8F8),
-                                  hintText: 'Search',
-                                  roundingCornersValue: 30,
-                                  onChange: (String text) {
-                                    scrollToIndex(
-                                        currentIndextForMessages["327418"] ??
-                                            -1,
-                                        currentId:
-                                            currentIndextForMessages.keys.last,
-                                        forSearchText: true,
-                                        parentMessageId: "327418");
-                                  },
-                                  textStyle: context.textTheme.titleMedium?.lr
-                                      .copyWith(color: const Color(0xff8D8D8D)),
-                                  hintTextStyle: context.textTheme.bodySmall?.lr
-                                      .copyWith(color: const Color(0xff8D8D8D)),
-                                  prefixIcon: Padding(
-                                    padding: HWEdgeInsetsDirectional.only(
-                                        top: 15, bottom: 15),
-                                    child: SvgPicture.asset(
-                                      AppAssets.searchOutlinedSvg,
+                            return BlocBuilder<ChatBloc, ChatState>(
+                              buildWhen: (previous, current) {
+                                return previous.resultOfSearchTextInChat
+                                            ?.paginationStatus !=
+                                        current.resultOfSearchTextInChat
+                                            ?.paginationStatus ||
+                                    previous.getMessagesBetweenStatus !=
+                                        current.getMessagesBetweenStatus;
+                              },
+                              builder: (context, state) {
+                                searchResults =
+                                    state.resultOfSearchTextInChat?.items ?? [];
+                                if (searchResults.length > 0 &&
+                                    indexForEveryTextInSearchResult == 0 &&
+                                    controller.text.length > 0 &&
+                                    state.resultOfSearchTextInChat
+                                            ?.paginationStatus ==
+                                        PaginationStatus.success &&
+                                    rebuildForScrollFirstWord) {
+                                  rebuildForScrollFirstWord = false;
+                                  scrollToIndex(
+                                      currentIndextForMessages[searchResults[
+                                              indexForEveryTextInSearchResult]] ??
+                                          -1,
+                                      currentId:
+                                          currentIndextForMessages.keys.first,
+                                      forSearchText: true,
+                                      parentMessageId: searchResults[
+                                          indexForEveryTextInSearchResult]);
+                                }
+                                return SafeArea(
+                                    child: Material(
+                                  color: Colors.transparent,
+                                  child: Padding(
+                                    padding:
+                                        HWEdgeInsets.symmetric(horizontal: 20.0)
+                                            .copyWith(bottom: 10),
+                                    child: AppTextField(
+                                      filledColor: Color(0xffF8F8F8),
+                                      bordersColor: Color(0xffF8F8F8),
+                                      hintText: 'Search',
+                                      roundingCornersValue: 30,
+                                      controller: controller,
+                                      onChange: (String text) {
+                                        if (text.length == 0) {
+                                          rebuildForScrollFirstWord = false;
+                                          chatBloc.add(SearchTextInChatEvent(
+                                              channel_id: widget.chatId,
+                                              searchText: "",
+                                              clearSearch: true));
+                                        }
+                                        if (text.length > 0) {
+                                          rebuildForScrollFirstWord = true;
+                                          chatBloc.add(SearchTextInChatEvent(
+                                              getWithPagination: false,
+                                              channel_id: widget.chatId,
+                                              searchText: text));
+                                          indexForEveryTextInSearchResult = 0;
+                                        }
+                                      },
+                                      textStyle: context
+                                          .textTheme.titleMedium?.lr
+                                          .copyWith(
+                                              color: const Color(0xff8D8D8D)),
+                                      hintTextStyle: context
+                                          .textTheme.bodySmall?.lr
+                                          .copyWith(
+                                              color: const Color(0xff8D8D8D)),
+                                      prefixIcon: Padding(
+                                        padding: HWEdgeInsetsDirectional.only(
+                                            top: 15, bottom: 15),
+                                        child: SvgPicture.asset(
+                                          AppAssets.searchOutlinedSvg,
+                                        ),
+                                      ),
+                                      suffix: (state.resultOfSearchTextInChat
+                                                          ?.paginationStatus ==
+                                                      PaginationStatus
+                                                          .loading &&
+                                                  state
+                                                      .resultOfSearchTextInChat!
+                                                      .items
+                                                      .isEmpty) ||
+                                              state.getMessagesBetweenStatus ==
+                                                  GetMessagesBetweenStatus
+                                                      .loading
+                                          ? LoadingIndicator()
+                                          : SizedBox.shrink(),
+                                      suffixIcon: (state.resultOfSearchTextInChat
+                                                          ?.paginationStatus ==
+                                                      PaginationStatus
+                                                          .loading &&
+                                                  state
+                                                      .resultOfSearchTextInChat!
+                                                      .items
+                                                      .isEmpty) ||
+                                              state.getMessagesBetweenStatus ==
+                                                  GetMessagesBetweenStatus
+                                                      .loading
+                                          ? SizedBox.shrink()
+                                          : Container(
+                                              height: 15,
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                children: [
+                                                  IconButton(
+                                                    onPressed: () {
+                                                      if (indexForEveryTextInSearchResult >
+                                                          0) {
+                                                        indexForEveryTextInSearchResult =
+                                                            indexForEveryTextInSearchResult -
+                                                                1;
+                                                      }
+
+                                                      scrollToIndex(
+                                                          currentIndextForMessages[
+                                                                  searchResults[
+                                                                      indexForEveryTextInSearchResult]] ??
+                                                              -1,
+                                                          currentId:
+                                                              currentIndextForMessages
+                                                                  .keys.first,
+                                                          forSearchText: true,
+                                                          parentMessageId:
+                                                              searchResults[
+                                                                  indexForEveryTextInSearchResult]);
+                                                    },
+                                                    icon: Icon(
+                                                        Icons.arrow_downward),
+                                                  ),
+                                                  IconButton(
+                                                    onPressed: () {
+                                                      MoveToUpToScrollSearch(
+                                                          state
+                                                              .resultOfSearchTextInChat!
+                                                              .paginationStatus,
+                                                          currentIndextForMessages);
+                                                    },
+                                                    icon: Icon(
+                                                        Icons.arrow_upward),
+                                                  ),
+                                                ],
+                                              )),
                                     ),
                                   ),
-                                ),
-                              ),
-                            ));
+                                ));
+                              },
+                            );
                           },
                         )
                       }
@@ -656,11 +808,12 @@ class _SinglePageChatState extends State<SinglePageChat> {
                 (p.getMessagesBetweenStatus != c.getMessagesBetweenStatus &&
                     c.getMessagesBetweenStatus ==
                         GetMessagesBetweenStatus.success &&
+                    p.resultOfSearchTextInChat?.paginationStatus !=
+                        c.resultOfSearchTextInChat?.paginationStatus &&
                     c.scrollToParentMessage),
             listener: (context, state) {
-              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                scrollToIndex(1);
-              });
+              searchResults = state.resultOfSearchTextInChat?.items ?? [];
+              rebuildForScrollWhenGetAllMessage = true;
             },
             child: Column(
               children: [
@@ -668,6 +821,11 @@ class _SinglePageChatState extends State<SinglePageChat> {
                   child: BlocConsumer<ChatBloc, ChatState>(
                     listenWhen: (p, c) =>
                         p.sendMessageStatus != c.sendMessageStatus ||
+                        (p.getMessagesBetweenStatus !=
+                                c.getMessagesBetweenStatus &&
+                            c.getMessagesBetweenStatus ==
+                                GetMessagesBetweenStatus.success &&
+                            c.scrollToParentMessage) ||
                         p.resendMessageStatus != c.resendMessageStatus ||
                         (p.receiveMessageStatus != c.receiveMessageStatus &&
                             c.receiveMessageStatus ==
@@ -749,10 +907,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                     .toString()]!
                                                                 .reversed
                                                                 .toList();
-                                                        print(
-                                                            "111111111111111111111111111111${messages.length}");
-                                                        print(
-                                                            "#${messages[index].id}");
+
                                                         if (messages[index]
                                                             .isDateMessage!) {
                                                           return AutoScrollTag(
@@ -787,13 +942,22 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                 .myChatId;
                                                         String? messageId =
                                                             messages[index].id;
-                                                        messagesIndexes[messages[
+                                                        messagesIndexes = {};
+                                                        for (int i = 0;
+                                                            i < messages.length;
+                                                            i++) {
+                                                          messagesIndexes
+                                                              .addAll({
+                                                            messages[i]
+                                                                .id
+                                                                .toString(): i
+                                                          });
+                                                        }
+                                                        /*   messagesIndexes[messages[
                                                                     index]
                                                                 .id
                                                                 .toString()] =
-                                                            index;
-                                                        print(
-                                                            "1111112222222222222222111111111111111111111111${messagesIndexes.length}");
+                                                            index;*/
                                                         WidgetsBinding.instance
                                                             .addPostFrameCallback(
                                                                 (_) {
@@ -803,7 +967,49 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                             ...messagesIndexes
                                                           };
                                                         });
-
+                                                        if (rebuildForScrollWhenGetAllMessage) {
+                                                          WidgetsBinding
+                                                              .instance
+                                                              .addPostFrameCallback(
+                                                                  (timeStamp) {
+                                                            controller.text
+                                                                        .length >
+                                                                    0
+                                                                ? messages
+                                                                            .firstWhere(
+                                                                              (element) => element.id == (indexForEveryTextInSearchResult >= searchResults.length ? "null" : searchResults[indexForEveryTextInSearchResult]),
+                                                                              orElse: () => Message(authMessageStatus: MessageStatus(isDeleted: 1)),
+                                                                            )
+                                                                            .authMessageStatus
+                                                                            ?.isDeleted ==
+                                                                        1
+                                                                    ? MoveToUpToScrollSearch(
+                                                                        PaginationStatus
+                                                                            .success,
+                                                                        currentIndextForEachMessage
+                                                                            .value)
+                                                                    : scrollToIndex(
+                                                                        messagesIndexes[searchResults[indexForEveryTextInSearchResult]] ??
+                                                                            messages.length -
+                                                                                1,
+                                                                        currentId: currentIndextForEachMessage
+                                                                            .value
+                                                                            .keys
+                                                                            .last,
+                                                                        forSearchText:
+                                                                            true,
+                                                                        parentMessageId:
+                                                                            searchResults[
+                                                                                indexForEveryTextInSearchResult])
+                                                                : scrollToIndex(
+                                                                    messages.length -
+                                                                        1,
+                                                                    forSearchText:
+                                                                        false);
+                                                          });
+                                                          rebuildForScrollWhenGetAllMessage =
+                                                              false;
+                                                        }
                                                         return AutoScrollTag(
                                                             key: ValueKey(
                                                                 messageId),
@@ -833,32 +1039,32 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                               .isDeleted ==
                                                                           1) {
                                                                         /*    showDialog(
-                                                                  context:
-                                                                      context,
-                                                                  builder: (context) => AlertDialog(
-                                                                      title:
-                                                                          Text(" حذف هذه الرسالة  "),
-                                                                      actions: [
-                                                                        MaterialButton(
+                                                                context:
+                                                                    context,
+                                                                builder: (context) => AlertDialog(
+                                                                    title:
+                                                                        Text(" حذف هذه الرسالة  "),
+                                                                    actions: [
+                                                                      MaterialButton(
+                                                                        onPressed: () {
+                                                                          callsBloc.add(DeleteMessageEvent(type: "message", deleteFromBoth: 0, messageId: messages[index].id!, channelId: widget.chatId, deleteFromId: _prefsRepository.myChatId!));
+                                                                          Navigator.of(context).pop();
+                                                                          rebuildMessage.value = -1;
+                                                                        },
+                                                                        child: Text("نعم"),
+                                                                      ),
+                                                                      SizedBox(
+                                                                        width: 20.w,
+                                                                      ),
+                                                                      MaterialButton(
+                                                                          child: Text("إغلاق"),
                                                                           onPressed: () {
-                                                                            callsBloc.add(DeleteMessageEvent(type: "message", deleteFromBoth: 0, messageId: messages[index].id!, channelId: widget.chatId, deleteFromId: _prefsRepository.myChatId!));
                                                                             Navigator.of(context).pop();
                                                                             rebuildMessage.value = -1;
-                                                                          },
-                                                                          child: Text("نعم"),
-                                                                        ),
-                                                                        SizedBox(
-                                                                          width: 20.w,
-                                                                        ),
-                                                                        MaterialButton(
-                                                                            child: Text("إغلاق"),
-                                                                            onPressed: () {
-                                                                              Navigator.of(context).pop();
-                                                                              rebuildMessage.value = -1;
-                                                                            })
-                                                                      ]),
-                                                                                                                                        );
-                                                                                                                                        */
+                                                                          })
+                                                                    ]),
+                                                                                                                                      );
+                                                                                                                                      */
                                                                         return;
                                                                       }
 
@@ -1426,7 +1632,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
   }
 
   void dealWithMessageOptions(int index, String? messageId) {
-    debugPrint('indexxxx:  $index');
     if (index == -1) {
       replayMessage(
           chat.messages!.firstWhere((element) => element.id == messageId),
@@ -1501,37 +1706,59 @@ class _SinglePageChatState extends State<SinglePageChat> {
       {String? currentId,
       String? parentMessageId,
       bool? forSearchText,
+      bool? maxScrollExtent,
       Duration? duration,
       AutoScrollPosition? preferPosition}) {
     if (index == -1) {
       chatBloc.add(GetAllMessagesBetweenEvent(
-          firstMessageId: parentMessageId!,
+          firstMessageId: parentMessageId ?? "",
           scrollToParentMessage: true,
           secondMessageId: currentId!,
           channelId: widget.chatId));
       return;
     }
-    autoScrollController
-        .scrollToIndex(index,
-            duration: duration ?? const Duration(milliseconds: 50),
-            preferPosition: preferPosition ?? AutoScrollPosition.middle)
-        .then((value) {
-      currentScrolledIndex = index;
-      rebuildMessage.value = index;
-      if (!(forSearchText ?? false)) {
-        Future.delayed(
-          Duration(milliseconds: 800),
-          () {
-            currentScrolledIndex = -1;
-            rebuildMessage.value = -1;
-          },
-        );
-      }
-    });
+    if (maxScrollExtent ?? false) {
+      autoScrollController
+          .animateTo(autoScrollController.position.maxScrollExtent,
+              duration: Duration(milliseconds: 300), curve: Curves.easeOut)
+          .then((value) {
+        currentScrolledIndex = index;
+        rebuildMessage.value = index;
+        if (!(forSearchText ?? false)) {
+          Future.delayed(
+            Duration(seconds: 2),
+            () {
+              currentScrolledIndex = -1;
+              rebuildMessage.value = -1;
+            },
+          );
+        }
+      });
+    } else {
+      autoScrollController
+          .scrollToIndex(index,
+              duration: duration ?? const Duration(milliseconds: 50),
+              preferPosition: preferPosition ?? AutoScrollPosition.middle)
+          .then((value) {
+        currentScrolledIndex = index;
+        rebuildMessage.value = index;
+        if (!(forSearchText ?? false)) {
+          Future.delayed(
+            Duration(seconds: 2),
+            () {
+              currentScrolledIndex = -1;
+              rebuildMessage.value = -1;
+            },
+          );
+        }
+      });
+    }
   }
 
   void _loadMoreMessages() {
-    chatBloc.add(GetMessagesForChatEvent(channelId: widget.chatId));
+    chatBloc.add(GetMessagesForChatEvent(
+      channelId: widget.chatId,
+    ));
   }
 
   getTheMessageWidget({
@@ -1633,10 +1860,14 @@ class _SinglePageChatState extends State<SinglePageChat> {
           watchedAt: messageStatus?.watchedAt,
           messageDate: parentMessage.createdAt ?? DateTime.now(),
           createAt: message.createdAt,
-          scrollToMessage: () => scrollToIndex(
-              messagesIndexes[parentMessage.id.toString()] ?? -1,
-              currentId: message.id!,
-              parentMessageId: message.parentMessageId!),
+          scrollToMessage: () {
+            scrollToIndex(
+                currentIndextForEachMessage
+                        .value[parentMessage.id.toString()] ??
+                    -1,
+                currentId: message.id!,
+                parentMessageId: message.parentMessageId!);
+          },
           messageId: message.parentMessageId!,
           answeredFilePath: message.mediaMessageContent?[0].filePath,
           messageAnswer: message.messageContent?.content,
@@ -1692,7 +1923,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
             messageAnswer: message.messageContent?.content,
             answeredFile: message.file,
             scrollToMessage: () => scrollToIndex(
-                messagesIndexes[parentMessage.id.toString()] ?? -1,
+                currentIndextForEachMessage
+                        .value[parentMessage.id.toString()] ??
+                    -1,
                 currentId: message.id!,
                 parentMessageId: message.parentMessageId!),
             isISentFirstMessage:
@@ -1728,7 +1961,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
               index: listIndex,
               receivedAt: messageStatus?.receivedAt,
               createAt: message.createdAt,
-              message: message.messageContent!.content.toString(),
+              message: message.messageContent?.content.toString() ?? "",
               messageId: message.id!,
               senderId: message.senderUserId!,
               isSent: isSentMessage,
@@ -1750,19 +1983,21 @@ class _SinglePageChatState extends State<SinglePageChat> {
             imageFile: message.file,
             messageId: message.id.toString(),
             senderId: message.senderUserId!,
-            imageUrl: message.mediaMessageContent?[0].filePath == null
+            imageUrl: message.mediaMessageContent.isNullOrEmpty
                 ? null
-                : addSuitableWidthAndHeightToImage(
-                    imageUrl: message.mediaMessageContent![0].filePath!,
-                    width: 200.w,
-                    // the width of the image in the ui
-                    height: 400,
-                    // the height of the image in the ui
-                    ordinalWidth: 200
-                        .w, //double.tryParse(message.mediaMessageContent![0].originalWidth.toString()),
-                    ordinalHeight: 400,
-                    //double.tryParse(image.originalHeight.toString())
-                  ),
+                : message.mediaMessageContent?[0].filePath == null
+                    ? null
+                    : addSuitableWidthAndHeightToImage(
+                        imageUrl: message.mediaMessageContent![0].filePath!,
+                        width: 200.w,
+                        // the width of the image in the ui
+                        height: 400,
+                        // the height of the image in the ui
+                        ordinalWidth: 200
+                            .w, //double.tryParse(message.mediaMessageContent![0].originalWidth.toString()),
+                        ordinalHeight: 400,
+                        //double.tryParse(image.originalHeight.toString())
+                      ),
             userMessageName: message.receiverUserId != _prefsRepository.myChatId
                 ? senderName
                 : receiverName,
@@ -1858,7 +2093,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
           );
         case 'FileMessage':
           String fileName = message.file?.path.split('/').last ??
-              message.mediaMessageContent![0].filePath!.split('/').last;
+              (message.mediaMessageContent.isNullOrEmpty
+                  ? ""
+                  : message.mediaMessageContent![0].filePath!.split('/').last);
           return DocumentMessage(
             channelId: message.channelId!,
             receivedAt: messageStatus?.receivedAt,
@@ -1867,7 +2104,9 @@ class _SinglePageChatState extends State<SinglePageChat> {
             documentFile: message.file,
             fileName: fileName,
             watchedAt: messageStatus?.watchedAt,
-            documentFileUrl: message.mediaMessageContent?[0].filePath,
+            documentFileUrl: message.mediaMessageContent.isNullOrEmpty
+                ? ""
+                : message.mediaMessageContent?[0].filePath,
             messageId: message.id.toString(),
             senderId: message.senderUserId!,
             userMessageName: isSentMessage ? senderName : receiverName,

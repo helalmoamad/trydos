@@ -105,6 +105,8 @@ import '../../features/chat/domain/use_cases/receive_message_usecase.dart'
     as _i40;
 import '../../features/chat/domain/use_cases/save_contacts_usecase.dart'
     as _i777;
+import '../../features/chat/domain/use_cases/search_For_message_text_in_chat_usecase.dart'
+    as _i925;
 import '../../features/chat/domain/use_cases/send_error_to_server_usecase.dart'
     as _i677;
 import '../../features/chat/domain/use_cases/send_message_usecase.dart'
@@ -400,6 +402,8 @@ Future<_i174.GetIt> $initGetIt(
       () => _i40.ReceiveMessageUseCase(gh<_i420.ChatRepository>()));
   gh.factory<_i777.SaveContactsUseCase>(
       () => _i777.SaveContactsUseCase(gh<_i420.ChatRepository>()));
+  gh.factory<_i925.SearchForMessageTextInChatUseCase>(() =>
+      _i925.SearchForMessageTextInChatUseCase(gh<_i420.ChatRepository>()));
   gh.factory<_i677.SendErrorToServerUseCase>(
       () => _i677.SendErrorToServerUseCase(gh<_i420.ChatRepository>()));
   gh.factory<_i703.SendMessageUseCase>(
@@ -456,6 +460,7 @@ Future<_i174.GetIt> $initGetIt(
         gh<_i1043.UploadFileCloudinaryUseCase>(),
         gh<_i304.GetMessagesForChatUseCase>(),
         gh<_i361.DeleteChatUseCase>(),
+        gh<_i925.SearchForMessageTextInChatUseCase>(),
         gh<_i142.ChangeChatPropertyUseCase>(),
         gh<_i897.UploadFileUseCase>(),
         gh<_i314.ReadAllMessagesUseCase>(),

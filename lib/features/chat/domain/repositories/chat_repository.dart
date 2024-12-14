@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:trydos/features/authentication/data/models/create_user_response_model.dart';
 import 'package:trydos/features/chat/data/models/my_contacts_response_model.dart';
+import 'package:trydos/features/chat/data/models/result_of_search_text_in_chat_model.dart';
 import 'package:trydos/features/chat/data/models/shared_product_count_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 
@@ -48,4 +49,7 @@ abstract class ChatRepository {
       Map<String, dynamic> params);
   Future<Either<Failure, bool>> SendErrorChatToServer(
       Map<String, dynamic> params);
+
+  Future<Either<Failure, ResultOfSearchTextInChatModel>>
+      searchForMessageTextInChat(Map<String, dynamic> params);
 }

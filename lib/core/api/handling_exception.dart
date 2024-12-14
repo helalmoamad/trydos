@@ -25,11 +25,17 @@ abstract class HandlingExceptionRequest {
     Logger(printer: PrettyPrinter(methodCount: 0)).v(message);
   }
 
-  Exception getException({required int statusCode, String? message}) {
+  Exception getException({
+    required int statusCode,
+    String? message,
+  }) {
     //if(tryAgain==true)
     //return TryAgainException
     if (statusCode == StatusCode.operationFailed.code) {
       return OperationFailedException(message: message);
+    } else if (statusCode == StatusCode.serverError.code) {
+      return ServerExceptionForCode500(
+          message: message, statusCode: statusCode);
     } else {
       return ServerException(message: message);
     }
@@ -40,15 +46,26 @@ abstract class HandlingExceptionRequest {
     try {
       T response = await tryCall();
       return Right(response);
+    } on ServerExceptionForCode500 {
+      // Fluttertoast.showToast(msg: 'sssssss',backgroundColor: Colors.yellow);
+      prettyPrinterError("***|| ServerExceptionForCode500 ||*** ");
+      return const Left(
+        ServerFailure("ServerExceptionForCode500", statusCode: 500),
+      );
     } on ServerException {
       // Fluttertoast.showToast(msg: 'sssssss',backgroundColor: Colors.yellow);
       prettyPrinterError("***|| ServerException ||*** ");
-      return const Left(ServerFailure("ServerException"));
+      return const Left(
+        ServerFailure("ServerException", statusCode: 400),
+      );
     } on DioException catch (e, s) {
       // Fluttertoast.showToast(msg: 'aaaaaaaaaaaa',backgroundColor: Colors.yellow);
 
       prettyPrinterError("***|| DioError ||*** \n $s");
-      return Left(DioFailure(message: e.response?.data['errors']?[0]['code']));
+      return Left(DioFailure(
+        message: e.response?.data['errors']?[0]['code'],
+        statusCode: 400,
+      ));
     } catch (e, stackTrace) {
       prettyPrinterError(
         "***|| CATCH ERROR ||***"
@@ -56,7 +73,9 @@ abstract class HandlingExceptionRequest {
         "***|| Stack Trace ||***"
         "\n $stackTrace",
       );
-      return const Left(ServerFailure("ServerException"));
+      return const Left(
+        ServerFailure("ServerException", statusCode: 400),
+      );
     }
   }
 }

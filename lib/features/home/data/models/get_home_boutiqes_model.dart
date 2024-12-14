@@ -69,7 +69,7 @@ class Data {
   factory Data.fromJson(Map<String, dynamic> json) => Data(
         total: json["total"],
         limit: json["limit"],
-        offset: json["offset"],
+        offset: json["offset"].toString(),
         boutiques: json["boutiques"] == null
             ? []
             : List<Boutique>.from(
@@ -79,7 +79,7 @@ class Data {
   Map<String, dynamic> toJson() => {
         "total": total,
         "limit": limit,
-        "offset": offset,
+        "offset": offset.toString(),
         "boutiques": boutiques == null
             ? []
             : List<dynamic>.from(boutiques!.map((x) => x.toJson())),

@@ -109,7 +109,7 @@ class Data {
     return Data(
       totalSize: json["total_size"],
       limit: json["limit"],
-      offset: json["offset"],
+      offset: json["offset"].toString(),
       products: json["products"] == null
           ? []
           : List<product_without_filters.Products>.from(json["products"]!
@@ -143,7 +143,7 @@ class Data {
   Map<String, dynamic> toJson() => {
         "total_size": totalSize,
         "limit": limit,
-        "offset": offset,
+        "offset": offset.toString(),
         "products": products == null
             ? []
             : List<dynamic>.from(products!.map((x) => x.toJson())),

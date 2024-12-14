@@ -21,6 +21,22 @@ class LoadWidthAndHeightForImage extends ChatEvent {
   List<Object?> get props => [];
 }
 
+class SearchTextInChatEvent extends ChatEvent {
+  final String searchText;
+  final String channel_id;
+  final bool getWithPagination;
+  final bool clearSearch;
+  SearchTextInChatEvent(
+      {required this.channel_id,
+      required this.searchText,
+      this.clearSearch = false,
+      this.getWithPagination = false});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+}
+
 class CreateUserEvent extends ChatEvent {
   final String? name;
   final String? mobilePhone;
@@ -515,7 +531,7 @@ class ShareProductWithContactsOrChannelsEvent extends ChatEvent {
         productDescription,
         productImageUrl,
         channelIds,
-    originalImageWidth,
-    originalImageHeight,
+        originalImageWidth,
+        originalImageHeight,
       ];
 }
