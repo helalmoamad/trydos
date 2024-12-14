@@ -26,6 +26,7 @@ import 'package:trydos/features/chat/domain/use_cases/get_shared_product_count_u
 import 'package:trydos/features/chat/domain/use_cases/read_all_messages_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/receive_message_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/save_contacts_usecase.dart';
+import 'package:trydos/features/chat/domain/use_cases/search_For_message_text_in_chat_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/send_error_to_server_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/send_message_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/share_product_on_social_app_count_usecase.dart';
@@ -68,6 +69,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       this.uploadFileCloudinaryUseCase,
       this.getMessagesForChatUseCase,
       this.deleteChatUseCase,
+      this.searchForMessageTextInChatUseCase,
       this.changeChatPropertyUseCase,
       this.uploadFileUseCase,
       this.readAllMessagesUseCase,
@@ -110,7 +112,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     on<ChangeChatPropertyEvent>(_onChangeChatPropertyEvent);
     on<GetMessagesForChatEvent>(_onGetMessagesForChatEvent);
     on<GetAllMessagesBetweenEvent>(_onGetAllMessagesBetweenEvent,
-        transformer: throttleDroppable(throttleDuration));
+        transformer: throttleDroppable(Duration(seconds: 2)));
     on<SaveContactsEvent>(
       _onSaveContactsEvent,
     );
@@ -126,6 +128,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     on<AddMediaCountEvent>(
       _onAddMediaCountEvent,
     );
+    on<SearchTextInChatEvent>(_onSearchTextInChatEvent,
+        transformer: restartable());
   }
 
   final SendMessageUseCase sendMessageUseCase;
@@ -139,6 +143,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
   final UploadFileCloudinaryUseCase uploadFileCloudinaryUseCase;
   final UploadFileUseCase uploadFileUseCase;
   final ShareProductOnAppsUseCase shareProductOnAppsUseCase;
+  final SearchForMessageTextInChatUseCase searchForMessageTextInChatUseCase;
   final ReadAllMessagesUseCase readAllMessagesUseCase;
   final ReceiveMessageUseCase receiveMessageUseCase;
   final DeleteChatUseCase deleteChatUseCase;
@@ -283,14 +288,16 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
             currentFailedMessage: currentFailedMessage));
       },
       (r) {
-        print("///-------------------------------------*${r.parentMessage}");
+        print("///-------------------------------------*${r.channel?.id}");
 
 //        debugPrint('count  ${messages.length}');
         print('mediaMessageContent ${r.mediaMessageContent}');
         if (currentOpenedChatId == event.channelId) {
           currentOpenedChatId = r.channel!.id;
         }
+        print("ddddddddddddddddddddddddddddddddddddd${ids}");
         ids.remove(event.messageId);
+        print("1111111111111ddddddddddddddddddddddddddddddddddddd${ids}");
         List<Chat> pinnedChats = state.pinnedChats.map((e) {
           if (e.localId == event.channelId &&
               int.tryParse(event.channelId) == null) {
@@ -359,6 +366,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
                   groupReceivedMessageOnDays(chats: [...chats, ...pinnedChats]),
               currentMessage: ids),
         );
+        print(
+            "222222222222222222222222ddddddddddddddddddddddddddddddddd${state.currentMessage}");
 
         //  add(IncreaseFileImageVideoCounterEvent(r.messageType!.name!));
       },
@@ -461,16 +470,15 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     });
     final response = await shareProductWithContactsOrChannelsUsecase(
       ShareProductWithContactsOrChannelsParams(
-        channelIds: [], // event.channelIds,
-        receiverIds: receiverIds,
-        productId: event.productId,
-        productDescription: event.productDescription,
-        productImageUrl: event.productImageUrl,
-        productName: event.productName,
-        productSlug: event.productSlug,
-        productImageWidth: event.originalImageWidth,
-        productImageHeight: event.originalImageHeight
-      ),
+          channelIds: [], // event.channelIds,
+          receiverIds: receiverIds,
+          productId: event.productId,
+          productDescription: event.productDescription,
+          productImageUrl: event.productImageUrl,
+          productName: event.productName,
+          productSlug: event.productSlug,
+          productImageWidth: event.originalImageWidth,
+          productImageHeight: event.originalImageHeight),
     );
     response.fold(
       (l) {
@@ -839,8 +847,9 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           channelId: event.channelId,
           senderParentMessageId: event.senderParentMessageId,
           file: event.file,
-          imageWidth : event.useCloudinaryToUpload ? r.width?.toDouble() : null ,
-          imageHeight : event.useCloudinaryToUpload ? r.height?.toDouble() : null ,
+          imageWidth: event.useCloudinaryToUpload ? r.width?.toDouble() : null,
+          imageHeight:
+              event.useCloudinaryToUpload ? r.height?.toDouble() : null,
           parentMessageContent: event.parentMessageContent,
           mediaContent: [
             {
@@ -1472,8 +1481,27 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
               }
               return e;
             }).toList();
+      List<String> listResultSearchTextInChat =
+          List.of(state.resultOfSearchTextInChat?.items ?? []);
+      emit(state.copyWith(
+          resultOfSearchTextInChat: state.resultOfSearchTextInChat
+              ?.copyWith(paginationStatus: PaginationStatus.initial)));
+      r.forEach(
+        (element) {
+          if (element.authMessageStatus?.isDeleted == 1) {
+            listResultSearchTextInChat.removeWhere(
+              (elements) => elements == element.id,
+            );
+          }
+        },
+      );
+      PaginationModel<String>? resultOfSearchTextInChat =
+          state.resultOfSearchTextInChat?.copyWith(
+              items: listResultSearchTextInChat,
+              paginationStatus: PaginationStatus.success);
       emit(state.copyWith(
           chats: chats,
+          resultOfSearchTextInChat: resultOfSearchTextInChat,
           getMessagesBetweenStatus: GetMessagesBetweenStatus.success,
           firstMessageId: event.firstMessageId,
           newSortedChatsByDate:
@@ -1990,8 +2018,110 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       emit(state.copyWith(
           getSharedProductCount: getSharedProductCount,
           getSharedProductCountStatus: GetSharedProductCountStatus.success));
-      print("sharedpppppppppppppppppppppppppppppppppppppp" +
-          "2222222222222222222222222222222222222222222222222222222222222222");
+    });
+  }
+
+  FutureOr<void> _onSearchTextInChatEvent(
+      SearchTextInChatEvent event, Emitter<ChatState> emit) async {
+    PaginationModel<String>? resultOfSearch =
+        state.resultOfSearchTextInChat ?? const PaginationModel.init();
+    List<String> listOfResultOfSearch = [];
+    String currentRequestIdForAvoidPreRequest = const Uuid().v4();
+    if (event.clearSearch) {
+      emit(state.copyWith(
+        resultOfSearchTextInChat: PaginationModel.init(),
+      ));
+      return;
+    }
+
+    print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%${resultOfSearch.items}");
+    if (event.getWithPagination &&
+        (resultOfSearch.hasReachedMax || resultOfSearch.offset == null)) {
+      return;
+    }
+    if (!event.getWithPagination) {
+      resultOfSearch = PaginationModel.init();
+
+      List<Message> messages =
+          List.of(state.newSortedChatsByDate![event.channel_id]!)
+              .reversed
+              .toList();
+      messages.forEach(
+        (element) {
+          if (element.messageContent?.content != null &&
+              element.messageContent?.content != "") {
+            if (element.messageContent!.content!.startsWith(event.searchText) &&
+                element.authMessageStatus?.isDeleted != 1) {
+              listOfResultOfSearch.add(element.id ?? "");
+            }
+          }
+        },
+      );
+    }
+    print(
+        "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%111111111111111111111111111111${resultOfSearch.items}");
+
+    emit(state.copyWith(
+      currentRequestIdForAvoidPreRequest: currentRequestIdForAvoidPreRequest,
+      resultOfSearchTextInChat: resultOfSearch.copyWith(
+          paginationStatus: PaginationStatus.loading,
+          items: [...listOfResultOfSearch]),
+    ));
+    print(
+        "%1112222222222222222222222%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%${state.resultOfSearchTextInChat?.items}");
+    final response = await searchForMessageTextInChatUseCase(
+        SearchForMessageTextInChatParams(
+            offset:
+                (event.getWithPagination) ? resultOfSearch?.offset ?? "0" : "0",
+            searchText: event.searchText,
+            channeltId: event.channel_id));
+
+    response.fold((l) {
+      PaginationModel<String>? resultOfSearch =
+          state.resultOfSearchTextInChat ?? const PaginationModel.init();
+      emit(state.copyWith(
+        resultOfSearchTextInChat:
+            resultOfSearch.copyWith(paginationStatus: PaginationStatus.failure),
+      ));
+    }, (r) {
+      if (currentRequestIdForAvoidPreRequest !=
+              state.currentRequestIdForAvoidPreRequest &&
+          !event.getWithPagination) {
+        return;
+      }
+      List<Message> messages =
+          List.of(state.newSortedChatsByDate![event.channel_id]!)
+              .reversed
+              .toList();
+      PaginationModel<String>? resultOfSearch =
+          state.resultOfSearchTextInChat ?? const PaginationModel.init();
+      r.messagesIds?.forEach(
+        (element) {
+          if (!resultOfSearch.items.contains(element) &&
+              messages
+                      .firstWhere(
+                        (elements) => elements.id == element,
+                        orElse: () => Message(
+                            authMessageStatus: MessageStatus(isDeleted: 0)),
+                      )
+                      .authMessageStatus
+                      ?.isDeleted !=
+                  1) {
+            resultOfSearch.items.add(element);
+          }
+        },
+      );
+      emit(state.copyWith(
+        resultOfSearchTextInChat: resultOfSearch.copyWith(
+            paginationStatus: PaginationStatus.success,
+            hasReachedMax: (r.messagesIds?.length ?? kPageSize) < kPageSize,
+            offset: r.offset,
+            items: [
+              ...resultOfSearch.items,
+            ]),
+      ));
+      print(
+          "%3333333333333333333333333333333331112222222222222222222222%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%${state.resultOfSearchTextInChat?.items}");
     });
   }
 }

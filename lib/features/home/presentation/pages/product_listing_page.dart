@@ -188,7 +188,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
   @override
   void initState() {
-    print("%%%%%%%%%${GetIt.I<PrefsRepository>().marketToken}*");
+    print("%%%%%%%%%${GetIt.I<PrefsRepository>().marketToken}0*");
     print("%%%%%%%%%${GetIt.I<PrefsRepository>().getFcmTokens}*");
     itExpendForFirst = true;
     key = widget.boutiqueSlug + (widget.category ?? '');

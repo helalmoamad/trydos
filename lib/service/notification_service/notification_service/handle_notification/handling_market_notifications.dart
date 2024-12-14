@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -44,10 +45,15 @@ Map<TypeOfNotificationForMarketEnum, String> TypeOfNotificationForMarket = {
 class HandlingMarketNotifications {
   // في هذا التابع نفحص أنواع الإشعارات المتعلقة بالمتجر فإذا كانت للمتجر نعيد true والا نعيد false
   static bool checkIfTheNotificationIsNotRelatedToChat(RemoteMessage message) {
-    Map<String, dynamic> data = jsonDecode(message.data["body"] ?? "");
+    Map<String, dynamic>? data;
+    try {
+      data = jsonDecode(message.data["body"] ?? "");
+    } catch (e) {
+      return false;
+    }
 
     if (message.data["title"] == "market") {
-      if (data["type"] ==
+      if (data?["type"] ==
           TypeOfNotificationForMarket[
               TypeOfNotificationForMarketEnum.product_cart_expiration]) {
         GetIt.I<HomeBloc>().add(GetOldCartItemEvent());
@@ -63,8 +69,6 @@ class HandlingMarketNotifications {
   // هنا حسب نوع الاشعار نحدد إلى أي صفحة سننتقل او ماذا سنفعل
   static dealWithNotificationFromMarket(Map data, bool fromBackground) async {
     GetIt.I<PrefsRepository>().setNotificationTypesOfMarketFromTerminated("");
-    print(
-        "ddddddddddddddddddddddddddddddddddddddddddddddd${GetIt.I<PrefsRepository>().getNotificationTypeOfMarketFromTerminated ?? ""}ddddddddddddddddddddddddddddddddddd");
     //    BlocProvider.of<AppBloc>(context).add(ChangeBasePage(1));
     if (data["type"] ==
         TypeOfNotificationForMarket[
@@ -206,6 +210,9 @@ class HandlingMarketNotifications {
           TypeOfNotificationForMarket[
               TypeOfNotificationForMarketEnum.boutique_created]) {
         try {
+          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
+              GetMainCategoriesEvent(
+                  context: navigatorKey.currentState!.context));
           Map? boutiqueIcon = data["boutique_icon"] ?? {};
           List<BunnerBoutique>? boutiqueBannerList = List<BunnerBoutique>.from(
               data["banner"]!.map((x) => BunnerBoutique.fromJson(x)));

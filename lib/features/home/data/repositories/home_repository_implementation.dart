@@ -50,8 +50,10 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   }
 
   @override
-  Future<Either<Failure, MainCategoriesResponseModel>> getMainCategories() {
-    return handlingExceptionRequest(tryCall: dataSource.getMainCategories);
+  Future<Either<Failure, MainCategoriesResponseModel>> getMainCategories(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.getMainCategories(params));
   }
 
   @override

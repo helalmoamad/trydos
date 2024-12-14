@@ -12,6 +12,7 @@ import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/core/utils/extensions/string.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/text_message.dart';
 import '../../../../../common/helper/file_saving.dart';
@@ -210,18 +211,22 @@ class _ImageMessageState extends State<ImageMessage> {
                                   child: ValueListenableBuilder<int>(
                                       valueListenable: _loadingImage,
                                       builder: (context, status, _) {
-                                        FileSaving().downloadFileToLocalStorage(
-                                            widget.imageUrl!,
-                                            widget.channelId,
-                                            action: (File? file) {
-                                          // _loadingImage.value = 2;
-                                          if (file != null) {
-                                            widget.imageFile = file;
-                                            if (mounted) {
-                                              setState(() {});
+                                        if (!widget.imageUrl.isNullOrEmpty) {
+                                          FileSaving()
+                                              .downloadFileToLocalStorage(
+                                                  widget.imageUrl ?? "",
+                                                  widget.channelId,
+                                                  action: (File? file) {
+                                            // _loadingImage.value = 2;
+                                            if (file != null) {
+                                              widget.imageFile = file;
+                                              if (mounted) {
+                                                setState(() {});
+                                              }
                                             }
-                                          }
-                                        });
+                                          });
+                                        }
+
                                         return CircularProgressIndicator(
                                           backgroundColor: Colors.grey.shade100,
                                           color: const Color(0xff388CFF),

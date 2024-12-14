@@ -23,11 +23,13 @@ class GetProductsFiltersParams {
   final String? category;
   final List<String>? prices;
   final List<String>? brands;
+
   final List<String>? colors;
   final List<Map<String, dynamic>>? attributes;
   final String? searchText;
   final String? offset;
   //final int? offset;
+  // final bool fromMarket;
   final int? limit;
   final String? scroll_id;
   final String? boutiqueSlug;
@@ -43,6 +45,7 @@ class GetProductsFiltersParams {
       this.boutiqueSlug,
       this.searchText,
       this.scroll_id,
+      //  required this.fromMarket,
       this.offset,
       this.limit,
       this.brandSlugs,
@@ -60,7 +63,8 @@ class GetProductsFiltersParams {
         "offset": " ",
         // "scroll_id": scroll_id,
         "with_products": '${false}',
-        //"limit": "10",
+        //  "fromMarket": "$fromMarket",
+        "limit": "10",
         "boutique_slug": boutiqueSlug,
         "boutique_slugs": boutiqueSlugs.toString(),
         "category_slugs": categorySlugs.toString(),

@@ -8,6 +8,7 @@ import 'package:trydos/features/chat/data/data_sources/chat_remote_datasource.da
 import 'package:trydos/features/authentication/data/models/create_user_response_model.dart';
 import 'package:trydos/features/chat/data/models/change_chat_property_model.dart';
 import 'package:trydos/features/chat/data/models/my_contacts_response_model.dart';
+import 'package:trydos/features/chat/data/models/result_of_search_text_in_chat_model.dart';
 import 'package:trydos/features/chat/data/models/shared_product_count_model.dart';
 import 'package:trydos/features/chat/data/models/upload_file_response_model.dart';
 
@@ -60,13 +61,15 @@ class ChatRepositoryImpl extends ChatRepository with HandlingExceptionRequest {
   }
 
   @override
-  Future<Either<Failure, bool>> shareProductOnApps(Map<String, dynamic> params) {
+  Future<Either<Failure, bool>> shareProductOnApps(
+      Map<String, dynamic> params) {
     ///todo debug12
 //    Fluttertoast.showToast(msg: dataSource.saveContacts(params).toString());
     return handlingExceptionRequest(
         tryCall: () => dataSource.shareProductOnApps(params));
   }
-@override
+
+  @override
   Future<Either<Failure, bool>> saveContacts(Map<String, dynamic> params) {
     ///todo debug12
 //    Fluttertoast.showToast(msg: dataSource.saveContacts(params).toString());
@@ -147,8 +150,16 @@ class ChatRepositoryImpl extends ChatRepository with HandlingExceptionRequest {
   }
 
   @override
-  Future<Either<Failure, Message>> shareProductWithContactsOrChannels(Map<String, dynamic> params) {
+  Future<Either<Failure, Message>> shareProductWithContactsOrChannels(
+      Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.shareProductWithContactsOrChannels(params));
+  }
+
+  @override
+  Future<Either<Failure, ResultOfSearchTextInChatModel>>
+      searchForMessageTextInChat(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.searchForMessageTextInChat(params));
   }
 }

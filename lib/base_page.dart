@@ -403,9 +403,10 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
             .showNotificationWithPayload(message: event, fromBackGround: 0);
         return;
       }
-
       Map<String, dynamic> remoteMessage =
           convert.jsonDecode(event.data['data']);
+      print(
+          "###################11111111111111111111111111111111111111111111###################################################################${remoteMessage['type']}");
 
       if (remoteMessage['type'] == 'RefuseCallEvent') {
         Map<String, dynamic> data = remoteMessage;

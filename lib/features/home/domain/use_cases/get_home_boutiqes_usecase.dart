@@ -21,16 +21,21 @@ class GetHomeBoutiqesUseCase
 
 class GetHomeBoutiqesParams {
   final String? offset;
+  final int? page;
+//  final bool fromMarket;
   final String? categorySlug;
 
   GetHomeBoutiqesParams({
     this.offset,
     required this.categorySlug,
+    //  required this.fromMarket,
+    required this.page,
   });
 
   Map<String, dynamic> get map => {
         'category_slugs': categorySlug == null ? null : '["$categorySlug"]',
         'offset': offset,
-        'limit': "10"
+        'limit': "10",
+        //    "fromMarket": "$fromMarket"
       }..removeWhere((key, value) => value == null || value == "Empty");
 }

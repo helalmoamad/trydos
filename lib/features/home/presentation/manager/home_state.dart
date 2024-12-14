@@ -143,6 +143,7 @@ class HomeState extends Equatable {
     this.cashedOrginalBoutique = false,
     this.getAllowedCountriesModel,
     this.currentIndexForMainCategoryEvent = -1,
+    //   this.moveUrlFromElasticToMarketServer = false,
     this.prefAppliedFilterForExtendFilter,
     this.fromSearchForSearchWithGemini = false,
     this.ListitemForAddToCart,
@@ -176,6 +177,7 @@ class HomeState extends Equatable {
   final Map<String, GetAndAddCountViewOfProductStatus>
       getAndAddCountViewOfProductStatus;
   final List<ImageForAddToCart>? ListitemForAddToCart;
+  //final bool moveUrlFromElasticToMarketServer;
   final GetAllowedCountriesModel? getAllowedCountriesModel;
   final Map<String, GetProductFiltersStatus> getProductFiltersStatus;
   final Map<String, PaginationModel<product.Products>?>
@@ -278,6 +280,7 @@ class HomeState extends Equatable {
         theReplyFromGemini,
         addCommentStatus,
         hideItemInOldCartStatus,
+        // moveUrlFromElasticToMarketServer,
         cashedOrginalBoutique,
         productContentForStatusOfOpeningProductDetailsDirectly,
         getProductListingWithFiltersPaginationWithPrefetchModels,
@@ -340,6 +343,7 @@ class HomeState extends Equatable {
       final HideItemInOldCartStatus? hideItemInOldCartStatus,
       final ConvertItemFromOldcartToCartStatus?
           convertItemFromOldcartToCartStatus,
+      // final bool? moveUrlFromElasticToMarketServer,
       final UpdateItemInCartStatus? updateItemInCartStatus,
       final Map<String, String>? searchWithFilterOffset,
       final GetListOfProductsFoundedInCartStatus?
@@ -441,7 +445,8 @@ class HomeState extends Equatable {
           addOrRemoveLikeOfProductStatus ?? this.addOrRemoveLikeOfProductStatus,
       convertItemFromOldcartToCartStatus: convertItemFromOldcartToCartStatus ??
           this.convertItemFromOldcartToCartStatus,
-
+      //   moveUrlFromElasticToMarketServer: moveUrlFromElasticToMarketServer ??
+      //     this.moveUrlFromElasticToMarketServer,
       sizes: sizes ?? this.sizes,
       getFullProductDetailsStatus:
           getFullProductDetailsStatus ?? this.getFullProductDetailsStatus,

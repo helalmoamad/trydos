@@ -111,10 +111,11 @@ class _TextMessageState extends ThemeState<TextMessage> {
     };
     return BlocConsumer<ChatBloc, ChatState>(
       listenWhen: (p, c) =>
-          p.changeMessageStateFromPusherStatus !=
-              c.changeMessageStateFromPusherStatus &&
-          c.changeMessageStateFromPusherStatus !=
-              ChangeMessageStateFromPusherStatus.init,
+          (p.changeMessageStateFromPusherStatus !=
+                  c.changeMessageStateFromPusherStatus &&
+              c.changeMessageStateFromPusherStatus !=
+                  ChangeMessageStateFromPusherStatus.init) ||
+          p.sendMessageStatus != c.sendMessageStatus,
       listener: (context, state) {
         if (state.changeMessageStateFromPusherStatus ==
             ChangeMessageStateFromPusherStatus.watched) {
@@ -131,6 +132,8 @@ class _TextMessageState extends ThemeState<TextMessage> {
         }
       },
       builder: (context, state) {
+        print("object////////////////////////////////////////");
+        print(state.currentMessage.contains(widget.messageId));
         return Column(
           key: key,
           children: [

@@ -1,7 +1,13 @@
 class ServerException implements Exception {
   final String? message;
-
   ServerException({this.message = "ServerException"});
+}
+
+class ServerExceptionForCode500 implements Exception {
+  final String? message;
+  final int? statusCode;
+  ServerExceptionForCode500(
+      {this.message = "ServerExceptionForCode500", this.statusCode});
 }
 
 class OperationFailedException implements Exception {
@@ -13,5 +19,6 @@ class OperationFailedException implements Exception {
 class TryAgainException implements Exception {
   final String? message;
   final int tryCount;
-  TryAgainException({this.message = "TryAgainException" , required this.tryCount});
+  TryAgainException(
+      {this.message = "TryAgainException", required this.tryCount});
 }

@@ -146,7 +146,8 @@ class HomeRemoteDatasource {
     return getBrand();
   }
 */
-  Future<MainCategoriesResponseModel> getMainCategories() {
+  Future<MainCategoriesResponseModel> getMainCategories(
+      Map<String, dynamic> params) {
     ///// for test /////
     TestVariables.getMainCategoriesFlag = true;
     TestVariables.getMainCategoriesRequestCountFlag++;
@@ -154,8 +155,10 @@ class HomeRemoteDatasource {
     GetClient<MainCategoriesResponseModel> getMainCategories =
         GetClient<MainCategoriesResponseModel>(
       serverName: ServerName.elastic,
+      //ServerName.elastic,
       requestPrams: RequestConfig<MainCategoriesResponseModel>(
         endpoint: ElasticEndPoints.getMainCategoriesEP,
+        //ElasticEndPoints.getMainCategoriesEP,
         // MarketEndPoints.getMainCategoriesRelatedWithBoutiquesEP,
         response: ResponseValue<MainCategoriesResponseModel>(
             fromJson: (response) =>
@@ -280,8 +283,10 @@ class HomeRemoteDatasource {
     GetClient<GetHomeBoutiquesModel> getHomeBoutiques =
         GetClient<GetHomeBoutiquesModel>(
       serverName: ServerName.elastic,
+      //ServerName.elastic,
       requestPrams: RequestConfig<GetHomeBoutiquesModel>(
         endpoint: ElasticEndPoints.getHomeBoutiquesEP,
+        //ElasticEndPoints.getHomeBoutiquesEP,
         // MarketEndPoints.getHomeBoutiqesEP,
         queryParameters: params,
         response: ResponseValue<GetHomeBoutiquesModel>(

@@ -251,7 +251,7 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           : GetAllowedCountriesModel.fromJson(
               json['getAllowedCountriesModel'] as Map<String, dynamic>),
       currentIndexForMainCategoryEvent:
-          (json['currentIndexForMainCategoryEvent'] as num?)?.toInt() ?? 0,
+          (json['currentIndexForMainCategoryEvent'] as num?)?.toInt() ?? -1,
       prefAppliedFilterForExtendFilter:
           json['prefAppliedFilterForExtendFilter'] == null
               ? null

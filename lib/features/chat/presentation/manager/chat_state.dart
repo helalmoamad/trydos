@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:trydos/core/data/model/pagination_model.dart';
 
 import '../../data/models/my_chats_response_model.dart';
 import '../../data/models/my_contacts_response_model.dart';
@@ -14,6 +15,8 @@ enum LoadImageWidthAndHeight { init, loading, success, failure }
 enum GetContactsStatus { init, loading, success, failure }
 
 enum GetChatsStatus { init, loading, success, failure }
+
+//enum SearchTextInChatStatus { init, loading, success, failure }
 
 enum SendMessageStatus { init, loading, success, failure }
 
@@ -53,6 +56,8 @@ class ChatState {
   final Map<String, String>? getSharedProductCount;
   final GetMediaCountStatus getMediaCountStatus;
   final ResetReadMessagesStatus readMessagesStatus;
+  final String currentRequestIdForAvoidPreRequest;
+  //final SearchTextInChatStatus? searchTextInChatStatus;
   final GetMessagesBetweenStatus getMessagesBetweenStatus;
   final NotifyThatIReceivedMessageStatus notifyThatIReceivedMessageStatus;
   final ChangeMessageStateFromPusherStatus changeMessageStateFromPusherStatus;
@@ -66,6 +71,7 @@ class ChatState {
   late final List<String> currentMessage;
   final List<String> currentFailedMessage;
   final List<String> currentFailedMediaMessage;
+  final PaginationModel<String>? resultOfSearchTextInChat;
   final String channelId;
   final String? messageType;
   final String userConnectedStatuse;
@@ -89,6 +95,7 @@ class ChatState {
     this.getMediaCountStatus = GetMediaCountStatus.init,
     this.resendMessageStatus = ResendMessageStatus.init,
     this.width = 0,
+    this.resultOfSearchTextInChat = const PaginationModel.init(),
     this.duration,
     this.slopMessageId = "",
     this.isSlpoing = false,
@@ -96,9 +103,11 @@ class ChatState {
     this.height = 0,
     this.imageCountInEachChat = 0,
     this.getSharedProductCountStatus,
+    this.currentRequestIdForAvoidPreRequest = "",
     this.fileCountInEachChat = 0,
     this.getSharedProductCount,
     this.videoCountInEachChat = 0,
+    //this.searchTextInChatStatus = SearchTextInChatStatus.init,
     this.loadImageWidthAndHeight = LoadImageWidthAndHeight.init,
     this.newSortedChatsByDate = const {},
     this.currentOpenedChatId,
@@ -135,6 +144,7 @@ class ChatState {
   ChatState copyWith({
     int? width,
     int? height,
+    //final SearchTextInChatStatus? searchTextInChatStatus,
     String? slopMessageId,
     bool? isSlpoing,
     final int? imageCountInEachChat,
@@ -149,6 +159,7 @@ class ChatState {
     final ResendMessageStatus? resendMessageStatus,
     final SendMessageStatus? sendMessageStatus,
     final ReceiveMessageStatus? receiveMessageStatus,
+    final PaginationModel<String>? resultOfSearchTextInChat,
     final ChangeChatPropertyStatus? changeChatPropertyStatus,
     final SaveContactsStatus? saveContactsStatus,
     final GetContactsStatus? getContactsStatus,
@@ -169,6 +180,7 @@ class ChatState {
     final String? currentChannelReceivedMessage,
     final List<Chat>? chats,
     final bool? createAnewChat,
+    final String? currentRequestIdForAvoidPreRequest,
     final List<String>? currentMessage,
     final List<String>? currentFailedMessage,
     final List<String>? currentFailedMediaMessage,
@@ -198,7 +210,11 @@ class ChatState {
       videoCountInEachChat: videoCountInEachChat ?? this.videoCountInEachChat,
       loadImageWidthAndHeight:
           loadImageWidthAndHeight ?? this.loadImageWidthAndHeight,
+      resultOfSearchTextInChat:
+          resultOfSearchTextInChat ?? this.resultOfSearchTextInChat,
       newSortedChatsByDate: newSortedChatsByDate ?? this.newSortedChatsByDate,
+      // searchTextInChatStatus:
+      //     searchTextInChatStatus ?? this.searchTextInChatStatus,
       getChatsStatus: getChatsStatus ?? this.getChatsStatus,
       sendMessageStatus: sendMessageStatus ?? this.sendMessageStatus,
       changeChatPropertyStatus:
@@ -208,6 +224,8 @@ class ChatState {
           chatToNavigateFromTerminated ?? this.chatToNavigateFromTerminated,
       contacts: contacts ?? this.contacts,
       chats: chats ?? this.chats,
+      currentRequestIdForAvoidPreRequest: currentRequestIdForAvoidPreRequest ??
+          this.currentRequestIdForAvoidPreRequest,
       currentOpenedChatId: currentOpenedChatId ?? this.currentOpenedChatId,
       createAnewChat: createAnewChat ?? this.createAnewChat,
       deleteChatStatus: deleteChatStatus ?? this.deleteChatStatus,
