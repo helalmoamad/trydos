@@ -121,6 +121,39 @@ class GetCommentForProductEvent extends HomeEvent {
   List<Object?> get props => [productId];
 }
 
+class AddTimerStartedToHurryUpEvent extends HomeEvent {
+  final bool isAddToList;
+  final String cartId;
+  final int timeLeft;
+
+  const AddTimerStartedToHurryUpEvent(
+      {required this.cartId,
+      required this.isAddToList,
+      required this.timeLeft});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [cartId];
+}
+
+class ConvertItemFromCartToOldCartEvent extends HomeEvent {
+  final String cartId;
+
+  const ConvertItemFromCartToOldCartEvent({required this.cartId});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [cartId];
+}
+
+class GetPopularSearchItemEvent extends HomeEvent {
+  const GetPopularSearchItemEvent();
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+}
+
 class GetProductsListInCartEvent extends HomeEvent {
   const GetProductsListInCartEvent(
       //  {this.getWithPagination = false}
@@ -453,14 +486,14 @@ class AddItemToCartEvent extends HomeEvent {
   final int? boutiqueId;
   final String colorName;
   final String? maxAllowed;
-  final bool fishAddAllTheItems;
+  final bool finishAddAllTheItems;
   final Products products;
   final String productSlugForTopic;
 
   AddItemToCartEvent(
       {this.quantity,
       this.boutiqueIcon,
-      this.fishAddAllTheItems = true,
+      this.finishAddAllTheItems = true,
       this.boutiqueId,
       required this.maxAllowed,
       required this.image,

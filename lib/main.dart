@@ -282,7 +282,7 @@ void main() async {
     NotificationProcess().init(),
   ]);
   isLoadDotenvFile = true;
-  await Eraser.clearAllAppNotifications();
+  //await Eraser.clearAllAppNotifications();
   await GetIt.I<PrefsRepository>().removeMessageFromBackground();
   await NotificationProcess().setupInteractedMessage();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -292,8 +292,8 @@ void main() async {
   fetchServersUrlsFromSharedPreference();
   await NotificationProcess().fcmToken();
   isDependencyInitialized = true;
-  await FirebaseMessaging.instance.subscribeToTopic("boutique_created");
-  await FirebaseMessaging.instance.subscribeToTopic("category_created");
+  FirebaseMessaging.instance.subscribeToTopic("boutique_created");
+  FirebaseMessaging.instance.subscribeToTopic("category_created");
   GetIt.I<AuthBloc>().add(GetUserCountryEvent());
 
   gemini.Gemini.init(
@@ -301,6 +301,12 @@ void main() async {
   );
   gemini.Gemini.enableDebugging = true;
   print('market token : ${(GetIt.I<PrefsRepository>().marketToken)}');
+  debugPrint(
+      'login _prefsRepository.chatToken${GetIt.I<PrefsRepository>().chatToken}');
+  debugPrint(
+      'login _prefsRepository.marketToken${GetIt.I<PrefsRepository>().marketToken}');
+  debugPrint(
+      'login _prefsRepository.storiesToken${GetIt.I<PrefsRepository>().storiesToken}');
   await SentryFlutter.init(
     (options) {
       options.dsn = dotenv.env['SENTRY_DNS'];

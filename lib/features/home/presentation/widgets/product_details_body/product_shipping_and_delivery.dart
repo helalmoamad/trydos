@@ -18,7 +18,8 @@ import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../authentication/presentation/manager/auth_bloc.dart';
 
 class ProductShippingAndDelivery extends StatelessWidget {
-  ProductShippingAndDelivery({super.key});
+  final String shippingDay;
+  ProductShippingAndDelivery({super.key, required this.shippingDay});
 
   final ValueNotifier<bool> isExpanded = ValueNotifier(false);
 
@@ -204,7 +205,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                           ),
                                         ),
                                         TextSpan(
-                                          text: '4 Days',
+                                          text: '$shippingDay Days',
                                           style: context
                                               .textTheme.titleMedium?.mq
                                               .copyWith(

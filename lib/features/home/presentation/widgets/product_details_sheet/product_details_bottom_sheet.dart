@@ -46,25 +46,22 @@ class ProductDetailsBottomSheet extends StatefulWidget {
   final String productSlugForTopic;
   final String productDescription;
   final String currentColornum;
-  final String currentSize;
+  final PanelController panelController;
+
   final int countOfPieces;
   final String maxAllowedToAddCart;
   final ValueNotifier<int> addToBagButtonShapeNotifier;
-  final List<String> sizes;
-  final List<int> sizesQuantities;
 
   const ProductDetailsBottomSheet(
       {super.key,
       required this.productItem,
+      required this.panelController,
       required this.addToBagButtonShapeNotifier,
       required this.boutiqueIcon,
-      required this.sizes,
       required this.productSlugForTopic,
       required this.productDescription,
       required this.maxAllowedToAddCart,
-      required this.sizesQuantities,
       required this.countOfPieces,
-      required this.currentSize,
       required this.currentColornum,
       required this.boutiqueId,
       required this.currentColor,
@@ -82,7 +79,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
 
   final ValueNotifier<String?> sizeIsNotAvailableNotifier = ValueNotifier(null);
   final PageController pageController = PageController();
-  final PanelController panelController = PanelController();
+
   Gallery3DController? gallery3dControllerForCircles;
   List<productListingModel.SyncColorImage> syncColorImageList = [];
   List<String> images = [];
@@ -176,7 +173,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                     child: SlidingUpPanel(
                       denyVericalSliding: currentTab == 3
                           ? (currentPosition) {
-                              if (panelController.panelPosition != 1) {
+                              if (widget.panelController.panelPosition != 1) {
                                 return false;
                               }
                               if (gallery3dControllerForCircles != null) {
@@ -202,7 +199,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                               return userWantToScrollHorizontally;
                             }
                           : null,
-                      controller: panelController,
+                      controller: widget.panelController,
                       maxHeight: currentTab == -1
                           ? 78
                           : _focusNode.hasFocus
@@ -212,11 +209,27 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                   : 433,
                       minHeight: 78,
                       onPanelClosed: () {
-                        homeBloc.add(UpdateListOfItemForAddToCartEvent(
+                        widget.addToBagButtonShapeNotifier.value = 0;
+                        setState(
+                          () {
+                            tag = 'cart';
+                          },
+                        );
+                        homeBloc.add(
+                          AddMultiItemsToCartEvent(
+                            maxAllowed: widget.maxAllowedToAddCart,
+                            boutiqueIcon: widget.boutiqueIcon,
+                            productSlugForTopic: widget.productSlugForTopic,
+                            boutiqueId: widget.boutiqueId,
+                            products: widget.productItem,
+                            id: widget.productItem.id.toString(),
+                          ),
+                        );
+                        /*   homeBloc.add(UpdateListOfItemForAddToCartEvent(
                             imageForAddToCart: ImageForAddToCart(),
                             operation: "remove",
                             productId: widget.productItem.id.toString(),
-                            resetTheList: true));
+                            resetTheList: true));*/
                         sizeIsNotAvailableNotifier.value = null;
                         firstOpenOfPanel = true;
                         denySlidingBackForSlidingUpPanels.value = false;
@@ -481,16 +494,34 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                           scrollController: currentTab == 0
                                               ? controller
                                               : null),
-                                      ProductDetailsSheetShareContent(
-                                          productDescription:
-                                              widget.productDescription,
-                                          productItem: widget.productItem,
-                                          focusNode: _focusNode,
-                                          scrollController: currentTab == 1
-                                              ? controller
-                                              : null,
-                                          idsOfChatCardsToShare:
-                                              idsOfChatCardsToShare),
+                                      BlocBuilder<HomeBloc, HomeState>(
+                                          buildWhen: (p, c) =>
+                                              p.CurrentColorSizeForCart?[
+                                                  "size"] !=
+                                              c.CurrentColorSizeForCart?[
+                                                  "size"],
+                                          builder: (context, state) {
+                                            return ProductDetailsSheetShareContent(
+                                                currentSize: state
+                                                            .CurrentColorSizeForCart !=
+                                                        null
+                                                    ? state.CurrentColorSizeForCart![
+                                                            "size"] ??
+                                                        ""
+                                                    : "",
+                                                currentColor:
+                                                    widget.currentColorName,
+                                                productDescription:
+                                                    widget.productDescription,
+                                                productItem: widget.productItem,
+                                                focusNode: _focusNode,
+                                                scrollController:
+                                                    currentTab == 1
+                                                        ? controller
+                                                        : null,
+                                                idsOfChatCardsToShare:
+                                                    idsOfChatCardsToShare);
+                                          }),
                                       ProductDetailsSheetMoreOptionsContent(
                                         productSlugForTopic:
                                             widget.productSlugForTopic,
@@ -508,17 +539,21 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                   ? BlocBuilder<HomeBloc, HomeState>(
                                       buildWhen: (p, c) =>
                                           p.currentSelectedColorForEveryProduct[
-                                              widget.productItem.id
-                                                  .toString()] !=
-                                          c.currentSelectedColorForEveryProduct[
-                                              widget.productItem.id.toString()],
+                                                  widget.productItem.id
+                                                      .toString()] !=
+                                              c.currentSelectedColorForEveryProduct[
+                                                  widget.productItem.id
+                                                      .toString()] ||
+                                          p.CurrentColorSizeForCart?["size"] !=
+                                              c.CurrentColorSizeForCart?[
+                                                  "size"],
                                       builder: (context, state) {
                                         return SelectSizeContent(
                                           productId:
                                               widget.productItem.id.toString(),
-                                          sizes: widget.sizes,
+                                          sizes: state.sizes ?? [],
                                           sizesQuantities:
-                                              widget.sizesQuantities,
+                                              state.sizesQuantities ?? [],
                                           scrollController: controller,
                                           selectedColorName: widget.productItem
                                                   .colors.isNullOrEmpty
@@ -607,108 +642,123 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
               valueListenable: idsOfChatCardsToShare,
               builder: (context, channelIds, _) {
                 return channelIds.isEmpty
-                    ? ProductDetailsSheetBottomBar(
-                        productSlug: widget.productItem.slug ?? "",
-                        countOfPieces: widget.countOfPieces,
-                        colorNum: widget.currentColornum,
-                        size: widget.currentSize,
-                        colorName: widget.currentColorName,
-                        productId: widget.productItem.id.toString(),
-                        imageUrl:
-                            !widget.productItem.syncColorImages.isNullOrEmpty
-                                ? widget
-                                        .productItem
-                                        .syncColorImages![widget.currentColor]
-                                        .images![0]
-                                        .filePath ??
-                                    ""
-                                : widget
-                                        .productItem
-                                        .images![widget.currentColor]
-                                        .filePath ??
-                                    "",
-                        onFinishBuying: (quantity) {
-                          homeBloc.add(
-                            AddMultiItemsToCartEvent(
-                              maxAllowed: widget.maxAllowedToAddCart,
-                              boutiqueIcon: widget.boutiqueIcon,
-                              productSlugForTopic: widget.productSlugForTopic,
-                              boutiqueId: widget.boutiqueId,
-                              products: widget.productItem,
-                              id: widget.productItem.id.toString(),
-                            ),
-                          );
-                          setState(
-                            () {
-                              tag = 'cart';
-                            },
-                          );
-                        },
-                        panelController: panelController,
-                        clickOnComments: () {
-                          panelController.open();
-                          currentActiveTab.value = 0;
-                          WidgetsBinding.instance.addPostFrameCallback(
-                            (_) {
-                              pageController.jumpToPage(0);
-                            },
-                          );
-                          //////////////////////////////
-                          FirebaseAnalyticsService.logEventForSession(
-                            eventName: AnalyticsEventsConst.buttonClicked,
-                            executedEventName: AnalyticsExecutedEventNameConst
-                                .showCommentsButton,
-                          );
-                        },
-                        clickOnFavorite: () {
-                          currentActiveTab.value = -1;
-                          //////////////////////////////
-                          FirebaseAnalyticsService.logEventForSession(
-                            eventName: AnalyticsEventsConst.buttonClicked,
-                            executedEventName: AnalyticsExecutedEventNameConst
-                                .likeProductButton,
-                          );
-                        },
-                        clickOnMoreOptions: () {
-                          panelController.open();
-                          currentActiveTab.value = 2;
-                          WidgetsBinding.instance.addPostFrameCallback(
-                            (_) {
-                              pageController.jumpToPage(2);
-                            },
-                          );
-                          //////////////////////////////
-                          FirebaseAnalyticsService.logEventForSession(
-                            eventName: AnalyticsEventsConst.buttonClicked,
-                            executedEventName: AnalyticsExecutedEventNameConst
-                                .moreOptionsButton,
-                          );
-                        },
-                        clickOnShare: () {
-                          panelController.open();
-                          currentActiveTab.value = 1;
-                          WidgetsBinding.instance.addPostFrameCallback(
-                            (_) {
-                              pageController.jumpToPage(1);
-                            },
-                          );
-                          if (GetIt.I<PrefsRepository>().chatToken != null) {
-                            BlocProvider.of<ChatBloc>(context)
-                                .add(GetChatsEvent());
-                            BlocProvider.of<ChatBloc>(context)
-                                .add(SaveContactsEvent());
-                          }
-                          //////////////////////////////
-                          FirebaseAnalyticsService.logEventForSession(
-                            eventName: AnalyticsEventsConst.buttonClicked,
-                            executedEventName: AnalyticsExecutedEventNameConst
-                                .shareProductButton,
-                          );
-                        },
-                        currentActiveTab: currentActiveTab,
-                        sizeIsNotAvailableNotifier: sizeIsNotAvailableNotifier,
-                        addToBagButtonShapeNotifier:
-                            widget.addToBagButtonShapeNotifier)
+                    ? BlocBuilder<HomeBloc, HomeState>(
+                        buildWhen: (p, c) =>
+                            p.CurrentColorSizeForCart?["size"] !=
+                            c.CurrentColorSizeForCart?["size"],
+                        builder: (context, state) {
+                          return ProductDetailsSheetBottomBar(
+                              productSlug: widget.productItem.slug ?? "",
+                              countOfPieces: widget.countOfPieces,
+                              colorNum: widget.currentColornum,
+                              size: state.CurrentColorSizeForCart != null
+                                  ? state.CurrentColorSizeForCart!["size"] ?? ""
+                                  : "",
+                              colorName: widget.currentColorName,
+                              productId: widget.productItem.id.toString(),
+                              imageUrl: !widget
+                                      .productItem.syncColorImages.isNullOrEmpty
+                                  ? widget
+                                          .productItem
+                                          .syncColorImages![widget.currentColor]
+                                          .images![0]
+                                          .filePath ??
+                                      ""
+                                  : widget
+                                          .productItem
+                                          .images![widget.currentColor]
+                                          .filePath ??
+                                      "",
+                              onFinishBuying: (quantity) {
+                                homeBloc.add(
+                                  AddMultiItemsToCartEvent(
+                                    maxAllowed: widget.maxAllowedToAddCart,
+                                    boutiqueIcon: widget.boutiqueIcon,
+                                    productSlugForTopic:
+                                        widget.productSlugForTopic,
+                                    boutiqueId: widget.boutiqueId,
+                                    products: widget.productItem,
+                                    id: widget.productItem.id.toString(),
+                                  ),
+                                );
+                                setState(
+                                  () {
+                                    tag = 'cart';
+                                  },
+                                );
+                              },
+                              panelController: widget.panelController,
+                              clickOnComments: () {
+                                widget.panelController.open();
+                                currentActiveTab.value = 0;
+                                WidgetsBinding.instance.addPostFrameCallback(
+                                  (_) {
+                                    pageController.jumpToPage(0);
+                                  },
+                                );
+                                //////////////////////////////
+                                FirebaseAnalyticsService.logEventForSession(
+                                  eventName: AnalyticsEventsConst.buttonClicked,
+                                  executedEventName:
+                                      AnalyticsExecutedEventNameConst
+                                          .showCommentsButton,
+                                );
+                              },
+                              clickOnFavorite: () {
+                                currentActiveTab.value = -1;
+                                //////////////////////////////
+                                FirebaseAnalyticsService.logEventForSession(
+                                  eventName: AnalyticsEventsConst.buttonClicked,
+                                  executedEventName:
+                                      AnalyticsExecutedEventNameConst
+                                          .likeProductButton,
+                                );
+                              },
+                              clickOnMoreOptions: () {
+                                widget.panelController.open();
+                                currentActiveTab.value = 2;
+                                WidgetsBinding.instance.addPostFrameCallback(
+                                  (_) {
+                                    pageController.jumpToPage(2);
+                                  },
+                                );
+                                //////////////////////////////
+                                FirebaseAnalyticsService.logEventForSession(
+                                  eventName: AnalyticsEventsConst.buttonClicked,
+                                  executedEventName:
+                                      AnalyticsExecutedEventNameConst
+                                          .moreOptionsButton,
+                                );
+                              },
+                              clickOnShare: () {
+                                widget.panelController.open();
+                                currentActiveTab.value = 1;
+                                WidgetsBinding.instance.addPostFrameCallback(
+                                  (_) {
+                                    pageController.jumpToPage(1);
+                                  },
+                                );
+                                if (GetIt.I<PrefsRepository>().chatToken !=
+                                    null) {
+                                  BlocProvider.of<ChatBloc>(context)
+                                      .add(GetChatsEvent());
+                                  BlocProvider.of<ChatBloc>(context)
+                                      .add(SaveContactsEvent());
+                                }
+                                //////////////////////////////
+                                FirebaseAnalyticsService.logEventForSession(
+                                  eventName: AnalyticsEventsConst.buttonClicked,
+                                  executedEventName:
+                                      AnalyticsExecutedEventNameConst
+                                          .shareProductButton,
+                                );
+                              },
+                              currentActiveTab: currentActiveTab,
+                              sizeIsNotAvailableNotifier:
+                                  sizeIsNotAvailableNotifier,
+                              addToBagButtonShapeNotifier:
+                                  widget.addToBagButtonShapeNotifier);
+                        })
                     : ShareButton(
                         onTap: () {
                           BlocProvider.of<ChatBloc>(context).add(

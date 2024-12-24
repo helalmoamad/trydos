@@ -2015,14 +2015,22 @@ class _SinglePageChatState extends State<SinglePageChat> {
             channelId: message.channelId!,
             imageUrl: addSuitableWidthAndHeightToImage(
               imageUrl: message.shareProductContent!.productImageUrl!,
-              width: message.shareProductContent!.imageWidth ?? 1.sw - 100,
+              width: (((message.shareProductContent!.imageWidth ?? 0) > 0)
+                  ? message.shareProductContent!.imageWidth
+                  : 1.sw - 100)!,
               // the width of the image in the ui
-              height: message.shareProductContent!.imageHeight ?? 464,
+              height: (((message.shareProductContent!.imageHeight ?? 0) > 0)
+                  ? message.shareProductContent!.imageHeight
+                  : 464)!,
               // the height of the image in the ui
-              ordinalWidth: message.shareProductContent!.imageWidth ??
-                  1.sw -
+              ordinalWidth: ((message.shareProductContent!.imageWidth ?? 0) > 0)
+                  ? message.shareProductContent!.imageWidth
+                  : 1.sw -
                       100, //double.tryParse(message.mediaMessageContent![0].originalWidth.toString()),
-              ordinalHeight: message.shareProductContent!.imageHeight ?? 464,
+              ordinalHeight:
+                  ((message.shareProductContent!.imageHeight ?? 0) > 0)
+                      ? message.shareProductContent!.imageHeight
+                      : 464,
               //double.tryParse(image.originalHeight.toString())
             ),
             productName: message.shareProductContent!.productName ?? "",

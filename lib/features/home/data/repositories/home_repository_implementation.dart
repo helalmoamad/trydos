@@ -1,34 +1,30 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:trydos/core/error/failures.dart';
-import 'package:trydos/features/authentication/data/models/create_user_response_model.dart';
-import 'package:trydos/features/authentication/data/models/login_to_stories_response_model.dart';
-import 'package:trydos/features/authentication/data/models/send_otp_response_model.dart';
-import 'package:trydos/features/authentication/data/models/verify_guest_phone_response_model.dart';
-import 'package:trydos/features/authentication/data/models/verify_otp_sign_up_and_in_response_model.dart';
+
 import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
 import 'package:trydos/features/home/data/models/convert_item_from_oldCart_to_cart_model.dart';
 
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
-import 'package:trydos/features/home/data/models/get_brand_model.dart';
+
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
-import 'package:trydos/features/home/data/models/get_category_model.dart';
+
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
-import 'package:trydos/features/home/data/models/get_count_likes_of_product_model.dart';
+
 import 'package:trydos/features/home/data/models/get_count_view_of_product_model.dart';
 import 'package:trydos/features/home/data/models/get_currency_for_country_model.dart';
 import 'package:trydos/features/home/data/models/get_full_product_details_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
-import 'package:trydos/features/home/data/models/get_is_liked_of_product_model.dart';
+
 import 'package:trydos/features/home/data/models/get_old_cart_model.dart';
 import 'package:trydos/features/home/data/models/get_only_message_from_api_model.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 
-import 'package:trydos/features/home/data/models/home_sections_response_model.dart';
 import 'package:trydos/features/home/data/models/list_of_products_in_cart_model.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
+import 'package:trydos/features/home/data/models/popular_search_terms_model.dart';
 import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
 
 import '../../../../core/api/handling_exception.dart';
@@ -73,6 +69,12 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
       Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.getHomeBoutiques(params));
+  }
+
+  @override
+  Future<Either<Failure, PopularSearchTermsModel>> getPopularSearchTerms() {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.getPopularSearchTerms());
   }
 
   @override

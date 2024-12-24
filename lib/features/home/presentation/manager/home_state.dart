@@ -19,6 +19,7 @@ import 'package:trydos/features/home/data/models/get_product_detail_without_rela
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 
 import 'package:trydos/features/home/data/models/get_story_for_product_model.dart';
+import 'package:trydos/features/home/data/models/popular_search_terms_model.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
 
 import '../../../../core/data/model/pagination_model.dart';
@@ -96,6 +97,7 @@ class HomeState extends Equatable {
     this.hideItemInOldCartStatus,
     this.searchWithOutFilterOffset,
     this.searchWithFilterOffset,
+    this.cartIdsSubsecribedToTopicHurryUP = const [],
     this.getProductDetailWithoutSimilarRelatedProductsStatus =
         GetProductDetailWithoutSimilarRelatedProductsStatus.init,
     this.getStartingSettingsStatus = GetStartingSettingsStatus.init,
@@ -130,7 +132,7 @@ class HomeState extends Equatable {
     this.getProductListingStatus = GetProductListingStatus.init,
     this.selectedCollection,
     this.productContentForStatusOfOpeningProductDetailsDirectly,
-    this.cartCollection = const {},
+    this.cartCollection = const [],
     //this.idForRequest,
     this.getProductListingWithFiltersPaginationModels = const {},
     this.getStoriesForProductStatus = GetStoriesForProductStatus.init,
@@ -145,12 +147,14 @@ class HomeState extends Equatable {
     this.currentIndexForMainCategoryEvent = -1,
     //   this.moveUrlFromElasticToMarketServer = false,
     this.prefAppliedFilterForExtendFilter,
+    this.cartIdsHurryUPTimerStarted = const {},
     this.fromSearchForSearchWithGemini = false,
     this.ListitemForAddToCart,
     this.getListOfProductsFoundedInCartStatus =
         GetListOfProductsFoundedInCartStatus.init,
     this.getCurrencyForCountryModel,
     this.isExpandedForListingPage = false,
+    this.popularSearchTerm,
     this.countOfProductExpectedByFiltering,
     this.getCartItemsStatus = GetCartItemsStatus.init,
     this.getProductDetailWithoutRelatedProductsModel,
@@ -176,6 +180,7 @@ class HomeState extends Equatable {
   final HideItemInOldCartStatus? hideItemInOldCartStatus;
   final Map<String, GetAndAddCountViewOfProductStatus>
       getAndAddCountViewOfProductStatus;
+  final List<PopularSearchTerm>? popularSearchTerm;
   final List<ImageForAddToCart>? ListitemForAddToCart;
   //final bool moveUrlFromElasticToMarketServer;
   final GetAllowedCountriesModel? getAllowedCountriesModel;
@@ -212,10 +217,12 @@ class HomeState extends Equatable {
   final Map<String, Map<int, List<String>>> addImagesToProductIdForCart;
   final Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>?
       productStatus;
-  final Map<String, List<cart.Cart>>? cartCollection;
+  final List<cart.Cart>? cartCollection;
+  final List<String> cartIdsSubsecribedToTopicHurryUP;
+  final Map<String, int> cartIdsHurryUPTimerStarted;
   final GetListOfProductsFoundedInCartStatus
       getListOfProductsFoundedInCartStatus;
-  final Map<String, List<oldCart.OldCart>>? oldcartCollection;
+  final List<oldCart.OldCart>? oldcartCollection;
 
   final Map<String, bool> reRequestTheseBoutiques;
   final Map<String, bool> reRequestTheseProductListingInBoutiques;
@@ -274,10 +281,12 @@ class HomeState extends Equatable {
         ListitemForAddToCart,
         getAllowedCountriesModel,
         getProductFiltersStatus,
+        popularSearchTerm,
         getProductListingWithFiltersPaginationModels,
         getCurrencyForCountryModel,
         sendRequestToGeminiStatus,
         theReplyFromGemini,
+        cartIdsHurryUPTimerStarted,
         addCommentStatus,
         hideItemInOldCartStatus,
         // moveUrlFromElasticToMarketServer,
@@ -354,7 +363,10 @@ class HomeState extends Equatable {
       final Map<String, GetAndAddCountViewOfProductStatus>?
           getAndAddCountViewOfProductStatus,
       bool? cashedOrginalBoutique,
+      final List<PopularSearchTerm>? popularSearchTerm,
+      final List<String>? cartIdsSubsecribedToTopicHurryUP,
       bool? isExpandedForLidtingPage,
+      final Map<String, int>? cartIdsHurryUPTimerStarted,
       final bool? fromSearchForSearchWithGemini,
 
       // String? idForRequest,
@@ -388,8 +400,8 @@ class HomeState extends Equatable {
       Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>?
           productStatus,
       Map<String, List<int>>? currentQuantityForCart,
-      Map<String, List<cart.Cart>>? cartCollection,
-      Map<String, List<oldCart.OldCart>>? oldCartCollection,
+      List<cart.Cart>? cartCollection,
+      List<oldCart.OldCart>? oldCartCollection,
       Map<String, String>? CurrentColorSizeForCart,
       final Map<String, bool>? reRequestTheseBoutiques,
       final SendRequestToGeminiStatus? sendRequestToGeminiStatus,
@@ -445,6 +457,7 @@ class HomeState extends Equatable {
           addOrRemoveLikeOfProductStatus ?? this.addOrRemoveLikeOfProductStatus,
       convertItemFromOldcartToCartStatus: convertItemFromOldcartToCartStatus ??
           this.convertItemFromOldcartToCartStatus,
+      popularSearchTerm: popularSearchTerm ?? this.popularSearchTerm,
       //   moveUrlFromElasticToMarketServer: moveUrlFromElasticToMarketServer ??
       //     this.moveUrlFromElasticToMarketServer,
       sizes: sizes ?? this.sizes,
@@ -452,12 +465,16 @@ class HomeState extends Equatable {
           getFullProductDetailsStatus ?? this.getFullProductDetailsStatus,
       sizesQuantities: sizesQuantities ?? this.sizesQuantities,
       addCommentStatus: addCommentStatus ?? this.addCommentStatus,
+      cartIdsSubsecribedToTopicHurryUP: cartIdsSubsecribedToTopicHurryUP ??
+          this.cartIdsSubsecribedToTopicHurryUP,
+
       isSizeRequestNotification:
           isSizeRequestNotification ?? this.isSizeRequestNotification,
       isGettingProductListingWithPagination:
           isGettingProductListingWithPagination ??
               this.isGettingProductListingWithPagination,
-
+      cartIdsHurryUPTimerStarted:
+          cartIdsHurryUPTimerStarted ?? this.cartIdsHurryUPTimerStarted,
       boutiquesThatDidPrefetch:
           boutiquesThatDidPrefetch ?? this.boutiquesThatDidPrefetch,
       // idForRequest: idForRequest ?? this.idForRequest,

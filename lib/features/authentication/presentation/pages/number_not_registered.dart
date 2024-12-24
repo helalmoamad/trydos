@@ -202,8 +202,19 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                 Duration(milliseconds: 100),
                                 () async {
                                   if (GetIt.I<PrefsRepository>()
-                                          .isVerifiedPhone !=
-                                      false) {
+                                              .isVerifiedPhone !=
+                                          false ||
+                                      ((GetIt.I<PrefsRepository>()
+                                                      .marketToken
+                                                      ?.length ??
+                                                  0) <
+                                              5 ||
+                                          GetIt.I<PrefsRepository>()
+                                                  .myMarketId ==
+                                              "" ||
+                                          GetIt.I<PrefsRepository>()
+                                                  .myMarketId ==
+                                              null)) {
                                     String? deviceId =
                                         await HelperFunctions.getDeviceId();
                                     BlocProvider.of<AuthBloc>(context).add(

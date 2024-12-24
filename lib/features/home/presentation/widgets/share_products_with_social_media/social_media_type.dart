@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter_html/flutter_html.dart';
 import 'package:get_it/get_it.dart';
 import 'package:html/parser.dart';
@@ -22,16 +24,18 @@ Future share(
     required String productId,
     required String urlShare}) async {
   text = parseFragment(text).text ?? "";
-  print(text);
+
   final urlShares = Uri.encodeComponent(urlShare);
+  print("$urlShares" + "000000000000000000000000000000000000");
   final textShares = Uri.encodeComponent(text);
+  final picture = Uri.encodeComponent(
+      "https://res.cloudinary.com/dtcmozf4d/image/upload/v1/product/2024-12-18-6762994403858.png");
 
   final urls = {
     SocialMediaType.facebook:
-        "https://www.facebook.com/sharer/sharer.php?u=$textShares$urlShare",
+        "https://www.facebook.com/sharer/sharer.php?u=$urlShares",
     SocialMediaType.messanger: 'http://m.me/?$text',
-    SocialMediaType.whatsapp:
-        "https://api.whatsapp.com/send/?text=$text \n $urlShares",
+    SocialMediaType.whatsapp: "https://api.whatsapp.com/send/?text=$urlShares",
     SocialMediaType.telegram: "https://t.me/share/url?url=$text \n $urlShares",
     SocialMediaType.instagram: 'https://instagram.com/share?text=$text',
     SocialMediaType.email:

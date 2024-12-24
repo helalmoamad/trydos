@@ -120,6 +120,8 @@ class _SearchPageState extends ThemeState<SearchPage> {
                     current.getProductFiltersStatus[key] ||
                 previous.cashedOrginalBoutique !=
                     current.cashedOrginalBoutique ||
+                previous.popularSearchTerm?.length !=
+                    current.popularSearchTerm?.length ||
                 previous.countOfProductExpectedByFiltering?.values !=
                     current.countOfProductExpectedByFiltering?.values ||
                 previous
@@ -163,7 +165,14 @@ class _SearchPageState extends ThemeState<SearchPage> {
                               }),
                           ValueListenableBuilder<bool>(
                               valueListenable: widget.appearTrendingAndHistory,
-                              child: TrendingSection(),
+                              child: TrendingSection(
+                                controller: widget.controller,
+                                buildSearchResult: widget.buildSearchResult,
+                                appearTrendingAndHistory:
+                                    widget.appearTrendingAndHistory,
+                                popularSearchTerms:
+                                    state.popularSearchTerm ?? [],
+                              ),
                               builder: (context, appear, child) {
                                 return SliverToBoxAdapter(
                                   child: Visibility(

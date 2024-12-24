@@ -330,6 +330,9 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                   onTap: () {
                     // if (prefsRepository.chatToken != null) return;
                     //appBloc.add(ChangeBasePage(0));
+                    if (Navigator.canPop(context)) {
+                      Navigator.of(context).pop();
+                    }
                     Navigator.of(context).push(PageRouteBuilder(
                       pageBuilder: (context, animation, secondaryAnimation) =>
                           RegistrationPage(),

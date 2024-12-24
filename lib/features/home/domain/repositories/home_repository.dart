@@ -19,6 +19,7 @@ import 'package:trydos/features/home/data/models/get_product_listing_without_fil
 import 'package:trydos/features/home/data/models/home_sections_response_model.dart';
 import 'package:trydos/features/home/data/models/list_of_products_in_cart_model.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
+import 'package:trydos/features/home/data/models/popular_search_terms_model.dart';
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
 import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
 import 'package:trydos/features/home/domain/use_cases/get_products_usecase.dart';
@@ -52,6 +53,7 @@ abstract class HomeRepository {
       getProductsListInCart();
   Future<Either<Failure, bool>> storeFcmTokenOfMarket(
       Map<String, dynamic> params);
+  Future<Either<Failure, PopularSearchTermsModel>> getPopularSearchTerms();
 
   Future<Either<Failure, GetAllowedCountriesModel>> getAllowCountries();
   Future<Either<Failure, GetStoryForProductModel>> getStories(String productId);

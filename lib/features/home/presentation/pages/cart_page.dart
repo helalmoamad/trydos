@@ -1,3 +1,4 @@
+/*
 import 'package:dotted_border/dotted_border.dart';
 
 import 'package:flutter/material.dart';
@@ -278,12 +279,12 @@ class _CartPageState extends State<CartPage> {
                                     children: [
                                       InkWell(
                                           onTap: () {
-                                            HelperFunctions.slidingNavigation(
+                                            /* HelperFunctions.slidingNavigation(
                                                 context,
                                                 CartPage2(
                                                   getCartShippingItemsModel: state
                                                       .getCartShippingItemsModel!,
-                                                ));
+                                                ));*/
                                           },
                                           child: SvgPicture.asset(
                                               AppAssets.countItemSvg)),
@@ -441,3 +442,4 @@ class _CartPageState extends State<CartPage> {
     );
   }
 }
+*/

@@ -401,6 +401,8 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                                         changingPagesScrollOffset: 0.1,
                                                                         isClip: false,
                                                                         onItemChanged: (index) {
+                                                                          print(
+                                                                              "################################################3");
                                                                           currentSelectedSizeIndex.value =
                                                                               index;
                                                                         },

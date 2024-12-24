@@ -233,6 +233,7 @@ class Data {
 
 class Cart {
   final int? id;
+  final String? uuid;
   final int? customerId;
   final String? cartGroupId;
   final String? image;
@@ -262,6 +263,9 @@ class Cart {
   final DateTime? createdAt;
   final dynamic flashDealDetails;
   final dynamic flashDealMaxAllowedQuantity;
+  final int? shippingDays;
+  final bool? haveHurryUpNotify;
+  final int? timeLeftInMinutes;
 
   Cart({
     this.id,
@@ -272,6 +276,7 @@ class Cart {
     this.choices,
     this.variations,
     this.variant,
+    this.uuid,
     this.availableQuantity,
     this.maxAllowedQty,
     this.vendorName,
@@ -293,6 +298,9 @@ class Cart {
     this.createdAt,
     this.flashDealDetails,
     this.flashDealMaxAllowedQuantity,
+    this.shippingDays,
+    this.haveHurryUpNotify,
+    this.timeLeftInMinutes,
   });
 
   Cart copyWith({
@@ -308,6 +316,7 @@ class Cart {
     String? image,
     String? vendorName,
     int? quantity,
+    String? uuid,
     double? price,
     int? countOfPieces,
     String? priceFormatted,
@@ -324,6 +333,9 @@ class Cart {
     String? thumbnail,
     DateTime? createdAt,
     dynamic flashDealDetails,
+    int? shippingDays,
+    bool? haveHurryUpNotify,
+    int? timeLeftInMinutes,
     dynamic flashDealMaxAllowedQuantity,
   }) =>
       Cart(
@@ -347,9 +359,13 @@ class Cart {
         tax: tax ?? this.tax,
         discount: discount ?? this.discount,
         slug: slug ?? this.slug,
+        uuid: uuid ?? this.uuid,
         name: name ?? this.name,
         shop: shop ?? this.shop,
         countOfPieces: countOfPieces ?? this.countOfPieces,
+        shippingDays: shippingDays ?? this.shippingDays,
+        haveHurryUpNotify: haveHurryUpNotify ?? this.haveHurryUpNotify,
+        timeLeftInMinutes: timeLeftInMinutes ?? this.timeLeftInMinutes,
         brand: brand ?? this.brand,
         boutique: boutique ?? this.boutique,
         thumbnail: thumbnail ?? this.thumbnail,
@@ -361,6 +377,7 @@ class Cart {
 
   factory Cart.fromJson(Map<String, dynamic> json) => Cart(
         id: json["id"],
+        uuid: json["uuid"],
         customerId: json["customer_id"],
         cartGroupId: json["cart_group_id"],
         productId: json["product_id"],
@@ -398,11 +415,15 @@ class Cart {
             ? null
             : DateTime.parse(json["created_at"]),
         flashDealDetails: json["flash_deal_details"],
+        shippingDays: json["shipping_days"],
+        haveHurryUpNotify: json["have_hurry_up_notify"],
+        timeLeftInMinutes: json["time_left_in_minutes"],
         flashDealMaxAllowedQuantity: json["flash_deal_max_allowed_quantity"],
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
+        "uuid": uuid,
         "image": image,
         "customer_id": customerId,
         "cart_group_id": cartGroupId,
@@ -426,6 +447,9 @@ class Cart {
         "discount": discount,
         "slug": slug,
         "name": name,
+        "shipping_days": shippingDays,
+        "have_hurry_up_notify": haveHurryUpNotify,
+        "time_left_in_minutes": timeLeftInMinutes,
         "shop": shop?.toJson(),
         "brand": brand?.toJson(),
         "boutique": boutique?.toJson(),

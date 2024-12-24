@@ -96,6 +96,8 @@ class _WelcomeSectionState extends State<WelcomeSection> {
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
             onTap: () async {
+              print(
+                  "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%lattttttter");
               clickButton.value = 0;
               Future.delayed(Duration(milliseconds: 100), () {
                 debugPrint(
@@ -227,12 +229,17 @@ class _WelcomeSectionState extends State<WelcomeSection> {
               Future.delayed(
                 Duration(milliseconds: 100),
                 () async {
-                  if (prefsRepository.isVerifiedPhone != false) {
+                  if (prefsRepository.isVerifiedPhone != false ||
+                      ((prefsRepository.marketToken?.length ?? 0) < 5 ||
+                          prefsRepository.myMarketId == "" ||
+                          prefsRepository.myMarketId == null)) {
                     String? deviceId = await HelperFunctions.getDeviceId();
                     BlocProvider.of<AuthBloc>(context)
                         .add(RegisterGuestEvent(deviceId: deviceId!));
                   }
                   if (Navigator.of(context).canPop()) {
+                    print(
+                        "############################################################3");
                     Navigator.of(context).pop();
                   } else {
                     context.go(GRouter.config.applicationRoutes.kBasePage);

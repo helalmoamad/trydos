@@ -253,6 +253,9 @@ class OldCart {
   final DateTime? createdAt;
   final dynamic flashDealDetails;
   final dynamic flashDealMaxAllowedQuantity;
+  final int? shippingDays;
+  final bool? haveHurryUpNotify;
+  final int? timeLeftInMinutes;
 
   OldCart({
     this.id,
@@ -280,6 +283,9 @@ class OldCart {
     this.createdAt,
     this.flashDealDetails,
     this.flashDealMaxAllowedQuantity,
+    this.shippingDays,
+    this.haveHurryUpNotify,
+    this.timeLeftInMinutes,
   });
 
   OldCart copyWith({
@@ -306,6 +312,9 @@ class OldCart {
     String? thumbnail,
     String? image,
     DateTime? createdAt,
+    int? shippingDays,
+    bool? haveHurryUpNotify,
+    int? timeLeftInMinutes,
     dynamic flashDealDetails,
     dynamic flashDealMaxAllowedQuantity,
   }) =>
@@ -329,6 +338,9 @@ class OldCart {
         countOfPieces: countOfPieces ?? this.countOfPieces,
         shop: shop ?? this.shop,
         brand: brand ?? this.brand,
+        shippingDays: shippingDays ?? this.shippingDays,
+        haveHurryUpNotify: haveHurryUpNotify ?? this.haveHurryUpNotify,
+        timeLeftInMinutes: timeLeftInMinutes ?? this.timeLeftInMinutes,
         boutique: boutique ?? this.boutique,
         thumbnail: thumbnail ?? this.thumbnail,
         image: image ?? this.image,
@@ -343,6 +355,9 @@ class OldCart {
         customerId: json["customer_id"],
         cartGroupId: json["cart_group_id"],
         productId: json["product_id"],
+        shippingDays: json["shipping_days"],
+        haveHurryUpNotify: json["have_hurry_up_notify"],
+        timeLeftInMinutes: json["time_left_in_minutes"],
         choices: json["choices"] == null
             ? []
             : List<Choice>.from(
@@ -391,6 +406,9 @@ class OldCart {
         "variant": variant,
         "available_quantity": availableQuantity,
         "max_allowed_qty": maxAllowedQty,
+        "shipping_days": shippingDays,
+        "have_hurry_up_notify": haveHurryUpNotify,
+        "time_left_in_minutes": timeLeftInMinutes,
         "vendor_name": vendorName,
         "quantity": quantity,
         "discount": discount,

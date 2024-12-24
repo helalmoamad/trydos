@@ -3,6 +3,8 @@ import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:stream_transform/stream_transform.dart';
@@ -159,8 +161,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           isFailedTheFirstTime.add('LoginToChatEvent');
         }
         emit(state.copyWith(loginToChatStatus: LoginToChatStatus.failure));
+        showMessage("fail to log in to chat",
+            foreGroundColor: Colors.white,
+            backGroundColor: Colors.black,
+            showInRelease: true,
+            timeShowing: Toast.LENGTH_LONG);
+        _prefsRepository.setVerifiedPhone(false);
       },
       (r) {
+        print(
+            "LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL${r.data!.accessToken}");
         isFailedTheFirstTime.remove('LoginToChatEvent');
         final id = r.data!.id;
         final token = r.data!.accessToken;

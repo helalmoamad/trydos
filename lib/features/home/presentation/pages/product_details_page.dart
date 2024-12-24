@@ -28,6 +28,7 @@ import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/features/home/presentation/pages/cart_page_new.dart';
 import 'package:trydos/features/home/presentation/pages/home_page.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_display_pictures_page.dart';
 import 'package:trydos/features/home/presentation/pages/cart_page.dart';
@@ -81,7 +82,7 @@ class ProductDetailsPage extends StatefulWidget {
 
 class _ProductDetailsPageState extends State<ProductDetailsPage> {
   final ScrollController scrollController = ScrollController();
-  late productListingModel.Products productItem;
+  productListingModel.Products? productItem;
   late HomeBloc homeBloc;
   late ChatBloc chatBloc;
   late AppBloc appBloc;
@@ -91,9 +92,16 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   double? valueOnY;
   final PanelController panelControllerForBuyersCameraShots = PanelController();
   final PanelController panelControllerForReels = PanelController();
-
+  final PanelController panelControllerForCart = PanelController();
+  PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   @override
   void initState() {
+    if ((prefsRepository.marketToken?.length ?? 0) < 5 ||
+        prefsRepository.myMarketId == "" ||
+        prefsRepository.myMarketId == null) {
+      print("NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNIIIIIIIIIIIIIIIIII");
+      context.go(GRouter.config.applicationRoutes.kRegistrationPagePath);
+    }
     if (widget.productItem != null) {
       productItem = widget.productItem!;
     }
@@ -103,21 +111,21 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     appBloc.add(IsFromNotificationByForGround(widget.fromNotification));
     if (widget.productItem != null) {
       homeBloc.add(GetProductDatailsWithoutRelatedProductsEvent(
-          productId: productItem.id.toString()));
+          productId: productItem?.id.toString()));
     }
-    Future.delayed(Duration(seconds: 3), () {
+    Future.delayed(Duration(seconds: 5), () {
       homeBloc.add(GetAndAddCountViewOfProductEvent(
-          productId: productItem.id.toString()));
+          productId: productItem!.id.toString()));
       homeBloc.add(GetCommentForProductEvent(
           productId: widget.productIdForOpeningChatDirectly ??
-              productItem.id.toString()));
+              productItem!.id.toString()));
       homeBloc.add(GetStoryForProductEvent(
           productId: widget.productIdForOpeningChatDirectly ??
-              productItem.id.toString()));
+              productItem!.id.toString()));
     });
     chatBloc.add(GetSharedProductCountEvent(
         productId: widget.productIdForOpeningChatDirectly ??
-            productItem.id.toString()));
+            productItem!.id.toString()));
 
     super.initState();
   }
@@ -167,24 +175,106 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     action: [
                       Padding(
                         padding: const EdgeInsetsDirectional.only(end: 10.0),
-                        child: InkWell(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => CartPage(
-                                    fromeFilters: true,
-                                  ),
-                                ),
-                              );
-                              //////////////////////////////
-                              FirebaseAnalyticsService.logEventForSession(
-                                eventName: AnalyticsEventsConst.buttonClicked,
-                                executedEventName:
-                                    AnalyticsExecutedEventNameConst
-                                        .showShoppingBagButton,
-                              );
-                            },
-                            child: SvgPicture.asset(AppAssets.bagsSvg)),
+                        child: BlocBuilder<HomeBloc, HomeState>(
+                          buildWhen: (previous, current) =>
+                              previous
+                                  .getProductDetailWithoutSimilarRelatedProductsStatus !=
+                              current
+                                  .getProductDetailWithoutSimilarRelatedProductsStatus,
+                          builder: (context, state) {
+                            (productItem?.syncColorImages?.length ?? 0) ~/ 2;
+                            return InkWell(
+                                onTap: () {
+                                  panelControllerForCart.close();
+                                  homeBloc.add(
+                                    AddMultiItemsToCartEvent(
+                                      maxAllowed: state
+                                              .cachedProductWithoutRelatedProductsModel[
+                                                  productItem?.id.toString()]
+                                              ?.product
+                                              ?.maxAllowedQty ??
+                                          "0",
+                                      boutiqueIcon: state
+                                                      .cachedProductWithoutRelatedProductsModel[
+                                                  productItem?.id.toString()] !=
+                                              null
+                                          ? state
+                                                      .cachedProductWithoutRelatedProductsModel[
+                                                          productItem?.id
+                                                              .toString()]!
+                                                      .product!
+                                                      .boutique !=
+                                                  null
+                                              ? state
+                                                          .cachedProductWithoutRelatedProductsModel[
+                                                              productItem?.id
+                                                                  .toString()]!
+                                                          .product!
+                                                          .boutique!
+                                                          .icon !=
+                                                      null
+                                                  ? state
+                                                          .cachedProductWithoutRelatedProductsModel[
+                                                              productItem?.id
+                                                                  .toString()]!
+                                                          .product!
+                                                          .boutique!
+                                                          .icon!
+                                                          .filePath ??
+                                                      ""
+                                                  : ""
+                                              : ""
+                                          : "",
+                                      productSlugForTopic: state
+                                              .cachedProductWithoutRelatedProductsModel[
+                                                  productItem?.id.toString()]
+                                              ?.product
+                                              ?.slugEnTopic ??
+                                          "",
+                                      boutiqueId: state
+                                                      .cachedProductWithoutRelatedProductsModel[
+                                                  productItem?.id.toString()] !=
+                                              null
+                                          ? state
+                                                      .cachedProductWithoutRelatedProductsModel[
+                                                          productItem?.id
+                                                              .toString()]!
+                                                      .product!
+                                                      .boutique !=
+                                                  null
+                                              ? state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                                      productItem?.id
+                                                          .toString()]!
+                                                  .product!
+                                                  .boutique!
+                                                  .id!
+                                              : 0
+                                          : 0,
+                                      products:
+                                          widget.productItem ?? productItem!,
+                                      id: productItem?.id.toString(),
+                                    ),
+                                  );
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => CartPage(
+                                        fromeFilters: true,
+                                      ),
+                                    ),
+                                  );
+                                  //////////////////////////////
+                                  FirebaseAnalyticsService.logEventForSession(
+                                    eventName:
+                                        AnalyticsEventsConst.buttonClicked,
+                                    executedEventName:
+                                        AnalyticsExecutedEventNameConst
+                                            .showShoppingBagButton,
+                                  );
+                                },
+                                child: SvgPicture.asset(AppAssets.bagsSvg));
+                          },
+                        ),
                       ),
                       LanguageService.rtl ? Spacer() : SizedBox.shrink(),
                     ],
@@ -237,8 +327,11 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         p.cachedProductWithoutRelatedProductsModel !=
                             c.cachedProductWithoutRelatedProductsModel,
                     builder: (context, state) {
-                      print(".........................................");
-                      String productId = productItem.id.toString();
+                      print(
+                          "...............${state.cachedProductWithoutRelatedProductsModel[productItem?.id.toString()]!.product!.variation?[0].type}..........................");
+                      String productId =
+                          widget.productIdForOpeningChatDirectly ??
+                              productItem!.id.toString();
                       /*     if (state
                                 .getProductDetailWithoutSimilarRelatedProductsStatus ==
                             GetProductDetailWithoutSimilarRelatedProductsStatus
@@ -257,21 +350,21 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
 
                       int currentSelectedColor = state
                               .currentSelectedColorForEveryProduct[productId] ??
-                          (productItem.syncColorImages?.length ?? 0) ~/ 2;
+                          (productItem?.syncColorImages?.length ?? 0) ~/ 2;
 
                       homeBloc.add(AddSizesFotColorsEvent(
-                          currentColorName: !productItem.colors.isNullOrEmpty
-                              ? productItem
+                          currentColorName: !productItem!.colors.isNullOrEmpty
+                              ? productItem!
                                       .colors![currentSelectedColor].name ??
                                   ""
                               : "",
                           variation:
                               state.cachedProductWithoutRelatedProductsModel[
-                                          productItem.id.toString()] !=
+                                          productItem?.id.toString()] !=
                                       null
                                   ? state
                                       .cachedProductWithoutRelatedProductsModel[
-                                          productItem.id.toString()]!
+                                          productItem?.id.toString()]!
                                       .product!
                                       .variation
                                   : null));
@@ -295,15 +388,15 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                   child: ScrollConfiguration(
                                     behavior: const CupertinoScrollBehavior(),
                                     child: ListView.separated(
-                                      itemCount: productItem
+                                      itemCount: productItem!
                                               .syncColorImages.isNullOrEmpty
-                                          ? productItem.images!.length
-                                          : !productItem
+                                          ? productItem!.images!.length
+                                          : !productItem!
                                                   .syncColorImages![
                                                       currentSelectedColor]
                                                   .images
                                                   .isNullOrEmpty
-                                              ? productItem
+                                              ? productItem!
                                                   .syncColorImages![
                                                       currentSelectedColor]
                                                   .images!
@@ -342,11 +435,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                             HelperFunctions.slidingNavigation(
                                               context,
                                               ProductDetailsDisplayPicturesPage(
-                                                images: productItem
+                                                currentIndex: index,
+                                                images: productItem!
                                                         .syncColorImages
                                                         .isNullOrEmpty
-                                                    ? productItem.images ?? []
-                                                    : productItem
+                                                    ? productItem!.images ?? []
+                                                    : productItem!
                                                             .syncColorImages![
                                                                 currentSelectedColor]
                                                             .images ??
@@ -364,34 +458,34 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                             );
                                           },
                                           child: ProductDetailsImageWidget(
-                                            orginalHeight: productItem
+                                            orginalHeight: productItem!
                                                     .syncColorImages
                                                     .isNullOrEmpty
-                                                ? double.parse(productItem
+                                                ? double.parse(productItem!
                                                     .images![index]
                                                     .originalHeight!)
-                                                : double.parse(productItem
+                                                : double.parse(productItem!
                                                     .syncColorImages![
                                                         currentSelectedColor]
                                                     .images![index]
                                                     .originalHeight!),
-                                            orginalWidth: productItem
+                                            orginalWidth: productItem!
                                                     .syncColorImages
                                                     .isNullOrEmpty
-                                                ? double.parse(productItem
+                                                ? double.parse(productItem!
                                                     .images![index]
                                                     .originalWidth!)
-                                                : double.parse(productItem
+                                                : double.parse(productItem!
                                                     .syncColorImages![
                                                         currentSelectedColor]
                                                     .images![index]
                                                     .originalWidth!),
-                                            imageUrl: productItem
+                                            imageUrl: productItem!
                                                     .syncColorImages
                                                     .isNullOrEmpty
-                                                ? productItem
+                                                ? productItem!
                                                     .images![index].filePath!
-                                                : productItem
+                                                : productItem!
                                                     .syncColorImages![
                                                         currentSelectedColor]
                                                     .images![index]
@@ -415,18 +509,18 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                               ],
                             ),
                             ProductDetailsTitle(
-                              productId: productItem.id.toString(),
+                              productId: productItem!.id.toString(),
                               orginalHeight: double.parse(
-                                  productItem.thumbnail!.originalHeight!),
+                                  productItem!.thumbnail!.originalHeight!),
                               orginalWidth: double.parse(
-                                  productItem.thumbnail!.originalWidth!),
-                              brand: productItem.brand,
-                              productName: productItem.name ?? "",
-                              thumbnail: (!productItem
+                                  productItem!.thumbnail!.originalWidth!),
+                              brand: productItem!.brand,
+                              productName: productItem!.name ?? "",
+                              thumbnail: (!productItem!
                                           .syncColorImages.isNullOrEmpty &&
-                                      !productItem.syncColorImages![0].images
+                                      !productItem!.syncColorImages![0].images
                                           .isNullOrEmpty)
-                                  ? (productItem
+                                  ? (productItem!
                                           .syncColorImages![
                                               currentSelectedColor]
                                           .images![0]
@@ -436,10 +530,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                   : widget.productItem?.thumbnail?.filePath ??
                                       "",
                               colorName:
-                                  !productItem.syncColorImages.isNullOrEmpty &&
-                                          !productItem.syncColorImages![0]
+                                  !productItem!.syncColorImages.isNullOrEmpty &&
+                                          !productItem!.syncColorImages![0]
                                               .images.isNullOrEmpty
-                                      ? productItem
+                                      ? productItem!
                                               .syncColorImages![
                                                   currentSelectedColor]
                                               .colorName ??
@@ -448,11 +542,11 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             ),
 
                             if (!state.cachedProductWithoutRelatedProductsModel
-                                .containsKey(productItem.id.toString())) ...{
+                                .containsKey(productItem!.id.toString())) ...{
                               SizedBox.shrink()
                             } else ...{
                               ProductDetailsDescriptionWidget(
-                                description: productItem.details ?? " ",
+                                description: productItem!.details ?? " ",
                               ),
                               SizedBox(
                                 height: 12,
@@ -460,7 +554,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                               BadgesList(
                                 lable: state
                                         .cachedProductWithoutRelatedProductsModel[
-                                            productItem.id.toString()]!
+                                            productItem!.id.toString()]!
                                         .product!
                                         .labels ??
                                     [],
@@ -470,10 +564,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                               height: 15,
                             ),
                             if (!state.cachedProductWithoutRelatedProductsModel
-                                    .containsKey(productItem.id.toString()) ||
+                                    .containsKey(productItem!.id.toString()) ||
                                 state
                                     .cachedProductWithoutRelatedProductsModel[
-                                        productItem.id.toString()]!
+                                        productItem!.id.toString()]!
                                     .product!
                                     .descriptors
                                     .isNullOrEmpty) ...{
@@ -486,7 +580,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                     child: ListView.separated(
                                       itemCount: state
                                           .cachedProductWithoutRelatedProductsModel[
-                                              productItem.id.toString()]!
+                                              productItem!.id.toString()]!
                                           .product!
                                           .descriptors!
                                           .length,
@@ -499,7 +593,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                         return ProductDetailsChipWidget(
                                           withIcon: state
                                                   .cachedProductWithoutRelatedProductsModel[
-                                                      productItem.id
+                                                      productItem!.id
                                                           .toString()]!
                                                   .product!
                                                   .descriptors![index]
@@ -508,7 +602,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                               null,
                                           descriptor: state
                                               .cachedProductWithoutRelatedProductsModel[
-                                                  productItem.id.toString()]!
+                                                  productItem!.id.toString()]!
                                               .product!
                                               .descriptors![index],
                                         );
@@ -524,9 +618,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             SizedBox(
                               height: 15,
                             ),
-                            if (!productItem.syncColorImages.isNullOrEmpty) ...{
+                            if (!productItem!
+                                .syncColorImages.isNullOrEmpty) ...{
                               DisplayColorsCard(
-                                productItem: productItem,
+                                productItem: productItem!,
                                 scrollController: scrollController,
                                 currentColorForProduct: currentSelectedColor,
                               ),
@@ -535,22 +630,22 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                               ),
                             },
                             if (!state.cachedProductWithoutRelatedProductsModel
-                                    .containsKey(productItem.id.toString()) ||
+                                    .containsKey(productItem!.id.toString()) ||
                                 state
                                     .cachedProductWithoutRelatedProductsModel[
-                                        productItem.id.toString()]!
+                                        productItem!.id.toString()]!
                                     .product!
                                     .choiceOptions
                                     .isNullOrEmpty) ...{
                               SizedBox.shrink()
                             } else ...{
                               DisplaySizesCard(
-                                productItem: productItem,
+                                productItem: productItem!,
                                 currentColorForProduct: currentSelectedColor,
                                 scrollController: scrollController,
                                 variation: state
                                     .cachedProductWithoutRelatedProductsModel[
-                                        productItem.id.toString()]!
+                                        productItem!.id.toString()]!
                                     .product!
                                     .variation,
                               ),
@@ -560,12 +655,33 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             },
                             // ProductStoriesCard(),
                             ProductStoriesCard(),
-                            ProductShippingAndDelivery(),
+                            ProductShippingAndDelivery(
+                              shippingDay:
+                                  (state.cachedProductWithoutRelatedProductsModel[
+                                                  productItem!.id.toString()] !=
+                                              null
+                                          ? state
+                                                      .cachedProductWithoutRelatedProductsModel[
+                                                          productItem!.id
+                                                              .toString()]!
+                                                      .product !=
+                                                  null
+                                              ? state
+                                                      .cachedProductWithoutRelatedProductsModel[
+                                                          productItem!.id
+                                                              .toString()]!
+                                                      .product!
+                                                      .shippingDays ??
+                                                  0
+                                              : 0
+                                          : 0)
+                                      .toString(),
+                            ),
                             SizedBox(
                               height: 15,
                             ),
                             BuyersCameraShots(
-                              productItem: productItem,
+                              productItem: productItem!,
                               panelControllerForBuyersCameraShots:
                                   panelControllerForBuyersCameraShots,
                             ),
@@ -603,68 +719,62 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                 }
                 return BlocBuilder<HomeBloc, HomeState>(
                   buildWhen: (previous, current) =>
-                      previous.CurrentColorSizeForCart?["size"] !=
-                          current.CurrentColorSizeForCart?["size"] ||
                       previous.currentSelectedColorForEveryProduct !=
                           current.currentSelectedColorForEveryProduct ||
                       previous.getProductDetailWithoutSimilarRelatedProductsStatus !=
                           current
                               .getProductDetailWithoutSimilarRelatedProductsStatus,
                   builder: (context, state) {
-                    String productId = productItem.id.toString();
+                    String productId = productItem!.id.toString();
                     int currentSelectedColor =
                         state.currentSelectedColorForEveryProduct[productId] ??
-                            (productItem.syncColorImages?.length ?? 0) ~/ 2;
+                            (productItem!.syncColorImages?.length ?? 0) ~/ 2;
                     return ProductDetailsBottomSheet(
+                      panelController: panelControllerForCart,
                       productSlugForTopic: state
                               .cachedProductWithoutRelatedProductsModel[
-                                  productItem.id.toString()]
+                                  productItem!.id.toString()]
                               ?.product
                               ?.slugEnTopic ??
                           "",
                       productDescription:
-                          HtmlParser.parseHTML(productItem.details ?? "").text,
+                          HtmlParser.parseHTML(productItem!.details ?? "").text,
                       countOfPieces:
                           state.cachedProductWithoutRelatedProductsModel[
-                                      productItem.id.toString()] !=
+                                      productItem!.id.toString()] !=
                                   null
                               ? state
                                       .cachedProductWithoutRelatedProductsModel[
-                                          productItem.id.toString()]!
+                                          productItem!.id.toString()]!
                                       .product!
                                       .countOfPieces ??
                                   0
                               : 0,
-                      currentSize: state.CurrentColorSizeForCart != null
-                          ? state.CurrentColorSizeForCart!["size"] ?? ""
-                          : "",
                       addToBagButtonShapeNotifier: addToBagButtonShapeNotifier,
-                      sizes: state.sizes ?? [],
-                      sizesQuantities: state.sizesQuantities ?? [],
-                      currentColornum: productItem.colors.isNullOrEmpty
+                      currentColornum: productItem!.colors.isNullOrEmpty
                           ? ''
-                          : productItem.colors![currentSelectedColor].color ??
+                          : productItem!.colors![currentSelectedColor].color ??
                               "",
                       boutiqueIcon: state
                                       .cachedProductWithoutRelatedProductsModel[
-                                  productItem.id.toString()] !=
+                                  productItem!.id.toString()] !=
                               null
                           ? state
                                       .cachedProductWithoutRelatedProductsModel[
-                                          productItem.id.toString()]!
+                                          productItem!.id.toString()]!
                                       .product!
                                       .boutique !=
                                   null
                               ? state
                                           .cachedProductWithoutRelatedProductsModel[
-                                              productItem.id.toString()]!
+                                              productItem!.id.toString()]!
                                           .product!
                                           .boutique!
                                           .icon !=
                                       null
                                   ? state
                                           .cachedProductWithoutRelatedProductsModel[
-                                              productItem.id.toString()]!
+                                              productItem!.id.toString()]!
                                           .product!
                                           .boutique!
                                           .icon!
@@ -675,31 +785,31 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           : "",
                       boutiqueId: state
                                       .cachedProductWithoutRelatedProductsModel[
-                                  productItem.id.toString()] !=
+                                  productItem!.id.toString()] !=
                               null
                           ? state
                                       .cachedProductWithoutRelatedProductsModel[
-                                          productItem.id.toString()]!
+                                          productItem!.id.toString()]!
                                       .product!
                                       .boutique !=
                                   null
                               ? state
                                   .cachedProductWithoutRelatedProductsModel[
-                                      productItem.id.toString()]!
+                                      productItem!.id.toString()]!
                                   .product!
                                   .boutique!
                                   .id!
                               : 0
                           : 0,
-                      currentColorName: productItem.colors.isNullOrEmpty
+                      currentColorName: productItem!.colors.isNullOrEmpty
                           ? ''
-                          : productItem.colors![currentSelectedColor].name ??
+                          : productItem!.colors![currentSelectedColor].name ??
                               "",
-                      productItem: productItem,
+                      productItem: productItem!,
                       currentColor: currentSelectedColor,
                       maxAllowedToAddCart: state
                               .cachedProductWithoutRelatedProductsModel[
-                                  productItem.id.toString()]
+                                  productItem!.id.toString()]
                               ?.product
                               ?.maxAllowedQty ??
                           "0",

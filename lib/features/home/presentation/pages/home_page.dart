@@ -77,6 +77,7 @@ class _HomePageState extends State<HomePage> {
     homeBloc = BlocProvider.of<HomeBloc>(context);
 
     appBloc.add(ChangeIndexForSearch(0));
+    homeBloc.add(GetPopularSearchItemEvent());
     homeBloc.add(GetProductsWithFiltersEvent(
         boutiqueSlug: "search",
         cashedOrginalBoutique: true,

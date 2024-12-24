@@ -24,6 +24,11 @@ abstract class AppAssets {
   /// region SVG Section
   static String get logoSvg => 'logo'.svg;
   static String get countItemSvg => 'countitem'.svg;
+  static String get shappingCartSvg => 'shipping_cart'.svg;
+  static String get giftCartSvg => 'gift_cart'.svg;
+  static String get totalDiscountCartSvg => 'total_discount_cart'.svg;
+  static String get expandDetaileSvg => 'expand_details'.svg;
+  static String get alarmClockSvg => 'alarm_clock'.svg;
   static String get sizeSvg => 'size'.svg;
   static String get adresswSvg => 'adressw'.svg;
   static String get logoIconSvg => 'logo_icon'.svg;
@@ -57,6 +62,7 @@ abstract class AppAssets {
   static String get chromeIconSvg => 'chrome_icon'.svg;
   static String get indicatorSvg => 'indicator'.svg;
   static String get dressSvg => 'dress'.svg;
+  static String get shappingCartNew => 'shipping_cart_new'.svg;
   static String get emptySvg => 'empty'.svg;
   static String get colorIndicatorSvg => 'color_indicator'.svg;
   static String get textSvg => 'text'.svg;
@@ -147,6 +153,11 @@ abstract class AppAssets {
   static String get copyIconSvg => 'copy_icon'.svg;
   static String get removeIconSvg => 'remove_icon'.svg;
   static String get editIconSvg => 'edit_icon'.svg;
+  static String get removeCartSvg => 'remove_cart'.svg;
+  static String get deletecartSvg => 'delete_cart'.svg;
+  static String get chatWithQuestionSvg => 'chat_with_question'.svg;
+  static String get towCartSvg => 'tow_cart'.svg;
+  static String get addCartSvg => 'add_cart'.svg;
   static String get notificationIconSvg => 'notification_icon'.svg;
   static String get notificationOutlinedIconSvg =>
       'notification_outlined_icon'.svg;

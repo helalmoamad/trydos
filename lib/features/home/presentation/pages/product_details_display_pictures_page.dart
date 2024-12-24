@@ -16,7 +16,9 @@ import '../widgets/product_details_body/product_details_image_widget.dart';
 
 class ProductDetailsDisplayPicturesPage extends StatefulWidget {
   final List<listing.Thumbnail> images;
-  const ProductDetailsDisplayPicturesPage({super.key, required this.images});
+  final int currentIndex;
+  const ProductDetailsDisplayPicturesPage(
+      {super.key, required this.images, required this.currentIndex});
 
   @override
   State<ProductDetailsDisplayPicturesPage> createState() =>
@@ -25,8 +27,6 @@ class ProductDetailsDisplayPicturesPage extends StatefulWidget {
 
 class _ProductDetailsDisplayPicturesPageState
     extends State<ProductDetailsDisplayPicturesPage> {
-  final ValueNotifier<int> selectedPicture = ValueNotifier(0);
-
   @override
   void didChangeDependencies() {
     FirebaseAnalyticsService.logScreen(
@@ -37,6 +37,8 @@ class _ProductDetailsDisplayPicturesPageState
 
   @override
   Widget build(BuildContext context) {
+    final ValueNotifier<int> selectedPicture =
+        ValueNotifier(widget.currentIndex);
     FlutterError.onError = (error) {
       debugPrint(error.toString());
     };

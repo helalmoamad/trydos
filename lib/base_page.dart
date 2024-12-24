@@ -11,6 +11,7 @@ import 'package:trydos/features/app/country_dropdown.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/features/home/presentation/pages/cart_page_new.dart';
 import 'package:trydos/features/search/presentation/pages/search_page.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
@@ -540,6 +541,8 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
       } else {
         Message message = Message.fromJson(remoteMessage['message']);
         String prevMessageId = remoteMessage['prev_message_id'].toString();
+        print(
+            "######222222222222222222222222222222222222222#############11111111111111111111111111111111111111111111#################################################${message.senderUserId}###################${message.receiverUserId}");
         chatBloc.add(AddChannelToChannels(message: message));
         chatBloc.add(ReceiveMessageEvent(
             message: message, prevMessageId: prevMessageId));

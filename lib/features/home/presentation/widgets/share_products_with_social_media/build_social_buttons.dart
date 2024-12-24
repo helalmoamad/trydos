@@ -11,9 +11,14 @@ import '../../../../../service/firebase_analytics_service/firebase_analytics_ser
 Widget buildSocialButtons(
     {required String text,
     required String productSlugForULr,
-    required String productId}) {
+    required String productId,
+    required String currentColor,
+    required String currentSize}) {
   String urlProductToShare =
-      "https://trydos-front-git-development-trydos-front-team.vercel.app/products/$productSlugForULr";
+      "https://trydos-front.vercel.app/tr-en/products/$productSlugForULr" +
+          (currentColor.length > 1 || currentSize.length > 1 ? "?" : "") +
+          (currentColor.length > 1 ? "color=$currentColor" : "") +
+          (currentSize.length > 1 ? "&size=$currentSize" : "");
   return Card(
     child: Row(
       mainAxisAlignment: MainAxisAlignment.center,

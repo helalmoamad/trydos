@@ -16,6 +16,7 @@ class ProductDetailsImageWidget extends StatelessWidget {
       this.imageFit,
       this.imageHeight,
       this.orginalHeight,
+      this.blurRadius = 10,
       this.imageWidth,
       this.orginalWidth,
       this.height,
@@ -25,6 +26,7 @@ class ProductDetailsImageWidget extends StatelessWidget {
   final double? height;
   final double? imageWidth;
   final double? imageHeight;
+  final double? blurRadius;
   final double? orginalWidth;
   final double? orginalHeight;
   final double? radius;
@@ -54,7 +56,7 @@ class ProductDetailsImageWidget extends StatelessWidget {
                     BoxShadow(
                       color: context.colorScheme.black.withOpacity(0.1),
                       offset: Offset(0, 0),
-                      blurRadius: 10,
+                      blurRadius: blurRadius ?? 10,
                     ),
                   ]
                 : null,

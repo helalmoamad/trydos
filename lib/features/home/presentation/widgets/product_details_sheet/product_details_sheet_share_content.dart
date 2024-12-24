@@ -35,10 +35,14 @@ class ProductDetailsSheetShareContent extends cupertino.StatefulWidget {
       required this.idsOfChatCardsToShare,
       required this.focusNode,
       required this.productItem,
+      required this.currentColor,
+      required this.currentSize,
       required this.productDescription,
       this.scrollController});
 
   final FocusNode focusNode;
+  final String currentColor;
+  final String currentSize;
   final product.Products productItem;
   final String productDescription;
   final ValueNotifier<List<String>> idsOfChatCardsToShare;
@@ -86,10 +90,7 @@ class _ProductDetailsSheetShareContentState
                   )),
             ],
           ),
-          if (GetIt.I<PrefsRepository>().chatToken == null) ...{
-            SizedBox(
-              height: 50,
-            ),
+          if (!(GetIt.I<PrefsRepository>().isVerifiedPhone ?? false)) ...{
             cupertino.Container(
               height: 280.h,
               child: cupertino.Column(
@@ -102,9 +103,6 @@ class _ProductDetailsSheetShareContentState
                   cupertino.Spacer(),
                 ],
               ),
-            ),
-            SizedBox(
-              height: 50,
             ),
           } else ...{
             10.verticalSpace,
@@ -237,6 +235,8 @@ class _ProductDetailsSheetShareContentState
                 }),
           },
           buildSocialButtons(
+              currentColor: widget.currentColor,
+              currentSize: widget.currentSize,
               text: "${widget.productDescription}",
               productSlugForULr: widget.productItem.slug ?? "",
               productId: widget.productItem.id.toString()),

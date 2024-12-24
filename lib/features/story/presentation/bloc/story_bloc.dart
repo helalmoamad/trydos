@@ -6,11 +6,14 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mime_type/mime_type.dart';
 import 'package:stream_transform/stream_transform.dart';
+import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/features/story/domain/useCases/get_stories_usecase.dart';
@@ -291,6 +294,11 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
     final response = await addStoryToOurServerUseCase(AddStoryToOurServerParams(
         filePath: event.filePath, isVideo: event.isVideo));
     response.fold((l) {
+      showMessage("Faild To Add Your Story",
+          foreGroundColor: Colors.white,
+          backGroundColor: Colors.black,
+          showInRelease: true,
+          timeShowing: Toast.LENGTH_LONG);
       if (isFailedTheFirstTime.contains('AddStoryToOurServerEvent')) {
         isFailedTheFirstTime.remove('AddStoryToOurServerEvent');
 
@@ -306,6 +314,7 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
             height: event.height));
       }
     }, (r) {
+      add(GetStoryEvent());
       isFailedTheFirstTime.remove('AddStoryToOurServerEvent');
       String fileName = event.filePath.split('/').last;
       String mimeType = mime(fileName) ?? '';

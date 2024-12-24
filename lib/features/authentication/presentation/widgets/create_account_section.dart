@@ -172,10 +172,16 @@ class CreateAccountSection extends StatelessWidget {
           highlightColor: Colors.transparent,
           splashColor: Colors.transparent,
           onTap: () async {
+            print(
+                "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
             Future.delayed(
               Duration(milliseconds: 100),
               () async {
-                if (GetIt.I<PrefsRepository>().isVerifiedPhone != false) {
+                if (GetIt.I<PrefsRepository>().isVerifiedPhone != false ||
+                    ((GetIt.I<PrefsRepository>().marketToken?.length ?? 0) <
+                            5 ||
+                        GetIt.I<PrefsRepository>().myMarketId == "" ||
+                        GetIt.I<PrefsRepository>().myMarketId == null)) {
                   String? deviceId = await HelperFunctions.getDeviceId();
                   BlocProvider.of<AuthBloc>(context)
                       .add(RegisterGuestEvent(deviceId: deviceId!));

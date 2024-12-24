@@ -149,6 +149,8 @@ import '../../features/home/domain/use_cases/get_main_categories_usecase.dart'
     as _i158;
 import '../../features/home/domain/use_cases/get_old_cart_item_usecase.dart'
     as _i318;
+import '../../features/home/domain/use_cases/get_popular_search_terms_usecase.dart'
+    as _i963;
 import '../../features/home/domain/use_cases/get_product_detail_without_related_products_uswcase.dart'
     as _i347;
 import '../../features/home/domain/use_cases/get_product_filters_usecase.dart'
@@ -337,6 +339,8 @@ Future<_i174.GetIt> $initGetIt(
       () => _i366.StoreFcmTokenOfMarketUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i802.UpdateItemInCartUseCase>(
       () => _i802.UpdateItemInCartUseCase(gh<_i0.HomeRepository>()));
+  gh.factory<_i963.GetPopularSearchItemUseCase>(
+      () => _i963.GetPopularSearchItemUseCase(gh<_i0.HomeRepository>()));
   gh.lazySingleton<_i801.HomeBloc>(() => _i801.HomeBloc(
         gh<_i158.GetMainCategoriesUseCase>(),
         gh<_i533.GetStoryForProductUseCase>(),
@@ -357,6 +361,7 @@ Future<_i174.GetIt> $initGetIt(
         gh<_i912.GetWidthAndHeightUseCase>(),
         gh<_i347.GetProductDetailWithoutRelatedProductsUseCase>(),
         gh<_i815.GetStartingSettingsUseCase>(),
+        gh<_i963.GetPopularSearchItemUseCase>(),
         gh<_i762.GetCurrencyForCountryUseCase>(),
         gh<_i104.HideItemsInOldCartUseCase>(),
         gh<_i149.GetFullProductDetailsUseCase>(),
