@@ -80,7 +80,15 @@ class _CartPageState extends State<CartPage> {
     if ((prefsRepository.marketToken?.length ?? 0) < 5 ||
         prefsRepository.marketToken == "" ||
         prefsRepository.marketToken == null) {
-      context.go(GRouter.config.applicationRoutes.kRegistrationPagePath);
+      print(
+          "#############################dddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
+
+      Future.delayed(
+        Duration(seconds: 2),
+        () {
+          context.go(GRouter.config.applicationRoutes.kRegistrationPagePath);
+        },
+      );
     }
     isExpanded.value = false;
     appBloc = BlocProvider.of<AppBloc>(context);
@@ -545,10 +553,10 @@ class _CartPageState extends State<CartPage> {
                                                   ? 100.h
                                                   : expanded
                                                       ? !isverified
-                                                          ? 700.h
+                                                          ? 720.h
                                                           : 425.h
                                                       : !isverified
-                                                          ? 500.h
+                                                          ? 550.h
                                                           : 176.h,
                                           width: 1.sw,
                                           child: Column(
@@ -1438,116 +1446,25 @@ class _CartPageState extends State<CartPage> {
                                                 !isverified
                                                     ? Container(
                                                         height: 200,
-                                                        child: PageView(
-                                                            physics:
-                                                                NeverScrollableScrollPhysics(),
-                                                            controller:
-                                                                pageController,
-                                                            children: [
-                                                              InsertPhoneTab(
-                                                                fromLogin:
-                                                                    false,
-                                                                focusNode:
-                                                                    focusNode,
-                                                                moveToNextStep:
-                                                                    (String
-                                                                        phoneNumber) {
-                                                                  this.phoneNumber =
-                                                                      phoneNumber
-                                                                          .replaceAll(
-                                                                              ' ',
-                                                                              '');
-                                                                  pageController.animateToPage(1,
-                                                                      duration: Duration(
-                                                                          milliseconds:
-                                                                              500),
-                                                                      curve: Curves
-                                                                          .easeInOut);
-                                                                  setState(
-                                                                      () {});
-                                                                },
-                                                              ),
-                                                              VerificationMethods(
-                                                                phoneNumber:
-                                                                    phoneNumber,
-                                                                onChooseWhatsapp:
-                                                                    () {
-                                                                  isVisWhatsApp =
-                                                                      1;
-                                                                  print(
-                                                                      "###################33333#${isVisWhatsApp}");
-                                                                  pageController.animateToPage(2,
-                                                                      duration: Duration(
-                                                                          milliseconds:
-                                                                              500),
-                                                                      curve: Curves
-                                                                          .easeInOut);
-
-                                                                  if (prefsRepository
-                                                                          .isTimerForOtpRunning ??
-                                                                      false) {
-                                                                    showMessage(
-                                                                        '${LocaleKeys.you_must_wait_for_some_seconds_before_try_again.tr()}');
-                                                                    return;
-                                                                  }
-                                                                  authBloc.add(SendOtpEvent(
-                                                                      phone:
-                                                                          phoneNumber,
-                                                                      isViaWhatsApp:
-                                                                          1));
-                                                                },
-                                                                goBackToPhone:
-                                                                    () {
-                                                                  pageController.animateToPage(0,
-                                                                      duration: Duration(
-                                                                          milliseconds:
-                                                                              500),
-                                                                      curve: Curves
-                                                                          .easeInOut);
-                                                                },
-                                                                onChooseSms:
-                                                                    () {
-                                                                  isVisWhatsApp =
-                                                                      0;
-                                                                  pageController.animateToPage(3,
-                                                                      duration: Duration(
-                                                                          milliseconds:
-                                                                              500),
-                                                                      curve: Curves
-                                                                          .easeInOut);
-                                                                  authBloc.add(SendOtpEvent(
-                                                                      phone:
-                                                                          phoneNumber,
-                                                                      isViaWhatsApp:
-                                                                          0));
-                                                                },
-                                                              ),
-                                                              VerifyOtp(
-                                                                  fromCart:
-                                                                      true,
-                                                                  isVisWhatsApp:
-                                                                      isVisWhatsApp,
-                                                                  navigateToAddName:
-                                                                      () {},
-                                                                  navigateTocart:
-                                                                      () {
-                                                                    isVerified
-                                                                            .value =
-                                                                        true;
-                                                                  },
+                                                        child: Stack(children: [
+                                                          PageView(
+                                                              physics:
+                                                                  NeverScrollableScrollPhysics(),
+                                                              controller:
+                                                                  pageController,
+                                                              children: [
+                                                                InsertPhoneTab(
                                                                   fromLogin:
                                                                       false,
-                                                                  onLoginFailed:
-                                                                      () {
-                                                                    pageController.animateToPage(
-                                                                        3,
-                                                                        duration: Duration(
-                                                                            milliseconds:
-                                                                                500),
-                                                                        curve: Curves
-                                                                            .easeInOut);
-                                                                  },
-                                                                  goBack: () {
+                                                                  focusNode:
+                                                                      focusNode,
+                                                                  moveToNextStep:
+                                                                      (String
+                                                                          phoneNumber) {
+                                                                    this.phoneNumber =
+                                                                        phoneNumber.replaceAll(
+                                                                            ' ',
+                                                                            '');
                                                                     pageController.animateToPage(
                                                                         1,
                                                                         duration: Duration(
@@ -1555,16 +1472,146 @@ class _CartPageState extends State<CartPage> {
                                                                                 500),
                                                                         curve: Curves
                                                                             .easeInOut);
+                                                                    setState(
+                                                                        () {});
                                                                   },
-                                                                  methodIcon: isVisWhatsApp ==
-                                                                          1
-                                                                      ? AppAssets
-                                                                          .whatsappSvg
-                                                                      : AppAssets
-                                                                          .smsSvg,
+                                                                ),
+                                                                VerificationMethods(
                                                                   phoneNumber:
-                                                                      phoneNumber),
-                                                            ]),
+                                                                      phoneNumber,
+                                                                  onChooseWhatsapp:
+                                                                      () {
+                                                                    isVisWhatsApp =
+                                                                        1;
+                                                                    print(
+                                                                        "###################33333#${isVisWhatsApp}");
+                                                                    pageController.animateToPage(
+                                                                        2,
+                                                                        duration: Duration(
+                                                                            milliseconds:
+                                                                                500),
+                                                                        curve: Curves
+                                                                            .easeInOut);
+
+                                                                    if (prefsRepository
+                                                                            .isTimerForOtpRunning ??
+                                                                        false) {
+                                                                      showMessage(
+                                                                          '${LocaleKeys.you_must_wait_for_some_seconds_before_try_again.tr()}');
+                                                                      return;
+                                                                    }
+                                                                    authBloc.add(SendOtpEvent(
+                                                                        phone:
+                                                                            phoneNumber,
+                                                                        isViaWhatsApp:
+                                                                            1));
+                                                                  },
+                                                                  goBackToPhone:
+                                                                      () {
+                                                                    pageController.animateToPage(
+                                                                        0,
+                                                                        duration: Duration(
+                                                                            milliseconds:
+                                                                                500),
+                                                                        curve: Curves
+                                                                            .easeInOut);
+                                                                  },
+                                                                  onChooseSms:
+                                                                      () {
+                                                                    isVisWhatsApp =
+                                                                        0;
+                                                                    pageController.animateToPage(
+                                                                        3,
+                                                                        duration: Duration(
+                                                                            milliseconds:
+                                                                                500),
+                                                                        curve: Curves
+                                                                            .easeInOut);
+                                                                    authBloc.add(SendOtpEvent(
+                                                                        phone:
+                                                                            phoneNumber,
+                                                                        isViaWhatsApp:
+                                                                            0));
+                                                                  },
+                                                                ),
+                                                                VerifyOtp(
+                                                                    fromCart:
+                                                                        true,
+                                                                    isVisWhatsApp:
+                                                                        isVisWhatsApp,
+                                                                    navigateToAddName:
+                                                                        () {},
+                                                                    navigateTocart:
+                                                                        () {
+                                                                      isVerified
+                                                                              .value =
+                                                                          true;
+                                                                    },
+                                                                    fromLogin:
+                                                                        false,
+                                                                    onLoginFailed:
+                                                                        () {
+                                                                      pageController.animateToPage(
+                                                                          3,
+                                                                          duration: Duration(
+                                                                              milliseconds:
+                                                                                  500),
+                                                                          curve:
+                                                                              Curves.easeInOut);
+                                                                    },
+                                                                    goBack: () {
+                                                                      pageController.animateToPage(
+                                                                          1,
+                                                                          duration: Duration(
+                                                                              milliseconds:
+                                                                                  500),
+                                                                          curve:
+                                                                              Curves.easeInOut);
+                                                                    },
+                                                                    methodIcon: isVisWhatsApp ==
+                                                                            1
+                                                                        ? AppAssets
+                                                                            .whatsappSvg
+                                                                        : AppAssets
+                                                                            .smsSvg,
+                                                                    phoneNumber:
+                                                                        phoneNumber),
+                                                              ]),
+                                                          Positioned(
+                                                            top: 0,
+                                                            left: LanguageService
+                                                                        .languageCode ==
+                                                                    "en"
+                                                                ? null
+                                                                : 0,
+                                                            right: LanguageService
+                                                                        .languageCode ==
+                                                                    "en"
+                                                                ? 0
+                                                                : null,
+                                                            child: Container(
+                                                              margin: EdgeInsets
+                                                                  .all(10),
+                                                              height: 20,
+                                                              width: 40,
+                                                              child: InkWell(
+                                                                  onTap: () =>
+                                                                      isVerified
+                                                                              .value =
+                                                                          true,
+                                                                  child:
+                                                                      SvgPicture
+                                                                          .asset(
+                                                                    AppAssets
+                                                                        .closeSvg,
+                                                                    height: 15,
+                                                                    width: 30,
+                                                                    color: Color(
+                                                                        0xffFF5F61),
+                                                                  )),
+                                                            ),
+                                                          )
+                                                        ]),
                                                       )
                                                     : Container(
                                                         margin: EdgeInsets.only(

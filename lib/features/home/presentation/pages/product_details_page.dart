@@ -100,7 +100,13 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         prefsRepository.marketToken == "" ||
         prefsRepository.marketToken == null) {
       print("NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNIIIIIIIIIIIIIIIIII");
-      context.go(GRouter.config.applicationRoutes.kRegistrationPagePath);
+
+      Future.delayed(
+        Duration(seconds: 2),
+        () {
+          context.go(GRouter.config.applicationRoutes.kRegistrationPagePath);
+        },
+      );
     }
     if (widget.productItem != null) {
       productItem = widget.productItem!;
