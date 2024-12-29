@@ -143,6 +143,7 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                         context.go(GRouter.config.applicationRoutes.kBasePage);
                         BlocProvider.of<AuthBloc>(context)
                             .add(VerifyOtpSignInEvent(
+                          fromCart: false,
                           otp: prefsRepository.otpCode!,
                           verificationId: prefsRepository.verificationId!,
                           phone: widget.phoneNumber,
@@ -196,8 +197,8 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                         if (GetIt.I<PrefsRepository>().isVerifiedPhone !=
                                 false ||
                             ((prefsRepository.marketToken?.length ?? 0) < 5 ||
-                                prefsRepository.myMarketId == "" ||
-                                prefsRepository.myMarketId == null)) {
+                                prefsRepository.marketToken == "" ||
+                                prefsRepository.marketToken == null)) {
                           String? deviceId =
                               await HelperFunctions.getDeviceId();
                           BlocProvider.of<AuthBloc>(context)

@@ -1,4 +1,5 @@
 import 'package:dotted_border/dotted_border.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,6 +25,8 @@ import 'package:trydos/features/home/presentation/pages/product_details_page.dar
 import 'package:trydos/features/home/presentation/widgets/cart_section/count_down_timer.dart';
 
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_image_widget.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/service/language_service.dart';
 
 class productCollectionInCartPage1 extends StatefulWidget {
   const productCollectionInCartPage1({
@@ -227,7 +230,9 @@ class _productCollectionInCartPage1State
                               ),
                             ),
                           ),
-                          left: 0,
+                          left: LanguageService.languageCode == "en" ? 0 : null,
+                          right:
+                              LanguageService.languageCode == "en" ? null : 0,
                         ),
                         Positioned(
                           child: Column(
@@ -236,7 +241,9 @@ class _productCollectionInCartPage1State
                             children: [
                               Container(
                                 margin: EdgeInsets.only(top: 10),
-                                alignment: Alignment.topLeft,
+                                alignment: LanguageService.languageCode == "en"
+                                    ? Alignment.topLeft
+                                    : Alignment.topRight,
                                 height: 10,
                                 width: 30,
                                 child: (isOldCart
@@ -251,10 +258,7 @@ class _productCollectionInCartPage1State
                                     : cartCollection![index].brand != null
                                         ? SvgPicture.network(
                                             cartCollection[index].brand!.image!,
-                                            fit: BoxFit.fill,
-                                            color: Color(
-                                              0xff1A171B,
-                                            ),
+                                            fit: BoxFit.contain,
                                           )
                                         : SizedBox.shrink()),
                               ),
@@ -262,7 +266,9 @@ class _productCollectionInCartPage1State
                                 height: 2,
                               ),
                               Container(
-                                alignment: Alignment.centerLeft,
+                                alignment: LanguageService.languageCode == "en"
+                                    ? Alignment.centerLeft
+                                    : Alignment.centerRight,
                                 width: 200.w,
                                 height: 16,
                                 child: Text(
@@ -314,7 +320,11 @@ class _productCollectionInCartPage1State
                                             ? SizedBox.shrink()
                                             : Container(
                                                 margin: EdgeInsets.only(top: 5),
-                                                alignment: Alignment.centerLeft,
+                                                alignment: LanguageService
+                                                            .languageCode ==
+                                                        "en"
+                                                    ? Alignment.centerLeft
+                                                    : Alignment.centerRight,
                                                 height: 17,
                                                 child: Row(
                                                   mainAxisAlignment:
@@ -328,7 +338,7 @@ class _productCollectionInCartPage1State
                                                       width: 5,
                                                     ),
                                                     Text(
-                                                      "Color: ",
+                                                      "${LocaleKeys.color.tr()}: ",
                                                       style: context.textTheme
                                                           .bodyMedium?.ra
                                                           .copyWith(
@@ -445,7 +455,11 @@ class _productCollectionInCartPage1State
                                             ? SizedBox.shrink()
                                             : Container(
                                                 margin: EdgeInsets.only(top: 5),
-                                                alignment: Alignment.centerLeft,
+                                                alignment: LanguageService
+                                                            .languageCode ==
+                                                        "en"
+                                                    ? Alignment.centerLeft
+                                                    : Alignment.centerRight,
                                                 width: 200,
                                                 height: 15,
                                                 child: Row(
@@ -461,7 +475,7 @@ class _productCollectionInCartPage1State
                                                       width: 5,
                                                     ),
                                                     Text(
-                                                      "Size: ",
+                                                      "${LocaleKeys.size.tr()}: ",
                                                       style: context.textTheme
                                                           .bodyMedium?.ra
                                                           .copyWith(
@@ -519,7 +533,10 @@ class _productCollectionInCartPage1State
                                 height: 2.h,
                               ),
                               Container(
-                                  alignment: Alignment.centerLeft,
+                                  alignment:
+                                      LanguageService.languageCode == "en"
+                                          ? Alignment.centerLeft
+                                          : Alignment.centerRight,
                                   width: 200,
                                   height: 17,
                                   child: Row(
@@ -535,8 +552,8 @@ class _productCollectionInCartPage1State
                                       ),
                                       Text(
                                         isOldCart
-                                            ? " Composed Of: "
-                                            : " Composed Of: ",
+                                            ? " ${LocaleKeys.composed_of.tr()}: "
+                                            : " ${LocaleKeys.composed_of.tr()}: ",
                                         style: context.textTheme.bodyMedium?.ra
                                             .copyWith(
                                                 fontWeight: FontWeight.normal,
@@ -547,8 +564,8 @@ class _productCollectionInCartPage1State
                                       ),
                                       Text(
                                         isOldCart
-                                            ? "${oldCartCollection![index].countOfPieces ?? 1} Piece"
-                                            : "${cartCollection![index].countOfPieces ?? 1} Piece",
+                                            ? "${oldCartCollection![index].countOfPieces ?? 1} ${LocaleKeys.piece.tr()}"
+                                            : "${cartCollection![index].countOfPieces ?? 1} ${LocaleKeys.piece.tr()}",
                                         style: context.textTheme.bodyMedium?.mr
                                             .copyWith(
                                                 fontWeight: FontWeight.w100,
@@ -563,7 +580,10 @@ class _productCollectionInCartPage1State
                                 height: 2.h,
                               ),
                               Container(
-                                  alignment: Alignment.centerLeft,
+                                  alignment:
+                                      LanguageService.languageCode == "en"
+                                          ? Alignment.centerLeft
+                                          : Alignment.centerRight,
                                   width: 200,
                                   height: 17,
                                   child: Row(
@@ -578,7 +598,9 @@ class _productCollectionInCartPage1State
                                         width: 5,
                                       ),
                                       Text(
-                                        isOldCart ? "Shipping: " : "Shipping: ",
+                                        isOldCart
+                                            ? "${LocaleKeys.shipping.tr()}: "
+                                            : "${LocaleKeys.shipping.tr()}: ",
                                         style: context.textTheme.bodyMedium?.ra
                                             .copyWith(
                                                 fontWeight: FontWeight.normal,
@@ -589,8 +611,8 @@ class _productCollectionInCartPage1State
                                       ),
                                       Text(
                                         isOldCart
-                                            ? "${state.oldcartCollection?[index].shippingDays ?? 0} Day "
-                                            : "${state.cartCollection?[index].shippingDays ?? 0} Day ",
+                                            ? "${state.oldcartCollection?[index].shippingDays ?? 0} ${LocaleKeys.day.tr()} "
+                                            : "${state.cartCollection?[index].shippingDays ?? 0} ${LocaleKeys.day.tr()} ",
                                         style: context.textTheme.bodyMedium?.mr
                                             .copyWith(
                                                 fontWeight: FontWeight.w100,
@@ -600,7 +622,14 @@ class _productCollectionInCartPage1State
                                                 height: 1.33),
                                       ),
                                       Text(
-                                        isOldCart ? "Details" : "Details",
+                                        isOldCart
+                                            ? "${LocaleKeys.details.tr()}"
+                                            : "${LocaleKeys.details.tr()}",
+                                        strutStyle:
+                                            LanguageService.languageCode == "en"
+                                                ? null
+                                                : StrutStyle(
+                                                    height: 0.8, leading: 0.6),
                                         style: context.textTheme.bodyMedium?.mr
                                             .copyWith(
                                                 decoration:
@@ -619,7 +648,9 @@ class _productCollectionInCartPage1State
                               Container(
                                 height: 31.h,
                                 width: 265.w,
-                                padding: EdgeInsets.only(right: 40.w),
+                                padding: LanguageService.languageCode == "en"
+                                    ? EdgeInsets.only(right: 40.w)
+                                    : EdgeInsets.only(left: 40.w),
                                 child: Row(
                                   children: [
                                     Container(
@@ -1004,11 +1035,11 @@ class _productCollectionInCartPage1State
                                                       width: 5,
                                                     ),
                                                     Text(
-                                                        "Saved ${(((cartCollection![index].price! - cartCollection[index].offerPrice!) / cartCollection[index].price!) * 100).toStringAsFixed(1)}%",
+                                                        "${LocaleKeys.saved.tr()} ${(((cartCollection![index].price! - cartCollection[index].offerPrice!) / cartCollection[index].price!) * 100).toStringAsFixed(1)}%",
                                                         style: context.textTheme
                                                             .bodyMedium?.ra
                                                             .copyWith(
-                                                          fontSize: 8,
+                                                          fontSize: 7,
                                                           color:
                                                               Color(0xff388CFF),
                                                         ))
@@ -1022,7 +1053,10 @@ class _productCollectionInCartPage1State
                               ),
                             ],
                           ),
-                          left: 130,
+                          left:
+                              LanguageService.languageCode == "en" ? 130 : null,
+                          right:
+                              LanguageService.languageCode == "en" ? null : 130,
                         ),
                         Positioned(
                           child: Container(
@@ -1045,7 +1079,9 @@ class _productCollectionInCartPage1State
                             ),
                           ),
                           top: 5,
-                          right: 5,
+                          right:
+                              LanguageService.languageCode == "en" ? 5 : null,
+                          left: LanguageService.languageCode == "en" ? null : 5,
                         ),
                         Positioned(
                           child: Container(
@@ -1074,7 +1110,7 @@ class _productCollectionInCartPage1State
                                                           
                                                         0))*/
                                 ? Text(
-                                    " Out OF Stock",
+                                    " ${LocaleKeys.out_of_stock.tr()}",
                                     style: context.textTheme.bodyMedium?.la
                                         .copyWith(
                                             fontWeight: FontWeight.w100,
@@ -1087,7 +1123,10 @@ class _productCollectionInCartPage1State
                                 : SizedBox.shrink(),
                           ),
                           top: 5,
-                          right: 20,
+                          right:
+                              LanguageService.languageCode == "en" ? 20 : null,
+                          left:
+                              LanguageService.languageCode == "en" ? null : 20,
                         ),
                         Positioned(
                             bottom: -15,
@@ -1113,14 +1152,16 @@ class _productCollectionInCartPage1State
                                           ),
                                           SvgPicture.asset(
                                               AppAssets.towCartSvg),
-                                          Text(" Out Of Bag! ",
+                                          Text(
+                                              " ${LocaleKeys.out_of_bag.tr()} ",
                                               style: context
                                                   .textTheme.bodyMedium?.ba
                                                   .copyWith(
                                                 fontSize: 12,
                                                 color: Color(0xff8D8D8D),
                                               )),
-                                          Text("Time Running Out. ",
+                                          Text(
+                                              "${LocaleKeys.time_running_out.tr()} ",
                                               style: context
                                                   .textTheme.bodyMedium?.ra
                                                   .copyWith(
@@ -1201,7 +1242,8 @@ class _productCollectionInCartPage1State
                                                                 .toString()]!,
                                                   ));
                                             },
-                                            child: Text(" | Add Agin?",
+                                            child: Text(
+                                                " | ${LocaleKeys.add_again.tr()}",
                                                 style: context
                                                     .textTheme.bodyMedium?.ra
                                                     .copyWith(
@@ -1255,7 +1297,8 @@ class _productCollectionInCartPage1State
                                                   ),
                                                   SvgPicture.asset(
                                                       AppAssets.alarmClockSvg),
-                                                  Text(" Hurry Up! ",
+                                                  Text(
+                                                      " ${LocaleKeys.hurry_up.tr()} ",
                                                       style: context.textTheme
                                                           .bodyMedium?.ba
                                                           .copyWith(
@@ -1263,7 +1306,8 @@ class _productCollectionInCartPage1State
                                                         color:
                                                             Color(0xffA28E5B),
                                                       )),
-                                                  Text("Quantity Running Out. ",
+                                                  Text(
+                                                      "${LocaleKeys.quantity_running_out.tr()} ",
                                                       style: context.textTheme
                                                           .bodyMedium?.ra
                                                           .copyWith(

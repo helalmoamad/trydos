@@ -30,8 +30,8 @@ class PrefsRepositoryImpl extends PrefsRepository {
   String? get marketToken => _preferences.getString(PrefsKey.marketToken);
 
   @override
-  Future<bool> setMarketToken(String token) =>
-      _preferences.setString(PrefsKey.marketToken, token);
+  Future<bool> setMarketToken(String? token) =>
+      _preferences.setString(PrefsKey.marketToken, token ?? "");
 
   @override
   Future<bool> setStoriesToken(String token) =>

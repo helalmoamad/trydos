@@ -36,16 +36,20 @@ class VerifyOtp extends StatefulWidget {
     required this.fromLogin,
     required this.isVisWhatsApp,
     required this.navigateToAddName,
+    required this.navigateTocart,
     required this.onLoginFailed,
     required this.goBack,
+    required this.fromCart,
     required this.phoneNumber,
   }) : super(key: key);
   final String methodIcon;
   final bool fromLogin;
+  final bool fromCart;
   final String phoneNumber;
   final void Function() onLoginFailed;
   final void Function() goBack;
   final void Function() navigateToAddName;
+  final void Function() navigateTocart;
   final int isVisWhatsApp;
   @override
   State<VerifyOtp> createState() => _VerifyOtpState();
@@ -112,30 +116,46 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
               p.verifyOtpSignInStatus != c.verifyOtpSignInStatus,
           listener: (context, state) {
             if (state.verifyOtpSignInStatus == VerifyOtpSignInStatus.failure) {
-              if (state.signInErrorMessage == 'auth-001') {
-                context.go(
-                  GRouter.config.applicationRoutes.kNumberNotRegisteredPage +
-                      '?phoneNumber=${widget.phoneNumber}',
-                  extra: widget.onLoginFailed,
-                );
-                /////////////////////////////////////////////
-                FirebaseAnalyticsService.logEventForSession(
-                  eventName: AnalyticsEventsConst.programmingEvent,
-                  executedEventName: AnalyticsExecutedEventNameConst
-                      .phoneNumberNotRegisteredEvent,
-                );
-                return;
-              } else {
-                FirebaseAnalyticsService.logEventForSession(
-                  eventName: AnalyticsEventsConst.programmingEvent,
-                  executedEventName:
-                      AnalyticsExecutedEventNameConst.otpFailedEvent,
-                );
+              print(
+                  "###6666666666666666666666666666666666#################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+
+              if (widget.fromCart) {
+                if (state.signUpErrorMessage == 'auth-001') {
+                  checkOtp.value = 1;
+                  widget.navigateTocart.call();
+
+                  return;
+                }
+              }
+              if (!widget.fromCart) {
+                if (state.signInErrorMessage == 'auth-001') {
+                  context.go(
+                    GRouter.config.applicationRoutes.kNumberNotRegisteredPage +
+                        '?phoneNumber=${widget.phoneNumber}',
+                    extra: widget.onLoginFailed,
+                  );
+                  /////////////////////////////////////////////
+                  FirebaseAnalyticsService.logEventForSession(
+                    eventName: AnalyticsEventsConst.programmingEvent,
+                    executedEventName: AnalyticsExecutedEventNameConst
+                        .phoneNumberNotRegisteredEvent,
+                  );
+                  return;
+                } else {
+                  FirebaseAnalyticsService.logEventForSession(
+                    eventName: AnalyticsEventsConst.programmingEvent,
+                    executedEventName:
+                        AnalyticsExecutedEventNameConst.otpFailedEvent,
+                  );
+                }
               }
               checkOtp.value = 2;
             } else if (state.verifyOtpSignInStatus ==
                 VerifyOtpSignInStatus.success) {
+              print(
+                  "###55555555555555######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
               checkOtp.value = 1;
+              widget.navigateTocart.call();
               Future.delayed(
                 Duration(milliseconds: 700),
                 () {
@@ -156,30 +176,47 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
             listener: (context, state) {
               if (state.verifyOtpSignUpStatus ==
                   VerifyOtpSignUpStatus.failure) {
-                if (state.signUpErrorMessage == 'auth-001') {
-                  debugPrint('auth-00122');
-                  context.go(
-                    GRouter.config.applicationRoutes.kUserExistPage +
-                        '?phoneNumber=${widget.phoneNumber}',
-                  );
-                  /////////////////////////
-                  FirebaseAnalyticsService.logEventForSession(
-                    eventName: AnalyticsEventsConst.programmingEvent,
-                    executedEventName:
-                        AnalyticsExecutedEventNameConst.userAlreadyExistsEvent,
-                  );
-                  return;
-                } else {
-                  FirebaseAnalyticsService.logEventForSession(
-                    eventName: AnalyticsEventsConst.programmingEvent,
-                    executedEventName:
-                        AnalyticsExecutedEventNameConst.otpFailedEvent,
-                  );
+                print(
+                    "###5555555563333337777777###########################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+
+                if (!widget.fromCart) {
+                  if (state.signUpErrorMessage == 'auth-001') {
+                    debugPrint('auth-00122');
+                    context.go(
+                      GRouter.config.applicationRoutes.kUserExistPage +
+                          '?phoneNumber=${widget.phoneNumber}',
+                    );
+                    /////////////////////////
+                    FirebaseAnalyticsService.logEventForSession(
+                      eventName: AnalyticsEventsConst.programmingEvent,
+                      executedEventName: AnalyticsExecutedEventNameConst
+                          .userAlreadyExistsEvent,
+                    );
+                    return;
+                  } else {
+                    FirebaseAnalyticsService.logEventForSession(
+                      eventName: AnalyticsEventsConst.programmingEvent,
+                      executedEventName:
+                          AnalyticsExecutedEventNameConst.otpFailedEvent,
+                    );
+                  }
                 }
+
+                if (widget.fromCart) {
+                  if (state.signUpErrorMessage == 'auth-001') {
+                    checkOtp.value = 1;
+                    widget.navigateTocart.call();
+                    return;
+                  }
+                }
+
                 checkOtp.value = 2;
               } else if (state.verifyOtpSignUpStatus ==
                   VerifyOtpSignUpStatus.success) {
+                print(
+                    "#########################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
                 checkOtp.value = 1;
+                widget.navigateTocart.call();
                 Future.delayed(
                   Duration(milliseconds: 700),
                   () {
@@ -599,12 +636,15 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                     '/// fromLogin //////');
                                                 authBloc.add(
                                                     VerifyOtpSignInEvent(
+                                                        fromCart:
+                                                            widget.fromCart,
                                                         verificationId:
                                                             prefsRepository
                                                                 .verificationId!,
                                                         otp: insertedCode,
                                                         phone: widget
                                                             .phoneNumber));
+
                                                 /////////////////////////////////////
                                                 FirebaseAnalyticsService
                                                     .logEventForSession(
@@ -618,12 +658,14 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                               } else {
                                                 authBloc.add(
                                                   VerifyOtpSignUpEvent(
+                                                    fromCart: widget.fromCart,
                                                     verificationId:
                                                         prefsRepository
                                                             .verificationId!,
                                                     otp: insertedCode,
                                                   ),
                                                 );
+
                                                 /////////////////////////////////////
                                                 FirebaseAnalyticsService
                                                     .logEventForSession(
@@ -710,12 +752,15 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
     form.controllers[5].text = text[5];
     if (widget.fromLogin) {
       authBloc.add(VerifyOtpSignInEvent(
+          fromCart: widget.fromCart,
           verificationId: prefsRepository.verificationId!,
           otp: text,
           phone: widget.phoneNumber));
     } else {
       authBloc.add(VerifyOtpSignUpEvent(
-          verificationId: prefsRepository.verificationId!, otp: text));
+          fromCart: widget.fromCart,
+          verificationId: prefsRepository.verificationId!,
+          otp: text));
     }
   }
 

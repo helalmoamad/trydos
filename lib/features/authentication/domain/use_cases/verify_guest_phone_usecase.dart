@@ -6,7 +6,8 @@ import '../../data/models/verify_guest_phone_response_model.dart';
 import '../repositories/auth_repository.dart';
 
 @injectable
-class VerifyGuestPhoneUseCase implements UseCase<VerifyGuestPhoneResponseModel, VerifyGuestPhoneParams> {
+class VerifyGuestPhoneUseCase
+    implements UseCase<VerifyGuestPhoneResponseModel, VerifyGuestPhoneParams> {
   VerifyGuestPhoneUseCase(this.repository);
 
   final AuthRepository repository;
@@ -24,7 +25,5 @@ class VerifyGuestPhoneParams {
   VerifyGuestPhoneParams({
     required this.idToken,
   });
-  Map<String, dynamic> get map =>{
-    "id_token" :idToken,
-  };
+  Map<String, dynamic> get map => {"id_token": idToken};
 }

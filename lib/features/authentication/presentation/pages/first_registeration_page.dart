@@ -268,6 +268,7 @@ class _RegistrationPageState extends State<RegistrationPage>
                                     },
                                   ),
                                   VerifyOtp(
+                                      fromCart: false,
                                       isVisWhatsApp: isVisWhatsApp,
                                       navigateToAddName: () {
                                         debugPrint('fromLogin:  $fromLogin');
@@ -286,6 +287,7 @@ class _RegistrationPageState extends State<RegistrationPage>
                                             curve: Curves.easeInOut);
                                         pageContent.value = 6;
                                       },
+                                      navigateTocart: () {},
                                       fromLogin: fromLogin,
                                       onLoginFailed: () {
                                         fromLogin = true;

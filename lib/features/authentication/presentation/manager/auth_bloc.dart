@@ -166,9 +166,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             backGroundColor: Colors.black,
             showInRelease: true,
             timeShowing: Toast.LENGTH_LONG);
-        _prefsRepository.setVerifiedPhone(false);
       },
       (r) {
+        print(
+            "#######################ccccccccccccccccc######@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@${r.data?.refreshToken}");
+
         print(
             "LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL${r.data!.accessToken}");
         isFailedTheFirstTime.remove('LoginToChatEvent');
@@ -239,12 +241,55 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       VerifyGuestPhoneEvent event, Emitter<AuthState> emit) async {
     emit(
         state.copyWith(verifyGuestPhoneStatus: VerifyGuestPhoneStatus.loading));
+    print(
+        "@@@@@@@@@@@@@@@@@@@!!!!!!!!!!!!!!!!!!55555555555555555555555555!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
     final response = await verifyGuestPhoneUseCase(
-      VerifyGuestPhoneParams(idToken: event.idToken),
+      VerifyGuestPhoneParams(
+        idToken: event.idToken,
+      ),
     );
+    print(
+        "@@@@@@@@@@@@@@@@@@@!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     response.fold(
         (l) => emit(state.copyWith(
             verifyGuestPhoneStatus: VerifyGuestPhoneStatus.failure)), (r) {
+      try {
+        _prefsRepository.setMyMarketId(r.data!.id.toString());
+        if ((r.data!.name?.replaceAll(' ', '') ?? '') != '') {
+          _prefsRepository.setMyMarketName(r.data!.name!);
+        }
+
+        GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
+        GetIt.I<HomeBloc>().add(GetCartItemEvent());
+        GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
+        _prefsRepository.setMyMarketId(r.data!.id.toString());
+        _prefsRepository.setMarketToken(r.token);
+        _prefsRepository.setVerifiedPhone(r.data!.isPhoneVerified == 1);
+        _prefsRepository.setPhoneNumber((r.data!.phone).toString());
+
+        add(LoginToChatEvent(
+            fcmToken: NotificationProcess.myFcmToken!,
+            mobilePhone: r.data!.phone,
+            name: r.data!.name,
+            originalUserId: r.data!.id!.toString(),
+            otpIdToken: r.data!.lastOtpIdToken));
+        add(LoginToStoriesEvent(
+          originalUserId: r.data!.id!.toString(),
+          otpIdToken: r.data!.lastOtpIdToken,
+          name: r.data!.name,
+          phone: r.data!.phone,
+        ));
+      } catch (error) {
+        showMessage(error.toString());
+      }
+      debugPrint(
+          'login _prefsRepository.chatToken${_prefsRepository.chatToken}');
+      debugPrint(
+          'login _prefsRepository.marketToken${_prefsRepository.marketToken}');
+      debugPrint(
+          'login _prefsRepository.storiesToken${_prefsRepository.storiesToken}');
+
       emit(state.copyWith(
           verifyGuestPhoneStatus: VerifyGuestPhoneStatus.success));
     });
@@ -305,46 +350,59 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           verifyOtpSignInStatus: VerifyOtpSignInStatus.failure,
           signInErrorMessage: l.message));
     }, (r) {
-      try {
-        _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
-        if ((r.data!.user!.name?.replaceAll(' ', '') ?? '') != '') {
-          _prefsRepository.setMyMarketName(r.data!.user!.name!);
-        }
-        _prefsRepository.setMarketToken(r.data!.token!);
-        _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
+      print(
+          "#############################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@${r.data?.expiresAt}");
+      if (event.fromCart) {
         print(
-            "*****************************-----------------------------${r.data!.token!}");
-        _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
-        _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());
+            "@@@@@@@@@@@@@@@@2111111111112222222222222222@@@!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
-        add(LoginToChatEvent(
-            fcmToken: NotificationProcess.myFcmToken!,
-            mobilePhone: r.data!.user!.phone,
-            name: r.data!.user!.name,
+        add(VerifyGuestPhoneEvent(idToken: r.data!.idToken!));
+      } else {
+        try {
+          _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
+          if ((r.data!.user!.name?.replaceAll(' ', '') ?? '') != '') {
+            _prefsRepository.setMyMarketName(r.data!.user!.name!);
+          }
+
+          _prefsRepository.setMarketToken(r.data!.token!);
+          GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
+          GetIt.I<HomeBloc>().add(GetCartItemEvent());
+          GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
+          _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
+          print(
+              "*****************************-----------------------------${r.data!.token!}");
+          _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
+          _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());
+
+          add(LoginToChatEvent(
+              fcmToken: NotificationProcess.myFcmToken!,
+              mobilePhone: r.data!.user!.phone,
+              name: r.data!.user!.name,
+              originalUserId: r.data!.user!.id!.toString(),
+              otpIdToken: r.data!.idToken!));
+          add(LoginToStoriesEvent(
             originalUserId: r.data!.user!.id!.toString(),
-            otpIdToken: r.data!.idToken!));
-        add(LoginToStoriesEvent(
-          originalUserId: r.data!.user!.id!.toString(),
-          otpIdToken: r.data!.idToken!,
-          name: r.data!.user!.name,
-          phone: r.data!.user!.phone,
-        ));
-      } catch (error) {
-        showMessage(error.toString());
-      }
-      debugPrint(
-          'login _prefsRepository.chatToken${_prefsRepository.chatToken}');
-      debugPrint(
-          'login _prefsRepository.marketToken${_prefsRepository.marketToken}');
-      debugPrint(
-          'login _prefsRepository.storiesToken${_prefsRepository.storiesToken}');
-      if (!r.data!.alreadyExist!) {
-        emit(state.copyWith(
-            verifyOtpSignInStatus: VerifyOtpSignInStatus.failure,
-            marketUser: r.data!.user,
-            signInErrorMessage: 'auth-001'));
+            otpIdToken: r.data!.idToken!,
+            name: r.data!.user!.name,
+            phone: r.data!.user!.phone,
+          ));
+        } catch (error) {
+          showMessage(error.toString());
+        }
+        debugPrint(
+            'login _prefsRepository.chatToken${_prefsRepository.chatToken}');
+        debugPrint(
+            'login _prefsRepository.marketToken${_prefsRepository.marketToken}');
+        debugPrint(
+            'login _prefsRepository.storiesToken${_prefsRepository.storiesToken}');
+        if (!r.data!.alreadyExist!) {
+          emit(state.copyWith(
+              verifyOtpSignInStatus: VerifyOtpSignInStatus.failure,
+              marketUser: r.data!.user,
+              signInErrorMessage: 'auth-001'));
 
-        return;
+          return;
+        }
       }
       emit(state.copyWith(
           verifyOtpSignInStatus: VerifyOtpSignInStatus.success,
@@ -363,46 +421,57 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
     response.fold((l) {
       emit(state.copyWith(
+        signUpErrorMessage: 'faild',
         verifyOtpSignUpStatus: VerifyOtpSignUpStatus.failure,
       ));
     }, (r) {
       print(
           "87777777777777777777777777777777777777777777777777777777${r.data!.user!.name}77777777777777777777777${r.data!.user!.id!}");
+      if (event.fromCart) {
+        print(
+            "@@@@@@@@@@@@@@@@@@@!!!!555555555555555555555555555555555!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
-      if ((r.data!.user!.name?.replaceAll(' ', '') ?? '') != '') {
-        _prefsRepository.setMyMarketName(r.data!.user!.name!);
-      }
-      _prefsRepository.setMarketToken(r.data!.token!);
-      _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
-      print(
-          ".................................*****************************-----------------------------${r.data!.token!}");
+        add(VerifyGuestPhoneEvent(idToken: r.data!.idToken!));
+      } else {
+        if ((r.data!.user!.name?.replaceAll(' ', '') ?? '') != '') {
+          _prefsRepository.setMyMarketName(r.data!.user!.name!);
+        }
 
-      _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
-      _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());
+        _prefsRepository.setMarketToken(r.data!.token!);
+        GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
+        GetIt.I<HomeBloc>().add(GetCartItemEvent());
+        GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
+        _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
+        print(
+            ".................................*****************************-----------------------------${r.data!.token!}");
 
-      GetIt.I<HomeBloc>().add(StoreFcmTokenOfMarketEvent(
-          userId: r.data!.user!.id!,
-          fcmToken: NotificationProcess.myFcmToken!));
+        _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
+        _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());
 
-      add(LoginToChatEvent(
-          fcmToken: NotificationProcess.myFcmToken!,
-          mobilePhone: r.data!.user!.phone,
+        GetIt.I<HomeBloc>().add(StoreFcmTokenOfMarketEvent(
+            userId: r.data!.user!.id!,
+            fcmToken: NotificationProcess.myFcmToken!));
+
+        add(LoginToChatEvent(
+            fcmToken: NotificationProcess.myFcmToken!,
+            mobilePhone: r.data!.user!.phone,
+            originalUserId: r.data!.user!.id!.toString(),
+            name: r.data!.user!.name,
+            otpIdToken: r.data!.idToken!));
+        add(LoginToStoriesEvent(
           originalUserId: r.data!.user!.id!.toString(),
+          otpIdToken: r.data!.idToken!,
           name: r.data!.user!.name,
-          otpIdToken: r.data!.idToken!));
-      add(LoginToStoriesEvent(
-        originalUserId: r.data!.user!.id!.toString(),
-        otpIdToken: r.data!.idToken!,
-        name: r.data!.user!.name,
-        phone: r.data!.user!.phone,
-      ));
-      if (r.data!.alreadyExist!) {
-        emit(state.copyWith(
-            verifyOtpSignUpStatus: VerifyOtpSignUpStatus.failure,
-            marketUser: r.data!.user,
-            signUpErrorMessage: 'auth-001'));
+          phone: r.data!.user!.phone,
+        ));
+        if (r.data!.alreadyExist!) {
+          emit(state.copyWith(
+              verifyOtpSignUpStatus: VerifyOtpSignUpStatus.failure,
+              marketUser: r.data!.user,
+              signUpErrorMessage: 'auth-001'));
 
-        return;
+          return;
+        }
       }
       emit(state.copyWith(
           verifyOtpSignUpStatus: VerifyOtpSignUpStatus.success,
@@ -434,7 +503,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       isFailedTheFirstTime.remove('RegisterGuestEvent');
       _prefsRepository.setMarketToken(r.data!.token!);
       _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
-
+      GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
+      GetIt.I<HomeBloc>().add(GetCartItemEvent());
+      GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
       GetIt.I<HomeBloc>().add(StoreFcmTokenOfMarketEvent(
           userId: r.data!.user!.id!,
           fcmToken: NotificationProcess.myFcmToken!));

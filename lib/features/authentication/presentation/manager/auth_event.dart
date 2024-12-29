@@ -43,7 +43,7 @@ class LoginToChatEvent extends AuthEvent {
 class StoreFcmTokenEvent extends AuthEvent {
   final int userId;
   final String fcmToken;
-  final ServerName serverName ;
+  final ServerName serverName;
 
   const StoreFcmTokenEvent({
     required this.userId,
@@ -87,10 +87,11 @@ class VerifyOtpSignInEvent extends AuthEvent {
   final String verificationId;
   final String otp;
   final String phone;
-
+  final bool fromCart;
   VerifyOtpSignInEvent({
     required this.verificationId,
     required this.otp,
+    required this.fromCart,
     required this.phone,
   });
   @override
@@ -102,9 +103,12 @@ class VerifyOtpSignUpEvent extends AuthEvent {
   final String verificationId;
   final String otp;
   final String? name;
-
+  final bool fromCart;
   VerifyOtpSignUpEvent(
-      {required this.verificationId, required this.otp, this.name});
+      {required this.verificationId,
+      required this.otp,
+      required this.fromCart,
+      this.name});
   @override
   // TODO: implement props
   List<Object?> get props => [otp, name, verificationId];

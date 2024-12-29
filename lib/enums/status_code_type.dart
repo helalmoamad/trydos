@@ -1,8 +1,4 @@
-enum StatusCode {
-  operationSucceeded,
-  operationFailed,
-  serverError,
-}
+enum StatusCode { operationSucceeded, operationFailed, serverError, unauth }
 
 extension FetchCode on StatusCode {
   int get code {
@@ -11,6 +7,8 @@ extension FetchCode on StatusCode {
         return 200;
       case StatusCode.operationFailed:
         return 400;
+      case StatusCode.unauth:
+        return 401;
       case StatusCode.serverError:
         return 500;
     }

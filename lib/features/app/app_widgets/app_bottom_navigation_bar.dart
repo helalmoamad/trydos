@@ -178,7 +178,8 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                       ? Key(WidgetsKeys.chatNavBarKey)
                       : null,
                   onTap: () async {
-                    if (prefsRepository.isVerifiedPhone != true) {
+                    if (prefsRepository.isVerifiedPhone != true ||
+                        (prefsRepository.chatToken?.length ?? 0) > 10) {
                       context.go(GRouter
                           .config.applicationRoutes.kRegistrationPagePath);
                     } else if (prefsRepository.myMarketName == null) {

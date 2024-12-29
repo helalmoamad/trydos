@@ -352,6 +352,12 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   }
 
   @override
+  void didChangeMetrics() {
+    setState(() {});
+    super.didChangeMetrics();
+  }
+
+  @override
   void initState() {
     pages.add(
       SearchPage(
@@ -664,9 +670,13 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                     //     getWithPagination: false));
                                     homeBloc.add(GetMainCategoriesEvent(
                                         context: context));
-                                    homeBloc.add(GetCurrencyForCountryEvent());
-                                    homeBloc.add(GetCartItemEvent());
-                                    homeBloc.add(GetProductsListInCartEvent());
+                                    if (prefsRepository.marketToken != null) {
+                                      homeBloc
+                                          .add(GetCurrencyForCountryEvent());
+                                      homeBloc.add(GetCartItemEvent());
+                                      homeBloc
+                                          .add(GetProductsListInCartEvent());
+                                    }
                                   }
 
                                   visible

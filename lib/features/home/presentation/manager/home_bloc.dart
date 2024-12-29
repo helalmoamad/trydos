@@ -12,6 +12,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:injectable/injectable.dart';
+import 'package:logger/logger.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/use_case/use_case.dart';
@@ -343,10 +344,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     }, (r) {
       apisMustNotToRequest.add('GetStartingSettingsEvent');
       isFailedTheFirstTime.remove('GetStartingSettingsEvent');
-      // if (r.data!.startingSetting!.smartLook ?? false) {
-      //   Logger(printer: PrettyPrinter(methodCount: 0)).i('SMARTLOOK STARTED!');
-      // initializeSmartLook();
-      // }
+/*    if (r.data!.startingSetting!.smartLook ?? false) {
+        Logger(printer: PrettyPrinter(methodCount: 0)).i('SMARTLOOK STARTED!');
+   initializeSmartLook();
+  */
       emit(state.copyWith(
           startingSetting: r.data!.startingSetting,
           getStartingSettingsStatus: GetStartingSettingsStatus.success));
@@ -2476,6 +2477,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     emit(state.copyWith(getCartItemsStatus: GetCartItemsStatus.loading));
     final response = await getCartItemUseCase(NoParams());
     response.fold((l) {
+      print('${l.hashCode}' +
+          '133333333333333333333333333222222222222222222222222222222222222222222222222222222222222');
       if (!isFailedTheFirstTime.contains('GetCartItemEvent')) {
         add(GetCartItemEvent());
         isFailedTheFirstTime.add('GetCartItemEvent');
@@ -2735,18 +2738,27 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     }*/
 
     cartCollection.add(cart);
+
     oldCart.OldCart? PreOldCart = oldCartCollection.firstWhere(
       (element) =>
           element.image == event.image &&
-          element.variations?[0].color == variation.color &&
-          element.variations?[0].size == variation.size,
+          (element.variations!.isNotEmpty
+              ? (element.variations?[0].color == variation.color)
+              : true) &&
+          (element.variations!.isNotEmpty
+              ? (element.variations?[0].size == variation.size)
+              : true),
       orElse: () => oldCart.OldCart(id: -1),
     );
     oldCartCollection.removeWhere(
       (element) =>
           element.image == event.image &&
-          element.variations?[0].color == variation.color &&
-          element.variations?[0].size == variation.size,
+          (element.variations!.isNotEmpty
+              ? (element.variations?[0].color == variation.color)
+              : true) &&
+          (element.variations!.isNotEmpty
+              ? (element.variations?[0].size == variation.size)
+              : true),
     );
     emit(state.copyWith(
         oldCartCollection: oldCartCollection,

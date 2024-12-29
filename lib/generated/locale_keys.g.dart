@@ -150,4 +150,37 @@ abstract class LocaleKeys {
   static const must_be_at_least_8_characters = 'must_be_at_least_8_characters';
   static const read_more = 'read_more';
   static const read_less = 'read_less';
+  static const color = 'color';
+  static const size = 'size';
+  static const composed_of = 'composed_of';
+  static const piece = 'piece';
+  static const shipping = 'shipping';
+  static const day = 'day';
+  static const details = 'details';
+  static const out_of_bag = 'out_of_bag';
+  static const time_running_out = 'time_running_out';
+  static const add_again = 'add_again';
+  static const item = 'item';
+  static const hide_all = 'hide_all';
+  static const old_cart = 'old_cart';
+  static const hurry_up = 'hurry_up';
+  static const quantity_running_out = 'quantity_running_out';
+  static const shopping_bag = 'shopping_bag';
+  static const out_of_stock = 'out_of_stock';
+  static const saved = 'saved';
+  static const your_cart_empty = 'your_cart_empty';
+  static const normal_price = 'normal_price';
+  static const total_discount = 'total_discount';
+  static const all_inclusve_without_addition = 'all_inclusve_without_addition';
+  static const gift = 'gift';
+  static const first_shopping = 'first_shopping';
+  static const shipping_is_completely_free_without_any_extras =
+      'shipping_is_completely_free_without_any_extras';
+  static const total = 'total';
+  static const click_to_show_all_discount = 'click_to_show_all_discount';
+  static const back_to_home = 'back_to_home';
+  static const confirm = 'confirm';
+  static const continues = 'continue';
+  static const you_must_wait_for_some_seconds_before_try_again =
+      'you_must_wait_for_some_seconds_before_try_again';
 }

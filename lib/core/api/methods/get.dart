@@ -36,8 +36,6 @@ class GetClient<T> extends BaseApi<T> {
   @override
   Future<T> call() async {
     try {
-      print(
-          "***********************************############################${_receiveTimeout}+++++++++++++++++++++++++++++++++++++++++++++++++++++++14[${options.receiveTimeout}]");
       stopWatch.start();
       final baseUri = getBaseUriForSpecificServer(serverName);
 
@@ -63,8 +61,7 @@ class GetClient<T> extends BaseApi<T> {
           response.requestOptions.method,
           response.requestOptions.queryParameters,
           response.data is! FormData ? response.data : {'data': 'formData'},
-          responseTime: stopWatch.elapsed.toString()
-      );
+          responseTime: stopWatch.elapsed.toString());
       log('request time: ${stopWatch.elapsed.toString()}');
       prettyPrinterI(stopWatch.elapsed.toString());
 

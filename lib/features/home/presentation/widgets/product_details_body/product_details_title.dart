@@ -82,12 +82,18 @@ class ProductDetailsTitle extends StatelessWidget {
                             child: SvgPicture.asset(AppAssets.eyeSvg),
                           ),
                         )
-                      : state
-                                  .cachedProductWithoutRelatedProductsModel[
-                                      productId]!
-                                  .product!
-                                  .viewsCount ==
-                              null
+                      : (state
+                                      .cachedProductWithoutRelatedProductsModel[
+                                          productId]!
+                                      .product !=
+                                  null
+                              ? state
+                                      .cachedProductWithoutRelatedProductsModel[
+                                          productId]!
+                                      .product!
+                                      .viewsCount ==
+                                  null
+                              : true)
                           ? Container(
                               width: 18,
                               height: 18,
@@ -112,11 +118,17 @@ class ProductDetailsTitle extends StatelessWidget {
                                               productId] !=
                                           null
                                       ? state
-                                          .cachedProductWithoutRelatedProductsModel[
-                                              productId]!
-                                          .product!
-                                          .viewsCount
-                                          .toString()
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                                      productId]!
+                                                  .product !=
+                                              null
+                                          ? state
+                                              .cachedProductWithoutRelatedProductsModel[
+                                                  productId]!
+                                              .product!
+                                              .viewsCount
+                                              .toString()
+                                          : "0"
                                       : "0",
                                   style: context.textTheme.titleMedium?.rq
                                       .copyWith(

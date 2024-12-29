@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:trydos/features/home/presentation/widgets/share_products_with_social_media/social_media_type.dart';
+import 'package:trydos/service/language_service.dart';
 import 'package:trydos/trydos_application.dart';
 
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
@@ -15,7 +17,7 @@ Widget buildSocialButtons(
     required String currentColor,
     required String currentSize}) {
   String urlProductToShare =
-      "https://trydos-front.vercel.app/tr-en/products/$productSlugForULr" +
+      "${dotenv.env['WEB_CALLS_URL']!}/tr-${LanguageService.languageCode == "en" ? "en" : "ar"}/products/$productSlugForULr" +
           (currentColor.length > 1 || currentSize.length > 1 ? "?" : "") +
           (currentColor.length > 1 ? "color=$currentColor" : "") +
           (currentSize.length > 1 ? "&size=$currentSize" : "");

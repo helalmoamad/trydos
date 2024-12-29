@@ -97,8 +97,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   @override
   void initState() {
     if ((prefsRepository.marketToken?.length ?? 0) < 5 ||
-        prefsRepository.myMarketId == "" ||
-        prefsRepository.myMarketId == null) {
+        prefsRepository.marketToken == "" ||
+        prefsRepository.marketToken == null) {
       print("NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNIIIIIIIIIIIIIIIIII");
       context.go(GRouter.config.applicationRoutes.kRegistrationPagePath);
     }
@@ -194,34 +194,35 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                               ?.product
                                               ?.maxAllowedQty ??
                                           "0",
-                                      boutiqueIcon: state
-                                                      .cachedProductWithoutRelatedProductsModel[
+                                      boutiqueIcon: state.cachedProductWithoutRelatedProductsModel[
                                                   productItem?.id.toString()] !=
                                               null
-                                          ? state
-                                                      .cachedProductWithoutRelatedProductsModel[
-                                                          productItem?.id
-                                                              .toString()]!
-                                                      .product!
-                                                      .boutique !=
+                                          ? state.cachedProductWithoutRelatedProductsModel[productItem?.id.toString()]!.product !=
                                                   null
                                               ? state
                                                           .cachedProductWithoutRelatedProductsModel[
                                                               productItem?.id
                                                                   .toString()]!
                                                           .product!
-                                                          .boutique!
-                                                          .icon !=
+                                                          .boutique !=
                                                       null
                                                   ? state
-                                                          .cachedProductWithoutRelatedProductsModel[
-                                                              productItem?.id
-                                                                  .toString()]!
-                                                          .product!
-                                                          .boutique!
-                                                          .icon!
-                                                          .filePath ??
-                                                      ""
+                                                              .cachedProductWithoutRelatedProductsModel[
+                                                                  productItem
+                                                                      ?.id
+                                                                      .toString()]!
+                                                              .product!
+                                                              .boutique!
+                                                              .icon !=
+                                                          null
+                                                      ? state
+                                                              .cachedProductWithoutRelatedProductsModel[productItem?.id.toString()]!
+                                                              .product!
+                                                              .boutique!
+                                                              .icon!
+                                                              .filePath ??
+                                                          ""
+                                                      : ""
                                                   : ""
                                               : ""
                                           : "",
@@ -327,8 +328,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         p.cachedProductWithoutRelatedProductsModel !=
                             c.cachedProductWithoutRelatedProductsModel,
                     builder: (context, state) {
-                      print(
-                          "...............${state.cachedProductWithoutRelatedProductsModel[productItem?.id.toString()]!.product!.variation?[0].type}..........................");
                       String productId =
                           widget.productIdForOpeningChatDirectly ??
                               productItem!.id.toString();
@@ -358,16 +357,21 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                       .colors![currentSelectedColor].name ??
                                   ""
                               : "",
-                          variation:
-                              state.cachedProductWithoutRelatedProductsModel[
-                                          productItem?.id.toString()] !=
+                          variation: state.cachedProductWithoutRelatedProductsModel[
+                                      productItem?.id.toString()] !=
+                                  null
+                              ? state
+                                          .cachedProductWithoutRelatedProductsModel[
+                                              productItem?.id.toString()]!
+                                          .product !=
                                       null
                                   ? state
                                       .cachedProductWithoutRelatedProductsModel[
                                           productItem?.id.toString()]!
                                       .product!
                                       .variation
-                                  : null));
+                                  : null
+                              : null));
 
                       return ScrollConfiguration(
                         behavior: const CupertinoScrollBehavior(),
@@ -552,12 +556,22 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                 height: 12,
                               ),
                               BadgesList(
-                                lable: state
-                                        .cachedProductWithoutRelatedProductsModel[
-                                            productItem!.id.toString()]!
-                                        .product!
-                                        .labels ??
-                                    [],
+                                lable: state.cachedProductWithoutRelatedProductsModel[
+                                            productItem!.id.toString()] !=
+                                        null
+                                    ? state
+                                                .cachedProductWithoutRelatedProductsModel[
+                                                    productItem!.id.toString()]!
+                                                .product !=
+                                            null
+                                        ? state
+                                                .cachedProductWithoutRelatedProductsModel[
+                                                    productItem!.id.toString()]!
+                                                .product!
+                                                .labels ??
+                                            []
+                                        : []
+                                    : [],
                               ),
                             },
                             SizedBox(
@@ -565,12 +579,22 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             ),
                             if (!state.cachedProductWithoutRelatedProductsModel
                                     .containsKey(productItem!.id.toString()) ||
-                                state
-                                    .cachedProductWithoutRelatedProductsModel[
-                                        productItem!.id.toString()]!
-                                    .product!
-                                    .descriptors
-                                    .isNullOrEmpty) ...{
+                                (state.cachedProductWithoutRelatedProductsModel[
+                                            productItem!.id.toString()] !=
+                                        null
+                                    ? state
+                                                .cachedProductWithoutRelatedProductsModel[
+                                                    productItem!.id.toString()]!
+                                                .product !=
+                                            null
+                                        ? state
+                                            .cachedProductWithoutRelatedProductsModel[
+                                                productItem!.id.toString()]!
+                                            .product!
+                                            .descriptors
+                                            .isNullOrEmpty
+                                        : true
+                                    : true)) ...{
                               SizedBox.shrink()
                             } else ...{
                               SizedBox(
@@ -631,12 +655,22 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             },
                             if (!state.cachedProductWithoutRelatedProductsModel
                                     .containsKey(productItem!.id.toString()) ||
-                                state
-                                    .cachedProductWithoutRelatedProductsModel[
-                                        productItem!.id.toString()]!
-                                    .product!
-                                    .choiceOptions
-                                    .isNullOrEmpty) ...{
+                                (state.cachedProductWithoutRelatedProductsModel[
+                                            productItem!.id.toString()] !=
+                                        null
+                                    ? state
+                                                .cachedProductWithoutRelatedProductsModel[
+                                                    productItem!.id.toString()]!
+                                                .product !=
+                                            null
+                                        ? state
+                                            .cachedProductWithoutRelatedProductsModel[
+                                                productItem!.id.toString()]!
+                                            .product!
+                                            .choiceOptions
+                                            .isNullOrEmpty
+                                        : true
+                                    : true)) ...{
                               SizedBox.shrink()
                             } else ...{
                               DisplaySizesCard(
@@ -739,9 +773,14 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           "",
                       productDescription:
                           HtmlParser.parseHTML(productItem!.details ?? "").text,
-                      countOfPieces:
-                          state.cachedProductWithoutRelatedProductsModel[
-                                      productItem!.id.toString()] !=
+                      countOfPieces: state
+                                      .cachedProductWithoutRelatedProductsModel[
+                                  productItem!.id.toString()] !=
+                              null
+                          ? state
+                                      .cachedProductWithoutRelatedProductsModel[
+                                          productItem!.id.toString()]!
+                                      .product !=
                                   null
                               ? state
                                       .cachedProductWithoutRelatedProductsModel[
@@ -749,7 +788,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                       .product!
                                       .countOfPieces ??
                                   0
-                              : 0,
+                              : 0
+                          : 0,
                       addToBagButtonShapeNotifier: addToBagButtonShapeNotifier,
                       currentColornum: productItem!.colors.isNullOrEmpty
                           ? ''
@@ -762,24 +802,29 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           ? state
                                       .cachedProductWithoutRelatedProductsModel[
                                           productItem!.id.toString()]!
-                                      .product!
-                                      .boutique !=
+                                      .product !=
                                   null
                               ? state
                                           .cachedProductWithoutRelatedProductsModel[
                                               productItem!.id.toString()]!
                                           .product!
-                                          .boutique!
-                                          .icon !=
+                                          .boutique !=
                                       null
                                   ? state
-                                          .cachedProductWithoutRelatedProductsModel[
-                                              productItem!.id.toString()]!
-                                          .product!
-                                          .boutique!
-                                          .icon!
-                                          .filePath ??
-                                      ""
+                                              .cachedProductWithoutRelatedProductsModel[
+                                                  productItem!.id.toString()]!
+                                              .product!
+                                              .boutique!
+                                              .icon !=
+                                          null
+                                      ? state
+                                              .cachedProductWithoutRelatedProductsModel[productItem!.id.toString()]!
+                                              .product!
+                                              .boutique!
+                                              .icon!
+                                              .filePath ??
+                                          ""
+                                      : ""
                                   : ""
                               : ""
                           : "",
@@ -790,15 +835,21 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           ? state
                                       .cachedProductWithoutRelatedProductsModel[
                                           productItem!.id.toString()]!
-                                      .product!
-                                      .boutique !=
+                                      .product !=
                                   null
                               ? state
-                                  .cachedProductWithoutRelatedProductsModel[
-                                      productItem!.id.toString()]!
-                                  .product!
-                                  .boutique!
-                                  .id!
+                                          .cachedProductWithoutRelatedProductsModel[
+                                              productItem!.id.toString()]!
+                                          .product!
+                                          .boutique !=
+                                      null
+                                  ? state
+                                      .cachedProductWithoutRelatedProductsModel[
+                                          productItem!.id.toString()]!
+                                      .product!
+                                      .boutique!
+                                      .id!
+                                  : 0
                               : 0
                           : 0,
                       currentColorName: productItem!.colors.isNullOrEmpty

@@ -66,7 +66,7 @@ abstract class PrefsRepository {
   Future<bool> setUserCountryIsAvailable(int userCountryAvailable);
   Future<bool> setChatToken(String token);
 
-  Future<bool> setMarketToken(String token);
+  Future<bool> setMarketToken(String? token);
 
   Future<bool> setStoriesToken(String token);
 
