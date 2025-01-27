@@ -5,6 +5,8 @@ import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/core/api/methods/get.dart';
 import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
 import 'package:trydos/features/home/data/models/convert_item_from_oldCart_to_cart_model.dart';
+import 'package:trydos/features/home/data/models/ge_address_by_coordinates_model.dart';
+import 'package:trydos/features/home/data/models/get_address_by_text_model.dart';
 
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
@@ -14,13 +16,16 @@ import 'package:trydos/features/home/data/models/get_count_view_of_product_model
 import 'package:trydos/features/home/data/models/get_full_product_details_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_is_liked_of_product_model.dart';
+import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
 import 'package:trydos/features/home/data/models/get_old_cart_model.dart';
 import 'package:trydos/features/home/data/models/get_only_message_from_api_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 import 'package:trydos/features/home/data/models/list_of_products_in_cart_model.dart';
 
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
+import 'package:trydos/features/home/data/models/notificaation_poroduct_types.dart';
 import 'package:trydos/features/home/data/models/popular_search_terms_model.dart';
+import 'package:trydos/features/home/data/models/response_only_message_model.dart';
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
 import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
 import '../../../../common/constant/configuration/market_url_routes.dart';
@@ -55,14 +60,14 @@ class HomeRemoteDatasource {
   }
 
   Future<GetProductDetailWithoutRelatedProductsModel>
-      getProductDetailWithoutRelatedProducts(String productId) {
+      getProductDetailWithoutRelatedProducts(String productSlug) {
     GetClient<GetProductDetailWithoutRelatedProductsModel>
         getProductDetailWithoutRelatedProducts =
         GetClient<GetProductDetailWithoutRelatedProductsModel>(
       serverName: ServerName.market,
       requestPrams: RequestConfig<GetProductDetailWithoutRelatedProductsModel>(
         endpoint: MarketEndPoints.getProductDetailWithoutSimilarRelatedProducts(
-            productId),
+            productSlug),
         response: ResponseValue<GetProductDetailWithoutRelatedProductsModel>(
             fromJson: (response) {
           print('qqqqqqq ${response.toString()}');
@@ -86,6 +91,21 @@ class HomeRemoteDatasource {
       ),
     );
     return getFullProductDetails();
+  }
+
+  Future<NotificationTypeForProductModel> getNotificationTypeForProduct() {
+    GetClient<NotificationTypeForProductModel> getNotificationTypeForProduct =
+        GetClient<NotificationTypeForProductModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<NotificationTypeForProductModel>(
+        endpoint: MarketEndPoints.getNotificationTypeForProductEP,
+        response: ResponseValue<NotificationTypeForProductModel>(
+            fromJson: (response) {
+          return NotificationTypeForProductModel.fromJson(response);
+        }),
+      ),
+    );
+    return getNotificationTypeForProduct();
   }
 
   Future<GetCommentForProductModel> getCommentForProduct(String productId) {
@@ -119,6 +139,57 @@ class HomeRemoteDatasource {
     );
 
     return getProductsWithoutFilters();
+  }
+
+  Future<ResponseOnlyMessageModel> deleteCustomerAddress(
+      Map<String, dynamic> params) {
+    PostClient<ResponseOnlyMessageModel> deleteCustomerAddress =
+        PostClient<ResponseOnlyMessageModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<ResponseOnlyMessageModel>(
+        endpoint: MarketEndPoints.deleteCustomerAddressEP,
+        data: params,
+        response: ResponseValue<ResponseOnlyMessageModel>(
+            fromJson: (response) =>
+                ResponseOnlyMessageModel.fromJson(response)),
+      ),
+    );
+
+    return deleteCustomerAddress();
+  }
+
+  Future<ResponseOnlyMessageModel> addCustomerAddress(
+      Map<String, dynamic> params) {
+    PostClient<ResponseOnlyMessageModel> addCustomerAddress =
+        PostClient<ResponseOnlyMessageModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<ResponseOnlyMessageModel>(
+        endpoint: MarketEndPoints.addCustomerAddressEP,
+        data: params,
+        response: ResponseValue<ResponseOnlyMessageModel>(
+            fromJson: (response) =>
+                ResponseOnlyMessageModel.fromJson(response)),
+      ),
+    );
+
+    return addCustomerAddress();
+  }
+
+  Future<ResponseOnlyMessageModel> updateCustomerAddress(
+      Map<String, dynamic> params) {
+    PostClient<ResponseOnlyMessageModel> updateCustomerAddress =
+        PostClient<ResponseOnlyMessageModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<ResponseOnlyMessageModel>(
+        endpoint: MarketEndPoints.updateCustomerAddressEP,
+        data: params,
+        response: ResponseValue<ResponseOnlyMessageModel>(
+            fromJson: (response) =>
+                ResponseOnlyMessageModel.fromJson(response)),
+      ),
+    );
+
+    return updateCustomerAddress();
   }
 
   /* Future<GetCategoryModel> getCategory() {
@@ -183,6 +254,20 @@ class HomeRemoteDatasource {
     return getCurrencyForCountry();
   }
 
+  Future<GetListOfCustomerAddressesInfoModel> getCustomerAddresses() {
+    GetClient<GetListOfCustomerAddressesInfoModel> getCustomerAddresses =
+        GetClient<GetListOfCustomerAddressesInfoModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<GetListOfCustomerAddressesInfoModel>(
+        endpoint: MarketEndPoints.getCustomerAddressesEP,
+        response: ResponseValue<GetListOfCustomerAddressesInfoModel>(
+            fromJson: (response) =>
+                GetListOfCustomerAddressesInfoModel.fromJson(response)),
+      ),
+    );
+    return getCustomerAddresses();
+  }
+
   Future<GetProductFiltersModel> getProductFilters(
       Map<String, dynamic> params) {
     GetClient<GetProductFiltersModel> getProductFilters =
@@ -233,6 +318,18 @@ class HomeRemoteDatasource {
       ),
     );
     return addComment();
+  }
+
+  Future<bool> sendErrorToMobileErrorLog(Map<String, dynamic> params) {
+    PostClient<bool> sendErrorToMobileErrorLog = PostClient<bool>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<bool>(
+        endpoint: MarketEndPoints.sendErrorToMobileErrorLogEP,
+        data: params,
+        response: ResponseValue<bool>(returnValueOnSuccess: true),
+      ),
+    );
+    return sendErrorToMobileErrorLog();
   }
 
   Future<GetStoryForProductModel> getStories(String productId) {
@@ -393,6 +490,36 @@ class HomeRemoteDatasource {
       ),
     );
     return getAndAddCountViewOfProduct();
+  }
+
+  Future<GetAddressByCoordinatesModel> getAddressByCoordinates(
+      Map<String, dynamic> params) {
+    PostClient<GetAddressByCoordinatesModel> getAddressByCoordinates =
+        PostClient<GetAddressByCoordinatesModel>(
+      serverName: ServerName.elastic,
+      requestPrams: RequestConfig<GetAddressByCoordinatesModel>(
+        endpoint: ElasticEndPoints.getAddressByCoordinatesEP,
+        data: params,
+        response: ResponseValue<GetAddressByCoordinatesModel>(
+            fromJson: (response) =>
+                GetAddressByCoordinatesModel.fromJson(response)),
+      ),
+    );
+    return getAddressByCoordinates();
+  }
+
+  Future<GetAddressByTextModel> getAddressByText(Map<String, dynamic> params) {
+    PostClient<GetAddressByTextModel> getAddressByText =
+        PostClient<GetAddressByTextModel>(
+      serverName: ServerName.elastic,
+      requestPrams: RequestConfig<GetAddressByTextModel>(
+        endpoint: ElasticEndPoints.getAddressByTextEP,
+        data: params,
+        response: ResponseValue<GetAddressByTextModel>(
+            fromJson: (response) => GetAddressByTextModel.fromJson(response)),
+      ),
+    );
+    return getAddressByText();
   }
 
   Future<UpdateItemInCartModel> updateItemInCart(Map<String, dynamic> params) {

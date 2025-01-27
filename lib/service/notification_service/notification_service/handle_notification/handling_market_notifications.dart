@@ -22,6 +22,7 @@ import 'package:trydos/features/home/presentation/pages/product_details_page.dar
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/main.dart';
 import 'package:trydos/routes/router.dart';
+import 'package:trydos/service/language_service.dart';
 
 enum TypeOfNotificationForMarketEnum {
   product_cart_expiration,
@@ -92,6 +93,7 @@ class HandlingMarketNotifications {
         try {
           BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
               GetFullProductDetailsEvent(
+                  productSlug: data["product_slug"].toString(),
                   productId: data["product_id"].toString()));
           BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
               AddCurrentSelectedColorEvent(
@@ -104,6 +106,8 @@ class HandlingMarketNotifications {
                       .push(PageRouteBuilder(
                     pageBuilder: (context, animation, secondaryAnimation) =>
                         ProductDetailsPage(
+                            productSlugForOpeningChatDirectly:
+                                data["product_slug"].toString(),
                             fromNotification: fromBackground,
                             productIdForOpeningChatDirectly:
                                 data["product_id"].toString()),
@@ -116,6 +120,7 @@ class HandlingMarketNotifications {
         try {
           BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
               GetFullProductDetailsEvent(
+                  productSlug: data["product_slug"].toString(),
                   productId: data["product_id"].toString()));
           BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
               AddCurrentSelectedColorEvent(
@@ -128,6 +133,8 @@ class HandlingMarketNotifications {
                       .push(PageRouteBuilder(
                     pageBuilder: (context, animation, secondaryAnimation) =>
                         ProductDetailsPage(
+                            productSlugForOpeningChatDirectly:
+                                data["product_slug"].toString(),
                             fromNotification: fromBackground,
                             productIdForOpeningChatDirectly:
                                 data["product_id"].toString()),
@@ -140,6 +147,7 @@ class HandlingMarketNotifications {
         try {
           BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
               GetFullProductDetailsEvent(
+                  productSlug: data["product_slug"].toString(),
                   productId: data["product_id"].toString()));
           BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
               AddCurrentSelectedColorEvent(
@@ -153,6 +161,8 @@ class HandlingMarketNotifications {
                     pageBuilder: (context, animation, secondaryAnimation) =>
                         ProductDetailsPage(
                             fromNotification: fromBackground,
+                            productSlugForOpeningChatDirectly:
+                                data["product_slug"].toString(),
                             productIdForOpeningChatDirectly:
                                 data["product_id"].toString()),
                   )));
@@ -163,36 +173,14 @@ class HandlingMarketNotifications {
               TypeOfNotificationForMarketEnum.category_created]) {
         try {
           BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
+              ChangeAppliedFiltersEvent(
+                  boutiqueSlug: "search", resetAppliedFilters: true));
+          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
               ChangeSelectedFiltersEvent(
                   boutiqueSlug: "search",
                   fromHomePageSearch: true,
                   resetChoosedFilters: true,
                   requestToUpdateFilters: false));
-          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
-              ChangeAppliedFiltersEvent(
-                  boutiqueSlug: "search", resetAppliedFilters: true));
-          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context)
-              .add(ChangeAppliedFiltersEvent(
-                  boutiqueSlug: "search",
-                  filtersAppliedByUser: GetProductFiltersModel(
-                      filters: Filter(categories: [
-                    Category(
-                      slug: data["category_slug"],
-                      isSelected: true,
-                      mostViewedProductThumbnail:
-                          CategoryBanner(filePath: data["image"]),
-                      flatPhotoPath:
-                          CategoryBanner(filePath: data["image_svg"]),
-                      name: data["category_name"],
-                      id: int.tryParse(data["category_id"].toString()),
-                    )
-                  ]))));
-          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
-              GetProductsWithFiltersEvent(
-                  category: data["category_slug"],
-                  boutiqueSlug: "search",
-                  offset: 1,
-                  fromSearch: true));
 
           await Future.delayed(
               Duration(seconds: 1),
@@ -200,9 +188,23 @@ class HandlingMarketNotifications {
                   PageRouteBuilder(
                       pageBuilder: (context, animation, secondaryAnimation) =>
                           ProductListingPage(
-                              fromNotification: fromBackground,
+                              getProductFiltersModel: GetProductFiltersModel(
+                                  filters: Filter(categories: [
+                                Category(
+                                  slug: data["category_slug"],
+                                  isSelected: true,
+                                  mostViewedProductThumbnail:
+                                      CategoryBanner(filePath: data["image"]),
+                                  flatPhotoPath: CategoryBanner(
+                                      filePath: data["image_svg"]),
+                                  name: data["category_name"],
+                                  id: int.tryParse(
+                                      data["category_id"].toString()),
+                                )
+                              ])),
+                              fromNotificationCategory: true,
+                              fromBackground: fromBackground,
                               fromSearch: true,
-                              category: data["category_slug"],
                               boutiqueSlug: "search"))));
         } catch (e) {}
       }
@@ -210,9 +212,6 @@ class HandlingMarketNotifications {
           TypeOfNotificationForMarket[
               TypeOfNotificationForMarketEnum.boutique_created]) {
         try {
-          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
-              GetMainCategoriesEvent(
-                  context: navigatorKey.currentState!.context));
           Map? boutiqueIcon = data["boutique_icon"] ?? {};
           List<BunnerBoutique>? boutiqueBannerList = List<BunnerBoutique>.from(
               data["banner"]!.map((x) => BunnerBoutique.fromJson(x)));
@@ -228,7 +227,7 @@ class HandlingMarketNotifications {
                 .push(PageRouteBuilder(
               pageBuilder: (context, animation, secondaryAnimation) =>
                   ProductListingPage(
-                fromNotification: fromBackground,
+                fromBackground: fromBackground,
                 boutiqueSlug: data["boutique_slug"] ?? "",
                 banner: boutiqueBannerList,
                 boutiqueDescription: data["description"] ?? "",
@@ -243,4 +242,109 @@ class HandlingMarketNotifications {
   }
 
   // static dealWithNotificationFromTerminited( fromBackground) async {}
+}
+
+class SubsecribeOrUnSubsecribeToTopic {
+  String countryISo = ((GetIt.I<PrefsRepository>().userCountryIsAvailable == 1
+              ? GetIt.I<PrefsRepository>().userChoosedCountryIso
+              : GetIt.I<PrefsRepository>().countryIso) ??
+          "")
+      .toLowerCase();
+
+  void SubsecribeToOtherTopic(String topic) async {
+    await FirebaseMessaging.instance.subscribeToTopic(topic);
+    GetIt.I<PrefsRepository>().setTopicThatAlreadySubsecribed(topic);
+  }
+
+  void UnSubsecribeToOtherTopic(String topic) async {
+    await FirebaseMessaging.instance.unsubscribeFromTopic(topic);
+    GetIt.I<PrefsRepository>().removeTopicThatAlreadySubsecribed(topic);
+  }
+
+  void SubsecribeToBoutiqueCreated() async {
+    await FirebaseMessaging.instance.subscribeToTopic(
+        "boutique_created_${countryISo}_${LanguageService.languageCode}");
+
+    GetIt.I<PrefsRepository>().setTopicThatAlreadySubsecribed(
+        "boutique_created_${countryISo}_${LanguageService.languageCode}");
+  }
+
+  void UnSubsecribeToBoutiqueCreated() async {
+    await FirebaseMessaging.instance.unsubscribeFromTopic(
+        "boutique_created_${countryISo}_${LanguageService.languageCode}");
+
+    GetIt.I<PrefsRepository>().removeTopicThatAlreadySubsecribed(
+        "boutique_created_${countryISo}_${LanguageService.languageCode}");
+  }
+
+  void SubsecribeToCategoryCreated() async {
+    await FirebaseMessaging.instance.subscribeToTopic(
+        "category_created_${countryISo}_${LanguageService.languageCode}");
+
+    GetIt.I<PrefsRepository>().setTopicThatAlreadySubsecribed(
+        "category_created_${countryISo}_${LanguageService.languageCode}");
+  }
+
+  void UnSubsecribeToCategoryCreated() async {
+    await FirebaseMessaging.instance.unsubscribeFromTopic(
+        "category_created_${countryISo}_${LanguageService.languageCode}");
+    GetIt.I<PrefsRepository>().removeTopicThatAlreadySubsecribed(
+        "category_created_${countryISo}_${LanguageService.languageCode}");
+  }
+
+  void SubsecribeToProductDiscount(String productId) async {
+    await FirebaseMessaging.instance.subscribeToTopic(
+        "product_discount_${productId}_${countryISo}_${LanguageService.languageCode}");
+    GetIt.I<PrefsRepository>().setTopicThatAlreadySubsecribed(
+        "product_discount_${productId}_${countryISo}_${LanguageService.languageCode}");
+  }
+
+  void unSubsecribeToProductDiscount(String productId) async {
+    await FirebaseMessaging.instance.unsubscribeFromTopic(
+        "product_discount_${productId}_${countryISo}_${LanguageService.languageCode}");
+    GetIt.I<PrefsRepository>().removeTopicThatAlreadySubsecribed(
+        "product_discount_${productId}_${countryISo}_${LanguageService.languageCode}");
+  }
+
+  void SubsecribeToProductComment(String productId) async {
+    await FirebaseMessaging.instance.subscribeToTopic(
+        "product_comment_${productId}_${countryISo}_${LanguageService.languageCode}");
+    GetIt.I<PrefsRepository>().setTopicThatAlreadySubsecribed(
+        "product_comment_${productId}_${countryISo}_${LanguageService.languageCode}");
+  }
+
+  void UnSubsecribeToProductComment(String productId) async {
+    await FirebaseMessaging.instance.unsubscribeFromTopic(
+        "product_comment_${productId}_${countryISo}_${LanguageService.languageCode}");
+    GetIt.I<PrefsRepository>().removeTopicThatAlreadySubsecribed(
+        "product_comment_${productId}_${countryISo}_${LanguageService.languageCode}");
+  }
+
+  void SubsecribeToProductHurryUpTimeLeft(String cartId) async {
+    await FirebaseMessaging.instance.subscribeToTopic(
+        "product_hurry_up_time_left_${cartId}_${countryISo}_${LanguageService.languageCode}");
+    GetIt.I<PrefsRepository>().setTopicThatAlreadySubsecribed(
+        "product_hurry_up_time_left_${cartId}_${countryISo}_${LanguageService.languageCode}");
+  }
+
+  void UnSubsecribeToProductHurryUpTimeLeft(String cartId) async {
+    await FirebaseMessaging.instance.unsubscribeFromTopic(
+        "product_hurry_up_time_left_${cartId}_${countryISo}_${LanguageService.languageCode}");
+    GetIt.I<PrefsRepository>().removeTopicThatAlreadySubsecribed(
+        "product_hurry_up_time_left_${cartId}_${countryISo}_${LanguageService.languageCode}");
+  }
+
+  void SubsecribeToProductHurryUpQuantity(String cartId) async {
+    await FirebaseMessaging.instance.subscribeToTopic(
+        "product_hurry_up_quantity_${cartId}_${countryISo}_${LanguageService.languageCode}");
+    GetIt.I<PrefsRepository>().setTopicThatAlreadySubsecribed(
+        "product_hurry_up_quantity_${cartId}_${countryISo}_${LanguageService.languageCode}");
+  }
+
+  void UnSubsecribeToProductHurryUpQuantity(String cartId) async {
+    await FirebaseMessaging.instance.unsubscribeFromTopic(
+        "product_hurry_up_quantity_${cartId}_${countryISo}_${LanguageService.languageCode}");
+    GetIt.I<PrefsRepository>().removeTopicThatAlreadySubsecribed(
+        "product_hurry_up_quantity_${cartId}_${countryISo}_${LanguageService.languageCode}");
+  }
 }

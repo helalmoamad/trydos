@@ -1,9 +1,11 @@
 import 'dart:math';
 import 'dart:ui' as ui;
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart' as cupertino;
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -15,7 +17,11 @@ import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/service/language_service.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
@@ -51,6 +57,20 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        print(
+            "##################################################@@@@@@@@@@@@@@@@@@@@@@@@@!!!!!!!!!!!!!!!!!!!!!!!!!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@2");
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
@@ -66,7 +86,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                 boutiqueSlug: widget.boutique.slug!,
                 boutiqueDescription: widget.boutique.description,
                 boutiqueFirstBanner: widget.boutique.banners![0].filePath!,
-                boutiqueIcon: widget.boutique.icon?.filePath!,
+                boutiqueIcon: widget.boutique.icon?.filePath ?? "",
               ),
             );
             ////////////////////////////////////
@@ -158,7 +178,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        widget.boutique.icon != null
+                        widget.boutique.icon?.filePath != null
                             ? SvgNetworkWidget(
                                 svgUrl: widget.boutique.icon!.filePath!,
                                 height: 20,
@@ -376,7 +396,10 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                           ));
                     },
                     itemCount:
-                        widget.boutique.mainCategoriesForProductIds!.length,
+                        widget.boutique.mainCategoriesForProductIds!.length > 5
+                            ? 5
+                            : widget
+                                .boutique.mainCategoriesForProductIds!.length,
                   ),
                 ),
 
@@ -415,9 +438,15 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                     HapticFeedback.lightImpact();
                     resizeItems.value = (details.globalPosition.dx -
                             40 -
-                            (9 -
-                                    widget.boutique.mainCategoriesForProductIds!
-                                        .length) /
+                            (8 -
+                                            widget
+                                                .boutique
+                                                .mainCategoriesForProductIds!
+                                                .length >
+                                        8
+                                    ? 8
+                                    : widget.boutique
+                                        .mainCategoriesForProductIds!.length) /
                                 //childCategoriesForProductIds!.length) /
                                 2 *
                                 (40.w - 5.w)) ~/
@@ -434,11 +463,16 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                     resizeItems.value = (details.globalPosition.dx -
                             40 -
                             (9 -
-                                    widget
-                                        .boutique
-                                        .mainCategoriesForProductIds!
-                                        //.childCategoriesForProductIds!
-                                        .length) /
+                                    (widget
+                                                .boutique
+                                                .mainCategoriesForProductIds!
+                                                .length >
+                                            9
+                                        ? 9
+                                        : widget
+                                            .boutique
+                                            .mainCategoriesForProductIds!
+                                            .length)) /
                                 2 *
                                 (40.w - 5.w)) ~/
                         35.w;
@@ -447,6 +481,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                     }
                   },
                   child: Column(
+                    mainAxisAlignment: cupertino.MainAxisAlignment.center,
                     children: [
                       SizedBox(
                         height: 10.w,
@@ -459,20 +494,24 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                           child: Stack(
                               alignment: Alignment.bottomCenter,
                               children: List.generate(
-                                  min(
-                                      9,
-                                      widget
-                                          .boutique
-                                          .mainCategoriesForProductIds!
-                                          //  .childCategoriesForProductIds!
-                                          .length),
+                                  (widget.boutique.mainCategoriesForProductIds!
+                                              .length) >
+                                          8
+                                      ? 8
+                                      : (widget.boutique
+                                          .mainCategoriesForProductIds!.length),
                                   (index) => AnimatedPositioned(
-                                        left: (9 -
-                                                    widget
-                                                        .boutique
-                                                        .mainCategoriesForProductIds!
-                                                        //  .childCategoriesForProductIds!
-                                                        .length) /
+                                        left: (8 -
+                                                    (widget
+                                                                .boutique
+                                                                .mainCategoriesForProductIds!
+                                                                .length >
+                                                            8
+                                                        ? 8
+                                                        : widget
+                                                            .boutique
+                                                            .mainCategoriesForProductIds!
+                                                            .length)) /
                                                 2 *
                                                 (40.w - 5.w) +
                                             (index * (40.w - 5.w) +
@@ -501,11 +540,13 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                                       widget.withSlidingImages,
                                                   boutiqueSlug:
                                                       widget.boutique.slug!,
-                                                  category: widget
-                                                      .boutique
-                                                      .mainCategoriesForProductIds![
-                                                          index]
-                                                      .categorySlug,
+                                                  category: index == 7
+                                                      ? null
+                                                      : widget
+                                                          .boutique
+                                                          .mainCategoriesForProductIds![
+                                                              index]
+                                                          .categorySlug,
                                                   boutiqueDescription: widget
                                                       .boutique.description,
                                                   boutiqueFirstBanner: widget
@@ -656,7 +697,7 @@ class ProductItemCircle extends StatelessWidget {
                     ],
                   ),
                 ),
-                index == 8
+                index == 7
                     ? Container(
                         height: 40.w,
                         width: 40.w,
@@ -679,9 +720,9 @@ class ProductItemCircle extends StatelessWidget {
                         ),
                       )
                     : const SizedBox.shrink(),
-                index == 8
+                index == 7
                     ? MyTextWidget(
-                        'More',
+                        '${LocaleKeys.more.tr()}',
                         style: context.textTheme.titleSmall?.rq
                             .copyWith(color: Colors.white),
                       )

@@ -199,7 +199,7 @@ class _TabsBarState extends State<TabsBar> {
                         newState.fromSearchForSearchWithGemini == true)),
             builder: (context, homeState) {
               print(
-                  "////////////////////////fffffffffffffffffffffffffffffffffffffffffffffffffffffff/////////////////////////");
+                  "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB////////////////////////fffffffffffffffffffffffffffffffffffffffffffffffffffffff/////////////////////////");
               if (homeState.theReplyFromGemini != "" &&
                   homeState.fromSearchForSearchWithGemini == true) {
                 widget.controller.text = homeState.theReplyFromGemini ?? "";
@@ -263,7 +263,7 @@ class _TabsBarState extends State<TabsBar> {
               }
               return Container(
                   width: 1.sw,
-                  height: 40 + 5.h,
+                  height: 45 + 5.h,
                   padding: EdgeInsets.all(4.r),
                   decoration: BoxDecoration(
                     color: colorScheme.white,

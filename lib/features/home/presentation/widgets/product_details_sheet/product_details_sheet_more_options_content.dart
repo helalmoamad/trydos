@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
@@ -15,6 +16,9 @@ import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
+import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
+import 'package:trydos/routes/router.dart';
+import 'package:trydos/service/language_service.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../../core/utils/responsive_padding.dart';
 import '../../../../../core/utils/theme_state.dart';
@@ -44,26 +48,39 @@ class ProductDetailsSheetMoreOptionsContent extends StatefulWidget {
 
 class _ProductDetailsSheetMoreOptionsContentState
     extends ThemeState<ProductDetailsSheetMoreOptionsContent> {
-  final ValueNotifier<bool> addCommentButtonToggleNotifier =
-      ValueNotifier(false);
-  final TextEditingController addCommentController = TextEditingController();
+  final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
+
     return BlocBuilder<HomeBloc, HomeState>(
-      buildWhen: (p, c) =>
-          p.getCommentForProductModel[widget.productId] !=
-              c.getCommentForProductModel[widget.productId] ||
-          p.addCommentStatus != c.addCommentStatus,
+      buildWhen: (previous, current) =>
+          previous.getNotificationTypeProductStatus !=
+          current.getNotificationTypeProductStatus,
       builder: (context, state) {
-        if (state.getCommentForProductModel[widget.productId] == null) {
-          return SizedBox.shrink();
-        }
-        if (state.addCommentStatus == AddCommentStatus.loading) {
-          return TrydosLoader();
-        }
-        return ScrollConfiguration(
-          behavior: cupertino.CupertinoScrollBehavior(),
+        String countryISo =
+            ((GetIt.I<PrefsRepository>().userCountryIsAvailable == 1
+                        ? GetIt.I<PrefsRepository>().userChoosedCountryIso
+                        : GetIt.I<PrefsRepository>().countryIso) ??
+                    "")
+                .toLowerCase();
+
+        List<String> notifucationThatSubsecribe = [];
+        notifucationThatSubsecribe =
+            prefsRepository.topicThatAlreadySubsecribed();
+        return SingleChildScrollView(
           child: ListView(
             physics: cupertino.ClampingScrollPhysics(),
             controller: widget.scrollController,
@@ -71,102 +88,155 @@ class _ProductDetailsSheetMoreOptionsContentState
             shrinkWrap: true,
             children: [
               10.verticalSpace,
-              MyTextWidget('More Options',
+              MyTextWidget('${LocaleKeys.more_options.tr()}',
                   textAlign: TextAlign.center,
                   style: context.textTheme.bodyMedium?.mq.copyWith(
                     color: Color(0xff505050),
                   )),
               10.verticalSpace,
-              Material(
-                color: Colors.transparent,
-                child: ValueListenableBuilder<bool>(
-                    valueListenable: addCommentButtonToggleNotifier,
-                    builder: (context, toggleValue, _) {
-                      return toggleValue
-                          ? Padding(
-                              padding: HWEdgeInsets.symmetric(horizontal: 15),
-                              child: AppTextField(
-                                hintText: LocaleKeys.add_comment.tr(),
-                                controller: addCommentController,
-                                suffixIcon: Padding(
-                                  padding: HWEdgeInsets.only(
-                                      right: 20.0, top: 15, bottom: 15),
-                                  child: InkWell(
-                                    onTap: () {
-                                      if (addCommentController.text.isEmpty) {
-                                        showMessage(LocaleKeys
-                                            .error_empty_comment
-                                            .tr());
-                                        return;
-                                      }
-                                      BlocProvider.of<HomeBloc>(context).add(
-                                          AddCommentEvent(
-                                              productSlugForTopic:
-                                                  widget.productSlugForTopic,
-                                              productSlug: widget.productSlug,
-                                              productId: widget.productId,
-                                              comment:
-                                                  addCommentController.text));
-                                      addCommentController.clear();
-                                      addCommentButtonToggleNotifier.value =
-                                          false;
-                                      //////////////////////////////////////////////////////////
-                                      FirebaseAnalyticsService
-                                          .logEventForSession(
-                                        eventName:
-                                            AnalyticsEventsConst.buttonClicked,
-                                        executedEventName:
-                                            AnalyticsExecutedEventNameConst
-                                                .confirmCommentButton,
-                                      );
-                                    },
-                                    child: SvgPicture.asset(
-                                      AppAssets.submitArrowSvg,
-                                      width: 10,
-                                      height: 10,
-                                    ),
-                                  ),
+              (state.notificationTypeForProductModel?.notificationTypes
+                              ?.length ??
+                          0) ==
+                      0
+                  ? SizedBox.shrink()
+                  : Container(
+                      padding: EdgeInsets.only(top: 20),
+                      margin: EdgeInsets.symmetric(horizontal: 20),
+                      height: 106,
+                      width: 1.sw,
+                      decoration: BoxDecoration(
+                          color: Color(0xffF8F8F8),
+                          borderRadius: BorderRadius.circular(30)),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: 1.sw,
+                            height: 25,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  width: 20,
                                 ),
-                              ),
-                            )
-                          : InkWell(
-                              onTap: () {
-                                if (GetIt.I<PrefsRepository>().myMarketId ==
-                                    null) {
-                                  showMessage('You must Login First!');
-                                  return;
-                                }
-                                addCommentButtonToggleNotifier.value = true;
-                                //////////////////////////////
-                                FirebaseAnalyticsService.logEventForSession(
-                                  eventName: AnalyticsEventsConst.buttonClicked,
-                                  executedEventName:
-                                      AnalyticsExecutedEventNameConst
-                                          .addCommentButton,
-                                );
-                              },
-                              child: Row(
-                                children: [
-                                  10.horizontalSpace,
-                                  SvgPicture.asset(
-                                    AppAssets.chatMarkSvg,
-                                    height: 25,
-                                  ),
-                                  10.horizontalSpace,
-                                  MyTextWidget(
-                                    LocaleKeys.add_comment.tr(),
-                                    style: textTheme.bodyMedium?.rq.copyWith(
-                                      color: Color(0xff505050),
-                                      height: 0,
+                                SvgPicture.asset(
+                                  AppAssets.notificationOutlinedIconSvg,
+                                  height: 25,
+                                ),
+                                SizedBox(
+                                  width: 20,
+                                ),
+                                Container(
+                                    child: Text(
+                                  LocaleKeys.notify_me_about_the_product_when
+                                      .tr(),
+                                  style: context.textTheme.bodyMedium?.rr
+                                      .copyWith(
+                                          color: const Color(0xff505050),
+                                          letterSpacing: 0.18,
+                                          fontSize: 16,
+                                          height: 0.8),
+                                ))
+                              ],
+                            ),
+                          ),
+                          Container(
+                            width: 1.sw,
+                            height: 30,
+                            margin:
+                                EdgeInsets.only(top: 15, left: 20, right: 20),
+                            child: ListView.separated(
+                                scrollDirection: Axis.horizontal,
+                                itemBuilder: (context, index) => Container(
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(30)),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        (state
+                                                .notificationTypeForProductModel
+                                                ?.notificationTypes?[index]
+                                                .name ??
+                                            ""),
+                                        style: context.textTheme.bodyMedium?.rr
+                                            .copyWith(
+                                                color: const Color(0xff505050),
+                                                letterSpacing: 0.18,
+                                                fontSize: 14,
+                                                height: 0.8),
+                                      ),
+                                    )),
+                                separatorBuilder: (context, index) => SizedBox(
+                                      width: 5,
                                     ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                              ),
-                            );
-                    }),
-              )
+                                itemCount: (state
+                                        .notificationTypeForProductModel
+                                        ?.notificationTypes
+                                        ?.length ??
+                                    0)),
+                          )
+                        ],
+                      ),
+                    ),
+              10.verticalSpace,
+              Container(
+                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  height: 65,
+                  decoration: BoxDecoration(
+                      color: Color(0xffF8F8F8),
+                      borderRadius: BorderRadius.circular(30)),
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: 20,
+                      ),
+                      SvgPicture.asset(
+                        AppAssets.checklistSvg,
+                        height: 25,
+                      ),
+                      SizedBox(
+                        width: 20,
+                      ),
+                      Text(
+                        LocaleKeys.add_to_my_checklist.tr(),
+                        style: context.textTheme.bodyMedium?.rr.copyWith(
+                            color: const Color(0xff505050),
+                            letterSpacing: 0.18,
+                            fontSize: 16,
+                            height: 0.8),
+                      ),
+                    ],
+                  )),
+              10.verticalSpace,
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 20),
+                height: 65,
+                decoration: BoxDecoration(
+                    color: Color(0xffF8F8F8),
+                    borderRadius: BorderRadius.circular(30)),
+                child: Row(children: [
+                  SizedBox(
+                    width: 20,
+                  ),
+                  SvgPicture.asset(
+                    AppAssets.compareSvg,
+                    height: 25,
+                  ),
+                  SizedBox(
+                    width: 20,
+                  ),
+                  Text(
+                    LocaleKeys.add_to_compare.tr(),
+                    style: context.textTheme.bodyMedium?.rr.copyWith(
+                        color: const Color(0xff505050),
+                        letterSpacing: 0.18,
+                        fontSize: 16,
+                        height: 0.8),
+                  )
+                ]),
+              ),
             ],
           ),
         );

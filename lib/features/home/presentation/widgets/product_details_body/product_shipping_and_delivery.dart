@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -10,7 +11,12 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
-
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
@@ -27,6 +33,18 @@ class ProductShippingAndDelivery extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15.0),
       child: Column(
@@ -63,7 +81,8 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                   text: TextSpan(
                                     children: [
                                       TextSpan(
-                                        text: 'You Will Get A ',
+                                        text:
+                                            '${LocaleKeys.you_will_get_a.tr()} ',
                                         style: context.textTheme.titleMedium?.rq
                                             .copyWith(
                                           color: const Color(0xff8d8d8d),
@@ -71,7 +90,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                         ),
                                       ),
                                       TextSpan(
-                                        text: '25% Refund',
+                                        text: '25% ${LocaleKeys.refund.tr()}',
                                         style: context.textTheme.titleMedium?.mq
                                             .copyWith(
                                           color: const Color(0xff8d8d8d),
@@ -80,7 +99,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                       ),
                                       TextSpan(
                                         text:
-                                            ' Of The Product Price If Shipping Is Delayed',
+                                            ' ${LocaleKeys.of_the_product_price_if_shipping.tr()}',
                                         style: context.textTheme.titleMedium?.rq
                                             .copyWith(
                                           color: const Color(0xff8d8d8d),
@@ -124,7 +143,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                 width: 10,
                               ),
                               MyTextWidget(
-                                'Product Shipping & Delivery',
+                                '${LocaleKeys.product_shipping_delivery.tr()}',
                                 style: context.textTheme.titleLarge?.rq
                                     .copyWith(
                                         height: 16 / 13,
@@ -167,7 +186,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                   if (state.getCustomerCountryStatus ==
                                       GetCustomerCountryStatus.failure) {
                                     return MyTextWidget(
-                                      'Failed to get location',
+                                      '${LocaleKeys.failed_to_get_location.tr()}',
                                       style: context.textTheme.titleLarge?.rq
                                           .copyWith(
                                               height: 16 / 13,
@@ -178,7 +197,8 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                     text: TextSpan(
                                       children: [
                                         TextSpan(
-                                          text: 'At Your Address In ',
+                                          text:
+                                              '${LocaleKeys.at_your_address_in.tr()} ',
                                           style: context
                                               .textTheme.titleMedium?.lq
                                               .copyWith(
@@ -196,7 +216,8 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                           ),
                                         ),
                                         TextSpan(
-                                          text: ' Expected Within ',
+                                          text:
+                                              ' ${LocaleKeys.expected_within.tr()} ',
                                           style: context
                                               .textTheme.titleMedium?.rq
                                               .copyWith(
@@ -205,7 +226,8 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                           ),
                                         ),
                                         TextSpan(
-                                          text: '$shippingDay Days',
+                                          text:
+                                              '$shippingDay ${LocaleKeys.day.tr()}',
                                           style: context
                                               .textTheme.titleMedium?.mq
                                               .copyWith(
@@ -251,7 +273,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                         width: 5,
                                       ),
                                       MyTextWidget(
-                                        'Fast Packing & Start Shipping',
+                                        '${LocaleKeys.fast_packing_start_shipping.tr()}',
                                         style: context.textTheme.titleMedium?.rq
                                             .copyWith(
                                                 height: 14 / 11,
@@ -265,7 +287,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                         children: [
                                           TextSpan(
                                             text:
-                                                'Same Day Packing & Ship If Buy Before ',
+                                                '${LocaleKeys.same_day_packing_ship_if_nuy_before.tr()} ',
                                             style: context
                                                 .textTheme.titleMedium?.lq
                                                 .copyWith(
@@ -283,7 +305,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                             ),
                                           ),
                                           TextSpan(
-                                            text: 'Today',
+                                            text: '${LocaleKeys.today.tr()}',
                                             style: context
                                                 .textTheme.titleMedium?.lq
                                                 .copyWith(
@@ -333,7 +355,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                       if (state.getCustomerCountryStatus ==
                                           GetCustomerCountryStatus.failure) {
                                         return MyTextWidget(
-                                          'Failed to get location',
+                                          '${LocaleKeys.failed_to_get_location.tr()}',
                                           style: context
                                               .textTheme.titleLarge?.rq
                                               .copyWith(
@@ -356,7 +378,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                         children: [
                                           TextSpan(
                                             text:
-                                                'Time Is Expected, It May Take More Or Less Than 2 Days',
+                                                '${LocaleKeys.time_is_expected_it_may_tak_more_or_less_than.tr()} 2 ${LocaleKeys.day.tr()}',
                                             style: context
                                                 .textTheme.titleMedium?.lq
                                                 .copyWith(
@@ -406,7 +428,8 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                             ),
                                           ),
                                           TextSpan(
-                                            text: 'In Your Adress',
+                                            text:
+                                                '${LocaleKeys.at_your_address_in.tr()}',
                                             style: context
                                                 .textTheme.titleMedium?.rq
                                                 .copyWith(
@@ -427,7 +450,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                         children: [
                                           TextSpan(
                                             text:
-                                                'Specify Your Address To Calculate The Delivery Time',
+                                                '${LocaleKeys.specify_your_address_to_calculate_the_delivery_time.tr()}',
                                             style: context
                                                 .textTheme.titleMedium?.lq
                                                 .copyWith(
@@ -479,7 +502,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       MyTextWidget(
-                        'Free Shipping',
+                        '${LocaleKeys.free_shipping.tr()}',
                         style: context.textTheme.titleLarge?.rq.copyWith(
                             height: 16 / 13, color: Color(0xff8d8d8d)),
                       ),
@@ -489,7 +512,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                             children: [
                               TextSpan(
                                 text:
-                                    'Shipping Is Completely Free Without Any Extras',
+                                    '${LocaleKeys.shipping_is_completely_free_without_any_extras.tr()}',
                                 style:
                                     context.textTheme.titleMedium?.lq.copyWith(
                                   color: const Color(0xff8d8d8d),
@@ -530,7 +553,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                           text: TextSpan(
                             children: [
                               TextSpan(
-                                text: 'Within ',
+                                text: '${LocaleKeys.within.tr()} ',
                                 style:
                                     context.textTheme.titleMedium?.rq.copyWith(
                                   color: const Color(0xff8d8d8d),
@@ -538,7 +561,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                 ),
                               ),
                               TextSpan(
-                                text: '3 Days',
+                                text: '3 ${LocaleKeys.day.tr()}',
                                 style:
                                     context.textTheme.titleMedium?.mq.copyWith(
                                   color: const Color(0xff8d8d8d),
@@ -547,7 +570,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                               ),
                               TextSpan(
                                 text:
-                                    ' After Receiving The Product, You Can Return It Without Conditions Or Reasons With Complete Ease And Get The Amount Back',
+                                    ' ${LocaleKeys.after_receiving_the_product_you_can_return_it_without_conditions_or_reasons.tr()}',
                                 style:
                                     context.textTheme.titleMedium?.rq.copyWith(
                                   color: const Color(0xff8d8d8d),
@@ -589,7 +612,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           MyTextWidget(
-                            'Free Return',
+                            '${LocaleKeys.free_return.tr()}',
                             style: context.textTheme.titleLarge?.rq.copyWith(
                                 height: 16 / 13, color: Color(0xff8d8d8d)),
                           ),
@@ -599,7 +622,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                 children: [
                                   TextSpan(
                                     text:
-                                        'Return Is Completely Free Without Any Extras',
+                                        '${LocaleKeys.return_is_completely_free_without_any_extras.tr()}',
                                     style: context.textTheme.titleMedium?.lq
                                         .copyWith(
                                       color: const Color(0xff8d8d8d),

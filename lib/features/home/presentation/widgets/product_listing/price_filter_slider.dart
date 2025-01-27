@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'dart:ui' as ui;
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/animation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -19,8 +20,13 @@ import 'package:trydos/features/home/data/models/get_product_filters_model.dart'
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:tuple/tuple.dart';
-
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../search/presentation/widgets/close_circle.dart';
 import '../../manager/home_bloc.dart';
@@ -74,6 +80,18 @@ class _PriceFilterState extends State<PriceFilter> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     if ((widget.pricesFiltersRanges.maxPrice! -
             widget.pricesFiltersRanges!.minPrice!) <
         1) {
@@ -306,7 +324,7 @@ class _PriceFilterState extends State<PriceFilter> {
                               width: 10,
                             ),
                             MyTextWidget(
-                              'Filter By Price',
+                              '${LocaleKeys.filter_by.tr()} ${LocaleKeys.prices.tr()}',
                               style: context.textTheme.titleMedium?.rq.copyWith(
                                   color: Color(0xff505050), height: 15 / 12),
                             ),

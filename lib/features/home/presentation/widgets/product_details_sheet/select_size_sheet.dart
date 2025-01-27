@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gallery_3d/gallery3d.dart';
@@ -13,9 +14,15 @@ import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:tuple/tuple.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../../core/utils/theme_state.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 
 class SelectSizeContent extends StatefulWidget {
   const SelectSizeContent({
@@ -75,6 +82,18 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return BlocBuilder<HomeBloc, HomeState>(
       buildWhen: (p, c) =>
           p.currentSelectedColorForEveryProduct !=
@@ -124,12 +143,12 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                     width: 10,
                   ),
                   MyTextWidget(
-                    'Please Select The Appropriate ',
+                    '${LocaleKeys.please_select_the_appropriate.tr()} ',
                     style: textTheme.titleLarge?.rq
                         .copyWith(height: 0.86, color: const Color(0xff505050)),
                   ),
                   MyTextWidget(
-                    'Size',
+                    '${LocaleKeys.size.tr()}',
                     style: textTheme.titleLarge?.mq
                         .copyWith(height: 0.86, color: const Color(0xff505050)),
                   )
@@ -321,7 +340,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                   builder: (context, currentIndex, _) {
                     if (sizesQuantities[currentIndex] == 0) {
                       return MyTextWidget(
-                        'Not Available Now, Stock Is Sold Out',
+                        '${LocaleKeys.not_available_now_stock.tr()}',
                         style: textTheme.titleMedium?.mq.copyWith(
                             height: 1, color: const Color(0xffFF5F61)),
                       );
@@ -335,7 +354,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                               height: 1, color: const Color(0xff505050)),
                         ),
                         MyTextWidget(
-                          'Recommended ',
+                          '${LocaleKeys.recommended.tr()} ',
                           style: textTheme.titleMedium?.rq.copyWith(
                               height: 1, color: const Color(0xff505050)),
                         ),
@@ -345,13 +364,13 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                               height: 1, color: const Color(0xff505050)),
                         ),
                         MyTextWidget(
-                          'For You ',
+                          '${LocaleKeys.for_you.tr()} ',
                           style: textTheme.titleMedium?.rq.copyWith(
                               height: 1, color: const Color(0xff505050)),
                         ),
                         if (sizesQuantities[currentIndex] < 3) ...{
                           MyTextWidget(
-                            'Last ',
+                            '${LocaleKeys.last.tr()} ',
                             style: textTheme.titleMedium?.rq.copyWith(
                                 height: 1, color: const Color(0xffFFAF5F)),
                           ),
@@ -390,7 +409,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                               width: 10,
                             ),
                             MyTextWidget(
-                              'Need Help Finding Your Size?',
+                              '${LocaleKeys.need_help_finding_your_size.tr()}',
                               style: textTheme.titleLarge?.rq
                                   .copyWith(color: const Color(0xff505050)),
                             ),

@@ -16,6 +16,7 @@ abstract class PrefsRepository {
   int? get userCountryIsAvailable;
 
   String? get myMarketId;
+  bool? get isLogInToChat;
 
   List<Message>? get getTheMessageFromBackground;
   List<String>? get getTheChatsIdsToRemoveFromBackground;
@@ -29,6 +30,9 @@ abstract class PrefsRepository {
   bool? get isTimerForOtpRunning;
 
   bool? get isVerifiedPhone;
+  bool? get isVerifiedPhonePeforeExpiredToken;
+  bool? get isTokenExpired;
+  bool? get isSmartlookStarted;
 
   String? get myStoriesName;
 
@@ -51,6 +55,9 @@ abstract class PrefsRepository {
   String? get otpCode;
   int? get getdurtion;
   Future<bool> setVerifiedPhone(bool verifiedPhone);
+  Future<bool> setVerifiedPhonePeforeExpiredToken(
+      bool verifiedPhonePeforeExpiredToken);
+  Future<bool> setTokenExpired(bool tokenExpired);
   Future<bool> setTimerForOtpRunning(bool isRunning);
   Future<bool> setDuration(int duration);
   Future<bool> setLanguage(String? language);
@@ -69,6 +76,9 @@ abstract class PrefsRepository {
   Future<bool> setMarketToken(String? token);
 
   Future<bool> setStoriesToken(String token);
+  Future<bool> setLogInToChat(bool isLogInToChat);
+  Future<bool> setOnMessageRun(bool onMessageRun);
+  Future<bool> setIsSmartlookStarted(bool isSmartlookStarted);
 
   Future<bool> setServerTime(DateTime serverTime);
 
@@ -107,7 +117,7 @@ abstract class PrefsRepository {
   Future<bool> setViewedProducts(String productId);
   List<String> getviewedProductsProducts();
   Future<bool> removeViewedProducts();
-
+  List<String> topicThatAlreadySubsecribed();
   Future<bool> setViewedBoutiques(String boutiqueId);
   List<String> getviewedProductsBoutiques();
   Future<bool> removeViewedBoutiques();
@@ -117,7 +127,8 @@ abstract class PrefsRepository {
   Future<bool> setAFilePathExist(String filePath, String chatId);
   Future<bool> removeAFilePathExist(String filePath, String chatId);
   Future<bool> removeAllFilePathExistInChat(String chatId);
-
+  Future<bool> setTopicThatAlreadySubsecribed(String topic);
+  Future<bool> removeTopicThatAlreadySubsecribed(String topic);
   List<String> getExistenceFiles();
   List<String>? getTheLocalPathForChannel(String chatId);
   bool isAFilePathExist(String filePath, String chatId);
@@ -133,7 +144,7 @@ abstract class PrefsRepository {
   // User? get user;
 
   Future<bool> clearUser();
-
+  bool? get onMessageRun;
   Future<bool> removeStoriesName();
 
   Future<bool> clearTokensForChatAndStory();

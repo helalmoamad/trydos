@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -7,14 +8,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gallery_3d/gallery3d.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
 import 'dart:ui' as ui;
 import 'package:local_hero/local_hero.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/service/language_service.dart';
 
 import '../../../../../core/utils/theme_state.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
@@ -200,6 +205,18 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return ValueListenableBuilder<int>(
         valueListenable: displayMode,
         builder: (context, mode, _) {
@@ -239,7 +256,18 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                 children: [
                                   Padding(
                                     padding: EdgeInsets.only(
-                                        left: mode != 0 ? 30 : 10,
+                                        right: (LanguageService.languageCode !=
+                                                "ar")
+                                            ? 0
+                                            : mode != 0
+                                                ? 30
+                                                : 10,
+                                        left: (LanguageService.languageCode ==
+                                                "ar")
+                                            ? 0
+                                            : mode != 0
+                                                ? 30
+                                                : 10,
                                         top: mode == 0 ? 5 : 15),
                                     child: GestureDetector(
                                       onTap: () {
@@ -260,7 +288,7 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                             width: 5,
                                           ),
                                           MyTextWidget(
-                                            'Available ${syncColorImageList!.length ~/ 2} Color',
+                                            '${LocaleKeys.available.tr()} ${syncColorImageList!.length ~/ 2} ${LocaleKeys.n_color.tr()}',
                                             style: textTheme.titleLarge?.rq
                                                 .copyWith(
                                                     color: const Color(
@@ -535,11 +563,25 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                           child: ListView.separated(
                                               physics: BouncingScrollPhysics(),
                                               padding: EdgeInsets.only(
-                                                  left: mode != 0 ? 20 : 0),
+                                                  right: (LanguageService
+                                                              .languageCode !=
+                                                          "ar")
+                                                      ? 0
+                                                      : mode != 0
+                                                          ? 20
+                                                          : 0,
+                                                  left: (LanguageService
+                                                              .languageCode ==
+                                                          "ar")
+                                                      ? 0
+                                                      : mode != 0
+                                                          ? 20
+                                                          : 0),
                                               scrollDirection: Axis.horizontal,
                                               itemBuilder: (ctx, index) {
                                                 return GestureDetector(
                                                   onTap: () {
+                                                    displayMode.value = 0;
                                                     currentIndexInSlider =
                                                         index;
                                                     HapticFeedback
@@ -633,7 +675,7 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                         ),
                                                       ),
                                                       MyTextWidget(
-                                                        'Offer',
+                                                        '${LocaleKeys.offer.tr()}',
                                                         style: textTheme
                                                             .titleMedium?.mq
                                                             .copyWith(

@@ -17,7 +17,7 @@ Widget buildSocialButtons(
     required String currentColor,
     required String currentSize}) {
   String urlProductToShare =
-      "${dotenv.env['WEB_CALLS_URL']!}/tr-${LanguageService.languageCode == "en" ? "en" : "ar"}/products/$productSlugForULr" +
+      "${dotenv.env['WEB_CALLS_URL']!}/tr-${LanguageService.languageCode == "ar" ? "ar" : LanguageService.languageCode == "tr" ? "tr" : "en"}/products/$productSlugForULr" +
           (currentColor.length > 1 || currentSize.length > 1 ? "?" : "") +
           (currentColor.length > 1 ? "color=$currentColor" : "") +
           (currentSize.length > 1 ? "&size=$currentSize" : "");

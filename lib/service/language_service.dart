@@ -1,33 +1,37 @@
 import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart';
 
-enum LangCode { ar, en }
+enum LangCode { ar, en, tr }
 
 List<Locale> supportedLocal = [
   localMap[LangCode.ar]!,
   localMap[LangCode.en]!,
+  localMap[LangCode.tr]!,
 ];
 
 final Locale defaultLocal = localMap[LangCode.en]!;
 
 final localMap = {
   LangCode.en: const Locale('en', 'US'),
+  LangCode.tr: const Locale('tr', 'TR'),
   LangCode.ar: const Locale('ar', 'SY'),
 };
 
 final mpaLanguageCodeToLocale = {
   LangCode.en.name: const Locale('en', 'US'),
   LangCode.ar.name: const Locale('ar', 'SY'),
+  LangCode.tr.name: const Locale('tr', 'TR'),
 };
 
 final languageNameAndLanguageCode = <String, LangCode>{
   'English': LangCode.en,
   'Arabic': LangCode.ar,
+  'Turkish': LangCode.tr,
 };
 
 class LanguageService {
   static late Locale currentLanguage;
-  static  String languageCode = 'en';
+  static String languageCode = 'en';
   static late bool rtl;
 
   final BuildContext context;
@@ -49,7 +53,7 @@ class LanguageService {
     return LanguageService._singleton(context);
   }
 
-  Locale get  _currentLanguage => context.locale;
+  Locale get _currentLanguage => context.locale;
 
   String get _languageCode => _currentLanguage.languageCode;
 

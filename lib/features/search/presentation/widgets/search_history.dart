@@ -15,6 +15,11 @@ import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/search/presentation/widgets/search_history_chip.dart';
 
 import '../../../../common/constant/design/assets_provider.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 
 class SearchHistory extends StatefulWidget {
   final List<String> items;
@@ -40,6 +45,18 @@ class _SearchHistoryState extends State<SearchHistory> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     _items = List.of(widget.items);
     return Padding(
       padding: const EdgeInsetsDirectional.only(top: 10.0, start: 20),
@@ -180,8 +197,10 @@ class _SearchHistoryState extends State<SearchHistory> {
                               child: MyTextWidget(
                                 _items[index],
                                 textAlign: TextAlign.start,
-                                style: context.textTheme.titleLarge?.rq.copyWith(
-                                    height: 18 / 14, color: Color(0xff8D8D8D)),
+                                style: context.textTheme.titleLarge?.rq
+                                    .copyWith(
+                                        height: 18 / 14,
+                                        color: Color(0xff8D8D8D)),
                               ),
                             ),
                           ),

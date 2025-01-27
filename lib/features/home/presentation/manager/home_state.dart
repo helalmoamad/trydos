@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:trydos/features/home/data/models/get_address_by_text_model.dart';
 
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart'
@@ -11,6 +12,7 @@ import 'package:trydos/features/home/data/models/get_comment_for_product_model.d
 import 'package:trydos/features/home/data/models/get_currency_for_country_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart'
     as boutiques_model;
+import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
 import 'package:trydos/features/home/data/models/get_old_cart_model.dart'
     as oldCart;
 
@@ -19,7 +21,9 @@ import 'package:trydos/features/home/data/models/get_product_detail_without_rela
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 
 import 'package:trydos/features/home/data/models/get_story_for_product_model.dart';
+import 'package:trydos/features/home/data/models/notificaation_poroduct_types.dart';
 import 'package:trydos/features/home/data/models/popular_search_terms_model.dart';
+import 'package:trydos/features/home/presentation/widgets/cart_section/add_shipping_address.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
 
 import '../../../../core/data/model/pagination_model.dart';
@@ -78,9 +82,23 @@ enum DeleteItemInCartStatus { init, loading, success, failure }
 
 enum AddCommentStatus { init, loading, success, failure }
 
+enum GetNotificationTypeProductStatus { init, loading, success, failure }
+
+enum AddAddressToOrderStatus { init, loading, success, failure }
+
+enum EditAddressToOrderStatus { init, loading, success, failure }
+
+enum GetCustomerAddressesStatus { init, loading, success, failure }
+
+enum RemoveAddressToOrderStatus { init, loading, success, failure }
+
 enum GetProductsWithoutFiltersStatus { init, loading, success, failure }
 
 enum AddOrRemoveLikeOfProductStatus { init, loading, success, failure }
+
+enum GetAddressByTextStatus { init, loading, success, failure }
+
+enum GetAddressByCoordinatesStatus { init, loading, success, failure }
 
 enum GetProductListingStatus { init, loading, success, failure }
 
@@ -94,15 +112,18 @@ class HomeState extends Equatable {
     this.getAndAddCountViewOfProductStatus = const {},
     this.addItemInCartStatus,
     this.convertItemFromOldcartToCartStatus,
+    this.resultSearch = const [],
     this.hideItemInOldCartStatus,
     this.searchWithOutFilterOffset,
     this.searchWithFilterOffset,
-    this.cartIdsSubsecribedToTopicHurryUP = const [],
     this.getProductDetailWithoutSimilarRelatedProductsStatus =
         GetProductDetailWithoutSimilarRelatedProductsStatus.init,
     this.getStartingSettingsStatus = GetStartingSettingsStatus.init,
     this.getMainCategoriesStatus = GetMainCategoriesStatus.init,
     this.getCommentForProductStatus = GetCommentForProductStatus.init,
+    this.editAddressToOrderStatus,
+    this.addAddressToOrderStatus,
+    this.removeAddressToOrderStatus,
     this.getFullProductDetailsStatus = GetFullProductDetailsStatus.init,
     this.addCommentStatus = AddCommentStatus.init,
     this.startingSetting,
@@ -122,6 +143,7 @@ class HomeState extends Equatable {
     this.currentPage = 0,
     this.productStatus,
     this.updateItemInCartStatus,
+    this.getCustomerAddressStatus,
     this.theReplyFromGemini,
     this.productITemForCart = const {},
     this.getCartShippingItemsModel,
@@ -155,6 +177,8 @@ class HomeState extends Equatable {
     this.getCurrencyForCountryModel,
     this.isExpandedForListingPage = false,
     this.popularSearchTerm,
+    this.getAddressByCoordinatesStatus,
+    this.getAddressByTextStatus,
     this.countOfProductExpectedByFiltering,
     this.getCartItemsStatus = GetCartItemsStatus.init,
     this.getProductDetailWithoutRelatedProductsModel,
@@ -164,6 +188,10 @@ class HomeState extends Equatable {
     this.getProductFiltersWithPrefetchModel = const {},
     this.currentSelectedColorForEveryProduct = const {},
     this.boutiquesThatDidPrefetch = const {},
+    this.notificationTypeForProductModel,
+    this.getNotificationTypeProductStatus,
+    this.listOfAddressInfoClassToSave = const [],
+    this.listOfErrorSendedToMobileErrorLog = const [],
     this.boutiquesForEveryMainCategoryThatDidPrefetch = const {},
     this.cachedProductWithoutRelatedProductsModel = const {},
     this.getHomeBoutiquesPaginationObjectByMainCategory = const {},
@@ -177,16 +205,26 @@ class HomeState extends Equatable {
   final Map<String, product.Products> productITemForCart;
   final ConvertItemFromOldcartToCartStatus? convertItemFromOldcartToCartStatus;
   final GetMainCategoriesStatus getMainCategoriesStatus;
+  final GetNotificationTypeProductStatus? getNotificationTypeProductStatus;
   final HideItemInOldCartStatus? hideItemInOldCartStatus;
+  final GetCustomerAddressesStatus? getCustomerAddressStatus;
+  final NotificationTypeForProductModel? notificationTypeForProductModel;
   final Map<String, GetAndAddCountViewOfProductStatus>
       getAndAddCountViewOfProductStatus;
   final List<PopularSearchTerm>? popularSearchTerm;
+  final List<ResultSearch>? resultSearch;
   final List<ImageForAddToCart>? ListitemForAddToCart;
+  final GetAddressByTextStatus? getAddressByTextStatus;
+  final GetAddressByCoordinatesStatus? getAddressByCoordinatesStatus;
   //final bool moveUrlFromElasticToMarketServer;
   final GetAllowedCountriesModel? getAllowedCountriesModel;
+  final RemoveAddressToOrderStatus? removeAddressToOrderStatus;
+  final EditAddressToOrderStatus? editAddressToOrderStatus;
+  final AddAddressToOrderStatus? addAddressToOrderStatus;
   final Map<String, GetProductFiltersStatus> getProductFiltersStatus;
   final Map<String, PaginationModel<product.Products>?>
       getProductListingWithFiltersPaginationModels;
+  final List<CustomerAddressesInfo>? listOfAddressInfoClassToSave;
   final GetCurrencyForCountryModel? getCurrencyForCountryModel;
   final Map<String, PaginationModel<product.Products>?>
       getProductListingWithFiltersPaginationWithPrefetchModels;
@@ -212,13 +250,14 @@ class HomeState extends Equatable {
 
   // String? idForRequest;
   final List<String>? searchHistory;
+  final List<String> listOfErrorSendedToMobileErrorLog;
   final Map<String, String>? searchWithFilterOffset;
   final Map<String, String>? searchWithOutFilterOffset;
   final Map<String, Map<int, List<String>>> addImagesToProductIdForCart;
   final Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>?
       productStatus;
   final List<cart.Cart>? cartCollection;
-  final List<String> cartIdsSubsecribedToTopicHurryUP;
+
   final Map<String, int> cartIdsHurryUPTimerStarted;
   final GetListOfProductsFoundedInCartStatus
       getListOfProductsFoundedInCartStatus;
@@ -229,6 +268,7 @@ class HomeState extends Equatable {
   final Map<String, bool> reRequestProductWithFilters;
   final GetProductDetailWithoutSimilarRelatedProductsStatus
       getProductDetailWithoutSimilarRelatedProductsStatus;
+
   final GetFullProductDetailsStatus getFullProductDetailsStatus;
   final String? theReplyFromGemini;
 
@@ -278,6 +318,11 @@ class HomeState extends Equatable {
         convertItemFromOldcartToCartStatus,
         getOldCartModel,
         getOldCartItemsStatus,
+        editAddressToOrderStatus,
+        addAddressToOrderStatus,
+        notificationTypeForProductModel,
+        removeAddressToOrderStatus,
+        getCustomerAddressStatus,
         ListitemForAddToCart,
         getAllowedCountriesModel,
         getProductFiltersStatus,
@@ -291,6 +336,10 @@ class HomeState extends Equatable {
         hideItemInOldCartStatus,
         // moveUrlFromElasticToMarketServer,
         cashedOrginalBoutique,
+        listOfAddressInfoClassToSave,
+        getAddressByCoordinatesStatus,
+        getAddressByTextStatus,
+        listOfErrorSendedToMobileErrorLog,
         productContentForStatusOfOpeningProductDetailsDirectly,
         getProductListingWithFiltersPaginationWithPrefetchModels,
         getProductFiltersModel,
@@ -309,6 +358,7 @@ class HomeState extends Equatable {
         productStatus,
         cartCollection,
         fromSearchForSearchWithGemini,
+        resultSearch,
         reRequestTheseBoutiques,
         reRequestTheseProductListingInBoutiques,
         reRequestProductWithFilters,
@@ -352,14 +402,25 @@ class HomeState extends Equatable {
       final HideItemInOldCartStatus? hideItemInOldCartStatus,
       final ConvertItemFromOldcartToCartStatus?
           convertItemFromOldcartToCartStatus,
+      final GetNotificationTypeProductStatus? getNotificationTypeProductStatus,
       // final bool? moveUrlFromElasticToMarketServer,
       final UpdateItemInCartStatus? updateItemInCartStatus,
+      final GetCustomerAddressesStatus? getCustomerAddressesStatus,
+      final List<ResultSearch>? resultSearch,
+      final List<String>? listOfErrorSendedToMobileErrorLog,
+      final NotificationTypeForProductModel? notificationTypeForProductModel,
       final Map<String, String>? searchWithFilterOffset,
       final GetListOfProductsFoundedInCartStatus?
           getListOfProductsFoundedInCartStatus,
+      final List<CustomerAddressesInfo>? listOfAdressInfoClassToSave,
+      final RemoveAddressToOrderStatus? removeAddressToOrderStatus,
+      final EditAddressToOrderStatus? editAddressToOrderStatus,
+      final AddAddressToOrderStatus? addAddressToOrderStatus,
       final Map<String, String>? searchWithOutFilterOffset,
       final Map<String, get_filters.GetProductFiltersModel?>?
           getProductFiltersWithPrefetchModel,
+      final GetAddressByTextStatus? getAddressByTextStatus,
+      final GetAddressByCoordinatesStatus? getAddressByCoordinatesStatus,
       final Map<String, GetAndAddCountViewOfProductStatus>?
           getAndAddCountViewOfProductStatus,
       bool? cashedOrginalBoutique,
@@ -453,11 +514,32 @@ class HomeState extends Equatable {
           getCommentForProductModel ?? this.getCommentForProductModel,
       updateItemInCartStatus:
           updateItemInCartStatus ?? this.updateItemInCartStatus,
+      notificationTypeForProductModel: notificationTypeForProductModel ??
+          this.notificationTypeForProductModel,
+      listOfAddressInfoClassToSave:
+          listOfAdressInfoClassToSave ?? this.listOfAddressInfoClassToSave,
+      removeAddressToOrderStatus:
+          removeAddressToOrderStatus ?? this.removeAddressToOrderStatus,
+      addAddressToOrderStatus:
+          addAddressToOrderStatus ?? this.addAddressToOrderStatus,
+      resultSearch: resultSearch ?? this.resultSearch,
+      getCustomerAddressStatus:
+          getCustomerAddressesStatus ?? this.getCustomerAddressStatus,
+      getNotificationTypeProductStatus: getNotificationTypeProductStatus ??
+          this.getNotificationTypeProductStatus,
+      editAddressToOrderStatus:
+          editAddressToOrderStatus ?? this.editAddressToOrderStatus,
+      getAddressByCoordinatesStatus:
+          getAddressByCoordinatesStatus ?? this.getAddressByCoordinatesStatus,
+      getAddressByTextStatus:
+          getAddressByTextStatus ?? this.getAddressByTextStatus,
       addOrRemoveLikeOfProductStatus:
           addOrRemoveLikeOfProductStatus ?? this.addOrRemoveLikeOfProductStatus,
       convertItemFromOldcartToCartStatus: convertItemFromOldcartToCartStatus ??
           this.convertItemFromOldcartToCartStatus,
       popularSearchTerm: popularSearchTerm ?? this.popularSearchTerm,
+      listOfErrorSendedToMobileErrorLog: listOfErrorSendedToMobileErrorLog ??
+          this.listOfErrorSendedToMobileErrorLog,
       //   moveUrlFromElasticToMarketServer: moveUrlFromElasticToMarketServer ??
       //     this.moveUrlFromElasticToMarketServer,
       sizes: sizes ?? this.sizes,
@@ -465,8 +547,6 @@ class HomeState extends Equatable {
           getFullProductDetailsStatus ?? this.getFullProductDetailsStatus,
       sizesQuantities: sizesQuantities ?? this.sizesQuantities,
       addCommentStatus: addCommentStatus ?? this.addCommentStatus,
-      cartIdsSubsecribedToTopicHurryUP: cartIdsSubsecribedToTopicHurryUP ??
-          this.cartIdsSubsecribedToTopicHurryUP,
 
       isSizeRequestNotification:
           isSizeRequestNotification ?? this.isSizeRequestNotification,

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart' as translate;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
@@ -6,14 +7,19 @@ import 'package:flutter_gallery_3d/gallery3d.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:local_hero/local_hero.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/common/constant/constant.dart';
+import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
+import 'package:trydos/features/app/app_elvated_button.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
+import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
+import 'package:trydos/features/authentication/presentation/pages/first_registeration_page.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
@@ -26,6 +32,8 @@ import 'package:flutter/cupertino.dart' as cupertino;
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_more_options_content.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_share_content.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/select_size_sheet.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/routes/router.dart';
 import '../../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
@@ -47,7 +55,7 @@ class ProductDetailsBottomSheet extends StatefulWidget {
   final String productDescription;
   final String currentColornum;
   final PanelController panelController;
-
+  final String productIdForCashData;
   final int countOfPieces;
   final String maxAllowedToAddCart;
   final ValueNotifier<int> addToBagButtonShapeNotifier;
@@ -55,6 +63,7 @@ class ProductDetailsBottomSheet extends StatefulWidget {
   const ProductDetailsBottomSheet(
       {super.key,
       required this.productItem,
+      required this.productIdForCashData,
       required this.panelController,
       required this.addToBagButtonShapeNotifier,
       required this.boutiqueIcon,
@@ -76,7 +85,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
   final ValueNotifier<List<String>> idsOfChatCardsToShare = ValueNotifier([]);
   final ValueNotifier<int> currentActiveTab = ValueNotifier(-1);
   final ValueNotifier<double> workOnBlurNotifier = ValueNotifier(10);
-
+  PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   final ValueNotifier<String?> sizeIsNotAvailableNotifier = ValueNotifier(null);
   final PageController pageController = PageController();
 
@@ -159,6 +168,18 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return LocalHeroScope(
       duration: Duration(milliseconds: 300),
       child: Column(
@@ -215,6 +236,104 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                             tag = 'cart';
                           },
                         );
+                        if ((prefsRepository.isTokenExpired ??
+                                false ||
+                                    prefsRepository.marketToken == "" ||
+                                    prefsRepository.marketToken == null) &&
+                            GetIt.I<AuthBloc>().state.registerGuestStatus !=
+                                RegisterGuestStatus.loading) {
+                          Future.delayed(
+                              Duration(seconds: 1),
+                              () => showDialog(
+                                    context: context,
+                                    builder: (context) => Center(
+                                        child: Container(
+                                      alignment: Alignment.center,
+                                      width: 400,
+                                      height: 300,
+                                      child: AlertDialog(
+                                        title: MyTextWidget(
+                                          "${LocaleKeys.it_has_been_along_time_since_your_account.tr()}",
+                                        ),
+                                        actions: <Widget>[
+                                          Container(
+                                            alignment: Alignment.center,
+                                            width: 300,
+                                            child: Row(
+                                              mainAxisAlignment: (prefsRepository
+                                                          .isVerifiedPhonePeforeExpiredToken ??
+                                                      false)
+                                                  ? MainAxisAlignment.center
+                                                  : MainAxisAlignment
+                                                      .spaceAround,
+                                              children: [
+                                                (prefsRepository
+                                                            .isVerifiedPhonePeforeExpiredToken ??
+                                                        false)
+                                                    ? SizedBox.shrink()
+                                                    : Container(
+                                                        alignment:
+                                                            Alignment.center,
+                                                        width: 130,
+                                                        child:
+                                                            AppElevatedButton(
+                                                          textStyle: TextStyle(
+                                                              fontSize: 16),
+                                                          onPressed: () async {
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop();
+                                                            String? deviceId =
+                                                                await HelperFunctions
+                                                                    .getDeviceId();
+
+                                                            GetIt.I<AuthBloc>().add(RegisterGuestEvent(
+                                                                oldGuestUserId:
+                                                                    prefsRepository
+                                                                        .myMarketId
+                                                                        .toString(),
+                                                                deviceId:
+                                                                    deviceId!));
+                                                          },
+                                                          text:
+                                                              "${LocaleKeys.reset_your_count.tr()}",
+                                                        ),
+                                                      ),
+                                                Container(
+                                                  alignment: Alignment.center,
+                                                  width: 130,
+                                                  child: AppElevatedButton(
+                                                    textStyle:
+                                                        TextStyle(fontSize: 16),
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+
+                                                      Navigator.of(context)
+                                                          .push(
+                                                              PageRouteBuilder(
+                                                        pageBuilder: (context,
+                                                                animation,
+                                                                secondaryAnimation) =>
+                                                            RegistrationPage(
+                                                          fromExpiredToken:
+                                                              true,
+                                                        ),
+                                                      ));
+                                                    },
+                                                    text:
+                                                        '${LocaleKeys.go_to_log_in.tr()}',
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    )),
+                                  ));
+                          return;
+                        }
                         homeBloc.add(
                           AddMultiItemsToCartEvent(
                             maxAllowed: widget.maxAllowedToAddCart,
@@ -427,6 +546,8 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                           current
                                               .getProductDetailWithoutSimilarRelatedProductsStatus,
                                   builder: (context, state) {
+                                    print(
+                                        "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!${widget.productItem.price!}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!${state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!}");
                                     return ProductDetailsSheetHeader(
                                       decimalPoint: state.startingSetting
                                               ?.decimalPointSetting ??
@@ -445,9 +566,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                   .data!
                                                   .currency!
                                                   .exchangeRate!)
-                                          .toStringAsFixed(state.startingSetting
-                                                  ?.decimalPointSetting ??
-                                              2),
+                                          .toString(),
                                       offerPrice: (widget
                                                   .productItem.offerPrice! *
                                               state
@@ -455,9 +574,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                   .data!
                                                   .currency!
                                                   .exchangeRate!)
-                                          .toStringAsFixed(state.startingSetting
-                                                  ?.decimalPointSetting ??
-                                              2),
+                                          .toString(),
                                     );
                                   }),
                               currentTab != -1
@@ -489,6 +606,10 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                     },
                                     children: [
                                       ProductDetailsSheetCommentsContent(
+                                          productSlugForTopic:
+                                              widget.productSlugForTopic,
+                                          productSlug:
+                                              widget.productItem.slug ?? "",
                                           productId:
                                               widget.productItem.id.toString(),
                                           scrollController: currentTab == 0
@@ -655,7 +776,10 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                   ? state.CurrentColorSizeForCart!["size"] ?? ""
                                   : "",
                               colorName: widget.currentColorName,
-                              productId: widget.productItem.id.toString(),
+                              productIdForCashproducts:
+                                  widget.productIdForCashData,
+                              productIdForRequestApi:
+                                  widget.productItem.id.toString(),
                               imageUrl: !widget
                                       .productItem.syncColorImages.isNullOrEmpty
                                   ? widget
@@ -670,6 +794,119 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                           .filePath ??
                                       "",
                               onFinishBuying: (quantity) {
+                                if ((prefsRepository.isTokenExpired ??
+                                        false ||
+                                            prefsRepository.marketToken == "" ||
+                                            prefsRepository.marketToken ==
+                                                null) &&
+                                    GetIt.I<AuthBloc>()
+                                            .state
+                                            .registerGuestStatus !=
+                                        RegisterGuestStatus.loading) {
+                                  Future.delayed(
+                                      Duration(seconds: 1),
+                                      () => showDialog(
+                                            context: context,
+                                            builder: (context) => Center(
+                                                child: Container(
+                                              alignment: Alignment.center,
+                                              width: 400,
+                                              height: 300,
+                                              child: AlertDialog(
+                                                title: MyTextWidget(
+                                                  "${LocaleKeys.it_has_been_along_time_since_your_account.tr()}",
+                                                ),
+                                                actions: <Widget>[
+                                                  Container(
+                                                    alignment: Alignment.center,
+                                                    width: 300,
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          (prefsRepository
+                                                                      .isVerifiedPhonePeforeExpiredToken ??
+                                                                  false)
+                                                              ? MainAxisAlignment
+                                                                  .center
+                                                              : MainAxisAlignment
+                                                                  .spaceAround,
+                                                      children: [
+                                                        (prefsRepository
+                                                                    .isVerifiedPhonePeforeExpiredToken ??
+                                                                false)
+                                                            ? SizedBox.shrink()
+                                                            : Container(
+                                                                alignment:
+                                                                    Alignment
+                                                                        .center,
+                                                                width: 130,
+                                                                child:
+                                                                    AppElevatedButton(
+                                                                  textStyle:
+                                                                      TextStyle(
+                                                                          fontSize:
+                                                                              16),
+                                                                  onPressed:
+                                                                      () async {
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop();
+                                                                    String?
+                                                                        deviceId =
+                                                                        await HelperFunctions
+                                                                            .getDeviceId();
+
+                                                                    GetIt.I<AuthBloc>().add(RegisterGuestEvent(
+                                                                        oldGuestUserId: prefsRepository
+                                                                            .myMarketId
+                                                                            .toString(),
+                                                                        deviceId:
+                                                                            deviceId!));
+                                                                  },
+                                                                  text:
+                                                                      "${LocaleKeys.reset_your_count.tr()}",
+                                                                ),
+                                                              ),
+                                                        Container(
+                                                          alignment:
+                                                              Alignment.center,
+                                                          width: 130,
+                                                          child:
+                                                              AppElevatedButton(
+                                                            textStyle:
+                                                                TextStyle(
+                                                                    fontSize:
+                                                                        16),
+                                                            onPressed: () {
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop();
+
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .push(
+                                                                      PageRouteBuilder(
+                                                                pageBuilder: (context,
+                                                                        animation,
+                                                                        secondaryAnimation) =>
+                                                                    RegistrationPage(
+                                                                  fromExpiredToken:
+                                                                      true,
+                                                                ),
+                                                              ));
+                                                            },
+                                                            text:
+                                                                '${LocaleKeys.go_to_log_in.tr()}',
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            )),
+                                          ));
+                                  return;
+                                }
                                 homeBloc.add(
                                   AddMultiItemsToCartEvent(
                                     maxAllowed: widget.maxAllowedToAddCart,
@@ -848,7 +1085,7 @@ class ShareButton extends StatelessWidget {
                     ),
                     10.horizontalSpace,
                     MyTextWidget(
-                      'Send',
+                      '${LocaleKeys.send.tr()}',
                       style: context.textTheme.bodyLarge?.rq
                           .copyWith(color: Colors.white),
                     )

@@ -201,7 +201,7 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                               Future.delayed(
                                 Duration(milliseconds: 100),
                                 () async {
-                                  if (GetIt.I<PrefsRepository>()
+                                  /*   if (GetIt.I<PrefsRepository>()
                                               .isVerifiedPhone !=
                                           false ||
                                       ((GetIt.I<PrefsRepository>()
@@ -210,17 +210,16 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                                   0) <
                                               5 ||
                                           GetIt.I<PrefsRepository>()
-                                                  .myMarketId ==
+                                                  .marketToken ==
                                               "" ||
                                           GetIt.I<PrefsRepository>()
-                                                  .myMarketId ==
-                                              null)) {
-                                    String? deviceId =
-                                        await HelperFunctions.getDeviceId();
-                                    BlocProvider.of<AuthBloc>(context).add(
-                                        RegisterGuestEvent(
-                                            deviceId: deviceId!));
-                                  }
+                                                  .marketToken ==
+                                              null)) {*/
+                                  String? deviceId =
+                                      await HelperFunctions.getDeviceId();
+                                  BlocProvider.of<AuthBloc>(context).add(
+                                      RegisterGuestEvent(deviceId: deviceId!));
+                                  //}
                                   if (Navigator.of(context).canPop()) {
                                     Navigator.of(context).pop();
                                   } else {

@@ -141,7 +141,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   FutureOr<void> _onLoginToChatEvent(
       LoginToChatEvent event, Emitter<AuthState> emit) async {
-    emit(state.copyWith(loginToChatStatus: LoginToChatStatus.loading));
+    /*   emit(state.copyWith(loginToChatStatus: LoginToChatStatus.loading));
 
     final response = await loginToChatUseCase(
       LoginToChatParams(
@@ -167,8 +167,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             backGroundColor: Colors.black,
             showInRelease: true,
             timeShowing: Toast.LENGTH_LONG);
+        _prefsRepository.setLogInToChat(false);
       },
       (r) {
+        _prefsRepository.setLogInToChat(true);
         print(
             "#######################ccccccccccccccccc######@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@${r.data?.refreshToken}");
 
@@ -194,7 +196,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         apisMustNotToRequest.remove('GetChatsEvent');
         GetIt.I<ChatBloc>().add(GetChatsEvent(limit: 10));
       },
-    );
+    );*/
   }
 
   FutureOr<void> _onStoreFcmTokenEvent(
@@ -261,13 +263,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           _prefsRepository.setMyMarketName(r.data!.name!);
         }
 
-        GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
-        GetIt.I<HomeBloc>().add(GetCartItemEvent());
-        GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
         _prefsRepository.setMyMarketId(r.data!.id.toString());
         _prefsRepository.setMarketToken(r.token);
+        _prefsRepository.setTokenExpired(false);
         _prefsRepository.setVerifiedPhone(r.data!.isPhoneVerified == 1);
         _prefsRepository.setPhoneNumber((r.data!.phone).toString());
+        GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
+        GetIt.I<HomeBloc>().add(GetCartItemEvent());
+        GetIt.I<HomeBloc>().add(GetOldCartItemEvent());
+        GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
 
         add(LoginToChatEvent(
             fcmToken: NotificationProcess.myFcmToken!,
@@ -366,8 +370,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           }
 
           _prefsRepository.setMarketToken(r.data!.token!);
+          _prefsRepository.setTokenExpired(false);
           GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
           GetIt.I<HomeBloc>().add(GetCartItemEvent());
+          GetIt.I<HomeBloc>().add(GetOldCartItemEvent());
           GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
           _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
           print(
@@ -439,9 +445,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         }
 
         _prefsRepository.setMarketToken(r.data!.token!);
+        _prefsRepository.setTokenExpired(false);
         GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
         GetIt.I<HomeBloc>().add(GetCartItemEvent());
+        GetIt.I<HomeBloc>().add(GetOldCartItemEvent());
         GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
+        ;
         _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
         print(
             ".................................*****************************-----------------------------${r.data!.token!}");
@@ -487,7 +496,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     _prefsRepository.setVerifiedPhone(false);
     emit(state.copyWith(registerGuestStatus: RegisterGuestStatus.loading));
     final response = await registerGuestUseCase(
-      RegisterGuestParams(deviceId: event.deviceId),
+      RegisterGuestParams(
+          deviceId: event.deviceId, oldGuestUserId: event.oldGuestUserId),
     );
     bool? previousStatusOfIsVerifiedPhone =
         _prefsRepository.isVerifiedPhone ?? false;
@@ -496,16 +506,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     response.fold((l) {
       _prefsRepository.setVerifiedPhone(previousStatusOfIsVerifiedPhone);
       if (!isFailedTheFirstTime.contains('RegisterGuestEvent')) {
-        add(RegisterGuestEvent(deviceId: event.deviceId));
+        add(RegisterGuestEvent(
+            deviceId: event.deviceId, oldGuestUserId: event.oldGuestUserId));
         isFailedTheFirstTime.add('RegisterGuestEvent');
       }
       emit(state.copyWith(registerGuestStatus: RegisterGuestStatus.failure));
     }, (r) {
       isFailedTheFirstTime.remove('RegisterGuestEvent');
       _prefsRepository.setMarketToken(r.data!.token!);
+      _prefsRepository.setTokenExpired(false);
       _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
       GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
       GetIt.I<HomeBloc>().add(GetCartItemEvent());
+      GetIt.I<HomeBloc>().add(GetOldCartItemEvent());
       GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
       GetIt.I<HomeBloc>().add(StoreFcmTokenOfMarketEvent(
           userId: r.data!.user!.id!,

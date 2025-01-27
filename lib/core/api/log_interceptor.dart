@@ -5,6 +5,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/core/data/repository/prefs_repository_impl.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../enums/status_code_type.dart';
 import '../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
@@ -99,10 +101,25 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
   void onError(DioException err, ErrorInterceptorHandler handler) {
     try {
       if (jsonDecode(err.response.toString())["message"]
-          .toString()
-          .contains("Unauth")) {
-        _prefsRepository.setMarketToken(null);
+              .toString()
+              .contains("Unauth") &&
+          !(_prefsRepository.isTokenExpired ?? false)) {
+        _prefsRepository.setTokenExpired(true);
+        _prefsRepository.setVerifiedPhonePeforeExpiredToken(
+            _prefsRepository.isVerifiedPhone ?? false);
         _prefsRepository.setVerifiedPhone(false);
+      }
+    } catch (e) {}
+    try {
+      if (err.stackTrace.toString().contains("HomeRemoteDatasource")) {
+        GetIt.I<HomeBloc>().add(SendErrorToMobileErrorLogEvent(
+            errorExption:
+                jsonDecode(err.response.toString())["message"].toString(),
+            errorPath: "Back End Error",
+            urlBackend:
+                err.stackTrace.toString().split("#4")[1].substring(0, 100),
+            messageFromeBackend:
+                jsonDecode(err.response.toString())["message"].toString()));
       }
     } catch (e) {}
 

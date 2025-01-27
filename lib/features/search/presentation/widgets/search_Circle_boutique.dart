@@ -17,6 +17,11 @@ import '../../../../common/test_utils/test_var.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../app/my_text_widget.dart';
 import '../../../home/data/models/get_product_filters_model.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 
 class SearchChipBoutique extends StatefulWidget {
   final String title;
@@ -46,6 +51,18 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return BlocBuilder<HomeBloc, HomeState>(
       builder: (context, state) {
         String key = 'search';

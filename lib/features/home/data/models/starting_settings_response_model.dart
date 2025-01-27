@@ -139,7 +139,7 @@ class StartingSetting {
   final bool? canInviteFriends;
   final bool? showButtonWhatsappCashOnDelivery;
   final bool? smartLook;
-  final List<Language>? language;
+  final List<Language>? languages;
   final List<NotificationType>? notificationTypes;
   final List<CurrencyList>? currencyList;
   final String? telrSuccessUrl;
@@ -201,7 +201,7 @@ class StartingSetting {
     this.canInviteFriends,
     this.showButtonWhatsappCashOnDelivery,
     this.smartLook,
-    this.language,
+    this.languages,
     this.currencyList,
     this.telrSuccessUrl,
     this.postPaySuccessUrl,
@@ -262,7 +262,7 @@ class StartingSetting {
     bool? canInviteFriends,
     bool? showButtonWhatsappCashOnDelivery,
     bool? smartLook,
-    List<Language>? language,
+    List<Language>? languages,
     List<NotificationType>? notificationTypes,
     List<CurrencyList>? currencyList,
     String? telrSuccessUrl,
@@ -338,7 +338,7 @@ class StartingSetting {
         showButtonWhatsappCashOnDelivery: showButtonWhatsappCashOnDelivery ??
             this.showButtonWhatsappCashOnDelivery,
         smartLook: smartLook ?? this.smartLook,
-        language: language ?? this.language,
+        languages: languages ?? this.languages,
         notificationTypes: notificationTypes ?? this.notificationTypes,
         currencyList: currencyList ?? this.currencyList,
         telrSuccessUrl: telrSuccessUrl ?? this.telrSuccessUrl,
@@ -420,10 +420,10 @@ class StartingSetting {
         showButtonWhatsappCashOnDelivery:
             json["show_button_whatsapp_cash_on_delivery"],
         smartLook: json["smart_look"],
-        language: json["language"] == null
+        languages: json["languages"] == null
             ? []
             : List<Language>.from(
-                json["language"]!.map((x) => Language.fromJson(x))),
+                json["languages"]!.map((x) => Language.fromJson(x))),
         notificationTypes: json["notificationTypes"] == null
             ? []
             : List<NotificationType>.from(json["notificationTypes"]!
@@ -500,9 +500,9 @@ class StartingSetting {
         "show_button_whatsapp_cash_on_delivery":
             showButtonWhatsappCashOnDelivery,
         "smart_look": smartLook,
-        "language": language == null
+        "languages": languages == null
             ? []
-            : List<dynamic>.from(language!.map((x) => x.toJson())),
+            : List<dynamic>.from(languages!.map((x) => x.toJson())),
         "notificationTypes": notificationTypes == null
             ? []
             : List<dynamic>.from(notificationTypes!.map((x) => x.toJson())),

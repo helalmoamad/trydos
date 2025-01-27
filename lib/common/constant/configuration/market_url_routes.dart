@@ -11,6 +11,8 @@ extension ScopeApi on String {
   String authFirebaseScope() => '$_api/${_currentVersion}/auth/firebase/$this';
 
   String authScope() => '$_api/${_currentVersion}/auth/$this';
+  String webScope() => '$_api/${_currentVersion}/web/$this';
+  String errorScope() => '$_api/${_currentVersion}/mobile_error_log/$this';
   String countryScope() => '$_api/${_currentVersion}/$this';
   String customerScope() => '$_api/${_currentVersion}/customer/$this';
   String productsScope() => '$_api/${_currentVersion}/mobile/search/$this';
@@ -38,11 +40,19 @@ abstract class MarketEndPoints {
   static String getFullProductDetailsEP(String productId) =>
       "details/$productId".productScope();
 
+  static final deleteCustomerAddressEP = "address/delete".customerScope();
+  static final updateCustomerAddressEP = "address/update".customerScope();
+  static final addCustomerAddressEP = "address/add".customerScope();
+  static final getCustomerAddressesEP = "address/list".customerScope();
+
+  static final sendErrorToMobileErrorLogEP = 'store'.errorScope();
   static final sendOtpEP = 'send_otp'.phoneScope();
   static final getCartItemEP = 'cart_shipping'.cartScope();
   static final getProductListInCartEP =
       'product_list_in_cart_and_old_cart'.cartScope();
   static final storeFcmOfMarketEP = 'firebase_device_tokens'.countryScope();
+  static final getNotificationTypeForProductEP =
+      'notification_types/customer-notification-to-choose'.webScope();
 
   static final getOldCartItemsEP = 'get_old_cart'.oldCartScope();
   static final hideItemsInOldCartEP = 'hide'.oldCartScope();

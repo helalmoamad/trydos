@@ -50,6 +50,7 @@ class AppTextField extends StatelessWidget {
     this.textStyle,
     this.suffixIcon,
     this.suffix,
+    this.prefix,
     this.hintText,
     this.labelText,
     this.inputFormatters,
@@ -57,6 +58,7 @@ class AppTextField extends StatelessWidget {
     this.contentPadding,
     this.roundingCornersValue,
     this.filledColor,
+    this.isErrorBorder = true,
     this.bordersColor,
   }) : super(key: key);
 
@@ -68,6 +70,7 @@ class AppTextField extends StatelessWidget {
   final void Function(String? val)? onSaved;
   final int? maxLines;
   final int? minLines;
+  final bool isErrorBorder;
   final int? maxLength;
   final bool? enabled;
   final TextInputType? textInputType;
@@ -97,6 +100,7 @@ class AppTextField extends StatelessWidget {
   final Widget? prefixIcon;
   final Widget? icon;
   final Widget? suffixIcon;
+  final Widget? prefix;
   final Widget? suffix;
   final String? hintText;
   final TextStyle? hintTextStyle;
@@ -145,51 +149,85 @@ class AppTextField extends StatelessWidget {
       toolbarOptions: toolbarOptions,
       inputFormatters: [
         if (maxLength != null) LengthLimitingTextInputFormatter(maxLength),
-        if (textInputType == TextInputType.phone || textInputType == TextInputType.number)
+        if (textInputType == TextInputType.phone ||
+            textInputType == TextInputType.number)
           FilteringTextInputFormatter.allow(RegExp("[0-9]")),
         ...?inputFormatters
       ],
-      style:textStyle ??  context.textTheme.displayMedium?.rr.copyWith(
-        color: const Color(0xff404040),
-        decoration: TextDecoration.none,
-        decorationColor: context.colorScheme.borderTextField,
-      ),
+      style: textStyle ??
+          context.textTheme.displayMedium?.rr.copyWith(
+            color: const Color(0xff404040),
+            decoration: TextDecoration.none,
+            decorationColor: context.colorScheme.borderTextField,
+          ),
       decoration: InputDecoration(
+        errorMaxLines: 1,
+        errorStyle: context.textTheme.bodyMedium?.mr.copyWith(
+            color: const Color.fromARGB(255, 201, 22, 22),
+            letterSpacing: 0.18,
+            fontSize: 11,
+            height: 0.8),
+        prefix: prefix,
+        prefixIconConstraints: BoxConstraints(
+            maxWidth: 2, maxHeight: 2, minHeight: 2, minWidth: 2),
         border: OutlineInputBorder(
-          borderSide: BorderSide(color: bordersColor ?? context.colorScheme.borderTextField,width: 0.4),
-          borderRadius: BorderRadius.circular( roundingCornersValue ?? kbrBorderTextField),
+          borderSide: BorderSide(
+              color: bordersColor ?? context.colorScheme.borderTextField,
+              width: 0.4),
+          borderRadius:
+              BorderRadius.circular(roundingCornersValue ?? kbrBorderTextField),
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: bordersColor ?? context.colorScheme.borderTextField,width: 0.4),
-          borderRadius: BorderRadius.circular(roundingCornersValue ?? kbrBorderTextField),
+          borderSide: BorderSide(
+              color: bordersColor ?? context.colorScheme.borderTextField,
+              width: 0.4),
+          borderRadius:
+              BorderRadius.circular(roundingCornersValue ?? kbrBorderTextField),
         ),
         enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: bordersColor ?? context.colorScheme.borderTextField,width: 0.4),
-          borderRadius: BorderRadius.circular(roundingCornersValue ?? kbrBorderTextField),
+          borderSide: BorderSide(
+              color: bordersColor ?? context.colorScheme.borderTextField,
+              width: 0.4),
+          borderRadius:
+              BorderRadius.circular(roundingCornersValue ?? kbrBorderTextField),
         ),
-        disabledBorder:  OutlineInputBorder(
-          borderSide: BorderSide(color: bordersColor ?? context.colorScheme.borderTextField,width: 0.4),
-          borderRadius: BorderRadius.circular(roundingCornersValue ?? kbrBorderTextField),
+        disabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(
+              color: bordersColor ?? context.colorScheme.borderTextField,
+              width: 0.4),
+          borderRadius:
+              BorderRadius.circular(roundingCornersValue ?? kbrBorderTextField),
         ),
         errorBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: context.colorScheme.error, width: 0.4),
-          borderRadius: BorderRadius.circular(roundingCornersValue ?? kbrBorderTextField),
+          borderSide: BorderSide(
+              color: !isErrorBorder ? bordersColor! : context.colorScheme.error,
+              width: 0.4),
+          borderRadius:
+              BorderRadius.circular(roundingCornersValue ?? kbrBorderTextField),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: context.colorScheme.error, width: 0.4),
-          borderRadius: BorderRadius.circular(roundingCornersValue ?? kbrBorderTextField),
+          borderSide: BorderSide(
+              color: !isErrorBorder ? bordersColor! : context.colorScheme.error,
+              width: 0.4),
+          borderRadius:
+              BorderRadius.circular(roundingCornersValue ?? kbrBorderTextField),
         ),
         filled: true,
         fillColor: filledColor ?? context.colorScheme.white,
-        contentPadding: contentPadding ?? HWEdgeInsetsDirectional.only(start: 20, end: 10,bottom: 12,top: 12),
+        contentPadding: contentPadding ??
+            HWEdgeInsetsDirectional.only(
+                start: 20, end: 10, bottom: 12, top: 12),
         prefixIcon: prefixIcon,
         icon: icon,
         suffixIcon: suffixIcon,
         suffix: suffix,
         hintText: hintText?.tr(),
-        hintStyle: hintTextStyle ?? context.textTheme.displayMedium?.rt.copyWith(color: context.colorScheme.grey200),
+        hintStyle: hintTextStyle ??
+            context.textTheme.displayMedium?.rt
+                .copyWith(color: context.colorScheme.grey200),
         labelText: labelText?.tr(),
-        labelStyle: context.textTheme.titleLarge?.copyWith(color: context.colorScheme.hint),
+        labelStyle: context.textTheme.titleLarge
+            ?.copyWith(color: context.colorScheme.hint),
       ),
     );
   }

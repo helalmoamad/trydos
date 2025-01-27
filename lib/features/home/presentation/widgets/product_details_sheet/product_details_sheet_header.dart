@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,9 +8,15 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../../core/utils/responsive_padding.dart';
 import '../../../../app/my_text_widget.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 
 class ProductDetailsSheetHeader extends StatefulWidget {
   final String price;
@@ -40,9 +47,9 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
   ];
 
   List<String> texts = [
-    'Free Shipping',
-    'Free Return',
-    'Ship To You Accepted 2 June',
+    '${LocaleKeys.free_shipping.tr()}',
+    '${LocaleKeys.free_return.tr()}',
+    '${LocaleKeys.ship_to_you_accepted.tr()} 2 June',
   ];
   ScrollController _scrollController = ScrollController();
   Timer? _timer;
@@ -96,6 +103,18 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return Container(
       decoration: BoxDecoration(
           color: colorScheme.white,
@@ -103,12 +122,12 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 20, top: 15),
-            child: Directionality(
-              textDirection: TextDirection.ltr,
-              child: Column(
-                children: [
-                  Row(
+            padding: const EdgeInsets.only(left: 0, top: 15),
+            child: Column(
+              children: [
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 10),
+                  child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       MyTextWidget(
@@ -179,12 +198,15 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                       )
                     ],
                   ),
-                  Row(
+                ),
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 10),
+                  child: Row(
                     children: [
                       Padding(
-                        padding: HWEdgeInsets.only(bottom: 12.0),
+                        padding: HWEdgeInsets.only(bottom: 8),
                         child: MyTextWidget(
-                          'All Inclusive Without Additions',
+                          '${LocaleKeys.all_inclusive_without_additions.tr()}',
                           style: textTheme.titleMedium?.rq.copyWith(
                             color: Color(0xff8D8D8D),
                             height: 0,
@@ -232,9 +254,9 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                         ),
                       )
                     ],
-                  )
-                ],
-              ),
+                  ),
+                )
+              ],
             ),
           ),
         ],

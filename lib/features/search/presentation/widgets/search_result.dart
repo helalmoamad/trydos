@@ -16,7 +16,11 @@ import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import '../../../../core/utils/theme_state.dart';
 import '../../../home/presentation/manager/home_bloc.dart';
 
@@ -44,6 +48,18 @@ class _SearchResultState extends ThemeState<SearchResult> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return ValueListenableBuilder<bool>(
       valueListenable: appearSearchResult,
       builder: (context, value, child) => BlocBuilder<HomeBloc, HomeState>(
@@ -223,6 +239,9 @@ class _SearchResultState extends ThemeState<SearchResult> {
                     children: [
                       InkWell(
                         onTap: () {
+                          BlocProvider.of<HomeBloc>(context).add(
+                              AddSearchTextToHistoryEvent(
+                                  searchTitle: widget.controller.text));
                           HelperFunctions.slidingNavigation(
                               context,
                               ProductDetailsPage(

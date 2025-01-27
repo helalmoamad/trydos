@@ -6,6 +6,11 @@ import 'package:trydos/config/theme/typography.dart';
 
 import '../../../../core/utils/theme_state.dart';
 import '../../../app/my_text_widget.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 
 class OfferTimeWidget extends StatefulWidget {
   const OfferTimeWidget({super.key});
@@ -32,6 +37,18 @@ class _OfferTimeWidgetState extends ThemeState<OfferTimeWidget> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return Row(
       children: [
         MyTextWidget('-',

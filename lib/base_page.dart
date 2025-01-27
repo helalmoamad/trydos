@@ -373,8 +373,12 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     appBloc = BlocProvider.of<AppBloc>(context);
     callsBloc = BlocProvider.of<CallsBloc>(context);
 
-    onMessage();
-
+    if (!(GetIt.I<PrefsRepository>().onMessageRun ?? false)) {
+      onMessage();
+      print(
+          "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@!!!!!!!!!!!!!!!!!!!!!!!!!DDD");
+    }
+    GetIt.I<PrefsRepository>().setOnMessageRun(true);
     if (homeBloc.state.startingSetting != null) {
       showUpgradeApp = false;
       debugPrint('version gets successfully');
@@ -406,14 +410,15 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     FirebaseMessaging.onMessage.listen((event) {
       if (HandlingMarketNotifications.checkIfTheNotificationIsNotRelatedToChat(
           event)) {
+        print(
+            "###################11111111111111111111111111111111111111${event.data}111111##################################################################");
+
         LocalNotificationService()
             .showNotificationWithPayload(message: event, fromBackGround: 0);
         return;
       }
       Map<String, dynamic> remoteMessage =
           convert.jsonDecode(event.data['data']);
-      print(
-          "###################11111111111111111111111111111111111111111111###################################################################${remoteMessage['type']}");
 
       if (remoteMessage['type'] == 'RefuseCallEvent') {
         Map<String, dynamic> data = remoteMessage;
@@ -714,6 +719,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                 ),
                                                 Center(
                                                     child: CountryDropdown(
+                                                  fromHomepage: false,
                                                   key: TestVariables.kTestMode
                                                       ? Key(WidgetsKeys
                                                           .countryDropDownKey)
@@ -738,8 +744,6 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                     if (_prefsRepository
                                                             .userChoosedCountryIso !=
                                                         null) {
-                                                      print("${_prefsRepository.userChoosedCountryIso}" +
-                                                          "-------------------------------------------------");
                                                       visibleCountries.value =
                                                           !visible;
                                                       _prefsRepository

@@ -23,12 +23,30 @@ extension AssetsUtils on String {
 abstract class AppAssets {
   /// region SVG Section
   static String get logoSvg => 'logo'.svg;
+  static String get checklistSvg => 'checklist'.svg;
+  static String get compareSvg => 'compare'.svg;
+  static String get enterInfoSvg => 'enter_info'.svg;
+  static String get addressInfoSvg => 'adress_info'.svg;
+  static String get detectedSvg => 'detected'.svg;
+  static String get navigationSvg => 'navigation'.svg;
+  static String get personSvg => 'person'.svg;
+  static String get addShippingAddressSvg => 'add_shipping_address'.svg;
+  static String get addShippingAddressWhiteSvg =>
+      'add_shipping_address_white'.svg;
+  static String get deliveryAddressSvg => 'delivery_address'.svg;
+  static String get deliveryGuranteeSvg => 'delivery_gurantee'.svg;
+  static String get earnMoneySvg => 'earn_money'.svg;
+  static String get purchaseSvg => 'purchase'.svg;
+  static String get returnGuranteeSvg => 'return_gurantee'.svg;
+  static String get safeEasySvg => 'safe_easy'.svg;
+  static String get securePrivacySvg => 'secure_privacy'.svg;
   static String get countItemSvg => 'countitem'.svg;
   static String get shappingCartSvg => 'shipping_cart'.svg;
   static String get giftCartSvg => 'gift_cart'.svg;
   static String get totalDiscountCartSvg => 'total_discount_cart'.svg;
   static String get expandDetaileSvg => 'expand_details'.svg;
   static String get alarmClockSvg => 'alarm_clock'.svg;
+  static String get editSvg => 'edit'.svg;
   static String get sizeSvg => 'size'.svg;
   static String get adresswSvg => 'adressw'.svg;
   static String get logoIconSvg => 'logo_icon'.svg;

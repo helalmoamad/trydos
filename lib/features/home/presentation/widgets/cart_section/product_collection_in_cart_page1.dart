@@ -8,12 +8,17 @@ import 'package:flutter_countdown_timer/countdown_timer_controller.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
+import 'package:trydos/features/app/app_elvated_button.dart';
+import 'package:trydos/features/app/my_text_widget.dart';
+import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_old_cart_model.dart';
@@ -26,6 +31,7 @@ import 'package:trydos/features/home/presentation/widgets/cart_section/count_dow
 
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_image_widget.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/routes/router.dart';
 import 'package:trydos/service/language_service.dart';
 
 class productCollectionInCartPage1 extends StatefulWidget {
@@ -57,9 +63,22 @@ class _productCollectionInCartPage1State
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     final List<Cart>? cartCollection;
     final List<OldCart>? oldCartCollection;
     final bool isOldCart;
+
     isOldCart = widget.isOldCart;
     oldCartCollection = widget.oldCartCollection;
     cartCollection = widget.cartCollection;
@@ -74,12 +93,14 @@ class _productCollectionInCartPage1State
           previous.addItemInCartStatus != current.addItemInCartStatus ||
           previous.updateItemInCartStatus != current.updateItemInCartStatus,
       builder: (context, state) {
+        print(
+            "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@${state.getCurrencyForCountryModel!.data!.currency!.exchangeRate}");
         return Container(
           padding: EdgeInsets.all(1),
           child: ListView.builder(
             padding: EdgeInsets.symmetric(vertical: 0),
             shrinkWrap: true,
-            physics: ClampingScrollPhysics(),
+            physics: NeverScrollableScrollPhysics(),
             itemCount:
                 isOldCart ? oldCartCollection?.length : cartCollection?.length,
             itemBuilder: (context, index) {
@@ -105,16 +126,16 @@ class _productCollectionInCartPage1State
                     bottom: (cartCollection?.length == 0)
                         ? (index == (oldCartCollection?.length ?? 0) - 1) &&
                                 isOldCart
-                            ? 170
+                            ? 220
                             : 0
                         : (oldCartCollection?.length == 0)
                             ? (index == (cartCollection?.length ?? 0) - 1) &&
                                     !isOldCart
-                                ? 170
+                                ? 220
                                 : 0
                             : (index == (oldCartCollection?.length ?? 0) - 1) &&
                                     isOldCart
-                                ? 170
+                                ? 220
                                 : 0),
                 child: Container(
                   margin: EdgeInsets.only(bottom: 7, right: 5, left: 5),
@@ -230,9 +251,9 @@ class _productCollectionInCartPage1State
                               ),
                             ),
                           ),
-                          left: LanguageService.languageCode == "en" ? 0 : null,
+                          left: LanguageService.languageCode != "ar" ? 0 : null,
                           right:
-                              LanguageService.languageCode == "en" ? null : 0,
+                              LanguageService.languageCode != "ar" ? null : 0,
                         ),
                         Positioned(
                           child: Column(
@@ -241,7 +262,7 @@ class _productCollectionInCartPage1State
                             children: [
                               Container(
                                 margin: EdgeInsets.only(top: 10),
-                                alignment: LanguageService.languageCode == "en"
+                                alignment: LanguageService.languageCode != "ar"
                                     ? Alignment.topLeft
                                     : Alignment.topRight,
                                 height: 10,
@@ -266,7 +287,7 @@ class _productCollectionInCartPage1State
                                 height: 2,
                               ),
                               Container(
-                                alignment: LanguageService.languageCode == "en"
+                                alignment: LanguageService.languageCode != "ar"
                                     ? Alignment.centerLeft
                                     : Alignment.centerRight,
                                 width: 200.w,
@@ -321,8 +342,8 @@ class _productCollectionInCartPage1State
                                             : Container(
                                                 margin: EdgeInsets.only(top: 5),
                                                 alignment: LanguageService
-                                                            .languageCode ==
-                                                        "en"
+                                                            .languageCode !=
+                                                        "ar"
                                                     ? Alignment.centerLeft
                                                     : Alignment.centerRight,
                                                 height: 17,
@@ -456,8 +477,8 @@ class _productCollectionInCartPage1State
                                             : Container(
                                                 margin: EdgeInsets.only(top: 5),
                                                 alignment: LanguageService
-                                                            .languageCode ==
-                                                        "en"
+                                                            .languageCode !=
+                                                        "ar"
                                                     ? Alignment.centerLeft
                                                     : Alignment.centerRight,
                                                 width: 200,
@@ -487,7 +508,7 @@ class _productCollectionInCartPage1State
                                                                   0xff8D8D8D),
                                                               letterSpacing:
                                                                   0.18,
-                                                              height: 1.33),
+                                                              height: 1.2),
                                                     ),
                                                     Text(
                                                       isOldCart
@@ -534,7 +555,7 @@ class _productCollectionInCartPage1State
                               ),
                               Container(
                                   alignment:
-                                      LanguageService.languageCode == "en"
+                                      LanguageService.languageCode != "ar"
                                           ? Alignment.centerLeft
                                           : Alignment.centerRight,
                                   width: 200,
@@ -581,7 +602,7 @@ class _productCollectionInCartPage1State
                               ),
                               Container(
                                   alignment:
-                                      LanguageService.languageCode == "en"
+                                      LanguageService.languageCode != "ar"
                                           ? Alignment.centerLeft
                                           : Alignment.centerRight,
                                   width: 200,
@@ -626,7 +647,7 @@ class _productCollectionInCartPage1State
                                             ? "${LocaleKeys.details.tr()}"
                                             : "${LocaleKeys.details.tr()}",
                                         strutStyle:
-                                            LanguageService.languageCode == "en"
+                                            LanguageService.languageCode != "ar"
                                                 ? null
                                                 : StrutStyle(
                                                     height: 0.8, leading: 0.6),
@@ -647,8 +668,10 @@ class _productCollectionInCartPage1State
                               ),
                               Container(
                                 height: 31.h,
-                                width: 265.w,
-                                padding: LanguageService.languageCode == "en"
+                                width: LanguageService.languageCode != "ar"
+                                    ? 270
+                                    : 285.w,
+                                padding: LanguageService.languageCode != "ar"
                                     ? EdgeInsets.only(right: 40.w)
                                     : EdgeInsets.only(left: 40.w),
                                 child: Row(
@@ -656,7 +679,7 @@ class _productCollectionInCartPage1State
                                     Container(
                                       padding: EdgeInsets.symmetric(
                                           horizontal: 10.w),
-                                      width: 85.w,
+                                      width: 86.w,
                                       height: 24.h,
                                       child: isOldCart
                                           ? Row(
@@ -1054,9 +1077,9 @@ class _productCollectionInCartPage1State
                             ],
                           ),
                           left:
-                              LanguageService.languageCode == "en" ? 130 : null,
+                              LanguageService.languageCode != "ar" ? 130 : null,
                           right:
-                              LanguageService.languageCode == "en" ? null : 130,
+                              LanguageService.languageCode != "ar" ? null : 130,
                         ),
                         Positioned(
                           child: Container(
@@ -1080,8 +1103,8 @@ class _productCollectionInCartPage1State
                           ),
                           top: 5,
                           right:
-                              LanguageService.languageCode == "en" ? 5 : null,
-                          left: LanguageService.languageCode == "en" ? null : 5,
+                              LanguageService.languageCode != "ar" ? 5 : null,
+                          left: LanguageService.languageCode != "ar" ? null : 5,
                         ),
                         Positioned(
                           child: Container(
@@ -1124,9 +1147,9 @@ class _productCollectionInCartPage1State
                           ),
                           top: 5,
                           right:
-                              LanguageService.languageCode == "en" ? 20 : null,
+                              LanguageService.languageCode != "ar" ? 20 : null,
                           left:
-                              LanguageService.languageCode == "en" ? null : 20,
+                              LanguageService.languageCode != "ar" ? null : 20,
                         ),
                         Positioned(
                             bottom: -15,

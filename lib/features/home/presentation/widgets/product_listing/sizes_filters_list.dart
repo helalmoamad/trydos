@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -15,6 +16,7 @@ import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 
 import '../../../../../common/test_utils/test_var.dart';
 import '../../../../../common/test_utils/widgets_keys.dart';
@@ -26,6 +28,11 @@ import '../../../data/models/get_product_filters_model.dart';
 import '../../manager/home_bloc.dart';
 import '../../manager/home_event.dart';
 import '../../manager/home_state.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 
 class SizesFiltersList extends StatefulWidget {
   const SizesFiltersList({
@@ -64,6 +71,18 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return Padding(
       padding: EdgeInsetsDirectional.only(start: widget.hideTitle ? 0 : 25.0),
       child: Column(
@@ -77,7 +96,7 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                   width: 10,
                 ),
                 MyTextWidget(
-                  'Filter By Size',
+                  '${LocaleKeys.filter_by.tr()} ${LocaleKeys.sizes.tr()}',
                   style: context.textTheme.titleMedium?.rq
                       .copyWith(color: Color(0xff505050), height: 15 / 12),
                 ),

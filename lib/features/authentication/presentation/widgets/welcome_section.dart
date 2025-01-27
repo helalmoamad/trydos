@@ -229,14 +229,15 @@ class _WelcomeSectionState extends State<WelcomeSection> {
               Future.delayed(
                 Duration(milliseconds: 100),
                 () async {
-                  if (prefsRepository.isVerifiedPhone != false ||
-                      ((prefsRepository.marketToken?.length ?? 0) < 5 ||
-                          prefsRepository.myMarketId == "" ||
-                          prefsRepository.myMarketId == null)) {
-                    String? deviceId = await HelperFunctions.getDeviceId();
-                    BlocProvider.of<AuthBloc>(context)
-                        .add(RegisterGuestEvent(deviceId: deviceId!));
-                  }
+                  /*   if (prefsRepository.isVerifiedPhone != false ||
+                      (prefsRepository.isTokenExpired ??
+                          false ||
+                              prefsRepository.marketToken == "" ||
+                              prefsRepository.marketToken == null)) {*/
+                  String? deviceId = await HelperFunctions.getDeviceId();
+                  BlocProvider.of<AuthBloc>(context)
+                      .add(RegisterGuestEvent(deviceId: deviceId!));
+                  //   }
                   if (Navigator.of(context).canPop()) {
                     print(
                         "############################################################3");

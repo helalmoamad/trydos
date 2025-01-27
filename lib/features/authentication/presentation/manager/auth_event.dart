@@ -128,9 +128,10 @@ class VerifyGuestPhoneEvent extends AuthEvent {
 
 class RegisterGuestEvent extends AuthEvent {
   final String deviceId;
-
+  final String? oldGuestUserId;
   RegisterGuestEvent({
     required this.deviceId,
+    this.oldGuestUserId,
   });
 
   @override

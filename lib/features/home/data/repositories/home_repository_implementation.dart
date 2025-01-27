@@ -4,6 +4,8 @@ import 'package:trydos/core/error/failures.dart';
 
 import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
 import 'package:trydos/features/home/data/models/convert_item_from_oldCart_to_cart_model.dart';
+import 'package:trydos/features/home/data/models/ge_address_by_coordinates_model.dart';
+import 'package:trydos/features/home/data/models/get_address_by_text_model.dart';
 
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 
@@ -15,6 +17,7 @@ import 'package:trydos/features/home/data/models/get_count_view_of_product_model
 import 'package:trydos/features/home/data/models/get_currency_for_country_model.dart';
 import 'package:trydos/features/home/data/models/get_full_product_details_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
+import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
 
 import 'package:trydos/features/home/data/models/get_old_cart_model.dart';
 import 'package:trydos/features/home/data/models/get_only_message_from_api_model.dart';
@@ -24,7 +27,9 @@ import 'package:trydos/features/home/data/models/get_product_listing_without_fil
 
 import 'package:trydos/features/home/data/models/list_of_products_in_cart_model.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
+import 'package:trydos/features/home/data/models/notificaation_poroduct_types.dart';
 import 'package:trydos/features/home/data/models/popular_search_terms_model.dart';
+import 'package:trydos/features/home/data/models/response_only_message_model.dart';
 import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
 
 import '../../../../core/api/handling_exception.dart';
@@ -69,6 +74,20 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
       Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.getHomeBoutiques(params));
+  }
+
+  @override
+  Future<Either<Failure, NotificationTypeForProductModel>>
+      getNotificationTypeForProduct() {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.getNotificationTypeForProduct());
+  }
+
+  @override
+  Future<Either<Failure, bool>> sendErrorToMobileErrorLog(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.sendErrorToMobileErrorLog(params));
   }
 
   @override
@@ -125,10 +144,10 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
 
   @override
   Future<Either<Failure, GetProductDetailWithoutRelatedProductsModel>>
-      getProductDetailWithoutSimilarRelatedProducts(String productId) {
+      getProductDetailWithoutSimilarRelatedProducts(String productSlug) {
     return handlingExceptionRequest(
         tryCall: () =>
-            dataSource.getProductDetailWithoutRelatedProducts(productId));
+            dataSource.getProductDetailWithoutRelatedProducts(productSlug));
   }
 
   @override
@@ -136,6 +155,48 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
       String productId) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.getStories(productId));
+  }
+
+  @override
+  Future<Either<Failure, ResponseOnlyMessageModel>> addCustomerAddress(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.addCustomerAddress(params));
+  }
+
+  @override
+  Future<Either<Failure, ResponseOnlyMessageModel>> updateCustomerAddress(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.updateCustomerAddress(params));
+  }
+
+  @override
+  Future<Either<Failure, GetListOfCustomerAddressesInfoModel>>
+      getCustomerAddresses() {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.getCustomerAddresses());
+  }
+
+  @override
+  Future<Either<Failure, GetAddressByTextModel>> getAddressByText(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.getAddressByText(params));
+  }
+
+  @override
+  Future<Either<Failure, GetAddressByCoordinatesModel>> getAddressByCoordinates(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.getAddressByCoordinates(params));
+  }
+
+  @override
+  Future<Either<Failure, ResponseOnlyMessageModel>> deleteCustomerAddress(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.deleteCustomerAddress(params));
   }
 
   @override

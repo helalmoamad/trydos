@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,6 +21,7 @@ import 'package:trydos/features/home/data/models/get_product_listing_with_filter
 import 'package:trydos/features/home/presentation/widgets/product_listing/price_filter_ranges.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/price_filter_slider.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/sizes_filters_list.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:tuple/tuple.dart';
 import '../../../../../common/test_utils/test_var.dart';
 import '../../../../../common/test_utils/widgets_keys.dart';
@@ -38,6 +40,11 @@ import 'categories_filter_list.dart';
 import 'color_list_filter.dart';
 import 'filters_loding_list.dart';
 import 'filters_normal_list.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 
 class StackedFiltersList extends StatefulWidget {
   const StackedFiltersList(
@@ -61,6 +68,7 @@ class StackedFiltersList extends StatefulWidget {
   final bool hideTitle;
   final bool filterPageExpanded;
   final bool fromSearch;
+
   final String? searchText;
   final ValueNotifier<int> expandingFiltersStack;
   final TextEditingController textController;
@@ -109,6 +117,18 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return BlocBuilder<HomeBloc, HomeState>(
         buildWhen: (previous, current) =>
             previous.appliedFiltersByUser[key] !=
@@ -136,7 +156,6 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
             previous.cashedOrginalBoutique != current.cashedOrginalBoutique,
         builder: (context, state) {
           isExpanded = state.isExpandedForListingPage ?? false;
-          print('//////// isExpanded : $isExpanded ///////////');
           if ((state.getProductFiltersStatus[key] ==
                   GetProductFiltersStatus.loading &&
               state.getProductFiltersStatus[key] == null)) {
@@ -162,7 +181,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                         )
                       : Center(
                           child: MyTextWidget(
-                            "No Filters Found",
+                            "${LocaleKeys.no_filters_found.tr()}",
                             style: TextStyle(color: Colors.black, fontSize: 18),
                           ),
                         ),
@@ -223,7 +242,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                 border: Border.all(color: Color(0xff388CFF))),
                             child: Center(
                               child: MyTextWidget(
-                                'Reset',
+                                '${LocaleKeys.reset.tr()}',
                                 style: textTheme.bodyLarge?.rq.copyWith(
                                     color: Color(0xff388CFF), height: 23 / 18),
                               ),
@@ -245,7 +264,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
           if ((state.getProductFiltersModel[key]?.filters == null &&
               state.cashedOrginalBoutique &&
               state.appliedFiltersByUser[key] == null)) {
-            print('ssss ${state.choosedFiltersByUser}');
+            print(
+                'ssssaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa${key} ${state.choosedFiltersByUser}');
             return SizedBox.shrink();
           }
           GetProductFiltersModel? appliedFiltersByUser =
@@ -330,9 +350,6 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
               currentAppliedFilterSllug == "Empty" &&
               state.getProductFiltersWithPrefetchModel['${widget.boutiqueSlug}' + 'Empty' + '${(widget.category ?? '')}']?.filters != null &&
               (state.getProductListingWithFiltersPaginationWithPrefetchModels["${widget.boutiqueSlug}" + "Empty" + "${widget.category ?? ""}"]?.paginationStatus == PaginationStatus.success)) {
-            print(
-                "*************************************888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888");
-
             filters = (state
                             .getProductListingWithFiltersPaginationWithPrefetchModels[
                                 '${widget.boutiqueSlug}' +
@@ -350,8 +367,6 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                             '${(widget.category ?? '')}']
                     ?.filters;
           } else {
-            print(
-                "8888888888888888888888888888888888888888888888888${state.cashedOrginalBoutique}88888888888888888888888888888888888888888888888888888888888888888888888888888");
             filters = (state
                                 .getProductListingWithFiltersPaginationModels[
                                     '${widget.boutiqueSlug}' +
@@ -394,25 +409,30 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
           }
           if (!filters!.categories.isNullOrEmpty) {
             countOfFilters++;
-            titleOfFilterSection.add('View By Categories');
+            titleOfFilterSection.add(
+                '${LocaleKeys.view_by.tr()} ${LocaleKeys.categories.tr()}');
           }
           if (!filters!.brands.isNullOrEmpty) {
             countOfFilters++;
-            titleOfFilterSection.add('View By Brands');
+            titleOfFilterSection
+                .add('${LocaleKeys.view_by.tr()} ${LocaleKeys.Brands.tr()}');
           }
           if (!filters!.attributes.isNullOrEmpty) {
             if (!filters!.attributes![0].options.isNullOrEmpty) {
               countOfFilters++;
-              titleOfFilterSection.add('View By Sizes');
+              titleOfFilterSection
+                  .add('${LocaleKeys.view_by.tr()} ${LocaleKeys.sizes.tr()}');
             }
           }
           if (!filters!.colors.isNullOrEmpty) {
             countOfFilters++;
-            titleOfFilterSection.add('View By Colors');
+            titleOfFilterSection
+                .add('${LocaleKeys.view_by.tr()} ${LocaleKeys.colors.tr()}');
           }
           if (filters!.prices != null) {
             countOfFilters++;
-            titleOfFilterSection.add('View By Price');
+            titleOfFilterSection
+                .add('${LocaleKeys.view_by.tr()} ${LocaleKeys.prices.tr()}');
           }
           if (countOfFilters == 0 &&
               state.appliedFiltersByUser[key] == null &&
@@ -438,7 +458,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                 width: 10,
                               ),
                               MyTextWidget(
-                                'Filter By Category',
+                                '${LocaleKeys.filter_by.tr()} ${LocaleKeys.categories.tr()}',
                                 style: context.textTheme.titleMedium?.rq
                                     .copyWith(
                                         color: Color(0xff505050),
@@ -664,7 +684,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                         child: index == 0 &&
                                                 titleOfFilterSection[
                                                         index ~/ 2] ==
-                                                    'View By Categories'
+                                                    '${LocaleKeys.view_by.tr()} ${LocaleKeys.categories.tr()}'
                                             ? CategoriesFilterList(
                                                 filterss: filters ?? Filter(),
                                                 key: TestVariables.kTestMode ==
@@ -686,7 +706,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                             : index <= 2 &&
                                                     titleOfFilterSection[
                                                             index ~/ 2] ==
-                                                        'View By Brands'
+                                                        '${LocaleKeys.view_by.tr()} ${LocaleKeys.Brands.tr()}'
                                                 ? FiltersNormalList(
                                                     key: TestVariables
                                                                 .kTestMode ==
@@ -703,7 +723,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                         widget.searchText,
                                                     category: widget.category,
                                                     filterListTitle:
-                                                        'Filter By Brand',
+                                                        '${LocaleKeys.filter_by.tr()} ${LocaleKeys.Brands.tr()}',
                                                     isBrandFilter: true,
                                                     filters:
                                                         filters!.brands ?? [],
@@ -711,7 +731,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                 : index <= 4 &&
                                                         titleOfFilterSection[
                                                                 index ~/ 2] ==
-                                                            'View By Sizes'
+                                                            '${LocaleKeys.view_by.tr()} ${LocaleKeys.sizes.tr()}'
                                                     ? SizesFiltersList(
                                                         key: TestVariables
                                                                     .kTestMode ==
@@ -735,7 +755,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                             titleOfFilterSection[
                                                                     index ~/
                                                                         2] ==
-                                                                'View By Colors'
+                                                                '${LocaleKeys.view_by.tr()} ${LocaleKeys.colors.tr()}'
                                                         ? ColorsListFilter(
                                                             key: TestVariables
                                                                         .kTestMode ==
@@ -797,7 +817,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                         end: 10,
                                         start: (index - 1) == 0 &&
                                                 titleOfFilterSection[0] ==
-                                                    'View By Categories'
+                                                    '${LocaleKeys.view_by.tr()} ${LocaleKeys.categories.tr()}'
                                             ? 0
                                             : 10,
                                         bottom: 45),
@@ -817,7 +837,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                   ),
                   !filters!.brands.isNullOrEmpty
                       ? FiltersNormalList(
-                          filterListTitle: 'Filter By Brand',
+                          filterListTitle:
+                              '${LocaleKeys.filter_by.tr()} ${LocaleKeys.Brands.tr()}',
                           boutiqueSlug: widget.boutiqueSlug,
                           fromHomeSearch: widget.fromSearch,
                           searchText: widget.searchText,
@@ -836,7 +857,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                         )
                       : SizedBox.shrink(),
                   FiltersNormalList(
-                    filterListTitle: 'Filter By Offer',
+                    filterListTitle:
+                        '${LocaleKeys.filter_by.tr()} ${LocaleKeys.offer.tr()}',
                     boutiqueSlug: widget.boutiqueSlug,
                     fromHomeSearch: widget.fromSearch,
                     searchText: widget.searchText,
@@ -1017,7 +1039,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                     padding: EdgeInsets.symmetric(vertical: 5)
                                         .copyWith(left: 10),
                                     child: MyTextWidget(
-                                      'The Products Will Be Shown As Below',
+                                      '${LocaleKeys.the_products_will_be_shown_as_below.tr()}',
                                       style: context.textTheme.titleMedium?.rq
                                           .copyWith(
                                               color: Color(0xff505050),
@@ -1208,9 +1230,6 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                   exchangeRate,
                                         );
                                       }-*/
-                                          print(
-                                              "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
-
                                           homeBloc.add(
                                               ChangeAppliedFiltersEvent(
                                                   category: widget.category,
@@ -1266,11 +1285,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                               offset: 1,
                                             ),
                                           );
-                                          print(
-                                              "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
                                           widget.closeFilterPage.call();
-                                          print(
-                                              "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
                                         },
                                         child: Container(
                                           height: 65,
@@ -1300,17 +1315,18 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                         widget.boutiqueSlug] !=
                                                     null) ...{
                                                   MyTextWidget(
-                                                    '(${state.countOfProductExpectedByFiltering?[widget.boutiqueSlug]}  products)',
+                                                    '( ${LocaleKeys.number_of_products.tr()} ${state.countOfProductExpectedByFiltering?[widget.boutiqueSlug]})',
                                                     style: textTheme
                                                         .bodyMedium?.mq
                                                         .copyWith(
+                                                            fontSize: 12,
                                                             color: Color(
                                                                 0xffFEFEFE),
-                                                            height: 23 / 18),
+                                                            height: 1.2),
                                                   ),
                                                 },
                                                 MyTextWidget(
-                                                  ' Apply   ',
+                                                  ' ${LocaleKeys.apply.tr()}   ',
                                                   style: textTheme.bodyLarge?.rq
                                                       .copyWith(
                                                           color:
@@ -1449,7 +1465,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                               ? Key(WidgetsKeys
                                                                   .resetFiltersKey)
                                                               : null,
-                                                          'Reset',
+                                                          '${LocaleKeys.reset.tr()}',
                                                           style: textTheme
                                                               .bodyLarge?.rq
                                                               .copyWith(
@@ -1583,6 +1599,7 @@ Widget choosedOrAppliedFiltersWidget({
                     homeBloc.add(ChangeSelectedFiltersEvent(
                       requestToUpdateFilters: false,
                       boutiqueSlug: boutiqueSlug,
+                      category: category,
                       resetChoosedFilters: true,
                       fromHomePageSearch: fromSearch,
                     ));
@@ -1591,7 +1608,7 @@ Widget choosedOrAppliedFiltersWidget({
                       boutiqueSlug: boutiqueSlug,
                       cashedOrginalBoutique: true,
                       searchText: null,
-                      category: category,
+                      category: fromSearch ? null : category,
                     ));
                     ///////////////////////////////
                     FirebaseAnalyticsService.logEventForSession(
@@ -1678,19 +1695,17 @@ Widget choosedOrAppliedFiltersWidget({
               if (choosedFilter)
                 Center(
                   child: MyTextWidget(
-                    'Choosed: ',
+                    '${LocaleKeys.choosed.tr()}: ',
                     maxLines: 1,
                     textAlign: TextAlign.center,
                     style: context.textTheme.titleLarge?.bq.copyWith(
-                        color: Color(0xffFF5F61),
-                        letterSpacing: 0,
-                        height: 1.25),
+                        color: Color(0xffFF5F61), letterSpacing: 0, height: 1),
                   ),
                 )
               else
                 Center(
                   child: MyTextWidget(
-                    'Applied: ',
+                    '${LocaleKeys.applied.tr()}: ',
                     maxLines: 1,
                     textAlign: TextAlign.center,
                     style: context.textTheme.titleLarge?.bq.copyWith(
@@ -1801,9 +1816,6 @@ Widget choosedOrAppliedFiltersWidget({
                       itemBuilder: (ctx, index) {
                         return InkWell(
                           onTap: () {
-                            print(
-                                "rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
-
                             List<filter_model.Boutique> newBoutiques =
                                 List.of(filters?.boutiques ?? []);
                             newBoutiques.removeAt(index);

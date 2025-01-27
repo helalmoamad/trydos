@@ -177,15 +177,15 @@ class CreateAccountSection extends StatelessWidget {
             Future.delayed(
               Duration(milliseconds: 100),
               () async {
-                if (GetIt.I<PrefsRepository>().isVerifiedPhone != false ||
+                /*     if (GetIt.I<PrefsRepository>().isVerifiedPhone != false ||
                     ((GetIt.I<PrefsRepository>().marketToken?.length ?? 0) <
                             5 ||
-                        GetIt.I<PrefsRepository>().myMarketId == "" ||
-                        GetIt.I<PrefsRepository>().myMarketId == null)) {
-                  String? deviceId = await HelperFunctions.getDeviceId();
-                  BlocProvider.of<AuthBloc>(context)
-                      .add(RegisterGuestEvent(deviceId: deviceId!));
-                }
+                        GetIt.I<PrefsRepository>().marketToken == "" ||
+                        GetIt.I<PrefsRepository>().marketToken == null)) {*/
+                String? deviceId = await HelperFunctions.getDeviceId();
+                BlocProvider.of<AuthBloc>(context)
+                    .add(RegisterGuestEvent(deviceId: deviceId!));
+                //}
                 if (Navigator.of(context).canPop()) {
                   Navigator.of(context).pop();
                 } else {

@@ -196,9 +196,10 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                       () async {
                         if (GetIt.I<PrefsRepository>().isVerifiedPhone !=
                                 false ||
-                            ((prefsRepository.marketToken?.length ?? 0) < 5 ||
-                                prefsRepository.marketToken == "" ||
-                                prefsRepository.marketToken == null)) {
+                            (prefsRepository.isTokenExpired ??
+                                false ||
+                                    prefsRepository.marketToken == "" ||
+                                    prefsRepository.marketToken == null)) {
                           String? deviceId =
                               await HelperFunctions.getDeviceId();
                           BlocProvider.of<AuthBloc>(context)

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -5,6 +6,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_xlider/flutter_xlider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:trydos/common/constant/constant.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 
 class FiltersLoadingListPage extends StatefulWidget {
   const FiltersLoadingListPage({super.key, required this.countOfListInPage});
@@ -17,16 +24,28 @@ class FiltersLoadingListPage extends StatefulWidget {
 
 class _FiltersLoadingListPageState extends State<FiltersLoadingListPage> {
   List<String> titles = [
-    'Categories',
-    'Brands',
-    'Colors',
-    'Offers',
-    'Sizes',
-    'Prices',
+    '${LocaleKeys.categories.tr()}',
+    '${LocaleKeys.Brands.tr()}',
+    '${LocaleKeys.colors.tr()}',
+    '${LocaleKeys.offer.tr()}',
+    '${LocaleKeys.sizes.tr()}',
+    '${LocaleKeys.prices.tr()}',
   ];
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return Shimmer.fromColors(
         baseColor: Colors.grey.shade300,
         highlightColor: Colors.grey.shade100,
@@ -45,7 +64,7 @@ class _FiltersLoadingListPageState extends State<FiltersLoadingListPage> {
                       SizedBox(
                         width: 10,
                       ),
-                      Text('Filter By ${titles[index]}'),
+                      Text('${LocaleKeys.filter_by.tr()} ${titles[index]}'),
                     ],
                   ),
                   SizedBox(
