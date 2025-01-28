@@ -23,6 +23,24 @@ extension AssetsUtils on String {
 abstract class AppAssets {
   /// region SVG Section
   static String get logoSvg => 'logo'.svg;
+  static String get infoSvg => 'info'.svg;
+  static String get orderInvoiceSvg => 'order_invoice'.svg;
+  static String get success1Svg => 'success_1'.svg;
+  static String get success2Svg => 'success_2'.svg;
+  static String get americanExpressSvg => 'american_express'.svg;
+  static String get applePaySvg => 'apple_pay'.svg;
+  static String get creditCards => 'credit_cards'.svg;
+  static String get cryptoSvg => 'crypto'.svg;
+  static String get crypto1Svg => 'crypto_1'.svg;
+  static String get crypto2Svg => 'crypto_2'.svg;
+  static String get crypto3Svg => 'crypto_3'.svg;
+  static String get crypto4Svg => 'crypto_4'.svg;
+  static String get googlePaySvg => 'google_pay'.svg;
+  static String get maestroSvg => 'maestro'.svg;
+  static String get masterCardSvg => 'master_card'.svg;
+  static String get paymentMethodSvg => 'payment_method'.svg;
+  static String get trydosWalletSvg => 'trydos_wallet'.svg;
+  static String get visaSvg => 'visa'.svg;
   static String get checklistSvg => 'checklist'.svg;
   static String get compareSvg => 'compare'.svg;
   static String get enterInfoSvg => 'enter_info'.svg;

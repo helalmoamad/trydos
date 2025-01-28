@@ -1347,7 +1347,7 @@ class _productCollectionInCartPage1State
                                                         color:
                                                             Color(0xffA28E5B),
                                                       )),*/
-                                                  countDownTimer(
+                                                  CountDownTimer(
                                                     cartId: state
                                                         .cartCollection?[index]
                                                         .id

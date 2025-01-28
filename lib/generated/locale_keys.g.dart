@@ -181,7 +181,6 @@ abstract class LocaleKeys {
   static const click_to_show_all_discount = 'click_to_show_all_discount';
   static const back_to_home = 'back_to_home';
   static const confirm = 'confirm';
-
   static const you_must_wait_for_some_seconds_before_try_again =
       'you_must_wait_for_some_seconds_before_try_again';
   static const it_has_been_along_time_since_your_account =
@@ -345,4 +344,36 @@ abstract class LocaleKeys {
   static const add_to_my_checklist = 'add_to_my_checklist';
   static const add_to_compare = 'add_to_compare';
   static const number_of_products = 'number_of_products';
+  static const expected_delivery = 'expected_delivery';
+  static const delivery_not = 'delivery_not';
+  static const payment_method = 'payment_method';
+  static const please_choose_your_payment_method_about_your_bag =
+      'please_choose_your_payment_method_about_your_bag';
+  static const wallet = 'wallet';
+  static const credit_cards = 'credit_cards';
+  static const Crypto = 'Crypto';
+  static const your_balance = 'your_balance';
+  static const i_have_discount_coupon = 'i_have_discount_coupon';
+  static const confirm_shipping_payment = 'confirm_shipping_payment';
+  static const please_enter_coupon_information =
+      'please_enter_coupon_information';
+  static const coupon_no = 'coupon_no';
+  static const your_payment_method_about_your_bag =
+      'your_payment_method_about_your_bag';
+  static const i_read_and_agree_to_the = 'i_read_and_agree_to_the';
+  static const policies = 'policies';
+  static const and = 'and';
+  static const terms = 'terms';
+  static const place_order = 'place_order';
+  static const done = 'done';
+  static const back_to_home_page = 'back_to_home_page';
+  static const the_purchase_was_completed_successfully =
+      'the_purchase_was_completed_successfully';
+  static const your_order_number = 'your_order_number';
+  static const order_invoice = 'order_invoice';
+  static const you_can_track_the_status_of_your_order_through =
+      'you_can_track_the_status_of_your_order_through';
+  static const my_account_my_orders = 'my_account_my_orders';
+  static const applied_your_coupon = 'applied_your_coupon';
+  static const shipping_payment = 'shipping_payment';
 }

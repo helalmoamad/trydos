@@ -9,15 +9,15 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 
-class countDownTimer extends StatefulWidget {
-  const countDownTimer({super.key, required this.cartId});
+class CountDownTimer extends StatefulWidget {
+  const CountDownTimer({super.key, required this.cartId});
 
   final String? cartId;
   @override
-  State<countDownTimer> createState() => _countDownTimerState();
+  State<CountDownTimer> createState() => _CountDownTimerState();
 }
 
-class _countDownTimerState extends State<countDownTimer> {
+class _CountDownTimerState extends State<CountDownTimer> {
   CountdownTimerController? countdownTimerController;
   int? endTime;
   late HomeBloc homeBloc;

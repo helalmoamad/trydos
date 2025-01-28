@@ -37,6 +37,8 @@ import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/add_shipping_address.dart';
+import 'package:trydos/features/home/presentation/widgets/cart_section/payment_method.dart';
+import 'package:trydos/features/home/presentation/widgets/cart_section/place_order.dart';
 
 import 'package:trydos/features/home/presentation/widgets/cart_section/product_collection_in_cart_page1.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_image_widget.dart';
@@ -50,10 +52,13 @@ import '../../../../../service/firebase_analytics_service/analytics_const/analyt
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 
 class CartDelivaryAdress extends StatefulWidget {
-  final List<String> cartImages;
-
+  final List<Map<String, String>> cartImages;
+  final String totalPrice;
+  final String currencySympole;
   const CartDelivaryAdress({
+    required this.totalPrice,
     required this.cartImages,
+    required this.currencySympole,
     Key? key,
   });
   @override
@@ -65,6 +70,7 @@ class _CartDelivaryAdressState extends State<CartDelivaryAdress> {
   final ValueNotifier<int> indexTap = ValueNotifier(0);
   final ValueNotifier<bool> showDeleteAddress = ValueNotifier(false);
   final ValueNotifier<bool> showPanel = ValueNotifier(false);
+  final ValueNotifier<String> paymentMethod = ValueNotifier("");
   final PanelController panelController = PanelController();
   late HomeBloc homeBloc;
   bool showDialogToResetSession = true;
@@ -276,7 +282,10 @@ class _CartDelivaryAdressState extends State<CartDelivaryAdress> {
                                           width: 5.w,
                                         ),
                                         Text(
-                                            "${LocaleKeys.bag_shipping_delivery_address.tr()} ",
+                                            !(state.listOfAddressInfoClassToSave
+                                                    .isNullOrEmpty)
+                                                ? "${LocaleKeys.shipping_payment.tr()} "
+                                                : "${LocaleKeys.bag_shipping_delivery_address.tr()} ",
                                             style: context
                                                 .textTheme.bodyMedium?.mr
                                                 .copyWith(
@@ -288,8 +297,16 @@ class _CartDelivaryAdressState extends State<CartDelivaryAdress> {
                                         SizedBox(
                                           width: LanguageService.languageCode ==
                                                   "ar"
-                                              ? 120.w
-                                              : 80.w,
+                                              ? !(state
+                                                      .listOfAddressInfoClassToSave
+                                                      .isNullOrEmpty)
+                                                  ? 180.w
+                                                  : 120.w
+                                              : !(state
+                                                      .listOfAddressInfoClassToSave
+                                                      .isNullOrEmpty)
+                                                  ? 140.w
+                                                  : 80.w,
                                         )
                                       ],
                                     ),
@@ -305,425 +322,451 @@ class _CartDelivaryAdressState extends State<CartDelivaryAdress> {
                                     child: Stack(
                                       children: [
                                         Container(
-                                          margin: EdgeInsets.symmetric(
-                                              horizontal: 10),
-                                          color: Color.fromARGB(
-                                              255, 255, 255, 255),
-                                          child: Container(
-                                              alignment: Alignment.topCenter,
-                                              height: 1.sh - 200.h,
-                                              child: Center(
-                                                child: Column(
-                                                  children: [
-                                                    SizedBox(
-                                                      height: 10,
-                                                    ),
-                                                    ValueListenableBuilder<
-                                                            bool>(
-                                                        valueListenable:
-                                                            isExpanded,
-                                                        builder: (context,
-                                                            expanded, _) {
-                                                          return AnimatedContainer(
-                                                            duration: Duration(
-                                                                seconds: 2),
-                                                            curve: Curves
-                                                                .easeInOut,
-                                                            child: Container(
-                                                                height: expanded
-                                                                    ? 182
-                                                                    : 50.h,
-                                                                width: 1.sw,
-                                                                decoration: BoxDecoration(
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            15),
-                                                                    border: Border.all(
-                                                                        color: Color(
-                                                                            0xffC4C2C2))),
-                                                                child: Column(
-                                                                  children: [
-                                                                    InkWell(
-                                                                      onTap: () =>
-                                                                          isExpanded.value =
-                                                                              !expanded,
-                                                                      child: Container(
-                                                                          margin: EdgeInsets.all(10),
-                                                                          height: 20,
-                                                                          child: Row(children: [
-                                                                            SvgPicture.asset(
-                                                                              AppAssets.bagsSvg,
-                                                                              height: 20,
-                                                                            ),
-                                                                            SizedBox(
-                                                                              width: 7.w,
-                                                                            ),
-                                                                            Text(
-                                                                              "${LocaleKeys.your_shopping_bag.tr()} ",
-                                                                              style: context.textTheme.bodyMedium?.ra.copyWith(color: const Color(0xff1D1D1D), letterSpacing: 0.18, fontSize: 14, height: 1.33),
-                                                                            ),
-                                                                            Text(
-                                                                              "${widget.cartImages.length} item",
-                                                                              style: context.textTheme.bodyMedium?.br.copyWith(color: const Color(0xff1D1D1D), letterSpacing: 0.18, fontSize: 13, height: 1.33),
-                                                                            ),
-                                                                            Spacer(),
-                                                                            Transform.rotate(
-                                                                                angle: expanded ? pi : 0,
-                                                                                child: SvgPicture.asset(
-                                                                                  AppAssets.expandDetaileSvg,
-                                                                                  height: 8,
-                                                                                  width: 12,
-                                                                                  color: Color(0xff8D8D8D),
-                                                                                )),
-                                                                          ])),
-                                                                    ),
-                                                                    !expanded
-                                                                        ? SizedBox
-                                                                            .shrink()
-                                                                        : SizedBox(
-                                                                            height:
-                                                                                5,
-                                                                          ),
-                                                                    !expanded
-                                                                        ? SizedBox
-                                                                            .shrink()
-                                                                        : Container(
-                                                                            margin:
-                                                                                EdgeInsets.only(left: (LanguageService.languageCode == "ar") ? 0 : 10, right: (LanguageService.languageCode == "ar") ? 10 : 0),
-                                                                            height:
-                                                                                125,
-                                                                            child: ListView.separated(
-                                                                                separatorBuilder: (context, index) => SizedBox(
-                                                                                      width: 5,
-                                                                                    ),
-                                                                                scrollDirection: Axis.horizontal,
-                                                                                itemCount: widget.cartImages.length,
-                                                                                itemBuilder: (context, index) => Container(
-                                                                                      decoration: BoxDecoration(
-                                                                                        borderRadius: BorderRadius.circular(15),
-                                                                                        color: Color(0x707070),
-                                                                                      ),
-                                                                                      width: 91.w,
-                                                                                      child: ProductDetailsImageWidget(
-                                                                                        withBackGroundShadow: true,
-                                                                                        withInnerShadow: false,
-                                                                                        imageFit: BoxFit.cover,
-                                                                                        blurRadius: 0,
-                                                                                        imageUrl: widget.cartImages[index],
-                                                                                        width: 91.w,
-                                                                                        radius: 15,
-                                                                                      ),
-                                                                                    )),
-                                                                          )
-                                                                  ],
-                                                                )),
-                                                          );
-                                                        }),
-                                                    SizedBox(
-                                                      height: 15,
-                                                    ),
-                                                    Container(
-                                                        height: !(state
-                                                                .listOfAddressInfoClassToSave
-                                                                .isNullOrEmpty)
-                                                            ? 188
-                                                            : 203,
-                                                        width: 1.sw,
-                                                        decoration: BoxDecoration(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        15),
-                                                            border: Border.all(
-                                                                color: Color(
-                                                                    0xffC4C2C2))),
-                                                        child: Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          mainAxisSize:
-                                                              MainAxisSize.min,
-                                                          children: [
-                                                            Container(
-                                                                margin: EdgeInsets
-                                                                    .only(
-                                                                        top: 10,
-                                                                        left:
-                                                                            10,
-                                                                        right:
-                                                                            10),
-                                                                child: Row(
+                                            margin: EdgeInsets.symmetric(
+                                                horizontal: 10),
+                                            color: Color.fromARGB(
+                                                255, 255, 255, 255),
+                                            child: Container(
+                                                height: 1.sh - 110.h,
+                                                alignment: Alignment.topCenter,
+                                                child: Center(
+                                                    child: ListView(
+                                                        physics:
+                                                            ClampingScrollPhysics(),
+                                                        padding:
+                                                            EdgeInsets.all(0),
+                                                        children: [
+                                                      SizedBox(
+                                                        height: 10,
+                                                      ),
+                                                      ValueListenableBuilder<
+                                                              bool>(
+                                                          valueListenable:
+                                                              isExpanded,
+                                                          builder: (context,
+                                                              expanded, _) {
+                                                            return AnimatedContainer(
+                                                              duration:
+                                                                  Duration(
+                                                                      seconds:
+                                                                          2),
+                                                              curve: Curves
+                                                                  .easeInOut,
+                                                              child: Container(
+                                                                  height:
+                                                                      expanded
+                                                                          ? 200
+                                                                          : 50
+                                                                              .h,
+                                                                  width: 1.sw,
+                                                                  decoration: BoxDecoration(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              15),
+                                                                      border: Border.all(
+                                                                          color:
+                                                                              Color(0xffC4C2C2))),
+                                                                  child: Column(
                                                                     children: [
-                                                                      SvgPicture
-                                                                          .asset(
-                                                                        AppAssets
-                                                                            .deliveryAddressSvg,
-                                                                        height:
-                                                                            16,
+                                                                      InkWell(
+                                                                        onTap: () =>
+                                                                            isExpanded.value =
+                                                                                !expanded,
+                                                                        child: Container(
+                                                                            margin: EdgeInsets.all(10),
+                                                                            height: 20,
+                                                                            child: Row(children: [
+                                                                              SvgPicture.asset(
+                                                                                AppAssets.bagsSvg,
+                                                                                height: 20,
+                                                                              ),
+                                                                              SizedBox(
+                                                                                width: 7.w,
+                                                                              ),
+                                                                              Text(
+                                                                                "${LocaleKeys.your_shopping_bag.tr()} ",
+                                                                                style: context.textTheme.bodyMedium?.ra.copyWith(color: const Color(0xff1D1D1D), letterSpacing: 0.18, fontSize: 14, height: 1.33),
+                                                                              ),
+                                                                              Text(
+                                                                                "${widget.cartImages.length} item",
+                                                                                style: context.textTheme.bodyMedium?.br.copyWith(color: const Color(0xff1D1D1D), letterSpacing: 0.18, fontSize: 13, height: 1.33),
+                                                                              ),
+                                                                              Spacer(),
+                                                                              Transform.rotate(
+                                                                                  angle: expanded ? pi : 0,
+                                                                                  child: SvgPicture.asset(
+                                                                                    AppAssets.expandDetaileSvg,
+                                                                                    height: 8,
+                                                                                    width: 12,
+                                                                                    color: Color(0xff8D8D8D),
+                                                                                  )),
+                                                                            ])),
                                                                       ),
-                                                                      SizedBox(
-                                                                        width:
-                                                                            7.w,
-                                                                      ),
-                                                                      Text(
-                                                                        "${LocaleKeys.shipping_delivery_address.tr()} ",
-                                                                        style: context.textTheme.bodyMedium?.ra.copyWith(
-                                                                            color: const Color(
-                                                                                0xff1D1D1D),
-                                                                            letterSpacing:
-                                                                                0.18,
-                                                                            fontSize:
-                                                                                14,
-                                                                            height:
-                                                                                0.8),
-                                                                      ),
-                                                                      SizedBox(
-                                                                        width:
-                                                                            5.w,
-                                                                      ),
-                                                                      SvgPicture
-                                                                          .asset(
-                                                                        AppAssets
-                                                                            .freeShippingSvg,
-                                                                      )
-                                                                    ])),
-                                                            SizedBox(
-                                                              height: 5.h,
-                                                            ),
-                                                            Container(
-                                                                margin: EdgeInsets
-                                                                    .symmetric(
-                                                                        horizontal:
-                                                                            35.w),
-                                                                child: Text(
-                                                                  !(state.listOfAddressInfoClassToSave
-                                                                          .isNullOrEmpty)
-                                                                      ? "${LocaleKeys.shipment_will_be_sent_to_the_address_below.tr()} "
-                                                                      : "${LocaleKeys.please_enter_shipping_address_to_receive_your_bag.tr()} ",
-                                                                  style: context
-                                                                      .textTheme
-                                                                      .bodyMedium
-                                                                      ?.ra
-                                                                      .copyWith(
-                                                                          color: const Color(
-                                                                              0xff8D8D8D),
-                                                                          letterSpacing:
-                                                                              0.18,
-                                                                          fontSize:
-                                                                              12,
-                                                                          height:
-                                                                              0.8),
-                                                                )),
-                                                            SizedBox(
-                                                              height: 12.h,
-                                                            ),
-                                                            !state.listOfAddressInfoClassToSave
-                                                                    .isNullOrEmpty
-                                                                ? Padding(
-                                                                    padding: const EdgeInsets
-                                                                        .symmetric(
-                                                                        horizontal:
-                                                                            10),
-                                                                    child:
-                                                                        AddressInfoWithContactInfoCart(
-                                                                      cartChoosed:
-                                                                          true,
-                                                                      inDelete:
-                                                                          false,
-                                                                      customerAddressesInfo:
-                                                                          state.listOfAddressInfoClassToSave![
-                                                                              _indexTap],
-                                                                      context:
-                                                                          context,
-                                                                      index: -1,
-                                                                      indexTap:
-                                                                          _indexTap,
-                                                                      onTapDelete:
-                                                                          () {},
-                                                                      onTapEdit:
-                                                                          () {
-                                                                        ;
-                                                                      },
-                                                                    ),
-                                                                  )
-                                                                : Container(
-                                                                    height:
-                                                                        85.h,
-                                                                    width: 1.sw,
-                                                                    padding: EdgeInsets
-                                                                        .symmetric(
-                                                                            horizontal:
-                                                                                0),
-                                                                    margin: EdgeInsets.symmetric(
-                                                                        horizontal:
-                                                                            10),
-                                                                    decoration: BoxDecoration(
-                                                                        color: Color(
-                                                                            0xffF8F8F8),
-                                                                        borderRadius:
-                                                                            BorderRadius.circular(
-                                                                                15),
-                                                                        border: Border.all(
-                                                                            color: !state.listOfAddressInfoClassToSave.isNullOrEmpty
-                                                                                ? Color(0xff388CFF)
-                                                                                : Color(0xffF8F8F8))),
-                                                                    child:
-                                                                        Column(
-                                                                      crossAxisAlignment:
-                                                                          CrossAxisAlignment
-                                                                              .center,
+                                                                      !expanded
+                                                                          ? SizedBox
+                                                                              .shrink()
+                                                                          : SizedBox(
+                                                                              height: 5,
+                                                                            ),
+                                                                      !expanded
+                                                                          ? SizedBox
+                                                                              .shrink()
+                                                                          : Container(
+                                                                              margin: EdgeInsets.only(left: (LanguageService.languageCode == "ar") ? 0 : 10, right: (LanguageService.languageCode == "ar") ? 10 : 0),
+                                                                              height: 150,
+                                                                              child: ListView.separated(
+                                                                                  separatorBuilder: (context, index) => SizedBox(
+                                                                                        width: 5,
+                                                                                      ),
+                                                                                  scrollDirection: Axis.horizontal,
+                                                                                  itemCount: widget.cartImages.length,
+                                                                                  itemBuilder: (context, index) => Container(
+                                                                                        decoration: BoxDecoration(
+                                                                                          borderRadius: BorderRadius.circular(15),
+                                                                                          color: Color(0x707070),
+                                                                                        ),
+                                                                                        width: 91.w,
+                                                                                        child: Column(
+                                                                                          children: [
+                                                                                            Container(
+                                                                                              height: 125.h,
+                                                                                              child: ProductDetailsImageWidget(
+                                                                                                withBackGroundShadow: true,
+                                                                                                withInnerShadow: false,
+                                                                                                imageFit: BoxFit.cover,
+                                                                                                blurRadius: 0,
+                                                                                                imageUrl: widget.cartImages[index]["image"],
+                                                                                                width: 91.w,
+                                                                                                radius: 15,
+                                                                                              ),
+                                                                                            ),
+                                                                                            SizedBox(
+                                                                                              height: 2,
+                                                                                            ),
+                                                                                            Text(
+                                                                                              '${widget.cartImages[index]["size"]}',
+                                                                                              style: context.textTheme.bodyMedium?.rr.copyWith(color: const Color(0xff1D1D1D), letterSpacing: 0.18, fontSize: 10, height: 1.33),
+                                                                                            ),
+                                                                                            Text(
+                                                                                              '${widget.cartImages[index]["color"]}',
+                                                                                              style: context.textTheme.bodyMedium?.rr.copyWith(color: const Color(0xff1D1D1D), letterSpacing: 0.18, fontSize: 10, height: 1.33),
+                                                                                            ),
+                                                                                          ],
+                                                                                        ),
+                                                                                      )),
+                                                                            )
+                                                                    ],
+                                                                  )),
+                                                            );
+                                                          }),
+                                                      SizedBox(
+                                                        height: 15,
+                                                      ),
+                                                      Container(
+                                                          height: !(state
+                                                                  .listOfAddressInfoClassToSave
+                                                                  .isNullOrEmpty)
+                                                              ? 220.h
+                                                              : 203,
+                                                          width: 1.sw,
+                                                          decoration: BoxDecoration(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          15),
+                                                              border: Border.all(
+                                                                  color: Color(
+                                                                      0xffC4C2C2))),
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            mainAxisSize:
+                                                                MainAxisSize
+                                                                    .min,
+                                                            children: [
+                                                              Container(
+                                                                  margin: EdgeInsets
+                                                                      .only(
+                                                                          top:
+                                                                              10,
+                                                                          left:
+                                                                              10,
+                                                                          right:
+                                                                              10),
+                                                                  child: Row(
                                                                       children: [
-                                                                        SizedBox(
+                                                                        SvgPicture
+                                                                            .asset(
+                                                                          AppAssets
+                                                                              .deliveryAddressSvg,
                                                                           height:
-                                                                              8.h,
+                                                                              16,
+                                                                        ),
+                                                                        SizedBox(
+                                                                          width:
+                                                                              7.w,
+                                                                        ),
+                                                                        Text(
+                                                                          "${LocaleKeys.shipping_delivery_address.tr()} ",
+                                                                          style: context.textTheme.bodyMedium?.ra.copyWith(
+                                                                              color: const Color(0xff1D1D1D),
+                                                                              letterSpacing: 0.18,
+                                                                              fontSize: 14,
+                                                                              height: 0.8),
+                                                                        ),
+                                                                        SizedBox(
+                                                                          width:
+                                                                              5.w,
                                                                         ),
                                                                         SvgPicture
                                                                             .asset(
                                                                           AppAssets
-                                                                              .chatWithQuestionSvg,
-                                                                        ),
-                                                                        SizedBox(
-                                                                          height:
-                                                                              18.h,
-                                                                        ),
-                                                                        Text(
-                                                                          "${LocaleKeys.your_address_list_is_empty.tr()} ",
-                                                                          style: context.textTheme.bodyMedium?.ra.copyWith(
-                                                                              color: const Color(0xffC4C2C2),
-                                                                              letterSpacing: 0.18,
-                                                                              fontSize: 12,
-                                                                              height: 0.8),
-                                                                        ),
-                                                                        SizedBox(
-                                                                          height:
-                                                                              8.h,
-                                                                        ),
-                                                                        Text(
-                                                                          "${LocaleKeys.you_can_also_create_multiple_addresses_to_use.tr()} ",
-                                                                          style: context.textTheme.bodyMedium?.ra.copyWith(
-                                                                              color: const Color(0xffC4C2C2),
-                                                                              letterSpacing: 0.18,
-                                                                              fontSize: 12,
-                                                                              height: 0.8),
+                                                                              .freeShippingSvg,
                                                                         )
-                                                                      ],
-                                                                    ),
-                                                                  ),
-                                                            SizedBox(
-                                                              height: !(state
-                                                                      .listOfAddressInfoClassToSave
-                                                                      .isNullOrEmpty)
-                                                                  ? 10
-                                                                  : 20.h,
-                                                            ),
-                                                            !state.listOfAddressInfoClassToSave
-                                                                    .isNullOrEmpty
-                                                                ? InkWell(
-                                                                    onTap: () {
-                                                                      panelController
-                                                                          .open();
-                                                                    },
-                                                                    child:
-                                                                        Container(
-                                                                      height:
-                                                                          40,
-                                                                      width:
-                                                                          1.sw,
+                                                                      ])),
+                                                              SizedBox(
+                                                                height: 5.h,
+                                                              ),
+                                                              Container(
+                                                                  margin: EdgeInsets
+                                                                      .symmetric(
+                                                                          horizontal:
+                                                                              35.w),
+                                                                  child: Text(
+                                                                    !(state.listOfAddressInfoClassToSave
+                                                                            .isNullOrEmpty)
+                                                                        ? "${LocaleKeys.shipment_will_be_sent_to_the_address_below.tr()} "
+                                                                        : "${LocaleKeys.please_enter_shipping_address_to_receive_your_bag.tr()} ",
+                                                                    style: context.textTheme.bodyMedium?.ra.copyWith(
+                                                                        color: const Color(
+                                                                            0xff8D8D8D),
+                                                                        letterSpacing:
+                                                                            0.18,
+                                                                        fontSize:
+                                                                            12,
+                                                                        height:
+                                                                            0.8),
+                                                                  )),
+                                                              SizedBox(
+                                                                height: 12.h,
+                                                              ),
+                                                              !state.listOfAddressInfoClassToSave
+                                                                      .isNullOrEmpty
+                                                                  ? Padding(
+                                                                      padding: const EdgeInsets
+                                                                          .symmetric(
+                                                                          horizontal:
+                                                                              10),
                                                                       child:
-                                                                          Row(
-                                                                        mainAxisAlignment:
-                                                                            MainAxisAlignment.center,
-                                                                        children: [
-                                                                          Center(
-                                                                            child:
-                                                                                SvgPicture.asset(
-                                                                              AppAssets.deliveryAddressSvg,
-                                                                              width: 15,
-                                                                              height: 15,
-                                                                              color: Color(0xff8D8D8D),
-                                                                            ),
-                                                                          ),
-                                                                          SizedBox(
-                                                                            width:
-                                                                                3,
-                                                                          ),
-                                                                          Text(
-                                                                            "${LocaleKeys.show_address_list.tr()} ",
-                                                                            style: context.textTheme.bodyMedium?.mr.copyWith(
-                                                                                color: const Color(0xff8D8D8D),
-                                                                                letterSpacing: 0.18,
-                                                                                fontSize: 12,
-                                                                                height: 1.33),
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                    ),
-                                                                  )
-                                                                : InkWell(
-                                                                    onTap: () =>
-                                                                        HelperFunctions.slidingNavigation(
+                                                                          AddressInfoWithContactInfoCart(
+                                                                        cartChoosed:
+                                                                            true,
+                                                                        isDelete:
+                                                                            false,
+                                                                        customerAddressesInfo:
+                                                                            state.listOfAddressInfoClassToSave![_indexTap],
+                                                                        context:
                                                                             context,
-                                                                            AddShippingAdress()),
-                                                                    child:
-                                                                        Container(
+                                                                        index:
+                                                                            -1,
+                                                                        indexTap:
+                                                                            _indexTap,
+                                                                        onTapDelete:
+                                                                            () {},
+                                                                        onTapEdit:
+                                                                            () {
+                                                                          ;
+                                                                        },
+                                                                      ),
+                                                                    )
+                                                                  : Container(
                                                                       height:
-                                                                          40,
+                                                                          85.h,
                                                                       width:
                                                                           1.sw,
+                                                                      padding: EdgeInsets.symmetric(
+                                                                          horizontal:
+                                                                              0),
                                                                       margin: EdgeInsets.symmetric(
                                                                           horizontal:
                                                                               10),
                                                                       decoration: BoxDecoration(
                                                                           color: Color(
-                                                                              0xffE8FFED),
+                                                                              0xffF8F8F8),
                                                                           borderRadius: BorderRadius.circular(
                                                                               15),
                                                                           border:
-                                                                              Border.all(color: Color(0xffC4C2C2))),
+                                                                              Border.all(color: !state.listOfAddressInfoClassToSave.isNullOrEmpty ? Color(0xff388CFF) : Color(0xffF8F8F8))),
                                                                       child:
-                                                                          Row(
-                                                                        mainAxisAlignment:
-                                                                            MainAxisAlignment.center,
+                                                                          Column(
+                                                                        crossAxisAlignment:
+                                                                            CrossAxisAlignment.center,
                                                                         children: [
-                                                                          Center(
-                                                                            child:
-                                                                                Stack(
-                                                                              alignment: Alignment.center,
-                                                                              children: [
-                                                                                SvgPicture.asset(
-                                                                                  AppAssets.addShippingAddressSvg,
-                                                                                ),
-                                                                                Positioned(
-                                                                                  top: 2,
-                                                                                  child: SvgPicture.asset(
-                                                                                    AppAssets.addShippingAddressWhiteSvg,
-                                                                                  ),
-                                                                                ),
-                                                                              ],
-                                                                            ),
+                                                                          SizedBox(
+                                                                            height:
+                                                                                8.h,
+                                                                          ),
+                                                                          SvgPicture
+                                                                              .asset(
+                                                                            AppAssets.chatWithQuestionSvg,
                                                                           ),
                                                                           SizedBox(
-                                                                            width:
-                                                                                3,
+                                                                            height:
+                                                                                18.h,
                                                                           ),
                                                                           Text(
-                                                                            "${LocaleKeys.add_shipping_address.tr()} ",
-                                                                            style: context.textTheme.bodyMedium?.mr.copyWith(
-                                                                                color: const Color(0xff1D1D1D),
+                                                                            "${LocaleKeys.your_address_list_is_empty.tr()} ",
+                                                                            style: context.textTheme.bodyMedium?.ra.copyWith(
+                                                                                color: const Color(0xffC4C2C2),
                                                                                 letterSpacing: 0.18,
                                                                                 fontSize: 12,
-                                                                                height: 1.33),
+                                                                                height: 0.8),
                                                                           ),
+                                                                          SizedBox(
+                                                                            height:
+                                                                                8.h,
+                                                                          ),
+                                                                          Text(
+                                                                            "${LocaleKeys.you_can_also_create_multiple_addresses_to_use.tr()} ",
+                                                                            style: context.textTheme.bodyMedium?.ra.copyWith(
+                                                                                color: const Color(0xffC4C2C2),
+                                                                                letterSpacing: 0.18,
+                                                                                fontSize: 12,
+                                                                                height: 0.8),
+                                                                          )
                                                                         ],
                                                                       ),
                                                                     ),
-                                                                  )
-                                                          ],
-                                                        )),
-                                                  ],
-                                                ),
-                                              )),
-                                        ),
+                                                              SizedBox(
+                                                                height: !(state
+                                                                        .listOfAddressInfoClassToSave
+                                                                        .isNullOrEmpty)
+                                                                    ? 10
+                                                                    : 20.h,
+                                                              ),
+                                                              !state.listOfAddressInfoClassToSave
+                                                                      .isNullOrEmpty
+                                                                  ? InkWell(
+                                                                      onTap:
+                                                                          () {
+                                                                        panelController
+                                                                            .open();
+                                                                      },
+                                                                      child:
+                                                                          Container(
+                                                                        height:
+                                                                            15.h,
+                                                                        width: 1
+                                                                            .sw,
+                                                                        child:
+                                                                            Row(
+                                                                          mainAxisAlignment:
+                                                                              MainAxisAlignment.center,
+                                                                          children: [
+                                                                            Center(
+                                                                              child: SvgPicture.asset(
+                                                                                AppAssets.deliveryAddressSvg,
+                                                                                width: 15,
+                                                                                height: 15,
+                                                                                color: Color(0xff8D8D8D),
+                                                                              ),
+                                                                            ),
+                                                                            SizedBox(
+                                                                              width: 3,
+                                                                            ),
+                                                                            Text(
+                                                                              "${LocaleKeys.show_address_list.tr()} ",
+                                                                              style: context.textTheme.bodyMedium?.mr.copyWith(color: const Color(0xff8D8D8D), letterSpacing: 0.18, fontSize: 12, height: 1.33),
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                      ),
+                                                                    )
+                                                                  : InkWell(
+                                                                      onTap: () => HelperFunctions.slidingNavigation(
+                                                                          context,
+                                                                          AddShippingAdress()),
+                                                                      child:
+                                                                          Container(
+                                                                        height:
+                                                                            40,
+                                                                        width: 1
+                                                                            .sw,
+                                                                        margin: EdgeInsets.symmetric(
+                                                                            horizontal:
+                                                                                10),
+                                                                        decoration: BoxDecoration(
+                                                                            color:
+                                                                                Color(0xffE8FFED),
+                                                                            borderRadius: BorderRadius.circular(15),
+                                                                            border: Border.all(color: Color(0xffC4C2C2))),
+                                                                        child:
+                                                                            Row(
+                                                                          mainAxisAlignment:
+                                                                              MainAxisAlignment.center,
+                                                                          children: [
+                                                                            Center(
+                                                                              child: Stack(
+                                                                                alignment: Alignment.center,
+                                                                                children: [
+                                                                                  SvgPicture.asset(
+                                                                                    AppAssets.addShippingAddressSvg,
+                                                                                  ),
+                                                                                  Positioned(
+                                                                                    top: 2,
+                                                                                    child: SvgPicture.asset(
+                                                                                      AppAssets.addShippingAddressWhiteSvg,
+                                                                                    ),
+                                                                                  ),
+                                                                                ],
+                                                                              ),
+                                                                            ),
+                                                                            SizedBox(
+                                                                              width: 3,
+                                                                            ),
+                                                                            Text(
+                                                                              "${LocaleKeys.add_shipping_address.tr()} ",
+                                                                              style: context.textTheme.bodyMedium?.mr.copyWith(color: const Color(0xff1D1D1D), letterSpacing: 0.18, fontSize: 12, height: 1.33),
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                      ),
+                                                                    )
+                                                            ],
+                                                          )),
+                                                      SizedBox(
+                                                        height: 20.h,
+                                                      ),
+                                                      (state.listOfAddressInfoClassToSave
+                                                              .isNullOrEmpty)
+                                                          ? SizedBox.shrink()
+                                                          : PaymentMethod(
+                                                              fromSuccessOrder:
+                                                                  false,
+                                                              fromPalceOrder:
+                                                                  false,
+                                                              paymentMethod:
+                                                                  paymentMethod),
+                                                      (state.listOfAddressInfoClassToSave
+                                                              .isNullOrEmpty)
+                                                          ? SizedBox.shrink()
+                                                          : ValueListenableBuilder<
+                                                                  bool>(
+                                                              valueListenable:
+                                                                  isExpanded,
+                                                              builder: (context,
+                                                                  _isExpanded,
+                                                                  _) {
+                                                                return SizedBox(
+                                                                  height:
+                                                                      !_isExpanded
+                                                                          ? 10.h
+                                                                          : 120
+                                                                              .h,
+                                                                );
+                                                              }),
+                                                    ])))),
                                         ValueListenableBuilder<bool>(
                                             valueListenable: showPanel,
                                             builder: (context, _showPanel, _) {
@@ -741,6 +784,145 @@ class _CartDelivaryAdressState extends State<CartDelivaryAdress> {
                                                               0, 0, 0, 0.65)),
                                                     );
                                             }),
+                                        Positioned(
+                                            bottom: 0,
+                                            child: (state
+                                                    .listOfAddressInfoClassToSave
+                                                    .isNullOrEmpty)
+                                                ? SizedBox.shrink()
+                                                : Container(
+                                                    height: 100.h,
+                                                    decoration: BoxDecoration(
+                                                      border: Border.all(
+                                                        color: Color.fromRGBO(
+                                                            255, 255, 255, 1),
+                                                      ),
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                          blurRadius: 10,
+                                                          blurStyle:
+                                                              BlurStyle.solid,
+                                                          color:
+                                                              Color(0xffF1F1F1),
+                                                        )
+                                                      ],
+                                                      color: Color.fromRGBO(
+                                                          255, 255, 255, 1),
+                                                    ),
+                                                    width: 1.sw,
+                                                    child:
+                                                        ValueListenableBuilder<
+                                                                String>(
+                                                            valueListenable:
+                                                                paymentMethod,
+                                                            builder: (context,
+                                                                _paymentMethod,
+                                                                _) {
+                                                              return InkWell(
+                                                                onTap: () {
+                                                                  if (_paymentMethod !=
+                                                                      "") {
+                                                                    HelperFunctions
+                                                                        .slidingNavigation(
+                                                                            context,
+                                                                            PlaceOrder(
+                                                                              customerAddressesInfo: state.listOfAddressInfoClassToSave![_indexTap],
+                                                                              paymentMethod: paymentMethod,
+                                                                              cartImages: widget.cartImages,
+                                                                              currencySympole: widget.currencySympole,
+                                                                              totalPrice: widget.totalPrice,
+                                                                            ));
+                                                                  }
+                                                                },
+                                                                child:
+                                                                    Container(
+                                                                  height: 70.h,
+                                                                  margin: EdgeInsets.symmetric(
+                                                                      horizontal:
+                                                                          10,
+                                                                      vertical:
+                                                                          10),
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            20),
+                                                                    color: _paymentMethod !=
+                                                                            ""
+                                                                        ? Color(
+                                                                            0xff346BFF)
+                                                                        : Color(
+                                                                            0xffC4C2C2),
+                                                                  ),
+                                                                  child: Center(
+                                                                      child:
+                                                                          Column(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .center,
+                                                                    children: [
+                                                                      Text(
+                                                                        LocaleKeys
+                                                                            .confirm_shipping_payment
+                                                                            .tr(),
+                                                                        style: context.textTheme.bodyMedium?.mr.copyWith(
+                                                                            color: const Color(
+                                                                                0xffFEFEFE),
+                                                                            letterSpacing:
+                                                                                0.18,
+                                                                            fontSize:
+                                                                                18,
+                                                                            height:
+                                                                                0.8),
+                                                                      ),
+                                                                      SizedBox(
+                                                                        height:
+                                                                            10.h,
+                                                                      ),
+                                                                      Row(
+                                                                        mainAxisAlignment:
+                                                                            MainAxisAlignment.center,
+                                                                        children: [
+                                                                          Text(
+                                                                            '${widget.cartImages.length} ',
+                                                                            style: context.textTheme.bodyMedium?.br.copyWith(
+                                                                                color: const Color(0xffFEFEFE),
+                                                                                letterSpacing: 0.18,
+                                                                                fontSize: 14,
+                                                                                height: 0.8),
+                                                                          ),
+                                                                          Text(
+                                                                            LocaleKeys.item.tr(),
+                                                                            style: context.textTheme.bodyMedium?.rr.copyWith(
+                                                                                color: const Color(0xffFEFEFE),
+                                                                                letterSpacing: 0.18,
+                                                                                fontSize: 14,
+                                                                                height: 0.8),
+                                                                          ),
+                                                                          Text(
+                                                                            ' ${widget.totalPrice} ',
+                                                                            style: context.textTheme.bodyMedium?.br.copyWith(
+                                                                                color: const Color(0xffFEFEFE),
+                                                                                letterSpacing: 0.18,
+                                                                                fontSize: 14,
+                                                                                height: 0.8),
+                                                                          ),
+                                                                          Text(
+                                                                            "${widget.currencySympole}",
+                                                                            style: context.textTheme.bodyMedium?.rr.copyWith(
+                                                                                color: const Color(0xffFEFEFE),
+                                                                                letterSpacing: 0.18,
+                                                                                fontSize: 14,
+                                                                                height: 0.8),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                    ],
+                                                                  )),
+                                                                ),
+                                                              );
+                                                            }),
+                                                  )),
                                         Positioned(
                                           bottom: 0,
                                           child: GestureDetector(
@@ -849,7 +1031,7 @@ class _CartDelivaryAdressState extends State<CartDelivaryAdress> {
                                                                         AddressInfoWithContactInfoCart(
                                                                       cartChoosed:
                                                                           false,
-                                                                      inDelete:
+                                                                      isDelete:
                                                                           false,
                                                                       customerAddressesInfo:
                                                                           state.listOfAddressInfoClassToSave![
@@ -1019,7 +1201,7 @@ class _CartDelivaryAdressState extends State<CartDelivaryAdress> {
                                       child: AddressInfoWithContactInfoCart(
                                         cartChoosed: false,
                                         context: context,
-                                        inDelete: true,
+                                        isDelete: true,
                                         indexTap: 0,
                                         index: 1,
                                         customerAddressesInfo:
@@ -1111,27 +1293,39 @@ Widget AddressInfoWithContactInfoCart(
     {required CustomerAddressesInfo customerAddressesInfo,
     required int index,
     required int indexTap,
-    required bool inDelete,
+    required bool isDelete,
+    bool? placeOrder,
+    bool? successfulOrder,
     required bool cartChoosed,
     required BuildContext context,
     required void Function()? onTapEdit,
     required void Function()? onTapDelete}) {
   return Container(
-      height: 90.h,
+      height: (placeOrder ?? false)
+          ? 130.h
+          : (!isDelete && cartChoosed)
+              ? 125.h
+              : 90.h,
       width: 1.sw,
       padding: EdgeInsets.only(
           right: LanguageService.languageCode == "ar" ? 20 : 10,
           left: LanguageService.languageCode != "ar" ? 20 : 10),
       decoration: BoxDecoration(
-          color: inDelete ? Color.fromRGBO(0, 0, 0, 0) : Color(0xffF8F8F8),
+          color: (placeOrder ?? false) || (successfulOrder ?? false)
+              ? Color(0xffFFFFFF)
+              : isDelete
+                  ? Color.fromRGBO(0, 0, 0, 0)
+                  : Color(0xffF8F8F8),
           borderRadius: BorderRadius.circular(15),
-          border: inDelete
-              ? Border.all(color: Color(0xffFFFFFF))
-              : cartChoosed
-                  ? Border.all(color: Color(0xff388CFF))
-                  : index != indexTap
-                      ? null
-                      : Border.all(color: Color(0xff388CFF))),
+          border: (placeOrder ?? false)
+              ? Border.all(color: Color(0xffC4C2C2))
+              : isDelete || (successfulOrder ?? false)
+                  ? Border.all(color: Color(0xffFFFFFF))
+                  : cartChoosed
+                      ? Border.all(color: Color(0xff388CFF))
+                      : index != indexTap
+                          ? null
+                          : Border.all(color: Color(0xff388CFF))),
       child: Column(
         children: [
           SizedBox(
@@ -1144,7 +1338,7 @@ Widget AddressInfoWithContactInfoCart(
               children: [
                 SvgPicture.asset(
                   AppAssets.homeInactiveSvg,
-                  color: inDelete
+                  color: isDelete
                       ? Color(0xffFFFFFF)
                       : index != indexTap
                           ? Color(0xff8D8D8D)
@@ -1158,7 +1352,7 @@ Widget AddressInfoWithContactInfoCart(
                 Text(
                   customerAddressesInfo.address ?? "",
                   style: context.textTheme.bodyMedium?.mr.copyWith(
-                      color: inDelete
+                      color: isDelete
                           ? Color(0xffFFFFFF)
                           : index != indexTap
                               ? Color(0xff8D8D8D)
@@ -1167,8 +1361,8 @@ Widget AddressInfoWithContactInfoCart(
                       fontSize: 12,
                       height: 1.3),
                 ),
-                inDelete || cartChoosed ? SizedBox.shrink() : Spacer(),
-                inDelete || cartChoosed
+                isDelete || cartChoosed ? SizedBox.shrink() : Spacer(),
+                isDelete || cartChoosed
                     ? SizedBox.shrink()
                     : InkWell(
                         onTap: onTapEdit,
@@ -1183,12 +1377,12 @@ Widget AddressInfoWithContactInfoCart(
                           ),
                         ),
                       ),
-                inDelete || cartChoosed
+                isDelete || cartChoosed
                     ? SizedBox.shrink()
                     : SizedBox(
                         width: 10,
                       ),
-                inDelete || cartChoosed
+                isDelete || cartChoosed
                     ? SizedBox.shrink()
                     : InkWell(
                         onTap: onTapDelete,
@@ -1214,7 +1408,7 @@ Widget AddressInfoWithContactInfoCart(
                 Text(
                   "${customerAddressesInfo.regionDetails?.street} | ${customerAddressesInfo.regionDetails?.town} | ${customerAddressesInfo.regionDetails?.city} | ${customerAddressesInfo.regionDetails?.province} | ${customerAddressesInfo.regionDetails?.country}",
                   style: context.textTheme.bodyMedium?.mr.copyWith(
-                      color: inDelete
+                      color: isDelete
                           ? Color(0xffFFFFFF)
                           : index != indexTap
                               ? Color(0xff8D8D8D)
@@ -1234,7 +1428,7 @@ Widget AddressInfoWithContactInfoCart(
                 Text(
                   "${customerAddressesInfo.addressDetail}",
                   style: context.textTheme.bodyMedium?.mr.copyWith(
-                      color: inDelete
+                      color: isDelete
                           ? Color(0xffFFFFFF)
                           : index != indexTap
                               ? Color(0xff8D8D8D)
@@ -1253,7 +1447,7 @@ Widget AddressInfoWithContactInfoCart(
               children: [
                 SvgPicture.asset(
                   AppAssets.phoneCallSvg,
-                  color: inDelete
+                  color: isDelete
                       ? Color(0xffFFFFFF)
                       : index != indexTap
                           ? Color(0xff8D8D8D)
@@ -1267,7 +1461,7 @@ Widget AddressInfoWithContactInfoCart(
                 Text(
                   '+${customerAddressesInfo.contactInfo?.phone ?? ""}',
                   style: context.textTheme.bodyMedium?.mr.copyWith(
-                      color: inDelete
+                      color: isDelete
                           ? Color(0xffFFFFFF)
                           : index != indexTap
                               ? Color(0xff8D8D8D)
@@ -1285,7 +1479,7 @@ Widget AddressInfoWithContactInfoCart(
                     children: [
                       SvgPicture.asset(
                         AppAssets.personSvg,
-                        color: inDelete
+                        color: isDelete
                             ? Color(0xffFFFFFF)
                             : index != indexTap
                                 ? Color(0xff8D8D8D)
@@ -1299,7 +1493,7 @@ Widget AddressInfoWithContactInfoCart(
                       Text(
                         '${customerAddressesInfo.contactInfo?.name ?? ""}',
                         style: context.textTheme.bodyMedium?.mr.copyWith(
-                            color: inDelete
+                            color: isDelete
                                 ? Color(0xffFFFFFF)
                                 : index != indexTap
                                     ? Color(0xff8D8D8D)
@@ -1312,11 +1506,11 @@ Widget AddressInfoWithContactInfoCart(
                   ),
                 ),
                 Spacer(),
-                index != indexTap || inDelete
+                index != indexTap || isDelete
                     ? SizedBox.shrink()
                     : SvgPicture.asset(
                         AppAssets.shareSvg,
-                        color: inDelete || cartChoosed
+                        color: isDelete || cartChoosed
                             ? Color(0xffFFFFFF)
                             : Color(0xff388CFF),
                         allowDrawingOutsideViewBox: true,
@@ -1326,11 +1520,62 @@ Widget AddressInfoWithContactInfoCart(
               ],
             ),
           ),
-          SizedBox(
-            height: 5,
-          ),
+          !(!isDelete && cartChoosed)
+              ? SizedBox.shrink()
+              : SizedBox(
+                  height: 8.h,
+                ),
+          !(placeOrder ?? false)
+              ? SizedBox.shrink()
+              : SizedBox(
+                  height: 5.h,
+                ),
+          !(!isDelete && cartChoosed)
+              ? SizedBox.shrink()
+              : Container(
+                  height: 30.h,
+                  width: 1.sw,
+                  decoration: BoxDecoration(
+                      color: (placeOrder ?? false) || (successfulOrder ?? false)
+                          ? Color(0xffF8F8F8)
+                          : Color(0xffFFFFFF),
+                      borderRadius: BorderRadius.circular(10)),
+                  alignment: Alignment.center,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '${LocaleKeys.expected_delivery.tr()}',
+                        style: context.textTheme.bodyMedium?.rr.copyWith(
+                            color: const Color(0xff8D8D8D),
+                            letterSpacing: 0.18,
+                            fontSize: 10,
+                            height: 1.3),
+                      ),
+                      Text(
+                        ' Sunday, 03.Jun.21. ',
+                        style: context.textTheme.bodyMedium?.rr.copyWith(
+                            color: const Color(0xff1D1D1D),
+                            letterSpacing: 0.18,
+                            fontSize: 10,
+                            height: 1.3),
+                      ),
+                      Text(
+                        '${LocaleKeys.delivery_not.tr()}',
+                        style: context.textTheme.bodyMedium?.rr.copyWith(
+                            decoration: TextDecoration.underline,
+                            decorationColor: const Color(0xff388CFF),
+                            color: const Color(0xff388CFF),
+                            letterSpacing: 0.18,
+                            fontSize: 10,
+                            height: 1.3),
+                      ),
+                    ],
+                  ))
         ],
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: (!isDelete && cartChoosed)
+            ? MainAxisAlignment.start
+            : MainAxisAlignment.spaceBetween,
       ));
 }

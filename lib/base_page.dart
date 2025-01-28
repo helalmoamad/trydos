@@ -375,8 +375,6 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 
     if (!(GetIt.I<PrefsRepository>().onMessageRun ?? false)) {
       onMessage();
-      print(
-          "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@!!!!!!!!!!!!!!!!!!!!!!!!!DDD");
     }
     GetIt.I<PrefsRepository>().setOnMessageRun(true);
     if (homeBloc.state.startingSetting != null) {
@@ -386,8 +384,9 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
           'android: ${homeBloc.state.startingSetting?.androidMinVersion}');
       debugPrint('ios: ${homeBloc.state.startingSetting?.iosMinVersion}');
       if (applicationVersion <
-              homeBloc.state.startingSetting!.androidMinVersion! ||
-          applicationVersion < homeBloc.state.startingSetting!.iosMinVersion!) {
+              (homeBloc.state.startingSetting!.androidMinVersion!) ||
+          applicationVersion <
+              (homeBloc.state.startingSetting!.iosMinVersion!)) {
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           HelperFunctions.showVersionDialog(context);
         });

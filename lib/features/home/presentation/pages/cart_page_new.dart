@@ -116,7 +116,7 @@ class _CartPageState extends State<CartPage> {
           null, null, null, null, null, null, null,
           error: error.toString());
     };
-    List<String> cartImages = [];
+    List<Map<String, String>> cartImages = [];
     return WillPopScope(
       onWillPop: () async {
         if (focusNode.hasFocus) {
@@ -172,7 +172,11 @@ class _CartPageState extends State<CartPage> {
               state.cartCollection?.forEach(
                 (element) {
                   for (var i = 0; i < (element.quantity ?? 0); i++) {
-                    cartImages.add(element.image ?? "");
+                    cartImages.add({
+                      "image": element.image ?? "",
+                      "size": element.variations?[0].size ?? "",
+                      "color": element.variations?[0].color ?? ""
+                    });
                   }
                 },
               );
@@ -1588,7 +1592,7 @@ class _CartPageState extends State<CartPage> {
                                                                                     if (prefsRepository.isVerifiedPhone != true) {
                                                                                       isVerified.value = false;
                                                                                     } else {
-                                                                                      HelperFunctions.slidingNavigation(context, CartDelivaryAdress(cartImages: cartImages));
+                                                                                      HelperFunctions.slidingNavigation(context, CartDelivaryAdress(cartImages: cartImages, totalPrice: totlalOfferPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2), currencySympole: priceSymbol ?? ' \$'));
                                                                                     }
                                                                                   }
                                                                                   ;
