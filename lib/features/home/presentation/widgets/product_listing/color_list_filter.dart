@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,6 +10,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 
 import '../../../../../common/test_utils/test_var.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
@@ -19,6 +21,11 @@ import '../../../data/models/get_product_filters_model.dart';
 import '../../manager/home_bloc.dart';
 import '../../manager/home_event.dart';
 import '../../manager/home_state.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 
 class ColorsListFilter extends StatefulWidget {
   const ColorsListFilter(
@@ -52,6 +59,18 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     if (widget.colors.isNullOrEmpty) {
       return SizedBox.shrink();
     }
@@ -68,7 +87,7 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                   width: 10,
                 ),
                 MyTextWidget(
-                  'Filter By Color',
+                  '${LocaleKeys.filter_by_color.tr()}',
                   style: context.textTheme.titleMedium?.rq
                       .copyWith(color: Color(0xff505050), height: 15 / 12),
                 ),

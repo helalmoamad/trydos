@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,10 +7,16 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/reel_widget.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../../trydos_application.dart';
 import '../../../../app/my_text_widget.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 
 class SlidingUpPanelForReels extends StatelessWidget {
   const SlidingUpPanelForReels({super.key, required this.panelController});
@@ -18,10 +25,21 @@ class SlidingUpPanelForReels extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return SlidingUpPanel(
         borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20.0),
-            topRight: Radius.circular(20.0)),
+            topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0)),
         minHeight: 0,
         controller: panelController,
         maxHeight: 1.sh - 100,
@@ -50,7 +68,7 @@ class SlidingUpPanelForReels extends StatelessWidget {
                         width: 5,
                       ),
                       MyTextWidget(
-                        'Buyers Camera 12 Shot',
+                        '${LocaleKeys.buyers_camera.tr()} 12 ${LocaleKeys.shot.tr()}',
                         style: context.textTheme.titleLarge?.rq
                             .copyWith(color: const Color(0xff8D8D8D)),
                       ),
@@ -73,7 +91,7 @@ class SlidingUpPanelForReels extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       MyTextWidget(
-                        'These Shots Are Made By Users Who Have Already Purchased And Received The Product',
+                        '${LocaleKeys.these_shots_are_made_by_users.tr()}',
                         style: context.textTheme.titleMedium?.rq.copyWith(
                             height: 1.23,
                             color: Color(0xffC4C2C2),
@@ -89,11 +107,13 @@ class SlidingUpPanelForReels extends StatelessWidget {
                         shrinkWrap: true,
                         controller: scrollController,
                         physics: const ClampingScrollPhysics(),
-                        padding: const EdgeInsets.only(left: 10, right: 10, top: 15),
+                        padding:
+                            const EdgeInsets.only(left: 10, right: 10, top: 15),
                         itemBuilder: (ctx, index) {
                           return const ReelWidget();
                         },
-                        separatorBuilder: (ctx, index) => const SizedBox(height: 15),
+                        separatorBuilder: (ctx, index) =>
+                            const SizedBox(height: 15),
                         itemCount: 10),
                   ),
                 ),

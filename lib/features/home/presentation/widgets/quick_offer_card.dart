@@ -6,7 +6,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
-
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import '../../../../core/utils/theme_state.dart';
 import '../../../app/my_text_widget.dart';
 import 'home_page_card2.dart';
@@ -24,6 +28,18 @@ class _quickOfferCardState extends ThemeState<quickOfferCard> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return Stack(
       alignment: Alignment.bottomCenter,
       clipBehavior: Clip.none,

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:dotted_border/dotted_border.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -10,14 +11,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gallery_3d/gallery3d.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:local_hero/local_hero.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/service/language_service.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
@@ -197,6 +202,18 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return BlocListener<HomeBloc, HomeState>(
       listenWhen: (p, c) =>
           p.CurrentColorSizeForCart?['size'] !=
@@ -258,7 +275,20 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                           children: [
                                             Padding(
                                               padding: EdgeInsets.only(
-                                                  left: mode != 0 ? 30 : 10,
+                                                  right: (LanguageService
+                                                              .languageCode ==
+                                                          "ar")
+                                                      ? 0
+                                                      : mode != 0
+                                                          ? 30
+                                                          : 10,
+                                                  left: (LanguageService
+                                                              .languageCode !=
+                                                          "ar")
+                                                      ? 0
+                                                      : mode != 0
+                                                          ? 30
+                                                          : 10,
                                                   top: mode == 0 ? 5 : 15),
                                               child: GestureDetector(
                                                 onTap: () {
@@ -272,6 +302,9 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.center,
                                                   children: [
+                                                    SizedBox(
+                                                      width: 10,
+                                                    ),
                                                     SvgPicture.asset(
                                                       AppAssets
                                                           .coloredSizeIconSvg,
@@ -281,7 +314,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                       width: 5,
                                                     ),
                                                     MyTextWidget(
-                                                      'Available ${sizes!.length ~/ 2} Sizes',
+                                                      '${LocaleKeys.available.tr()} ${sizes!.length ~/ 2} ${LocaleKeys.n_sizes.tr()}',
                                                       style: textTheme
                                                           .titleLarge?.rq
                                                           .copyWith(
@@ -299,10 +332,23 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                 ),
                                               ),
                                             ),
+                                            Spacer(),
                                             Padding(
                                                 padding: EdgeInsets.only(
-                                                    right:
-                                                        mode == 0 ? 20.0 : 10,
+                                                    right: (LanguageService
+                                                                .languageCode !=
+                                                            "ar")
+                                                        ? 0
+                                                        : mode == 0
+                                                            ? 20.0
+                                                            : 10,
+                                                    left: (LanguageService
+                                                                .languageCode ==
+                                                            "ar")
+                                                        ? 0
+                                                        : mode == 0
+                                                            ? 20.0
+                                                            : 10,
                                                     top: 5),
                                                 child: mode == 0
                                                     ? LocalHero(
@@ -401,6 +447,8 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                                         changingPagesScrollOffset: 0.1,
                                                                         isClip: false,
                                                                         onItemChanged: (index) {
+                                                                          print(
+                                                                              "################################################3");
                                                                           currentSelectedSizeIndex.value =
                                                                               index;
                                                                         },
@@ -450,7 +498,9 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                         ),
                                                       )
                                                     : GestureDetector(
-                                                        onTap: () {},
+                                                        onTap: () {
+                                                          displayMode.value = 0;
+                                                        },
                                                         child: Container(
                                                           width: 30,
                                                           height: 30,
@@ -493,71 +543,76 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                         builder: (context,
                                                             selectedSizeIndex,
                                                             _) {
-                                                          return ListView
-                                                              .separated(
-                                                                  physics:
-                                                                      BouncingScrollPhysics(),
-                                                                  padding: EdgeInsets.only(
-                                                                      left: mode !=
-                                                                              0
+                                                          return ListView.separated(
+                                                              physics: BouncingScrollPhysics(),
+                                                              padding: EdgeInsets.only(
+                                                                  right: (LanguageService.languageCode == "ar")
+                                                                      ? 0
+                                                                      : mode != 0
+                                                                          ? 20
+                                                                          : 0,
+                                                                  left: (LanguageService.languageCode != "ar")
+                                                                      ? 0
+                                                                      : mode != 0
                                                                           ? 20
                                                                           : 0),
-                                                                  scrollDirection:
-                                                                      Axis
-                                                                          .horizontal,
-                                                                  itemBuilder: (ctx,
-                                                                      index) {
-                                                                    return GestureDetector(
-                                                                      onTap:
-                                                                          () {
-                                                                        currentSelectedSizeIndex.value =
-                                                                            index;
-                                                                        BlocProvider.of<HomeBloc>(context).add(AddCurrentColorSizeEvent(
+                                                              scrollDirection: Axis.horizontal,
+                                                              itemBuilder: (ctx, index) {
+                                                                return GestureDetector(
+                                                                  onTap: () {
+                                                                    displayMode
+                                                                        .value = 0;
+                                                                    currentSelectedSizeIndex
+                                                                            .value =
+                                                                        index;
+                                                                    BlocProvider.of<HomeBloc>(
+                                                                            context)
+                                                                        .add(AddCurrentColorSizeEvent(
                                                                             choice_1:
                                                                                 sizes?[index]));
-                                                                        HapticFeedback
-                                                                            .lightImpact();
-                                                                        //////////////////////////////
-                                                                        FirebaseAnalyticsService
-                                                                            .logEventForSession(
-                                                                          eventName:
-                                                                              AnalyticsEventsConst.buttonClicked,
-                                                                          executedEventName:
-                                                                              AnalyticsExecutedEventNameConst.chooseAvailableSizeButton,
-                                                                        );
-                                                                      },
-                                                                      child: AnimatedContainer(
-                                                                          duration: Duration(milliseconds: 300),
-                                                                          curve: Curves.fastLinearToSlowEaseIn,
-                                                                          alignment: Alignment.topCenter,
-                                                                          child: SizeItemWidget(
-                                                                            sizeName:
-                                                                                sizes![index],
-                                                                            width: mode == 1
-                                                                                ? 70
-                                                                                : 135,
-                                                                            height: mode == 1
-                                                                                ? 70
-                                                                                : 195,
-                                                                            index:
-                                                                                index,
-                                                                            fixedFontSize:
-                                                                                14.sp,
-                                                                            currentIndex:
-                                                                                selectedSizeIndex,
-                                                                          )),
+                                                                    HapticFeedback
+                                                                        .lightImpact();
+                                                                    //////////////////////////////
+                                                                    FirebaseAnalyticsService
+                                                                        .logEventForSession(
+                                                                      eventName:
+                                                                          AnalyticsEventsConst
+                                                                              .buttonClicked,
+                                                                      executedEventName:
+                                                                          AnalyticsExecutedEventNameConst
+                                                                              .chooseAvailableSizeButton,
                                                                     );
                                                                   },
-                                                                  separatorBuilder:
-                                                                      (context,
-                                                                          index) {
-                                                                    return SizedBox(
-                                                                      width: 10,
-                                                                    );
-                                                                  },
-                                                                  itemCount:
-                                                                      (sizes!.length ~/
-                                                                          2));
+                                                                  child: AnimatedContainer(
+                                                                      duration: Duration(milliseconds: 300),
+                                                                      curve: Curves.fastLinearToSlowEaseIn,
+                                                                      alignment: Alignment.topCenter,
+                                                                      child: SizeItemWidget(
+                                                                        sizeName:
+                                                                            sizes![index],
+                                                                        width: mode ==
+                                                                                1
+                                                                            ? 70
+                                                                            : 135,
+                                                                        height: mode ==
+                                                                                1
+                                                                            ? 70
+                                                                            : 195,
+                                                                        index:
+                                                                            index,
+                                                                        fixedFontSize:
+                                                                            14.sp,
+                                                                        currentIndex:
+                                                                            selectedSizeIndex,
+                                                                      )),
+                                                                );
+                                                              },
+                                                              separatorBuilder: (context, index) {
+                                                                return SizedBox(
+                                                                  width: 10,
+                                                                );
+                                                              },
+                                                              itemCount: (sizes!.length ~/ 2));
                                                         })),
                                               )
                                             : SizedBox.shrink(),
@@ -596,7 +651,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                                 0xff505050)),
                                                   ),
                                                   MyTextWidget(
-                                                    'Recommended ',
+                                                    '${LocaleKeys.recommended.tr()} ',
                                                     style: textTheme
                                                         .titleMedium?.rq
                                                         .copyWith(
@@ -605,7 +660,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                                 0xff505050)),
                                                   ),
                                                   MyTextWidget(
-                                                    'Size ',
+                                                    '${LocaleKeys.size.tr()} ',
                                                     style: textTheme
                                                         .titleMedium?.bq
                                                         .copyWith(
@@ -614,7 +669,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                                 0xff505050)),
                                                   ),
                                                   MyTextWidget(
-                                                    'For You ',
+                                                    '${LocaleKeys.for_you.tr()} ',
                                                     style: textTheme
                                                         .titleMedium?.rq
                                                         .copyWith(
@@ -623,7 +678,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                                 0xff505050)),
                                                   ),
                                                   MyTextWidget(
-                                                    'Last ',
+                                                    '${LocaleKeys.last.tr()} ',
                                                     style: textTheme
                                                         .titleMedium?.rq
                                                         .copyWith(
@@ -670,7 +725,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                     width: 5,
                                                   ),
                                                   MyTextWidget(
-                                                    'Need Help Finding Your Size?',
+                                                    '${LocaleKeys.need_help_finding_your_size.tr()}',
                                                     style: textTheme
                                                         .titleMedium?.rq
                                                         .copyWith(

@@ -4,7 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart'
-as inset_shadow;
+    as inset_shadow;
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
@@ -15,27 +15,28 @@ import 'package:trydos/features/app/blocs/pre_caching_image_bloc/pre_caching_ima
 import 'package:trydos/features/app/trydos_shimmer_loading.dart';
 
 class MyCachedNetworkImage extends StatelessWidget {
-  MyCachedNetworkImage({Key? key,
-    required this.imageUrl,
-    required this.width,
-    this.logoTextWidth,
-    this.ordinalHeight,
-    this.ordinalwidth,
-    this.logoTextHeight,
-    this.imageWidth,
-    this.imageHeight,
-    required this.imageFit,
-    this.imageBuilder,
-    this.imageColor,
-    this.progressIndicatorBuilderWidget,
-    this.callWhenDisplayImage,
-    this.callWhenLoadingImage,
-    this.radius = 12,
-    this.innerShadowYOffset,
-    this.withImageShadow = false,
-    this.withInnerShadow = false,
-    required this.height,
-    this.circleDimensions})
+  MyCachedNetworkImage(
+      {Key? key,
+      required this.imageUrl,
+      required this.width,
+      this.logoTextWidth,
+      this.ordinalHeight,
+      this.ordinalwidth,
+      this.logoTextHeight,
+      this.imageWidth,
+      this.imageHeight,
+      required this.imageFit,
+      this.imageBuilder,
+      this.imageColor,
+      this.progressIndicatorBuilderWidget,
+      this.callWhenDisplayImage,
+      this.callWhenLoadingImage,
+      this.radius = 12,
+      this.innerShadowYOffset,
+      this.withImageShadow = false,
+      this.withInnerShadow = false,
+      required this.height,
+      this.circleDimensions})
       : super(key: key) {
     currentUrl = imageUrl;
   }
@@ -85,18 +86,19 @@ class MyCachedNetworkImage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(radius),
                 boxShadow: withImageShadow
                     ? [
-                  BoxShadow(
-                    color: context.colorScheme.black.withOpacity(0.16),
-                    offset: const Offset(0, 3),
-                    blurRadius: 6,
-                  ),
-                ]
+                        BoxShadow(
+                          color: context.colorScheme.black.withOpacity(0.16),
+                          offset: const Offset(0, 3),
+                          blurRadius: 6,
+                        ),
+                      ]
                     : null,
               ),
               child: BlocBuilder<PreCachingImageBloc, PreCachingImageState>(
-                buildWhen: (p,c)=> p.cachedImages[url] == false && c.cachedImages[url] == true,
+                buildWhen: (p, c) =>
+                    p.cachedImages[url] == false && c.cachedImages[url] == true,
                 builder: (context, state) {
-                  if(state.cachedImages[url] == false){
+                  if (state.cachedImages[url] == false) {
                     return progressIndicatorBuilderWidget ??
                         TrydosShimmerLoading(
                           width: width,
@@ -117,7 +119,6 @@ class MyCachedNetworkImage extends StatelessWidget {
                       fadeOutDuration: Duration(milliseconds: 0),
                       //cacheKey: CustomCacheManager.key,
                       cacheManager: CustomCacheManager(),
-
                       progressIndicatorBuilder: (context, _, progress) {
                         callWhenLoadingImage?.call();
                         return progressIndicatorBuilderWidget ??
@@ -130,7 +131,7 @@ class MyCachedNetworkImage extends StatelessWidget {
                             );
                       },
                       imageBuilder: imageBuilder ??
-                              (ctx, image) {
+                          (ctx, image) {
                             callWhenDisplayImage?.call();
                             return ClipRRect(
                                 child: Align(
@@ -146,25 +147,25 @@ class MyCachedNetworkImage extends StatelessWidget {
                                               fit: imageFit,
                                             ),
                                             borderRadius:
-                                            BorderRadius.circular(radius),
+                                                BorderRadius.circular(radius),
                                           ),
                                         ),
                                         withInnerShadow
                                             ? Container(
-                                          decoration:
-                                          inset_shadow.BoxDecoration(
-                                            boxShadow: [
-                                              inset_shadow.BoxShadow(
-                                                offset: Offset(
-                                                    0, innerShadowYOffset!),
-                                                blurRadius: 20,
-                                                color: Colors.white
-                                                    .withOpacity(0.7),
-                                                inset: true,
-                                              ),
-                                            ],
-                                          ),
-                                        )
+                                                decoration:
+                                                    inset_shadow.BoxDecoration(
+                                                  boxShadow: [
+                                                    inset_shadow.BoxShadow(
+                                                      offset: Offset(0,
+                                                          innerShadowYOffset!),
+                                                      blurRadius: 20,
+                                                      color: Colors.white
+                                                          .withOpacity(0.7),
+                                                      inset: true,
+                                                    ),
+                                                  ],
+                                                ),
+                                              )
                                             : SizedBox.shrink()
                                       ],
                                     )));
@@ -178,7 +179,7 @@ class MyCachedNetworkImage extends StatelessWidget {
                           });
                         }
                         return Material(
-                          color:  Colors.transparent,
+                          color: Colors.transparent,
                           child: InkWell(
                             focusColor: Colors.transparent,
                             splashColor: Colors.transparent,
@@ -215,35 +216,33 @@ class CustomCacheManager extends CacheManager {
 
   CustomCacheManager._()
       : super(Config(
-    key,
-    maxNrOfCacheObjects: 600,
-    stalePeriod: const Duration(days: 30),
-  ));
+          key,
+          maxNrOfCacheObjects: 600,
+          stalePeriod: const Duration(days: 30),
+        ));
 }
 
-String addSuitableWidthAndHeightToImage({required String imageUrl,
-  double? ordinalHeight,
-  double? ordinalWidth,
-  required double width,
-  required double height}) {
-  if(!imageUrl.contains('upload')){
+String addSuitableWidthAndHeightToImage(
+    {required String imageUrl,
+    double? ordinalHeight,
+    double? ordinalWidth,
+    required double width,
+    required double height}) {
+  if (!imageUrl.contains('upload')) {
     return imageUrl;
   }
   List<String> list;
   String url = '';
   list = imageUrl.split('upload');
-  if (ordinalHeight != null && ordinalWidth != null) {
+  if (ordinalHeight != null &&
+      ordinalWidth != null &&
+      ordinalHeight != 0 &&
+      ordinalWidth != 0) {
     url = ordinalWidth >= ordinalHeight
-        ? list[0] +
-        'upload/c_scale,h_${2 * height.toInt()}' +
-        list[1]
-        : list[0] +
-        'upload/c_scale,w_${2 * width.toInt()}' +
-        list[1];
+        ? list[0] + 'upload/c_scale,h_${2 * height.toInt()}' + list[1]
+        : list[0] + 'upload/c_scale,w_${2 * width.toInt()}' + list[1];
   } else {
-    url = list[0] +
-        'upload/c_scale,h_${2 * height.toInt()}' +
-        list[1];
+    url = list[0] + 'upload/c_scale,h_${2 * height.toInt()}' + list[1];
   }
   return url;
 }

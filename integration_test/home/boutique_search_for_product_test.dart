@@ -95,7 +95,7 @@ void main() {
       String productIdBeforeSearch = tester
           .widget<ProductItem>(find.byKey(productKey))
           .productItem
-          .id!
+          .productId!
           .toString();
 
       ///////////////////////////
@@ -169,7 +169,7 @@ void main() {
         final productBoutId = tester
             .widget<ProductItem>(find.byKey(productKey))
             .productItem
-            .id!
+            .productId!
             .toString();
 
         productIdsAfterSearchList.add(productBoutId);

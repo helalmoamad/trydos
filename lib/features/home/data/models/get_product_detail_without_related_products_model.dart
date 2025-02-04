@@ -76,6 +76,7 @@ class Product {
   final int? viewsCount;
   final List<DataDescriptor>? descriptors;
   final List<Label>? labels;
+  final int? shippingDays;
   final bool isProductNotifiedForUser;
   Product({
     this.id,
@@ -99,6 +100,7 @@ class Product {
     this.unitPrice,
     this.currentStock,
     this.leftStock,
+    this.shippingDays,
     this.reviewsCount,
     this.sellerId,
     this.seller,
@@ -131,6 +133,7 @@ class Product {
     int? leftStock,
     int? reviewsCount,
     dynamic sellerId,
+    int? shippingDays,
     BoutiqueForCart? boutique,
     bool? isLiked,
     int? countOfLikes,
@@ -161,6 +164,7 @@ class Product {
         deliveryAt: deliveryAt ?? this.deliveryAt,
         tax: tax ?? this.tax,
         unitPrice: unitPrice ?? this.unitPrice,
+        shippingDays: shippingDays ?? this.shippingDays,
         currentStock: currentStock ?? this.currentStock,
         leftStock: leftStock ?? this.leftStock,
         isLiked: isLiked ?? this.isLiked,
@@ -213,6 +217,7 @@ class Product {
       leftStock: json["Left_stock"],
       // reviewsCount: json["reviews_count"],
       sellerId: json["seller_id"],
+      shippingDays: json["shipping_days"],
       seller: json["seller"] == null ? null : Seller.fromJson(json["seller"]),
       shop: json["shop"] == null ? null : Shop.fromJson(json["shop"]),
       isFavSeller: json["is_fav_seller"],
@@ -248,6 +253,7 @@ class Product {
         "has_tax": hasTax,
         "delivery_at": deliveryAt,
         "slug_en_topic": slugEnTopic,
+        "shipping_days": shippingDays,
         "is_liked": isLiked,
         "count_of_likes": countOfLikes,
         "tax": tax,

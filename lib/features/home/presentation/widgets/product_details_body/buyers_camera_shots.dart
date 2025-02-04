@@ -1,15 +1,22 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gallery_3d/gallery3d.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_image_widget.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/reel_widget.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../../common/helper/helper_functions.dart';
@@ -88,6 +95,18 @@ class _BuyersCameraShotsState extends State<BuyersCameraShots> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return Container(
       height: 50,
       margin: EdgeInsets.only(left: 20, right: 10),
@@ -114,7 +133,7 @@ class _BuyersCameraShotsState extends State<BuyersCameraShots> {
               },
               child: Row(
                 mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SvgPicture.asset(
                     AppAssets.chromeIconSvg,
@@ -124,7 +143,7 @@ class _BuyersCameraShotsState extends State<BuyersCameraShots> {
                     width: 5,
                   ),
                   MyTextWidget(
-                    'Buyers Camera 12 Shot',
+                    '${LocaleKeys.buyers_camera.tr()} 12 ${LocaleKeys.shot.tr()}',
                     style: context.textTheme.titleLarge?.rq
                         .copyWith(color: Color(0xff8D8D8D)),
                   ),
@@ -139,113 +158,118 @@ class _BuyersCameraShotsState extends State<BuyersCameraShots> {
               ),
             ),
           ),
-          GestureDetector(
-            onTap: () {
-              scaleAnimationOnImages.value = false;
-              Future.delayed(Duration(milliseconds: 150), () {
-                scaleAnimationOnImages.value = true;
-              });
-              Future.delayed(Duration(milliseconds: 300), () {
-                widget.panelControllerForBuyersCameraShots.open();
-              });
-            },
-            child: ValueListenableBuilder<bool>(
-                valueListenable: scaleAnimationOnImages,
-                builder: (context, oneValue, _) {
-                  return AnimatedScale(
-                    scale: oneValue ? 1 : 0.9,
-                    duration: Duration(milliseconds: 150),
-                    curve: Curves.fastLinearToSlowEaseIn,
-                    child: (syncColorImageList?.length ?? 0) <= 8
-                        ? SizedBox(
-                            height: 40,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: List.generate(
-                                  syncColorImageList!.length ~/ 2,
-                                  (index) => GestureDetector(
-                                        child: ProductListingImageWidget(
-                                          width: 40 - index * 5,
-                                          height: 40 - index * 5,
-                                          withBackGroundShadow: true,
-                                          imageUrl:
-                                              'assets/images/details_circle.jpg',
-                                          // images[index],
-                                          innerShadowYOffset: 4,
-                                          borderColor: // index == currentIndexInSlider
-                                              // ? Color(int.parse(
-                                              // '0xff${widget.productItem.colors![currentIndexInSlider % widget.productItem.colors!.length].color!.substring(1)}')) :
-                                              Colors.white,
-                                          circleShape: true,
-                                        ),
-                                      )),
-                            ))
-                        : Gallery3D(
-                            // key: ValueKey('gallery3dControllerForCircles${widget.itemIndex}'),
-                            controller: gallery3dControllerForCircles!,
-                            denyScrolling: true,
-                            width: 172,
-                            padding: EdgeInsets.zero,
-                            stopScrollingOnEdges: (double primaryDelta) {
-                              return (primaryDelta <= 0 &&
-                                      gallery3dControllerForCircles!
-                                              .currentIndex ==
-                                          (syncColorImageList!.length ~/ 2 -
-                                              1)) ||
-                                  (primaryDelta >= 0 &&
-                                      gallery3dControllerForCircles!
-                                              .currentIndex ==
-                                          0);
-                            },
-                            height: null,
-                            changingPagesScrollOffset: 0.1,
-                            isClip: false,
-                            onItemChanged: (index) {
-                              currentIndexInSlider = index;
-                            },
-                            onClickItem: (index) {
-                              scaleAnimationOnImages.value = false;
-                              Future.delayed(Duration(milliseconds: 150), () {
-                                scaleAnimationOnImages.value = true;
-                              });
-                              Future.delayed(Duration(milliseconds: 300), () {
-                                widget.panelControllerForBuyersCameraShots
-                                    .open();
-                              });
-                            },
-                            itemConfig: GalleryItemConfig(
-                                width: 40,
-                                height: 40,
-                                radius: 180,
-                                isShowTransformMask: false,
-                                shadows: [
-                                  BoxShadow(
-                                    color: Color(0x19000000),
-                                    offset: Offset(0, 3),
-                                    blurRadius: 6,
-                                  ),
-                                ]),
-                            itemBuilder: (context, index) {
-                              return Visibility(
-                                visible:
-                                    index < (syncColorImageList!.length ~/ 2),
-                                child: ProductListingImageWidget(
+          Spacer(),
+          Container(
+            width: 100,
+            child: GestureDetector(
+              onTap: () {
+                scaleAnimationOnImages.value = false;
+                Future.delayed(Duration(milliseconds: 150), () {
+                  scaleAnimationOnImages.value = true;
+                });
+                Future.delayed(Duration(milliseconds: 300), () {
+                  widget.panelControllerForBuyersCameraShots.open();
+                });
+              },
+              child: ValueListenableBuilder<bool>(
+                  valueListenable: scaleAnimationOnImages,
+                  builder: (context, oneValue, _) {
+                    return AnimatedScale(
+                      scale: oneValue ? 1 : 0.9,
+                      duration: Duration(milliseconds: 150),
+                      curve: Curves.fastLinearToSlowEaseIn,
+                      child: (syncColorImageList?.length ?? 0) <= 8
+                          ? SizedBox(
+                              height: 40,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: List.generate(
+                                    3,
+                                    (index) => GestureDetector(
+                                          child: ProductListingImageWidget(
+                                            width: 40 - index * 5,
+                                            height: 40 - index * 5,
+                                            withBackGroundShadow: true,
+                                            imageUrl:
+                                                'assets/images/details_circle.jpg',
+                                            // images[index],
+                                            innerShadowYOffset: 4,
+                                            borderColor: // index == currentIndexInSlider
+                                                // ? Color(int.parse(
+                                                // '0xff${widget.productItem.colors![currentIndexInSlider % widget.productItem.colors!.length].color!.substring(1)}')) :
+                                                Colors.white,
+                                            circleShape: true,
+                                          ),
+                                        )),
+                              ))
+                          : Gallery3D(
+                              // key: ValueKey('gallery3dControllerForCircles${widget.itemIndex}'),
+                              controller: gallery3dControllerForCircles!,
+                              denyScrolling: true,
+                              width: 172,
+                              padding: EdgeInsets.zero,
+                              stopScrollingOnEdges: (double primaryDelta) {
+                                return (primaryDelta <= 0 &&
+                                        gallery3dControllerForCircles!
+                                                .currentIndex ==
+                                            (syncColorImageList!.length ~/ 2 -
+                                                1)) ||
+                                    (primaryDelta >= 0 &&
+                                        gallery3dControllerForCircles!
+                                                .currentIndex ==
+                                            0);
+                              },
+                              height: null,
+                              changingPagesScrollOffset: 0.1,
+                              isClip: false,
+                              onItemChanged: (index) {
+                                currentIndexInSlider = index;
+                              },
+                              onClickItem: (index) {
+                                scaleAnimationOnImages.value = false;
+                                Future.delayed(Duration(milliseconds: 150), () {
+                                  scaleAnimationOnImages.value = true;
+                                });
+                                Future.delayed(Duration(milliseconds: 300), () {
+                                  widget.panelControllerForBuyersCameraShots
+                                      .open();
+                                });
+                              },
+                              itemConfig: GalleryItemConfig(
                                   width: 40,
                                   height: 40,
-                                  imageUrl: 'assets/images/details_circle.jpg',
-                                  // images[index],
-                                  innerShadowYOffset: 4,
-                                  borderColor: // index == currentIndexInSlider
-                                      // ? Color(int.parse(
-                                      // '0xff${widget.productItem.colors![currentIndexInSlider % widget.productItem.colors!.length].color!.substring(1)}')) :
-                                      Colors.white,
-                                  circleShape: true,
-                                ),
-                              );
-                            }),
-                  );
-                }),
+                                  radius: 180,
+                                  isShowTransformMask: false,
+                                  shadows: [
+                                    BoxShadow(
+                                      color: Color(0x19000000),
+                                      offset: Offset(0, 3),
+                                      blurRadius: 6,
+                                    ),
+                                  ]),
+                              itemBuilder: (context, index) {
+                                return Visibility(
+                                  visible:
+                                      index < (syncColorImageList!.length ~/ 2),
+                                  child: ProductListingImageWidget(
+                                    width: 40,
+                                    height: 40,
+                                    imageUrl:
+                                        'assets/images/details_circle.jpg',
+                                    // images[index],
+                                    innerShadowYOffset: 4,
+                                    borderColor: // index == currentIndexInSlider
+                                        // ? Color(int.parse(
+                                        // '0xff${widget.productItem.colors![currentIndexInSlider % widget.productItem.colors!.length].color!.substring(1)}')) :
+                                        Colors.white,
+                                    circleShape: true,
+                                  ),
+                                );
+                              }),
+                    );
+                  }),
+            ),
           ),
         ],
       ),

@@ -9,9 +9,14 @@ import 'package:video_player/video_player.dart';
 
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../app/trydos_shimmer_loading.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 
 class ProductStoryVideoItem extends StatefulWidget {
-  const ProductStoryVideoItem({super.key , required this.videoUrl});
+  const ProductStoryVideoItem({super.key, required this.videoUrl});
 
   final String videoUrl;
   @override
@@ -19,7 +24,6 @@ class ProductStoryVideoItem extends StatefulWidget {
 }
 
 class _ProductStoryVideoItemState extends State<ProductStoryVideoItem> {
-
   late Future<void> initializeVideo;
   VideoPlayerController? _controller;
   @override
@@ -31,8 +35,8 @@ class _ProductStoryVideoItemState extends State<ProductStoryVideoItem> {
 
   void initializeController() {
     initializeVideo = _controller!.initialize().then((value) {
-       Timer.periodic(Duration(seconds: 3), (timer) {
-         _controller!.setVolume(0);
+      Timer.periodic(Duration(seconds: 3), (timer) {
+        _controller!.setVolume(0);
         _controller!.seekTo(Duration.zero);
         _controller!.play();
       });
@@ -47,14 +51,25 @@ class _ProductStoryVideoItemState extends State<ProductStoryVideoItem> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return FutureBuilder(
         future: initializeVideo,
         builder: (context, snapShot) {
           if (snapShot.connectionState == ConnectionState.done) {
             return GestureDetector(
               behavior: HitTestBehavior.opaque,
-              onTap: () => {
-              },
+              onTap: () => {},
               child: Stack(
                 children: [
                   Container(

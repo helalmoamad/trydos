@@ -21,6 +21,11 @@ import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../data/models/get_product_filters_model.dart';
 import '../../manager/home_event.dart';
 import '../../manager/home_state.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 
 class FiltersNormalList<T> extends StatefulWidget {
   const FiltersNormalList(
@@ -58,6 +63,18 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     if (widget.filters.isNullOrEmpty) {
       return SizedBox.shrink();
     }
@@ -207,9 +224,6 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                               );
                             }
                             if (widget.hideTitle) {
-                              print(
-                                  "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
-
                               homeBloc.add(ChangeAppliedFiltersEvent(
                                 category: widget.category,
                                 boutiqueSlug: widget.boutiqueSlug,
@@ -296,7 +310,7 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                                   '${WidgetsKeys.brandProductListingFilterNameKey}$index'),
                           widget.isBrandFilter
                               ? widget.filters[index].name
-                              : 'T-shirt',
+                              : '',
                           maxLines: 1,
                           textAlign: TextAlign.center,
                           style: context.textTheme.titleMedium?.rq.copyWith(

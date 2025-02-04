@@ -63,6 +63,12 @@ class _TrydosApplicationState extends State<TrydosApplication>
   }
 
   @override
+  void didChangeMetrics() {
+    setState(() {});
+    super.didChangeMetrics();
+  }
+
+  @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
       GetIt.I<PrefsRepository>().saveRequestsData(

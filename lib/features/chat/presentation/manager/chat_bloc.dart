@@ -491,6 +491,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
             currentFailedMessage: currentFailedMessage));
       },
       (r) {
+        print(
+            "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!${r.messageContent?.content}");
         ids.remove(messageId);
         pinnedChats = state.pinnedChats.map((e) {
           if (event.channelIds.contains(e.localId) &&

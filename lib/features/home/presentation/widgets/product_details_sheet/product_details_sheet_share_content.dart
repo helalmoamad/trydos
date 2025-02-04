@@ -28,6 +28,11 @@ import '../../../../chat/data/models/my_chats_response_model.dart';
 import '../../../../chat/presentation/manager/chat_bloc.dart';
 import '../../../data/models/get_product_listing_without_filters_model.dart'
     as product;
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 
 class ProductDetailsSheetShareContent extends cupertino.StatefulWidget {
   const ProductDetailsSheetShareContent(
@@ -35,10 +40,14 @@ class ProductDetailsSheetShareContent extends cupertino.StatefulWidget {
       required this.idsOfChatCardsToShare,
       required this.focusNode,
       required this.productItem,
+      required this.currentColor,
+      required this.currentSize,
       required this.productDescription,
       this.scrollController});
 
   final FocusNode focusNode;
+  final String currentColor;
+  final String currentSize;
   final product.Products productItem;
   final String productDescription;
   final ValueNotifier<List<String>> idsOfChatCardsToShare;
@@ -56,9 +65,18 @@ class _ProductDetailsSheetShareContentState
 
   @override
   Widget build(BuildContext context) {
-    print(
-        "*******************************///////////////////////////////111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111/");
-    print(widget.productDescription);
+    FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return ScrollConfiguration(
       behavior: cupertino.CupertinoScrollBehavior(),
       child: ListView(
@@ -80,31 +98,26 @@ class _ProductDetailsSheetShareContentState
               SizedBox(
                 width: 10,
               ),
-              MyTextWidget('Share This Product With',
+              MyTextWidget('${LocaleKeys.share_this_product_with.tr()}',
                   style: context.textTheme.bodyMedium?.mq.copyWith(
                     color: Color(0xff505050),
                   )),
             ],
           ),
-          if (GetIt.I<PrefsRepository>().chatToken == null) ...{
-            SizedBox(
-              height: 50,
-            ),
+          if (!(GetIt.I<PrefsRepository>().isVerifiedPhone ?? false)) ...{
             cupertino.Container(
               height: 280.h,
               child: cupertino.Column(
                 mainAxisAlignment: cupertino.MainAxisAlignment.center,
                 children: [
-                  MyTextWidget('You Must Login To Share Product With Chats!',
+                  MyTextWidget(
+                      '${LocaleKeys.you_must_login_to_share_product_with_chats.tr()}',
                       style: context.textTheme.bodyMedium?.bq.copyWith(
                         color: Color(0xffff0000),
                       )),
                   cupertino.Spacer(),
                 ],
               ),
-            ),
-            SizedBox(
-              height: 50,
             ),
           } else ...{
             10.verticalSpace,
@@ -117,7 +130,7 @@ class _ProductDetailsSheetShareContentState
                   focusNode: widget.focusNode,
                   filledColor: Color(0xffF8F8F8),
                   bordersColor: Color(0xffF8F8F8),
-                  hintText: 'Search',
+                  hintText: '${LocaleKeys.search.tr()}',
                   roundingCornersValue: 30,
                   onChange: (String text) {
                     if (text.isEmpty) {
@@ -237,9 +250,11 @@ class _ProductDetailsSheetShareContentState
                 }),
           },
           buildSocialButtons(
+              currentColor: widget.currentColor,
+              currentSize: widget.currentSize,
               text: "${widget.productDescription}",
               productSlugForULr: widget.productItem.slug ?? "",
-              productId: widget.productItem.id.toString()),
+              productId: widget.productItem.productId.toString()),
         ],
       ),
     );
@@ -265,7 +280,8 @@ class ChatCardForShare extends StatelessWidget {
     final String receiverName, fullReceiverName;
     if (channelMember.user?.name == null) {
       receiverName = LocaleKeys.uk.tr();
-      fullReceiverName = channelMember.user?.mobilePhone ?? 'UnKnown User';
+      fullReceiverName =
+          channelMember.user?.mobilePhone ?? "${LocaleKeys.unknown_user.tr()}";
     } else {
       receiverName = HelperFunctions.getTheFirstTwoLettersOfName(
           channelMember.user!.name!);

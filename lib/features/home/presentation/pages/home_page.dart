@@ -15,6 +15,7 @@ import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/data/model/pagination_model.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
@@ -25,6 +26,7 @@ import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/widgets/sliver_list_seprated.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/service/language_service.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/handling_market_notifications.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/request_permission_notification.dart';
 import '../../../../common/constant/design/assets_provider.dart';
@@ -72,11 +74,15 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
+    SubsecribeOrUnSubsecribeToTopic().SubsecribeToBoutiqueCreated();
+    SubsecribeOrUnSubsecribeToTopic().SubsecribeToCategoryCreated();
+
     PermissionServices().requestNotificationPermission();
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
-
+    homeBloc.add(GetNotificationTypeProductEvent());
     appBloc.add(ChangeIndexForSearch(0));
+    homeBloc.add(GetPopularSearchItemEvent());
     homeBloc.add(GetProductsWithFiltersEvent(
         boutiqueSlug: "search",
         cashedOrginalBoutique: true,
@@ -100,7 +106,7 @@ class _HomePageState extends State<HomePage> {
               scrollController.position.viewportDimension +
               235) ~/
           235;
-
+      print(lastIndexSeenByUser);
       int currentSelectedMainCategoryTab = appBloc.state.tabIndex;
 
       if (currentSelectedMainCategoryTab == -1) {
@@ -126,7 +132,7 @@ class _HomePageState extends State<HomePage> {
             selectedCategorySlug] = lastIndexSeenByUser;
       }
       if (scrollController.offset >=
-          (scrollController.position.maxScrollExtent * 0.7)) {
+          (scrollController.position.maxScrollExtent * 0.6)) {
         homeBloc.add(GetHomeBoutiqesEvent(
             getWithPrefetchForBoutiques: false,
             categorySlug: selectedCategorySlug,
@@ -143,6 +149,8 @@ class _HomePageState extends State<HomePage> {
         debugPrint(scrollController.position.pixels.toString());
         appBloc.add(ShowOrHideBars(true));
       }
+      homeBloc.prefetchBoutiques(
+          selectedCategorySlug, context, lastIndexSeenByUser);
     });
 
     String notificationTypesOfMarketFromTerminated =
@@ -157,7 +165,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
   }
 
-  prefetchBoutiques(String currentSlug) {
+/*  prefetchBoutiques(String currentSlug) {
     for (int i = 0;
         i <
             min(
@@ -207,7 +215,7 @@ class _HomePageState extends State<HomePage> {
         debugPrint('/////////Did Prefetch For Boutique Slug : $slug /////////');
       }
     }
-  }
+  }*/
 
   @override
   void dispose() {
@@ -227,7 +235,15 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     Locale currentLocale = Localizations.localeOf(context);
+
     FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: error.toString());
@@ -246,6 +262,7 @@ class _HomePageState extends State<HomePage> {
       homeBloc.add(
         GetHomeBoutiqesEvent(
           getWithPagination: false,
+          forRefresh: true,
           getWithPrefetchForBoutiques: false,
           offset: "1",
           categorySlug: selectedCategorySlug,
@@ -398,11 +415,6 @@ class _HomePageState extends State<HomePage> {
                                               .length ??
                                           0) ==
                                       0))) {
-                        print("${currentSlug}" +
-                            ".111111111111111111111222222222222222222222222223333333333333333333333333.........${homeState.boutiquesForEveryMainCategoryThatDidPrefetch[currentSlug] != true}" +
-                            "/////////${homeState.getHomeBoutiquesPaginationObjectByMainCategory[currentSlug] == null}" +
-                            "22${(homeState.getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]?.paginationStatus == PaginationStatus.loading || homeState.getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]?.paginationStatus == PaginationStatus.initial)}" +
-                            "${(homeState.getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]?.items.length ?? 0) == 0}8888");
                         return sliverListSeparated(
                             key: TestVariables.kTestMode
                                 ? Key(WidgetsKeys.boutiquesFailureStatusKey)
@@ -480,23 +492,31 @@ class _HomePageState extends State<HomePage> {
                             : reRenderingListViewKey[currentSlug],
                         itemBuilder: (_, index) => Padding(
                             padding: HWEdgeInsets.symmetric(horizontal: 15.w),
-                            child: HomePageCard2(
-                              key: TestVariables.kTestMode
-                                  ? Key('${WidgetsKeys.boutiqueCardKey}$index')
-                                  : null,
-                              category_Slug: currentSlug,
-                              withSlidingImages: homeState
-                                      .getHomeBoutiquesPaginationObjectByMainCategory[
-                                          currentSlug]!
-                                      .items[index]
-                                      .banners!
-                                      .length >
-                                  1,
-                              boutique: homeState
-                                  .getHomeBoutiquesPaginationObjectByMainCategory[
-                                      currentSlug]!
-                                  .items[index],
-                            )
+                            child: homeState
+                                    .getHomeBoutiquesPaginationObjectByMainCategory[
+                                        currentSlug]!
+                                    .items[index]
+                                    .banners
+                                    .isNullOrEmpty
+                                ? SizedBox.shrink()
+                                : HomePageCard2(
+                                    key: TestVariables.kTestMode
+                                        ? Key(
+                                            '${WidgetsKeys.boutiqueCardKey}$index')
+                                        : null,
+                                    category_Slug: currentSlug,
+                                    withSlidingImages: homeState
+                                            .getHomeBoutiquesPaginationObjectByMainCategory[
+                                                currentSlug]!
+                                            .items[index]
+                                            .banners!
+                                            .length >
+                                        1,
+                                    boutique: homeState
+                                        .getHomeBoutiquesPaginationObjectByMainCategory[
+                                            currentSlug]!
+                                        .items[index],
+                                  )
 
                             //HomePageCard(showWhite: index % 2 == 0),
                             ),

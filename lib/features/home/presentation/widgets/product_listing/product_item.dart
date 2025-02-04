@@ -8,6 +8,11 @@ import 'dart:ui' as ui;
 
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_3d_slider.dart';
 import 'package:tuple/tuple.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 
 class ProductItem extends StatefulWidget {
   const ProductItem(
@@ -15,9 +20,11 @@ class ProductItem extends StatefulWidget {
       required this.setThisEnabled,
       required this.slidingModeItem,
       required this.itemIndex,
+      required this.tapIndexToAddProductToCart,
       required this.productItem});
 
   final void Function(int, int) setThisEnabled;
+  final ValueNotifier<int> tapIndexToAddProductToCart;
   final Tuple2<int, int> slidingModeItem;
   final productListingModel.Products productItem;
   final int itemIndex;
@@ -39,6 +46,18 @@ class _ProductItemState extends State<ProductItem> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return Stack(
         alignment: Alignment.bottomCenter,
         clipBehavior: Clip.none,
@@ -116,6 +135,7 @@ class _ProductItemState extends State<ProductItem> {
           ProductListing3DSlider(
               productItem: widget.productItem,
               slidingModeItem: widget.slidingModeItem,
+              tapIndexToAddProductToCart: widget.tapIndexToAddProductToCart,
               currentChosenColor: currentChosenColor,
               itemIndex: widget.itemIndex,
               setThisEnabled: widget.setThisEnabled),

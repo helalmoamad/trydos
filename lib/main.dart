@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:flutter/services.dart';
 import 'dart:developer' as dev;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -14,11 +15,13 @@ import 'package:flutter_callkit_incoming/entities/ios_params.dart';
 import 'package:flutter_callkit_incoming/entities/notification_params.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:flutter_gemini/flutter_gemini.dart' as gemini;
+import 'package:flutter_smartlook/flutter_smartlook.dart';
 import 'package:get_it/get_it.dart';
 import 'package:eraser/eraser.dart';
 import 'package:trydos/common/constant/configuration/chat_url_routes.dart';
 import 'package:trydos/common/constant/configuration/market_url_routes.dart';
 import 'package:trydos/common/constant/configuration/stories_url_routes.dart';
+import 'package:trydos/service/language_service.dart';
 import 'package:trydos/service/local_notification_service.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/handling_market_notifications.dart';
 import 'package:uuid/uuid.dart';
@@ -260,16 +263,19 @@ request() async {
   final Stopwatch stopWatch = Stopwatch();
   stopWatch.start();
   //await http.get(Uri.parse('http://market_under_dev_backend.trydos.dev/api/new_v1/mobile/home/mainCategories'));
+
   await Dio().getUri(Uri.parse('http://ip-api.com/json')).onError((e, st) {
     dev.log(e.toString());
     return Response(requestOptions: RequestOptions());
   });
+
   stopWatch.stop();
   dev.log('request time: ${stopWatch.elapsed.toString()}');
 }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   HydratedBloc.storage = await HydratedStorage.build(
     storageDirectory: await getApplicationDocumentsDirectory(),
   );
@@ -282,18 +288,20 @@ void main() async {
     NotificationProcess().init(),
   ]);
   isLoadDotenvFile = true;
-  await Eraser.clearAllAppNotifications();
+  await GetIt.I<PrefsRepository>().setOnMessageRun(false);
+  //await Eraser.clearAllAppNotifications();
   await GetIt.I<PrefsRepository>().removeMessageFromBackground();
   await NotificationProcess().setupInteractedMessage();
+  //final Smartlook smartLook = Smartlook.instance;
+  // await smartLook.start();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
   FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
   FirebaseAnalytics.instance.setSessionTimeoutDuration(Duration(seconds: 20));
   GetIt.I<PrefsRepository>().setTimerForOtpRunning(false);
   fetchServersUrlsFromSharedPreference();
   await NotificationProcess().fcmToken();
   isDependencyInitialized = true;
-  await FirebaseMessaging.instance.subscribeToTopic("boutique_created");
-  await FirebaseMessaging.instance.subscribeToTopic("category_created");
   GetIt.I<AuthBloc>().add(GetUserCountryEvent());
 
   gemini.Gemini.init(
@@ -301,6 +309,12 @@ void main() async {
   );
   gemini.Gemini.enableDebugging = true;
   print('market token : ${(GetIt.I<PrefsRepository>().marketToken)}');
+  debugPrint(
+      'login _prefsRepository.chatToken${GetIt.I<PrefsRepository>().chatToken}');
+  debugPrint(
+      'login _prefsRepository.marketToken${GetIt.I<PrefsRepository>().marketToken}');
+  debugPrint(
+      'login _prefsRepository.storiesToken${GetIt.I<PrefsRepository>().storiesToken}');
   await SentryFlutter.init(
     (options) {
       options.dsn = dotenv.env['SENTRY_DNS'];

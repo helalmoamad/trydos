@@ -126,7 +126,7 @@ class LocalNotificationService {
           pngImage = byteData!.buffer.asUint8List();
         }
       } catch (e) {}
-      String title = "${data?["type"]}";
+      String title = "${data?["showed_type"]}";
       String body = "${data?["description"]}";
       print("##################################${notificationId}");
       await _localNotificationPlugin.show(
@@ -177,7 +177,7 @@ class LocalNotificationService {
               showProgress: true,
               maxProgress: maxProgress,
               progress: progress,
-              autoCancel: false);
+              autoCancel: true);
 
       NotificationDetails platformChannelSpecifics =
           NotificationDetails(android: androidPlatformChannelSpecifics);
@@ -196,6 +196,7 @@ class LocalNotificationService {
         "Files Notifications",
         channelDescription: "Inform user files uploaded",
         channelShowBadge: false,
+        autoCancel: true,
         importance: Importance.max,
         priority: Priority.high,
         onlyAlertOnce: true,
@@ -240,7 +241,7 @@ class LocalNotificationService {
             priority: Priority.high,
             playSound: channel.playSound,
             enableVibration: channel.enableVibration,
-            autoCancel: false,
+            autoCancel: true,
             largeIcon:
                 (pngImage == null) ? null : ByteArrayAndroidBitmap(pngImage),
             styleInformation: (pngImage == null)

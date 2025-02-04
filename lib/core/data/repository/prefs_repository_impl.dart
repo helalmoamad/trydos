@@ -30,8 +30,8 @@ class PrefsRepositoryImpl extends PrefsRepository {
   String? get marketToken => _preferences.getString(PrefsKey.marketToken);
 
   @override
-  Future<bool> setMarketToken(String token) =>
-      _preferences.setString(PrefsKey.marketToken, token);
+  Future<bool> setMarketToken(String? token) =>
+      _preferences.setString(PrefsKey.marketToken, token ?? "");
 
   @override
   Future<bool> setStoriesToken(String token) =>
@@ -580,6 +580,69 @@ class PrefsRepositoryImpl extends PrefsRepository {
     return await _preferences.setString(PrefsKey.notificationTypeFromTerminated,
         notificationTypeFromTerminated ?? "");
   }
+
+  @override
+  // TODO: implement isSmartlookStarted
+  bool? get isSmartlookStarted =>
+      _preferences.getBool(PrefsKey.isSmartlookStarted);
+
+  @override
+  Future<bool> setIsSmartlookStarted(bool isSmartlookStarted) =>
+      _preferences.setBool(PrefsKey.isSmartlookStarted, isSmartlookStarted);
+
+  @override
+  // TODO: implement isTokenExpired
+  bool? get isTokenExpired => _preferences.getBool(PrefsKey.tokenExpired);
+
+  @override
+  Future<bool> setTokenExpired(bool tokenExpired) =>
+      _preferences.setBool(PrefsKey.tokenExpired, tokenExpired);
+  @override
+  Future<bool> setLogInToChat(bool isLogInToChat) =>
+      _preferences.setBool(PrefsKey.isLogInToChat, isLogInToChat);
+  @override
+  // TODO: implement isVerifiedPhonePeforeExpiredToken
+  bool? get isLogInToChat => _preferences.getBool(PrefsKey.isLogInToChat);
+  @override
+  // TODO: implement isVerifiedPhonePeforeExpiredToken
+  bool? get isVerifiedPhonePeforeExpiredToken =>
+      _preferences.getBool(PrefsKey.verifiedPhonePeforeExpiredToken);
+  @override
+  Future<bool> setVerifiedPhonePeforeExpiredToken(
+          bool verifiedPhonePeforeExpiredToken) =>
+      _preferences.setBool(PrefsKey.verifiedPhonePeforeExpiredToken,
+          verifiedPhonePeforeExpiredToken);
+
+  @override
+  Future<bool> setTopicThatAlreadySubsecribed(String topic) async {
+    List<String> list = topicThatAlreadySubsecribed();
+    list.add(topic);
+    return await _preferences.setStringList(PrefsKey.topicSubsecribe, list);
+  }
+
+  @override
+  // TODO: implement topicThatAlreadySubsecribed
+  List<String> topicThatAlreadySubsecribed() {
+    List<String> list =
+        _preferences.getStringList(PrefsKey.topicSubsecribe) ?? [];
+
+    return list;
+  }
+
+  @override
+  Future<bool> removeTopicThatAlreadySubsecribed(String topic) {
+    List<String> topics = topicThatAlreadySubsecribed();
+
+    topics.removeWhere((element) => (element.contains(topic)));
+    return _preferences.setStringList(PrefsKey.topicSubsecribe, topics);
+  }
+
+  @override
+  bool? get onMessageRun => _preferences.getBool(PrefsKey.onMessageRun);
+
+  @override
+  Future<bool> setOnMessageRun(bool onMessageRun) =>
+      _preferences.setBool(PrefsKey.onMessageRun, onMessageRun);
 
 // @override
 

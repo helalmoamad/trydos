@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewBox="0 0 25 25">
+  <defs>
+    <clipPath id="clip-path">
+      <rect id="Rectangle_4609" data-name="Rectangle 4609" width="25" height="25" fill="none"/>
+    </clipPath>
+  </defs>
+  <g id="Mask_Group_363" data-name="Mask Group 363" clip-path="url(#clip-path)">
+    <g id="Group_3487" data-name="Group 3487" transform="translate(3.75 0)">
+      <g id="Rectangle_4147" data-name="Rectangle 4147" fill="none" stroke="#404040" stroke-width="0.625">
+        <rect width="17.5" height="25" rx="2.5" stroke="none"/>
+        <rect x="0.313" y="0.313" width="16.875" height="24.375" rx="2.188" fill="none"/>
+      </g>
+      <g id="Group_3484" data-name="Group 3484" transform="translate(1.247 4.546)">
+        <line id="Line_872" data-name="Line 872" x2="10" transform="translate(4.375 5)" fill="none" stroke="#404040" stroke-linecap="round" stroke-width="0.625"/>
+        <line id="Line_873" data-name="Line 873" x2="10" transform="translate(4.375 8.75)" fill="none" stroke="#404040" stroke-linecap="round" stroke-width="0.625"/>
+        <line id="Line_874" data-name="Line 874" x2="10" transform="translate(4.375 12.5)" fill="none" stroke="#404040" stroke-linecap="round" stroke-width="0.625"/>
+        <line id="Line_875" data-name="Line 875" x2="10" transform="translate(4.375 16.25)" fill="none" stroke="#404040" stroke-linecap="round" stroke-width="0.625"/>
+        <line id="Line_871" data-name="Line 871" x2="10" transform="translate(4.375 1.25)" fill="none" stroke="#404040" stroke-linecap="round" stroke-width="0.625"/>
+        <circle id="Ellipse_261" data-name="Ellipse 261" cx="1.25" cy="1.25" r="1.25" fill="#404040"/>
+        <circle id="Ellipse_262" data-name="Ellipse 262" cx="1.25" cy="1.25" r="1.25" transform="translate(0 3.75)" fill="#404040"/>
+        <circle id="Ellipse_263" data-name="Ellipse 263" cx="1.25" cy="1.25" r="1.25" transform="translate(0 7.5)" fill="#404040"/>
+        <circle id="Ellipse_264" data-name="Ellipse 264" cx="1.25" cy="1.25" r="1.25" transform="translate(0 11.25)" fill="#404040"/>
+        <circle id="Ellipse_265" data-name="Ellipse 265" cx="1.25" cy="1.25" r="1.25" transform="translate(0 15)" fill="#404040"/>
+      </g>
+    </g>
+  </g>
+</svg>

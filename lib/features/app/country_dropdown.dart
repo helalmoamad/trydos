@@ -2,18 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
+import 'package:trydos/service/notification_service/notification_service/handle_notification/handling_market_notifications.dart';
 
 import '../../service/firebase_analytics_service/firebase_analytics_service.dart';
 
 class CountryDropdown extends StatefulWidget {
   final List<Country> countries;
-
-  const CountryDropdown({super.key, required this.countries});
+  final bool fromHomepage;
+  const CountryDropdown(
+      {super.key, required this.countries, required this.fromHomepage});
   @override
   _CountryDropdownState createState() => _CountryDropdownState();
 }
@@ -47,15 +50,37 @@ class _CountryDropdownState extends State<CountryDropdown> {
           items: widget.countries.map((country) {
             return DropdownMenuItem<String>(
               value: country.iso,
-              child: Text(country.nicename!),
+              child: Text(country.name!),
             );
           }).toList(),
           value: selectedCountry,
           onChanged: (String? newValue) {
-            setState(() {
-              selectedCountry = newValue;
-              _prefsRepository.setUserChoosedCountryIso(newValue);
-            });
+            selectedCountry = newValue;
+            _prefsRepository.setUserChoosedCountryIso(newValue);
+            if (widget.fromHomepage) {
+              _prefsRepository.setUserCountryIsAvailable(1);
+              print(
+                  "@@@@@@@@@!!!!!!!!!!!!!!!!!!!!!!!!!!${newValue}!!!!!!111111111111111");
+              BlocProvider.of<HomeBloc>(context).add(ClearAllAppCashEvent());
+              List<String> topicTOUnSubsecribe =
+                  _prefsRepository.topicThatAlreadySubsecribed();
+              topicTOUnSubsecribe.forEach(
+                (element) {
+                  SubsecribeOrUnSubsecribeToTopic()
+                      .UnSubsecribeToOtherTopic(element);
+                  print(
+                      "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${element}");
+                },
+              );
+              Future.delayed(
+                Duration(microseconds: 500),
+                () {
+                  context.go("/");
+                },
+              );
+            } else {
+              setState(() {});
+            }
           },
           // buttonHeight: 40,
           // buttonWidth: 1.sw / 2,

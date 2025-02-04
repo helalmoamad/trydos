@@ -1,30 +1,63 @@
 import 'package:dartz/dartz.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart' as cupertino;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
+import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
+import 'package:trydos/features/app/app_widgets/app_text_field.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/routes/router.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../../core/utils/responsive_padding.dart';
 import '../../../../app/my_text_widget.dart';
 
 class ProductDetailsSheetCommentsContent extends StatelessWidget {
   final String productId;
-  const ProductDetailsSheetCommentsContent(
-      {super.key, this.scrollController, required this.productId});
-
+  final String productSlug;
+  final String productSlugForTopic;
+  ProductDetailsSheetCommentsContent(
+      {super.key,
+      this.scrollController,
+      required this.productSlug,
+      required this.productSlugForTopic,
+      required this.productId});
+  final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   final ScrollController? scrollController;
+  final TextEditingController addCommentController = TextEditingController();
+  final ValueNotifier<bool> addCommentButtonToggleNotifier =
+      ValueNotifier(false);
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return BlocBuilder<HomeBloc, HomeState>(
       buildWhen: (previous, current) =>
           previous.getCommentForProductStatus !=
@@ -39,71 +72,142 @@ class ProductDetailsSheetCommentsContent extends StatelessWidget {
             state.getCommentForProductModel[productId] == null) {
           return cupertino.SizedBox.shrink();
         }
-        return ScrollConfiguration(
-          behavior: const cupertino.CupertinoScrollBehavior(),
-          child: ListView(
-            controller: scrollController,
-            physics: const cupertino.ClampingScrollPhysics(),
-            shrinkWrap: true,
-            padding: EdgeInsets.zero,
-            children: [
-              10.verticalSpace,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
+        return BlocBuilder<HomeBloc, HomeState>(
+          buildWhen: (p, c) =>
+              p.getCommentForProductModel[productId] !=
+                  c.getCommentForProductModel[productId] ||
+              p.addCommentStatus != c.addCommentStatus,
+          builder: (context, state) {
+            return ScrollConfiguration(
+              behavior: const cupertino.CupertinoScrollBehavior(),
+              child: ListView(
+                controller: scrollController,
+                physics: const cupertino.ClampingScrollPhysics(),
+                shrinkWrap: true,
+                padding: EdgeInsets.zero,
                 children: [
-                  SvgPicture.asset(
-                    AppAssets.chatMarkActiveSvg,
-                    height: 20,
+                  10.verticalSpace,
+                  !(prefsRepository.isVerifiedPhone ?? false)
+                      ? SizedBox.shrink()
+                      : Container(
+                          height: 65,
+                          decoration: BoxDecoration(
+                              color: Color(0xffF8F8F8),
+                              borderRadius: BorderRadius.circular(30)),
+                          margin: EdgeInsets.symmetric(horizontal: 20),
+                          alignment: Alignment.center,
+                          child: Material(
+                              color: Colors.transparent,
+                              child: Padding(
+                                padding: HWEdgeInsets.symmetric(horizontal: 20),
+                                child: AppTextField(
+                                  hintText: LocaleKeys.add_comment.tr(),
+                                  controller: addCommentController,
+                                  suffixIcon: Padding(
+                                    padding: HWEdgeInsets.only(
+                                        right: 20.0, top: 15, bottom: 15),
+                                    child: InkWell(
+                                      onTap: () {
+                                        if (addCommentController.text.isEmpty) {
+                                          showMessage(LocaleKeys
+                                              .error_empty_comment
+                                              .tr());
+                                          return;
+                                        }
+                                        BlocProvider.of<HomeBloc>(context).add(
+                                            AddCommentEvent(
+                                                productSlugForTopic:
+                                                    productSlugForTopic,
+                                                productSlug: productSlug,
+                                                productId: productId,
+                                                comment:
+                                                    addCommentController.text));
+                                        addCommentController.clear();
+                                        addCommentButtonToggleNotifier.value =
+                                            false;
+                                        //////////////////////////////////////////////////////////
+                                        FirebaseAnalyticsService
+                                            .logEventForSession(
+                                          eventName: AnalyticsEventsConst
+                                              .buttonClicked,
+                                          executedEventName:
+                                              AnalyticsExecutedEventNameConst
+                                                  .confirmCommentButton,
+                                        );
+                                      },
+                                      child: SvgPicture.asset(
+                                        AppAssets.submitArrowSvg,
+                                        width: 10,
+                                        height: 10,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )),
+                        ),
+                  10.verticalSpace,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SvgPicture.asset(
+                        AppAssets.chatMarkActiveSvg,
+                        height: 20,
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      MyTextWidget(
+                          '${LocaleKeys.comment_about_this_product.tr()}',
+                          style: context.textTheme.bodyMedium?.mq.copyWith(
+                            color: Color(0xff505050),
+                          )),
+                    ],
                   ),
-                  const SizedBox(
-                    width: 10,
+                  SizedBox(
+                    height: 10,
                   ),
-                  MyTextWidget('Comment About This Product',
-                      style: context.textTheme.bodyMedium?.mq.copyWith(
-                        color: Color(0xff505050),
-                      )),
+                  ...List.generate(
+                      state.getCommentForProductModel[productId]!
+                              .commentsForProduct!.commentsCount ??
+                          0,
+                      (index) => Column(
+                            children: [
+                              CommentCard(
+                                comment: state
+                                    .getCommentForProductModel[productId]!
+                                    .commentsForProduct!
+                                    .comments![index]
+                                    .comment!,
+                                imageUrl: state
+                                        .getCommentForProductModel[productId]!
+                                        .commentsForProduct!
+                                        .comments![index]
+                                        .customer!
+                                        .image ??
+                                    "",
+                                names: state
+                                        .getCommentForProductModel[productId]!
+                                        .commentsForProduct!
+                                        .comments![index]
+                                        .customer!
+                                        .name ??
+                                    "",
+                                date: HelperFunctions.getDatesInFormat(state
+                                    .getCommentForProductModel[productId]!
+                                    .commentsForProduct!
+                                    .comments![index]
+                                    .createdAt!),
+                              ),
+                              SizedBox(
+                                height: 5,
+                              )
+                            ],
+                          ))
                 ],
               ),
-              SizedBox(
-                height: 10,
-              ),
-              ...List.generate(
-                  state.getCommentForProductModel[productId]!
-                          .commentsForProduct!.commentsCount ??
-                      0,
-                  (index) => Column(
-                        children: [
-                          CommentCard(
-                            comment: state.getCommentForProductModel[productId]!
-                                .commentsForProduct!.comments![index].comment!,
-                            imageUrl: state
-                                    .getCommentForProductModel[productId]!
-                                    .commentsForProduct!
-                                    .comments![index]
-                                    .customer!
-                                    .image ??
-                                "",
-                            names: state
-                                    .getCommentForProductModel[productId]!
-                                    .commentsForProduct!
-                                    .comments![index]
-                                    .customer!
-                                    .name ??
-                                "",
-                            date: HelperFunctions.getDatesInFormat(state
-                                .getCommentForProductModel[productId]!
-                                .commentsForProduct!
-                                .comments![index]
-                                .createdAt!),
-                          ),
-                          SizedBox(
-                            height: 5,
-                          )
-                        ],
-                      ))
-            ],
-          ),
+            );
+          },
         );
       },
     );

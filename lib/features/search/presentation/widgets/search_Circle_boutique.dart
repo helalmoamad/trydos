@@ -17,6 +17,11 @@ import '../../../../common/test_utils/test_var.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../app/my_text_widget.dart';
 import '../../../home/data/models/get_product_filters_model.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 
 class SearchChipBoutique extends StatefulWidget {
   final String title;
@@ -46,6 +51,18 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return BlocBuilder<HomeBloc, HomeState>(
       builder: (context, state) {
         String key = 'search';
@@ -124,110 +141,126 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                                           element.id ==
                                           filters.boutiques?[index].id) ??
                                   false;
-                              return InkWell(
-                                onTap: () {
-                                  Filter? prevChoosedFilterToAddToIt = homeBloc
-                                      .state.choosedFiltersByUser[key]?.filters;
-                                  if (prevChoosedFilterToAddToIt == null) {
-                                    prevChoosedFilterToAddToIt = Filter();
-                                  }
-                                  if (isSelected) {
-                                    List<Boutique> boutiques =
-                                        prevChoosedFilterToAddToIt.boutiques ??
-                                            [];
-                                    boutiques.removeWhere((element) =>
-                                        element.id ==
-                                        filters.boutiques![index].id);
-                                    prevChoosedFilterToAddToIt =
-                                        prevChoosedFilterToAddToIt
-                                            .copyWithSaveOtherField(
-                                      searchText:
-                                          widget.controller.text.length > 2
-                                              ? widget.controller.text
-                                              : null,
-                                      boutiques: boutiques,
-                                    );
-                                  } else {
-                                    prevChoosedFilterToAddToIt =
-                                        prevChoosedFilterToAddToIt
-                                            .copyWithSaveOtherField(
-                                                searchText: widget.controller
-                                                            .text.length >
+                              return filters.boutiques![index].banner == null
+                                  ? SizedBox.shrink()
+                                  : InkWell(
+                                      onTap: () {
+                                        Filter? prevChoosedFilterToAddToIt =
+                                            homeBloc
+                                                .state
+                                                .choosedFiltersByUser[key]
+                                                ?.filters;
+                                        if (prevChoosedFilterToAddToIt ==
+                                            null) {
+                                          prevChoosedFilterToAddToIt = Filter();
+                                        }
+                                        if (isSelected) {
+                                          List<Boutique> boutiques =
+                                              prevChoosedFilterToAddToIt
+                                                      .boutiques ??
+                                                  [];
+                                          boutiques.removeWhere((element) =>
+                                              element.id ==
+                                              filters.boutiques![index].id);
+                                          prevChoosedFilterToAddToIt =
+                                              prevChoosedFilterToAddToIt
+                                                  .copyWithSaveOtherField(
+                                            searchText:
+                                                widget.controller.text.length >
                                                         2
                                                     ? widget.controller.text
                                                     : null,
-                                                boutiques: [
-                                          ...prevChoosedFilterToAddToIt
-                                                  .boutiques ??
-                                              [],
-                                          filters.boutiques![index]
-                                        ]);
-                                  }
-                                  homeBloc.add(ChangeSelectedFiltersEvent(
-                                      fromHomePageSearch: true,
-                                      boutiqueSlug: key,
-                                      filtersChoosedByUser:
-                                          GetProductFiltersModel(
-                                              filters:
-                                                  prevChoosedFilterToAddToIt)));
-                                },
-                                child: Column(
-                                  children: [
-                                    Stack(
-                                      children: [
-                                        Container(
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                              color: Color(0xffF8F8F8),
-                                              border: Border.all(
-                                                  color: isSelected
-                                                      ? Color(0xffFF5F61)
-                                                      : Color(0xffF8F8F8))),
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 0, horizontal: 0),
-                                          child: Center(
-                                            child: filters.boutiques![index]
-                                                        .banner !=
-                                                    null
-                                                ? MyCachedNetworkImage(
-                                                    imageUrl: filters
-                                                        .boutiques![index]
-                                                        .banner!
-                                                        .filePath!,
-                                                    imageFit: BoxFit.cover,
-                                                    height: 40,
-                                                    width: 100,
-                                                    circleDimensions: 13,
-                                                    logoTextHeight: 9,
-                                                  )
-                                                : SizedBox.shrink(),
+                                            boutiques: boutiques,
+                                          );
+                                        } else {
+                                          prevChoosedFilterToAddToIt =
+                                              prevChoosedFilterToAddToIt
+                                                  .copyWithSaveOtherField(
+                                                      searchText: widget
+                                                                  .controller
+                                                                  .text
+                                                                  .length >
+                                                              2
+                                                          ? widget
+                                                              .controller.text
+                                                          : null,
+                                                      boutiques: [
+                                                ...prevChoosedFilterToAddToIt
+                                                        .boutiques ??
+                                                    [],
+                                                filters.boutiques![index]
+                                              ]);
+                                        }
+                                        homeBloc.add(ChangeSelectedFiltersEvent(
+                                            fromHomePageSearch: true,
+                                            boutiqueSlug: key,
+                                            filtersChoosedByUser:
+                                                GetProductFiltersModel(
+                                                    filters:
+                                                        prevChoosedFilterToAddToIt)));
+                                      },
+                                      child: Column(
+                                        children: [
+                                          Stack(
+                                            children: [
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            12),
+                                                    color: Color(0xffF8F8F8),
+                                                    border: Border.all(
+                                                        color: isSelected
+                                                            ? Color(0xffFF5F61)
+                                                            : Color(
+                                                                0xffF8F8F8))),
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: 0, horizontal: 0),
+                                                child: Center(
+                                                  child: filters
+                                                              .boutiques![index]
+                                                              .banner !=
+                                                          null
+                                                      ? MyCachedNetworkImage(
+                                                          imageUrl: filters
+                                                              .boutiques![index]
+                                                              .banner!
+                                                              .filePath!,
+                                                          imageFit:
+                                                              BoxFit.cover,
+                                                          height: 40,
+                                                          width: 100,
+                                                          circleDimensions: 13,
+                                                          logoTextHeight: 9,
+                                                        )
+                                                      : SizedBox.shrink(),
+                                                ),
+                                              ),
+                                              Visibility(
+                                                  visible: isSelected,
+                                                  child: FilterSelectedMark(
+                                                      width: 12, height: 12))
+                                            ],
                                           ),
-                                        ),
-                                        Visibility(
-                                            visible: isSelected,
-                                            child: FilterSelectedMark(
-                                                width: 12, height: 12))
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: 2,
-                                    ),
-                                    Center(
-                                        child: MyTextWidget(
-                                      key: TestVariables.kTestMode
-                                          ? Key(
-                                              '${WidgetsKeys.searchPageBoutiqueNameKey}$index')
-                                          : null,
-                                      filters.boutiques![index].name!,
-                                      style: context.textTheme.titleLarge?.rq
-                                          .copyWith(
-                                              height: 12 / 14,
-                                              color: Color(0xff8D8D8D)),
-                                    ))
-                                  ],
-                                ),
-                              );
+                                          SizedBox(
+                                            height: 2,
+                                          ),
+                                          Center(
+                                              child: MyTextWidget(
+                                            key: TestVariables.kTestMode
+                                                ? Key(
+                                                    '${WidgetsKeys.searchPageBoutiqueNameKey}$index')
+                                                : null,
+                                            filters.boutiques![index].name!,
+                                            style: context
+                                                .textTheme.titleLarge?.rq
+                                                .copyWith(
+                                                    height: 12 / 14,
+                                                    color: Color(0xff8D8D8D)),
+                                          ))
+                                        ],
+                                      ),
+                                    );
                             },
                             separatorBuilder: (context, index) {
                               return SizedBox(

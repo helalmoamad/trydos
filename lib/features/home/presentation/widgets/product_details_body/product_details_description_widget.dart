@@ -12,6 +12,11 @@ import '../../../../../generated/locale_keys.g.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 
 class ProductDetailsDescriptionWidget extends StatefulWidget {
   final String description;
@@ -53,11 +58,23 @@ class _ProductDetailsDescriptionWidgetState
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return ValueListenableBuilder<bool>(
         valueListenable: readMoreNotifier,
         builder: (context, readMore, child) {
           return Padding(
-              padding: EdgeInsets.symmetric(horizontal: 5.0),
+              padding: EdgeInsets.symmetric(horizontal: 12),
               child: Column(
                 children: [
                   Html(
@@ -71,7 +88,7 @@ class _ProductDetailsDescriptionWidgetState
                       ),
                     },
                   ),
-                  RichText(
+                  /* RichText(
                       overflow: TextOverflow.ellipsis,
                       text: TextSpan(children: [
                         readMores
@@ -112,7 +129,7 @@ class _ProductDetailsDescriptionWidgetState
                             : TextSpan(
                                 text: " ",
                               )
-                      ]))
+                      ]))*/
                 ],
               )
 

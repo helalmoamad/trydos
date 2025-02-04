@@ -23,7 +23,48 @@ extension AssetsUtils on String {
 abstract class AppAssets {
   /// region SVG Section
   static String get logoSvg => 'logo'.svg;
+  static String get infoSvg => 'info'.svg;
+  static String get orderInvoiceSvg => 'order_invoice'.svg;
+  static String get success1Svg => 'success_1'.svg;
+  static String get success2Svg => 'success_2'.svg;
+  static String get americanExpressSvg => 'american_express'.svg;
+  static String get applePaySvg => 'apple_pay'.svg;
+  static String get creditCards => 'credit_cards'.svg;
+  static String get cryptoSvg => 'crypto'.svg;
+  static String get crypto1Svg => 'crypto_1'.svg;
+  static String get crypto2Svg => 'crypto_2'.svg;
+  static String get crypto3Svg => 'crypto_3'.svg;
+  static String get crypto4Svg => 'crypto_4'.svg;
+  static String get googlePaySvg => 'google_pay'.svg;
+  static String get maestroSvg => 'maestro'.svg;
+  static String get masterCardSvg => 'master_card'.svg;
+  static String get paymentMethodSvg => 'payment_method'.svg;
+  static String get trydosWalletSvg => 'trydos_wallet'.svg;
+  static String get visaSvg => 'visa'.svg;
+  static String get checklistSvg => 'checklist'.svg;
+  static String get compareSvg => 'compare'.svg;
+  static String get enterInfoSvg => 'enter_info'.svg;
+  static String get addressInfoSvg => 'adress_info'.svg;
+  static String get detectedSvg => 'detected'.svg;
+  static String get navigationSvg => 'navigation'.svg;
+  static String get personSvg => 'person'.svg;
+  static String get addShippingAddressSvg => 'add_shipping_address'.svg;
+  static String get addShippingAddressWhiteSvg =>
+      'add_shipping_address_white'.svg;
+  static String get deliveryAddressSvg => 'delivery_address'.svg;
+  static String get deliveryGuranteeSvg => 'delivery_gurantee'.svg;
+  static String get earnMoneySvg => 'earn_money'.svg;
+  static String get purchaseSvg => 'purchase'.svg;
+  static String get returnGuranteeSvg => 'return_gurantee'.svg;
+  static String get safeEasySvg => 'safe_easy'.svg;
+  static String get securePrivacySvg => 'secure_privacy'.svg;
   static String get countItemSvg => 'countitem'.svg;
+  static String get shappingCartSvg => 'shipping_cart'.svg;
+  static String get giftCartSvg => 'gift_cart'.svg;
+  static String get totalDiscountCartSvg => 'total_discount_cart'.svg;
+  static String get expandDetaileSvg => 'expand_details'.svg;
+  static String get alarmClockSvg => 'alarm_clock'.svg;
+  static String get editSvg => 'edit'.svg;
   static String get sizeSvg => 'size'.svg;
   static String get adresswSvg => 'adressw'.svg;
   static String get logoIconSvg => 'logo_icon'.svg;
@@ -57,6 +98,7 @@ abstract class AppAssets {
   static String get chromeIconSvg => 'chrome_icon'.svg;
   static String get indicatorSvg => 'indicator'.svg;
   static String get dressSvg => 'dress'.svg;
+  static String get shappingCartNew => 'shipping_cart_new'.svg;
   static String get emptySvg => 'empty'.svg;
   static String get colorIndicatorSvg => 'color_indicator'.svg;
   static String get textSvg => 'text'.svg;
@@ -147,6 +189,11 @@ abstract class AppAssets {
   static String get copyIconSvg => 'copy_icon'.svg;
   static String get removeIconSvg => 'remove_icon'.svg;
   static String get editIconSvg => 'edit_icon'.svg;
+  static String get removeCartSvg => 'remove_cart'.svg;
+  static String get deletecartSvg => 'delete_cart'.svg;
+  static String get chatWithQuestionSvg => 'chat_with_question'.svg;
+  static String get towCartSvg => 'tow_cart'.svg;
+  static String get addCartSvg => 'add_cart'.svg;
   static String get notificationIconSvg => 'notification_icon'.svg;
   static String get notificationOutlinedIconSvg =>
       'notification_outlined_icon'.svg;

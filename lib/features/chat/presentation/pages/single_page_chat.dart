@@ -212,7 +212,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
 
     ChannelMember? member;
     Locale locale = Localizations.localeOf(context);
-    bool lan = locale.languageCode.contains("en");
+    bool lan = !locale.languageCode.contains("ar");
     FlutterError.onError = (details) {
       chatBloc.add(SendErrorChatToServerEvent(
           error: details.toString(), lastPage: "Single_Page_Chat"));
@@ -1093,8 +1093,10 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                               ?.name ==
                                                                           'ShareProduct') {
                                                                         BlocProvider.of<HomeBloc>(context).add(GetFullProductDetailsEvent(
+                                                                            productSlug: messages[index].shareProductContent?.productSlug.toString() ??
+                                                                                "",
                                                                             productId:
-                                                                                messages[index].shareProductContent?.productId.toString()));
+                                                                                messages[index].shareProductContent?.productSlug.toString()));
                                                                         Navigator.of(context).push(MaterialPageRoute(
                                                                             builder: (ctx) => ProductDetailsPage(
                                                                                   productIdForOpeningChatDirectly: messages[index].shareProductContent?.productId.toString(),
@@ -1778,10 +1780,10 @@ class _SinglePageChatState extends State<SinglePageChat> {
       Locale lan = Localizations.localeOf(context);
       return Row(
         mainAxisAlignment: !isSentMessage
-            ? (lan.languageCode == "en"
+            ? (lan.languageCode != "ar"
                 ? MainAxisAlignment.start
                 : MainAxisAlignment.end)
-            : (lan.languageCode == "en"
+            : (lan.languageCode != "ar"
                 ? MainAxisAlignment.end
                 : MainAxisAlignment.start),
         children: [
@@ -2015,14 +2017,22 @@ class _SinglePageChatState extends State<SinglePageChat> {
             channelId: message.channelId!,
             imageUrl: addSuitableWidthAndHeightToImage(
               imageUrl: message.shareProductContent!.productImageUrl!,
-              width: message.shareProductContent!.imageWidth ?? 1.sw - 100,
+              width: (((message.shareProductContent!.imageWidth ?? 0) > 0)
+                  ? message.shareProductContent!.imageWidth
+                  : 1.sw - 100)!,
               // the width of the image in the ui
-              height: message.shareProductContent!.imageHeight ?? 464,
+              height: (((message.shareProductContent!.imageHeight ?? 0) > 0)
+                  ? message.shareProductContent!.imageHeight
+                  : 464)!,
               // the height of the image in the ui
-              ordinalWidth: message.shareProductContent!.imageWidth ??
-                  1.sw -
+              ordinalWidth: ((message.shareProductContent!.imageWidth ?? 0) > 0)
+                  ? message.shareProductContent!.imageWidth
+                  : 1.sw -
                       100, //double.tryParse(message.mediaMessageContent![0].originalWidth.toString()),
-              ordinalHeight: message.shareProductContent!.imageHeight ?? 464,
+              ordinalHeight:
+                  ((message.shareProductContent!.imageHeight ?? 0) > 0)
+                      ? message.shareProductContent!.imageHeight
+                      : 464,
               //double.tryParse(image.originalHeight.toString())
             ),
             productName: message.shareProductContent!.productName ?? "",
@@ -2216,7 +2226,7 @@ class MessageSubtitleWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Locale locale = Localizations.localeOf(context);
-    bool lan = locale.languageCode == "en";
+    bool lan = locale.languageCode != "ar";
 
     String hoverText = '';
     switch (focusedIndex) {

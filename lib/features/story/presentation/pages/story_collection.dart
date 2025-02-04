@@ -81,9 +81,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
       tag: widget.collectionIndex,
       createRectTween: HeroAnimationAsset.customTweenRect,
       child: BlocConsumer<StoryBloc, StoryState>(
-        listener: (ctx, state) {
-          widget.stopAnimationAndVideo = false;
-        },
+        listener: (ctx, state) {},
         builder: (context, state) {
           //todo the initial story
 //        int currentInitialIndex = state.currentStoryInEachCollection!;
@@ -256,10 +254,13 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                 widget.collectionIndex]!]
                             .isPhoto ==
                         1) {
+                      widget.animatedController.duration =
+                          const Duration(seconds: 4);
+                      widget.animatedController.forward();
                       if (state.storiesCollections[widget.collectionIndex]
                               .selectedStoriesStatusForCollection ==
                           SelectedStoriesStatus.loading) {
-                        widget.animatedController.stop();
+                        //   widget.animatedController.stop();
                         return TrydosShimmerLoading(
                           width: 60,
                           height: 60,
@@ -270,9 +271,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                       if (state.storiesCollections[widget.collectionIndex]
                               .selectedStoriesStatusForCollection ==
                           SelectedStoriesStatus.success) {
-                        widget.animatedController.stop();
-                        widget.animatedController.duration =
-                            const Duration(seconds: 4);
+                        widget.animatedController.forward();
                         if (widget.stopAnimationAndVideo) {
                           widget.animatedController.stop();
                         } else {
@@ -292,8 +291,10 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                     widget.collectionIndex]!];
                             if (!(story.isSeen ?? false)) {
                               GetIt.I<StoryBloc>().add(IncreaseViewersEvent(
-                                  collectionId: state.storiesCollections[
-                                          widget.collectionIndex].id
+                                  collectionId: state
+                                      .storiesCollections[
+                                          widget.collectionIndex]
+                                      .id
                                       .toString(),
                                   storyId: story.id.toString()));
                             }
@@ -304,7 +305,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                             }
                           },
                           callWhenLoadingImage: () {
-                            widget.animatedController.stop();
+                            //   widget.animatedController.stop();
                           },
                           width: state
                               .storiesCollections[widget.collectionIndex]
@@ -482,10 +483,11 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                               .name ==
                                           null
                                       ? LocaleKeys.uk.tr()
-                                      : HelperFunctions.getTheFirstTwoLettersOfName(state
-                                          .storiesCollections[
-                                              widget.collectionIndex]
-                                          .name!))
+                                      : HelperFunctions.getTheFirstTwoLettersOfName(
+                                          state
+                                              .storiesCollections[
+                                                  widget.collectionIndex]
+                                              .name!))
                               : MyCachedNetworkImage(
                                   width: 40,
                                   height: 40,

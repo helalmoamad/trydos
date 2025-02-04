@@ -36,6 +36,8 @@ abstract class HandlingExceptionRequest {
     } else if (statusCode == StatusCode.serverError.code) {
       return ServerExceptionForCode500(
           message: message, statusCode: statusCode);
+    } else if (statusCode == StatusCode.unauth.code) {
+      return Unauth(message: message, statusCode: statusCode);
     } else {
       return ServerException(message: message);
     }
@@ -51,6 +53,12 @@ abstract class HandlingExceptionRequest {
       prettyPrinterError("***|| ServerExceptionForCode500 ||*** ");
       return const Left(
         ServerFailure("ServerExceptionForCode500", statusCode: 500),
+      );
+    } on Unauth {
+      // Fluttertoast.showToast(msg: 'sssssss',backgroundColor: Colors.yellow);
+      prettyPrinterError("***|| Unauth ||*** ");
+      return const Left(
+        ServerFailure("Unauth ", statusCode: 401),
       );
     } on ServerException {
       // Fluttertoast.showToast(msg: 'sssssss',backgroundColor: Colors.yellow);

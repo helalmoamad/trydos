@@ -1,0 +1,177 @@
+import 'dart:async';
+
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:trydos/config/theme/my_color_scheme.dart';
+import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/utils/extensions/state_ext.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
+import '../../../../../common/constant/design/assets_provider.dart';
+import '../../../../../core/utils/responsive_padding.dart';
+import '../../../../app/my_text_widget.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
+
+class CartDetailsSheetHeader extends StatefulWidget {
+  const CartDetailsSheetHeader({
+    super.key,
+  });
+
+  @override
+  State<CartDetailsSheetHeader> createState() => _CartDetailsSheetHeaderState();
+}
+
+class _CartDetailsSheetHeaderState extends State<CartDetailsSheetHeader> {
+  List<String> svg = [
+    AppAssets.arrivalOfShippingSvg,
+    AppAssets.freeShippingSvg,
+    AppAssets.freeReturnSvg,
+    AppAssets.deliveryGuranteeSvg,
+    AppAssets.returnGuranteeSvg,
+    AppAssets.securePrivacySvg,
+    AppAssets.safeEasySvg,
+    AppAssets.purchaseSvg,
+    AppAssets.earnMoneySvg,
+  ];
+
+  List<String> texts = [
+    '${LocaleKeys.delivery.tr()}',
+    '${LocaleKeys.free_shipping.tr()}',
+    '${LocaleKeys.free_return.tr()}',
+    '${LocaleKeys.delivery_guarantee.tr()}',
+    '${LocaleKeys.return_guarantee.tr()}',
+    '${LocaleKeys.secure_privacy.tr()}',
+    '${LocaleKeys.safe_easy_payment.tr()}',
+    '${LocaleKeys.purchase_protection.tr()}',
+    '${LocaleKeys.earn_money_with_this_order.tr()}',
+  ];
+  ScrollController _scrollController = ScrollController();
+  Timer? _timer;
+  Timer? _recallForAutoScroll;
+  double _scrollOffset = 0.0;
+  double _scrollSpeed = 0.25;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_scrollListener);
+    _startAutoScroll();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_scrollListener);
+    _stopAutoScroll();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.userScrollDirection ==
+            ScrollDirection.reverse ||
+        _scrollController.position.userScrollDirection ==
+            ScrollDirection.forward) {
+      _stopAutoScroll();
+      _recallForAutoScroll?.cancel();
+      _recallForAutoScroll = Timer(Duration(seconds: 2), () {
+        _startAutoScroll();
+      });
+    }
+  }
+
+  void _startAutoScroll() {
+    _timer = Timer.periodic(Duration(milliseconds: 50), (_) {
+      setState(() {
+        _scrollOffset += _scrollSpeed;
+        if (_scrollOffset >= _scrollController.position.maxScrollExtent) {
+          _scrollOffset = 0.0;
+        }
+        _scrollController.jumpTo(_scrollOffset);
+      });
+    });
+  }
+
+  void _stopAutoScroll() {
+    _timer?.cancel();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 10),
+      decoration: BoxDecoration(
+          color: colorScheme.white,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(30))),
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 10),
+        child: Row(
+          children: [
+            Flexible(
+              child: SizedBox(
+                height: 15 + 12.h,
+                child: ListView.builder(
+                  controller: _scrollController,
+                  padding: HWEdgeInsets.only(bottom: 12),
+                  itemBuilder: (
+                    BuildContext context,
+                    int index,
+                  ) {
+                    return Row(
+                      children: [
+                        SvgPicture.asset(
+                          svg[index],
+                          height: 15,
+                        ),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        index == 0
+                            ? MyTextWidget(
+                                '2 June',
+                                style: textTheme.titleMedium?.ba.copyWith(
+                                    color: Color(0xff505050),
+                                    height: 0,
+                                    fontSize: 11),
+                              )
+                            : MyTextWidget(
+                                texts[index],
+                                style: textTheme.titleMedium?.rq.copyWith(
+                                    color: Color(0xff505050),
+                                    height: 0,
+                                    fontSize: 11),
+                              ),
+                        SizedBox(
+                          width: 10,
+                        )
+                      ],
+                    );
+                  },
+                  scrollDirection: Axis.horizontal,
+                  itemCount: texts.length,
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}

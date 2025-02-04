@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,17 +14,26 @@ import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
-
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../app/my_text_widget.dart';
 
 class NotifyWhenQuantityAvailableButton extends StatefulWidget {
   const NotifyWhenQuantityAvailableButton(
-      {super.key, required this.unAvailableSize, required this.productId, required this.selectedColorName, required this.notificationTypeId});
+      {super.key,
+      required this.unAvailableSize,
+      required this.productId,
+      required this.selectedColorName,
+      required this.notificationTypeId});
 
   final String unAvailableSize;
   final String productId;
-  final String selectedColorName ;
+  final String selectedColorName;
   final int notificationTypeId;
 
   @override
@@ -52,6 +62,18 @@ class _NotifyWhenQuantityAvailableButtonState
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return BlocBuilder<HomeBloc, HomeState>(
       buildWhen: (p, c) =>
           p.isSizeRequestNotification != c.isSizeRequestNotification,
@@ -70,20 +92,26 @@ class _NotifyWhenQuantityAvailableButtonState
                         GestureDetector(
                           onTap: () {
                             HapticFeedback.lightImpact();
-                            BlocProvider.of<HomeBloc>(context).add(RequestForNotificationWhenProductBecameAvailableEvent(widget.productId, widget.notificationTypeId, widget.unAvailableSize , widget.selectedColorName));
+                            BlocProvider.of<HomeBloc>(context).add(
+                                RequestForNotificationWhenProductBecameAvailableEvent(
+                                    widget.productId,
+                                    widget.notificationTypeId,
+                                    widget.unAvailableSize,
+                                    widget.selectedColorName));
                           },
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 300),
                             curve: Curves.fastLinearToSlowEaseIn,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20),
-                                color: state.isSizeRequestNotification.contains(widget.unAvailableSize)
+                                color: state.isSizeRequestNotification
+                                        .contains(widget.unAvailableSize)
                                     ? const Color(0xffFFFCE6)
                                     : const Color(0xffE6F1FF)),
                             child: Center(
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 10),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 10),
                                 child: Column(
                                   children: [
                                     Row(
@@ -94,9 +122,10 @@ class _NotifyWhenQuantityAvailableButtonState
                                       children: [
                                         const Spacer(),
                                         SvgPicture.asset(
-                                          state.isSizeRequestNotification.contains(widget.unAvailableSize)
-                                              ? AppAssets
-                                                  .notificationIconSvg
+                                          state.isSizeRequestNotification
+                                                  .contains(
+                                                      widget.unAvailableSize)
+                                              ? AppAssets.notificationIconSvg
                                               : AppAssets
                                                   .notificationOutlinedIconSvg,
                                           height: 30,
@@ -107,14 +136,14 @@ class _NotifyWhenQuantityAvailableButtonState
                                     const SizedBox(
                                       height: 5,
                                     ),
-                                    if (!state.isSizeRequestNotification.contains(widget.unAvailableSize)) ...{
+                                    if (!state.isSizeRequestNotification
+                                        .contains(widget.unAvailableSize)) ...{
                                       MyTextWidget(
-                                        'Notify Me When Size Is Available',
+                                        '${LocaleKeys.notify_me_when_size_is_available.tr()}',
                                         style: textTheme.titleMedium?.rq
                                             .copyWith(
                                                 height: 15 / 12,
-                                                color: const Color(
-                                                    0xff505050)),
+                                                color: const Color(0xff505050)),
                                       )
                                     } else ...{
                                       Row(
@@ -122,9 +151,8 @@ class _NotifyWhenQuantityAvailableButtonState
                                             MainAxisAlignment.center,
                                         children: [
                                           MyTextWidget(
-                                            'We Will Inform You When A ',
-                                            style: textTheme
-                                                .titleMedium?.rq
+                                            '${LocaleKeys.we_will_inform_you_when_a.tr()} ',
+                                            style: textTheme.titleMedium?.rq
                                                 .copyWith(
                                                     height: 15 / 12,
                                                     color: const Color(
@@ -132,17 +160,15 @@ class _NotifyWhenQuantityAvailableButtonState
                                           ),
                                           MyTextWidget(
                                             '${widget.unAvailableSize} ',
-                                            style: textTheme
-                                                .titleMedium?.bq
+                                            style: textTheme.titleMedium?.bq
                                                 .copyWith(
                                                     height: 15 / 12,
                                                     color: const Color(
                                                         0xff505050)),
                                           ),
                                           MyTextWidget(
-                                            'Size Is Available',
-                                            style: textTheme
-                                                .titleMedium?.rq
+                                            '${LocaleKeys.size_is_available.tr()}',
+                                            style: textTheme.titleMedium?.rq
                                                 .copyWith(
                                                     height: 15 / 12,
                                                     color: const Color(
@@ -169,7 +195,8 @@ class _NotifyWhenQuantityAvailableButtonState
                           ),
                         ),
                         SvgPicture.asset(
-                          state.isSizeRequestNotification.contains(widget.unAvailableSize)
+                          state.isSizeRequestNotification
+                                  .contains(widget.unAvailableSize)
                               ? AppAssets.notificationOutlinedIconSvg
                               : AppAssets.notificationIconSvg,
                           height: 15.h,

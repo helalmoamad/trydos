@@ -11,6 +11,7 @@ import 'package:trydos/features/app/country_dropdown.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/features/home/presentation/pages/cart_page_new.dart';
 import 'package:trydos/features/search/presentation/pages/search_page.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
@@ -351,6 +352,12 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   }
 
   @override
+  void didChangeMetrics() {
+    setState(() {});
+    super.didChangeMetrics();
+  }
+
+  @override
   void initState() {
     pages.add(
       SearchPage(
@@ -366,8 +373,10 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     appBloc = BlocProvider.of<AppBloc>(context);
     callsBloc = BlocProvider.of<CallsBloc>(context);
 
-    onMessage();
-
+    if (!(GetIt.I<PrefsRepository>().onMessageRun ?? false)) {
+      onMessage();
+    }
+    GetIt.I<PrefsRepository>().setOnMessageRun(true);
     if (homeBloc.state.startingSetting != null) {
       showUpgradeApp = false;
       debugPrint('version gets successfully');
@@ -375,8 +384,9 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
           'android: ${homeBloc.state.startingSetting?.androidMinVersion}');
       debugPrint('ios: ${homeBloc.state.startingSetting?.iosMinVersion}');
       if (applicationVersion <
-              homeBloc.state.startingSetting!.androidMinVersion! ||
-          applicationVersion < homeBloc.state.startingSetting!.iosMinVersion!) {
+              (homeBloc.state.startingSetting!.androidMinVersion!) ||
+          applicationVersion <
+              (homeBloc.state.startingSetting!.iosMinVersion!)) {
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           HelperFunctions.showVersionDialog(context);
         });
@@ -399,14 +409,15 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     FirebaseMessaging.onMessage.listen((event) {
       if (HandlingMarketNotifications.checkIfTheNotificationIsNotRelatedToChat(
           event)) {
+        print(
+            "###################11111111111111111111111111111111111111${event.data}111111##################################################################");
+
         LocalNotificationService()
             .showNotificationWithPayload(message: event, fromBackGround: 0);
         return;
       }
       Map<String, dynamic> remoteMessage =
           convert.jsonDecode(event.data['data']);
-      print(
-          "###################11111111111111111111111111111111111111111111###################################################################${remoteMessage['type']}");
 
       if (remoteMessage['type'] == 'RefuseCallEvent') {
         Map<String, dynamic> data = remoteMessage;
@@ -540,6 +551,8 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
       } else {
         Message message = Message.fromJson(remoteMessage['message']);
         String prevMessageId = remoteMessage['prev_message_id'].toString();
+        print(
+            "######222222222222222222222222222222222222222#############11111111111111111111111111111111111111111111#################################################${message.senderUserId}###################${message.receiverUserId}");
         chatBloc.add(AddChannelToChannels(message: message));
         chatBloc.add(ReceiveMessageEvent(
             message: message, prevMessageId: prevMessageId));
@@ -574,6 +587,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
           error: error.toString());
       debugPrint('error $error');
     };
+    _prefsRepository.setTokenExpired(false);
     return BlocListener<ChatBloc, ChatState>(
       listener: (context, state) {
         navigationToSinglePageChat(state.chatToNavigateFromTerminated!);
@@ -661,9 +675,13 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                     //     getWithPagination: false));
                                     homeBloc.add(GetMainCategoriesEvent(
                                         context: context));
-                                    homeBloc.add(GetCurrencyForCountryEvent());
-                                    homeBloc.add(GetCartItemEvent());
-                                    homeBloc.add(GetProductsListInCartEvent());
+                                    if (prefsRepository.marketToken != null) {
+                                      homeBloc
+                                          .add(GetCurrencyForCountryEvent());
+                                      homeBloc.add(GetCartItemEvent());
+                                      homeBloc
+                                          .add(GetProductsListInCartEvent());
+                                    }
                                   }
 
                                   visible
@@ -701,6 +719,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                 ),
                                                 Center(
                                                     child: CountryDropdown(
+                                                  fromHomepage: false,
                                                   key: TestVariables.kTestMode
                                                       ? Key(WidgetsKeys
                                                           .countryDropDownKey)
@@ -725,8 +744,6 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                     if (_prefsRepository
                                                             .userChoosedCountryIso !=
                                                         null) {
-                                                      print("${_prefsRepository.userChoosedCountryIso}" +
-                                                          "-------------------------------------------------");
                                                       visibleCountries.value =
                                                           !visible;
                                                       _prefsRepository

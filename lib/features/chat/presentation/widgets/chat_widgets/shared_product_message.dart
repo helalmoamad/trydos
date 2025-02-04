@@ -86,6 +86,8 @@ class _SharedProductMessageState extends State<SharedProductMessage> {
 
   @override
   void initState() {
+    print(
+        "####################################################################3eee3");
     chatBloc = BlocProvider.of<ChatBloc>(context);
     Timer(Duration(seconds: 4), () {
       if (mounted) {
@@ -225,6 +227,8 @@ class _SharedProductMessageState extends State<SharedProductMessage> {
                                                           '?width=${1.sw - 100}&height=464',
                                                       widget.channelId,
                                                       action: (File? file) {
+                                                print(
+                                                    "fgggggggggggggggggggggggg${widget.imageUrl!}");
                                                 // _loadingImage.value = 2;
                                                 if (file != null) {
                                                   widget.imageFile = file;
@@ -492,7 +496,9 @@ class _SharedProductMessageState extends State<SharedProductMessage> {
                           ),
                         ),
                         Container(
-                          constraints: BoxConstraints(maxWidth: 1.sw - 100,),
+                          constraints: BoxConstraints(
+                            maxWidth: 1.sw - 100,
+                          ),
                           child: MyTextWidget(
                             widget.productName,
                             style: context.textTheme.labelSmall?.mr,
@@ -500,7 +506,9 @@ class _SharedProductMessageState extends State<SharedProductMessage> {
                         ),
                         10.verticalSpace,
                         Container(
-                          constraints: BoxConstraints(maxWidth: 1.sw - 100,),
+                          constraints: BoxConstraints(
+                            maxWidth: 1.sw - 100,
+                          ),
                           child: Html(
                             shrinkWrap: true,
                             data: widget.productDescription,

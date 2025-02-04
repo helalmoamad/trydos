@@ -1,11 +1,16 @@
 abstract class PrefsKey {
   static const userMarketId = r'__$__userMarketId__$__';
+  static const isSmartlookStarted = r'__$__IsSmartlookStarted__$__';
   static const currentEvent = r'__$__current event__$__';
   static const notificationTypeFromTerminated =
       r'__$__notificationTypeFromTerminated__$__';
 
+  static const verifiedPhonePeforeExpiredToken =
+      r'__$__verifiedPhonePeforeExpiredToken__$__';
   static const currentCountry = r'__$__currentCountry__$__';
-
+  static const onMessageRun = r'__$__onMessageRun__$__';
+  static const tokenExpired = r'__$__tokenexpired__$__';
+  static const isLogInToChat = r'__$__isLogInToChat__$__';
   static const userChatId = r'__$__userChatId__$__';
   static const sessionId = r'__$__sessionId__$__';
   static const userStoriesId = r'__$__userStoriesId__$__';
@@ -14,7 +19,7 @@ abstract class PrefsKey {
   static const language = r'__$__language__$__';
 
   static const chatName = r'__$__chatName__$__';
-
+  static const topicSubsecribe = r'__$__topicSubsecribe__$__';
   static const storiesName = r'__$__storiesName__$__';
 
   static const chatPhoto = r'__$__chatPhoto__$__';

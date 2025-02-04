@@ -3,6 +3,11 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:trydos/features/app/my_cached_network_image.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 
 class ProductDetailsImageWidget extends StatelessWidget {
   const ProductDetailsImageWidget(
@@ -16,6 +21,7 @@ class ProductDetailsImageWidget extends StatelessWidget {
       this.imageFit,
       this.imageHeight,
       this.orginalHeight,
+      this.blurRadius = 10,
       this.imageWidth,
       this.orginalWidth,
       this.height,
@@ -25,6 +31,7 @@ class ProductDetailsImageWidget extends StatelessWidget {
   final double? height;
   final double? imageWidth;
   final double? imageHeight;
+  final double? blurRadius;
   final double? orginalWidth;
   final double? orginalHeight;
   final double? radius;
@@ -38,62 +45,79 @@ class ProductDetailsImageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     print(imageUrl);
-    return Stack(
-      children: [
-        Container(
-          height: (height ?? 464),
-          width: (width ?? 320),
-          decoration: BoxDecoration(
-            borderRadius:
-                borderRadius ?? BorderRadius.circular((radius ?? 30.0)),
-            border: Border.all(
-                width: 0.5, color: borderColor ?? context.colorScheme.white),
-            boxShadow: withBackGroundShadow
-                ? [
-                    BoxShadow(
-                      color: context.colorScheme.black.withOpacity(0.1),
-                      offset: Offset(0, 0),
-                      blurRadius: 10,
-                    ),
-                  ]
-                : null,
-          ),
-          child: ClipRRect(
+    return InteractiveViewer(
+      panEnabled: true,
+      minScale: 0.1,
+      maxScale: 4.0,
+      child: Stack(
+        children: [
+          Container(
+            height: (height ?? 464),
+            width: (width ?? 320),
+            decoration: BoxDecoration(
               borderRadius:
                   borderRadius ?? BorderRadius.circular((radius ?? 30.0)),
-              child: imageUrl?.contains('assets') ?? true
-                  ? Image.asset('assets/images/address2.png',
-                      fit: imageFit ?? BoxFit.cover)
-                  : MyCachedNetworkImage(
-                      ordinalHeight: orginalHeight,
-                      ordinalwidth: orginalWidth,
-                      imageUrl: imageUrl!,
-                      imageWidth: imageWidth,
-                      imageHeight: imageHeight,
-                      height: height ?? 464,
-                      width: width ?? 320,
-                      imageFit: imageFit ?? BoxFit.cover,
-                    )),
-        ),
-        Container(
-          height: (height ?? 464),
-          width: (width ?? 320),
-          decoration: BoxDecoration(
-            borderRadius:
-                borderRadius ?? BorderRadius.circular((radius ?? 30.0)),
-            boxShadow: withInnerShadow
-                ? [
-                    BoxShadow(
-                        color: context.colorScheme.white,
-                        offset: Offset(0, 3),
-                        blurRadius: 6,
-                        inset: true),
-                  ]
-                : null,
+              border: Border.all(
+                  width: 0.5, color: borderColor ?? context.colorScheme.white),
+              boxShadow: withBackGroundShadow
+                  ? [
+                      BoxShadow(
+                        color: context.colorScheme.black.withOpacity(0.1),
+                        offset: Offset(0, 0),
+                        blurRadius: blurRadius ?? 10,
+                      ),
+                    ]
+                  : null,
+            ),
+            child: ClipRRect(
+                borderRadius:
+                    borderRadius ?? BorderRadius.circular((radius ?? 30.0)),
+                child: (imageUrl?.contains('assets') ?? true)
+                    ? Image.asset('assets/images/address2.png',
+                        fit: imageFit ?? BoxFit.cover)
+                    : MyCachedNetworkImage(
+                        ordinalHeight: orginalHeight,
+                        ordinalwidth: orginalWidth,
+                        imageUrl: imageUrl!,
+                        imageWidth: imageWidth,
+                        imageHeight: imageHeight,
+                        height: height ?? 464,
+                        width: width ?? 320,
+                        imageFit: imageFit ?? BoxFit.cover,
+                      )),
           ),
-        ),
-      ],
+          Container(
+            height: (height ?? 464),
+            width: (width ?? 320),
+            decoration: BoxDecoration(
+              borderRadius:
+                  borderRadius ?? BorderRadius.circular((radius ?? 30.0)),
+              boxShadow: withInnerShadow
+                  ? [
+                      BoxShadow(
+                          color: context.colorScheme.white,
+                          offset: Offset(0, 3),
+                          blurRadius: 6,
+                          inset: true),
+                    ]
+                  : null,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

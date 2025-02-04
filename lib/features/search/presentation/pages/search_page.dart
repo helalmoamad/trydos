@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,6 +17,7 @@ import 'package:trydos/features/search/presentation/widgets/search_Circle_boutiq
 import 'package:trydos/features/search/presentation/widgets/search_circle_brand.dart';
 import 'package:trydos/features/search/presentation/widgets/search_circle_category.dart';
 import 'package:trydos/features/search/presentation/widgets/trendig_section.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../common/test_utils/test_var.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/utils/theme_state.dart';
@@ -29,6 +31,11 @@ import '../../../home/presentation/manager/home_bloc.dart';
 import '../../../home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 import '../widgets/search_history.dart';
 import '../widgets/search_result.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage(
@@ -98,9 +105,22 @@ class _SearchPageState extends ThemeState<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return PopScope(
       canPop: false,
       onPopInvoked: (pop) {
+        FocusScope.of(context).unfocus();
         widget.controller.clear();
         appBloc.add(ChangeBasePage(0));
         homeBloc.add(ResetAllSelectedAppliedFilterEvent());
@@ -120,8 +140,12 @@ class _SearchPageState extends ThemeState<SearchPage> {
                     current.getProductFiltersStatus[key] ||
                 previous.cashedOrginalBoutique !=
                     current.cashedOrginalBoutique ||
+                previous.popularSearchTerm?.length !=
+                    current.popularSearchTerm?.length ||
                 previous.countOfProductExpectedByFiltering?.values !=
                     current.countOfProductExpectedByFiltering?.values ||
+                previous.choosedFiltersByUser[key] !=
+                    current.choosedFiltersByUser[key] ||
                 previous
                         .getProductListingWithFiltersPaginationModels['search' +
                             (current.cashedOrginalBoutique
@@ -163,7 +187,14 @@ class _SearchPageState extends ThemeState<SearchPage> {
                               }),
                           ValueListenableBuilder<bool>(
                               valueListenable: widget.appearTrendingAndHistory,
-                              child: TrendingSection(),
+                              child: TrendingSection(
+                                controller: widget.controller,
+                                buildSearchResult: widget.buildSearchResult,
+                                appearTrendingAndHistory:
+                                    widget.appearTrendingAndHistory,
+                                popularSearchTerms:
+                                    state.popularSearchTerm ?? [],
+                              ),
                               builder: (context, appear, child) {
                                 return SliverToBoxAdapter(
                                   child: Visibility(
@@ -215,7 +246,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
                           isLoading: state.getProductFiltersStatus[key] ==
                               GetProductFiltersStatus.loading,
                           controller: widget.controller,
-                          title: 'Brands',
+                          title: LocaleKeys.Brands.tr(),
                         ),
                         builder: (context, appear, child) {
                           return SliverToBoxAdapter(
@@ -234,7 +265,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
                           isLoading: state.getProductFiltersStatus[key] ==
                               GetProductFiltersStatus.loading,
                           controller: widget.controller,
-                          title: 'Category',
+                          title: LocaleKeys.categories.tr(),
                         ),
                         builder: (context, appear, child) {
                           return SliverToBoxAdapter(
@@ -253,7 +284,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
                           isLoading: state.getProductFiltersStatus[key] ==
                               GetProductFiltersStatus.loading,
                           controller: widget.controller,
-                          title: "Boutique",
+                          title: LocaleKeys.boutiques.tr(),
                         ),
                         builder: (context, appear, child) {
                           return SliverToBoxAdapter(
@@ -319,6 +350,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
                       }
                       return SliverToBoxAdapter(
                         child: Container(
+                          width: 300,
                           margin: EdgeInsets.only(
                               bottom: !hideAppleyResetButtom.value ? 0 : 30,
                               left: 20,
@@ -328,7 +360,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               Expanded(
-                                flex: 2,
+                                flex: 3,
                                 child: InkWell(
                                   onTap: () {
                                     Filter filters = state
@@ -374,6 +406,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                   },
                                   child: Container(
                                     height: 65,
+                                    width: 300,
                                     key: TestVariables.kTestMode
                                         ? Key(WidgetsKeys
                                             .searchButtonInSearchPageKey)
@@ -395,38 +428,34 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                         ],
                                         borderRadius:
                                             BorderRadius.circular(20)),
-                                    child: Stack(
-                                      children: [
-                                        Center(
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              MyTextWidget(
-                                                'Search ',
-                                                style: textTheme.bodyLarge?.rq
-                                                    .copyWith(
-                                                        color:
-                                                            Color(0xffFEFEFE),
-                                                        height: 23 / 18),
-                                              ),
-                                              state.countOfProductExpectedByFiltering?[
-                                                          'search'] !=
-                                                      null
-                                                  ? MyTextWidget(
-                                                      "(${state.countOfProductExpectedByFiltering?['search']} products)",
-                                                      style: textTheme
-                                                          .bodyMedium?.rq
-                                                          .copyWith(
-                                                              color: Color(
-                                                                  0xffFEFEFE),
-                                                              height: 23 / 18),
-                                                    )
-                                                  : SizedBox.shrink()
-                                            ],
+                                    child: Center(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          MyTextWidget(
+                                            '${LocaleKeys.search.tr()} ',
+                                            style: textTheme.bodyLarge?.rq
+                                                .copyWith(
+                                                    color: Color(0xffFEFEFE),
+                                                    height: 23 / 18),
                                           ),
-                                        ),
-                                      ],
+                                          state.countOfProductExpectedByFiltering?[
+                                                      'search'] !=
+                                                  null
+                                              ? MyTextWidget(
+                                                  "(${LocaleKeys.number_of_products.tr()} ${state.countOfProductExpectedByFiltering?['search']})",
+                                                  style: textTheme
+                                                      .bodyMedium?.rq
+                                                      .copyWith(
+                                                          fontSize: 12,
+                                                          color:
+                                                              Color(0xffFEFEFE),
+                                                          height: 1.2),
+                                                )
+                                              : SizedBox.shrink()
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -477,7 +506,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                             color: Color(0xff388CFF))),
                                     child: Center(
                                       child: MyTextWidget(
-                                        'Reset',
+                                        '${LocaleKeys.reset.tr()}',
                                         style: textTheme.bodyLarge?.rq.copyWith(
                                             color: Color(0xff388CFF),
                                             height: 23 / 18),

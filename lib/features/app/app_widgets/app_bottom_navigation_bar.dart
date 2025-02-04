@@ -14,14 +14,18 @@ import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/features/app/app_widgets/update_user_name_widget.dart';
+import 'package:trydos/features/app/country_dropdown.dart';
 import 'package:trydos/features/app/language_dropdown.dart';
+import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/authentication/presentation/pages/first_registeration_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/feed_back_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/files_exist_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/shared_preference_page.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/service/language_service.dart';
 import '../../../common/test_utils/test_var.dart';
 import '../../../core/domin/repositories/prefs_repository.dart';
 import '../../../core/utils/theme_state.dart';
@@ -83,7 +87,9 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                     );
 
                     if (Navigator.of(context).canPop()) {
-                      Navigator.of(context).pop();
+                      try {
+                        Navigator.of(context).pop();
+                      } catch (e) {}
                     }
                     if (state.currentIndex != 0) {
                       homeBloc.add(
@@ -136,7 +142,9 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                   },
                   onTap: () {
                     if (context.canPop()) {
-                      Navigator.of(context).pop();
+                      try {
+                        Navigator.of(context).pop();
+                      } catch (e) {}
                     }
                     appBloc.add(ChangeBasePage(1));
                     /////////////////////////
@@ -146,29 +154,79 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                           AnalyticsExecutedEventNameConst.cartNavBarButton,
                     );
                   },
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      state.currentIndex == 1
-                          ? SvgPicture.asset(
-                              AppAssets.bagsSvg,
-                              height: 30.h,
-                            )
-                          : SvgPicture.asset(
-                              AppAssets.cartSvg,
-                              height: 30.h,
-                            ),
-                      10.verticalSpace,
-                      MyTextWidget(
-                        LocaleKeys.cart.tr(),
-                        maxLines: 1,
-                        style: textTheme.titleSmall?.lr.copyWith(
-                            color: state.currentIndex != 1
-                                ? colorScheme.grey200
-                                : colorScheme.black,
-                            letterSpacing: 0.28),
-                      )
-                    ],
+                  child: BlocBuilder<HomeBloc, HomeState>(
+                    buildWhen: (previous, current) {
+                      return previous.cartCollection?.length !=
+                              current.cartCollection?.length ||
+                          previous.getCartItemsStatus !=
+                              current.getCartItemsStatus;
+                    },
+                    builder: (context, stateHome) {
+                      int qtyItemsInCart = 0;
+                      stateHome.cartCollection?.forEach(
+                        (element) {
+                          qtyItemsInCart =
+                              qtyItemsInCart + (element.quantity ?? 0);
+                        },
+                      );
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Stack(children: [
+                            Container(
+                                width: 50,
+                                child: state.currentIndex == 1
+                                    ? SvgPicture.asset(
+                                        AppAssets.bagsSvg,
+                                        height: 30.h,
+                                      )
+                                    : SvgPicture.asset(
+                                        AppAssets.cartSvg,
+                                        height: 30.h,
+                                      )),
+                            (qtyItemsInCart > 0)
+                                ? Positioned(
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      width: 15,
+                                      height: 15,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          color: Colors.green),
+                                      child: MyTextWidget(
+                                        (qtyItemsInCart > 0)
+                                            ? "${qtyItemsInCart}"
+                                            : "",
+                                        maxLines: 1,
+                                        style: textTheme.titleSmall?.ra
+                                            .copyWith(
+                                                fontSize: 12,
+                                                color: Colors.white,
+                                                letterSpacing: 0.28),
+                                      ),
+                                    ),
+                                    top: 0,
+                                    right:
+                                        (qtyItemsInCart.toString().length) > 1
+                                            ? 1
+                                            : 5,
+                                  )
+                                : SizedBox.shrink()
+                          ]),
+                          10.verticalSpace,
+                          MyTextWidget(
+                            LocaleKeys.cart.tr(),
+                            maxLines: 1,
+                            style: textTheme.titleSmall?.lr.copyWith(
+                                color: state.currentIndex != 1
+                                    ? colorScheme.grey200
+                                    : colorScheme.black,
+                                letterSpacing: 0.28),
+                          )
+                        ],
+                      );
+                    },
                   ),
                 ),
               ),
@@ -178,7 +236,9 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                       ? Key(WidgetsKeys.chatNavBarKey)
                       : null,
                   onTap: () async {
-                    if (prefsRepository.isVerifiedPhone != true) {
+                    if (prefsRepository.isVerifiedPhone != true ||
+                        (prefsRepository.isLogInToChat ?? false) != true ||
+                        (prefsRepository.chatToken?.length ?? 0) > 10) {
                       context.go(GRouter
                           .config.applicationRoutes.kRegistrationPagePath);
                     } else if (prefsRepository.myMarketName == null) {
@@ -247,81 +307,115 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                           return AlertDialog(
                             content: MyTextWidget('Dev tools'),
                             actions: [
-                              Container(
-                                width: 300,
-                                height: 300,
-                                child: Stack(
-                                  children: [
-                                    Positioned(
-                                        left: 10,
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceAround,
-                                          children: [
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (_) =>
-                                                            FeedBackScreen(
-                                                              showRequests:
-                                                                  true,
-                                                            )));
-                                              },
-                                              child: MyTextWidget('requests'),
-                                            ),
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (_) =>
-                                                            SharedPreferencePage()));
-                                              },
-                                              child: MyTextWidget(
-                                                  'shared preferences'),
-                                            ),
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (_) =>
-                                                            FeedBackScreen(
-                                                              showRequests:
-                                                                  false,
-                                                            )));
-                                              },
-                                              child: MyTextWidget(
-                                                  'flutter errors'),
-                                            ),
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (_) =>
-                                                            FilesExistPage()));
-                                              },
-                                              child:
-                                                  MyTextWidget('files exists'),
-                                            ),
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (_) =>
-                                                            EditUrlsPage()));
-                                              },
-                                              child: MyTextWidget('Edit Urls'),
-                                            ),
-                                            LanguageDropdown(),
-                                          ],
-                                        )),
-                                  ],
-                                ),
+                              BlocBuilder<HomeBloc, HomeState>(
+                                buildWhen: (p, c) =>
+                                    p.getAllowedCountriesModel !=
+                                        c.getAllowedCountriesModel ||
+                                    p.getStartingSettingsStatus !=
+                                        c.getStartingSettingsStatus,
+                                builder: (context, homestate) {
+                                  return Container(
+                                    width: 300,
+                                    height: 300,
+                                    child: Stack(
+                                      children: [
+                                        Positioned(
+                                            left: 10,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceAround,
+                                              children: [
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (_) =>
+                                                                FeedBackScreen(
+                                                                  showRequests:
+                                                                      true,
+                                                                )));
+                                                  },
+                                                  child:
+                                                      MyTextWidget('requests'),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (_) =>
+                                                                SharedPreferencePage()));
+                                                  },
+                                                  child: MyTextWidget(
+                                                      'shared preferences'),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (_) =>
+                                                                FeedBackScreen(
+                                                                  showRequests:
+                                                                      false,
+                                                                )));
+                                                  },
+                                                  child: MyTextWidget(
+                                                      'flutter errors'),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (_) =>
+                                                                FilesExistPage()));
+                                                  },
+                                                  child: MyTextWidget(
+                                                      'files exists'),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (_) =>
+                                                                EditUrlsPage()));
+                                                  },
+                                                  child:
+                                                      MyTextWidget('Edit Urls'),
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    LanguageDropdown(
+                                                        language: homestate
+                                                                .startingSetting
+                                                                ?.languages ??
+                                                            []),
+                                                    SizedBox(
+                                                      width: 10,
+                                                    ),
+                                                    CountryDropdown(
+                                                      fromHomepage: true,
+                                                      countries: homestate
+                                                                  .getAllowedCountriesModel !=
+                                                              null
+                                                          ? homestate
+                                                                  .getAllowedCountriesModel!
+                                                                  .data!
+                                                                  .countries ??
+                                                              []
+                                                          : [],
+                                                    )
+                                                  ],
+                                                )
+                                              ],
+                                            )),
+                                      ],
+                                    ),
+                                  );
+                                },
                               )
                             ],
                           );
@@ -330,6 +424,9 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                   onTap: () {
                     // if (prefsRepository.chatToken != null) return;
                     //appBloc.add(ChangeBasePage(0));
+                    if (Navigator.canPop(context)) {
+                      Navigator.of(context).pop();
+                    }
                     Navigator.of(context).push(PageRouteBuilder(
                       pageBuilder: (context, animation, secondaryAnimation) =>
                           RegistrationPage(),

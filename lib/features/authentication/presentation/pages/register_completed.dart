@@ -52,7 +52,7 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
               children: [
                 Spacer(),
                 SizedBox(
-                  height: 10,
+                  height: 1.sh / 8,
                 ),
                 Padding(
                   padding: HWEdgeInsets.only(left: 30.0),

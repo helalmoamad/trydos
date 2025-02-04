@@ -11,6 +11,7 @@ import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/form_utils.dart';
+import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/authentication/presentation/widgets/name_from_field.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
@@ -55,13 +56,16 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
   GlobalKey<FormState> _formkey = GlobalKey();
   @override
   Widget build(BuildContext context) {
+    bool updateNameLoading = false;
     FlutterError.onError = (FlutterErrorDetails error) {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: error.toString());
     };
     return BlocListener<AuthBloc, AuthState>(
-      listenWhen: (p, c) => p.verifyOtpSignUpStatus != c.verifyOtpSignUpStatus,
+      listenWhen: (p, c) =>
+          p.verifyOtpSignUpStatus != c.verifyOtpSignUpStatus ||
+          p.updateNameStatus != c.updateNameStatus,
       listener: (context, state) {
         if (state.verifyOtpSignUpStatus == VerifyOtpSignUpStatus.failure) {
           showMessage(
@@ -69,6 +73,9 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
             showInRelease: true,
           );
           return;
+        }
+        if (state.verifyOtpSignUpStatus == VerifyOtpSignUpStatus.loading) {
+          updateNameLoading = true;
         }
         if (state.verifyOtpSignUpStatus == VerifyOtpSignUpStatus.success) {
           context.go(
@@ -223,18 +230,22 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
                                     child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          SvgPicture.asset(
-                                            AppAssets.submitArrowSvg,
-                                            width: 10,
-                                            height: 20,
-                                          ),
+                                          updateNameLoading
+                                              ? TrydosLoader(
+                                                  size: 12,
+                                                )
+                                              : SvgPicture.asset(
+                                                  AppAssets.submitArrowSvg,
+                                                  width: 10,
+                                                  height: 20,
+                                                ),
                                         ]),
                                   ),
                           ),
                         );
                       })),
             ),
-            10.verticalSpace,
+            60.verticalSpace,
           ],
         ),
       ),

@@ -1,21 +1,29 @@
 import 'dart:math';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
+import 'package:trydos/features/app/app_elvated_button.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/app/trydos_shimmer_loading.dart';
+import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
+import 'package:trydos/features/authentication/presentation/pages/first_registeration_page.dart';
 import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
@@ -25,6 +33,8 @@ import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/notify_for_quantity_available_button.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/routes/router.dart';
 
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../../core/utils/responsive_padding.dart';
@@ -42,7 +52,8 @@ class ProductDetailsSheetBottomBar extends StatefulWidget {
       required this.onFinishBuying,
       required this.clickOnMoreOptions,
       required this.panelController,
-      required this.productId,
+      required this.productIdForCashproducts,
+      required this.productIdForRequestApi,
       required this.colorName,
       required this.colorNum,
       required this.size,
@@ -59,7 +70,8 @@ class ProductDetailsSheetBottomBar extends StatefulWidget {
   final PanelController panelController;
   final String imageUrl;
   final int countOfPieces;
-  final String productId;
+  final String productIdForCashproducts;
+  final String productIdForRequestApi;
   final String productSlug;
   final String colorName;
   final String colorNum;
@@ -81,6 +93,7 @@ class _ProductDetailsSheetBottomBarState
     extends State<ProductDetailsSheetBottomBar>
     with SingleTickerProviderStateMixin {
   late final AnimationController animationController;
+  final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   late HomeBloc homeBloc;
 
   @override
@@ -107,12 +120,28 @@ class _ProductDetailsSheetBottomBarState
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return BlocBuilder<HomeBloc, HomeState>(
       buildWhen: (previous, current) =>
-          previous.addImagesToProductIdForCart[widget.productId]?.length !=
-              current.addImagesToProductIdForCart[widget.productId]?.length ||
-          previous.currentSelectedColorForEveryProduct[widget.productId] !=
-              current.currentSelectedColorForEveryProduct[widget.productId] ||
+          previous.addImagesToProductIdForCart[widget.productIdForRequestApi]
+                  ?.length !=
+              current.addImagesToProductIdForCart[widget.productIdForRequestApi]
+                  ?.length ||
+          previous.currentSelectedColorForEveryProduct[
+                  widget.productIdForRequestApi] !=
+              current.currentSelectedColorForEveryProduct[
+                  widget.productIdForRequestApi] ||
           previous.productStatus != current.productStatus ||
           previous.updateItemInCartStatus != current.updateItemInCartStatus ||
           previous.addItemInCartStatus != current.addItemInCartStatus ||
@@ -121,19 +150,24 @@ class _ProductDetailsSheetBottomBarState
               current.ListitemForAddToCart?.length ||
           previous.getCommentForProductStatus !=
               current.getCommentForProductStatus ||
+          previous.changeSizesForEveryProduct !=
+              current.changeSizesForEveryProduct ||
           previous.addCommentStatus != current.addCommentStatus,
       builder: (context, state) {
+        print(
+            "####################${widget.productIdForCashproducts}##############################${state.productStatus?[widget.productIdForCashproducts]}");
         print("***********");
         List<String> allimages = [];
 
         // حلقات متداخلة للوصول إلى جميع القيم
-        state.addImagesToProductIdForCart[widget.productId] != null
-            ? state.addImagesToProductIdForCart[widget.productId]!
+        state.addImagesToProductIdForCart[widget.productIdForRequestApi] != null
+            ? state.addImagesToProductIdForCart[widget.productIdForRequestApi]!
                 .forEach((key, value) {
                 allimages.addAll(value);
               })
             : [];
-        print(")))${state.addImagesToProductIdForCart[widget.productId]}");
+        print(
+            ")))${state.addImagesToProductIdForCart[widget.productIdForRequestApi]}");
         return Container(
             color: colorScheme.white,
             child: Column(
@@ -186,10 +220,13 @@ class _ProductDetailsSheetBottomBarState
                                               );
                                             },
                                             child: selectedSizeByUser == null
-                                                ? (state.productStatus?[
-                                                            widget.productId] !=
-                                                        GetProductDetailWithoutSimilarRelatedProductsStatus
-                                                            .success)
+                                                ? (state.productStatus?[widget
+                                                                .productIdForCashproducts] !=
+                                                            GetProductDetailWithoutSimilarRelatedProductsStatus
+                                                                .success ||
+                                                        state.changeSizesForEveryProduct !=
+                                                            ChangeSizesForEveryProduct
+                                                                .success)
                                                     ? Stack(
                                                         alignment:
                                                             Alignment.center,
@@ -231,12 +268,98 @@ class _ProductDetailsSheetBottomBarState
                                                       )
                                                     : GestureDetector(
                                                         onTapDown: (details) {
+                                                          if (((prefsRepository
+                                                                              .marketToken
+                                                                              ?.length ??
+                                                                          0) <
+                                                                      5 ||
+                                                                  prefsRepository
+                                                                          .marketToken ==
+                                                                      "" ||
+                                                                  prefsRepository
+                                                                          .marketToken ==
+                                                                      null) &&
+                                                              GetIt.I<AuthBloc>()
+                                                                      .state
+                                                                      .registerGuestStatus !=
+                                                                  RegisterGuestStatus
+                                                                      .loading) {
+                                                            Future.delayed(
+                                                                Duration(
+                                                                    seconds: 1),
+                                                                () =>
+                                                                    showDialog(
+                                                                      context:
+                                                                          context,
+                                                                      builder: (context) =>
+                                                                          Center(
+                                                                              child: Container(
+                                                                        alignment:
+                                                                            Alignment.center,
+                                                                        width:
+                                                                            400,
+                                                                        height:
+                                                                            300,
+                                                                        child:
+                                                                            AlertDialog(
+                                                                          title:
+                                                                              MyTextWidget(
+                                                                            "${LocaleKeys.it_has_been_along_time_since_your_account.tr()}",
+                                                                          ),
+                                                                          actions: <Widget>[
+                                                                            Container(
+                                                                              alignment: Alignment.center,
+                                                                              width: 300,
+                                                                              child: Row(
+                                                                                mainAxisAlignment: (prefsRepository.isVerifiedPhonePeforeExpiredToken ?? false) ? MainAxisAlignment.center : MainAxisAlignment.spaceAround,
+                                                                                children: [
+                                                                                  (prefsRepository.isVerifiedPhonePeforeExpiredToken ?? false)
+                                                                                      ? SizedBox.shrink()
+                                                                                      : Container(
+                                                                                          alignment: Alignment.center,
+                                                                                          width: 130,
+                                                                                          child: AppElevatedButton(
+                                                                                            textStyle: TextStyle(fontSize: 16),
+                                                                                            onPressed: () async {
+                                                                                              Navigator.of(context).pop();
+                                                                                              String? deviceId = await HelperFunctions.getDeviceId();
+
+                                                                                              GetIt.I<AuthBloc>().add(RegisterGuestEvent(oldGuestUserId: prefsRepository.myMarketId.toString(), deviceId: deviceId!));
+                                                                                            },
+                                                                                            text: "${LocaleKeys.reset_your_count.tr()}",
+                                                                                          ),
+                                                                                        ),
+                                                                                  Container(
+                                                                                    alignment: Alignment.center,
+                                                                                    width: 130,
+                                                                                    child: AppElevatedButton(
+                                                                                      textStyle: TextStyle(fontSize: 16),
+                                                                                      onPressed: () {
+                                                                                        Navigator.of(context).pop();
+                                                                                        Navigator.of(context).push(PageRouteBuilder(
+                                                                                          pageBuilder: (context, animation, secondaryAnimation) => RegistrationPage(
+                                                                                            fromExpiredToken: true,
+                                                                                          ),
+                                                                                        ));
+                                                                                      },
+                                                                                      text: '${LocaleKeys.go_to_log_in.tr()}',
+                                                                                    ),
+                                                                                  ),
+                                                                                ],
+                                                                              ),
+                                                                            )
+                                                                          ],
+                                                                        ),
+                                                                      )),
+                                                                    ));
+                                                            return;
+                                                          }
                                                           if (currentTab != 3) {
                                                             print('open panel');
 
                                                             if (state.productStatus![
                                                                     widget
-                                                                        .productId] ==
+                                                                        .productIdForCashproducts] ==
                                                                 GetProductDetailWithoutSimilarRelatedProductsStatus
                                                                     .success) {
                                                               widget
@@ -273,7 +396,7 @@ class _ProductDetailsSheetBottomBarState
                                                                   UpdateListOfItemForAddToCartEvent(
                                                                       productId:
                                                                           widget
-                                                                              .productId,
+                                                                              .productIdForRequestApi,
                                                                       imageForAddToCart:
                                                                           imageForAddToCart,
                                                                       operation:
@@ -304,7 +427,7 @@ class _ProductDetailsSheetBottomBarState
                                                                 homeBloc.add(UpdateListOfItemForAddToCartEvent(
                                                                     productId:
                                                                         widget
-                                                                            .productId,
+                                                                            .productIdForRequestApi,
                                                                     imageForAddToCart:
                                                                         imageForAddToCart,
                                                                     operation:
@@ -343,7 +466,7 @@ class _ProductDetailsSheetBottomBarState
                                                                 homeBloc.add(UpdateListOfItemForAddToCartEvent(
                                                                     productId:
                                                                         widget
-                                                                            .productId,
+                                                                            .productIdForRequestApi,
                                                                     resetTheList:
                                                                         true,
                                                                     imageForAddToCart:
@@ -371,7 +494,7 @@ class _ProductDetailsSheetBottomBarState
                                                                   .value++;
                                                               homeBloc.add(UpdateListOfItemForAddToCartEvent(
                                                                   productId: widget
-                                                                      .productId,
+                                                                      .productIdForRequestApi,
                                                                   imageForAddToCart:
                                                                       imageForAddToCart,
                                                                   operation:
@@ -503,47 +626,44 @@ class _ProductDetailsSheetBottomBarState
                                                                                       ),
                                                                                       if (currentTab != 3) ...{
                                                                                         MyTextWidget(
-                                                                                          itemCount > 0 ? '$itemCount' : 'Add to bag',
+                                                                                          itemCount > 0 ? '$itemCount' : '${LocaleKeys.add.tr()} ${LocaleKeys.tto.tr()} ${LocaleKeys.bag.tr()}',
                                                                                           style: itemCount > 0 ? textTheme.titleMedium?.bq.copyWith(color: const Color(0xff505050)) : textTheme.titleMedium?.rq.copyWith(color: const Color(0xff505050)),
                                                                                         )
                                                                                       } else ...{
-                                                                                        Row(
-                                                                                          mainAxisAlignment: MainAxisAlignment.center,
-                                                                                          children: [
-                                                                                            MyTextWidget(
-                                                                                              'Add ',
-                                                                                              style: textTheme.titleMedium?.mq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
-                                                                                            ),
-                                                                                            MyTextWidget(
-                                                                                              'to bag ',
-                                                                                              style: textTheme.titleMedium?.rq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
-                                                                                            ),
-                                                                                            widget.colorNum == ""
-                                                                                                ? SizedBox.shrink()
-                                                                                                : MyTextWidget(
-                                                                                                    'color ',
-                                                                                                    style: textTheme.titleMedium?.rq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
-                                                                                                  ),
-                                                                                            widget.colorNum == ""
-                                                                                                ? SizedBox.shrink()
-                                                                                                : MyTextWidget(
-                                                                                                    '${widget.colorName} ',
-                                                                                                    style: textTheme.titleMedium?.mq.copyWith(height: 15 / 12, color: Color(int.parse('0xff${widget.colorNum.substring(1)}'))),
-                                                                                                  ),
-                                                                                            widget.size == ""
-                                                                                                ? SizedBox.shrink()
-                                                                                                : MyTextWidget(
-                                                                                                    'size ',
-                                                                                                    style: textTheme.titleMedium?.rq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
-                                                                                                  ),
-                                                                                            widget.size == ""
-                                                                                                ? SizedBox.shrink()
-                                                                                                : MyTextWidget(
-                                                                                                    '${widget.size} ',
-                                                                                                    style: textTheme.titleMedium?.mq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
-                                                                                                  ),
-                                                                                          ].reversed.toList(),
-                                                                                        )
+                                                                                        Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                                                                          MyTextWidget(
+                                                                                            '${LocaleKeys.add.tr()} ',
+                                                                                            style: textTheme.titleMedium?.mq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
+                                                                                          ),
+                                                                                          MyTextWidget(
+                                                                                            '${LocaleKeys.tto.tr()} ${LocaleKeys.bag.tr()} ',
+                                                                                            style: textTheme.titleMedium?.rq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
+                                                                                          ),
+                                                                                          widget.colorNum == ""
+                                                                                              ? SizedBox.shrink()
+                                                                                              : MyTextWidget(
+                                                                                                  '${LocaleKeys.color.tr()} ',
+                                                                                                  style: textTheme.titleMedium?.rq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
+                                                                                                ),
+                                                                                          widget.colorNum == ""
+                                                                                              ? SizedBox.shrink()
+                                                                                              : MyTextWidget(
+                                                                                                  '${widget.colorName} ',
+                                                                                                  style: textTheme.titleMedium?.mq.copyWith(height: 15 / 12, color: Color(int.parse('0xff${widget.colorNum.substring(1)}'))),
+                                                                                                ),
+                                                                                          widget.size == ""
+                                                                                              ? SizedBox.shrink()
+                                                                                              : MyTextWidget(
+                                                                                                  '${LocaleKeys.size.tr()} ',
+                                                                                                  style: textTheme.titleMedium?.rq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
+                                                                                                ),
+                                                                                          widget.size == ""
+                                                                                              ? SizedBox.shrink()
+                                                                                              : MyTextWidget(
+                                                                                                  '${widget.size} ',
+                                                                                                  style: textTheme.titleMedium?.mq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
+                                                                                                ),
+                                                                                        ])
                                                                                       }
                                                                                     ],
                                                                                   ),
@@ -618,7 +738,7 @@ class _ProductDetailsSheetBottomBarState
                                                               notificationTypeId:
                                                                   notificationTypeId,
                                                               productId: widget
-                                                                  .productId,
+                                                                  .productIdForRequestApi,
                                                               selectedColorName:
                                                                   widget
                                                                       .colorName,
@@ -659,7 +779,7 @@ class _ProductDetailsSheetBottomBarState
                                                   (state
                                                               .cachedProductWithoutRelatedProductsModel[
                                                                   widget
-                                                                      .productId]
+                                                                      .productIdForCashproducts]
                                                               ?.product
                                                               ?.isLiked ??
                                                           false)
@@ -670,11 +790,11 @@ class _ProductDetailsSheetBottomBarState
                                               )
                                             : BarWidget(
                                                 text:
-                                                    "${state.cachedProductWithoutRelatedProductsModel[widget.productId]?.product?.countOfLikes ?? 0}",
+                                                    "${state.cachedProductWithoutRelatedProductsModel[widget.productIdForCashproducts]?.product?.countOfLikes ?? 0}",
                                                 svgPath: (state
                                                             .cachedProductWithoutRelatedProductsModel[
                                                                 widget
-                                                                    .productId]
+                                                                    .productIdForCashproducts]
                                                             ?.product
                                                             ?.isLiked ??
                                                         false)
@@ -686,7 +806,7 @@ class _ProductDetailsSheetBottomBarState
                                                       productSlugForTopic: state
                                                               .cachedProductWithoutRelatedProductsModel[
                                                                   widget
-                                                                      .productId]
+                                                                      .productIdForCashproducts]
                                                               ?.product
                                                               ?.slugEnTopic ??
                                                           "",
@@ -695,19 +815,20 @@ class _ProductDetailsSheetBottomBarState
                                                       isFavourite: !(state
                                                               .cachedProductWithoutRelatedProductsModel[
                                                                   widget
-                                                                      .productId]
+                                                                      .productIdForCashproducts]
                                                               ?.product
                                                               ?.isLiked ??
                                                           false),
-                                                      productId:
-                                                          widget.productId));
+                                                      productId: widget
+                                                          .productIdForRequestApi));
                                                   widget.clickOnFavorite;
                                                 });
                                       },
                                     ),
                                     state
                                                 .getCommentForProductModel[
-                                                    widget.productId]
+                                                    widget
+                                                        .productIdForRequestApi]
                                                 ?.commentsForProduct
                                                 ?.commentsCount ==
                                             null
@@ -721,7 +842,7 @@ class _ProductDetailsSheetBottomBarState
                                           )
                                         : BarWidget(
                                             text:
-                                                '${state.getCommentForProductModel[widget.productId]?.commentsForProduct?.commentsCount ?? 0}',
+                                                '${state.getCommentForProductModel[widget.productIdForRequestApi]?.commentsForProduct?.commentsCount ?? 0}',
                                             svgPath: currentTab == 0
                                                 ? AppAssets.chatMarkActiveSvg
                                                 : AppAssets.chatMarkSvg,
@@ -731,13 +852,14 @@ class _ProductDetailsSheetBottomBarState
                                           previous.getSharedProductCountStatus !=
                                               current
                                                   .getSharedProductCountStatus ||
-                                          previous.getSharedProductCount?[
-                                                  widget.productId] !=
+                                          previous.getSharedProductCount?[widget
+                                                  .productIdForRequestApi] !=
                                               current.getSharedProductCount?[
-                                                  widget.productId],
+                                                  widget
+                                                      .productIdForRequestApi],
                                       builder: (context, state) {
-                                        return state.getSharedProductCount?[
-                                                        widget.productId] ==
+                                        return state.getSharedProductCount?[widget
+                                                        .productIdForRequestApi] ==
                                                     null &&
                                                 state.getSharedProductCountStatus ==
                                                     GetSharedProductCountStatus
@@ -751,7 +873,7 @@ class _ProductDetailsSheetBottomBarState
                                               )
                                             : BarWidget(
                                                 text:
-                                                    '${state.getSharedProductCount?[widget.productId] ?? "0"}',
+                                                    '${state.getSharedProductCount?[widget.productIdForRequestApi] ?? "0"}',
                                                 svgPath: AppAssets.shareSvg,
                                                 color: currentTab == 1
                                                     ? Color(0xff505050)

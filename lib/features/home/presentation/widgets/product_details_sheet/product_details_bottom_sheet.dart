@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart' as translate;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
@@ -6,14 +7,19 @@ import 'package:flutter_gallery_3d/gallery3d.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:local_hero/local_hero.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/common/constant/constant.dart';
+import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
+import 'package:trydos/features/app/app_elvated_button.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
+import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
+import 'package:trydos/features/authentication/presentation/pages/first_registeration_page.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
@@ -26,6 +32,8 @@ import 'package:flutter/cupertino.dart' as cupertino;
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_more_options_content.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_share_content.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/select_size_sheet.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/routes/router.dart';
 import '../../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
@@ -46,25 +54,27 @@ class ProductDetailsBottomSheet extends StatefulWidget {
   final String productSlugForTopic;
   final String productDescription;
   final String currentColornum;
-  final String currentSize;
+  final PanelController panelController;
+  final String productIdForCashData;
   final int countOfPieces;
+  final bool? fromListingPage;
   final String maxAllowedToAddCart;
   final ValueNotifier<int> addToBagButtonShapeNotifier;
-  final List<String> sizes;
-  final List<int> sizesQuantities;
+  final ValueNotifier<int>? tapIndexToAddProductToCart;
 
   const ProductDetailsBottomSheet(
       {super.key,
       required this.productItem,
+      this.tapIndexToAddProductToCart,
+      required this.productIdForCashData,
+      required this.panelController,
       required this.addToBagButtonShapeNotifier,
       required this.boutiqueIcon,
-      required this.sizes,
+      this.fromListingPage = false,
       required this.productSlugForTopic,
       required this.productDescription,
       required this.maxAllowedToAddCart,
-      required this.sizesQuantities,
       required this.countOfPieces,
-      required this.currentSize,
       required this.currentColornum,
       required this.boutiqueId,
       required this.currentColor,
@@ -79,10 +89,10 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
   final ValueNotifier<List<String>> idsOfChatCardsToShare = ValueNotifier([]);
   final ValueNotifier<int> currentActiveTab = ValueNotifier(-1);
   final ValueNotifier<double> workOnBlurNotifier = ValueNotifier(10);
-
+  PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   final ValueNotifier<String?> sizeIsNotAvailableNotifier = ValueNotifier(null);
   final PageController pageController = PageController();
-  final PanelController panelController = PanelController();
+
   Gallery3DController? gallery3dControllerForCircles;
   List<productListingModel.SyncColorImage> syncColorImageList = [];
   List<String> images = [];
@@ -93,12 +103,17 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
   late HomeBloc homeBloc;
   List<double>? orginalHeight;
   List<double>? orginalWidth;
-
+  String tag = '';
   @override
   void initState() {
+    if (widget.fromListingPage ?? false) {
+      currentActiveTab.value = 3;
+
+      tag = '';
+    }
     homeBloc = BlocProvider.of<HomeBloc>(context);
     int currentColor = homeBloc.state.currentSelectedColorForEveryProduct[
-            widget.productItem.id.toString()] ??
+            widget.productItem.productId.toString()] ??
         (widget.productItem.syncColorImages?.length ?? 0) ~/ 2;
     syncColorImageList = widget.productItem.syncColorImages ?? [];
     syncColorImageList.removeWhere((element) => element.images.isNullOrEmpty);
@@ -158,10 +173,21 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
 
   bool firstOpenOfPanel = true;
   bool hide = false;
-  String tag = '';
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     return LocalHeroScope(
       duration: Duration(milliseconds: 300),
       child: Column(
@@ -176,7 +202,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                     child: SlidingUpPanel(
                       denyVericalSliding: currentTab == 3
                           ? (currentPosition) {
-                              if (panelController.panelPosition != 1) {
+                              if (widget.panelController.panelPosition != 1) {
                                 return false;
                               }
                               if (gallery3dControllerForCircles != null) {
@@ -202,21 +228,136 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                               return userWantToScrollHorizontally;
                             }
                           : null,
-                      controller: panelController,
+                      controller: widget.panelController,
                       maxHeight: currentTab == -1
                           ? 78
                           : _focusNode.hasFocus
                               ? 575
                               : currentTab == 3
-                                  ? 1.sh - 180 //330.h + 70.w + 305
+                                  ? 1.sh - 179 //330.h + 70.w + 305
                                   : 433,
-                      minHeight: 78,
+                      minHeight: (widget.fromListingPage ?? false) ? 0 : 78,
                       onPanelClosed: () {
-                        homeBloc.add(UpdateListOfItemForAddToCartEvent(
+                        widget.tapIndexToAddProductToCart?.value = -1;
+                        widget.addToBagButtonShapeNotifier.value = 0;
+                        setState(
+                          () {
+                            tag = 'cart';
+                          },
+                        );
+                        /*   if ((prefsRepository.isTokenExpired ??
+                                false ||
+                                    prefsRepository.marketToken == "" ||
+                                    prefsRepository.marketToken == null) &&
+                            GetIt.I<AuthBloc>().state.registerGuestStatus !=
+                                RegisterGuestStatus.loading) {
+                          Future.delayed(
+                              Duration(seconds: 1),
+                              () => showDialog(
+                                    context: context,
+                                    builder: (context) => Center(
+                                        child: Container(
+                                      alignment: Alignment.center,
+                                      width: 400,
+                                      height: 300,
+                                      child: AlertDialog(
+                                        title: MyTextWidget(
+                                          "${LocaleKeys.it_has_been_along_time_since_your_account.tr()}",
+                                        ),
+                                        actions: <Widget>[
+                                          Container(
+                                            alignment: Alignment.center,
+                                            width: 300,
+                                            child: Row(
+                                              mainAxisAlignment: (prefsRepository
+                                                          .isVerifiedPhonePeforeExpiredToken ??
+                                                      false)
+                                                  ? MainAxisAlignment.center
+                                                  : MainAxisAlignment
+                                                      .spaceAround,
+                                              children: [
+                                                (prefsRepository
+                                                            .isVerifiedPhonePeforeExpiredToken ??
+                                                        false)
+                                                    ? SizedBox.shrink()
+                                                    : Container(
+                                                        alignment:
+                                                            Alignment.center,
+                                                        width: 130,
+                                                        child:
+                                                            AppElevatedButton(
+                                                          textStyle: TextStyle(
+                                                              fontSize: 16),
+                                                          onPressed: () async {
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop();
+                                                            String? deviceId =
+                                                                await HelperFunctions
+                                                                    .getDeviceId();
+
+                                                            GetIt.I<AuthBloc>().add(RegisterGuestEvent(
+                                                                oldGuestUserId:
+                                                                    prefsRepository
+                                                                        .myMarketId
+                                                                        .toString(),
+                                                                deviceId:
+                                                                    deviceId!));
+                                                          },
+                                                          text:
+                                                              "${LocaleKeys.reset_your_count.tr()}",
+                                                        ),
+                                                      ),
+                                                Container(
+                                                  alignment: Alignment.center,
+                                                  width: 130,
+                                                  child: AppElevatedButton(
+                                                    textStyle:
+                                                        TextStyle(fontSize: 16),
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+
+                                                      Navigator.of(context)
+                                                          .push(
+                                                              PageRouteBuilder(
+                                                        pageBuilder: (context,
+                                                                animation,
+                                                                secondaryAnimation) =>
+                                                            RegistrationPage(
+                                                          fromExpiredToken:
+                                                              true,
+                                                        ),
+                                                      ));
+                                                    },
+                                                    text:
+                                                        '${LocaleKeys.go_to_log_in.tr()}',
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    )),
+                                  ));
+                          return;
+                        }*/
+                        homeBloc.add(
+                          AddMultiItemsToCartEvent(
+                            maxAllowed: widget.maxAllowedToAddCart,
+                            boutiqueIcon: widget.boutiqueIcon,
+                            productSlugForTopic: widget.productSlugForTopic,
+                            boutiqueId: widget.boutiqueId,
+                            products: widget.productItem,
+                            id: widget.productItem.productId.toString(),
+                          ),
+                        );
+                        /*   homeBloc.add(UpdateListOfItemForAddToCartEvent(
                             imageForAddToCart: ImageForAddToCart(),
                             operation: "remove",
                             productId: widget.productItem.id.toString(),
-                            resetTheList: true));
+                            resetTheList: true));*/
                         sizeIsNotAvailableNotifier.value = null;
                         firstOpenOfPanel = true;
                         denySlidingBackForSlidingUpPanels.value = false;
@@ -332,7 +473,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                                     .length ~/
                                                                 2),
                                                     productId: widget
-                                                        .productItem.id
+                                                        .productItem.productId
                                                         .toString()));
                                           },
                                           itemConfig: GalleryItemConfig(
@@ -414,6 +555,8 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                           current
                                               .getProductDetailWithoutSimilarRelatedProductsStatus,
                                   builder: (context, state) {
+                                    print(
+                                        "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!${widget.productItem.price!}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!${state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!}");
                                     return ProductDetailsSheetHeader(
                                       decimalPoint: state.startingSetting
                                               ?.decimalPointSetting ??
@@ -432,9 +575,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                   .data!
                                                   .currency!
                                                   .exchangeRate!)
-                                          .toStringAsFixed(state.startingSetting
-                                                  ?.decimalPointSetting ??
-                                              2),
+                                          .toString(),
                                       offerPrice: (widget
                                                   .productItem.offerPrice! *
                                               state
@@ -442,9 +583,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                   .data!
                                                   .currency!
                                                   .exchangeRate!)
-                                          .toStringAsFixed(state.startingSetting
-                                                  ?.decimalPointSetting ??
-                                              2),
+                                          .toString(),
                                     );
                                   }),
                               currentTab != -1
@@ -460,7 +599,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                           ),
                           currentTab < 3 && currentTab >= 0
                               ? SizedBox(
-                                  height: 358,
+                                  height: 358.h,
                                   child: PageView(
                                     physics:
                                         const cupertino.ClampingScrollPhysics(),
@@ -476,21 +615,44 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                     },
                                     children: [
                                       ProductDetailsSheetCommentsContent(
-                                          productId:
-                                              widget.productItem.id.toString(),
+                                          productSlugForTopic:
+                                              widget.productSlugForTopic,
+                                          productSlug:
+                                              widget.productItem.slug ?? "",
+                                          productId: widget
+                                              .productItem.productId
+                                              .toString(),
                                           scrollController: currentTab == 0
                                               ? controller
                                               : null),
-                                      ProductDetailsSheetShareContent(
-                                          productDescription:
-                                              widget.productDescription,
-                                          productItem: widget.productItem,
-                                          focusNode: _focusNode,
-                                          scrollController: currentTab == 1
-                                              ? controller
-                                              : null,
-                                          idsOfChatCardsToShare:
-                                              idsOfChatCardsToShare),
+                                      BlocBuilder<HomeBloc, HomeState>(
+                                          buildWhen: (p, c) =>
+                                              p.CurrentColorSizeForCart?[
+                                                  "size"] !=
+                                              c.CurrentColorSizeForCart?[
+                                                  "size"],
+                                          builder: (context, state) {
+                                            return ProductDetailsSheetShareContent(
+                                                currentSize: state
+                                                            .CurrentColorSizeForCart !=
+                                                        null
+                                                    ? state.CurrentColorSizeForCart![
+                                                            "size"] ??
+                                                        ""
+                                                    : "",
+                                                currentColor:
+                                                    widget.currentColorName,
+                                                productDescription:
+                                                    widget.productDescription,
+                                                productItem: widget.productItem,
+                                                focusNode: _focusNode,
+                                                scrollController:
+                                                    currentTab == 1
+                                                        ? controller
+                                                        : null,
+                                                idsOfChatCardsToShare:
+                                                    idsOfChatCardsToShare);
+                                          }),
                                       ProductDetailsSheetMoreOptionsContent(
                                         productSlugForTopic:
                                             widget.productSlugForTopic,
@@ -498,8 +660,8 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                             widget.productItem.slug ?? "",
                                         scrollController:
                                             currentTab == 2 ? controller : null,
-                                        productId:
-                                            widget.productItem.id.toString(),
+                                        productId: widget.productItem.productId
+                                            .toString(),
                                       )
                                     ],
                                   ),
@@ -508,17 +670,22 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                   ? BlocBuilder<HomeBloc, HomeState>(
                                       buildWhen: (p, c) =>
                                           p.currentSelectedColorForEveryProduct[
-                                              widget.productItem.id
-                                                  .toString()] !=
-                                          c.currentSelectedColorForEveryProduct[
-                                              widget.productItem.id.toString()],
+                                                  widget.productItem.productId
+                                                      .toString()] !=
+                                              c.currentSelectedColorForEveryProduct[
+                                                  widget.productItem.productId
+                                                      .toString()] ||
+                                          p.CurrentColorSizeForCart?["size"] !=
+                                              c.CurrentColorSizeForCart?[
+                                                  "size"],
                                       builder: (context, state) {
                                         return SelectSizeContent(
-                                          productId:
-                                              widget.productItem.id.toString(),
-                                          sizes: widget.sizes,
+                                          productId: widget
+                                              .productItem.productId
+                                              .toString(),
+                                          sizes: state.sizes ?? [],
                                           sizesQuantities:
-                                              widget.sizesQuantities,
+                                              state.sizesQuantities ?? [],
                                           scrollController: controller,
                                           selectedColorName: widget.productItem
                                                   .colors.isNullOrEmpty
@@ -527,7 +694,8 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                   .productItem
                                                   .colors![state
                                                               .currentSelectedColorForEveryProduct[
-                                                          widget.productItem.id
+                                                          widget.productItem
+                                                              .productId
                                                               .toString()] ??
                                                       (widget
                                                                   .productItem
@@ -541,7 +709,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                   .colors.isNullOrEmpty
                                               ? null
                                               : Color(int.parse(
-                                                  '0xff${widget.productItem.colors![state.currentSelectedColorForEveryProduct[widget.productItem.id.toString()] ?? (widget.productItem.syncColorImages?.length ?? 0) ~/ 2].color!.substring(1)}')),
+                                                  '0xff${widget.productItem.colors![state.currentSelectedColorForEveryProduct[widget.productItem.productId.toString()] ?? (widget.productItem.syncColorImages?.length ?? 0) ~/ 2].color!.substring(1)}')),
                                           sizeIsNotAvailableNotifier:
                                               sizeIsNotAvailableNotifier,
                                           addToBagButtonShapeNotifier: widget
@@ -607,113 +775,245 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
               valueListenable: idsOfChatCardsToShare,
               builder: (context, channelIds, _) {
                 return channelIds.isEmpty
-                    ? ProductDetailsSheetBottomBar(
-                        productSlug: widget.productItem.slug ?? "",
-                        countOfPieces: widget.countOfPieces,
-                        colorNum: widget.currentColornum,
-                        size: widget.currentSize,
-                        colorName: widget.currentColorName,
-                        productId: widget.productItem.id.toString(),
-                        imageUrl:
-                            !widget.productItem.syncColorImages.isNullOrEmpty
-                                ? widget
-                                        .productItem
-                                        .syncColorImages![widget.currentColor]
-                                        .images![0]
-                                        .filePath ??
-                                    ""
-                                : widget
-                                        .productItem
-                                        .images![widget.currentColor]
-                                        .filePath ??
-                                    "",
-                        onFinishBuying: (quantity) {
-                          homeBloc.add(
-                            AddMultiItemsToCartEvent(
-                              maxAllowed: widget.maxAllowedToAddCart,
-                              boutiqueIcon: widget.boutiqueIcon,
-                              productSlugForTopic: widget.productSlugForTopic,
-                              boutiqueId: widget.boutiqueId,
-                              products: widget.productItem,
-                              id: widget.productItem.id.toString(),
-                            ),
-                          );
-                          setState(
-                            () {
-                              tag = 'cart';
-                            },
-                          );
-                        },
-                        panelController: panelController,
-                        clickOnComments: () {
-                          panelController.open();
-                          currentActiveTab.value = 0;
-                          WidgetsBinding.instance.addPostFrameCallback(
-                            (_) {
-                              pageController.jumpToPage(0);
-                            },
-                          );
-                          //////////////////////////////
-                          FirebaseAnalyticsService.logEventForSession(
-                            eventName: AnalyticsEventsConst.buttonClicked,
-                            executedEventName: AnalyticsExecutedEventNameConst
-                                .showCommentsButton,
-                          );
-                        },
-                        clickOnFavorite: () {
-                          currentActiveTab.value = -1;
-                          //////////////////////////////
-                          FirebaseAnalyticsService.logEventForSession(
-                            eventName: AnalyticsEventsConst.buttonClicked,
-                            executedEventName: AnalyticsExecutedEventNameConst
-                                .likeProductButton,
-                          );
-                        },
-                        clickOnMoreOptions: () {
-                          panelController.open();
-                          currentActiveTab.value = 2;
-                          WidgetsBinding.instance.addPostFrameCallback(
-                            (_) {
-                              pageController.jumpToPage(2);
-                            },
-                          );
-                          //////////////////////////////
-                          FirebaseAnalyticsService.logEventForSession(
-                            eventName: AnalyticsEventsConst.buttonClicked,
-                            executedEventName: AnalyticsExecutedEventNameConst
-                                .moreOptionsButton,
-                          );
-                        },
-                        clickOnShare: () {
-                          panelController.open();
-                          currentActiveTab.value = 1;
-                          WidgetsBinding.instance.addPostFrameCallback(
-                            (_) {
-                              pageController.jumpToPage(1);
-                            },
-                          );
-                          if (GetIt.I<PrefsRepository>().chatToken != null) {
-                            BlocProvider.of<ChatBloc>(context)
-                                .add(GetChatsEvent());
-                            BlocProvider.of<ChatBloc>(context)
-                                .add(SaveContactsEvent());
-                          }
-                          //////////////////////////////
-                          FirebaseAnalyticsService.logEventForSession(
-                            eventName: AnalyticsEventsConst.buttonClicked,
-                            executedEventName: AnalyticsExecutedEventNameConst
-                                .shareProductButton,
-                          );
-                        },
-                        currentActiveTab: currentActiveTab,
-                        sizeIsNotAvailableNotifier: sizeIsNotAvailableNotifier,
-                        addToBagButtonShapeNotifier:
-                            widget.addToBagButtonShapeNotifier)
+                    ? BlocBuilder<HomeBloc, HomeState>(
+                        buildWhen: (p, c) =>
+                            p.CurrentColorSizeForCart?["size"] !=
+                            c.CurrentColorSizeForCart?["size"],
+                        builder: (context, state) {
+                          return ProductDetailsSheetBottomBar(
+                              productSlug: widget.productItem.slug ?? "",
+                              countOfPieces: widget.countOfPieces,
+                              colorNum: widget.currentColornum,
+                              size: state.CurrentColorSizeForCart != null
+                                  ? state.CurrentColorSizeForCart!["size"] ?? ""
+                                  : "",
+                              colorName: widget.currentColorName,
+                              productIdForCashproducts:
+                                  widget.productIdForCashData,
+                              productIdForRequestApi:
+                                  widget.productItem.productId.toString(),
+                              imageUrl: !widget
+                                      .productItem.syncColorImages.isNullOrEmpty
+                                  ? widget
+                                          .productItem
+                                          .syncColorImages![widget.currentColor]
+                                          .images![0]
+                                          .filePath ??
+                                      ""
+                                  : widget
+                                          .productItem
+                                          .images![widget.currentColor]
+                                          .filePath ??
+                                      "",
+                              onFinishBuying: (quantity) {
+                                /*   if ((prefsRepository.isTokenExpired ??
+                                        false ||
+                                            prefsRepository.marketToken == "" ||
+                                            prefsRepository.marketToken ==
+                                                null) &&
+                                    GetIt.I<AuthBloc>()
+                                            .state
+                                            .registerGuestStatus !=
+                                        RegisterGuestStatus.loading) {
+                                  Future.delayed(
+                                      Duration(seconds: 1),
+                                      () => showDialog(
+                                            context: context,
+                                            builder: (context) => Center(
+                                                child: Container(
+                                              alignment: Alignment.center,
+                                              width: 400,
+                                              height: 300,
+                                              child: AlertDialog(
+                                                title: MyTextWidget(
+                                                  "${LocaleKeys.it_has_been_along_time_since_your_account.tr()}",
+                                                ),
+                                                actions: <Widget>[
+                                                  Container(
+                                                    alignment: Alignment.center,
+                                                    width: 300,
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          (prefsRepository
+                                                                      .isVerifiedPhonePeforeExpiredToken ??
+                                                                  false)
+                                                              ? MainAxisAlignment
+                                                                  .center
+                                                              : MainAxisAlignment
+                                                                  .spaceAround,
+                                                      children: [
+                                                        (prefsRepository
+                                                                    .isVerifiedPhonePeforeExpiredToken ??
+                                                                false)
+                                                            ? SizedBox.shrink()
+                                                            : Container(
+                                                                alignment:
+                                                                    Alignment
+                                                                        .center,
+                                                                width: 130,
+                                                                child:
+                                                                    AppElevatedButton(
+                                                                  textStyle:
+                                                                      TextStyle(
+                                                                          fontSize:
+                                                                              16),
+                                                                  onPressed:
+                                                                      () async {
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop();
+                                                                    String?
+                                                                        deviceId =
+                                                                        await HelperFunctions
+                                                                            .getDeviceId();
+
+                                                                    GetIt.I<AuthBloc>().add(RegisterGuestEvent(
+                                                                        oldGuestUserId: prefsRepository
+                                                                            .myMarketId
+                                                                            .toString(),
+                                                                        deviceId:
+                                                                            deviceId!));
+                                                                  },
+                                                                  text:
+                                                                      "${LocaleKeys.reset_your_count.tr()}",
+                                                                ),
+                                                              ),
+                                                        Container(
+                                                          alignment:
+                                                              Alignment.center,
+                                                          width: 130,
+                                                          child:
+                                                              AppElevatedButton(
+                                                            textStyle:
+                                                                TextStyle(
+                                                                    fontSize:
+                                                                        16),
+                                                            onPressed: () {
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop();
+
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .push(
+                                                                      PageRouteBuilder(
+                                                                pageBuilder: (context,
+                                                                        animation,
+                                                                        secondaryAnimation) =>
+                                                                    RegistrationPage(
+                                                                  fromExpiredToken:
+                                                                      true,
+                                                                ),
+                                                              ));
+                                                            },
+                                                            text:
+                                                                '${LocaleKeys.go_to_log_in.tr()}',
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            )),
+                                          ));
+                                  return;
+                                }*/
+                                homeBloc.add(
+                                  AddMultiItemsToCartEvent(
+                                    maxAllowed: widget.maxAllowedToAddCart,
+                                    boutiqueIcon: widget.boutiqueIcon,
+                                    productSlugForTopic:
+                                        widget.productSlugForTopic,
+                                    boutiqueId: widget.boutiqueId,
+                                    products: widget.productItem,
+                                    id: widget.productItem.productId.toString(),
+                                  ),
+                                );
+                                setState(
+                                  () {
+                                    tag = 'cart';
+                                  },
+                                );
+                              },
+                              panelController: widget.panelController,
+                              clickOnComments: () {
+                                widget.panelController.open();
+                                currentActiveTab.value = 0;
+                                WidgetsBinding.instance.addPostFrameCallback(
+                                  (_) {
+                                    pageController.jumpToPage(0);
+                                  },
+                                );
+                                //////////////////////////////
+                                FirebaseAnalyticsService.logEventForSession(
+                                  eventName: AnalyticsEventsConst.buttonClicked,
+                                  executedEventName:
+                                      AnalyticsExecutedEventNameConst
+                                          .showCommentsButton,
+                                );
+                              },
+                              clickOnFavorite: () {
+                                currentActiveTab.value = -1;
+                                //////////////////////////////
+                                FirebaseAnalyticsService.logEventForSession(
+                                  eventName: AnalyticsEventsConst.buttonClicked,
+                                  executedEventName:
+                                      AnalyticsExecutedEventNameConst
+                                          .likeProductButton,
+                                );
+                              },
+                              clickOnMoreOptions: () {
+                                widget.panelController.open();
+                                currentActiveTab.value = 2;
+                                WidgetsBinding.instance.addPostFrameCallback(
+                                  (_) {
+                                    pageController.jumpToPage(2);
+                                  },
+                                );
+                                //////////////////////////////
+                                FirebaseAnalyticsService.logEventForSession(
+                                  eventName: AnalyticsEventsConst.buttonClicked,
+                                  executedEventName:
+                                      AnalyticsExecutedEventNameConst
+                                          .moreOptionsButton,
+                                );
+                              },
+                              clickOnShare: () {
+                                widget.panelController.open();
+                                currentActiveTab.value = 1;
+                                WidgetsBinding.instance.addPostFrameCallback(
+                                  (_) {
+                                    pageController.jumpToPage(1);
+                                  },
+                                );
+                                if (GetIt.I<PrefsRepository>().chatToken !=
+                                    null) {
+                                  BlocProvider.of<ChatBloc>(context)
+                                      .add(GetChatsEvent());
+                                  BlocProvider.of<ChatBloc>(context)
+                                      .add(SaveContactsEvent());
+                                }
+                                //////////////////////////////
+                                FirebaseAnalyticsService.logEventForSession(
+                                  eventName: AnalyticsEventsConst.buttonClicked,
+                                  executedEventName:
+                                      AnalyticsExecutedEventNameConst
+                                          .shareProductButton,
+                                );
+                              },
+                              currentActiveTab: currentActiveTab,
+                              sizeIsNotAvailableNotifier:
+                                  sizeIsNotAvailableNotifier,
+                              addToBagButtonShapeNotifier:
+                                  widget.addToBagButtonShapeNotifier);
+                        })
                     : ShareButton(
                         onTap: () {
                           BlocProvider.of<ChatBloc>(context).add(
                               ShareProductWithContactsOrChannelsEvent(
-                                  productId: widget.productItem.id.toString(),
+                                  productId:
+                                      widget.productItem.productId.toString(),
                                   productName:
                                       widget.productItem.name.toString(),
                                   productSlug:
@@ -798,7 +1098,7 @@ class ShareButton extends StatelessWidget {
                     ),
                     10.horizontalSpace,
                     MyTextWidget(
-                      'Send',
+                      '${LocaleKeys.send.tr()}',
                       style: context.textTheme.bodyLarge?.rq
                           .copyWith(color: Colors.white),
                     )

@@ -16,6 +16,11 @@ import '../../../../../service/firebase_analytics_service/firebase_analytics_ser
 import '../../../data/models/get_product_filters_model.dart';
 import '../../../data/models/get_product_listing_with_filters_model.dart';
 import '../../manager/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 
 class CategoriesFilterList extends StatelessWidget {
   CategoriesFilterList(
@@ -33,6 +38,7 @@ class CategoriesFilterList extends StatelessWidget {
   final ValueNotifier<bool> scaleTheTopItemInFiltersStack;
   final bool workWithChoosedFilter;
   final bool fromSearch;
+
   final Filter filterss;
   final TextEditingController? controller;
   final String boutiqueSlug;
@@ -40,6 +46,18 @@ class CategoriesFilterList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+    };
     HomeBloc homeBloc = BlocProvider.of<HomeBloc>(context);
 
     String key = boutiqueSlug + (category ?? '');
@@ -64,8 +82,6 @@ class CategoriesFilterList extends StatelessWidget {
         Filter? appliedFilters = state.appliedFiltersByUser[key]?.filters;
         if (((choosedFilters?.categories?.length ?? 0) == 0) &&
             (appliedFilters?.categories?.length ?? 0) == 0) {
-          print(
-              "---------------+++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
           expandingFiltersStack.value = -1;
         }
         print(filters.categories?.length ?? 0);
@@ -428,7 +444,7 @@ class CategoriesFilterList extends StatelessWidget {
                                         scale: scale,
                                         paddingValue: 2,
                                         isExpanded: (currentExpandedIndex == index),
-                                        displayFilterMark: (isChildCategorySlug || (!workWithChoosedFilter ? ((appliedFilters?.categories?.isNullOrEmpty ?? true) ? false : appliedFilters!.categories!.any((element) => element.slug == filters.categories![index].slug)) : ((choosedFilters?.categories?.isNullOrEmpty ?? true) ? false : choosedFilters!.categories!.any((element) => element.slug == filters.categories![index].slug)))),
+                                        displayFilterMark: (isChildCategorySlug || (!workWithChoosedFilter ? ((appliedFilters?.categories?.isNullOrEmpty ?? true) ? false : appliedFilters!.categories!.any((element) => (element.slug == filters.categories![index].slug))) : ((choosedFilters?.categories?.isNullOrEmpty ?? true) ? false : choosedFilters!.categories!.any((element) => element.slug == filters.categories![index].slug)))),
                                         addOrRemoveSpecificFilter: (bool add) {
                                           if (appliedFilters?.categories ==
                                                   null &&
@@ -594,6 +610,8 @@ class CategoriesFilterList extends StatelessWidget {
                     );
                   });
             } else {
+              print(
+                  "^^^^^*******************************************${(appliedFilters?.categories?.isNullOrEmpty ?? true)}}****************************************${isChildCategorySlug || !workWithChoosedFilter}");
               return filters.categories![index].mostViewedProductThumbnail !=
                       null
                   ? FilterCircleWidget(
