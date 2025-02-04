@@ -57,16 +57,20 @@ class ProductDetailsBottomSheet extends StatefulWidget {
   final PanelController panelController;
   final String productIdForCashData;
   final int countOfPieces;
+  final bool? fromListingPage;
   final String maxAllowedToAddCart;
   final ValueNotifier<int> addToBagButtonShapeNotifier;
+  final ValueNotifier<int>? tapIndexToAddProductToCart;
 
   const ProductDetailsBottomSheet(
       {super.key,
       required this.productItem,
+      this.tapIndexToAddProductToCart,
       required this.productIdForCashData,
       required this.panelController,
       required this.addToBagButtonShapeNotifier,
       required this.boutiqueIcon,
+      this.fromListingPage = false,
       required this.productSlugForTopic,
       required this.productDescription,
       required this.maxAllowedToAddCart,
@@ -99,12 +103,17 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
   late HomeBloc homeBloc;
   List<double>? orginalHeight;
   List<double>? orginalWidth;
-
+  String tag = '';
   @override
   void initState() {
+    if (widget.fromListingPage ?? false) {
+      currentActiveTab.value = 3;
+
+      tag = '';
+    }
     homeBloc = BlocProvider.of<HomeBloc>(context);
     int currentColor = homeBloc.state.currentSelectedColorForEveryProduct[
-            widget.productItem.id.toString()] ??
+            widget.productItem.productId.toString()] ??
         (widget.productItem.syncColorImages?.length ?? 0) ~/ 2;
     syncColorImageList = widget.productItem.syncColorImages ?? [];
     syncColorImageList.removeWhere((element) => element.images.isNullOrEmpty);
@@ -164,7 +173,6 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
 
   bool firstOpenOfPanel = true;
   bool hide = false;
-  String tag = '';
 
   @override
   Widget build(BuildContext context) {
@@ -226,17 +234,18 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                           : _focusNode.hasFocus
                               ? 575
                               : currentTab == 3
-                                  ? 1.sh - 180 //330.h + 70.w + 305
+                                  ? 1.sh - 179 //330.h + 70.w + 305
                                   : 433,
-                      minHeight: 78,
+                      minHeight: (widget.fromListingPage ?? false) ? 0 : 78,
                       onPanelClosed: () {
+                        widget.tapIndexToAddProductToCart?.value = -1;
                         widget.addToBagButtonShapeNotifier.value = 0;
                         setState(
                           () {
                             tag = 'cart';
                           },
                         );
-                        if ((prefsRepository.isTokenExpired ??
+                        /*   if ((prefsRepository.isTokenExpired ??
                                 false ||
                                     prefsRepository.marketToken == "" ||
                                     prefsRepository.marketToken == null) &&
@@ -333,7 +342,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                     )),
                                   ));
                           return;
-                        }
+                        }*/
                         homeBloc.add(
                           AddMultiItemsToCartEvent(
                             maxAllowed: widget.maxAllowedToAddCart,
@@ -341,7 +350,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                             productSlugForTopic: widget.productSlugForTopic,
                             boutiqueId: widget.boutiqueId,
                             products: widget.productItem,
-                            id: widget.productItem.id.toString(),
+                            id: widget.productItem.productId.toString(),
                           ),
                         );
                         /*   homeBloc.add(UpdateListOfItemForAddToCartEvent(
@@ -464,7 +473,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                                     .length ~/
                                                                 2),
                                                     productId: widget
-                                                        .productItem.id
+                                                        .productItem.productId
                                                         .toString()));
                                           },
                                           itemConfig: GalleryItemConfig(
@@ -590,7 +599,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                           ),
                           currentTab < 3 && currentTab >= 0
                               ? SizedBox(
-                                  height: 358,
+                                  height: 358.h,
                                   child: PageView(
                                     physics:
                                         const cupertino.ClampingScrollPhysics(),
@@ -610,8 +619,9 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                               widget.productSlugForTopic,
                                           productSlug:
                                               widget.productItem.slug ?? "",
-                                          productId:
-                                              widget.productItem.id.toString(),
+                                          productId: widget
+                                              .productItem.productId
+                                              .toString(),
                                           scrollController: currentTab == 0
                                               ? controller
                                               : null),
@@ -650,8 +660,8 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                             widget.productItem.slug ?? "",
                                         scrollController:
                                             currentTab == 2 ? controller : null,
-                                        productId:
-                                            widget.productItem.id.toString(),
+                                        productId: widget.productItem.productId
+                                            .toString(),
                                       )
                                     ],
                                   ),
@@ -660,18 +670,19 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                   ? BlocBuilder<HomeBloc, HomeState>(
                                       buildWhen: (p, c) =>
                                           p.currentSelectedColorForEveryProduct[
-                                                  widget.productItem.id
+                                                  widget.productItem.productId
                                                       .toString()] !=
                                               c.currentSelectedColorForEveryProduct[
-                                                  widget.productItem.id
+                                                  widget.productItem.productId
                                                       .toString()] ||
                                           p.CurrentColorSizeForCart?["size"] !=
                                               c.CurrentColorSizeForCart?[
                                                   "size"],
                                       builder: (context, state) {
                                         return SelectSizeContent(
-                                          productId:
-                                              widget.productItem.id.toString(),
+                                          productId: widget
+                                              .productItem.productId
+                                              .toString(),
                                           sizes: state.sizes ?? [],
                                           sizesQuantities:
                                               state.sizesQuantities ?? [],
@@ -683,7 +694,8 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                   .productItem
                                                   .colors![state
                                                               .currentSelectedColorForEveryProduct[
-                                                          widget.productItem.id
+                                                          widget.productItem
+                                                              .productId
                                                               .toString()] ??
                                                       (widget
                                                                   .productItem
@@ -697,7 +709,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                   .colors.isNullOrEmpty
                                               ? null
                                               : Color(int.parse(
-                                                  '0xff${widget.productItem.colors![state.currentSelectedColorForEveryProduct[widget.productItem.id.toString()] ?? (widget.productItem.syncColorImages?.length ?? 0) ~/ 2].color!.substring(1)}')),
+                                                  '0xff${widget.productItem.colors![state.currentSelectedColorForEveryProduct[widget.productItem.productId.toString()] ?? (widget.productItem.syncColorImages?.length ?? 0) ~/ 2].color!.substring(1)}')),
                                           sizeIsNotAvailableNotifier:
                                               sizeIsNotAvailableNotifier,
                                           addToBagButtonShapeNotifier: widget
@@ -779,7 +791,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                               productIdForCashproducts:
                                   widget.productIdForCashData,
                               productIdForRequestApi:
-                                  widget.productItem.id.toString(),
+                                  widget.productItem.productId.toString(),
                               imageUrl: !widget
                                       .productItem.syncColorImages.isNullOrEmpty
                                   ? widget
@@ -794,7 +806,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                           .filePath ??
                                       "",
                               onFinishBuying: (quantity) {
-                                if ((prefsRepository.isTokenExpired ??
+                                /*   if ((prefsRepository.isTokenExpired ??
                                         false ||
                                             prefsRepository.marketToken == "" ||
                                             prefsRepository.marketToken ==
@@ -906,7 +918,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                             )),
                                           ));
                                   return;
-                                }
+                                }*/
                                 homeBloc.add(
                                   AddMultiItemsToCartEvent(
                                     maxAllowed: widget.maxAllowedToAddCart,
@@ -915,7 +927,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                         widget.productSlugForTopic,
                                     boutiqueId: widget.boutiqueId,
                                     products: widget.productItem,
-                                    id: widget.productItem.id.toString(),
+                                    id: widget.productItem.productId.toString(),
                                   ),
                                 );
                                 setState(
@@ -1000,7 +1012,8 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                         onTap: () {
                           BlocProvider.of<ChatBloc>(context).add(
                               ShareProductWithContactsOrChannelsEvent(
-                                  productId: widget.productItem.id.toString(),
+                                  productId:
+                                      widget.productItem.productId.toString(),
                                   productName:
                                       widget.productItem.name.toString(),
                                   productSlug:

@@ -15,6 +15,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mime/mime.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/base_page.dart';
 import 'package:trydos/common/constant/design/constant_design.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
@@ -33,6 +34,7 @@ import 'package:trydos/features/home/data/models/get_product_listing_without_fil
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
+import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_bottom_sheet.dart';
 import 'package:trydos/features/search/presentation/widgets/search_with_image_related_gemini.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/routes/router.dart';
@@ -108,6 +110,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
   double? _previousOffset;
   final FocusNode focusNode = FocusNode();
   final ValueNotifier<int> expandingFiltersStack = ValueNotifier(-1);
+
+  final ValueNotifier<int> tapIndexToAddProductToCart = ValueNotifier(-1);
   final ValueNotifier<bool> searchVisible = ValueNotifier(true);
 
   final TextEditingController controller = TextEditingController();
@@ -115,15 +119,18 @@ class _ProductListingPageState extends State<ProductListingPage> {
   final GlobalKey htmlDescriptionKey = GlobalKey();
   final ValueNotifier<double> htmlDescriptionHeight = ValueNotifier(0);
   final ScrollController scrollController = ScrollController();
+  final ValueNotifier<int> addToBagButtonShapeNotifier = ValueNotifier(0);
   final ValueNotifier<Tuple2<int, int>> setThisEnabledNotifier =
       ValueNotifier(Tuple2(-1, -1));
   final ValueNotifier<String?> showTitleForFilterList = ValueNotifier(null);
   final ValueNotifier<bool> displayBoutiqueIconInAppBar = ValueNotifier(false);
   final ValueNotifier<bool> fromSearchListing = ValueNotifier(false);
+  final PanelController panelControllerForCart = PanelController();
   bool isExpanded = false;
   final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   bool? fromSearch;
   SpeechToText _speechToText = SpeechToText();
+
   final ValueNotifier<bool> isRecordeForSearchWithMic = ValueNotifier(false);
 
   bool itExpendForFirst = true;
@@ -134,6 +141,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
   Key gridViewKeyForRendering = UniqueKey();
   bool _speechEnabled = false;
 
+  List<filter_products.Products> products = [];
   void _startListening() async {
     if (!_speechEnabled) {
       _speechEnabled = await _speechToText.initialize();
@@ -368,7 +376,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
     };
     return WillPopScope(
       onWillPop: () async {
-        FocusScope.of(context).unfocus();
+        try {
+          if (panelControllerForCart.isPanelOpen) {
+            panelControllerForCart.close();
+            return Future.value(false);
+          }
+        } catch (e) {}
         if (widget.fromBackground) {
           context.go(GRouter.config.kRootRoute);
 
@@ -632,6 +645,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                         onBack: () {
                                                           FocusScope.of(context)
                                                               .unfocus();
+                                                          try {
+                                                            if (panelControllerForCart
+                                                                .isPanelOpen) {
+                                                              panelControllerForCart
+                                                                  .close();
+                                                              return;
+                                                            }
+                                                          } catch (e) {}
                                                           if (widget
                                                               .fromBackground) {
                                                             context.go(GRouter
@@ -830,7 +851,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
                                                                 resetSearchAfterSearchingWhileRemoveSearch =
                                                                     false;
-                                                                focusNode
+                                                                FocusScope.of(
+                                                                        context)
                                                                     .unfocus();
 
                                                                 searchVisible
@@ -2114,9 +2136,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                           true));
                                             }
 
-                                            List<filter_products.Products>
-                                                products = [];
-
                                             if (state.getProductListingWithFiltersPaginationWithPrefetchModels[
                                                         "${widget.boutiqueSlug}" +
                                                             "${currentAppliedFilterSllug}" +
@@ -2184,7 +2203,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                         .viewedProduct,
                                                                 productId: products[
                                                                         index]
-                                                                    .id
+                                                                    .productId
                                                                     .toString(),
                                                                 productName: products[
                                                                         index]
@@ -2250,6 +2269,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                               : null,
                                                           slidingModeItem:
                                                               slidingMode,
+                                                          tapIndexToAddProductToCart:
+                                                              tapIndexToAddProductToCart,
                                                           productItem:
                                                               products[index],
                                                           itemIndex: index,
@@ -2513,7 +2534,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                       .viewedProduct,
                                                               productId: products[
                                                                       index]
-                                                                  .id
+                                                                  .productId
                                                                   .toString(),
                                                               productName:
                                                                   products[
@@ -2570,6 +2591,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                     )));
                                                       },
                                                       child: ProductItem(
+                                                        tapIndexToAddProductToCart:
+                                                            tapIndexToAddProductToCart,
                                                         key: TestVariables
                                                                 .kTestMode
                                                             ? Key(
@@ -2667,7 +2690,270 @@ class _ProductListingPageState extends State<ProductListingPage> {
                         })
                   ],
                 ),
-              )
+              ),
+              ValueListenableBuilder<int>(
+                  valueListenable: tapIndexToAddProductToCart,
+                  builder: (context, tapIndex, _) {
+                    bool changeAppearSizeForProduct = true;
+                    if (tapIndex != -1) {
+                      homeBloc.add(GetProductDatailsWithoutRelatedProductsEvent(
+                          productSlug: products[tapIndex].slug,
+                          productId: products[tapIndex].productId.toString()));
+                    }
+                    return tapIndex == -1
+                        ? SizedBox.shrink()
+                        : Positioned(
+                            bottom: 5,
+                            child: Container(
+                              height: 1.sh,
+                              width: 1.sw,
+                              child: BlocBuilder<HomeBloc, HomeState>(
+                                  buildWhen: (previous, current) =>
+                                      previous.currentSelectedColorForEveryProduct != current.currentSelectedColorForEveryProduct ||
+                                      previous.getProductDetailWithoutSimilarRelatedProductsStatus !=
+                                          current
+                                              .getProductDetailWithoutSimilarRelatedProductsStatus ||
+                                      previous.currentSelectedColorForEveryProduct !=
+                                          current
+                                              .currentSelectedColorForEveryProduct ||
+                                      previous.changeSizesForEveryProduct !=
+                                          current.changeSizesForEveryProduct ||
+                                      previous.cartCollection !=
+                                          current.cartCollection,
+                                  builder: (context, state) {
+                                    String productId = state
+                                                    .cachedProductWithoutRelatedProductsModel[
+                                                products[tapIndex]
+                                                    .productId
+                                                    .toString()] !=
+                                            null
+                                        ? state
+                                                    .cachedProductWithoutRelatedProductsModel[
+                                                        products[tapIndex]
+                                                            .productId
+                                                            .toString()]!
+                                                    .product !=
+                                                null
+                                            ? state
+                                                .cachedProductWithoutRelatedProductsModel[
+                                                    products[tapIndex]
+                                                        .productId
+                                                        .toString()]!
+                                                .product!
+                                                .id
+                                                .toString()
+                                            : ""
+                                        : "";
+                                    int currentSelectedColor =
+                                        state.currentSelectedColorForEveryProduct[
+                                                productId] ??
+                                            (products[tapIndex]
+                                                        .syncColorImages
+                                                        ?.length ??
+                                                    0) ~/
+                                                2;
+                                    if (state.getProductDetailWithoutSimilarRelatedProductsStatus !=
+                                            GetProductDetailWithoutSimilarRelatedProductsStatus
+                                                .success &&
+                                        (prefsRepository.isTokenExpired ??
+                                            false ||
+                                                prefsRepository.marketToken ==
+                                                    "" ||
+                                                prefsRepository.marketToken ==
+                                                    null)) {
+                                      Future.delayed(
+                                        Duration(seconds: 5),
+                                        () {
+                                          homeBloc.add(
+                                              GetProductDatailsWithoutRelatedProductsEvent(
+                                                  productSlug:
+                                                      products[tapIndex].slug,
+                                                  productId: products[tapIndex]
+                                                      .productId
+                                                      .toString()));
+                                        },
+                                      );
+                                    }
+                                    if (productId != "" &&
+                                        tapIndex != -1 &&
+                                        changeAppearSizeForProduct) {
+                                      homeBloc.add(AddSizesFotColorsEvent(
+                                          currentColorName: !products[tapIndex]
+                                                  .colors
+                                                  .isNullOrEmpty
+                                              ? products[tapIndex].colors![currentSelectedColor].name ??
+                                                  ""
+                                              : "",
+                                          variation: state.cachedProductWithoutRelatedProductsModel[
+                                                      products[tapIndex]
+                                                          .productId
+                                                          .toString()] !=
+                                                  null
+                                              ? state
+                                                          .cachedProductWithoutRelatedProductsModel[
+                                                              products[tapIndex]
+                                                                  .productId
+                                                                  .toString()]!
+                                                          .product !=
+                                                      null
+                                                  ? state
+                                                      .cachedProductWithoutRelatedProductsModel[
+                                                          products[tapIndex]
+                                                              .productId
+                                                              .toString()]!
+                                                      .product!
+                                                      .variation
+                                                  : null
+                                              : null));
+                                      Future.delayed(
+                                          Duration(microseconds: 300),
+                                          () => panelControllerForCart.open());
+                                      changeAppearSizeForProduct = false;
+                                    }
+                                    return ProductDetailsBottomSheet(
+                                      tapIndexToAddProductToCart:
+                                          tapIndexToAddProductToCart,
+                                      fromListingPage: true,
+                                      productIdForCashData: products[tapIndex]
+                                          .productId
+                                          .toString(),
+                                      panelController: panelControllerForCart,
+                                      productSlugForTopic: state
+                                              .cachedProductWithoutRelatedProductsModel[
+                                                  products[tapIndex]
+                                                      .productId
+                                                      .toString()]
+                                              ?.product
+                                              ?.slugEnTopic ??
+                                          "",
+                                      productDescription: HtmlParser.parseHTML(
+                                              products[tapIndex].details ?? "")
+                                          .text,
+                                      countOfPieces: state
+                                                      .cachedProductWithoutRelatedProductsModel[
+                                                  products[tapIndex]
+                                                      .productId
+                                                      .toString()] !=
+                                              null
+                                          ? state
+                                                      .cachedProductWithoutRelatedProductsModel[
+                                                          products[tapIndex]
+                                                              .productId
+                                                              .toString()]!
+                                                      .product !=
+                                                  null
+                                              ? state
+                                                      .cachedProductWithoutRelatedProductsModel[
+                                                          products[tapIndex]
+                                                              .productId
+                                                              .toString()]!
+                                                      .product!
+                                                      .countOfPieces ??
+                                                  0
+                                              : 0
+                                          : 0,
+                                      addToBagButtonShapeNotifier:
+                                          addToBagButtonShapeNotifier,
+                                      currentColornum: products[tapIndex]
+                                              .colors
+                                              .isNullOrEmpty
+                                          ? ''
+                                          : products[tapIndex]
+                                                  .colors![currentSelectedColor]
+                                                  .color ??
+                                              "",
+                                      boutiqueIcon: state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()] !=
+                                              null
+                                          ? state
+                                                      .cachedProductWithoutRelatedProductsModel[
+                                                          products[tapIndex]
+                                                              .productId
+                                                              .toString()]!
+                                                      .product !=
+                                                  null
+                                              ? state
+                                                          .cachedProductWithoutRelatedProductsModel[
+                                                              products[tapIndex]
+                                                                  .productId
+                                                                  .toString()]!
+                                                          .product!
+                                                          .boutique !=
+                                                      null
+                                                  ? state
+                                                              .cachedProductWithoutRelatedProductsModel[
+                                                                  products[tapIndex]
+                                                                      .productId
+                                                                      .toString()]!
+                                                              .product!
+                                                              .boutique!
+                                                              .icon !=
+                                                          null
+                                                      ? state
+                                                              .cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!
+                                                              .product!
+                                                              .boutique!
+                                                              .icon!
+                                                              .filePath ??
+                                                          ""
+                                                      : ""
+                                                  : ""
+                                              : ""
+                                          : "",
+                                      boutiqueId: state
+                                                      .cachedProductWithoutRelatedProductsModel[
+                                                  products[tapIndex]
+                                                      .productId
+                                                      .toString()] !=
+                                              null
+                                          ? state
+                                                      .cachedProductWithoutRelatedProductsModel[
+                                                          products[tapIndex]
+                                                              .productId
+                                                              .toString()]!
+                                                      .product !=
+                                                  null
+                                              ? state
+                                                          .cachedProductWithoutRelatedProductsModel[
+                                                              products[tapIndex]
+                                                                  .productId
+                                                                  .toString()]!
+                                                          .product!
+                                                          .boutique !=
+                                                      null
+                                                  ? state
+                                                      .cachedProductWithoutRelatedProductsModel[
+                                                          products[tapIndex]
+                                                              .productId
+                                                              .toString()]!
+                                                      .product!
+                                                      .boutique!
+                                                      .id!
+                                                  : 0
+                                              : 0
+                                          : 0,
+                                      currentColorName: products[tapIndex]
+                                              .colors
+                                              .isNullOrEmpty
+                                          ? ''
+                                          : products[tapIndex]
+                                                  .colors![currentSelectedColor]
+                                                  .name ??
+                                              "",
+                                      productItem: products[tapIndex].copyWith(
+                                          productId: int.tryParse(productId)),
+                                      currentColor: currentSelectedColor,
+                                      maxAllowedToAddCart: state
+                                              .cachedProductWithoutRelatedProductsModel[
+                                                  products[tapIndex]
+                                                      .productId
+                                                      .toString()]
+                                              ?.product
+                                              ?.maxAllowedQty ??
+                                          "0",
+                                    );
+                                  }),
+                            ));
+                  })
             ],
           ),
         ),
@@ -2702,7 +2988,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                   (value) {
                     FirebaseAnalyticsService.logEventForViewedProduct(
                       eventName: AnalyticsEventsConst.viewedProduct,
-                      productId: products[index].id.toString(),
+                      productId: products[index].productId.toString(),
                       productName: products[index].name.toString(),
                       productCategoriesId: products[index]
                           .categories
@@ -2729,6 +3015,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                 );
               },
               child: ProductItem(
+                tapIndexToAddProductToCart: tapIndexToAddProductToCart,
                 key: TestVariables.kTestMode
                     ? Key('${WidgetsKeys.productInBoutiqueListKey}$index')
                     : null,

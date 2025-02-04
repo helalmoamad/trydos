@@ -38,7 +38,6 @@ class VerificationMethods extends StatefulWidget {
 
 class _VerificationMethodsState extends State<VerificationMethods> {
   final ValueNotifier<int> clickButton = ValueNotifier(-1);
-
   @override
   void didChangeDependencies() async {
     FirebaseAnalyticsService.logScreen(
@@ -57,7 +56,7 @@ class _VerificationMethodsState extends State<VerificationMethods> {
     };
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Padding(
           padding: HWEdgeInsets.symmetric(horizontal: 40.0),
@@ -216,6 +215,7 @@ class _VerificationMethodsState extends State<VerificationMethods> {
                       Future.delayed(
                         Duration(milliseconds: 100),
                         () {
+                          FocusScope.of(context).requestFocus();
                           clickButton.value = -1;
                           widget.onChooseSms.call();
                         },

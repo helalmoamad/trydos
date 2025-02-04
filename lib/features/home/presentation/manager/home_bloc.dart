@@ -1946,6 +1946,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     List<int> sizesQuantities = [];
     List<String> isSizeRequestNotification = [];
     String size;
+    emit(state.copyWith(
+        sizes: [],
+        changeSizesForEveryProduct: ChangeSizesForEveryProduct.loading));
     //emit(state.copyWith(sizes: sizes));
     if (event.variation != null) {
       event.variation!.forEach((element) {
@@ -1966,6 +1969,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     }
     emit(state.copyWith(
         sizes: sizes,
+        changeSizesForEveryProduct: ChangeSizesForEveryProduct.success,
         sizesQuantities: sizesQuantities,
         isSizeRequestNotification: isSizeRequestNotification));
   }
@@ -2847,7 +2851,31 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   }
 
   FutureOr<void> _onGetAddressByCoordinatesEvent(
-      GetAddressByCoordinatesEvent event, Emitter<HomeState> emit) async {}
+      GetAddressByCoordinatesEvent event, Emitter<HomeState> emit) async {
+    if (event.latitude == 0 && event.longitude == 0) {
+      return;
+    }
+    emit(state.copyWith(
+        getAddressByCoordinatesStatus: GetAddressByCoordinatesStatus.loading));
+
+    final response = await getAddressByCoordinatesUsecase(
+        GetAddressByCoordinatesParams(
+            latitude: event.latitude, longitude: event.longitude));
+
+    response.fold((l) {
+      if (!isFailedTheFirstTime.contains('GetAddressByCoordinatesEvent')) {
+        ;
+        isFailedTheFirstTime.add('GetAddressByCoordinatesEvent');
+      }
+      emit(state.copyWith(
+          getAddressByCoordinatesStatus:
+              GetAddressByCoordinatesStatus.failure));
+    }, (r) {
+      emit(state.copyWith(
+          getAddressByCoordinatesStatus: GetAddressByCoordinatesStatus.success,
+          getAddressByCoordinatesModel: r));
+    });
+  }
 
   FutureOr<void> _onGetAddressByTextEvent(
       GetAddressByTextEvent event, Emitter<HomeState> emit) async {
@@ -3028,7 +3056,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       Map<String, Products> productITemForCart = {};
       r.data?.forEach(
         (element) {
-          productITemForCart.addAll({element.id.toString(): element});
+          productITemForCart.addAll({element.productId.toString(): element});
         },
       );
 
@@ -3082,7 +3110,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     String currentSize = event.choice_1!;
     Map<String, List<int>> CurrentQuantity =
         Map.of(state.currentQuantityForCart ?? {});
-    String key = "${event.products.id.toString()}" +
+    String key = "${event.products.productId.toString()}" +
         "${event.colorName}" +
         "${currentSize}";
 
@@ -3111,7 +3139,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             currentSize: currentSize,
             maxAllowed: (double.tryParse(event.maxAllowed ?? "0") ?? 0),
             colorName: event.colorName,
-            productId: event.products.id.toString(),
+            productId: event.products.productId.toString(),
             quantity: quantity,
             cartId: CurrentQuantity[key]![1].toString(),
             boutiqueId: event.boutiqueId.toString()));
@@ -3156,7 +3184,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       quantity: event.quantity,
       brand: brand,
       variations: [variation],
-      productId: event.products.id,
+      productId: event.products.productId,
     );
     List<Cart>? cartCollection = List.of(state.cartCollection ?? []);
     List<oldCart.OldCart>? oldCartCollection =
@@ -3199,7 +3227,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         image: event.image.split("/").last,
         choice_1: event.choice_1,
         color: event.color,
-        id: event.products.id.toString(),
+        id: event.products.productId.toString(),
         quantity: event.quantity,
       ),
     );
@@ -3208,7 +3236,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       add(UpdateListOfItemForAddToCartEvent(
           imageForAddToCart: ImageForAddToCart(),
           operation: "remove",
-          productId: event.products.id.toString(),
+          productId: event.products.productId.toString(),
           resetTheList: true));
       if (!isFailedTheFirstTime.contains('AddCartItemEvent')) {
         add(AddItemToCartEvent(
@@ -3243,7 +3271,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       add(UpdateListOfItemForAddToCartEvent(
           imageForAddToCart: ImageForAddToCart(),
           operation: "remove",
-          productId: event.products.id.toString(),
+          productId: event.products.productId.toString(),
           resetTheList: true));
       emit(state.copyWith(addItemInCartStatus: AddItemInCartStatus.success));
       if (r.data == null || r.data == "" || (r.data?.status ?? 0) != 1) {
@@ -3287,7 +3315,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                               ),
                               onPressed: () {
                                 add(RequestForNotificationWhenProductBecameAvailableEvent(
-                                    event.products.id.toString(),
+                                    event.products.productId.toString(),
                                     state.startingSetting?.notificationTypes
                                             ?.firstWhere(
                                                 (type) =>
@@ -3332,28 +3360,29 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         SubsecribeOrUnSubsecribeToTopic()
             .SubsecribeToProductHurryUpTimeLeft(r.data!.idCart.toString());
         SubsecribeOrUnSubsecribeToTopic()
-            .SubsecribeToProductDiscount(event.products.id.toString());
+            .SubsecribeToProductDiscount(event.products.productId.toString());
         SubsecribeOrUnSubsecribeToTopic()
-            .SubsecribeToProductComment(event.products.id.toString());
+            .SubsecribeToProductComment(event.products.productId.toString());
         Map<String, Map<int, List<String>>> addImagesToProductIdForCart =
             Map.from(state.addImagesToProductIdForCart);
-        if (addImagesToProductIdForCart[event.products.id.toString()] == null) {
-          addImagesToProductIdForCart[event.products.id.toString()] = {};
+        if (addImagesToProductIdForCart[event.products.productId.toString()] ==
+            null) {
+          addImagesToProductIdForCart[event.products.productId.toString()] = {};
         }
-        if (!addImagesToProductIdForCart[event.products.id.toString()]![
+        if (!addImagesToProductIdForCart[event.products.productId.toString()]![
                 r.data!.idCart!]
             .isNullOrEmpty) {
           for (int i = 0; i < event.quantity!; i++) {
-            addImagesToProductIdForCart[event.products.id.toString()]![
+            addImagesToProductIdForCart[event.products.productId.toString()]![
                     r.data!.idCart!]!
                 .add(event.image);
           }
           ;
         } else {
-          addImagesToProductIdForCart[event.products.id.toString()]![
+          addImagesToProductIdForCart[event.products.productId.toString()]![
               r.data!.idCart!] = [];
           for (int i = 0; i < event.quantity!; i++) {
-            addImagesToProductIdForCart[event.products.id.toString()]![
+            addImagesToProductIdForCart[event.products.productId.toString()]![
                     r.data!.idCart!]!
                 .add(event.image);
           }
@@ -3364,7 +3393,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             colorName: event.colorName,
             cartId: r.data!.idCart!,
             quantity: event.quantity!,
-            productId: event.products.id.toString()));
+            productId: event.products.productId.toString()));
         cartCollection.removeWhere(
           (element) => element.uuid == currentUuid,
         );
@@ -3376,7 +3405,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             cartCollection: cartCollection,
             addImagesToProductIdForCart: addImagesToProductIdForCart));
         add(AddProductItemForCartEvent(
-            productId: event.products.id.toString(), product: event.products));
+            productId: event.products.productId.toString(),
+            product: event.products));
       }
 
       if (event.finishAddAllTheItems) {
@@ -4329,8 +4359,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     Map<String, GetProductDetailWithoutRelatedProductsModel>
         cachedProductWithoutRelatedProductsModel =
         Map.of(state.cachedProductWithoutRelatedProductsModel);
-    emit(state.copyWith(
-        addOrRemoveLikeOfProductStatus: AddOrRemoveLikeOfProductStatus.init));
+
     if (!cachedProductWithoutRelatedProductsModel
         .containsKey(event.productId)) {
       cachedProductWithoutRelatedProductsModel.addAll(
@@ -4357,6 +4386,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             cachedProductWithoutRelatedProductsModel,
         addOrRemoveLikeOfProductStatus:
             AddOrRemoveLikeOfProductStatus.loading));
+
     final response = event.isFavourite
         ? await addLikeToProductUsecase(AddLikeToProductParams(
             productId: event.productId,
@@ -4800,7 +4830,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       emit(state.copyWith(
           getFullProductDetailsStatus: GetFullProductDetailsStatus.failure));
     }, (r) {
-      if (r.productItem?.id == null) {
+      if (r.productItem?.productId == null) {
         emit(state.copyWith(
           productContentForStatusOfOpeningProductDetailsDirectly: Products(),
           getFullProductDetailsStatus: GetFullProductDetailsStatus.success,
@@ -4810,11 +4840,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       }
       Future.delayed(Duration(seconds: 2), () {
         add(GetAndAddCountViewOfProductEvent(
-            productId: r.productItem!.id.toString()));
-        add(GetCommentForProductEvent(productId: r.productItem!.id.toString()));
-        add(GetStoryForProductEvent(productId: r.productItem!.id.toString()));
+            productId: r.productItem!.productId.toString()));
+        add(GetCommentForProductEvent(
+            productId: r.productItem!.productId.toString()));
+        add(GetStoryForProductEvent(
+            productId: r.productItem!.productId.toString()));
         GetIt.I<ChatBloc>().add(GetSharedProductCountEvent(
-            productId: r.productItem!.id.toString()));
+            productId: r.productItem!.productId.toString()));
       });
       Map<String, GetProductDetailWithoutRelatedProductsModel> cachedData =
           Map.of(state.cachedProductWithoutRelatedProductsModel);

@@ -258,16 +258,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         (l) => emit(state.copyWith(
             verifyGuestPhoneStatus: VerifyGuestPhoneStatus.failure)), (r) {
       try {
-        _prefsRepository.setMyMarketId(r.data!.id.toString());
-        if ((r.data!.name?.replaceAll(' ', '') ?? '') != '') {
-          _prefsRepository.setMyMarketName(r.data!.name!);
+        if ((r.data!.data?.name?.replaceAll(' ', '') ?? '') != '') {
+          _prefsRepository.setMyMarketName(r.data!.data!.name!);
         }
 
-        _prefsRepository.setMyMarketId(r.data!.id.toString());
-        _prefsRepository.setMarketToken(r.token);
-        _prefsRepository.setTokenExpired(false);
-        _prefsRepository.setVerifiedPhone(r.data!.isPhoneVerified == 1);
-        _prefsRepository.setPhoneNumber((r.data!.phone).toString());
+        _prefsRepository.setMyMarketId(r.data!.data!.id.toString());
+        _prefsRepository.setMarketToken(r.data!.token);
+
+        Future.delayed(
+          Duration(seconds: 30),
+          () {
+            print("#########33333333332");
+            _prefsRepository.setTokenExpired(false);
+          },
+        );
+        _prefsRepository.setVerifiedPhone(r.data!.data?.isPhoneVerified == 1);
+        _prefsRepository.setPhoneNumber((r.data!.data?.phone).toString());
         GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
         GetIt.I<HomeBloc>().add(GetCartItemEvent());
         GetIt.I<HomeBloc>().add(GetOldCartItemEvent());
@@ -275,15 +281,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
         add(LoginToChatEvent(
             fcmToken: NotificationProcess.myFcmToken!,
-            mobilePhone: r.data!.phone,
-            name: r.data!.name,
-            originalUserId: r.data!.id!.toString(),
-            otpIdToken: r.data!.lastOtpIdToken));
+            mobilePhone: r.data!.data?.phone,
+            name: r.data!.data!.name,
+            originalUserId: r.data!.data!.id.toString(),
+            otpIdToken: r.data!.data?.lastOtpIdToken));
         add(LoginToStoriesEvent(
-          originalUserId: r.data!.id!.toString(),
-          otpIdToken: r.data!.lastOtpIdToken,
-          name: r.data!.name,
-          phone: r.data!.phone,
+          name: r.data!.data!.name,
+          originalUserId: r.data!.data!.id.toString(),
+          otpIdToken: r.data!.data?.lastOtpIdToken,
+          phone: r.data!.data?.phone,
         ));
       } catch (error) {
         showMessage(error.toString());
@@ -346,6 +352,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   FutureOr<void> _onVerifyOtpSignInEvent(
       VerifyOtpSignInEvent event, Emitter<AuthState> emit) async {
     emit(state.copyWith(verifyOtpSignInStatus: VerifyOtpSignInStatus.loading));
+
     final response = await verifyOtpSignInUseCase(
       VerifyOtpSignInParams(
           verificationId: event.verificationId, otp: event.otp),
@@ -355,12 +362,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           verifyOtpSignInStatus: VerifyOtpSignInStatus.failure,
           signInErrorMessage: l.message));
     }, (r) {
-      print(
-          "#############################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@${r.data?.expiresAt}");
       if (event.fromCart) {
-        print(
-            "@@@@@@@@@@@@@@@@2111111111112222222222222222@@@!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-
         add(VerifyGuestPhoneEvent(idToken: r.data!.idToken!));
       } else {
         try {
@@ -432,18 +434,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         verifyOtpSignUpStatus: VerifyOtpSignUpStatus.failure,
       ));
     }, (r) {
-      print(
-          "87777777777777777777777777777777777777777777777777777777${r.data!.user!.name}77777777777777777777777${r.data!.user!.id!}");
       if (event.fromCart) {
-        print(
-            "@@@@@@@@@@@@@@@@@@@!!!!555555555555555555555555555555555!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-
         add(VerifyGuestPhoneEvent(idToken: r.data!.idToken!));
       } else {
         if ((r.data!.user!.name?.replaceAll(' ', '') ?? '') != '') {
           _prefsRepository.setMyMarketName(r.data!.user!.name!);
         }
-
+        _prefsRepository.setOtpCode(event.otp);
         _prefsRepository.setMarketToken(r.data!.token!);
         _prefsRepository.setTokenExpired(false);
         GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
@@ -452,8 +449,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
         ;
         _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
-        print(
-            ".................................*****************************-----------------------------${r.data!.token!}");
 
         _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
         _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());
@@ -493,7 +488,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       RegisterGuestEvent event, Emitter<AuthState> emit) async {
     _prefsRepository.clearTokenForMarket();
     _prefsRepository.clearTokensForChatAndStory();
-    _prefsRepository.setVerifiedPhone(false);
+
     emit(state.copyWith(registerGuestStatus: RegisterGuestStatus.loading));
     final response = await registerGuestUseCase(
       RegisterGuestParams(
@@ -502,7 +497,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     bool? previousStatusOfIsVerifiedPhone =
         _prefsRepository.isVerifiedPhone ?? false;
     _prefsRepository.setVerifiedPhone(false);
-
     response.fold((l) {
       _prefsRepository.setVerifiedPhone(previousStatusOfIsVerifiedPhone);
       if (!isFailedTheFirstTime.contains('RegisterGuestEvent')) {
@@ -512,9 +506,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
       emit(state.copyWith(registerGuestStatus: RegisterGuestStatus.failure));
     }, (r) {
+      Future.delayed(
+        Duration(minutes: 2),
+        () {
+          print("#########33333333332");
+          _prefsRepository.setTokenExpired(false);
+        },
+      );
       isFailedTheFirstTime.remove('RegisterGuestEvent');
       _prefsRepository.setMarketToken(r.data!.token!);
-      _prefsRepository.setTokenExpired(false);
+
       _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
       GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
       GetIt.I<HomeBloc>().add(GetCartItemEvent());

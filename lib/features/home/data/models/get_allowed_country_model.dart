@@ -70,133 +70,53 @@ class Data {
 
 class Country {
   final int? id;
-  final int? parentId;
-  final int? position;
+  final int? phonecode;
   final String? iso;
   final String? name;
-  final String? nicename;
-  final String? iso3;
-  final int? numcode;
-  final int? phonecode;
-  final dynamic flatPhotoPath;
-  final dynamic outlinePhotoPath;
-  final dynamic flagPhotoPath;
-  final dynamic mapPhotoPath;
-  final int? status;
-  final int? isAccess;
-  final int? otpByWhatsapp;
-  final int? otpBySms;
-  final dynamic createdAt;
-  final DateTime? updatedAt;
+  final String? longitude;
+  final String? latitude;
 
   Country({
     this.id,
-    this.parentId,
-    this.position,
+    this.phonecode,
     this.iso,
     this.name,
-    this.nicename,
-    this.iso3,
-    this.numcode,
-    this.phonecode,
-    this.flatPhotoPath,
-    this.outlinePhotoPath,
-    this.flagPhotoPath,
-    this.mapPhotoPath,
-    this.status,
-    this.isAccess,
-    this.otpByWhatsapp,
-    this.otpBySms,
-    this.createdAt,
-    this.updatedAt,
+    this.longitude,
+    this.latitude,
   });
 
   Country copyWith({
     int? id,
-    int? parentId,
-    int? position,
+    int? phonecode,
     String? iso,
     String? name,
-    String? nicename,
-    String? iso3,
-    int? numcode,
-    int? phonecode,
-    dynamic flatPhotoPath,
-    dynamic outlinePhotoPath,
-    dynamic flagPhotoPath,
-    dynamic mapPhotoPath,
-    int? status,
-    int? isAccess,
-    int? otpByWhatsapp,
-    int? otpBySms,
-    dynamic createdAt,
-    DateTime? updatedAt,
+    String? longitude,
+    String? latitude,
   }) =>
       Country(
         id: id ?? this.id,
-        parentId: parentId ?? this.parentId,
-        position: position ?? this.position,
+        phonecode: phonecode ?? this.phonecode,
         iso: iso ?? this.iso,
         name: name ?? this.name,
-        nicename: nicename ?? this.nicename,
-        iso3: iso3 ?? this.iso3,
-        numcode: numcode ?? this.numcode,
-        phonecode: phonecode ?? this.phonecode,
-        flatPhotoPath: flatPhotoPath ?? this.flatPhotoPath,
-        outlinePhotoPath: outlinePhotoPath ?? this.outlinePhotoPath,
-        flagPhotoPath: flagPhotoPath ?? this.flagPhotoPath,
-        mapPhotoPath: mapPhotoPath ?? this.mapPhotoPath,
-        status: status ?? this.status,
-        isAccess: isAccess ?? this.isAccess,
-        otpByWhatsapp: otpByWhatsapp ?? this.otpByWhatsapp,
-        otpBySms: otpBySms ?? this.otpBySms,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt,
+        longitude: longitude ?? this.longitude,
+        latitude: latitude ?? this.latitude,
       );
 
   factory Country.fromJson(Map<String, dynamic> json) => Country(
         id: json["id"],
-        parentId: json["parent_id"],
-        position: json["position"],
+        phonecode: json["phonecode"],
         iso: json["iso"],
         name: json["name"],
-        nicename: json["nicename"],
-        iso3: json["iso3"],
-        numcode: json["numcode"],
-        phonecode: json["phonecode"],
-        flatPhotoPath: json["flat_photo_path"],
-        outlinePhotoPath: json["outline_photo_path"],
-        flagPhotoPath: json["flag_photo_path"],
-        mapPhotoPath: json["map_photo_path"],
-        status: json["status"],
-        isAccess: json["isAccess"],
-        otpByWhatsapp: json["otp_by_whatsapp"],
-        otpBySms: json["otp_by_sms"],
-        createdAt: json["created_at"],
-        updatedAt: json["updated_at"] == null
-            ? null
-            : DateTime.parse(json["updated_at"]),
+        longitude: json["longitude"],
+        latitude: json["latitude"],
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
-        "parent_id": parentId,
-        "position": position,
+        "phonecode": phonecode,
         "iso": iso,
         "name": name,
-        "nicename": nicename,
-        "iso3": iso3,
-        "numcode": numcode,
-        "phonecode": phonecode,
-        "flat_photo_path": flatPhotoPath,
-        "outline_photo_path": outlinePhotoPath,
-        "flag_photo_path": flagPhotoPath,
-        "map_photo_path": mapPhotoPath,
-        "status": status,
-        "isAccess": isAccess,
-        "otp_by_whatsapp": otpByWhatsapp,
-        "otp_by_sms": otpBySms,
-        "created_at": createdAt,
-        "updated_at": updatedAt?.toIso8601String(),
+        "longitude": longitude,
+        "latitude": latitude,
       };
 }

@@ -63,15 +63,16 @@ class AddCustomerAddressParams {
         "address_detail": addressDetail,
         "country": country,
         "contact_person_name": contactPersonName,
-        "city": city,
-        "district": district,
-        "town": town,
-        "street": street,
+        "city": city == "" ? null : city,
+        "district": district == "" ? null : district,
+        "town": town == "" ? null : town,
+        "street": street == "" ? null : street,
         "phone": phone,
         "alternative_phone": alternativePhone == "" ? null : alternativePhone,
         "latitude": latitude,
         "longitude": longitude,
-        "province": province,
-        "building": building
+        "province": province == "" ? null : province,
+        "building": building == "" ? null : building,
+        "zip": ""
       };
 }

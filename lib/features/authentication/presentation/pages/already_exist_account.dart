@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 
 import 'package:trydos/config/theme/typography.dart';
@@ -55,6 +56,7 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
 
   @override
   Widget build(BuildContext context) {
+    bool verifiedBySignIn = false;
     return Scaffold(
       backgroundColor: const Color(0xffF4F8FF),
       body: Stack(
@@ -132,15 +134,28 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                   ]),
                 ),
                 Spacer(),
-                InkWell(
-                  key: TestVariables.kTestMode
-                      ? Key(WidgetsKeys.loginContinueButtonKey)
-                      : null,
-                  onTap: () {
-                    Future.delayed(
-                      Duration(milliseconds: 100),
-                      () {
-                        context.go(GRouter.config.applicationRoutes.kBasePage);
+                BlocBuilder<AuthBloc, AuthState>(
+                  buildWhen: (previous, current) =>
+                      previous.verifyOtpSignInStatus !=
+                      current.verifyOtpSignInStatus,
+                  builder: (context, state) {
+                    if (state.verifyOtpSignInStatus ==
+                            VerifyOtpSignInStatus.success &&
+                        verifiedBySignIn) {
+                      verifiedBySignIn = false;
+                      Future.delayed(
+                        Duration(seconds: 2),
+                        () {
+                          context
+                              .go(GRouter.config.applicationRoutes.kBasePage);
+                        },
+                      );
+                    }
+                    return InkWell(
+                      key: TestVariables.kTestMode
+                          ? Key(WidgetsKeys.loginContinueButtonKey)
+                          : null,
+                      onTap: () {
                         BlocProvider.of<AuthBloc>(context)
                             .add(VerifyOtpSignInEvent(
                           fromCart: false,
@@ -148,40 +163,55 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                           verificationId: prefsRepository.verificationId!,
                           phone: widget.phoneNumber,
                         ));
+                        verifiedBySignIn = true;
+                        ////////////////////
+                        FirebaseAnalyticsService.logEventForSession(
+                          eventName: AnalyticsEventsConst.buttonClicked,
+                          executedEventName: AnalyticsExecutedEventNameConst
+                              .loginContinueButton,
+                        );
+                        //////////////////////
+                        debugPrint(
+                            '////////// loginContinueButton  ///////////////');
                       },
+                      child: state.verifyOtpSignInStatus ==
+                              VerifyOtpSignInStatus.loading
+                          ? Shimmer.fromColors(
+                              baseColor: Colors.grey[200]!,
+                              highlightColor: Colors.grey[100]!,
+                              child: Container(
+                                  width: 1.sw,
+                                  height: 60,
+                                  margin:
+                                      HWEdgeInsets.symmetric(horizontal: 20),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xffFAFAFA),
+                                    borderRadius: BorderRadius.circular(20.0),
+                                  )))
+                          : Container(
+                              width: 1.sw,
+                              height: 60,
+                              margin: HWEdgeInsets.symmetric(horizontal: 20),
+                              decoration: BoxDecoration(
+                                color: const Color(0xffFAFAFA),
+                                borderRadius: BorderRadius.circular(20.0),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  MyTextWidget(
+                                    LocaleKeys.login_continue.tr(),
+                                    style: textTheme.displayMedium?.ra.copyWith(
+                                      color: Color(0xff5D5C5D),
+                                      letterSpacing: 0.16,
+                                      height: 1.25,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                     );
-                    ////////////////////
-                    FirebaseAnalyticsService.logEventForSession(
-                      eventName: AnalyticsEventsConst.buttonClicked,
-                      executedEventName:
-                          AnalyticsExecutedEventNameConst.loginContinueButton,
-                    );
-                    //////////////////////
-                    debugPrint(
-                        '////////// loginContinueButton  ///////////////');
                   },
-                  child: Container(
-                    width: 1.sw,
-                    height: 60,
-                    margin: HWEdgeInsets.symmetric(horizontal: 20),
-                    decoration: BoxDecoration(
-                      color: const Color(0xffFAFAFA),
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        MyTextWidget(
-                          LocaleKeys.login_continue.tr(),
-                          style: textTheme.displayMedium?.ra.copyWith(
-                            color: Color(0xff5D5C5D),
-                            letterSpacing: 0.16,
-                            height: 1.25,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                 ),
                 20.verticalSpace,
                 InkWell(
@@ -194,17 +224,16 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                     Future.delayed(
                       Duration(milliseconds: 100),
                       () async {
-                        if (GetIt.I<PrefsRepository>().isVerifiedPhone !=
+                        /*    if (GetIt.I<PrefsRepository>().isVerifiedPhone !=
                                 false ||
                             (prefsRepository.isTokenExpired ??
                                 false ||
                                     prefsRepository.marketToken == "" ||
-                                    prefsRepository.marketToken == null)) {
-                          String? deviceId =
-                              await HelperFunctions.getDeviceId();
-                          BlocProvider.of<AuthBloc>(context)
-                              .add(RegisterGuestEvent(deviceId: deviceId!));
-                        }
+                                    prefsRepository.marketToken == null)) {*/
+                        String? deviceId = await HelperFunctions.getDeviceId();
+                        BlocProvider.of<AuthBloc>(context)
+                            .add(RegisterGuestEvent(deviceId: deviceId!));
+                        // }
                         context.go(GRouter.config.applicationRoutes.kBasePage);
                       },
                     );

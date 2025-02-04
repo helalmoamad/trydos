@@ -35,7 +35,7 @@ class CreateAccountSection extends StatelessWidget {
           error: error.toString());
     };
     return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text.rich(
@@ -87,11 +87,11 @@ class CreateAccountSection extends StatelessWidget {
           textAlign: TextAlign.center,
         ),
         SizedBox(
-          height: 23,
+          height: 20.h,
         ),
         SvgPicture.asset(AppAssets.termsSvg),
         SizedBox(
-          height: 10,
+          height: 10.h,
         ),
         MyTextWidget(
           LocaleKeys.trems_of_services.tr(),
@@ -102,7 +102,7 @@ class CreateAccountSection extends StatelessWidget {
           textAlign: TextAlign.center,
         ),
         SizedBox(
-          height: 78,
+          height: 60.h,
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -144,7 +144,7 @@ class CreateAccountSection extends StatelessWidget {
                         : const Color(0xfffafafa),
                     child: Container(
                       width: 1.sw,
-                      height: 60,
+                      height: 50.h,
                       decoration: BoxDecoration(
                         color:
                             index == 0 ? Colors.white : const Color(0xfffafafa),

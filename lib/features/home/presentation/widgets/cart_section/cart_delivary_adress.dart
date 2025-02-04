@@ -79,7 +79,7 @@ class _CartDelivaryAdressState extends State<CartDelivaryAdress> {
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
-    homeBloc.add(GetCustomerAddressesEvent());
+
 //    appBloc = BlocProvider.of<AppBloc>(context);
 
     // homeBloc = BlocProvider.of<HomeBloc>(context);
@@ -137,7 +137,7 @@ class _CartDelivaryAdressState extends State<CartDelivaryAdress> {
                 previous.removeAddressToOrderStatus !=
                     current.removeAddressToOrderStatus,
             builder: (context, state) {
-              if ((prefsRepository.isTokenExpired ??
+              /*  if ((prefsRepository.isTokenExpired ??
                       false ||
                           prefsRepository.marketToken == "" ||
                           prefsRepository.marketToken == null) &&
@@ -224,7 +224,7 @@ class _CartDelivaryAdressState extends State<CartDelivaryAdress> {
                     ),
                   ),
                 );
-              }
+              }*/
               return ValueListenableBuilder<bool>(
                   valueListenable: showDeleteAddress,
                   builder: (context, _showDeleteAddress, _) {
@@ -677,7 +677,7 @@ class _CartDelivaryAdressState extends State<CartDelivaryAdress> {
                                                                             ),
                                                                             Text(
                                                                               "${LocaleKeys.show_address_list.tr()} ",
-                                                                              style: context.textTheme.bodyMedium?.mr.copyWith(color: const Color(0xff8D8D8D), letterSpacing: 0.18, fontSize: 12, height: 1.33),
+                                                                              style: context.textTheme.bodyMedium?.mr.copyWith(color: const Color(0xff8D8D8D), letterSpacing: 0.18, fontSize: 12, height: 1),
                                                                             ),
                                                                           ],
                                                                         ),
@@ -1406,7 +1406,7 @@ Widget AddressInfoWithContactInfoCart(
             child: Row(
               children: [
                 Text(
-                  "${customerAddressesInfo.regionDetails?.street} | ${customerAddressesInfo.regionDetails?.town} | ${customerAddressesInfo.regionDetails?.city} | ${customerAddressesInfo.regionDetails?.province} | ${customerAddressesInfo.regionDetails?.country}",
+                  "${customerAddressesInfo.regionDetails?.street ?? ""}${(customerAddressesInfo.regionDetails?.street?.length ?? 0) > 0 ? " | " : ""}${customerAddressesInfo.regionDetails?.town ?? ""}${(customerAddressesInfo.regionDetails?.town?.length ?? 0) > 0 ? " | " : ""}${customerAddressesInfo.regionDetails?.city ?? ""}${(customerAddressesInfo.regionDetails?.city?.length ?? 0) > 0 ? " | " : ""}${customerAddressesInfo.regionDetails?.province ?? ""} | ${customerAddressesInfo.regionDetails?.country ?? ''}",
                   style: context.textTheme.bodyMedium?.mr.copyWith(
                       color: isDelete
                           ? Color(0xffFFFFFF)

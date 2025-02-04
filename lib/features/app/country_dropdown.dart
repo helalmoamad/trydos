@@ -50,7 +50,7 @@ class _CountryDropdownState extends State<CountryDropdown> {
           items: widget.countries.map((country) {
             return DropdownMenuItem<String>(
               value: country.iso,
-              child: Text(country.nicename!),
+              child: Text(country.name!),
             );
           }).toList(),
           value: selectedCountry,

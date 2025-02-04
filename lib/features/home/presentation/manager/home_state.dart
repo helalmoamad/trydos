@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:trydos/features/home/data/models/get_address_by_coordinates_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_text_model.dart';
 
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
@@ -104,6 +105,8 @@ enum GetProductListingStatus { init, loading, success, failure }
 
 enum GetAndAddCountViewOfProductStatus { init, loading, success, failure }
 
+enum ChangeSizesForEveryProduct { init, loading, success, failure }
+
 @JsonSerializable(explicitToJson: true)
 @immutable
 class HomeState extends Equatable {
@@ -114,6 +117,7 @@ class HomeState extends Equatable {
     this.convertItemFromOldcartToCartStatus,
     this.resultSearch = const [],
     this.hideItemInOldCartStatus,
+    this.changeSizesForEveryProduct,
     this.searchWithOutFilterOffset,
     this.searchWithFilterOffset,
     this.getProductDetailWithoutSimilarRelatedProductsStatus =
@@ -139,6 +143,7 @@ class HomeState extends Equatable {
     this.getProductFiltersStatus = const {},
     this.getProductFiltersModel = const {},
     this.choosedFiltersByUser = const {},
+    this.getAddressByCoordinatesModel,
     this.appliedFiltersByUser = const {},
     this.currentPage = 0,
     this.productStatus,
@@ -213,6 +218,7 @@ class HomeState extends Equatable {
       getAndAddCountViewOfProductStatus;
   final List<PopularSearchTerm>? popularSearchTerm;
   final List<ResultSearch>? resultSearch;
+  final GetAddressByCoordinatesModel? getAddressByCoordinatesModel;
   final List<ImageForAddToCart>? ListitemForAddToCart;
   final GetAddressByTextStatus? getAddressByTextStatus;
   final GetAddressByCoordinatesStatus? getAddressByCoordinatesStatus;
@@ -295,6 +301,7 @@ class HomeState extends Equatable {
   final MainCategoriesResponseModel? mainCategoriesResponseModel;
   final GetProductDetailWithoutRelatedProductsModel?
       getProductDetailWithoutRelatedProductsModel;
+  final ChangeSizesForEveryProduct? changeSizesForEveryProduct;
   final bool cashedOrginalBoutique;
   final int currentIndexForMainCategoryEvent;
   final StartingSetting? startingSetting;
@@ -333,6 +340,7 @@ class HomeState extends Equatable {
         theReplyFromGemini,
         cartIdsHurryUPTimerStarted,
         addCommentStatus,
+        changeSizesForEveryProduct,
         hideItemInOldCartStatus,
         // moveUrlFromElasticToMarketServer,
         cashedOrginalBoutique,
@@ -390,6 +398,8 @@ class HomeState extends Equatable {
         currentIndexForMainCategoryEvent,
         startingSetting,
         CurrentColorSizeForCart,
+        getAddressByCoordinatesModel,
+
         currentQuantityForCart,
         cachedProductWithoutRelatedProductsModel,
         addOrRemoveLikeOfProductStatus
@@ -398,6 +408,7 @@ class HomeState extends Equatable {
   HomeState copyWith(
       {final GetStartingSettingsStatus? getStartingSettingsStatus,
       final GetMainCategoriesStatus? getMainCategoriesStatus,
+      final GetAddressByCoordinatesModel? getAddressByCoordinatesModel,
       final AddItemInCartStatus? addItemInCartStatus,
       final HideItemInOldCartStatus? hideItemInOldCartStatus,
       final ConvertItemFromOldcartToCartStatus?
@@ -429,7 +440,7 @@ class HomeState extends Equatable {
       bool? isExpandedForLidtingPage,
       final Map<String, int>? cartIdsHurryUPTimerStarted,
       final bool? fromSearchForSearchWithGemini,
-
+      final ChangeSizesForEveryProduct? changeSizesForEveryProduct,
       // String? idForRequest,
 
       get_filters.Filter? prefAppliedFilterForExtendFilter,
@@ -508,6 +519,8 @@ class HomeState extends Equatable {
               this.boutiquesForEveryMainCategoryThatDidPrefetch,
       getAndAddCountViewOfProductStatus: getAndAddCountViewOfProductStatus ??
           this.getAndAddCountViewOfProductStatus,
+      getAddressByCoordinatesModel:
+          getAddressByCoordinatesModel ?? this.getAddressByCoordinatesModel,
       hideItemInOldCartStatus:
           hideItemInOldCartStatus ?? this.hideItemInOldCartStatus,
       getCommentForProductModel:
@@ -520,6 +533,8 @@ class HomeState extends Equatable {
           listOfAdressInfoClassToSave ?? this.listOfAddressInfoClassToSave,
       removeAddressToOrderStatus:
           removeAddressToOrderStatus ?? this.removeAddressToOrderStatus,
+      changeSizesForEveryProduct:
+          changeSizesForEveryProduct ?? this.changeSizesForEveryProduct,
       addAddressToOrderStatus:
           addAddressToOrderStatus ?? this.addAddressToOrderStatus,
       resultSearch: resultSearch ?? this.resultSearch,

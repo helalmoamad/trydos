@@ -212,7 +212,7 @@ void main() {
           String productId = tester
               .widget<ProductItem>(productWidget)
               .productItem
-              .id!
+              .productId!
               .toString();
 
           print(

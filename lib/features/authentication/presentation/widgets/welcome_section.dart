@@ -70,12 +70,12 @@ class _WelcomeSectionState extends State<WelcomeSection> {
               style: context.textTheme.titleLarge?.la.copyWith(
                 color: Color(0xff5D5C5D),
                 letterSpacing: 0.14,
-                height: 1.43,
+                height: 1.3,
               ),
             ),
           ),
           SizedBox(
-            height: 20,
+            height: 10.h,
           ),
           MyTextWidget(
             LocaleKeys.why_we_know_you_label.tr(),
@@ -87,7 +87,7 @@ class _WelcomeSectionState extends State<WelcomeSection> {
             ),
           ),
           SizedBox(
-            height: 30,
+            height: 20.h,
           ),
           InkWell(
             key: TestVariables.kTestMode
@@ -155,7 +155,7 @@ class _WelcomeSectionState extends State<WelcomeSection> {
                 }),
           ),
           SizedBox(
-            height: 10,
+            height: 10.h,
           ),
           InkWell(
             key: TestVariables.kTestMode
@@ -193,7 +193,7 @@ class _WelcomeSectionState extends State<WelcomeSection> {
                           : const Color(0xfffafafa),
                       child: Container(
                         width: 1.sw,
-                        height: 60,
+                        height: 50,
                         decoration: BoxDecoration(
                           color: index == 1
                               ? Colors.white
@@ -217,7 +217,7 @@ class _WelcomeSectionState extends State<WelcomeSection> {
                 }),
           ),
           SizedBox(
-            height: 20,
+            height: 15.h,
           ),
           InkWell(
             highlightColor: Colors.transparent,
@@ -269,7 +269,7 @@ class _WelcomeSectionState extends State<WelcomeSection> {
             ),
           ),
           SizedBox(
-            height: 46,
+            height: 45.h,
           ),
         ],
       ),

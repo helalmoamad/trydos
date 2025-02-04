@@ -40,11 +40,13 @@ class ProductListing3DSlider extends StatefulWidget {
       required this.setThisEnabled,
       required this.slidingModeItem,
       required this.itemIndex,
+      required this.tapIndexToAddProductToCart,
       required this.productItem,
       required this.currentChosenColor});
 
   final Tuple2<int, int> slidingModeItem;
   final void Function(int, int) setThisEnabled;
+  final ValueNotifier<int> tapIndexToAddProductToCart;
   final int itemIndex;
   final productListingModel.Products productItem;
   final ValueNotifier<int> currentChosenColor;
@@ -193,7 +195,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
         scrollTime: 1);
     homeBloc.add(AddCurrentSelectedColorEvent(
         currentSelectedColor: syncColorImageList!.length ~/ 4,
-        productId: widget.productItem.id.toString()));
+        productId: widget.productItem.productId.toString()));
     gallery3dControllerForCircles =
         syncColorImageList.isNullOrEmpty || syncColorImageList!.length < 3
             ? null
@@ -504,7 +506,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                                           gallery3dControllerForCircles!
                                                               .currentIndex,
                                                       productId: widget
-                                                          .productItem.id
+                                                          .productItem.productId
                                                           .toString()));
                                               widget.setThisEnabled
                                                   .call(-1, -1);
@@ -959,24 +961,35 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                         "")
                                   ].reversed.toList(),
                                 ),
-                                Row(
-                                  children: [
-                                    MyTextWidget(
-                                      '${LocaleKeys.buy.tr()}',
-                                      style: textTheme.titleSmall?.lq.copyWith(
-                                        color: Color(0xff414141),
-                                        height: 1.4,
-                                      ),
+                                InkWell(
+                                  onTap: () {
+                                    widget.tapIndexToAddProductToCart.value =
+                                        widget.itemIndex;
+                                  },
+                                  child: Container(
+                                    height: 30.h,
+                                    color: Color(0x1D1D1D),
+                                    child: Row(
+                                      children: [
+                                        MyTextWidget(
+                                          '${LocaleKeys.buy.tr()}',
+                                          style:
+                                              textTheme.titleSmall?.lq.copyWith(
+                                            color: Color(0xff414141),
+                                            height: 1.4,
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          width: 2,
+                                        ),
+                                        SvgPicture.asset(
+                                          AppAssets.bagSvg,
+                                          height: 15,
+                                          width: 15,
+                                        ),
+                                      ],
                                     ),
-                                    const SizedBox(
-                                      width: 2,
-                                    ),
-                                    SvgPicture.asset(
-                                      AppAssets.bagSvg,
-                                      height: 15,
-                                      width: 15,
-                                    ),
-                                  ],
+                                  ),
                                 )
                               ],
                             );
@@ -1126,7 +1139,8 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                     } else {
                                       homeBloc.add(AddCurrentSelectedColorEvent(
                                           currentSelectedColor: index,
-                                          productId: widget.productItem.id
+                                          productId: widget
+                                              .productItem.productId
                                               .toString()));
                                       gallery3dControllerForCircles!
                                           .animateTo(index, true);

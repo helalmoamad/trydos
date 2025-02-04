@@ -254,7 +254,7 @@ class _ProductDetailsSheetShareContentState
               currentSize: widget.currentSize,
               text: "${widget.productDescription}",
               productSlugForULr: widget.productItem.slug ?? "",
-              productId: widget.productItem.id.toString()),
+              productId: widget.productItem.productId.toString()),
         ],
       ),
     );

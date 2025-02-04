@@ -150,6 +150,8 @@ class _ProductDetailsSheetBottomBarState
               current.ListitemForAddToCart?.length ||
           previous.getCommentForProductStatus !=
               current.getCommentForProductStatus ||
+          previous.changeSizesForEveryProduct !=
+              current.changeSizesForEveryProduct ||
           previous.addCommentStatus != current.addCommentStatus,
       builder: (context, state) {
         print(
@@ -219,9 +221,12 @@ class _ProductDetailsSheetBottomBarState
                                             },
                                             child: selectedSizeByUser == null
                                                 ? (state.productStatus?[widget
-                                                            .productIdForCashproducts] !=
-                                                        GetProductDetailWithoutSimilarRelatedProductsStatus
-                                                            .success)
+                                                                .productIdForCashproducts] !=
+                                                            GetProductDetailWithoutSimilarRelatedProductsStatus
+                                                                .success ||
+                                                        state.changeSizesForEveryProduct !=
+                                                            ChangeSizesForEveryProduct
+                                                                .success)
                                                     ? Stack(
                                                         alignment:
                                                             Alignment.center,
@@ -797,100 +802,6 @@ class _ProductDetailsSheetBottomBarState
                                                         .favoriteActiveSvg
                                                     : AppAssets.favoriteSvg,
                                                 onTap: () {
-                                                  if (((prefsRepository
-                                                                      .marketToken
-                                                                      ?.length ??
-                                                                  0) <
-                                                              5 ||
-                                                          prefsRepository
-                                                                  .marketToken ==
-                                                              "" ||
-                                                          prefsRepository
-                                                                  .marketToken ==
-                                                              null) &&
-                                                      GetIt.I<AuthBloc>()
-                                                              .state
-                                                              .registerGuestStatus !=
-                                                          RegisterGuestStatus
-                                                              .loading) {
-                                                    Future.delayed(
-                                                        Duration(seconds: 1),
-                                                        () => showDialog(
-                                                              context: context,
-                                                              builder: (context) =>
-                                                                  Center(
-                                                                      child:
-                                                                          Container(
-                                                                alignment:
-                                                                    Alignment
-                                                                        .center,
-                                                                width: 400,
-                                                                height: 300,
-                                                                child:
-                                                                    AlertDialog(
-                                                                  title:
-                                                                      MyTextWidget(
-                                                                    "${LocaleKeys.it_has_been_along_time_since_your_account.tr()}",
-                                                                  ),
-                                                                  actions: <Widget>[
-                                                                    Container(
-                                                                      alignment:
-                                                                          Alignment
-                                                                              .center,
-                                                                      width:
-                                                                          300,
-                                                                      child:
-                                                                          Row(
-                                                                        mainAxisAlignment: (prefsRepository.isVerifiedPhonePeforeExpiredToken ??
-                                                                                false)
-                                                                            ? MainAxisAlignment.center
-                                                                            : MainAxisAlignment.spaceAround,
-                                                                        children: [
-                                                                          (prefsRepository.isVerifiedPhonePeforeExpiredToken ?? false)
-                                                                              ? SizedBox.shrink()
-                                                                              : Container(
-                                                                                  alignment: Alignment.center,
-                                                                                  width: 130,
-                                                                                  child: AppElevatedButton(
-                                                                                    textStyle: TextStyle(fontSize: 16),
-                                                                                    onPressed: () async {
-                                                                                      Navigator.of(context).pop();
-                                                                                      String? deviceId = await HelperFunctions.getDeviceId();
-
-                                                                                      GetIt.I<AuthBloc>().add(RegisterGuestEvent(oldGuestUserId: prefsRepository.myMarketId.toString(), deviceId: deviceId!));
-                                                                                    },
-                                                                                    text: "${LocaleKeys.reset_your_count.tr()}",
-                                                                                  ),
-                                                                                ),
-                                                                          Container(
-                                                                            alignment:
-                                                                                Alignment.center,
-                                                                            width:
-                                                                                130,
-                                                                            child:
-                                                                                AppElevatedButton(
-                                                                              textStyle: TextStyle(fontSize: 16),
-                                                                              onPressed: () {
-                                                                                Navigator.of(context).pop();
-
-                                                                                Navigator.of(context).push(PageRouteBuilder(
-                                                                                  pageBuilder: (context, animation, secondaryAnimation) => RegistrationPage(
-                                                                                    fromExpiredToken: true,
-                                                                                  ),
-                                                                                ));
-                                                                              },
-                                                                              text: '${LocaleKeys.go_to_log_in.tr()}',
-                                                                            ),
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                    )
-                                                                  ],
-                                                                ),
-                                                              )),
-                                                            ));
-                                                    return;
-                                                  }
                                                   homeBloc.add(AddOrRemoveLikeForProductEvent(
                                                       productSlugForTopic: state
                                                               .cachedProductWithoutRelatedProductsModel[

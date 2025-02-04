@@ -593,7 +593,8 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                             currentSelectedColor:
                                                                 index,
                                                             productId: widget
-                                                                .productItem.id
+                                                                .productItem
+                                                                .productId
                                                                 .toString()));
                                                     //////////////////////////////
                                                     FirebaseAnalyticsService

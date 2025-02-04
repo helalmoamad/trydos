@@ -79,7 +79,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
       resizeToAvoidBottomInset: true,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Padding(
             padding: HWEdgeInsets.symmetric(horizontal: 40.0),
@@ -271,6 +271,8 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                                         WidgetsKeys.loginConfirmPhoneButtonKey)
                                     : null,
                                 onTap: () {
+                                  Future.delayed(Duration(seconds: 1),
+                                      () => FocusScope.of(context).unfocus());
                                   widget.moveToNextStep
                                       .call('${form.controllers[0].text}');
                                   //////////////////////////

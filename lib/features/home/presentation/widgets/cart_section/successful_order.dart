@@ -155,7 +155,7 @@ class _SuccessfulOrderState extends State<SuccessfulOrder> {
                                 height: 1.33),
                           ),
                           SizedBox(
-                            height: 10.h,
+                            height: 8.h,
                           ),
                           Text(
                             "${LocaleKeys.your_order_number.tr()} ",
@@ -164,9 +164,6 @@ class _SuccessfulOrderState extends State<SuccessfulOrder> {
                                 letterSpacing: 0.18,
                                 fontSize: 12,
                                 height: 1.33),
-                          ),
-                          SizedBox(
-                            height: 10.h,
                           ),
                           Text(
                             "TTISA10012",
@@ -177,7 +174,7 @@ class _SuccessfulOrderState extends State<SuccessfulOrder> {
                                 height: 1.33),
                           ),
                           SizedBox(
-                            height: 10.h,
+                            height: 8.h,
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -200,7 +197,7 @@ class _SuccessfulOrderState extends State<SuccessfulOrder> {
                             ],
                           ),
                           SizedBox(
-                            height: 15.h,
+                            height: 10.h,
                           ),
                           SvgPicture.asset(
                             AppAssets.infoSvg,
@@ -244,7 +241,7 @@ class _SuccessfulOrderState extends State<SuccessfulOrder> {
                                     child: Column(
                                       children: [
                                         Container(
-                                            height: 20.h,
+                                            height: 22.h,
                                             child: Row(children: [
                                               SvgPicture.asset(
                                                 AppAssets.bagsSvg,
@@ -289,7 +286,7 @@ class _SuccessfulOrderState extends State<SuccessfulOrder> {
                                                       "ar")
                                                   ? 10
                                                   : 0),
-                                          height: 157.h,
+                                          height: 160.h,
                                           child: ListView.separated(
                                               separatorBuilder:
                                                   (context, index) => SizedBox(
@@ -310,7 +307,7 @@ class _SuccessfulOrderState extends State<SuccessfulOrder> {
                                                     child: Column(
                                                       children: [
                                                         Container(
-                                                          height: 125.h,
+                                                          height: 122.h,
                                                           child:
                                                               ProductDetailsImageWidget(
                                                             withBackGroundShadow:
@@ -378,7 +375,7 @@ class _SuccessfulOrderState extends State<SuccessfulOrder> {
                                             child: Row(children: [
                                               SvgPicture.asset(
                                                 AppAssets.deliveryAddressSvg,
-                                                height: 16,
+                                                height: 15,
                                               ),
                                               SizedBox(
                                                 width: 7.w,

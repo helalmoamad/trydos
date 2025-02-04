@@ -4,7 +4,9 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
+import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/core/data/repository/prefs_repository_impl.dart';
+import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
@@ -98,15 +100,20 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
   }
 
   @override
-  void onError(DioException err, ErrorInterceptorHandler handler) {
+  void onError(DioException err, ErrorInterceptorHandler handler) async {
     try {
       if (jsonDecode(err.response.toString())["message"]
               .toString()
               .contains("Unauth") &&
           !(_prefsRepository.isTokenExpired ?? false)) {
-        _prefsRepository.setTokenExpired(true);
         _prefsRepository.setVerifiedPhonePeforeExpiredToken(
             _prefsRepository.isVerifiedPhone ?? false);
+        String? deviceId = await HelperFunctions.getDeviceId();
+        _prefsRepository.setTokenExpired(true);
+        GetIt.I<AuthBloc>().add(RegisterGuestEvent(
+            oldGuestUserId: _prefsRepository.myMarketId.toString(),
+            deviceId: deviceId!));
+
         _prefsRepository.setVerifiedPhone(false);
       }
     } catch (e) {}

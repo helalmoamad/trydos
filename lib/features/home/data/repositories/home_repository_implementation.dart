@@ -4,7 +4,7 @@ import 'package:trydos/core/error/failures.dart';
 
 import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
 import 'package:trydos/features/home/data/models/convert_item_from_oldCart_to_cart_model.dart';
-import 'package:trydos/features/home/data/models/ge_address_by_coordinates_model.dart';
+import 'package:trydos/features/home/data/models/get_address_by_coordinates_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_text_model.dart';
 
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';

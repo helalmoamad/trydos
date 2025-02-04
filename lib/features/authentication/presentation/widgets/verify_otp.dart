@@ -705,7 +705,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                 });
                           }),
                     ),
-                    10.verticalSpace,
+                    60.verticalSpace,
                     ValueListenableBuilder<int>(
                         valueListenable: checkOtp,
                         builder: (context, codeStatus, _) {

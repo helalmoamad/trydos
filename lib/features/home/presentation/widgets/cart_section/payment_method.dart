@@ -13,6 +13,7 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/service/language_service.dart';
 
 class PaymentMethod extends StatefulWidget {
   final ValueNotifier<String> paymentMethod;
@@ -104,6 +105,10 @@ class _PaymentMethodState extends State<PaymentMethod> {
                       ? SizedBox.shrink()
                       : InkWell(
                           onTap: () {
+                            if (widget.fromPalceOrder ||
+                                widget.fromSuccessOrder) {
+                              return;
+                            }
                             if (_paymentMethod == "trydos_wallet") {
                               widget.paymentMethod.value = "";
                             } else {
@@ -135,7 +140,9 @@ class _PaymentMethodState extends State<PaymentMethod> {
                                               : null),
                                   SizedBox(width: 10.w),
                                   Text(
-                                    "${LocaleKeys.trydos.tr()} ${LocaleKeys.wallet.tr()}",
+                                    LanguageService.languageCode == "ar"
+                                        ? "${LocaleKeys.wallet.tr()} ${LocaleKeys.trydos.tr()}"
+                                        : "${LocaleKeys.trydos.tr()} ${LocaleKeys.wallet.tr()}",
                                     style: context.textTheme.bodyMedium?.rr
                                         .copyWith(
                                             color: _paymentMethod ==
@@ -180,6 +187,10 @@ class _PaymentMethodState extends State<PaymentMethod> {
                       ? SizedBox.shrink()
                       : InkWell(
                           onTap: () {
+                            if (widget.fromPalceOrder ||
+                                widget.fromSuccessOrder) {
+                              return;
+                            }
                             if (_paymentMethod == "credit_cards") {
                               widget.paymentMethod.value = "";
                             } else {
@@ -258,6 +269,10 @@ class _PaymentMethodState extends State<PaymentMethod> {
                       ? SizedBox.shrink()
                       : InkWell(
                           onTap: () {
+                            if (widget.fromPalceOrder ||
+                                widget.fromSuccessOrder) {
+                              return;
+                            }
                             if (_paymentMethod == "Crypto") {
                               widget.paymentMethod.value = "";
                             } else {
@@ -338,7 +353,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                         child: InkWell(
                           onTap: () => isExpandedCoupon.value = !expandedCoupon,
                           child: Container(
-                              height: expandedCoupon ? 117.h : 44.h,
+                              height: expandedCoupon ? 117.h : 50.h,
                               width: 1.sw,
                               padding: EdgeInsets.all(10.h),
                               decoration: BoxDecoration(
@@ -395,7 +410,11 @@ class _PaymentMethodState extends State<PaymentMethod> {
                                                           0xff8D8D8D),
                                                       letterSpacing: 0.18,
                                                       fontSize: 12,
-                                                      height: 1.33),
+                                                      height: LanguageService
+                                                                  .languageCode ==
+                                                              "ar"
+                                                          ? 0.8
+                                                          : 1.33),
                                             ),
                                           ),
                                     !expandedCoupon

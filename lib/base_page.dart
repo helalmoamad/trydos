@@ -587,6 +587,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
           error: error.toString());
       debugPrint('error $error');
     };
+    _prefsRepository.setTokenExpired(false);
     return BlocListener<ChatBloc, ChatState>(
       listener: (context, state) {
         navigationToSinglePageChat(state.chatToNavigateFromTerminated!);

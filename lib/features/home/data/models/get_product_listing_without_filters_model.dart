@@ -102,7 +102,7 @@ class Data {
 }
 
 class Products {
-  final int? id;
+  final int? productId;
   final int? boutiqueId;
   final String? name;
   final String? slug;
@@ -128,7 +128,7 @@ class Products {
   final String? dateNow;
 
   Products({
-    this.id,
+    this.productId,
     this.boutiqueId,
     this.name,
     this.slug,
@@ -155,7 +155,7 @@ class Products {
   });
 
   Products copyWith({
-    int? id,
+    int? productId,
     int? boutiqueId,
     String? name,
     String? slug,
@@ -181,7 +181,7 @@ class Products {
     String? date,
   }) =>
       Products(
-        id: id ?? this.id,
+        productId: productId ?? this.productId,
         boutiqueId: boutiqueId ?? this.boutiqueId,
         name: name ?? this.name,
         slug: slug ?? this.slug,
@@ -209,7 +209,7 @@ class Products {
       );
 
   factory Products.fromJson(Map<String, dynamic> json) => Products(
-        id: json["id"],
+        productId: json["product_id"],
         boutiqueId: json["boutique_id"],
         name: json["name"],
         slug: json["slug"],
@@ -251,7 +251,7 @@ class Products {
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
+        "product_id": productId,
         "boutique_id": boutiqueId,
         "name": name,
         "slug": slug,

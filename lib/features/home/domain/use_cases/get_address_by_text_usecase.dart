@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 
-import 'package:trydos/features/home/data/models/ge_address_by_coordinates_model.dart';
+import 'package:trydos/features/home/data/models/get_address_by_coordinates_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_text_model.dart';
 
 import 'package:trydos/features/home/domain/repositories/home_repository.dart';

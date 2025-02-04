@@ -186,17 +186,17 @@ class _RegistrationPageState extends State<RegistrationPage>
                               if (Navigator.canPop(context)) {
                                 Navigator.of(context).pop();
                               } else {
-                                if (prefsRepository.isTokenExpired ??
+                                /*        if (prefsRepository.isTokenExpired ??
                                     false ||
                                         prefsRepository.marketToken == "" ||
-                                        prefsRepository.marketToken == null) {
-                                  String? deviceId =
-                                      await HelperFunctions.getDeviceId();
-                                  GetIt.I<AuthBloc>().add(RegisterGuestEvent(
-                                      oldGuestUserId:
-                                          prefsRepository.myMarketId.toString(),
-                                      deviceId: deviceId!));
-                                }
+                                        prefsRepository.marketToken == null) {*/
+                                String? deviceId =
+                                    await HelperFunctions.getDeviceId();
+                                GetIt.I<AuthBloc>().add(RegisterGuestEvent(
+                                    oldGuestUserId:
+                                        prefsRepository.myMarketId.toString(),
+                                    deviceId: deviceId!));
+                                // }
                                 Future.delayed(
                                     Duration(microseconds: 300),
                                     () => context.go(GRouter
@@ -225,7 +225,7 @@ class _RegistrationPageState extends State<RegistrationPage>
                         height: 96,
                       ),
                       SizedBox(
-                        height: 360,
+                        height: 1.sh / 2.6,
                         width: 1.sw,
                         child: WillPopScope(
                             child: PageView(

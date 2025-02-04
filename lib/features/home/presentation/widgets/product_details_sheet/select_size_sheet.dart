@@ -98,7 +98,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
       buildWhen: (p, c) =>
           p.currentSelectedColorForEveryProduct !=
               c.currentSelectedColorForEveryProduct ||
-          p.sizes != c.sizes ||
+          p.sizes?.length != c.sizes?.length ||
           p.cartCollection != c.cartCollection,
       builder: (context, state) {
         sizes = state.sizes ?? [];

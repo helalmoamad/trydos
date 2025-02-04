@@ -667,9 +667,9 @@ class _productCollectionInCartPage1State
                                 height: 14.h,
                               ),
                               Container(
-                                height: 31.h,
+                                height: 32.h,
                                 width: LanguageService.languageCode != "ar"
-                                    ? 270
+                                    ? 270.w
                                     : 285.w,
                                 padding: LanguageService.languageCode != "ar"
                                     ? EdgeInsets.only(right: 40.w)
@@ -677,9 +677,9 @@ class _productCollectionInCartPage1State
                                 child: Row(
                                   children: [
                                     Container(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 10.w),
-                                      width: 86.w,
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 8.w),
+                                      width: 83.w,
                                       height: 24.h,
                                       child: isOldCart
                                           ? Row(

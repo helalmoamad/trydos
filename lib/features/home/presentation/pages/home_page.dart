@@ -15,6 +15,7 @@ import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/data/model/pagination_model.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
@@ -82,8 +83,6 @@ class _HomePageState extends State<HomePage> {
     homeBloc.add(GetNotificationTypeProductEvent());
     appBloc.add(ChangeIndexForSearch(0));
     homeBloc.add(GetPopularSearchItemEvent());
-    print(
-        "1111111111111111111111222222222222222222222222222222222222222222222222222222222222222222222222222222222222BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
     homeBloc.add(GetProductsWithFiltersEvent(
         boutiqueSlug: "search",
         cashedOrginalBoutique: true,
@@ -236,8 +235,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     Locale currentLocale = Localizations.localeOf(context);
-    print(
-        "###########################################%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%${currentLocale.languageCode}");
 
     FlutterError.onError = (FlutterErrorDetails error) {
       try {
@@ -495,23 +492,31 @@ class _HomePageState extends State<HomePage> {
                             : reRenderingListViewKey[currentSlug],
                         itemBuilder: (_, index) => Padding(
                             padding: HWEdgeInsets.symmetric(horizontal: 15.w),
-                            child: HomePageCard2(
-                              key: TestVariables.kTestMode
-                                  ? Key('${WidgetsKeys.boutiqueCardKey}$index')
-                                  : null,
-                              category_Slug: currentSlug,
-                              withSlidingImages: homeState
-                                      .getHomeBoutiquesPaginationObjectByMainCategory[
-                                          currentSlug]!
-                                      .items[index]
-                                      .banners!
-                                      .length >
-                                  1,
-                              boutique: homeState
-                                  .getHomeBoutiquesPaginationObjectByMainCategory[
-                                      currentSlug]!
-                                  .items[index],
-                            )
+                            child: homeState
+                                    .getHomeBoutiquesPaginationObjectByMainCategory[
+                                        currentSlug]!
+                                    .items[index]
+                                    .banners
+                                    .isNullOrEmpty
+                                ? SizedBox.shrink()
+                                : HomePageCard2(
+                                    key: TestVariables.kTestMode
+                                        ? Key(
+                                            '${WidgetsKeys.boutiqueCardKey}$index')
+                                        : null,
+                                    category_Slug: currentSlug,
+                                    withSlidingImages: homeState
+                                            .getHomeBoutiquesPaginationObjectByMainCategory[
+                                                currentSlug]!
+                                            .items[index]
+                                            .banners!
+                                            .length >
+                                        1,
+                                    boutique: homeState
+                                        .getHomeBoutiquesPaginationObjectByMainCategory[
+                                            currentSlug]!
+                                        .items[index],
+                                  )
 
                             //HomePageCard(showWhite: index % 2 == 0),
                             ),
