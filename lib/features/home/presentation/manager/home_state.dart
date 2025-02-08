@@ -1,4 +1,3 @@
-import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -20,19 +19,16 @@ import 'package:trydos/features/home/data/models/get_old_cart_model.dart'
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
-
 import 'package:trydos/features/home/data/models/get_story_for_product_model.dart';
 import 'package:trydos/features/home/data/models/notificaation_poroduct_types.dart';
 import 'package:trydos/features/home/data/models/popular_search_terms_model.dart';
-import 'package:trydos/features/home/presentation/widgets/cart_section/add_shipping_address.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
-
 import '../../../../core/data/model/pagination_model.dart';
+import '../../data/models/customer_wallet_model.dart';
 import '../../data/models/get_cart_item_model.dart';
-import '../../data/models/get_home_boutiqes_model.dart';
+import '../../data/models/get_old_cart_model.dart';
 import '../../data/models/get_product_filters_model.dart' as get_filters;
-import '../../data/models/get_product_listing_with_filters_model.dart'
-    as get_product_with_filter;
+import '../../data/models/get_product_filters_model.dart';
 import '../../data/models/get_product_listing_without_filters_model.dart'
     as product;
 import '../../data/models/main_categories_response_model.dart';
@@ -101,6 +97,8 @@ enum GetAddressByTextStatus { init, loading, success, failure }
 
 enum GetAddressByCoordinatesStatus { init, loading, success, failure }
 
+enum GetCustomerWalletStatus { init, loading, success, failure }
+
 enum GetProductListingStatus { init, loading, success, failure }
 
 enum GetAndAddCountViewOfProductStatus { init, loading, success, failure }
@@ -144,6 +142,7 @@ class HomeState extends Equatable {
     this.getProductFiltersModel = const {},
     this.choosedFiltersByUser = const {},
     this.getAddressByCoordinatesModel,
+    this.customerWalletModel,
     this.appliedFiltersByUser = const {},
     this.currentPage = 0,
     this.productStatus,
@@ -165,7 +164,7 @@ class HomeState extends Equatable {
     this.getStoriesForProductStatus = GetStoriesForProductStatus.init,
     this.mainCategoriesResponseModel,
     this.sendRequestToGeminiStatus = SendRequestToGeminiStatus.init,
-    this.CurrentColorSizeForCart,
+    this.currentColorSizeForCart,
     this.currentQuantityForCart,
     this.addImagesToProductIdForCart = const {},
     this.searchHistory,
@@ -183,6 +182,7 @@ class HomeState extends Equatable {
     this.isExpandedForListingPage = false,
     this.popularSearchTerm,
     this.getAddressByCoordinatesStatus,
+    this.getCustomerWalletStatus,
     this.getAddressByTextStatus,
     this.countOfProductExpectedByFiltering,
     this.getCartItemsStatus = GetCartItemsStatus.init,
@@ -219,9 +219,11 @@ class HomeState extends Equatable {
   final List<PopularSearchTerm>? popularSearchTerm;
   final List<ResultSearch>? resultSearch;
   final GetAddressByCoordinatesModel? getAddressByCoordinatesModel;
+  final CustomerWalletModel? customerWalletModel;
   final List<ImageForAddToCart>? ListitemForAddToCart;
   final GetAddressByTextStatus? getAddressByTextStatus;
   final GetAddressByCoordinatesStatus? getAddressByCoordinatesStatus;
+  final GetCustomerWalletStatus? getCustomerWalletStatus;
   //final bool moveUrlFromElasticToMarketServer;
   final GetAllowedCountriesModel? getAllowedCountriesModel;
   final RemoveAddressToOrderStatus? removeAddressToOrderStatus;
@@ -305,7 +307,7 @@ class HomeState extends Equatable {
   final bool cashedOrginalBoutique;
   final int currentIndexForMainCategoryEvent;
   final StartingSetting? startingSetting;
-  final Map<String, String>? CurrentColorSizeForCart;
+  final Map<String, String>? currentColorSizeForCart;
   final bool? fromSearchForSearchWithGemini;
   final Map<String, List<int>>? currentQuantityForCart;
   final Map<String, GetProductDetailWithoutRelatedProductsModel>
@@ -346,6 +348,7 @@ class HomeState extends Equatable {
         cashedOrginalBoutique,
         listOfAddressInfoClassToSave,
         getAddressByCoordinatesStatus,
+        getCustomerWalletStatus,
         getAddressByTextStatus,
         listOfErrorSendedToMobileErrorLog,
         productContentForStatusOfOpeningProductDetailsDirectly,
@@ -397,9 +400,9 @@ class HomeState extends Equatable {
         cashedOrginalBoutique,
         currentIndexForMainCategoryEvent,
         startingSetting,
-        CurrentColorSizeForCart,
+        currentColorSizeForCart,
         getAddressByCoordinatesModel,
-
+        customerWalletModel,
         currentQuantityForCart,
         cachedProductWithoutRelatedProductsModel,
         addOrRemoveLikeOfProductStatus
@@ -409,6 +412,7 @@ class HomeState extends Equatable {
       {final GetStartingSettingsStatus? getStartingSettingsStatus,
       final GetMainCategoriesStatus? getMainCategoriesStatus,
       final GetAddressByCoordinatesModel? getAddressByCoordinatesModel,
+      final CustomerWalletModel? customerWalletModel,
       final AddItemInCartStatus? addItemInCartStatus,
       final HideItemInOldCartStatus? hideItemInOldCartStatus,
       final ConvertItemFromOldcartToCartStatus?
@@ -432,6 +436,7 @@ class HomeState extends Equatable {
           getProductFiltersWithPrefetchModel,
       final GetAddressByTextStatus? getAddressByTextStatus,
       final GetAddressByCoordinatesStatus? getAddressByCoordinatesStatus,
+      final GetCustomerWalletStatus? getCustomerWalletStatus,
       final Map<String, GetAndAddCountViewOfProductStatus>?
           getAndAddCountViewOfProductStatus,
       bool? cashedOrginalBoutique,
@@ -521,6 +526,7 @@ class HomeState extends Equatable {
           this.getAndAddCountViewOfProductStatus,
       getAddressByCoordinatesModel:
           getAddressByCoordinatesModel ?? this.getAddressByCoordinatesModel,
+      customerWalletModel: customerWalletModel ?? this.customerWalletModel,
       hideItemInOldCartStatus:
           hideItemInOldCartStatus ?? this.hideItemInOldCartStatus,
       getCommentForProductModel:
@@ -546,6 +552,8 @@ class HomeState extends Equatable {
           editAddressToOrderStatus ?? this.editAddressToOrderStatus,
       getAddressByCoordinatesStatus:
           getAddressByCoordinatesStatus ?? this.getAddressByCoordinatesStatus,
+      getCustomerWalletStatus:
+          getCustomerWalletStatus ?? this.getCustomerWalletStatus,
       getAddressByTextStatus:
           getAddressByTextStatus ?? this.getAddressByTextStatus,
       addOrRemoveLikeOfProductStatus:
@@ -622,8 +630,8 @@ class HomeState extends Equatable {
       currentIndexForMainCategoryEvent: currentIndexForMainCategoryEvent ??
           this.currentIndexForMainCategoryEvent,
       productITemForCart: productITemForCart ?? this.productITemForCart,
-      CurrentColorSizeForCart:
-          CurrentColorSizeForCart ?? this.CurrentColorSizeForCart,
+      currentColorSizeForCart:
+          CurrentColorSizeForCart ?? this.currentColorSizeForCart,
       choosedFiltersByUser: choosedFiltersByUser ?? this.choosedFiltersByUser,
       appliedFiltersByUser: appliedFiltersByUser ?? this.appliedFiltersByUser,
       getProductFiltersModel:

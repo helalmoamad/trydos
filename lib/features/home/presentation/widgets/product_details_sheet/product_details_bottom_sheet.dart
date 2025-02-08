@@ -394,331 +394,344 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                               }
                             }
                           : null,
-                      panelBuilder: (controller) => Column(
-                        //mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (currentTab == 3) ...{
-                            SizedBox(
-                              height: 1.sh - (288.h + 70.w + 305) - 180,
-                            ),
-                            tag == ''
-                                ? LocalHero(
-                                    tag: 'cart',
-                                    child: ProductDetailsImageWidget(
-                                      width: 198.w,
-                                      height: 280.h,
-                                      imageWidth: 320,
-                                      imageHeight: 464,
-                                      orginalWidth: double.tryParse(
-                                          gallery3dControllerForCircles != null
-                                              ? orginalWidth![
-                                                      currentIndexInSlider]
-                                                  .toString()
-                                              : widget.productItem.images![0]
-                                                  .originalWidth
-                                                  .toString()),
-                                      orginalHeight: double.tryParse(
-                                          gallery3dControllerForCircles != null
-                                              ? orginalHeight![
-                                                      currentIndexInSlider]
-                                                  .toString()
-                                              : widget.productItem.images![0]
-                                                  .originalHeight
-                                                  .toString()),
-                                      imageUrl:
-                                          gallery3dControllerForCircles != null
-                                              ? images[currentIndexInSlider]
-                                              : widget.productItem.images![0]
-                                                  .filePath,
-                                    ))
-                                : SizedBox(
-                                    height: 288.h,
-                                  ),
-                            5.verticalSpace,
-                            Material(
-                              color: Colors.transparent,
-                              child: gallery3dControllerForCircles != null
-                                  ? Directionality(
-                                      textDirection: TextDirection.ltr,
-                                      child: Gallery3D(
-                                          key: colorsGallerySliderKey,
-                                          // key: ValueKey('gallery3dControllerForCircles${widget.itemIndex}'),
-                                          controller:
-                                              gallery3dControllerForCircles!,
-                                          denyScrolling: false,
-                                          width: 200,
-                                          stopScrollingOnEdges:
-                                              (double primaryDelta) {
-                                            return (primaryDelta <= 0 &&
-                                                    gallery3dControllerForCircles!
-                                                            .currentIndex ==
-                                                        (syncColorImageList
-                                                                    .length ~/
-                                                                2 -
-                                                            1)) ||
-                                                (primaryDelta >= 0 &&
-                                                    gallery3dControllerForCircles!
-                                                            .currentIndex ==
-                                                        0);
-                                          },
-                                          changingPagesScrollOffset: 0.1,
-                                          isClip: false,
-                                          onItemChanged: (index) {
-                                            currentIndexInSlider = index;
-                                            homeBloc.add(
-                                                AddCurrentSelectedColorEvent(
-                                                    currentSelectedColor:
-                                                        index %
-                                                            (syncColorImageList
-                                                                    .length ~/
-                                                                2),
-                                                    productId: widget
-                                                        .productItem.productId
-                                                        .toString()));
-                                          },
-                                          itemConfig: GalleryItemConfig(
-                                              width: 70.w,
-                                              height: 70.w,
-                                              radius: 180,
-                                              isShowTransformMask: false,
-                                              shadows: const [
-                                                BoxShadow(
-                                                  color: Color(0x19000000),
-                                                  offset: Offset(0, 3),
-                                                  blurRadius: 6,
-                                                ),
-                                              ]),
-                                          itemBuilder: (context, index) {
-                                            return Visibility(
-                                              visible: ((gallery3dControllerForCircles
-                                                                  ?.currentIndex ??
-                                                              0) <
+                      panelBuilder: (controller) => SingleChildScrollView(
+                        child: Column(
+                          //mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (currentTab == 3) ...{
+                              // SizedBox(
+                              //   height: 1.sh - (288.h + 70.w + 305) - 180,
+                              // ),
+                              tag == ''
+                                  ? LocalHero(
+                                      tag: 'cart',
+                                      child: ProductDetailsImageWidget(
+                                        width: 198.w,
+                                        height: 280.h,
+                                        imageWidth: 320,
+                                        imageHeight: 464,
+                                        orginalWidth: double.tryParse(
+                                            gallery3dControllerForCircles !=
+                                                    null
+                                                ? orginalWidth![
+                                                        currentIndexInSlider]
+                                                    .toString()
+                                                : widget.productItem.images![0]
+                                                    .originalWidth
+                                                    .toString()),
+                                        orginalHeight: double.tryParse(
+                                            gallery3dControllerForCircles !=
+                                                    null
+                                                ? orginalHeight![
+                                                        currentIndexInSlider]
+                                                    .toString()
+                                                : widget.productItem.images![0]
+                                                    .originalHeight
+                                                    .toString()),
+                                        imageUrl:
+                                            gallery3dControllerForCircles !=
+                                                    null
+                                                ? images[currentIndexInSlider]
+                                                : widget.productItem.images![0]
+                                                    .filePath,
+                                      ))
+                                  : SizedBox(
+                                      height: 288.h,
+                                    ),
+                              5.verticalSpace,
+                              Material(
+                                color: Colors.transparent,
+                                child: gallery3dControllerForCircles != null
+                                    ? Directionality(
+                                        textDirection: TextDirection.ltr,
+                                        child: Gallery3D(
+                                            key: colorsGallerySliderKey,
+                                            // key: ValueKey('gallery3dControllerForCircles${widget.itemIndex}'),
+                                            controller:
+                                                gallery3dControllerForCircles!,
+                                            denyScrolling: false,
+                                            width: 200,
+                                            stopScrollingOnEdges:
+                                                (double primaryDelta) {
+                                              return (primaryDelta <= 0 &&
+                                                      gallery3dControllerForCircles!
+                                                              .currentIndex ==
                                                           (syncColorImageList
-                                                                  .length ~/
-                                                              2) &&
-                                                      index <
-                                                          (syncColorImageList
-                                                                  .length ~/
-                                                              2)) ||
-                                                  ((gallery3dControllerForCircles
-                                                                  ?.currentIndex ??
-                                                              0) >=
-                                                          (syncColorImageList
-                                                                  .length ~/
-                                                              2) &&
-                                                      index >=
-                                                          (syncColorImageList
-                                                                  .length ~/
-                                                              2)),
-                                              child: ProductListingImageWidget(
-                                                // orginalHeight:
-                                                //     orginalHeight![index],
-                                                // orginalWidth:
-                                                //     orginalWidth![index],
+                                                                      .length ~/
+                                                                  2 -
+                                                              1)) ||
+                                                  (primaryDelta >= 0 &&
+                                                      gallery3dControllerForCircles!
+                                                              .currentIndex ==
+                                                          0);
+                                            },
+                                            changingPagesScrollOffset: 0.1,
+                                            isClip: false,
+                                            onItemChanged: (index) {
+                                              currentIndexInSlider = index;
+                                              homeBloc.add(
+                                                  AddCurrentSelectedColorEvent(
+                                                      currentSelectedColor:
+                                                          index %
+                                                              (syncColorImageList
+                                                                      .length ~/
+                                                                  2),
+                                                      productId: widget
+                                                          .productItem.productId
+                                                          .toString()));
+                                            },
+                                            itemConfig: GalleryItemConfig(
                                                 width: 70.w,
                                                 height: 70.w,
-                                                imageWidth: 70,
-                                                imageHeight: 70,
-                                                imageUrl: images[index],
-                                                innerShadowYOffset: 4,
-                                                borderColor: index ==
-                                                        currentIndexInSlider
-                                                    ? Color(int.parse(
-                                                        '0xff${widget.productItem.colors![currentIndexInSlider % widget.productItem.colors!.length].color!.substring(1)}'))
-                                                    : Colors.white,
-                                                circleShape: true,
-                                              ),
-                                            );
-                                          }),
-                                    )
-                                  : SizedBox(
-                                      height: 70.w,
-                                    ),
+                                                radius: 180,
+                                                isShowTransformMask: false,
+                                                shadows: const [
+                                                  BoxShadow(
+                                                    color: Color(0x19000000),
+                                                    offset: Offset(0, 3),
+                                                    blurRadius: 6,
+                                                  ),
+                                                ]),
+                                            itemBuilder: (context, index) {
+                                              return Visibility(
+                                                visible: ((gallery3dControllerForCircles
+                                                                    ?.currentIndex ??
+                                                                0) <
+                                                            (syncColorImageList
+                                                                    .length ~/
+                                                                2) &&
+                                                        index <
+                                                            (syncColorImageList
+                                                                    .length ~/
+                                                                2)) ||
+                                                    ((gallery3dControllerForCircles
+                                                                    ?.currentIndex ??
+                                                                0) >=
+                                                            (syncColorImageList
+                                                                    .length ~/
+                                                                2) &&
+                                                        index >=
+                                                            (syncColorImageList
+                                                                    .length ~/
+                                                                2)),
+                                                child:
+                                                    ProductListingImageWidget(
+                                                  // orginalHeight:
+                                                  //     orginalHeight![index],
+                                                  // orginalWidth:
+                                                  //     orginalWidth![index],
+                                                  width: 70.w,
+                                                  height: 70.w,
+                                                  imageWidth: 70,
+                                                  imageHeight: 70,
+                                                  imageUrl: images[index],
+                                                  innerShadowYOffset: 4,
+                                                  borderColor: index ==
+                                                          currentIndexInSlider
+                                                      ? Color(int.parse(
+                                                          '0xff${widget.productItem.colors![currentIndexInSlider % widget.productItem.colors!.length].color!.substring(1)}'))
+                                                      : Colors.white,
+                                                  circleShape: true,
+                                                ),
+                                              );
+                                            }),
+                                      )
+                                    : SizedBox(
+                                        height: 70.w,
+                                      ),
+                              ),
+                              5.verticalSpace,
+                            },
+                            Stack(
+                              alignment: Alignment.topCenter,
+                              children: [
+                                BlocBuilder<HomeBloc, HomeState>(
+                                    buildWhen: (previous, current) =>
+                                        previous.getCurrencyForCountryModel !=
+                                            current
+                                                .getCurrencyForCountryModel ||
+                                        previous.currentColorSizeForCart?[
+                                                "size"] !=
+                                            current.currentColorSizeForCart?[
+                                                "size"] ||
+                                        previous.currentSelectedColorForEveryProduct !=
+                                            current
+                                                .currentSelectedColorForEveryProduct ||
+                                        previous.getProductDetailWithoutSimilarRelatedProductsStatus !=
+                                            current
+                                                .getProductDetailWithoutSimilarRelatedProductsStatus,
+                                    builder: (context, state) {
+                                      print(
+                                          "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!${widget.productItem.price!}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!${state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!}");
+                                      return ProductDetailsSheetHeader(
+                                        decimalPoint: state.startingSetting
+                                                ?.decimalPointSetting ??
+                                            2,
+                                        priceSymbol: state
+                                                .getCurrencyForCountryModel!
+                                                .data!
+                                                .currency!
+                                                .symbol ??
+                                            "",
+                                        addToBagButtonShapeNotifier:
+                                            widget.addToBagButtonShapeNotifier,
+                                        price: (widget.productItem.price! *
+                                                state
+                                                    .getCurrencyForCountryModel!
+                                                    .data!
+                                                    .currency!
+                                                    .exchangeRate!)
+                                            .toString(),
+                                        offerPrice: (widget
+                                                    .productItem.offerPrice! *
+                                                state
+                                                    .getCurrencyForCountryModel!
+                                                    .data!
+                                                    .currency!
+                                                    .exchangeRate!)
+                                            .toString(),
+                                      );
+                                    }),
+                                currentTab != -1
+                                    ? Positioned(
+                                        top: 7,
+                                        child: SvgPicture.asset(
+                                          AppAssets.minusMarkSvg,
+                                          width: 25,
+                                          color: Colors.grey.shade200,
+                                        ))
+                                    : const SizedBox.shrink(),
+                              ],
                             ),
-                            5.verticalSpace,
-                          },
-                          Stack(
-                            alignment: Alignment.topCenter,
-                            children: [
-                              BlocBuilder<HomeBloc, HomeState>(
-                                  buildWhen: (previous, current) =>
-                                      previous.getCurrencyForCountryModel !=
-                                          current.getCurrencyForCountryModel ||
-                                      previous.CurrentColorSizeForCart?[
-                                              "size"] !=
-                                          current.CurrentColorSizeForCart?[
-                                              "size"] ||
-                                      previous.currentSelectedColorForEveryProduct !=
-                                          current
-                                              .currentSelectedColorForEveryProduct ||
-                                      previous.getProductDetailWithoutSimilarRelatedProductsStatus !=
-                                          current
-                                              .getProductDetailWithoutSimilarRelatedProductsStatus,
-                                  builder: (context, state) {
-                                    print(
-                                        "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!${widget.productItem.price!}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!${state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!}");
-                                    return ProductDetailsSheetHeader(
-                                      decimalPoint: state.startingSetting
-                                              ?.decimalPointSetting ??
-                                          2,
-                                      priceSymbol: state
-                                              .getCurrencyForCountryModel!
-                                              .data!
-                                              .currency!
-                                              .symbol ??
-                                          "",
-                                      addToBagButtonShapeNotifier:
-                                          widget.addToBagButtonShapeNotifier,
-                                      price: (widget.productItem.price! *
-                                              state
-                                                  .getCurrencyForCountryModel!
-                                                  .data!
-                                                  .currency!
-                                                  .exchangeRate!)
-                                          .toString(),
-                                      offerPrice: (widget
-                                                  .productItem.offerPrice! *
-                                              state
-                                                  .getCurrencyForCountryModel!
-                                                  .data!
-                                                  .currency!
-                                                  .exchangeRate!)
-                                          .toString(),
-                                    );
-                                  }),
-                              currentTab != -1
-                                  ? Positioned(
-                                      top: 7,
-                                      child: SvgPicture.asset(
-                                        AppAssets.minusMarkSvg,
-                                        width: 25,
-                                        color: Colors.grey.shade200,
-                                      ))
-                                  : const SizedBox.shrink(),
-                            ],
-                          ),
-                          currentTab < 3 && currentTab >= 0
-                              ? SizedBox(
-                                  height: 358.h,
-                                  child: PageView(
-                                    physics:
-                                        const cupertino.ClampingScrollPhysics(),
-                                    scrollBehavior: const cupertino
-                                        .CupertinoScrollBehavior(),
-                                    controller: pageController,
-                                    onPageChanged: (index) {
-                                      currentActiveTab.value = index;
-                                      if (idsOfChatCardsToShare
-                                          .value.isNotEmpty) {
-                                        idsOfChatCardsToShare.value = [];
-                                      }
-                                    },
-                                    children: [
-                                      ProductDetailsSheetCommentsContent(
+                            currentTab < 3 && currentTab >= 0
+                                ? SizedBox(
+                                    height: 358.h,
+                                    child: PageView(
+                                      physics: const cupertino
+                                          .ClampingScrollPhysics(),
+                                      scrollBehavior: const cupertino
+                                          .CupertinoScrollBehavior(),
+                                      controller: pageController,
+                                      onPageChanged: (index) {
+                                        currentActiveTab.value = index;
+                                        if (idsOfChatCardsToShare
+                                            .value.isNotEmpty) {
+                                          idsOfChatCardsToShare.value = [];
+                                        }
+                                      },
+                                      children: [
+                                        ProductDetailsSheetCommentsContent(
+                                            productSlugForTopic:
+                                                widget.productSlugForTopic,
+                                            productSlug:
+                                                widget.productItem.slug ?? "",
+                                            productId: widget
+                                                .productItem.productId
+                                                .toString(),
+                                            scrollController: currentTab == 0
+                                                ? controller
+                                                : null),
+                                        BlocBuilder<HomeBloc, HomeState>(
+                                            buildWhen: (p, c) =>
+                                                p.currentColorSizeForCart?[
+                                                    "size"] !=
+                                                c.currentColorSizeForCart?[
+                                                    "size"],
+                                            builder: (context, state) {
+                                              return ProductDetailsSheetShareContent(
+                                                  currentSize: state
+                                                              .currentColorSizeForCart !=
+                                                          null
+                                                      ? state.currentColorSizeForCart![
+                                                              "size"] ??
+                                                          ""
+                                                      : "",
+                                                  currentColor:
+                                                      widget.currentColorName,
+                                                  productDescription:
+                                                      widget.productDescription,
+                                                  productItem:
+                                                      widget.productItem,
+                                                  focusNode: _focusNode,
+                                                  scrollController:
+                                                      currentTab == 1
+                                                          ? controller
+                                                          : null,
+                                                  idsOfChatCardsToShare:
+                                                      idsOfChatCardsToShare);
+                                            }),
+                                        ProductDetailsSheetMoreOptionsContent(
                                           productSlugForTopic:
                                               widget.productSlugForTopic,
                                           productSlug:
                                               widget.productItem.slug ?? "",
-                                          productId: widget
-                                              .productItem.productId
-                                              .toString(),
-                                          scrollController: currentTab == 0
+                                          scrollController: currentTab == 2
                                               ? controller
-                                              : null),
-                                      BlocBuilder<HomeBloc, HomeState>(
-                                          buildWhen: (p, c) =>
-                                              p.CurrentColorSizeForCart?[
-                                                  "size"] !=
-                                              c.CurrentColorSizeForCart?[
-                                                  "size"],
-                                          builder: (context, state) {
-                                            return ProductDetailsSheetShareContent(
-                                                currentSize: state
-                                                            .CurrentColorSizeForCart !=
-                                                        null
-                                                    ? state.CurrentColorSizeForCart![
-                                                            "size"] ??
-                                                        ""
-                                                    : "",
-                                                currentColor:
-                                                    widget.currentColorName,
-                                                productDescription:
-                                                    widget.productDescription,
-                                                productItem: widget.productItem,
-                                                focusNode: _focusNode,
-                                                scrollController:
-                                                    currentTab == 1
-                                                        ? controller
-                                                        : null,
-                                                idsOfChatCardsToShare:
-                                                    idsOfChatCardsToShare);
-                                          }),
-                                      ProductDetailsSheetMoreOptionsContent(
-                                        productSlugForTopic:
-                                            widget.productSlugForTopic,
-                                        productSlug:
-                                            widget.productItem.slug ?? "",
-                                        scrollController:
-                                            currentTab == 2 ? controller : null,
-                                        productId: widget.productItem.productId
-                                            .toString(),
-                                      )
-                                    ],
-                                  ),
-                                )
-                              : currentTab == 3
-                                  ? BlocBuilder<HomeBloc, HomeState>(
-                                      buildWhen: (p, c) =>
-                                          p.currentSelectedColorForEveryProduct[
-                                                  widget.productItem.productId
-                                                      .toString()] !=
-                                              c.currentSelectedColorForEveryProduct[
-                                                  widget.productItem.productId
-                                                      .toString()] ||
-                                          p.CurrentColorSizeForCart?["size"] !=
-                                              c.CurrentColorSizeForCart?[
-                                                  "size"],
-                                      builder: (context, state) {
-                                        return SelectSizeContent(
+                                              : null,
                                           productId: widget
                                               .productItem.productId
                                               .toString(),
-                                          sizes: state.sizes ?? [],
-                                          sizesQuantities:
-                                              state.sizesQuantities ?? [],
-                                          scrollController: controller,
-                                          selectedColorName: widget.productItem
-                                                  .colors.isNullOrEmpty
-                                              ? null
-                                              : widget
-                                                  .productItem
-                                                  .colors![state
-                                                              .currentSelectedColorForEveryProduct[
-                                                          widget.productItem
-                                                              .productId
-                                                              .toString()] ??
-                                                      (widget
-                                                                  .productItem
-                                                                  .syncColorImages
-                                                                  ?.length ??
-                                                              0) ~/
-                                                          2]
-                                                  .name
-                                                  .toString(),
-                                          selectedColor: widget.productItem
-                                                  .colors.isNullOrEmpty
-                                              ? null
-                                              : Color(int.parse(
-                                                  '0xff${widget.productItem.colors![state.currentSelectedColorForEveryProduct[widget.productItem.productId.toString()] ?? (widget.productItem.syncColorImages?.length ?? 0) ~/ 2].color!.substring(1)}')),
-                                          sizeIsNotAvailableNotifier:
-                                              sizeIsNotAvailableNotifier,
-                                          addToBagButtonShapeNotifier: widget
-                                              .addToBagButtonShapeNotifier,
-                                        );
-                                      },
-                                    )
-                                  : const SizedBox.shrink(),
-                        ],
+                                        )
+                                      ],
+                                    ),
+                                  )
+                                : currentTab == 3
+                                    ? BlocBuilder<HomeBloc, HomeState>(
+                                        buildWhen: (p, c) =>
+                                            p.currentSelectedColorForEveryProduct[
+                                                    widget.productItem.productId
+                                                        .toString()] !=
+                                                c.currentSelectedColorForEveryProduct[
+                                                    widget.productItem.productId
+                                                        .toString()] ||
+                                            p.currentColorSizeForCart?[
+                                                    "size"] !=
+                                                c.currentColorSizeForCart?[
+                                                    "size"],
+                                        builder: (context, state) {
+                                          return SelectSizeContent(
+                                            productId: widget
+                                                .productItem.productId
+                                                .toString(),
+                                            sizes: state.sizes ?? [],
+                                            sizesQuantities:
+                                                state.sizesQuantities ?? [],
+                                            scrollController: controller,
+                                            selectedColorName: widget
+                                                    .productItem
+                                                    .colors
+                                                    .isNullOrEmpty
+                                                ? null
+                                                : widget
+                                                    .productItem
+                                                    .colors![state
+                                                                .currentSelectedColorForEveryProduct[
+                                                            widget.productItem
+                                                                .productId
+                                                                .toString()] ??
+                                                        (widget
+                                                                    .productItem
+                                                                    .syncColorImages
+                                                                    ?.length ??
+                                                                0) ~/
+                                                            2]
+                                                    .name
+                                                    .toString(),
+                                            selectedColor: widget.productItem
+                                                    .colors.isNullOrEmpty
+                                                ? null
+                                                : Color(int.parse(
+                                                    '0xff${widget.productItem.colors![state.currentSelectedColorForEveryProduct[widget.productItem.productId.toString()] ?? (widget.productItem.syncColorImages?.length ?? 0) ~/ 2].color!.substring(1)}')),
+                                            sizeIsNotAvailableNotifier:
+                                                sizeIsNotAvailableNotifier,
+                                            addToBagButtonShapeNotifier: widget
+                                                .addToBagButtonShapeNotifier,
+                                          );
+                                        },
+                                      )
+                                    : const SizedBox.shrink(),
+                          ],
+                        ),
                       ),
                       borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(30.0),
@@ -777,15 +790,15 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                 return channelIds.isEmpty
                     ? BlocBuilder<HomeBloc, HomeState>(
                         buildWhen: (p, c) =>
-                            p.CurrentColorSizeForCart?["size"] !=
-                            c.CurrentColorSizeForCart?["size"],
+                            p.currentColorSizeForCart?["size"] !=
+                            c.currentColorSizeForCart?["size"],
                         builder: (context, state) {
                           return ProductDetailsSheetBottomBar(
                               productSlug: widget.productItem.slug ?? "",
                               countOfPieces: widget.countOfPieces,
                               colorNum: widget.currentColornum,
-                              size: state.CurrentColorSizeForCart != null
-                                  ? state.CurrentColorSizeForCart!["size"] ?? ""
+                              size: state.currentColorSizeForCart != null
+                                  ? state.currentColorSizeForCart!["size"] ?? ""
                                   : "",
                               colorName: widget.currentColorName,
                               productIdForCashproducts:

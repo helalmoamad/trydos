@@ -1,12 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
-import 'package:trydos/features/home/data/models/get_old_cart_model.dart'
-    as oldCarts;
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
-import 'package:trydos/features/home/presentation/widgets/cart_section/add_shipping_address.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
 
 import '../../data/models/get_product_filters_model.dart';
@@ -490,6 +487,16 @@ class GetAddressByCoordinatesEvent extends HomeEvent {
   @override
   // TODO: implement props
   List<Object?> get props => [longitude, latitude];
+}
+
+class GetCustomerWalletEvent extends HomeEvent {
+  final int limit;
+  final int offset;
+  GetCustomerWalletEvent({required this.limit, required this.offset});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [limit, offset];
 }
 
 class GetAddressByTextEvent extends HomeEvent {

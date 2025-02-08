@@ -4,22 +4,16 @@ import 'package:trydos/features/home/data/models/convert_item_from_oldCart_to_ca
 import 'package:trydos/features/home/data/models/get_address_by_coordinates_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_text_model.dart';
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
-import 'package:trydos/features/home/data/models/get_brand_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
-import 'package:trydos/features/home/data/models/get_category_model.dart';
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
-import 'package:trydos/features/home/data/models/get_count_likes_of_product_model.dart';
 import 'package:trydos/features/home/data/models/get_count_view_of_product_model.dart';
 import 'package:trydos/features/home/data/models/get_currency_for_country_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
-import 'package:trydos/features/home/data/models/get_is_liked_of_product_model.dart';
 import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
 import 'package:trydos/features/home/data/models/get_old_cart_model.dart';
 import 'package:trydos/features/home/data/models/get_only_message_from_api_model.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
-
-import 'package:trydos/features/home/data/models/home_sections_response_model.dart';
 import 'package:trydos/features/home/data/models/list_of_products_in_cart_model.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
 import 'package:trydos/features/home/data/models/notificaation_poroduct_types.dart';
@@ -27,9 +21,8 @@ import 'package:trydos/features/home/data/models/popular_search_terms_model.dart
 import 'package:trydos/features/home/data/models/response_only_message_model.dart';
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
 import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
-import 'package:trydos/features/home/domain/use_cases/get_products_usecase.dart';
-
 import '../../../../core/error/failures.dart';
+import '../../data/models/customer_wallet_model.dart';
 import '../../data/models/get_full_product_details_model.dart';
 import '../../data/models/get_product_filters_model.dart';
 import '../../data/models/get_product_listing_with_filters_model.dart';
@@ -112,4 +105,8 @@ abstract class HomeRepository {
 
   /* Future<Either<Failure, SearchResultModel>> getSearchResult(
       Map<String, dynamic> params);*/
+  Future<Either<Failure, CustomerWalletModel>> getCustomerWallet({
+    required int limit,
+    required int offset,
+  });
 }

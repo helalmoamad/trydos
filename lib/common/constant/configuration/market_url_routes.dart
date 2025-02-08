@@ -19,16 +19,13 @@ extension ScopeApi on String {
   String productScope() => '$_api/${_currentVersion}/mobile/product/$this';
   String mobileScope() => '$_api/${_currentVersion}/mobile/$this';
   String likeScope() => '$_api/${_currentVersion}/product_likes/$this';
-
   String productScopeWeb() => '$_api/${_currentVersion}/web/product/$this';
   String homeScope() => '$_api/${_currentVersion}/mobile/home/$this';
   String cartScope() => '$_api/${_currentVersion}/cart/$this';
   String oldCartScope() => '$_api/${_currentVersion}/old-cart/$this';
-
   String searchScope() => '$_api/${_currentVersion}/products/$this';
   String notificationScope() =>
       '$_api/${_currentVersion}/product_notification/$this';
-
   String firebaseTokensScope({bool current = false}) =>
       '$_api/${_currentVersion}/firebase_device_tokens${this != '' ? '/$this' : ''}';
 }
@@ -37,6 +34,8 @@ abstract class MarketEndPoints {
   static String getProductDetailWithoutSimilarRelatedProducts(
           String productId) =>
       "details_without_similar_related_products/$productId".productScope();
+
+  ////
   static String getFullProductDetailsEP(String productId) =>
       "details/$productId".productScope();
 
@@ -44,6 +43,9 @@ abstract class MarketEndPoints {
   static final updateCustomerAddressEP = "address/update".customerScope();
   static final addCustomerAddressEP = "address/add".customerScope();
   static final getCustomerAddressesEP = "address/list".customerScope();
+
+  static final getCustomerWalletEP = "wallet/list".customerScope();
+
   static final unsubscribeTopicEP = "unsubscribe_topic".firebaseTokensScope();
   static final subscribe_topicEP = "subscribe_topic".firebaseTokensScope();
   static final change_country_languageEP =

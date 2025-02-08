@@ -718,10 +718,11 @@ packages:
   flutter_carousel_slider:
     dependency: "direct main"
     description:
-      name: flutter_carousel_slider
-      sha256: "4cd0691b98ebbf8b40361e01779b3a211002c963d3709630e775fba699d3b821"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: "0d9271b6a09c35d520b425051b6e054f2045dace"
+      url: "https://gitlab.com/trydos_app/trydos-app-trydos-flutter_carousel_slider-1.1.0.git"
+    source: git
     version: "1.1.0"
   flutter_countdown_timer:
     dependency: "direct main"
@@ -755,10 +756,11 @@ packages:
   flutter_gallery_3d:
     dependency: "direct main"
     description:
-      name: flutter_gallery_3d
-      sha256: "1c8b5d15c4e8ab653558e2c73f7291bb7367c860749b721bcc8d625a920c5c34"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: c36d69309b3493ab4eed713c5a33f38e085b9dd1
+      url: "https://gitlab.com/trydos_app/trydos-app-flutter_gallery_3d-1.1.1.git"
+    source: git
     version: "1.1.1"
   flutter_gemini:
     dependency: "direct main"
@@ -1508,11 +1510,12 @@ packages:
   overscroll_pop:
     dependency: "direct main"
     description:
-      name: overscroll_pop
-      sha256: "2304ad974aa5c2310f6bd7b2f1e8aad40a19e3a0cfd6ecf5e53a498c0ae2e891"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.1"
+      path: "."
+      ref: HEAD
+      resolved-ref: "51e6029dd511f1268490f4c1f22d4f6012bf2e70"
+      url: "https://gitlab.com/trydos_app/trydos-app-trydos-overscroll_pop-0.1.0.git"
+    source: git
+    version: "0.1.0"
   package_config:
     dependency: transitive
     description:
@@ -1921,10 +1924,11 @@ packages:
   sliding_up_panel:
     dependency: "direct main"
     description:
-      name: sliding_up_panel
-      sha256: "578e90956a6212d1e406373250b2436a0f3afece29aee3c24c8360094d6cf968"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: "4d0915d55aaed0972f6db5f3c2ab9333d324de80"
+      url: "https://gitlab.com/trydos_app/trydos-app-sliding_up_panel-2.0.0.git"
+    source: git
     version: "2.0.0+1"
   source_gen:
     dependency: transitive
@@ -2282,10 +2286,10 @@ packages:
     dependency: transitive
     description:
       name: vm_service
-      sha256: f652077d0bdf60abe4c1f6377448e8655008eef28f128bc023f7b5e8dfeb48fc
+      sha256: "5c5f338a667b4c644744b661f309fb8080bb94b18a7e91ef1dbd343bed00ed6d"
       url: "https://pub.dev"
     source: hosted
-    version: "14.2.4"
+    version: "14.2.5"
   watcher:
     dependency: transitive
     description:

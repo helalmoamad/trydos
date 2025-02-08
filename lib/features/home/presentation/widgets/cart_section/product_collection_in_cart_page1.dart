@@ -16,9 +16,6 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
-import 'package:trydos/features/app/app_elvated_button.dart';
-import 'package:trydos/features/app/my_text_widget.dart';
-import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_old_cart_model.dart';
@@ -34,8 +31,8 @@ import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/routes/router.dart';
 import 'package:trydos/service/language_service.dart';
 
-class productCollectionInCartPage1 extends StatefulWidget {
-  const productCollectionInCartPage1({
+class ProductCollectionInCartPage1 extends StatefulWidget {
+  const ProductCollectionInCartPage1({
     super.key,
     required this.priceSymbol,
     required this.oldCartCollection,
@@ -50,12 +47,12 @@ class productCollectionInCartPage1 extends StatefulWidget {
 
   final String? priceSymbol;
   @override
-  State<productCollectionInCartPage1> createState() =>
-      _productCollectionInCartPage1State();
+  State<ProductCollectionInCartPage1> createState() =>
+      _ProductCollectionInCartPage1State();
 }
 
-class _productCollectionInCartPage1State
-    extends State<productCollectionInCartPage1> {
+class _ProductCollectionInCartPage1State
+    extends State<ProductCollectionInCartPage1> {
   @override
   void initState() {
     super.initState();

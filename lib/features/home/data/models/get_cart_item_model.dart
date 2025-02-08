@@ -1,15 +1,3 @@
-// To parse this JSON data, do
-//
-//     final getCartShippingItemsModel = getCartShippingItemsModelFromJson(jsonString);
-
-import 'dart:convert';
-
-GetCartShippingItemsModel getCartShippingItemsModelFromJson(String str) =>
-    GetCartShippingItemsModel.fromJson(json.decode(str));
-
-String getCartShippingItemsModelToJson(GetCartShippingItemsModel data) =>
-    json.encode(data.toJson());
-
 class GetCartShippingItemsModel {
   final String? message;
   final Data? data;

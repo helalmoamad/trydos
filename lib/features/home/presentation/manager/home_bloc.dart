@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,7 +12,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:injectable/injectable.dart';
-import 'package:logger/logger.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/core/use_case/use_case.dart';
@@ -26,7 +24,6 @@ import 'package:trydos/features/authentication/domain/use_cases/get_customer_inf
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/home/data/models/get_address_by_text_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
-
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
@@ -75,12 +72,10 @@ import 'package:trydos/features/home/domain/use_cases/send_error_to_mobile_error
 import 'package:trydos/features/home/domain/use_cases/store_fcm_token_of_market_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/update_customer_address_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/update_item_from_cart_usecase.dart';
-import 'package:trydos/features/home/presentation/widgets/cart_section/add_shipping_address.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
 import 'package:trydos/features/story/domain/useCases/get_width_and_height_usecase.dart';
 import 'package:trydos/features/story/presentation/bloc/story_state.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/service/language_service.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/handling_market_notifications.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../common/helper/helper_functions.dart';
@@ -95,6 +90,7 @@ import '../../../chat/presentation/manager/chat_bloc.dart';
 import '../../../chat/presentation/manager/chat_event.dart';
 import '../../../story/presentation/bloc/story_bloc.dart';
 import '../../domain/use_cases/add_item_to_cart_usecase.dart';
+import '../../domain/use_cases/get_customer_wallet_usecase.dart';
 import '../../domain/use_cases/get_stories_for_product_usecase.dart';
 import 'home_event.dart';
 
@@ -151,6 +147,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.addCommentUseCase,
     this.requestForNotificationWhenProductBecameAvailableUseCase,
     this.getProductsWithFiltersUseCase,
+    this.getCustomerWalletUseCase,
   ) : super(HomeState()) {
     on<HomeEvent>((event, emit) {});
 
@@ -162,6 +159,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     );
     on<GetAddressByCoordinatesEvent>(
       _onGetAddressByCoordinatesEvent,
+    );
+    on<GetCustomerWalletEvent>(
+      _onGetCustomerWalletEvent,
     );
     on<GetAddressByTextEvent>(_onGetAddressByTextEvent,
         transformer: restartable());
@@ -382,6 +382,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final AddCustomerAddressUseCase addCustomerAddressUseCase;
   final UpdateCustomerAddressUseCase updateCustomerAddressUseCase;
   final DeleteCustomerAddressUseCase deleteCustomerAddressUseCase;
+
+  final GetCustomerWalletUseCase getCustomerWalletUseCase;
 
   final Smartlook smartLook = Smartlook.instance;
 
@@ -609,7 +611,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           addressInfoClassToSave: event.addressInfoClassToSave,
           preIdToEdit: event.preIdToEdit,
         ));
-        showMessage(l.message ?? "",
+        showMessage(l.message,
             foreGroundColor: Colors.white,
             backGroundColor: Colors.black,
             showInRelease: true,
@@ -2850,31 +2852,85 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     });
   }
 
+  FutureOr<void> _onGetCustomerWalletEvent(
+    GetCustomerWalletEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    ///////////////////////////
+    emit(
+      state.copyWith(
+        getCustomerWalletStatus: GetCustomerWalletStatus.loading,
+      ),
+    );
+
+    final response = await getCustomerWalletUseCase.call(
+      CustomerWalletParams(limit: event.limit, offset: event.offset),
+    );
+
+    response.fold(
+      (l) {
+        if (!isFailedTheFirstTime.contains('GetCustomerWalletEvent')) {
+          isFailedTheFirstTime.add('GetCustomerWalletEvent');
+        }
+        emit(
+          state.copyWith(
+            getCustomerWalletStatus: GetCustomerWalletStatus.failure,
+          ),
+        );
+      },
+      (r) {
+        isFailedTheFirstTime.remove('GetCustomerWalletEvent');
+        emit(
+          state.copyWith(
+            getCustomerWalletStatus: GetCustomerWalletStatus.success,
+            customerWalletModel: r,
+          ),
+        );
+      },
+    );
+  }
+
   FutureOr<void> _onGetAddressByCoordinatesEvent(
       GetAddressByCoordinatesEvent event, Emitter<HomeState> emit) async {
     if (event.latitude == 0 && event.longitude == 0) {
       return;
     }
-    emit(state.copyWith(
-        getAddressByCoordinatesStatus: GetAddressByCoordinatesStatus.loading));
+    ///////////////////////////
+    emit(
+      state.copyWith(
+        getAddressByCoordinatesStatus: GetAddressByCoordinatesStatus.loading,
+      ),
+    );
 
     final response = await getAddressByCoordinatesUsecase(
-        GetAddressByCoordinatesParams(
-            latitude: event.latitude, longitude: event.longitude));
+      GetAddressByCoordinatesParams(
+        latitude: event.latitude,
+        longitude: event.longitude,
+      ),
+    );
 
-    response.fold((l) {
-      if (!isFailedTheFirstTime.contains('GetAddressByCoordinatesEvent')) {
-        ;
-        isFailedTheFirstTime.add('GetAddressByCoordinatesEvent');
-      }
-      emit(state.copyWith(
-          getAddressByCoordinatesStatus:
-              GetAddressByCoordinatesStatus.failure));
-    }, (r) {
-      emit(state.copyWith(
-          getAddressByCoordinatesStatus: GetAddressByCoordinatesStatus.success,
-          getAddressByCoordinatesModel: r));
-    });
+    response.fold(
+      (l) {
+        if (!isFailedTheFirstTime.contains('GetAddressByCoordinatesEvent')) {
+          isFailedTheFirstTime.add('GetAddressByCoordinatesEvent');
+        }
+        emit(
+          state.copyWith(
+            getAddressByCoordinatesStatus:
+                GetAddressByCoordinatesStatus.failure,
+          ),
+        );
+      },
+      (r) {
+        isFailedTheFirstTime.remove('GetAddressByCoordinatesEvent');
+        emit(
+          state.copyWith(
+              getAddressByCoordinatesStatus:
+                  GetAddressByCoordinatesStatus.success,
+              getAddressByCoordinatesModel: r),
+        );
+      },
+    );
   }
 
   FutureOr<void> _onGetAddressByTextEvent(
@@ -4253,8 +4309,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         quantity: event.imageForAddToCart.quantity,
         countOfPieces: event.imageForAddToCart.countOfPieces,
         images: event.imageForAddToCart.images,
-        size: state.CurrentColorSizeForCart != null
-            ? state.CurrentColorSizeForCart!["size"]
+        size: state.currentColorSizeForCart != null
+            ? state.currentColorSizeForCart!["size"]
             : "");
 
     List<ImageForAddToCart>? ListitemForAddToCart =

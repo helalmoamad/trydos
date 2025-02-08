@@ -4,6 +4,7 @@ import 'package:trydos/core/error/failures.dart';
 
 import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
 import 'package:trydos/features/home/data/models/convert_item_from_oldCart_to_cart_model.dart';
+import 'package:trydos/features/home/data/models/customer_wallet_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_coordinates_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_text_model.dart';
 
@@ -146,8 +147,9 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   Future<Either<Failure, GetProductDetailWithoutRelatedProductsModel>>
       getProductDetailWithoutSimilarRelatedProducts(String productSlug) {
     return handlingExceptionRequest(
-        tryCall: () =>
-            dataSource.getProductDetailWithoutRelatedProducts(productSlug));
+      tryCall: () =>
+          dataSource.getProductDetailWithoutRelatedProducts(productSlug),
+    );
   }
 
   @override
@@ -301,5 +303,15 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
       Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.storeFcmTokenOfMarket(params));
+  }
+
+  @override
+  Future<Either<Failure, CustomerWalletModel>> getCustomerWallet({
+    required int limit,
+    required int offset,
+  }) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.getCustomerWallet(limit: limit, offset: offset),
+    );
   }
 }

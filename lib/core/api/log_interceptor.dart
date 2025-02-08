@@ -5,7 +5,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
-import 'package:trydos/core/data/repository/prefs_repository_impl.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
@@ -133,6 +132,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
     if (kDebugMode) {
       prettyPrinterError(
         "***|| SOMETHING ERROR 💔 ||***"
+        "\n url: ${err.requestOptions.path}"
         "\n error: ${err.error}"
         "\n response: ${err.response}"
         "\n message: ${err.message}"

@@ -1,54 +1,26 @@
-import 'dart:math';
-
-import 'package:dotted_border/dotted_border.dart';
 import 'package:easy_localization/easy_localization.dart';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:local_hero/local_hero.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'package:trydos/base_page.dart';
-
 import 'package:trydos/common/constant/constant.dart';
-import 'package:trydos/common/helper/helper_functions.dart';
-
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
-import 'package:trydos/core/utils/extensions/list.dart';
-import 'package:trydos/features/app/app_elvated_button.dart';
-
-import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
-import 'package:trydos/features/app/my_text_widget.dart';
-import 'package:trydos/features/app/svg_network_widget.dart';
-import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
-import 'package:trydos/features/authentication/presentation/pages/first_registeration_page.dart';
-import 'package:trydos/features/chat/domain/use_cases/get_image_width_and_height_usecase.dart';
 import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
-import 'package:trydos/features/home/presentation/manager/home_state.dart';
-import 'package:trydos/features/home/presentation/widgets/cart_section/add_shipping_address.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/cart_delivary_adress.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/payment_method.dart';
-
-import 'package:trydos/features/home/presentation/widgets/cart_section/product_collection_in_cart_page1.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_image_widget.dart';
-import 'package:trydos/features/story/presentation/widget/try_again.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/main.dart';
 import 'package:trydos/routes/router.dart';
 import 'package:trydos/service/language_service.dart';
-
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 
@@ -56,6 +28,7 @@ class SuccessfulOrder extends StatefulWidget {
   final List<Map<String, String>> cartImages;
   final String totalPrice;
   final ValueNotifier<String> paymentMethod;
+  final List<String> availablePaymentMethod;
   final String currencySympole;
   final CustomerAddressesInfo customerAddressesInfo;
   const SuccessfulOrder({
@@ -65,6 +38,7 @@ class SuccessfulOrder extends StatefulWidget {
     required this.paymentMethod,
     required this.currencySympole,
     Key? key,
+    required this.availablePaymentMethod,
   });
   @override
   State<SuccessfulOrder> createState() => _SuccessfulOrderState();
@@ -441,6 +415,8 @@ class _SuccessfulOrderState extends State<SuccessfulOrder> {
                                           fromSuccessOrder: true,
                                           paymentMethod: widget.paymentMethod,
                                           fromPalceOrder: true,
+                                          availablePaymentMethod:
+                                              widget.availablePaymentMethod,
                                         )
                                       ],
                                     )),

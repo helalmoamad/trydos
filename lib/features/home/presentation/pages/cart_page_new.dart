@@ -1,39 +1,24 @@
 import 'dart:math';
-
-import 'package:dotted_border/dotted_border.dart';
 import 'package:easy_localization/easy_localization.dart';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'package:trydos/base_page.dart';
-
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/common/helper/show_message.dart';
-
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
-import 'package:trydos/features/app/app_elvated_button.dart';
-import 'package:trydos/features/app/app_widgets/app_bottom_navigation_bar.dart';
-
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
-import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
-import 'package:trydos/features/authentication/presentation/pages/first_registeration_page.dart';
 import 'package:trydos/features/authentication/presentation/widgets/insert_phone_tab.dart';
 import 'package:trydos/features/authentication/presentation/widgets/verification_methods.dart';
 import 'package:trydos/features/authentication/presentation/widgets/verify_otp.dart';
@@ -41,18 +26,11 @@ import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/cart_delivary_adress.dart';
-
 import 'package:trydos/features/home/presentation/widgets/cart_section/cart_sheet_header.dart';
-
 import 'package:trydos/features/home/presentation/widgets/cart_section/product_collection_in_cart_page1.dart';
-import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_image_widget.dart';
-import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_bottom_sheet.dart';
 import 'package:trydos/features/story/presentation/widget/try_again.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/main.dart';
-import 'package:trydos/routes/router.dart';
 import 'package:trydos/service/language_service.dart';
-
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 
@@ -172,6 +150,7 @@ class _CartPageState extends State<CartPage> {
             },
             builder: (context, state) {
               cartImages = [];
+
               state.cartCollection?.forEach(
                 (element) {
                   for (var i = 0; i < (element.quantity ?? 0); i++) {
@@ -588,7 +567,7 @@ class _CartPageState extends State<CartPage> {
                                       (state.cartCollection == null ||
                                               state.cartCollection!.isEmpty)
                                           ? SizedBox.shrink()
-                                          : productCollectionInCartPage1(
+                                          : ProductCollectionInCartPage1(
                                               isOldCart: false,
                                               oldCartCollection:
                                                   state.oldcartCollection ?? [],
@@ -643,7 +622,7 @@ class _CartPageState extends State<CartPage> {
                                       (state.oldcartCollection == null ||
                                               state.oldcartCollection!.isEmpty)
                                           ? SizedBox.shrink()
-                                          : productCollectionInCartPage1(
+                                          : ProductCollectionInCartPage1(
                                               isOldCart: true,
                                               oldCartCollection:
                                                   state.oldcartCollection ?? [],
@@ -1491,233 +1470,243 @@ class _CartPageState extends State<CartPage> {
                                                                           : 10),
                                                                   height: 70.h,
                                                                   child: BlocBuilder<
-                                                                          AuthBloc,
-                                                                          AuthState>(
-                                                                      buildWhen: (p,
-                                                                              c) =>
-                                                                          p.verifyOtpSignInStatus != c.verifyOtpSignInStatus ||
-                                                                          p.verifyOtpSignUpStatus !=
-                                                                              c
-                                                                                  .verifyOtpSignUpStatus ||
-                                                                          c.verifyGuestPhoneStatus !=
-                                                                              p
-                                                                                  .verifyGuestPhoneStatus,
-                                                                      builder:
-                                                                          (context,
-                                                                              authState) {
-                                                                        return (authState.verifyGuestPhoneStatus == VerifyGuestPhoneStatus.loading ||
-                                                                                authState.verifyOtpSignInStatus == VerifyOtpSignInStatus.loading ||
-                                                                                authState.verifyOtpSignUpStatus == VerifyOtpSignUpStatus.loading ||
-                                                                                state.addItemInCartStatus == AddItemInCartStatus.loading ||
-                                                                                state.deleteItemInCartStatus == DeleteItemInCartStatus.loading ||
-                                                                                state.updateItemInCartStatus == UpdateItemInCartStatus.loading)
-                                                                            ? Shimmer.fromColors(
-                                                                                baseColor: Colors.grey[200]!,
-                                                                                highlightColor: Colors.grey[100]!,
-                                                                                child: Container(
-                                                                                    alignment: Alignment.center,
-                                                                                    child: Column(
+                                                                      AuthBloc,
+                                                                      AuthState>(
+                                                                    buildWhen: (p,
+                                                                            c) =>
+                                                                        p.verifyOtpSignInStatus != c.verifyOtpSignInStatus ||
+                                                                        p.verifyOtpSignUpStatus !=
+                                                                            c
+                                                                                .verifyOtpSignUpStatus ||
+                                                                        c.verifyGuestPhoneStatus !=
+                                                                            p.verifyGuestPhoneStatus,
+                                                                    builder:
+                                                                        (context,
+                                                                            authState) {
+                                                                      return (authState.verifyGuestPhoneStatus == VerifyGuestPhoneStatus.loading ||
+                                                                              authState.verifyOtpSignInStatus == VerifyOtpSignInStatus.loading ||
+                                                                              authState.verifyOtpSignUpStatus == VerifyOtpSignUpStatus.loading ||
+                                                                              state.addItemInCartStatus == AddItemInCartStatus.loading ||
+                                                                              state.deleteItemInCartStatus == DeleteItemInCartStatus.loading ||
+                                                                              state.updateItemInCartStatus == UpdateItemInCartStatus.loading)
+                                                                          ? Shimmer.fromColors(
+                                                                              baseColor: Colors.grey[200]!,
+                                                                              highlightColor: Colors.grey[100]!,
+                                                                              child: Container(
+                                                                                alignment: Alignment.center,
+                                                                                child: Column(
+                                                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                                                  children: [
+                                                                                    Row(
                                                                                       mainAxisAlignment: MainAxisAlignment.center,
                                                                                       children: [
-                                                                                        Row(
-                                                                                          mainAxisAlignment: MainAxisAlignment.center,
-                                                                                          children: [
-                                                                                            Text(
-                                                                                              "${LocaleKeys.confirm.tr()} ",
-                                                                                              style: context.textTheme.bodyMedium?.la.copyWith(
-                                                                                                fontSize: 18,
-                                                                                                color: const Color(0xffFEFEFE),
-                                                                                                letterSpacing: 0.18,
-                                                                                              ),
-                                                                                            ),
-                                                                                            Text(
-                                                                                              "&",
-                                                                                              style: context.textTheme.bodyMedium?.ld.copyWith(
-                                                                                                fontSize: 18,
-                                                                                                color: const Color(0xffFEFEFE),
-                                                                                                letterSpacing: 0.18,
-                                                                                              ),
-                                                                                            ),
-                                                                                            Text(
-                                                                                              " ${LocaleKeys.continues.tr()}",
-                                                                                              style: context.textTheme.bodyMedium?.la.copyWith(
-                                                                                                fontSize: 18,
-                                                                                                color: const Color(0xffFEFEFE),
-                                                                                                letterSpacing: 0.18,
-                                                                                              ),
-                                                                                            ),
-                                                                                          ],
+                                                                                        Text(
+                                                                                          "${LocaleKeys.confirm.tr()} ",
+                                                                                          style: context.textTheme.bodyMedium?.la.copyWith(
+                                                                                            fontSize: 18,
+                                                                                            color: const Color(0xffFEFEFE),
+                                                                                            letterSpacing: 0.18,
+                                                                                          ),
                                                                                         ),
-                                                                                        Row(
-                                                                                          mainAxisAlignment: MainAxisAlignment.center,
-                                                                                          children: [
-                                                                                            Text(
-                                                                                              "${totlalQuantity.round()} ",
-                                                                                              style: context.textTheme.bodyMedium?.ba.copyWith(
-                                                                                                fontSize: 14,
-                                                                                                color: const Color(0xffFEFEFE),
-                                                                                                letterSpacing: 0.18,
-                                                                                              ),
-                                                                                            ),
-                                                                                            Text(
-                                                                                              "${LocaleKeys.item.tr()}",
-                                                                                              style: context.textTheme.bodyMedium?.ra.copyWith(
-                                                                                                fontSize: 14,
-                                                                                                color: const Color(0xffFEFEFE),
-                                                                                                letterSpacing: 0.18,
-                                                                                              ),
-                                                                                            ),
-                                                                                            Text(
-                                                                                              " ${totlalOfferPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} ",
-                                                                                              style: context.textTheme.bodyMedium?.ba.copyWith(
-                                                                                                fontSize: 14,
-                                                                                                color: const Color(0xffFEFEFE),
-                                                                                                letterSpacing: 0.18,
-                                                                                              ),
-                                                                                            ),
-                                                                                            Text(
-                                                                                              priceSymbol ?? ' \$',
-                                                                                              style: context.textTheme.bodyMedium?.ra.copyWith(
-                                                                                                decorationColor: Color(0xffFEFEFE),
-                                                                                                fontSize: 14,
-                                                                                                color: Color(0xffFEFEFE),
-                                                                                              ),
-                                                                                            )
-                                                                                          ],
+                                                                                        Text(
+                                                                                          "&",
+                                                                                          style: context.textTheme.bodyMedium?.ld.copyWith(
+                                                                                            fontSize: 18,
+                                                                                            color: const Color(0xffFEFEFE),
+                                                                                            letterSpacing: 0.18,
+                                                                                          ),
+                                                                                        ),
+                                                                                        Text(
+                                                                                          " ${LocaleKeys.continues.tr()}",
+                                                                                          style: context.textTheme.bodyMedium?.la.copyWith(
+                                                                                            fontSize: 18,
+                                                                                            color: const Color(0xffFEFEFE),
+                                                                                            letterSpacing: 0.18,
+                                                                                          ),
                                                                                         ),
                                                                                       ],
                                                                                     ),
-                                                                                    margin: EdgeInsets.symmetric(horizontal: 20.w),
-                                                                                    width: 390.w,
-                                                                                    height: 70.h,
-                                                                                    decoration: BoxDecoration(
-                                                                                      borderRadius: BorderRadius.circular(20),
-                                                                                      color: Color(0xff3C3C3C),
-                                                                                    )))
-                                                                            : InkWell(
-                                                                                onTap: () {
-                                                                                  if ((state.cartCollection == null || state.cartCollection!.isEmpty)) {
-                                                                                    // didCallOnWillPop = true;
-                                                                                    if (Navigator.canPop(context)) {
-                                                                                      if (Navigator.of(context).canPop()) {
-                                                                                        Navigator.of(context).pop();
-                                                                                        return;
-                                                                                        // منع الإغلاق بعد تنفيذ pop
-                                                                                      }
-
-                                                                                      // يسمح بالإغلاق إذا لم تنطبق أي من الشروط
-
-                                                                                      appBloc.add(ChangeBasePage(0));
-                                                                                      homeBloc.add(ResetAllSelectedAppliedFilterEvent());
+                                                                                    Row(
+                                                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                                                      children: [
+                                                                                        Text(
+                                                                                          "${totlalQuantity.round()} ",
+                                                                                          style: context.textTheme.bodyMedium?.ba.copyWith(
+                                                                                            fontSize: 14,
+                                                                                            color: const Color(0xffFEFEFE),
+                                                                                            letterSpacing: 0.18,
+                                                                                          ),
+                                                                                        ),
+                                                                                        Text(
+                                                                                          "${LocaleKeys.item.tr()}",
+                                                                                          style: context.textTheme.bodyMedium?.ra.copyWith(
+                                                                                            fontSize: 14,
+                                                                                            color: const Color(0xffFEFEFE),
+                                                                                            letterSpacing: 0.18,
+                                                                                          ),
+                                                                                        ),
+                                                                                        Text(
+                                                                                          " ${totlalOfferPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} ",
+                                                                                          style: context.textTheme.bodyMedium?.ba.copyWith(
+                                                                                            fontSize: 14,
+                                                                                            color: const Color(0xffFEFEFE),
+                                                                                            letterSpacing: 0.18,
+                                                                                          ),
+                                                                                        ),
+                                                                                        Text(
+                                                                                          priceSymbol ?? ' \$',
+                                                                                          style: context.textTheme.bodyMedium?.ra.copyWith(
+                                                                                            decorationColor: Color(0xffFEFEFE),
+                                                                                            fontSize: 14,
+                                                                                            color: Color(0xffFEFEFE),
+                                                                                          ),
+                                                                                        )
+                                                                                      ],
+                                                                                    ),
+                                                                                  ],
+                                                                                ),
+                                                                                margin: EdgeInsets.symmetric(horizontal: 20.w),
+                                                                                width: 390.w,
+                                                                                height: 70.h,
+                                                                                decoration: BoxDecoration(
+                                                                                  borderRadius: BorderRadius.circular(20),
+                                                                                  color: Color(0xff3C3C3C),
+                                                                                ),
+                                                                              ),
+                                                                            )
+                                                                          : InkWell(
+                                                                              onTap: () {
+                                                                                if ((state.cartCollection == null || state.cartCollection!.isEmpty)) {
+                                                                                  // didCallOnWillPop = true;
+                                                                                  if (Navigator.canPop(context)) {
+                                                                                    if (Navigator.of(context).canPop()) {
+                                                                                      Navigator.of(context).pop();
                                                                                       return;
-                                                                                    } else {
-                                                                                      appBloc.add(ChangeBasePage(0));
-                                                                                      return;
+                                                                                      // منع الإغلاق بعد تنفيذ pop
                                                                                     }
+
+                                                                                    // يسمح بالإغلاق إذا لم تنطبق أي من الشروط
+
+                                                                                    appBloc.add(ChangeBasePage(0));
+                                                                                    homeBloc.add(ResetAllSelectedAppliedFilterEvent());
+                                                                                    return;
                                                                                   } else {
-                                                                                    if (prefsRepository.isVerifiedPhone != true) {
-                                                                                      if ((prefsRepository.isVerifiedPhonePeforeExpiredToken ?? false)) {
-                                                                                        authBloc.add(SendOtpEvent(phone: prefsRepository.myPhoneNumber!, isViaWhatsApp: 1));
-                                                                                        ;
-                                                                                      }
-                                                                                      isVerified.value = false;
-                                                                                    } else {
-                                                                                      HelperFunctions.slidingNavigation(context, CartDelivaryAdress(cartImages: cartImages, totalPrice: totlalOfferPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2), currencySympole: priceSymbol ?? ' \$'));
-                                                                                    }
+                                                                                    appBloc.add(ChangeBasePage(0));
+                                                                                    return;
                                                                                   }
-                                                                                  ;
-                                                                                },
-                                                                                child: Container(
-                                                                                    alignment: Alignment.center,
-                                                                                    child: ((state.cartCollection == null || state.cartCollection!.isEmpty))
-                                                                                        ? Text(
-                                                                                            "${LocaleKeys.back_to_home.tr()}",
-                                                                                            style: context.textTheme.bodyMedium?.la.copyWith(
-                                                                                              fontSize: 18,
-                                                                                              color: const Color(0xffFEFEFE),
-                                                                                              letterSpacing: 0.18,
-                                                                                            ),
-                                                                                          )
-                                                                                        : Column(
+                                                                                } else {
+                                                                                  if (prefsRepository.isVerifiedPhone != true) {
+                                                                                    if ((prefsRepository.isVerifiedPhonePeforeExpiredToken ?? false)) {
+                                                                                      authBloc.add(SendOtpEvent(phone: prefsRepository.myPhoneNumber!, isViaWhatsApp: 1));
+                                                                                      ;
+                                                                                    }
+                                                                                    isVerified.value = false;
+                                                                                  } else {
+                                                                                    HelperFunctions.slidingNavigation(
+                                                                                      context,
+                                                                                      CartDelivaryAddress(
+                                                                                        cartImages: cartImages,
+                                                                                        availablePaymentMethod: state.getCartShippingItemsModel!.data!.availablePaymentMethod!,
+                                                                                        totalPrice: totlalOfferPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2),
+                                                                                        currencySympole: priceSymbol ?? ' \$',
+                                                                                      ),
+                                                                                    );
+                                                                                  }
+                                                                                }
+                                                                              },
+                                                                              child: Container(
+                                                                                alignment: Alignment.center,
+                                                                                child: ((state.cartCollection == null || state.cartCollection!.isEmpty))
+                                                                                    ? Text(
+                                                                                        "${LocaleKeys.back_to_home.tr()}",
+                                                                                        style: context.textTheme.bodyMedium?.la.copyWith(
+                                                                                          fontSize: 18,
+                                                                                          color: const Color(0xffFEFEFE),
+                                                                                          letterSpacing: 0.18,
+                                                                                        ),
+                                                                                      )
+                                                                                    : Column(
+                                                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                                                        children: [
+                                                                                          Row(
                                                                                             mainAxisAlignment: MainAxisAlignment.center,
                                                                                             children: [
-                                                                                              Row(
-                                                                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                                                                children: [
-                                                                                                  Text(
-                                                                                                    "${LocaleKeys.confirm.tr()} ",
-                                                                                                    style: context.textTheme.bodyMedium?.la.copyWith(
-                                                                                                      fontSize: 18,
-                                                                                                      color: const Color(0xffFEFEFE),
-                                                                                                      letterSpacing: 0.18,
-                                                                                                    ),
-                                                                                                  ),
-                                                                                                  Text(
-                                                                                                    "&",
-                                                                                                    style: context.textTheme.bodyMedium?.ld.copyWith(
-                                                                                                      fontSize: 18,
-                                                                                                      color: const Color(0xffFEFEFE),
-                                                                                                      letterSpacing: 0.18,
-                                                                                                    ),
-                                                                                                  ),
-                                                                                                  Text(
-                                                                                                    " ${LocaleKeys.continues.tr()}",
-                                                                                                    style: context.textTheme.bodyMedium?.la.copyWith(
-                                                                                                      fontSize: 18,
-                                                                                                      color: const Color(0xffFEFEFE),
-                                                                                                      letterSpacing: 0.18,
-                                                                                                    ),
-                                                                                                  ),
-                                                                                                ],
+                                                                                              Text(
+                                                                                                "${LocaleKeys.confirm.tr()} ",
+                                                                                                style: context.textTheme.bodyMedium?.la.copyWith(
+                                                                                                  fontSize: 18,
+                                                                                                  color: const Color(0xffFEFEFE),
+                                                                                                  letterSpacing: 0.18,
+                                                                                                ),
                                                                                               ),
-                                                                                              Row(
-                                                                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                                                                children: [
-                                                                                                  Text(
-                                                                                                    "${totlalQuantity.round()} ",
-                                                                                                    style: context.textTheme.bodyMedium?.ba.copyWith(
-                                                                                                      fontSize: 14,
-                                                                                                      color: const Color(0xffFEFEFE),
-                                                                                                      letterSpacing: 0.18,
-                                                                                                    ),
-                                                                                                  ),
-                                                                                                  Text(
-                                                                                                    "${LocaleKeys.item.tr()}",
-                                                                                                    style: context.textTheme.bodyMedium?.ra.copyWith(
-                                                                                                      fontSize: 14,
-                                                                                                      color: const Color(0xffFEFEFE),
-                                                                                                      letterSpacing: 0.18,
-                                                                                                    ),
-                                                                                                  ),
-                                                                                                  Text(
-                                                                                                    " ${totlalOfferPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} ",
-                                                                                                    style: context.textTheme.bodyMedium?.ba.copyWith(
-                                                                                                      fontSize: 14,
-                                                                                                      color: const Color(0xffFEFEFE),
-                                                                                                      letterSpacing: 0.18,
-                                                                                                    ),
-                                                                                                  ),
-                                                                                                  Text(
-                                                                                                    priceSymbol ?? ' \$',
-                                                                                                    style: context.textTheme.bodyMedium?.ra.copyWith(
-                                                                                                      decorationColor: Color(0xffFEFEFE),
-                                                                                                      fontSize: 14,
-                                                                                                      color: Color(0xffFEFEFE),
-                                                                                                    ),
-                                                                                                  )
-                                                                                                ],
+                                                                                              Text(
+                                                                                                "&",
+                                                                                                style: context.textTheme.bodyMedium?.ld.copyWith(
+                                                                                                  fontSize: 18,
+                                                                                                  color: const Color(0xffFEFEFE),
+                                                                                                  letterSpacing: 0.18,
+                                                                                                ),
+                                                                                              ),
+                                                                                              Text(
+                                                                                                " ${LocaleKeys.continues.tr()}",
+                                                                                                style: context.textTheme.bodyMedium?.la.copyWith(
+                                                                                                  fontSize: 18,
+                                                                                                  color: const Color(0xffFEFEFE),
+                                                                                                  letterSpacing: 0.18,
+                                                                                                ),
                                                                                               ),
                                                                                             ],
                                                                                           ),
-                                                                                    margin: EdgeInsets.symmetric(horizontal: 20.w),
-                                                                                    width: 390.w,
-                                                                                    height: 70.h,
-                                                                                    decoration: BoxDecoration(
-                                                                                      borderRadius: BorderRadius.circular(20),
-                                                                                      color: Color(0xff3C3C3C),
-                                                                                    )),
-                                                                              );
-                                                                      }),
+                                                                                          Row(
+                                                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                                                            children: [
+                                                                                              Text(
+                                                                                                "${totlalQuantity.round()} ",
+                                                                                                style: context.textTheme.bodyMedium?.ba.copyWith(
+                                                                                                  fontSize: 14,
+                                                                                                  color: const Color(0xffFEFEFE),
+                                                                                                  letterSpacing: 0.18,
+                                                                                                ),
+                                                                                              ),
+                                                                                              Text(
+                                                                                                "${LocaleKeys.item.tr()}",
+                                                                                                style: context.textTheme.bodyMedium?.ra.copyWith(
+                                                                                                  fontSize: 14,
+                                                                                                  color: const Color(0xffFEFEFE),
+                                                                                                  letterSpacing: 0.18,
+                                                                                                ),
+                                                                                              ),
+                                                                                              Text(
+                                                                                                " ${totlalOfferPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} ",
+                                                                                                style: context.textTheme.bodyMedium?.ba.copyWith(
+                                                                                                  fontSize: 14,
+                                                                                                  color: const Color(0xffFEFEFE),
+                                                                                                  letterSpacing: 0.18,
+                                                                                                ),
+                                                                                              ),
+                                                                                              Text(
+                                                                                                priceSymbol ?? ' \$',
+                                                                                                style: context.textTheme.bodyMedium?.ra.copyWith(
+                                                                                                  decorationColor: Color(0xffFEFEFE),
+                                                                                                  fontSize: 14,
+                                                                                                  color: Color(0xffFEFEFE),
+                                                                                                ),
+                                                                                              )
+                                                                                            ],
+                                                                                          ),
+                                                                                        ],
+                                                                                      ),
+                                                                                margin: EdgeInsets.symmetric(horizontal: 20.w),
+                                                                                width: 390.w,
+                                                                                height: 70.h,
+                                                                                decoration: BoxDecoration(
+                                                                                  borderRadius: BorderRadius.circular(20),
+                                                                                  color: Color(0xff3C3C3C),
+                                                                                ),
+                                                                              ),
+                                                                            );
+                                                                    },
+                                                                  ),
                                                                 ),
                                                         ],
                                                         mainAxisAlignment:

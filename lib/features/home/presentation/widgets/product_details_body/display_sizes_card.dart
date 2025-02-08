@@ -160,7 +160,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
         size ==
         BlocProvider.of<HomeBloc>(context)
             .state
-            .CurrentColorSizeForCart?['size']);
+            .currentColorSizeForCart?['size']);
     widget.scrollController.addListener(changingModeListener);
     gallery3dControllerForCircles = sizes.isNullOrEmpty || sizes!.length < 3
         ? null
@@ -216,11 +216,11 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
     };
     return BlocListener<HomeBloc, HomeState>(
       listenWhen: (p, c) =>
-          p.CurrentColorSizeForCart?['size'] !=
-          c.CurrentColorSizeForCart?['size'],
+          p.currentColorSizeForCart?['size'] !=
+          c.currentColorSizeForCart?['size'],
       listener: (context, state) {
         currentSelectedSizeIndex.value = sizes?.indexWhere(
-                (size) => size == state.CurrentColorSizeForCart?['size']) ??
+                (size) => size == state.currentColorSizeForCart?['size']) ??
             currentSelectedSizeIndex.value;
       },
       child: BlocBuilder<HomeBloc, HomeState>(

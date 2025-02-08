@@ -1,15 +1,3 @@
-// To parse this JSON data, do
-//
-//     final getAddressByCoordinatesModel = getAddressByCoordinatesModelFromJson(jsonString);
-
-import 'dart:convert';
-
-GetAddressByCoordinatesModel getAddressByCoordinatesModelFromJson(String str) =>
-    GetAddressByCoordinatesModel.fromJson(json.decode(str));
-
-String getAddressByCoordinatesModelToJson(GetAddressByCoordinatesModel data) =>
-    json.encode(data.toJson());
-
 class GetAddressByCoordinatesModel {
   final String? status;
   final Data? data;

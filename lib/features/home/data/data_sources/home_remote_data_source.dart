@@ -1,4 +1,3 @@
-import 'package:flutter/widgets.dart';
 import 'package:injectable/injectable.dart';
 import 'package:trydos/common/constant/configuration/elastic_url_routes.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
@@ -7,21 +6,17 @@ import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
 import 'package:trydos/features/home/data/models/convert_item_from_oldCart_to_cart_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_coordinates_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_text_model.dart';
-
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
-import 'package:trydos/features/home/data/models/get_count_likes_of_product_model.dart';
 import 'package:trydos/features/home/data/models/get_count_view_of_product_model.dart';
 import 'package:trydos/features/home/data/models/get_full_product_details_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
-import 'package:trydos/features/home/data/models/get_is_liked_of_product_model.dart';
 import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
 import 'package:trydos/features/home/data/models/get_old_cart_model.dart';
 import 'package:trydos/features/home/data/models/get_only_message_from_api_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 import 'package:trydos/features/home/data/models/list_of_products_in_cart_model.dart';
-
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
 import 'package:trydos/features/home/data/models/notificaation_poroduct_types.dart';
 import 'package:trydos/features/home/data/models/popular_search_terms_model.dart';
@@ -34,6 +29,7 @@ import '../../../../common/constant/configuration/stories_url_routes.dart';
 import '../../../../core/api/client_config.dart';
 import '../../../../core/api/methods/detect_server.dart';
 import '../../../../core/api/methods/post.dart';
+import '../models/customer_wallet_model.dart';
 import '../models/get_product_detail_without_related_products_model.dart';
 import '../models/get_product_filters_model.dart';
 import '../models/get_product_listing_with_filters_model.dart';
@@ -52,8 +48,9 @@ class HomeRemoteDatasource {
       requestPrams: RequestConfig<StartingSettingsResponseModel>(
         endpoint: MarketEndPoints.getStartingSettingsEP,
         response: ResponseValue<StartingSettingsResponseModel>(
-            fromJson: (response) =>
-                StartingSettingsResponseModel.fromJson(response)),
+          fromJson: (response) =>
+              StartingSettingsResponseModel.fromJson(response),
+        ),
       ),
     );
     return getStartingSettings();
@@ -620,5 +617,26 @@ class HomeRemoteDatasource {
       ),
     );
     return deleteLikeOFProduct();
+  }
+
+  Future<CustomerWalletModel> getCustomerWallet({
+    required int limit,
+    required int offset,
+  }) {
+    GetClient<CustomerWalletModel> getCustomerWallet =
+        GetClient<CustomerWalletModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<CustomerWalletModel>(
+        endpoint: MarketEndPoints.getCustomerWalletEP,
+        queryParameters: {
+          "limit": limit.toString(),
+          "offset": offset.toString(),
+        },
+        response: ResponseValue<CustomerWalletModel>(
+            fromJson: (response) => CustomerWalletModel.fromJson(response)),
+      ),
+    );
+
+    return getCustomerWallet();
   }
 }
