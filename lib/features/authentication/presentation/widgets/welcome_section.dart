@@ -131,7 +131,7 @@ class _WelcomeSectionState extends State<WelcomeSection> {
                           : const Color(0xfffafafa),
                       child: Container(
                         width: 1.sw,
-                        height: 60,
+                        height: 50.h,
                         decoration: BoxDecoration(
                           color: index == 0
                               ? Colors.white
@@ -193,7 +193,7 @@ class _WelcomeSectionState extends State<WelcomeSection> {
                           : const Color(0xfffafafa),
                       child: Container(
                         width: 1.sw,
-                        height: 50,
+                        height: 50.h,
                         decoration: BoxDecoration(
                           color: index == 1
                               ? Colors.white
@@ -268,9 +268,7 @@ class _WelcomeSectionState extends State<WelcomeSection> {
               ),
             ),
           ),
-          SizedBox(
-            height: 45.h,
-          ),
+          SizedBox(height: 50.h),
         ],
       ),
     );

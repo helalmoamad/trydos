@@ -28,6 +28,9 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           const [],
       hideItemInOldCartStatus: $enumDecodeNullable(
           _$HideItemInOldCartStatusEnumMap, json['hideItemInOldCartStatus']),
+      changeSizesForEveryProduct: $enumDecodeNullable(
+          _$ChangeSizesForEveryProductEnumMap,
+          json['changeSizesForEveryProduct']),
       searchWithOutFilterOffset:
           (json['searchWithOutFilterOffset'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
@@ -126,6 +129,10 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
                             e as Map<String, dynamic>)),
               ) ??
               const {},
+      getAddressByCoordinatesModel: json['getAddressByCoordinatesModel'] == null
+          ? null
+          : GetAddressByCoordinatesModel.fromJson(
+              json['getAddressByCoordinatesModel'] as Map<String, dynamic>),
       appliedFiltersByUser:
           (json['appliedFiltersByUser'] as Map<String, dynamic>?)?.map(
                 (k, e) => MapEntry(
@@ -147,7 +154,8 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       updateItemInCartStatus: $enumDecodeNullable(
           _$UpdateItemInCartStatusEnumMap, json['updateItemInCartStatus']),
       getCustomerAddressStatus: $enumDecodeNullable(
-          _$GetAddressToOrderStatusEnumMap, json['getAddressToOrderStatus']),
+          _$GetCustomerAddressesStatusEnumMap,
+          json['getCustomerAddressStatus']),
       theReplyFromGemini: json['theReplyFromGemini'] as String?,
       productITemForCart:
           (json['productITemForCart'] as Map<String, dynamic>?)?.map(
@@ -405,10 +413,24 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
                             Boutique.fromJson(value as Map<String, dynamic>))),
               ) ??
               const {},
+      getFirebaseSettingForNotificationStatus: $enumDecodeNullable(
+          _$GetFirebaseSettingForNotificationStatusEnumMap,
+          json['getFirebaseSettingForNotificationStatus']),
+      firebaseSettingForNotificationModel:
+          json['firebaseSettingForNotificationModel'] == null
+              ? null
+              : FirebaseSettingForNotificationModel.fromJson(
+                  json['firebaseSettingForNotificationModel']
+                      as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'boutiquesThatDidPrefetch': instance.boutiquesThatDidPrefetch,
+      'getFirebaseSettingForNotificationStatus':
+          _$GetFirebaseSettingForNotificationStatusEnumMap[
+              instance.getFirebaseSettingForNotificationStatus],
+      'firebaseSettingForNotificationModel':
+          instance.firebaseSettingForNotificationModel?.toJson(),
       'boutiquesForEveryMainCategoryThatDidPrefetch':
           instance.boutiquesForEveryMainCategoryThatDidPrefetch,
       'getStartingSettingsStatus': _$GetStartingSettingsStatusEnumMap[
@@ -429,8 +451,8 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
               instance.getNotificationTypeProductStatus],
       'hideItemInOldCartStatus':
           _$HideItemInOldCartStatusEnumMap[instance.hideItemInOldCartStatus],
-      'getAddressToOrderStatus':
-          _$GetAddressToOrderStatusEnumMap[instance.getCustomerAddressStatus],
+      'getCustomerAddressStatus': _$GetCustomerAddressesStatusEnumMap[
+          instance.getCustomerAddressStatus],
       'notificationTypeForProductModel':
           instance.notificationTypeForProductModel?.toJson(),
       'getAndAddCountViewOfProductStatus':
@@ -439,6 +461,8 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'popularSearchTerm':
           instance.popularSearchTerm?.map((e) => e.toJson()).toList(),
       'resultSearch': instance.resultSearch?.map((e) => e.toJson()).toList(),
+      'getAddressByCoordinatesModel':
+          instance.getAddressByCoordinatesModel?.toJson(),
       'ListitemForAddToCart':
           instance.ListitemForAddToCart?.map((e) => e.toJson()).toList(),
       'getAddressByTextStatus':
@@ -569,6 +593,8 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           instance.mainCategoriesResponseModel?.toJson(),
       'getProductDetailWithoutRelatedProductsModel':
           instance.getProductDetailWithoutRelatedProductsModel?.toJson(),
+      'changeSizesForEveryProduct': _$ChangeSizesForEveryProductEnumMap[
+          instance.changeSizesForEveryProduct],
       'cashedOrginalBoutique': instance.cashedOrginalBoutique,
       'currentIndexForMainCategoryEvent':
           instance.currentIndexForMainCategoryEvent,
@@ -607,6 +633,13 @@ const _$HideItemInOldCartStatusEnumMap = {
   HideItemInOldCartStatus.loading: 'loading',
   HideItemInOldCartStatus.success: 'success',
   HideItemInOldCartStatus.failure: 'failure',
+};
+
+const _$ChangeSizesForEveryProductEnumMap = {
+  ChangeSizesForEveryProduct.init: 'init',
+  ChangeSizesForEveryProduct.loading: 'loading',
+  ChangeSizesForEveryProduct.success: 'success',
+  ChangeSizesForEveryProduct.failure: 'failure',
 };
 
 const _$GetProductDetailWithoutSimilarRelatedProductsStatusEnumMap = {
@@ -700,7 +733,7 @@ const _$UpdateItemInCartStatusEnumMap = {
   UpdateItemInCartStatus.failure: 'failure',
 };
 
-const _$GetAddressToOrderStatusEnumMap = {
+const _$GetCustomerAddressesStatusEnumMap = {
   GetCustomerAddressesStatus.init: 'init',
   GetCustomerAddressesStatus.loading: 'loading',
   GetCustomerAddressesStatus.success: 'success',
@@ -768,4 +801,11 @@ const _$GetNotificationTypeProductStatusEnumMap = {
   GetNotificationTypeProductStatus.loading: 'loading',
   GetNotificationTypeProductStatus.success: 'success',
   GetNotificationTypeProductStatus.failure: 'failure',
+};
+
+const _$GetFirebaseSettingForNotificationStatusEnumMap = {
+  GetFirebaseSettingForNotificationStatus.init: 'init',
+  GetFirebaseSettingForNotificationStatus.loading: 'loading',
+  GetFirebaseSettingForNotificationStatus.success: 'success',
+  GetFirebaseSettingForNotificationStatus.failure: 'failure',
 };

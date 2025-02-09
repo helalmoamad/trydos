@@ -169,6 +169,35 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
                       valueListenable: displaySubmit,
                       builder: (context, display, _) {
                         return NameFormField(
+                          onFieldSubmitted: (val) {
+                            if (display) {
+                              if (!widget.fromLogin) {
+                                BlocProvider.of<AuthBloc>(context)
+                                    .add(UpdateNameEvent(
+                                  name: form.controllers[0].text,
+                                ));
+                                // BlocProvider.of<AuthBloc>(context)
+                                //     .add(VerifyOtpSignUpEvent(
+                                //   name: form.controllers[0].text,
+                                //   otp: prefsRepository.otpCode!,
+                                //   verificationId:
+                                //       prefsRepository.verificationId!,
+                                // ));
+                              } else {
+                                BlocProvider.of<AuthBloc>(context)
+                                    .add(UpdateNameEvent(
+                                  name: form.controllers[0].text,
+                                ));
+                              }
+                              ////////////////
+                              FirebaseAnalyticsService.logEventForSession(
+                                eventName: AnalyticsEventsConst.buttonClicked,
+                                executedEventName:
+                                    AnalyticsExecutedEventNameConst
+                                        .confirmNameButton,
+                              );
+                            }
+                          },
                           key: TestVariables.kTestMode
                               ? Key(WidgetsKeys.nameFormFieldKey)
                               : null,
@@ -245,7 +274,7 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
                         );
                       })),
             ),
-            60.verticalSpace,
+            120.verticalSpace,
           ],
         ),
       ),

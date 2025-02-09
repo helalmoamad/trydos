@@ -48,7 +48,6 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
 
   @override
   void initState() {
-    widget.focusNode.requestFocus();
     super.initState();
   }
 
@@ -82,7 +81,7 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Padding(
-            padding: HWEdgeInsets.symmetric(horizontal: 40.0),
+            padding: HWEdgeInsets.symmetric(horizontal: 20.0),
             child: Column(children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -188,10 +187,24 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                   valueListenable: displaySubmit,
                   builder: (context, display, _) {
                     return PhoneFormField(
+                      onFieldSubmitted: (val) {
+                        if (display) {
+                          Future.delayed(Duration(milliseconds: 300),
+                              () => FocusScope.of(context).unfocus());
+                          widget.moveToNextStep
+                              .call('${form.controllers[0].text}');
+                          //////////////////////////
+                          FirebaseAnalyticsService.logEventForSession(
+                            eventName: AnalyticsEventsConst.buttonClicked,
+                            executedEventName: AnalyticsExecutedEventNameConst
+                                .confirmPhoneNumberButton,
+                          );
+                        }
+                      },
                       key: TestVariables.kTestMode
                           ? Key(WidgetsKeys.loginPhoneFormFieldKey)
                           : null,
-                      focusNode: widget.focusNode,
+                      autoFocus: true,
                       onChange: (String? text) {
                         Country newCountry = countries.firstWhere(
                             (element) => '+${text?.toLowerCase()}'

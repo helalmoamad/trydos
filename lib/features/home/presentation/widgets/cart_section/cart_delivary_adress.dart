@@ -1406,7 +1406,7 @@ Widget AddressInfoWithContactInfoCart(
             child: Row(
               children: [
                 Text(
-                  "${customerAddressesInfo.regionDetails?.street ?? ""}${(customerAddressesInfo.regionDetails?.street?.length ?? 0) > 0 ? " | " : ""}${customerAddressesInfo.regionDetails?.town ?? ""}${(customerAddressesInfo.regionDetails?.town?.length ?? 0) > 0 ? " | " : ""}${customerAddressesInfo.regionDetails?.city ?? ""}${(customerAddressesInfo.regionDetails?.city?.length ?? 0) > 0 ? " | " : ""}${customerAddressesInfo.regionDetails?.province ?? ""} | ${customerAddressesInfo.regionDetails?.country ?? ''}",
+                  "${customerAddressesInfo.regionDetails?.building ?? ""}${(customerAddressesInfo.regionDetails?.building?.length ?? 0) > 0 ? " | " : ""}${customerAddressesInfo.regionDetails?.street ?? ""}${(customerAddressesInfo.regionDetails?.street?.length ?? 0) > 0 ? " | " : ""}${customerAddressesInfo.regionDetails?.town ?? ""}${(customerAddressesInfo.regionDetails?.town?.length ?? 0) > 0 ? " | " : ""}${customerAddressesInfo.regionDetails?.city ?? ""}${(customerAddressesInfo.regionDetails?.city?.length ?? 0) > 0 ? " | " : ""}${customerAddressesInfo.regionDetails?.province ?? ""} | ${customerAddressesInfo.regionDetails?.country ?? ''}",
                   style: context.textTheme.bodyMedium?.mr.copyWith(
                       color: isDelete
                           ? Color(0xffFFFFFF)

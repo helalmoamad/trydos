@@ -39,12 +39,12 @@ class VerifyOtp extends StatefulWidget {
     required this.navigateTocart,
     required this.onLoginFailed,
     required this.goBack,
-    required this.fromCart,
+    required this.fromExpired,
     required this.phoneNumber,
   }) : super(key: key);
   final String methodIcon;
   final bool fromLogin;
-  final bool fromCart;
+  final bool fromExpired;
   final String phoneNumber;
   final void Function() onLoginFailed;
   final void Function() goBack;
@@ -119,7 +119,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
               print(
                   "###6666666666666666666666666666666666#################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 
-              if (widget.fromCart) {
+              if (widget.fromExpired) {
                 if (state.signUpErrorMessage == 'auth-001') {
                   checkOtp.value = 1;
                   widget.navigateTocart.call();
@@ -127,7 +127,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                   return;
                 }
               }
-              if (!widget.fromCart) {
+              if (!widget.fromExpired) {
                 if (state.signInErrorMessage == 'auth-001') {
                   context.go(
                     GRouter.config.applicationRoutes.kNumberNotRegisteredPage +
@@ -179,7 +179,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                 print(
                     "###5555555563333337777777###########################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 
-                if (!widget.fromCart) {
+                if (!widget.fromExpired) {
                   if (state.signUpErrorMessage == 'auth-001') {
                     debugPrint('auth-00122');
                     context.go(
@@ -202,7 +202,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                   }
                 }
 
-                if (widget.fromCart) {
+                if (widget.fromExpired) {
                   if (state.signUpErrorMessage == 'auth-001') {
                     checkOtp.value = 1;
                     widget.navigateTocart.call();
@@ -637,7 +637,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                 authBloc.add(
                                                     VerifyOtpSignInEvent(
                                                         fromCart:
-                                                            widget.fromCart,
+                                                            widget.fromExpired,
                                                         verificationId:
                                                             prefsRepository
                                                                 .verificationId!,
@@ -658,7 +658,8 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                               } else {
                                                 authBloc.add(
                                                   VerifyOtpSignUpEvent(
-                                                    fromCart: widget.fromCart,
+                                                    fromCart:
+                                                        widget.fromExpired,
                                                     verificationId:
                                                         prefsRepository
                                                             .verificationId!,
@@ -705,7 +706,9 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                 });
                           }),
                     ),
-                    60.verticalSpace,
+                    (checkOtp.value == 2 || enabledResendNotifier.value)
+                        ? 20.verticalSpace
+                        : 120.verticalSpace,
                     ValueListenableBuilder<int>(
                         valueListenable: checkOtp,
                         builder: (context, codeStatus, _) {
@@ -729,7 +732,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                     color: Color(0xff5D5C5D),
                                                     height: 1.25),
                                           ),
-                                          10.verticalSpace,
+                                          100.verticalSpace,
                                         ],
                                       )
                                     : const SizedBox.shrink();
@@ -752,13 +755,13 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
     form.controllers[5].text = text[5];
     if (widget.fromLogin) {
       authBloc.add(VerifyOtpSignInEvent(
-          fromCart: widget.fromCart,
+          fromCart: widget.fromExpired,
           verificationId: prefsRepository.verificationId!,
           otp: text,
           phone: widget.phoneNumber));
     } else {
       authBloc.add(VerifyOtpSignUpEvent(
-          fromCart: widget.fromCart,
+          fromCart: widget.fromExpired,
           verificationId: prefsRepository.verificationId!,
           otp: text));
     }

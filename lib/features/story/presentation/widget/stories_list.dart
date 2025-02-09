@@ -10,6 +10,7 @@ import 'dart:ui' as ui;
 import 'package:go_router/go_router.dart';
 import 'package:overscroll_pop/overscroll_pop.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/features/app/app_widgets/gallery_and_camera_dialog_widget.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
@@ -32,7 +33,8 @@ import '../../data/models/get_stories_model.dart';
 import '../bloc/story_state.dart';
 
 class StoriesList extends StatefulWidget {
-  StoriesList({super.key});
+  final ValueNotifier<bool> isShowPanelForVerified;
+  StoriesList({super.key, required this.isShowPanelForVerified});
 
   @override
   State<StoriesList> createState() => _StoriesListState();
@@ -145,14 +147,15 @@ class _StoriesListState extends State<StoriesList> {
                                                         if (GetIt.I<PrefsRepository>()
                                                                 .isVerifiedPhone ==
                                                             false) {
-                                                          context.go(GRouter
-                                                              .config
-                                                              .applicationRoutes
-                                                              .kRegistrationPage);
-                                                        } else if (GetIt.I<
-                                                                    PrefsRepository>()
-                                                                .myMarketName ==
-                                                            null) {
+                                                          widget
+                                                              .isShowPanelForVerified
+                                                              .value = true;
+                                                        } else if ((GetIt.I<
+                                                                        PrefsRepository>()
+                                                                    .myMarketName
+                                                                    ?.length ??
+                                                                0) <
+                                                            3) {
                                                           showDialog(
                                                             context: context,
                                                             barrierDismissible:

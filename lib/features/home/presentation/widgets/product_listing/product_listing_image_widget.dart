@@ -50,6 +50,7 @@ class ProductListingImageWidget extends StatelessWidget {
           error: error.toString());
     };
     return Container(
+      alignment: Alignment.center,
       width: width,
       height: height,
       decoration: BoxDecoration(
@@ -71,6 +72,7 @@ class ProductListingImageWidget extends StatelessWidget {
           borderRadius:
               BorderRadius.all(Radius.circular(circleShape ? 180.0 : 15)),
           child: Stack(
+            alignment: Alignment.center,
             children: [
               imageUrl.contains('assets')
                   ? Image.asset(imageUrl,
@@ -82,7 +84,7 @@ class ProductListingImageWidget extends StatelessWidget {
                       ordinalHeight: orginalHeight,
                       imageHeight: imageHeight,
                       imageWidth: imageWidth,
-                      imageFit: BoxFit.cover,
+                      imageFit: BoxFit.contain,
                       innerShadowYOffset: innerShadowYOffset,
                       withInnerShadow: true,
                       height: height!),

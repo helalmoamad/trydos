@@ -97,7 +97,19 @@ class LocalNotificationService {
                   TypeOfNotificationForMarketEnum.product_discount] ||
           data?["type"] ==
               TypeOfNotificationForMarket[
-                  TypeOfNotificationForMarketEnum.product_cart_expiration]) {
+                  TypeOfNotificationForMarketEnum.product_cart_expiration] ||
+          data?["type"] ==
+              TypeOfNotificationForMarket[
+                  TypeOfNotificationForMarketEnum.product_hurry_up_quantity] ||
+          data?["type"] ==
+              TypeOfNotificationForMarket[
+                  TypeOfNotificationForMarketEnum.product_hurry_up_time_left] ||
+          data?["type"] ==
+              TypeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                  .product_when_change_in_price] ||
+          data?["type"] ==
+              TypeOfNotificationForMarket[
+                  TypeOfNotificationForMarketEnum.product_before_stock_out]) {
         imageUrl = data?["image"] ?? "";
       }
       if (data?["type"] ==

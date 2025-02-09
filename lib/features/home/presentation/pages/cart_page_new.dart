@@ -67,13 +67,14 @@ class CartPage extends StatefulWidget {
 
 class _CartPageState extends State<CartPage> {
   late HomeBloc homeBloc;
-  final PageController pageController = PageController();
+
   late AppBloc appBloc;
   String phoneNumber = '';
   int isVisWhatsApp = 0;
   late AuthBloc authBloc;
   bool showDialogToResetSession = true;
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
+  final PageController pageController = PageController();
   final FocusNode focusNode = FocusNode();
   final ValueNotifier<bool> isExpanded = ValueNotifier(false);
   final ValueNotifier<bool> isVerified = ValueNotifier(true);
@@ -295,8 +296,6 @@ class _CartPageState extends State<CartPage> {
                   (state.getOldCartModel == null &&
                       state.getOldCartItemsStatus !=
                           GetOLdCartItemsStatus.success)) {
-                print("-------------------------------${(state.getOldCartModel == null && state.getOldCartItemsStatus != GetOLdCartItemsStatus.success)}------------------------------------------${state.getCartShippingItemsModel == null && state.getCartItemsStatus != GetCartItemsStatus.success}" +
-                    "   ////////////////${state.getCartShippingItemsModel == null && state.getCartItemsStatus != GetCartItemsStatus.success}");
                 return Center(
                   child: TrydosLoader(),
                 );
@@ -1389,7 +1388,7 @@ class _CartPageState extends State<CartPage> {
                                                                             children: (prefsRepository.isVerifiedPhonePeforeExpiredToken ?? false)
                                                                                 ? [
                                                                                     VerifyOtp(
-                                                                                        fromCart: true,
+                                                                                        fromExpired: true,
                                                                                         isVisWhatsApp: 1,
                                                                                         navigateToAddName: () {},
                                                                                         navigateTocart: () {
@@ -1438,7 +1437,7 @@ class _CartPageState extends State<CartPage> {
                                                                                       },
                                                                                     ),
                                                                                     VerifyOtp(
-                                                                                        fromCart: true,
+                                                                                        fromExpired: true,
                                                                                         isVisWhatsApp: isVisWhatsApp,
                                                                                         navigateToAddName: () {},
                                                                                         navigateTocart: () {

@@ -536,7 +536,7 @@ class _ProductDetailsSheetBottomBarState
                                                                         width: currentTab ==
                                                                                 3
                                                                             ? 1.sw -
-                                                                                40
+                                                                                60
                                                                             : itemCount > 0
                                                                                 ? 197.w
                                                                                 : 97.w,

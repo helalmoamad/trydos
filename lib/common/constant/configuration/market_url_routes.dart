@@ -45,10 +45,15 @@ abstract class MarketEndPoints {
   static final addCustomerAddressEP = "address/add".customerScope();
   static final getCustomerAddressesEP = "address/list".customerScope();
   static final unsubscribeTopicEP = "unsubscribe_topic".firebaseTokensScope();
-  static final subscribe_topicEP = "subscribe_topic".firebaseTokensScope();
-  static final change_country_languageEP =
+  static final subscribeTopicEP = "subscribe_topic".firebaseTokensScope();
+  static final updateWhatsappEP = "update_whatsapp".firebaseTokensScope();
+  static final updateFirebaseEP = "update_firebase".firebaseTokensScope();
+  static final updateEmailEP = "update_email".firebaseTokensScope();
+  static final updateNotificationFrequencyEP =
+      "update_notification_frequency".firebaseTokensScope();
+  static final changeCountryLanguageEP =
       "change_country_language".firebaseTokensScope();
-  static final get_my_firebase_settingsEP =
+  static final getMyFirebaseSettingsEP =
       "my_firebase_settings".firebaseTokensScope();
   static final sendErrorToMobileErrorLogEP = 'store'.errorScope();
   static final sendOtpEP = 'send_otp'.phoneScope();

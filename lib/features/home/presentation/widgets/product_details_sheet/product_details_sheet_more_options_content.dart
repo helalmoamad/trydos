@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
@@ -19,6 +20,7 @@ import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/routes/router.dart';
 import 'package:trydos/service/language_service.dart';
+import 'package:trydos/service/notification_service/notification_service/handle_notification/handling_market_notifications.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../../core/utils/responsive_padding.dart';
 import '../../../../../core/utils/theme_state.dart';
@@ -49,7 +51,7 @@ class ProductDetailsSheetMoreOptionsContent extends StatefulWidget {
 class _ProductDetailsSheetMoreOptionsContentState
     extends ThemeState<ProductDetailsSheetMoreOptionsContent> {
   final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
-
+  int? tapIndex;
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
@@ -82,8 +84,8 @@ class _ProductDetailsSheetMoreOptionsContentState
             prefsRepository.topicThatAlreadySubsecribed();
         return SingleChildScrollView(
           child: ListView(
-            physics: cupertino.ClampingScrollPhysics(),
             controller: widget.scrollController,
+            physics: cupertino.ClampingScrollPhysics(),
             padding: EdgeInsets.zero,
             shrinkWrap: true,
             children: [
@@ -141,41 +143,156 @@ class _ProductDetailsSheetMoreOptionsContentState
                               ],
                             ),
                           ),
-                          Container(
-                            width: 1.sw,
-                            height: 30,
-                            margin:
-                                EdgeInsets.only(top: 15, left: 20, right: 20),
-                            child: ListView.separated(
-                                scrollDirection: Axis.horizontal,
-                                itemBuilder: (context, index) => Container(
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(30)),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        (state
-                                                .notificationTypeForProductModel
-                                                ?.notificationTypes?[index]
-                                                .name ??
-                                            ""),
-                                        style: context.textTheme.bodyMedium?.rr
-                                            .copyWith(
-                                                color: const Color(0xff505050),
-                                                letterSpacing: 0.18,
-                                                fontSize: 14,
-                                                height: 0.8),
-                                      ),
-                                    )),
-                                separatorBuilder: (context, index) => SizedBox(
-                                      width: 5,
-                                    ),
-                                itemCount: (state
-                                        .notificationTypeForProductModel
-                                        ?.notificationTypes
-                                        ?.length ??
-                                    0)),
+                          BlocBuilder<HomeBloc, HomeState>(
+                            buildWhen: (previous, current) =>
+                                previous
+                                    .getFirebaseSettingForNotificationStatus !=
+                                current.getFirebaseSettingForNotificationStatus,
+                            builder: (context, state) {
+                              List<String> notificationISSubsecribe = [];
+                              state.firebaseSettingForNotificationModel?.data
+                                  ?.firebaseSettings?.subscribedTopics
+                                  ?.forEach(
+                                (element) => notificationISSubsecribe
+                                    .add(element.topic ?? ""),
+                              );
+                              return Container(
+                                width: 1.sw,
+                                height: 50.h,
+                                margin: EdgeInsets.only(
+                                    top: 15, left: 20, right: 20),
+                                child: ListView.separated(
+                                    scrollDirection: Axis.horizontal,
+                                    itemBuilder: (context, index) =>
+                                        GestureDetector(
+                                          onTap: () {
+                                            tapIndex = index;
+                                            if (notificationISSubsecribe
+                                                .contains((state
+                                                            .notificationTypeForProductModel
+                                                            ?.notificationTypes?[
+                                                                index]
+                                                            .topic ??
+                                                        "") +
+                                                    "_${widget.productId}")) {
+                                              SubsecribeOrUnSubsecribeToTopic()
+                                                  .UnSubsecribeToOtherTopic(
+                                                      ("${state.notificationTypeForProductModel?.notificationTypes?[index].topic ?? ""}" +
+                                                          "_${widget.productId}"));
+                                            } else {
+                                              SubsecribeOrUnSubsecribeToTopic()
+                                                  .SubsecribeToOtherTopic(
+                                                      ("${state.notificationTypeForProductModel?.notificationTypes?[index].topic ?? ""}" +
+                                                          "_${widget.productId}"));
+                                            }
+                                          },
+                                          child: Stack(
+                                            children: [
+                                              Container(
+                                                  decoration: BoxDecoration(
+                                                      color: Color(0xffEFEFEF),
+                                                      border: Border.all(
+                                                          color: notificationISSubsecribe.contains((state
+                                                                          .notificationTypeForProductModel
+                                                                          ?.notificationTypes?[
+                                                                              index]
+                                                                          .topic ??
+                                                                      "") +
+                                                                  "_${widget.productId}")
+                                                              ? Colors.red
+                                                              : Color(
+                                                                  0xffEFEFEF)),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              30)),
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: Text(
+                                                      (state
+                                                              .notificationTypeForProductModel
+                                                              ?.notificationTypes?[
+                                                                  index]
+                                                              .name ??
+                                                          ""),
+                                                      style: context.textTheme
+                                                          .bodyMedium?.rr
+                                                          .copyWith(
+                                                              color: const Color(
+                                                                  0xff505050),
+                                                              letterSpacing:
+                                                                  0.18,
+                                                              fontSize: 14,
+                                                              height: 0.8),
+                                                    ),
+                                                  )),
+                                              index == tapIndex &&
+                                                      state.getFirebaseSettingForNotificationStatus ==
+                                                          GetFirebaseSettingForNotificationStatus
+                                                              .loading
+                                                  ? Shimmer.fromColors(
+                                                      baseColor:
+                                                          Colors.grey.shade300,
+                                                      highlightColor:
+                                                          Colors.grey.shade100,
+                                                      enabled: true,
+                                                      child: Container(
+                                                          decoration: BoxDecoration(
+                                                              color: Color(
+                                                                  0xffEFEFEF),
+                                                              border: Border.all(
+                                                                  color: notificationISSubsecribe.contains(
+                                                                          (state.notificationTypeForProductModel?.notificationTypes?[index].topic ?? "") +
+                                                                              "_${widget.productId}")
+                                                                      ? Colors
+                                                                          .red
+                                                                      : Color(
+                                                                          0xffEFEFEF)),
+                                                              borderRadius:
+                                                                  BorderRadius.circular(
+                                                                      30)),
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(8.0),
+                                                            child: Text(
+                                                              (state
+                                                                      .notificationTypeForProductModel
+                                                                      ?.notificationTypes?[
+                                                                          index]
+                                                                      .name ??
+                                                                  ""),
+                                                              style: context
+                                                                  .textTheme
+                                                                  .bodyMedium
+                                                                  ?.rr
+                                                                  .copyWith(
+                                                                      color: const Color(
+                                                                          0xff505050),
+                                                                      letterSpacing:
+                                                                          0.18,
+                                                                      fontSize:
+                                                                          14,
+                                                                      height:
+                                                                          0.8),
+                                                            ),
+                                                          )))
+                                                  : SizedBox.shrink()
+                                            ],
+                                          ),
+                                        ),
+                                    separatorBuilder: (context, index) =>
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                    itemCount: (state
+                                            .notificationTypeForProductModel
+                                            ?.notificationTypes
+                                            ?.length ??
+                                        0)),
+                              );
+                            },
                           )
                         ],
                       ),

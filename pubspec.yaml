@@ -131,6 +131,7 @@ dependencies:
   google_maps_flutter: ^2.10.0
   geocoding: ^3.0.0
   location: ^7.0.1
+  device_preview_plus: ^2.1.0
 dev_dependencies:
 
   flutter_test:

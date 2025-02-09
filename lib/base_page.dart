@@ -308,6 +308,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   late ChatBloc chatBloc;
   late HomeBloc homeBloc;
   late AppBloc appBloc;
+  final ValueNotifier<bool> isShowPanelForVerified = ValueNotifier(false);
   late CallsBloc callsBloc;
   ValueNotifier<bool> visibleCountries = ValueNotifier(false);
   final TextEditingController controller = TextEditingController();
@@ -315,12 +316,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   final ValueNotifier<int> buildSearchResult = ValueNotifier(0);
   final ValueNotifier<bool> appearTrendingAndHistory = ValueNotifier(true);
-  final List<Widget> pages = [
-    const HomePage(),
-    const CartPage(),
-    const ChatPages(description: ''),
-    const RegistrationPage(),
-  ];
+  List<Widget>? pages;
   bool showUpgradeApp = true;
 
   @override
@@ -359,8 +355,15 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 
   @override
   void initState() {
-    pages.add(
+    pages = [
+      HomePage(isShowPanelForVerified: isShowPanelForVerified),
+      const CartPage(),
+      const ChatPages(description: ''),
+      const RegistrationPage(),
+    ];
+    pages!.add(
       SearchPage(
+        isShowPanelForVerified: isShowPanelForVerified,
         controller: controller,
         buildSearchResult: buildSearchResult,
         appearTrendingAndHistory: appearTrendingAndHistory,
@@ -631,7 +634,9 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                             builder: (context, state) {
                               return state.hideBottomNavigationBar
                                   ? const SizedBox.shrink()
-                                  : const AppBottomNavBar();
+                                  : AppBottomNavBar(
+                                      isShowPanelForVerified:
+                                          isShowPanelForVerified);
                             });
                       } else {
                         return const SizedBox.shrink();
@@ -783,7 +788,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                   oldState.currentIndex !=
                                                   newState.currentIndex,
                                               builder: (_, state) {
-                                                return pages[
+                                                return pages![
                                                     state.currentIndex];
                                               },
                                             ),

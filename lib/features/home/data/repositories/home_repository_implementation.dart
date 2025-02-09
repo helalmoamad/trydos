@@ -4,6 +4,7 @@ import 'package:trydos/core/error/failures.dart';
 
 import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
 import 'package:trydos/features/home/data/models/convert_item_from_oldCart_to_cart_model.dart';
+import 'package:trydos/features/home/data/models/firebase_setting_for_notification_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_coordinates_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_text_model.dart';
 
@@ -74,6 +75,62 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
       Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.getHomeBoutiques(params));
+  }
+
+  @override
+  Future<Either<Failure, FirebaseSettingForNotificationModel>>
+      changeCountryLanguageFornotification(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.changeCountryLanguageFornotification(params));
+  }
+
+  @override
+  Future<Either<Failure, FirebaseSettingForNotificationModel>>
+      unSubscribeTopicFornotification(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.unSubscribeTopicFornotification(params));
+  }
+
+  @override
+  Future<Either<Failure, FirebaseSettingForNotificationModel>>
+      subscribeTopicFornotification(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.subscribeTopicFornotification(params));
+  }
+
+  @override
+  Future<Either<Failure, FirebaseSettingForNotificationModel>>
+      updateWhatsappNotification(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.updateWhatsappNotification(params));
+  }
+
+  @override
+  Future<Either<Failure, FirebaseSettingForNotificationModel>>
+      updateFirebaseNotification(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.updateFirebaseNotification(params));
+  }
+
+  @override
+  Future<Either<Failure, FirebaseSettingForNotificationModel>>
+      updateEmailNotification(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.updateEmailNotification(params));
+  }
+
+  @override
+  Future<Either<Failure, FirebaseSettingForNotificationModel>>
+      updateNotificationFrequency(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.updateNotificationFrequency(params));
+  }
+
+  @override
+  Future<Either<Failure, FirebaseSettingForNotificationModel>>
+      getMyFirebaseSettings() {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.getMyFirebaseSettings());
   }
 
   @override

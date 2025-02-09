@@ -33,11 +33,12 @@ class HomePageCard2 extends cupertino.StatefulWidget {
       {super.key,
       this.withSlidingImages = false,
       required this.boutique,
-      required this.category_Slug});
+      required this.category_Slug,
+      required this.isShowPanelForVerified});
   final String category_Slug;
   final bool withSlidingImages;
   final Boutique boutique;
-
+  final ValueNotifier<bool> isShowPanelForVerified;
   @override
   cupertino.State<HomePageCard2> createState() => _HomePageCard2State();
 }
@@ -81,6 +82,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
             HelperFunctions.slidingNavigation(
               context,
               ProductListingPage(
+                isShowPanelForVerified: widget.isShowPanelForVerified,
                 banner: widget.boutique.banners,
                 withSlidingImages: widget.withSlidingImages,
                 boutiqueSlug: widget.boutique.slug!,
@@ -365,6 +367,8 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                             HelperFunctions.slidingNavigation(
                                 context,
                                 ProductListingPage(
+                                  isShowPanelForVerified:
+                                      widget.isShowPanelForVerified,
                                   banner: widget.boutique.banners,
                                   withSlidingImages: widget.withSlidingImages,
                                   boutiqueSlug: widget.boutique.slug!,
@@ -534,6 +538,8 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                             HelperFunctions.slidingNavigation(
                                                 context,
                                                 ProductListingPage(
+                                                  isShowPanelForVerified: widget
+                                                      .isShowPanelForVerified,
                                                   banner:
                                                       widget.boutique.banners,
                                                   withSlidingImages:

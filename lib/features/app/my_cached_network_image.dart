@@ -80,6 +80,7 @@ class MyCachedNetworkImage extends StatelessWidget {
         valueListenable: rebuildImage,
         builder: (context, count, _) {
           return Container(
+              alignment: Alignment.center,
               width: width,
               height: height,
               decoration: BoxDecoration(
@@ -87,7 +88,7 @@ class MyCachedNetworkImage extends StatelessWidget {
                 boxShadow: withImageShadow
                     ? [
                         BoxShadow(
-                          color: context.colorScheme.black.withOpacity(0.16),
+                          color: context.colorScheme.black.withOpacity(0.1),
                           offset: const Offset(0, 3),
                           blurRadius: 6,
                         ),
@@ -108,96 +109,101 @@ class MyCachedNetworkImage extends StatelessWidget {
                           circleDimensions: circleDimensions,
                         );
                   }
-                  return CachedNetworkImage(
-                      imageUrl: url,
-                      key: ValueKey(url),
-                      fit: imageFit,
-                      width: width,
-                      color: imageColor,
-                      height: height,
-                      fadeInDuration: Duration(milliseconds: 0),
-                      fadeOutDuration: Duration(milliseconds: 0),
-                      //cacheKey: CustomCacheManager.key,
-                      cacheManager: CustomCacheManager(),
-                      progressIndicatorBuilder: (context, _, progress) {
-                        callWhenLoadingImage?.call();
-                        return progressIndicatorBuilderWidget ??
-                            TrydosShimmerLoading(
-                              width: width,
-                              height: height,
-                              logoTextHeight: logoTextHeight ?? 14,
-                              logoTextWidth: logoTextWidth ?? 48.w,
-                              circleDimensions: circleDimensions,
-                            );
-                      },
-                      imageBuilder: imageBuilder ??
-                          (ctx, image) {
-                            callWhenDisplayImage?.call();
-                            return ClipRRect(
-                                child: Align(
-                                    alignment: Alignment.center,
-                                    child: Stack(
-                                      children: [
-                                        Container(
-                                          width: width,
-                                          height: height,
-                                          decoration: BoxDecoration(
-                                            image: DecorationImage(
-                                              image: image,
-                                              fit: imageFit,
+                  return Center(
+                    child: CachedNetworkImage(
+                        imageUrl: url,
+                        key: ValueKey(url),
+                        fit: imageFit,
+                        width: width,
+                        color: imageColor,
+                        height: height,
+                        fadeInDuration: Duration(milliseconds: 0),
+                        fadeOutDuration: Duration(milliseconds: 0),
+                        //cacheKey: CustomCacheManager.key,
+                        cacheManager: CustomCacheManager(),
+                        progressIndicatorBuilder: (context, _, progress) {
+                          callWhenLoadingImage?.call();
+                          return progressIndicatorBuilderWidget ??
+                              TrydosShimmerLoading(
+                                width: width,
+                                height: height,
+                                logoTextHeight: logoTextHeight ?? 14,
+                                logoTextWidth: logoTextWidth ?? 48.w,
+                                circleDimensions: circleDimensions,
+                              );
+                        },
+                        imageBuilder: imageBuilder ??
+                            (ctx, image) {
+                              callWhenDisplayImage?.call();
+                              return ClipRRect(
+                                  child: Align(
+                                      alignment: Alignment.center,
+                                      child: Stack(
+                                        children: [
+                                          Container(
+                                            alignment: Alignment.center,
+                                            width: width,
+                                            height: height,
+                                            decoration: BoxDecoration(
+                                              image: DecorationImage(
+                                                image: image,
+                                                fit: imageFit,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(radius),
                                             ),
-                                            borderRadius:
-                                                BorderRadius.circular(radius),
                                           ),
-                                        ),
-                                        withInnerShadow
-                                            ? Container(
-                                                decoration:
-                                                    inset_shadow.BoxDecoration(
-                                                  boxShadow: [
-                                                    inset_shadow.BoxShadow(
-                                                      offset: Offset(0,
-                                                          innerShadowYOffset!),
-                                                      blurRadius: 20,
-                                                      color: Colors.white
-                                                          .withOpacity(0.7),
-                                                      inset: true,
-                                                    ),
-                                                  ],
-                                                ),
-                                              )
-                                            : SizedBox.shrink()
-                                      ],
-                                    )));
-                          },
-                      errorWidget: (context, url, error) {
-                        if (enable) {
-                          enable = false;
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            currentUrl = imageUrl;
-                            rebuildImage.value++;
-                          });
-                        }
-                        return Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            focusColor: Colors.transparent,
-                            splashColor: Colors.transparent,
-                            onTap: () async {
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
-                                currentUrl = '';
-                                enable = true;
-                                rebuildImage.value++;
-                              });
+                                          withInnerShadow
+                                              ? Container(
+                                                  alignment: Alignment.center,
+                                                  decoration: inset_shadow
+                                                      .BoxDecoration(
+                                                    boxShadow: [
+                                                      inset_shadow.BoxShadow(
+                                                        offset: Offset(0,
+                                                            innerShadowYOffset!),
+                                                        blurRadius: 20,
+                                                        color: Colors.white
+                                                            .withOpacity(0.7),
+                                                        inset: true,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                )
+                                              : SizedBox.shrink()
+                                        ],
+                                      )));
                             },
-                            child: Center(
-                              child: Icon(Icons.refresh,
-                                  color: const Color(0xffff5f61),
-                                  size: min(25, height)),
+                        errorWidget: (context, url, error) {
+                          if (enable) {
+                            enable = false;
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              currentUrl = imageUrl;
+                              rebuildImage.value++;
+                            });
+                          }
+                          return Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              focusColor: Colors.transparent,
+                              splashColor: Colors.transparent,
+                              onTap: () async {
+                                WidgetsBinding.instance
+                                    .addPostFrameCallback((_) {
+                                  currentUrl = '';
+                                  enable = true;
+                                  rebuildImage.value++;
+                                });
+                              },
+                              child: Center(
+                                child: Icon(Icons.refresh,
+                                    color: const Color(0xffff5f61),
+                                    size: min(25, height)),
+                              ),
                             ),
-                          ),
-                        );
-                      });
+                          );
+                        }),
+                  );
                 },
               ));
         });

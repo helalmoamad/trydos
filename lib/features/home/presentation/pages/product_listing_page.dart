@@ -81,6 +81,7 @@ class ProductListingPage extends StatefulWidget {
   final bool fromSearch;
   final bool fromBackground;
   final GetProductFiltersModel? getProductFiltersModel;
+  final ValueNotifier<bool>? isShowPanelForVerified;
   final String? searchText;
 
   const ProductListingPage({
@@ -89,6 +90,7 @@ class ProductListingPage extends StatefulWidget {
     this.fromBackground = false,
     this.getProductFiltersModel,
     this.boutiqueDescription,
+    this.isShowPanelForVerified,
     this.controllerFormSearchPage,
     this.searchText,
     this.fromNotificationCategory,
@@ -109,11 +111,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
   late HomeBloc homeBloc;
   double? _previousOffset;
   final FocusNode focusNode = FocusNode();
+
   final ValueNotifier<int> expandingFiltersStack = ValueNotifier(-1);
 
   final ValueNotifier<int> tapIndexToAddProductToCart = ValueNotifier(-1);
   final ValueNotifier<bool> searchVisible = ValueNotifier(true);
-
+  final ValueNotifier<bool> isShowPanelForVerified = ValueNotifier(false);
   final TextEditingController controller = TextEditingController();
   Timer? timerForDisplayFilterSectionTitle;
   final GlobalKey htmlDescriptionKey = GlobalKey();
@@ -453,8 +456,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
               filtersChoosedByUser: GetProductFiltersModel(
                   filters: homeBloc.state.appliedFiltersByUser[key]?.filters),
             ));
-            print(
-                "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQQQQQQQQQQQQQQQQQQQQQQQQQQQQ${homeBloc.state.choosedFiltersByUser[key]?.filters?.categories?.length}");
 
             homeBloc.add(
               ChangeAppliedFiltersEvent(
@@ -464,8 +465,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
               ),
             );
           }
-          print(
-              "1111111111111111------------------------------------------------------------------------------------");
 
           ////////////////////////////////////
           FirebaseAnalyticsService.logEventForSession(
@@ -492,9 +491,13 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                 p.hideBottomNavigationBar !=
                                 c.hideBottomNavigationBar,
                             builder: (context, state) {
-                              return state.hideBottomNavigationBar
+                              return state.hideBottomNavigationBar ||
+                                      (widget.fromSearch)
                                   ? const SizedBox.shrink()
-                                  : const AppBottomNavBar();
+                                  : AppBottomNavBar(
+                                      isShowPanelForVerified:
+                                          widget.isShowPanelForVerified ??
+                                              isShowPanelForVerified);
                             });
                       } else {
                         return const SizedBox.shrink();

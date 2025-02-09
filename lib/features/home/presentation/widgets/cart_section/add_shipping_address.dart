@@ -87,9 +87,10 @@ class _AddShippingAdressState extends State<AddShippingAdress>
     "Antalya"
   ];
 
-  List<String> filterResultSearch = [];
+  List<address.RegionDetails> filterResultSearch = [];
   List<LatLng> filterLatLngSearch = [];
-  List<String> finishSelectedByUser = [];
+  List<address.RegionDetails> finishSelectedByUser = [];
+  List<String> finishSelectedByUserToAppear = [];
   final TextEditingController addressTitleController = TextEditingController();
   final PanelController panelController = PanelController();
   final TextEditingController reciptionNameController = TextEditingController();
@@ -201,10 +202,15 @@ class _AddShippingAdressState extends State<AddShippingAdress>
       reciptionNameController.text =
           widget.addressInfoClassToEdid?.contactInfo?.name ?? "";
       finishSelectedByUser = [
-        widget.addressInfoClassToEdid?.regionDetails?.province ?? "",
-        widget.addressInfoClassToEdid?.regionDetails?.city ?? "",
-        widget.addressInfoClassToEdid?.regionDetails?.town ?? "",
-        widget.addressInfoClassToEdid?.regionDetails?.street ?? ""
+        address.RegionDetails(
+            building:
+                widget.addressInfoClassToEdid?.regionDetails?.building ?? "",
+            city: widget.addressInfoClassToEdid?.regionDetails?.city ?? "",
+            country: "",
+            province:
+                widget.addressInfoClassToEdid?.regionDetails?.province ?? "",
+            street: widget.addressInfoClassToEdid?.regionDetails?.street ?? "",
+            town: widget.addressInfoClassToEdid?.regionDetails?.town ?? "")
       ];
       if (alternativePhoneController.text.length > 0) {
         visiblePrefixOptional.value = true;
@@ -847,16 +853,31 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                     builder: (context, state) {
                       if (state.getAddressByCoordinatesStatus ==
                               GetAddressByCoordinatesStatus.success &&
-                          !(fromEditeTodenychangeDetailAddress ?? false)) {
+                          !((fromEditeTodenychangeDetailAddress ?? false)) &&
+                          state.getAddressByCoordinatesModel?.data?.province !=
+                              null) {
                         finishSelectedByUser = [
-                          state.getAddressByCoordinatesModel?.data?.province ??
-                              "",
-                          state.getAddressByCoordinatesModel?.data?.city ?? "",
-                          state.getAddressByCoordinatesModel?.data?.town ?? "",
-                          state.getAddressByCoordinatesModel?.data?.street ??
-                              "",
+                          address.RegionDetails(
+                            building: state.getAddressByCoordinatesModel?.data
+                                    ?.building ??
+                                "",
+                            city: state
+                                    .getAddressByCoordinatesModel?.data?.city ??
+                                "",
+                            country: "",
+                            province: state.getAddressByCoordinatesModel?.data
+                                    ?.province ??
+                                "",
+                            street: state.getAddressByCoordinatesModel?.data
+                                    ?.street ??
+                                "",
+                            town: state
+                                    .getAddressByCoordinatesModel?.data?.town ??
+                                "",
+                          )
                         ];
-
+                        print(
+                            "@!!!!QQQQQQQQQQWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW${state.getAddressByCoordinatesModel?.data?.building ?? ""}");
                         finishSelectedByUser.removeWhere(
                           (element) => element == "",
                         );
@@ -1430,6 +1451,39 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                 builder: (context,
                                                                     _showPanel,
                                                                     _) {
+                                                                  if (finishSelectedByUser
+                                                                          .length >
+                                                                      0) {
+                                                                    print(
+                                                                        ")))))))))))))))))${finishSelectedByUser[0].building}0000000000000000000000000000000000000000000000000000000000000");
+
+                                                                    finishSelectedByUserToAppear =
+                                                                        [
+                                                                      finishSelectedByUser[0]
+                                                                              .province ??
+                                                                          "",
+                                                                      finishSelectedByUser[0]
+                                                                              .city ??
+                                                                          "",
+                                                                      finishSelectedByUser[0]
+                                                                              .town ??
+                                                                          "",
+                                                                      finishSelectedByUser[0]
+                                                                              .street ??
+                                                                          "",
+                                                                      finishSelectedByUser[0]
+                                                                              .building ??
+                                                                          ""
+                                                                    ];
+                                                                    finishSelectedByUserToAppear
+                                                                        .removeWhere(
+                                                                      (element) =>
+                                                                          element ==
+                                                                          "",
+                                                                    );
+                                                                    print(
+                                                                        "!!!!!!!!!!!!!!!!!!!!!!!!!!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@${finishSelectedByUserToAppear}");
+                                                                  }
                                                                   return InkWell(
                                                                       highlightColor:
                                                                           Colors
@@ -1457,7 +1511,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                             (context, child) =>
                                                                                 Transform.translate(
                                                                           offset: Offset(
-                                                                              !(finishSelectedByUser.length == 0) ? 0 : sin(3 * 2 * pi * animationController.value) * 5,
+                                                                              !(finishSelectedByUserToAppear.length == 0) ? 0 : sin(3 * 2 * pi * animationController.value) * 5,
                                                                               0),
                                                                           child: state.getAddressByCoordinatesStatus == GetAddressByCoordinatesStatus.loading
                                                                               ? Shimmer.fromColors(baseColor: Colors.grey[500]!, highlightColor: Colors.grey[200]!, child: Container(margin: EdgeInsets.symmetric(vertical: 10.h), width: 1.sw, height: 53.h, decoration: BoxDecoration(borderRadius: BorderRadius.circular(15), border: Border.all(color: (isValidateBox && (finishSelectedByUser.length == 0)) ? Colors.red : Color(0xffD3D3D3))), child: Padding(padding: const EdgeInsets.all(8.0))))
@@ -1473,7 +1527,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                       crossAxisAlignment: CrossAxisAlignment.start,
                                                                                       children: [
                                                                                         Text(
-                                                                                          finishSelectedByUser.length > 0 ? LocaleKeys.change_from_list.tr() : LocaleKeys.select_from_list.tr(),
+                                                                                          finishSelectedByUserToAppear.length > 0 ? LocaleKeys.change_from_list.tr() : LocaleKeys.select_from_list.tr(),
                                                                                           style: context.textTheme.bodyMedium?.rr.copyWith(color: const Color(0xff505050), letterSpacing: 0.18, fontSize: 12, height: LanguageService.languageCode == "ar" ? 0.6 : 0.5),
                                                                                         ),
                                                                                         Container(
@@ -1482,21 +1536,21 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                             children: [
                                                                                               SvgPicture.asset(
                                                                                                 AppAssets.detectedSvg,
-                                                                                                color: finishSelectedByUser.length > 0 ? Color(0xff1D1D1D) : Color(0xffD3D3D3),
+                                                                                                color: finishSelectedByUserToAppear.length > 0 ? Color(0xff1D1D1D) : Color(0xffD3D3D3),
                                                                                                 height: 16,
                                                                                               ),
                                                                                               SizedBox(
                                                                                                 width: 5.w,
                                                                                               ),
-                                                                                              finishSelectedByUser.length > 0
+                                                                                              finishSelectedByUserToAppear.length > 0
                                                                                                   ? Container(
                                                                                                       width: 300.w,
                                                                                                       height: 20,
                                                                                                       child: ListView.builder(
                                                                                                         scrollDirection: Axis.horizontal,
-                                                                                                        itemCount: finishSelectedByUser.length,
+                                                                                                        itemCount: finishSelectedByUserToAppear.length,
                                                                                                         itemBuilder: (context, index) => Text(
-                                                                                                          index == finishSelectedByUser.length - 1 ? "${finishSelectedByUser[index]}." : "${finishSelectedByUser[index]} | ",
+                                                                                                          index == finishSelectedByUserToAppear.length - 1 ? "${finishSelectedByUserToAppear[index]}." : "${finishSelectedByUserToAppear[index]} | ",
                                                                                                           style: context.textTheme.bodyMedium?.mr.copyWith(color: const Color(0xff1D1D1D), letterSpacing: 0.18, fontSize: 14, height: 1.3),
                                                                                                         ),
                                                                                                       ),
@@ -1705,6 +1759,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                             onTap: () async {
                                                               showFulMap.value =
                                                                   false;
+                                                              _markers = [];
                                                               fromEditeTodenychangeDetailAddress =
                                                                   false;
                                                               homeBloc.add(GetAddressByCoordinatesEvent(
@@ -1891,28 +1946,30 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                   regionDetails:
                                                                       address
                                                                           .RegionDetails(
-                                                                    building:
-                                                                        detailsAddressController
-                                                                            .text,
+                                                                    building: finishSelectedByUser.length >
+                                                                            0
+                                                                        ? finishSelectedByUser[0]
+                                                                            .building
+                                                                        : "",
                                                                     city: finishSelectedByUser.length >
-                                                                            1
-                                                                        ? finishSelectedByUser[
-                                                                            1]
+                                                                            0
+                                                                        ? finishSelectedByUser[0]
+                                                                            .city
                                                                         : "",
                                                                     country:
                                                                         "${country?.name}",
                                                                     province:
-                                                                        finishSelectedByUser[
-                                                                            0],
+                                                                        finishSelectedByUser[0]
+                                                                            .province,
                                                                     street: finishSelectedByUser.length >
-                                                                            2
-                                                                        ? finishSelectedByUser[
-                                                                            2]
+                                                                            0
+                                                                        ? finishSelectedByUser[0]
+                                                                            .street
                                                                         : "",
                                                                     town: finishSelectedByUser.length >
-                                                                            3
-                                                                        ? finishSelectedByUser[
-                                                                            3]
+                                                                            0
+                                                                        ? finishSelectedByUser[0]
+                                                                            .town
                                                                         : "",
                                                                   ),
                                                                 )));
@@ -1929,20 +1986,21 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                             address.CustomerAddressesInfo(
                                                                           regionDetails:
                                                                               address.RegionDetails(
-                                                                            building:
-                                                                                detailsAddressController.text,
-                                                                            city: finishSelectedByUser.length > 1
-                                                                                ? finishSelectedByUser[1]
+                                                                            building: finishSelectedByUser.length > 0
+                                                                                ? finishSelectedByUser[0].building
+                                                                                : "",
+                                                                            city: finishSelectedByUser.length > 0
+                                                                                ? finishSelectedByUser[0].city
                                                                                 : "",
                                                                             country:
                                                                                 "${country?.name}",
                                                                             province:
-                                                                                finishSelectedByUser[0],
-                                                                            street: finishSelectedByUser.length > 2
-                                                                                ? finishSelectedByUser[2]
+                                                                                finishSelectedByUser[0].province,
+                                                                            street: finishSelectedByUser.length > 0
+                                                                                ? finishSelectedByUser[0].street
                                                                                 : "",
-                                                                            town: finishSelectedByUser.length > 3
-                                                                                ? finishSelectedByUser[3]
+                                                                            town: finishSelectedByUser.length > 0
+                                                                                ? finishSelectedByUser[0].town
                                                                                 : "",
                                                                           ),
                                                                           addressDetail:
@@ -2077,7 +2135,15 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                           state.resultSearch?.forEach(
                                             (element) {
                                               filterResultSearch.add(
-                                                  "${element.province ?? ""}${(element.province?.length ?? 0) > 1 ? ' | ' : ""}${element.city ?? ""}${(element.city?.length ?? 0) > 1 ? ' | ' : ""}${element.town ?? ""}${(element.town?.length ?? 0) > 1 && (element.street?.length ?? 0) > 1 ? ' | ' : ""}${element.street ?? ""}");
+                                                  address.RegionDetails(
+                                                      building:
+                                                          element.building,
+                                                      city: element.city,
+                                                      country: "",
+                                                      province:
+                                                          element.province,
+                                                      street: element.street,
+                                                      town: element.town));
                                               filterLatLngSearch.add(LatLng(
                                                   element.coordinates?.lat ?? 0,
                                                   element.coordinates?.lon ??
@@ -2093,10 +2159,8 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                   addressTilteSeletedByUser,
                                                   _) {
                                                 if (listOfAddressTilteSeletedByUser
-                                                        .value.length ==
+                                                        .value.length >=
                                                     4) {
-                                                  finishSelectedByUser =
-                                                      addressTilteSeletedByUser;
                                                   panelController.close();
                                                 }
                                                 return Positioned(
@@ -2136,12 +2200,42 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                             SlideDirection.UP,
                                                         onPanelClosed: () {
                                                           finishSelectedByUser =
-                                                              addressTilteSeletedByUser;
-                                                          finishSelectedByUser
-                                                              .removeWhere(
-                                                            (element) => element
-                                                                .contains("|"),
-                                                          );
+                                                              [
+                                                            address.RegionDetails(
+                                                                province: addressTilteSeletedByUser
+                                                                            .length >
+                                                                        0
+                                                                    ? addressTilteSeletedByUser[
+                                                                        0]
+                                                                    : "",
+                                                                city: addressTilteSeletedByUser
+                                                                            .length >
+                                                                        1
+                                                                    ? addressTilteSeletedByUser[
+                                                                        1]
+                                                                    : "",
+                                                                town: addressTilteSeletedByUser
+                                                                            .length >
+                                                                        2
+                                                                    ? addressTilteSeletedByUser[
+                                                                        2]
+                                                                    : "",
+                                                                street: addressTilteSeletedByUser
+                                                                            .length >
+                                                                        3
+                                                                    ? addressTilteSeletedByUser[
+                                                                        3]
+                                                                    : "",
+                                                                building: addressTilteSeletedByUser
+                                                                            .length >
+                                                                        4
+                                                                    ? addressTilteSeletedByUser[
+                                                                        4]
+                                                                    : "")
+                                                          ];
+                                                          print(
+                                                              "!!!!!!!!!!!!!!!@@@@@@@@cccccccccccccccccccccc@@@@@@@@@@@@@@%%%%%%%%%%%%%%%%%%%%%%%%%%%%%${finishSelectedByUser[0].building}");
+
                                                           searchController
                                                               .text = "";
                                                           FocusScope.of(context)
@@ -2429,37 +2523,56 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                         padding:
                                                                             EdgeInsets.all(
                                                                                 0),
-                                                                        itemBuilder: (context,
-                                                                                index) =>
-                                                                            InkWell(
-                                                                              onTap: () {
-                                                                                if ((searchController.text.length) > 0) {
-                                                                                  _locationFromSearch = filterLatLngSearch[index];
-                                                                                  setState(() {});
-                                                                                  List<String> filterSearchTadd = filterResultSearch[index].split(" | ").toList();
-                                                                                  listOfAddressTilteSeletedByUser.value = [
-                                                                                    ...filterSearchTadd
-                                                                                  ];
-                                                                                  panelController.close();
-                                                                                } else {
-                                                                                  listOfAddressTilteSeletedByUser.value = [
-                                                                                    ...addressTilteSeletedByUser,
-                                                                                    addressTilte[index]
-                                                                                  ];
-                                                                                }
-                                                                              },
-                                                                              child: Container(
-                                                                                padding: EdgeInsets.symmetric(horizontal: 35),
-                                                                                alignment: LanguageService.languageCode == "ar" ? Alignment.centerRight : Alignment.centerLeft,
-                                                                                child: RichText(
-                                                                                  text: TextSpan(style: context.textTheme.bodyMedium?.mr.copyWith(color: const Color(0xff1D1D1D), letterSpacing: 0.18, fontSize: 14, height: 1.2), text: (searchController.text.length) > 0 ? filterResultSearch[index].substring(0, (searchController.text.length)) : addressTilte[index], children: [
-                                                                                    TextSpan(style: context.textTheme.bodyMedium?.mr.copyWith(color: const Color(0xff8D8D8D), letterSpacing: 0.18, fontSize: 14, height: 1.2), text: (searchController.text.length) > 0 ? filterResultSearch[index].substring(searchController.text.length) : "")
-                                                                                  ]),
-                                                                                ),
-                                                                                decoration: BoxDecoration(color: Color(0xffF8F8F8), borderRadius: BorderRadius.circular(12)),
-                                                                                height: 50,
+                                                                        itemBuilder:
+                                                                            (context,
+                                                                                index) {
+                                                                          String
+                                                                              apprearfilterResultSearch =
+                                                                              "";
+                                                                          if ((searchController.text.length) >
+                                                                              0) {
+                                                                            apprearfilterResultSearch =
+                                                                                " ${filterResultSearch[index].province ?? ""} ${filterResultSearch[index].city ?? ""} ${filterResultSearch[index].town ?? ""} ${filterResultSearch[index].street ?? ""} ${filterResultSearch[index].street ?? ""} ${filterResultSearch[index].building ?? ""}";
+                                                                          }
+
+                                                                          return InkWell(
+                                                                            onTap:
+                                                                                () {
+                                                                              if ((searchController.text.length) > 0) {
+                                                                                _locationFromSearch = filterLatLngSearch[index];
+                                                                                setState(() {});
+                                                                                address.RegionDetails filterSearchTadd = filterResultSearch[index];
+                                                                                listOfAddressTilteSeletedByUser.value = [
+                                                                                  ...[
+                                                                                    filterSearchTadd.province ?? "",
+                                                                                    filterSearchTadd.city ?? "",
+                                                                                    filterSearchTadd.town ?? "",
+                                                                                    filterSearchTadd.street ?? "",
+                                                                                    filterSearchTadd.building ?? ""
+                                                                                  ]
+                                                                                ];
+                                                                                panelController.close();
+                                                                              } else {
+                                                                                listOfAddressTilteSeletedByUser.value = [
+                                                                                  ...addressTilteSeletedByUser,
+                                                                                  addressTilte[index]
+                                                                                ];
+                                                                              }
+                                                                            },
+                                                                            child:
+                                                                                Container(
+                                                                              padding: EdgeInsets.symmetric(horizontal: 35),
+                                                                              alignment: LanguageService.languageCode == "ar" ? Alignment.centerRight : Alignment.centerLeft,
+                                                                              child: RichText(
+                                                                                text: TextSpan(style: context.textTheme.bodyMedium?.mr.copyWith(color: const Color(0xff1D1D1D), letterSpacing: 0.18, fontSize: 14, height: 1.2), text: (searchController.text.length) > 0 ? apprearfilterResultSearch.substring(0, (searchController.text.length)) : addressTilte[index], children: [
+                                                                                  TextSpan(style: context.textTheme.bodyMedium?.mr.copyWith(color: const Color(0xff8D8D8D), letterSpacing: 0.18, fontSize: 14, height: 1.2), text: (searchController.text.length) > 0 ? apprearfilterResultSearch.substring(searchController.text.length) : "")
+                                                                                ]),
                                                                               ),
+                                                                              decoration: BoxDecoration(color: Color(0xffF8F8F8), borderRadius: BorderRadius.circular(12)),
+                                                                              height: 50,
                                                                             ),
+                                                                          );
+                                                                        },
                                                                         separatorBuilder: (context,
                                                                                 index) =>
                                                                             SizedBox(

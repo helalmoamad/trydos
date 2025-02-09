@@ -8,6 +8,7 @@ import 'package:trydos/features/home/data/models/get_allowed_country_model.dart'
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
+import 'package:trydos/service/language_service.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/handling_market_notifications.dart';
 
 import '../../service/firebase_analytics_service/firebase_analytics_service.dart';
@@ -62,7 +63,7 @@ class _CountryDropdownState extends State<CountryDropdown> {
               print(
                   "@@@@@@@@@!!!!!!!!!!!!!!!!!!!!!!!!!!${newValue}!!!!!!111111111111111");
               BlocProvider.of<HomeBloc>(context).add(ClearAllAppCashEvent());
-              List<String> topicTOUnSubsecribe =
+              /* List<String> topicTOUnSubsecribe =
                   _prefsRepository.topicThatAlreadySubsecribed();
               topicTOUnSubsecribe.forEach(
                 (element) {
@@ -71,7 +72,12 @@ class _CountryDropdownState extends State<CountryDropdown> {
                   print(
                       "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${element}");
                 },
-              );
+              );*/
+              BlocProvider.of<HomeBloc>(context).add(
+                  ChangeCountryLanguageForNotificationEvent(
+                      country: newValue!.toLowerCase(),
+                      languageCode: LanguageService.languageCode));
+
               Future.delayed(
                 Duration(microseconds: 500),
                 () {
