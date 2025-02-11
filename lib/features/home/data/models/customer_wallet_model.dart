@@ -1,7 +1,7 @@
 class CustomerWalletModel {
-  final bool isSuccessful;
-  final bool hasContent;
-  final int code;
+  final bool? isSuccessful;
+  final bool? hasContent;
+  final int? code;
   final String message;
   final dynamic detailedError;
   final CustomerWalletDataModel data;
@@ -34,11 +34,11 @@ class CustomerWalletModel {
 
   factory CustomerWalletModel.fromJson(Map<String, dynamic> json) =>
       CustomerWalletModel(
-        isSuccessful: json["isSuccessful"],
-        hasContent: json["hasContent"],
-        code: json["code"],
-        message: json["message"],
-        detailedError: json["detailed_error"],
+        isSuccessful: json["isSuccessful"] ?? false,
+        hasContent: json["hasContent"] ?? false,
+        code: json["code"] ?? 0,
+        message: json["message"] ?? '',
+        detailedError: json["detailed_error"] ?? '',
         data: CustomerWalletDataModel.fromJson(json["data"]),
       );
 
@@ -53,18 +53,16 @@ class CustomerWalletModel {
 }
 
 class CustomerWalletDataModel {
-  final int limit;
-  final int offset;
-  final int totalWalletBalance;
-  final String totalWalletBalanceFormatted;
-  final int totalWalletTransaction;
+  final int? limit;
+  final int? offset;
+  final double? totalWalletBalance;
+  final int? totalWalletTransaction;
   final List<WalletTransactionList> walletTransactionList;
 
   CustomerWalletDataModel({
     required this.limit,
     required this.offset,
     required this.totalWalletBalance,
-    required this.totalWalletBalanceFormatted,
     required this.totalWalletTransaction,
     required this.walletTransactionList,
   });
@@ -72,7 +70,7 @@ class CustomerWalletDataModel {
   CustomerWalletDataModel copyWith({
     int? limit,
     int? offset,
-    int? totalWalletBalance,
+    double? totalWalletBalance,
     String? totalWalletBalanceFormatted,
     int? totalWalletTransaction,
     List<WalletTransactionList>? walletTransactionList,
@@ -81,8 +79,6 @@ class CustomerWalletDataModel {
         limit: limit ?? this.limit,
         offset: offset ?? this.offset,
         totalWalletBalance: totalWalletBalance ?? this.totalWalletBalance,
-        totalWalletBalanceFormatted:
-            totalWalletBalanceFormatted ?? this.totalWalletBalanceFormatted,
         totalWalletTransaction:
             totalWalletTransaction ?? this.totalWalletTransaction,
         walletTransactionList:
@@ -91,11 +87,14 @@ class CustomerWalletDataModel {
 
   factory CustomerWalletDataModel.fromJson(Map<String, dynamic> json) =>
       CustomerWalletDataModel(
-        limit: json["limit"],
-        offset: json["offset"],
-        totalWalletBalance: json["total_wallet_balance"],
-        totalWalletBalanceFormatted: json["total_wallet_balance_formatted"],
-        totalWalletTransaction: json["total_wallet_transaction"],
+        limit: json["limit"] ?? 0,
+        offset: json["offset"] ?? 0,
+        totalWalletBalance: json["total_wallet_balance"] == null
+            ? 0
+            : double.parse(
+                json["total_wallet_balance"].toString(),
+              ),
+        totalWalletTransaction: json["total_wallet_transaction"] ?? 0,
         walletTransactionList: List<WalletTransactionList>.from(
             json["wallet_transaction_list"]
                 .map((x) => WalletTransactionList.fromJson(x))),
@@ -105,7 +104,6 @@ class CustomerWalletDataModel {
         "limit": limit,
         "offset": offset,
         "total_wallet_balance": totalWalletBalance,
-        "total_wallet_balance_formatted": totalWalletBalanceFormatted,
         "total_wallet_transaction": totalWalletTransaction,
         "wallet_transaction_list":
             List<dynamic>.from(walletTransactionList.map((x) => x.toJson())),
@@ -116,26 +114,20 @@ class WalletTransactionList {
   final int id;
   final int userId;
   final dynamic orderId;
-  final int transactionId;
-  final int credit;
-  final int debit;
-  final int adminBonus;
-  final int balance;
-  final String transactionType;
-  final String reference;
+  final int? transactionId;
+  final double? credit;
+  final double? debit;
+  final double? adminBonus;
+  final double? balance;
+  final String? transactionType;
+  final String? reference;
   final dynamic paymentMethodCustomer;
-  final int returnedToCreditCart;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-  final dynamic deletedAt;
-  final dynamic returnRequestId;
-  final dynamic destinationId;
-  final dynamic convertedWalletTransactionId;
-  final String statusPayment;
-  final String creditFormatted;
-  final String debitFormatted;
-  final String balanceFormatted;
-  final String destinationName;
+  final double? returnedToCreditCart;
+  final String? statusPayment;
+  final String? creditFormatted;
+  final String? debitFormatted;
+  final String? balanceFormatted;
+  final String? destinationName;
 
   WalletTransactionList({
     required this.id,
@@ -150,12 +142,6 @@ class WalletTransactionList {
     required this.reference,
     required this.paymentMethodCustomer,
     required this.returnedToCreditCart,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.deletedAt,
-    required this.returnRequestId,
-    required this.destinationId,
-    required this.convertedWalletTransactionId,
     required this.statusPayment,
     required this.creditFormatted,
     required this.debitFormatted,
@@ -168,14 +154,14 @@ class WalletTransactionList {
     int? userId,
     dynamic orderId,
     int? transactionId,
-    int? credit,
-    int? debit,
-    int? adminBonus,
-    int? balance,
+    double? credit,
+    double? debit,
+    double? adminBonus,
+    double? balance,
     String? transactionType,
     String? reference,
     dynamic paymentMethodCustomer,
-    int? returnedToCreditCart,
+    double? returnedToCreditCart,
     DateTime? createdAt,
     DateTime? updatedAt,
     dynamic deletedAt,
@@ -202,13 +188,6 @@ class WalletTransactionList {
         paymentMethodCustomer:
             paymentMethodCustomer ?? this.paymentMethodCustomer,
         returnedToCreditCart: returnedToCreditCart ?? this.returnedToCreditCart,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt,
-        deletedAt: deletedAt ?? this.deletedAt,
-        returnRequestId: returnRequestId ?? this.returnRequestId,
-        destinationId: destinationId ?? this.destinationId,
-        convertedWalletTransactionId:
-            convertedWalletTransactionId ?? this.convertedWalletTransactionId,
         statusPayment: statusPayment ?? this.statusPayment,
         creditFormatted: creditFormatted ?? this.creditFormatted,
         debitFormatted: debitFormatted ?? this.debitFormatted,
@@ -221,26 +200,29 @@ class WalletTransactionList {
         id: json["id"],
         userId: json["user_id"],
         orderId: json["order_id"],
-        transactionId: json["transaction_id"],
-        credit: json["credit"],
-        debit: json["debit"],
-        adminBonus: json["admin_bonus"],
-        balance: json["balance"],
-        transactionType: json["transaction_type"],
-        reference: json["reference"],
+        transactionId: json["transaction_id"] ?? 0,
+        credit: json["credit"] == null
+            ? 0
+            : double.parse(json["credit"].toString()),
+        debit:
+            json["debit"] == null ? 0 : double.parse(json["debit"].toString()),
+        adminBonus: json["admin_bonus"] == null
+            ? 0
+            : double.parse(json["admin_bonus"].toString()),
+        balance: json["balance"] == null
+            ? 0
+            : double.parse(json["balance"].toString()),
+        transactionType: json["transaction_type"] ?? '',
+        reference: json["reference"] ?? '',
         paymentMethodCustomer: json["payment_method_customer"],
-        returnedToCreditCart: json["returned_to_credit_cart"],
-        createdAt: DateTime.parse(json["created_at"]),
-        updatedAt: DateTime.parse(json["updated_at"]),
-        deletedAt: json["deleted_at"],
-        returnRequestId: json["return_request_id"],
-        destinationId: json["destination_id"],
-        convertedWalletTransactionId: json["converted_wallet_transaction_id"],
-        statusPayment: json["status_payment"],
-        creditFormatted: json["credit_formatted"],
-        debitFormatted: json["debit_formatted"],
-        balanceFormatted: json["balance_formatted"],
-        destinationName: json["destination_name"],
+        returnedToCreditCart: json["returned_to_credit_cart"] == null
+            ? 0
+            : double.parse(json["returned_to_credit_cart"].toString()),
+        statusPayment: json["status_payment"] ?? '',
+        creditFormatted: json["credit_formatted"] ?? '',
+        debitFormatted: json["debit_formatted"] ?? '',
+        balanceFormatted: json["balance_formatted"] ?? '',
+        destinationName: json["destination_name"] ?? '',
       );
 
   Map<String, dynamic> toJson() => {
@@ -256,12 +238,6 @@ class WalletTransactionList {
         "reference": reference,
         "payment_method_customer": paymentMethodCustomer,
         "returned_to_credit_cart": returnedToCreditCart,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
-        "deleted_at": deletedAt,
-        "return_request_id": returnRequestId,
-        "destination_id": destinationId,
-        "converted_wallet_transaction_id": convertedWalletTransactionId,
         "status_payment": statusPayment,
         "credit_formatted": creditFormatted,
         "debit_formatted": debitFormatted,

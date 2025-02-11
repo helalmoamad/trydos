@@ -1,28 +1,20 @@
 import 'dart:async';
 import 'dart:math';
-
 import 'package:country_flags/country_flags.dart';
-
 import 'package:easy_localization/easy_localization.dart' as translate;
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-//import 'package:geocoding/geocoding.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/constant/countries.dart';
-
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -30,21 +22,15 @@ import 'package:trydos/core/utils/extensions/string.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/features/app/app_widgets/app_text_field.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
-import 'package:trydos/features/home/data/models/get_address_by_text_model.dart';
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart'
     as counttry;
 import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart'
     as address;
-
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
-import 'package:trydos/features/search/presentation/widgets/search_result.dart';
-
 import 'package:trydos/generated/locale_keys.g.dart';
-
 import 'package:trydos/service/language_service.dart';
-
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 

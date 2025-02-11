@@ -46,6 +46,9 @@ abstract class MarketEndPoints {
 
   static final getCustomerWalletEP = "wallet/list".customerScope();
 
+  static String placeOrderEP(String paymentMethod) =>
+      "order/checkout/$paymentMethod".customerScope();
+
   static final unsubscribeTopicEP = "unsubscribe_topic".firebaseTokensScope();
   static final subscribe_topicEP = "subscribe_topic".firebaseTokensScope();
   static final change_country_languageEP =

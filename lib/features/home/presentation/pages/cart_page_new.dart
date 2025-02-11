@@ -1606,8 +1606,7 @@ class _CartPageState extends State<CartPage> {
                                                                                       context,
                                                                                       CartDelivaryAddress(
                                                                                         cartImages: cartImages,
-                                                                                        availablePaymentMethod: state.getCartShippingItemsModel!.data!.availablePaymentMethod!,
-                                                                                        totalPrice: totlalOfferPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2),
+                                                                                        totalPrice: totlalOfferPrice,
                                                                                         currencySympole: priceSymbol ?? ' \$',
                                                                                       ),
                                                                                     );

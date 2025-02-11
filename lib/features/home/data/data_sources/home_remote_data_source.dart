@@ -34,6 +34,7 @@ import '../models/get_product_detail_without_related_products_model.dart';
 import '../models/get_product_filters_model.dart';
 import '../models/get_product_listing_with_filters_model.dart';
 import '../models/get_story_for_product_model.dart';
+import '../models/place_order_model.dart';
 
 @injectable
 class HomeRemoteDatasource {
@@ -638,5 +639,21 @@ class HomeRemoteDatasource {
     );
 
     return getCustomerWallet();
+  }
+
+  Future<PlaceOrderModel> placeOrder(
+      {required Map<String, dynamic> params, required String paymentMethod}) {
+    PostClient<PlaceOrderModel> placeOrder = PostClient<PlaceOrderModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<PlaceOrderModel>(
+        endpoint: MarketEndPoints.placeOrderEP(paymentMethod),
+        data: params,
+        response: ResponseValue<PlaceOrderModel>(
+          fromJson: (response) => PlaceOrderModel.fromJson(response),
+        ),
+      ),
+    );
+
+    return placeOrder();
   }
 }

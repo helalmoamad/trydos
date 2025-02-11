@@ -183,6 +183,7 @@ import '../../features/home/domain/use_cases/GetCommentForProductUseCase.dart'
     as _i939;
 import '../../features/home/domain/use_cases/hide_item_from_oldCart_usecase.dart'
     as _i104;
+import '../../features/home/domain/use_cases/place_order_usecase.dart' as _i649;
 import '../../features/home/domain/use_cases/remove_item_from_cart_usecase.dart'
     as _i687;
 import '../../features/home/domain/use_cases/request_for_notification_when_product_became_available_usecase.dart'
@@ -377,6 +378,8 @@ Future<_i174.GetIt> $initGetIt(
       () => _i418.UpdateCustomerAddressUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i802.UpdateItemInCartUseCase>(
       () => _i802.UpdateItemInCartUseCase(gh<_i0.HomeRepository>()));
+  gh.factory<_i649.PlaceOrderUsecase>(
+      () => _i649.PlaceOrderUsecase(gh<_i0.HomeRepository>()));
   gh.lazySingleton<_i702.CommonUseRepository>(() =>
       _i77.CommonUseRepositoryImpl(gh<_i672.CommonUseRemoteDataSource>()));
   gh.lazySingleton<_i1032.CallsRepository>(
@@ -426,6 +429,22 @@ Future<_i174.GetIt> $initGetIt(
           gh<_i420.ChatRepository>()));
   gh.factory<_i897.UploadFileUseCase>(
       () => _i897.UploadFileUseCase(gh<_i420.ChatRepository>()));
+  gh.factory<_i661.AnswerCallUseCase>(
+      () => _i661.AnswerCallUseCase(gh<_i1032.CallsRepository>()));
+  gh.factory<_i95.DeleteMessageUseCase>(
+      () => _i95.DeleteMessageUseCase(gh<_i1032.CallsRepository>()));
+  gh.factory<_i1014.GetAgoraTokenUseCase>(
+      () => _i1014.GetAgoraTokenUseCase(gh<_i1032.CallsRepository>()));
+  gh.factory<_i767.GetMissedCalCountUseCase>(
+      () => _i767.GetMissedCalCountUseCase(gh<_i1032.CallsRepository>()));
+  gh.factory<_i177.GetMyCallsUseCase>(
+      () => _i177.GetMyCallsUseCase(gh<_i1032.CallsRepository>()));
+  gh.factory<_i643.MakeCallUseCase>(
+      () => _i643.MakeCallUseCase(gh<_i1032.CallsRepository>()));
+  gh.factory<_i711.RejectCallUseCase>(
+      () => _i711.RejectCallUseCase(gh<_i1032.CallsRepository>()));
+  gh.factory<_i961.WatchMissedCallUseCase>(
+      () => _i961.WatchMissedCallUseCase(gh<_i1032.CallsRepository>()));
   gh.lazySingleton<_i801.HomeBloc>(() => _i801.HomeBloc(
         gh<_i158.GetMainCategoriesUseCase>(),
         gh<_i533.GetStoryForProductUseCase>(),
@@ -465,23 +484,8 @@ Future<_i174.GetIt> $initGetIt(
         gh<_i715.RequestForNotificationWhenProductBecameAvailableUseCase>(),
         gh<_i955.GetProductsWithFiltersUseCase>(),
         gh<_i361.GetCustomerWalletUseCase>(),
+        gh<_i649.PlaceOrderUsecase>(),
       ));
-  gh.factory<_i661.AnswerCallUseCase>(
-      () => _i661.AnswerCallUseCase(gh<_i1032.CallsRepository>()));
-  gh.factory<_i95.DeleteMessageUseCase>(
-      () => _i95.DeleteMessageUseCase(gh<_i1032.CallsRepository>()));
-  gh.factory<_i1014.GetAgoraTokenUseCase>(
-      () => _i1014.GetAgoraTokenUseCase(gh<_i1032.CallsRepository>()));
-  gh.factory<_i767.GetMissedCalCountUseCase>(
-      () => _i767.GetMissedCalCountUseCase(gh<_i1032.CallsRepository>()));
-  gh.factory<_i177.GetMyCallsUseCase>(
-      () => _i177.GetMyCallsUseCase(gh<_i1032.CallsRepository>()));
-  gh.factory<_i643.MakeCallUseCase>(
-      () => _i643.MakeCallUseCase(gh<_i1032.CallsRepository>()));
-  gh.factory<_i711.RejectCallUseCase>(
-      () => _i711.RejectCallUseCase(gh<_i1032.CallsRepository>()));
-  gh.factory<_i961.WatchMissedCallUseCase>(
-      () => _i961.WatchMissedCallUseCase(gh<_i1032.CallsRepository>()));
   gh.lazySingleton<_i536.StoryBloc>(() => _i536.StoryBloc(
         gh<_i1043.UploadFileCloudinaryUseCase>(),
         gh<_i804.GetStoryUseCase>(),

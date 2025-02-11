@@ -16,20 +16,28 @@ import 'package:trydos/service/language_service.dart';
 import '../../../../../common/constant/payment_methods.dart';
 
 class PaymentMethod extends StatefulWidget {
-  final ValueNotifier<String> paymentMethod;
+  final ValueNotifier<List<String>> paymentMethods;
   final List<String> availablePaymentMethod;
+  final double walletBalance;
+  final double totalPrice;
   final bool fromPalceOrder;
   final bool fromSuccessOrder;
+  final int decimalPointSetting;
   const PaymentMethod({
-    required this.paymentMethod,
+    required this.paymentMethods,
     required this.fromPalceOrder,
     required this.fromSuccessOrder,
     required this.availablePaymentMethod,
+    required this.totalPrice,
+    required this.walletBalance,
+    required this.decimalPointSetting,
   });
 
   @override
   State<PaymentMethod> createState() => _PaymentMethodState();
 }
+
+PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
 
 class _PaymentMethodState extends State<PaymentMethod> {
   @override
@@ -37,8 +45,24 @@ class _PaymentMethodState extends State<PaymentMethod> {
     super.initState();
   }
 
+  void _addItemToPaymentMethods(
+      ValueNotifier<List<String>> paymentMethods, String item) {
+    paymentMethods.value = List.from(paymentMethods.value)..add(item);
+  }
+
+  void _removeItemFromPaymentMethods(
+      ValueNotifier<List<String>> paymentMethods, String item) {
+    paymentMethods.value = List.from(paymentMethods.value)
+      ..removeWhere(
+        (element) => element == item,
+      );
+  }
+
   @override
   Widget build(BuildContext context) {
+    String iso = prefsRepository.userCountryIsAvailable == 1
+        ? prefsRepository.userChoosedCountryIso ?? ''
+        : prefsRepository.countryIso ?? '';
     FlutterError.onError = (FlutterErrorDetails error) {
       try {
         BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
@@ -53,11 +77,10 @@ class _PaymentMethodState extends State<PaymentMethod> {
     };
     return Column(
       children: [
-        ValueListenableBuilder<String>(
-          valueListenable: widget.paymentMethod,
-          builder: (context, _paymentMethod, _) {
+        ValueListenableBuilder<List<String>>(
+          valueListenable: widget.paymentMethods,
+          builder: (context, _paymentMethods, _) {
             return Container(
-              height: (widget.fromPalceOrder) ? 120.h : 203,
               width: 1.sw,
               padding: EdgeInsets.all(10.h),
               decoration: BoxDecoration(
@@ -103,7 +126,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                   SizedBox(
                     height: 12.h,
                   ),
-                  (!(_paymentMethod == PaymentMethods.trydosWallet) &&
+                  (!(_paymentMethods.contains(PaymentMethods.trydosWallet)) &&
                               widget.fromPalceOrder) ||
                           !widget.availablePaymentMethod
                               .contains(PaymentMethods.trydosWallet)
@@ -114,22 +137,47 @@ class _PaymentMethodState extends State<PaymentMethod> {
                                 widget.fromSuccessOrder) {
                               return;
                             }
-                            if (_paymentMethod == PaymentMethods.trydosWallet) {
-                              widget.paymentMethod.value = "";
+                            ///////////////////////////
+                            if (_paymentMethods
+                                .contains(PaymentMethods.trydosWallet)) {
+                              _removeItemFromPaymentMethods(
+                                widget.paymentMethods,
+                                PaymentMethods.trydosWallet,
+                              );
                             } else {
-                              widget.paymentMethod.value =
-                                  PaymentMethods.trydosWallet;
+                              if (widget.walletBalance > 0) {
+                                if (widget.paymentMethods.value.isNotEmpty) {
+                                  widget.paymentMethods.value =
+                                      List.from(widget.paymentMethods.value)
+                                        ..clear();
+                                  //////////////////////
+                                  _addItemToPaymentMethods(
+                                    widget.paymentMethods,
+                                    PaymentMethods.trydosWallet,
+                                  );
+                                } else {
+                                  _addItemToPaymentMethods(
+                                    widget.paymentMethods,
+                                    PaymentMethods.trydosWallet,
+                                  );
+                                }
+                              }
                             }
                           },
                           child:
-                              buildTrydosWalletWidget(_paymentMethod, context),
+                              buildTrydosWalletWidget(_paymentMethods, context),
                         ),
-                  (widget.fromPalceOrder)
+                  /////////////////////
+                  (!(_paymentMethods.contains(PaymentMethods.trydosWallet)) &&
+                              widget.fromPalceOrder) ||
+                          !widget.availablePaymentMethod
+                              .contains(PaymentMethods.trydosWallet)
                       ? SizedBox.shrink()
                       : SizedBox(
                           height: 12.h,
                         ),
-                  (!(_paymentMethod == PaymentMethods.card) &&
+                  ////////////////////
+                  (!(_paymentMethods.contains(PaymentMethods.card)) &&
                               widget.fromPalceOrder) ||
                           !widget.availablePaymentMethod
                               .contains(PaymentMethods.card)
@@ -140,21 +188,64 @@ class _PaymentMethodState extends State<PaymentMethod> {
                                 widget.fromSuccessOrder) {
                               return;
                             }
-                            if (_paymentMethod == PaymentMethods.card) {
-                              widget.paymentMethod.value = "";
+                            /////////////////////
+                            if (_paymentMethods.contains(PaymentMethods.card)) {
+                              _removeItemFromPaymentMethods(
+                                widget.paymentMethods,
+                                PaymentMethods.card,
+                              );
                             } else {
-                              PaymentMethods.card;
+                              if (widget.paymentMethods.value
+                                  .contains(PaymentMethods.trydosWallet)) {
+                                if (widget.walletBalance < widget.totalPrice) {
+                                  widget.paymentMethods.value =
+                                      List.from(widget.paymentMethods.value)
+                                        ..removeWhere(
+                                          (element) =>
+                                              element !=
+                                              PaymentMethods.trydosWallet,
+                                        );
+                                  ///////////////
+                                  _addItemToPaymentMethods(
+                                    widget.paymentMethods,
+                                    PaymentMethods.card,
+                                  );
+                                } else {
+                                  widget.paymentMethods.value =
+                                      List.from(widget.paymentMethods.value)
+                                        ..clear();
+                                  ////////////////
+                                  _addItemToPaymentMethods(
+                                    widget.paymentMethods,
+                                    PaymentMethods.card,
+                                  );
+                                }
+                              } else {
+                                widget.paymentMethods.value =
+                                    List.from(widget.paymentMethods.value)
+                                      ..clear();
+                                ////////////////
+                                _addItemToPaymentMethods(
+                                  widget.paymentMethods,
+                                  PaymentMethods.card,
+                                );
+                              }
                             }
                           },
                           child:
-                              buildCardPaymentWidget(_paymentMethod, context),
+                              buildCardPaymentWidget(_paymentMethods, context),
                         ),
-                  (widget.fromPalceOrder)
+                  ////////////////////////
+                  (!(_paymentMethods.contains(PaymentMethods.card)) &&
+                              widget.fromPalceOrder) ||
+                          !widget.availablePaymentMethod
+                              .contains(PaymentMethods.card)
                       ? SizedBox.shrink()
                       : SizedBox(
                           height: 12.h,
                         ),
-                  (!(_paymentMethod == PaymentMethods.crypto) &&
+                  //////////////////////
+                  (!(_paymentMethods.contains(PaymentMethods.crypto)) &&
                               widget.fromPalceOrder) ||
                           !widget.availablePaymentMethod
                               .contains(PaymentMethods.crypto)
@@ -165,14 +256,120 @@ class _PaymentMethodState extends State<PaymentMethod> {
                                 widget.fromSuccessOrder) {
                               return;
                             }
-                            if (_paymentMethod == PaymentMethods.crypto) {
-                              widget.paymentMethod.value = "";
+                            //////////////////////////
+                            if (_paymentMethods
+                                .contains(PaymentMethods.crypto)) {
+                              _removeItemFromPaymentMethods(
+                                widget.paymentMethods,
+                                PaymentMethods.crypto,
+                              );
+                              ///////////////////
                             } else {
-                              widget.paymentMethod.value =
-                                  PaymentMethods.crypto;
+                              if (widget.paymentMethods.value
+                                  .contains(PaymentMethods.trydosWallet)) {
+                                if (widget.walletBalance < widget.totalPrice) {
+                                  widget.paymentMethods.value =
+                                      List.from(widget.paymentMethods.value)
+                                        ..removeWhere(
+                                          (element) =>
+                                              element !=
+                                              PaymentMethods.trydosWallet,
+                                        );
+                                  ///////////////
+                                  _addItemToPaymentMethods(
+                                    widget.paymentMethods,
+                                    PaymentMethods.crypto,
+                                  );
+                                } else {
+                                  widget.paymentMethods.value =
+                                      List.from(widget.paymentMethods.value)
+                                        ..clear();
+                                  ////////////////
+                                  _addItemToPaymentMethods(
+                                    widget.paymentMethods,
+                                    PaymentMethods.crypto,
+                                  );
+                                }
+                              } else {
+                                widget.paymentMethods.value =
+                                    List.from(widget.paymentMethods.value)
+                                      ..clear();
+                                ////////////////
+                                _addItemToPaymentMethods(
+                                  widget.paymentMethods,
+                                  PaymentMethods.crypto,
+                                );
+                              }
                             }
                           },
-                          child: buildCryptoWidget(_paymentMethod, context),
+                          child: buildCryptoWidget(_paymentMethods, context),
+                        ),
+                  ////////////////////////
+                  (!(_paymentMethods.contains(PaymentMethods.crypto)) &&
+                              widget.fromPalceOrder) ||
+                          !widget.availablePaymentMethod
+                              .contains(PaymentMethods.crypto)
+                      ? SizedBox.shrink()
+                      : SizedBox(
+                          height: 12.h,
+                        ),
+                  //////////////////////
+                  (!(_paymentMethods.contains(PaymentMethods.cod)) &&
+                              widget.fromPalceOrder) ||
+                          !widget.availablePaymentMethod
+                              .contains(PaymentMethods.cod) ||
+                          iso != 'SY'
+                      ? SizedBox.shrink()
+                      : InkWell(
+                          onTap: () {
+                            if (widget.fromPalceOrder ||
+                                widget.fromSuccessOrder) {
+                              return;
+                            }
+                            if (_paymentMethods.contains(PaymentMethods.cod)) {
+                              _removeItemFromPaymentMethods(
+                                widget.paymentMethods,
+                                PaymentMethods.cod,
+                              );
+                            } else {
+                              if (widget.paymentMethods.value
+                                  .contains(PaymentMethods.trydosWallet)) {
+                                if (widget.walletBalance < widget.totalPrice) {
+                                  widget.paymentMethods.value =
+                                      List.from(widget.paymentMethods.value)
+                                        ..removeWhere(
+                                          (element) =>
+                                              element !=
+                                              PaymentMethods.trydosWallet,
+                                        );
+                                  ///////////////
+                                  _addItemToPaymentMethods(
+                                    widget.paymentMethods,
+                                    PaymentMethods.cod,
+                                  );
+                                } else {
+                                  widget.paymentMethods.value =
+                                      List.from(widget.paymentMethods.value)
+                                        ..clear();
+                                  ////////////////
+                                  _addItemToPaymentMethods(
+                                    widget.paymentMethods,
+                                    PaymentMethods.cod,
+                                  );
+                                }
+                              } else {
+                                widget.paymentMethods.value =
+                                    List.from(widget.paymentMethods.value)
+                                      ..clear();
+                                ////////////////
+                                _addItemToPaymentMethods(
+                                  widget.paymentMethods,
+                                  PaymentMethods.cod,
+                                );
+                              }
+                            }
+                          },
+                          child: buildCodWidget(_paymentMethods, context),
                         ),
                 ],
               ),
@@ -183,59 +380,116 @@ class _PaymentMethodState extends State<PaymentMethod> {
     );
   }
 
-  Widget buildCryptoWidget(String _paymentMethod, BuildContext context) {
+  Widget buildCodWidget(List<String> _paymentMethod, BuildContext context) {
     return Container(
-        height: 40.h,
-        width: 1.sw,
-        decoration: BoxDecoration(
-          border: Border.all(
-              color: widget.fromPalceOrder
-                  ? Color(0xffC4C2C2)
-                  : _paymentMethod == PaymentMethods.crypto
-                      ? Color(0xff388CFF)
-                      : Color(0xffF8F8F8)),
-          color: Color(0xffF8F8F8),
-          borderRadius: BorderRadius.circular(15),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SizedBox(width: 29.w),
-            SvgPicture.asset(AppAssets.cryptoSvg,
-                color: _paymentMethod == PaymentMethods.crypto &&
-                        !widget.fromSuccessOrder
+      height: 40.h,
+      width: 1.sw,
+      decoration: BoxDecoration(
+        border: Border.all(
+            color: widget.fromPalceOrder
+                ? Color(0xffC4C2C2)
+                : _paymentMethod.contains(PaymentMethods.cod)
+                    ? Color(0xff388CFF)
+                    : Color(0xffF8F8F8)),
+        color: Color(0xffF8F8F8),
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          SizedBox(width: 29.w),
+          SvgPicture.asset(
+            AppAssets.earnMoneySvg,
+            color: _paymentMethod.contains(PaymentMethods.cod) &&
+                    !widget.fromSuccessOrder
+                ? Color(0xff1D1D1D)
+                : null,
+          ),
+          SizedBox(width: 10.w),
+          Text(
+            "${LocaleKeys.cod.tr()}",
+            style: context.textTheme.bodyMedium?.rr.copyWith(
+                color: _paymentMethod.contains(PaymentMethods.cod)
                     ? Color(0xff1D1D1D)
-                    : null),
-            SizedBox(width: 10.w),
-            Text(
-              "${LocaleKeys.Crypto.tr()}",
-              style: context.textTheme.bodyMedium?.rr.copyWith(
-                  color: _paymentMethod == PaymentMethods.crypto
-                      ? Color(0xff1D1D1D)
-                      : Color(0xffC4C2C2),
-                  letterSpacing: 0.18,
-                  fontSize: 12,
-                  height: 1.33),
-            ),
-            Spacer(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SvgPicture.asset(AppAssets.crypto1Svg),
-                SizedBox(width: 5.w),
-                SvgPicture.asset(AppAssets.crypto2Svg),
-                SizedBox(width: 5.w),
-                SvgPicture.asset(AppAssets.crypto3Svg),
-                SizedBox(width: 5.w),
-                SvgPicture.asset(AppAssets.crypto4Svg),
-              ],
-            ),
-            SizedBox(width: 30.w)
-          ],
-        ));
+                    : Color(0xffC4C2C2),
+                letterSpacing: 0.18,
+                fontSize: 12,
+                height: 1.33),
+          ),
+          // Spacer(),
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.center,
+          //   children: [
+          //     SvgPicture.asset(AppAssets.crypto1Svg),
+          //     SizedBox(width: 5.w),
+          //     SvgPicture.asset(AppAssets.crypto2Svg),
+          //     SizedBox(width: 5.w),
+          //     SvgPicture.asset(AppAssets.crypto3Svg),
+          //     SizedBox(width: 5.w),
+          //     SvgPicture.asset(AppAssets.crypto4Svg),
+          //   ],
+          // ),
+          // SizedBox(width: 30.w)
+        ],
+      ),
+    );
   }
 
-  Widget buildCardPaymentWidget(String _paymentMethod, BuildContext context) {
+  Widget buildCryptoWidget(List<String> _paymentMethod, BuildContext context) {
+    return Container(
+      height: 40.h,
+      width: 1.sw,
+      decoration: BoxDecoration(
+        border: Border.all(
+            color: widget.fromPalceOrder
+                ? Color(0xffC4C2C2)
+                : _paymentMethod.contains(PaymentMethods.crypto)
+                    ? Color(0xff388CFF)
+                    : Color(0xffF8F8F8)),
+        color: Color(0xffF8F8F8),
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          SizedBox(width: 29.w),
+          SvgPicture.asset(AppAssets.cryptoSvg,
+              color: _paymentMethod.contains(PaymentMethods.crypto) &&
+                      !widget.fromSuccessOrder
+                  ? Color(0xff1D1D1D)
+                  : null),
+          SizedBox(width: 10.w),
+          Text(
+            "${LocaleKeys.Crypto.tr()}",
+            style: context.textTheme.bodyMedium?.rr.copyWith(
+                color: _paymentMethod.contains(PaymentMethods.crypto)
+                    ? Color(0xff1D1D1D)
+                    : Color(0xffC4C2C2),
+                letterSpacing: 0.18,
+                fontSize: 12,
+                height: 1.33),
+          ),
+          Spacer(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SvgPicture.asset(AppAssets.crypto1Svg),
+              SizedBox(width: 5.w),
+              SvgPicture.asset(AppAssets.crypto2Svg),
+              SizedBox(width: 5.w),
+              SvgPicture.asset(AppAssets.crypto3Svg),
+              SizedBox(width: 5.w),
+              SvgPicture.asset(AppAssets.crypto4Svg),
+            ],
+          ),
+          SizedBox(width: 30.w)
+        ],
+      ),
+    );
+  }
+
+  Widget buildCardPaymentWidget(
+      List<String> _paymentMethod, BuildContext context) {
     return Center(
       child: Container(
           height: 40.h,
@@ -244,7 +498,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
             border: Border.all(
                 color: widget.fromPalceOrder
                     ? Color(0xffC4C2C2)
-                    : _paymentMethod == PaymentMethods.card
+                    : _paymentMethod.contains(PaymentMethods.card)
                         ? Color(0xff388CFF)
                         : Color(0xffF8F8F8)),
             color: Color(0xffF8F8F8),
@@ -255,7 +509,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
             children: [
               SizedBox(width: 29.w),
               SvgPicture.asset(AppAssets.creditCards,
-                  color: _paymentMethod == PaymentMethods.card &&
+                  color: _paymentMethod.contains(PaymentMethods.card) &&
                           !widget.fromSuccessOrder
                       ? Color(0xff1D1D1D)
                       : null),
@@ -263,7 +517,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
               Text(
                 "${LocaleKeys.credit_cards.tr()}",
                 style: context.textTheme.bodyMedium?.rr.copyWith(
-                    color: _paymentMethod == PaymentMethods.card
+                    color: _paymentMethod.contains(PaymentMethods.card)
                         ? Color(0xff1D1D1D)
                         : Color(0xffC4C2C2),
                     letterSpacing: 0.18,
@@ -293,7 +547,8 @@ class _PaymentMethodState extends State<PaymentMethod> {
     );
   }
 
-  Widget buildTrydosWalletWidget(String _paymentMethod, BuildContext context) {
+  Widget buildTrydosWalletWidget(
+      List<String> _paymentMethod, BuildContext context) {
     return Container(
       height: 40.h,
       width: 1.sw,
@@ -301,7 +556,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
         border: Border.all(
             color: widget.fromPalceOrder
                 ? Color(0xffC4C2C2)
-                : _paymentMethod == PaymentMethods.trydosWallet
+                : _paymentMethod.contains(PaymentMethods.trydosWallet)
                     ? Color(0xff388CFF)
                     : Color(0xffF8F8F8)),
         color: Color(0xffF8F8F8),
@@ -312,7 +567,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
         children: [
           SizedBox(width: 29.w),
           SvgPicture.asset(AppAssets.trydosWalletSvg,
-              color: _paymentMethod == PaymentMethods.trydosWallet &&
+              color: _paymentMethod.contains(PaymentMethods.trydosWallet) &&
                       !widget.fromSuccessOrder
                   ? Color(0xff1D1D1D)
                   : null),
@@ -322,7 +577,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                 ? "${LocaleKeys.wallet.tr()} ${LocaleKeys.trydos.tr()}"
                 : "${LocaleKeys.trydos.tr()} ${LocaleKeys.wallet.tr()}",
             style: context.textTheme.bodyMedium?.rr.copyWith(
-                color: _paymentMethod == PaymentMethods.trydosWallet
+                color: _paymentMethod.contains(PaymentMethods.trydosWallet)
                     ? Color(0xff1D1D1D)
                     : Color(0xffC4C2C2),
                 letterSpacing: 0.18,
@@ -341,7 +596,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                 height: 1.33),
           ),
           Text(
-            "788 USD",
+            widget.walletBalance.toStringAsFixed(widget.decimalPointSetting),
             style: context.textTheme.bodyMedium?.sbt.copyWith(
                 color: const Color(0xff1D1D1D),
                 letterSpacing: 0.18,

@@ -27,6 +27,7 @@ import '../../data/models/get_full_product_details_model.dart';
 import '../../data/models/get_product_filters_model.dart';
 import '../../data/models/get_product_listing_with_filters_model.dart';
 import '../../data/models/get_story_for_product_model.dart';
+import '../../data/models/place_order_model.dart';
 
 abstract class HomeRepository {
   Future<Either<Failure, StartingSettingsResponseModel>> getStartingSettings();
@@ -103,10 +104,13 @@ abstract class HomeRepository {
       requestForNotificationWhenProductBecameAvailable(
           Map<String, dynamic> params);
 
-  /* Future<Either<Failure, SearchResultModel>> getSearchResult(
-      Map<String, dynamic> params);*/
   Future<Either<Failure, CustomerWalletModel>> getCustomerWallet({
     required int limit,
     required int offset,
+  });
+
+  Future<Either<Failure, PlaceOrderModel>> placeOrder({
+    required Map<String, dynamic> params,
+    required String paymentMethod,
   });
 }

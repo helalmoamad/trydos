@@ -3,14 +3,15 @@ import 'package:flutter_svg/svg.dart';
 import 'package:trydos/common/constant/constant.dart';
 
 class TrydosShimmerLoading extends StatefulWidget {
-  const TrydosShimmerLoading(
-      {super.key,
-      required this.width,
-      this.radius = 15,
-      required this.logoTextWidth,
-      required this.height,
-      required this.logoTextHeight,
-      this.circleDimensions});
+  const TrydosShimmerLoading({
+    super.key,
+    required this.width,
+    this.radius = 15,
+    required this.logoTextWidth,
+    required this.height,
+    required this.logoTextHeight,
+    this.circleDimensions,
+  });
 
   final double width, logoTextWidth;
   final double height, logoTextHeight;

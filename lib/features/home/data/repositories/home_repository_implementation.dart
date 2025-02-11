@@ -29,6 +29,7 @@ import 'package:trydos/features/home/data/models/get_product_listing_without_fil
 import 'package:trydos/features/home/data/models/list_of_products_in_cart_model.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
 import 'package:trydos/features/home/data/models/notificaation_poroduct_types.dart';
+import 'package:trydos/features/home/data/models/place_order_model.dart';
 import 'package:trydos/features/home/data/models/popular_search_terms_model.dart';
 import 'package:trydos/features/home/data/models/response_only_message_model.dart';
 import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
@@ -312,6 +313,17 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   }) {
     return handlingExceptionRequest(
       tryCall: () => dataSource.getCustomerWallet(limit: limit, offset: offset),
+    );
+  }
+
+  @override
+  Future<Either<Failure, PlaceOrderModel>> placeOrder({
+    required Map<String, dynamic> params,
+    required String paymentMethod,
+  }) async {
+    return handlingExceptionRequest(
+      tryCall: () =>
+          dataSource.placeOrder(params: params, paymentMethod: paymentMethod),
     );
   }
 }

@@ -32,6 +32,7 @@ import '../../data/models/get_product_filters_model.dart';
 import '../../data/models/get_product_listing_without_filters_model.dart'
     as product;
 import '../../data/models/main_categories_response_model.dart';
+import '../../data/models/place_order_model.dart';
 import '../../data/models/starting_settings_response_model.dart';
 
 part 'home_state.g.dart';
@@ -105,6 +106,8 @@ enum GetAndAddCountViewOfProductStatus { init, loading, success, failure }
 
 enum ChangeSizesForEveryProduct { init, loading, success, failure }
 
+enum PlaceOrderStatus { init, loading, success, failure }
+
 @JsonSerializable(explicitToJson: true)
 @immutable
 class HomeState extends Equatable {
@@ -143,6 +146,7 @@ class HomeState extends Equatable {
     this.choosedFiltersByUser = const {},
     this.getAddressByCoordinatesModel,
     this.customerWalletModel,
+    this.placeOrderModel,
     this.appliedFiltersByUser = const {},
     this.currentPage = 0,
     this.productStatus,
@@ -183,6 +187,7 @@ class HomeState extends Equatable {
     this.popularSearchTerm,
     this.getAddressByCoordinatesStatus,
     this.getCustomerWalletStatus,
+    this.placeOrderStatus = PlaceOrderStatus.init,
     this.getAddressByTextStatus,
     this.countOfProductExpectedByFiltering,
     this.getCartItemsStatus = GetCartItemsStatus.init,
@@ -220,6 +225,8 @@ class HomeState extends Equatable {
   final List<ResultSearch>? resultSearch;
   final GetAddressByCoordinatesModel? getAddressByCoordinatesModel;
   final CustomerWalletModel? customerWalletModel;
+  final PlaceOrderModel? placeOrderModel;
+  final PlaceOrderStatus? placeOrderStatus;
   final List<ImageForAddToCart>? ListitemForAddToCart;
   final GetAddressByTextStatus? getAddressByTextStatus;
   final GetAddressByCoordinatesStatus? getAddressByCoordinatesStatus;
@@ -349,6 +356,8 @@ class HomeState extends Equatable {
         listOfAddressInfoClassToSave,
         getAddressByCoordinatesStatus,
         getCustomerWalletStatus,
+        placeOrderStatus,
+        placeOrderModel,
         getAddressByTextStatus,
         listOfErrorSendedToMobileErrorLog,
         productContentForStatusOfOpeningProductDetailsDirectly,
@@ -413,6 +422,8 @@ class HomeState extends Equatable {
       final GetMainCategoriesStatus? getMainCategoriesStatus,
       final GetAddressByCoordinatesModel? getAddressByCoordinatesModel,
       final CustomerWalletModel? customerWalletModel,
+      final PlaceOrderModel? placeOrderModel,
+      final PlaceOrderStatus? placeOrderStatus,
       final AddItemInCartStatus? addItemInCartStatus,
       final HideItemInOldCartStatus? hideItemInOldCartStatus,
       final ConvertItemFromOldcartToCartStatus?
@@ -554,6 +565,8 @@ class HomeState extends Equatable {
           getAddressByCoordinatesStatus ?? this.getAddressByCoordinatesStatus,
       getCustomerWalletStatus:
           getCustomerWalletStatus ?? this.getCustomerWalletStatus,
+      placeOrderModel: placeOrderModel ?? this.placeOrderModel,
+      placeOrderStatus: placeOrderStatus ?? this.placeOrderStatus,
       getAddressByTextStatus:
           getAddressByTextStatus ?? this.getAddressByTextStatus,
       addOrRemoveLikeOfProductStatus:

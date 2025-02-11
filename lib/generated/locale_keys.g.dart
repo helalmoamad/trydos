@@ -181,6 +181,7 @@ abstract class LocaleKeys {
   static const click_to_show_all_discount = 'click_to_show_all_discount';
   static const back_to_home = 'back_to_home';
   static const confirm = 'confirm';
+  static const continue_ = 'continue';
   static const you_must_wait_for_some_seconds_before_try_again =
       'you_must_wait_for_some_seconds_before_try_again';
   static const it_has_been_along_time_since_your_account =
@@ -198,11 +199,11 @@ abstract class LocaleKeys {
   static const you_can_add_only = 'you_can_add_only';
   static const your_request_add_successfuly = 'your_request_add_successfuly';
   static const item_was_hidden_successfuly = 'item_was_hidden_successfuly';
+  static const your_request_faild = 'your _request_faild';
+  static const do_you_want_to_notify_You_when_your_choose_available =
+      'do_you_want-to_notify_You_when_your_choose_available';
   static const not_now = 'not_now';
   static const notify_me = 'notify_me';
-  static const do_you_want_to_notify_You_when_your_choose_available =
-      'do_you_want_to_notify_You_when_your_choose_available';
-  static const your_request_faild = 'your_request_faild';
   static const continues = 'continues';
   static const more = 'more';
   static const product_story = 'product_story';
@@ -352,6 +353,7 @@ abstract class LocaleKeys {
   static const wallet = 'wallet';
   static const credit_cards = 'credit_cards';
   static const Crypto = 'Crypto';
+  static const cod = 'cod';
   static const your_balance = 'your_balance';
   static const i_have_discount_coupon = 'i_have_discount_coupon';
   static const confirm_shipping_payment = 'confirm_shipping_payment';

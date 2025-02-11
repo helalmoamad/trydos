@@ -137,6 +137,10 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           ? null
           : CustomerWalletModel.fromJson(
               json['customerWalletModel'] as Map<String, dynamic>),
+      placeOrderModel: json['placeOrderModel'] == null
+          ? null
+          : PlaceOrderModel.fromJson(
+              json['placeOrderModel'] as Map<String, dynamic>),
       appliedFiltersByUser:
           (json['appliedFiltersByUser'] as Map<String, dynamic>?)?.map(
                 (k, e) => MapEntry(
@@ -301,6 +305,8 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           json['getAddressByCoordinatesStatus']),
       getCustomerWalletStatus: $enumDecodeNullable(
           _$GetCustomerWalletStatusEnumMap, json['getCustomerWalletStatus']),
+      placeOrderStatus: $enumDecodeNullable(
+          _$PlaceOrderStatusEnumMap, json['placeOrderStatus']),
       getAddressByTextStatus: $enumDecodeNullable(
           _$GetAddressByTextStatusEnumMap, json['getAddressByTextStatus']),
       countOfProductExpectedByFiltering:
@@ -455,6 +461,8 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'getAddressByCoordinatesModel':
           instance.getAddressByCoordinatesModel?.toJson(),
       'customerWalletModel': instance.customerWalletModel?.toJson(),
+      'placeOrderModel': instance.placeOrderModel?.toJson(),
+      'placeOrderStatus': _$PlaceOrderStatusEnumMap[instance.placeOrderStatus],
       'ListitemForAddToCart':
           instance.ListitemForAddToCart?.map((e) => e.toJson()).toList(),
       'getAddressByTextStatus':
@@ -774,6 +782,13 @@ const _$GetCustomerWalletStatusEnumMap = {
   GetCustomerWalletStatus.loading: 'loading',
   GetCustomerWalletStatus.success: 'success',
   GetCustomerWalletStatus.failure: 'failure',
+};
+
+const _$PlaceOrderStatusEnumMap = {
+  PlaceOrderStatus.init: 'init',
+  PlaceOrderStatus.loading: 'loading',
+  PlaceOrderStatus.success: 'success',
+  PlaceOrderStatus.failure: 'failure',
 };
 
 const _$GetAddressByTextStatusEnumMap = {

@@ -7,6 +7,7 @@ import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
 
 import '../../data/models/get_product_filters_model.dart';
+import '../../domain/use_cases/place_order_usecase.dart';
 
 abstract class HomeEvent extends Equatable {
   const HomeEvent();
@@ -953,4 +954,16 @@ class GetProductFiltersWithPrefetchForFiveFiltersEvent extends HomeEvent {
         filterSlug,
         boutiqueSlug,
       ];
+}
+
+class PlaceOrderEvent extends HomeEvent {
+  final PlaceOrderParams placeOrderParams;
+
+  PlaceOrderEvent({
+    required this.placeOrderParams,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [placeOrderParams];
 }

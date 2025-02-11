@@ -23,28 +23,33 @@ import 'package:trydos/routes/router.dart';
 import 'package:trydos/service/language_service.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
+import '../../../../app/trydos_shimmer_loading.dart';
+import '../../../../story/presentation/widget/try_again.dart';
+import '../../manager/home_state.dart';
 
-class SuccessfulOrder extends StatefulWidget {
+class SuccessfullOrder extends StatefulWidget {
   final List<Map<String, String>> cartImages;
-  final String totalPrice;
-  final ValueNotifier<String> paymentMethod;
+  final double totalPrice;
+  final ValueNotifier<List<String>> paymentMethods;
   final List<String> availablePaymentMethod;
   final String currencySympole;
   final CustomerAddressesInfo customerAddressesInfo;
-  const SuccessfulOrder({
+  final int decimalPointSetting;
+  const SuccessfullOrder({
     required this.totalPrice,
     required this.customerAddressesInfo,
     required this.cartImages,
-    required this.paymentMethod,
+    required this.paymentMethods,
     required this.currencySympole,
     Key? key,
     required this.availablePaymentMethod,
+    required this.decimalPointSetting,
   });
   @override
-  State<SuccessfulOrder> createState() => _SuccessfulOrderState();
+  State<SuccessfullOrder> createState() => _SuccessfullOrderState();
 }
 
-class _SuccessfulOrderState extends State<SuccessfulOrder> {
+class _SuccessfullOrderState extends State<SuccessfullOrder> {
   late HomeBloc homeBloc;
   late AppBloc appBloc;
   final ValueNotifier<bool> agreeToPolicies = ValueNotifier(false);
@@ -54,10 +59,9 @@ class _SuccessfulOrderState extends State<SuccessfulOrder> {
     appBloc = BlocProvider.of<AppBloc>(navigatorKey.currentState!.context);
 
     homeBloc = BlocProvider.of<HomeBloc>(context);
-    homeBloc.add(GetCustomerAddressesEvent());
-//    appBloc = BlocProvider.of<AppBloc>(context);
 
-    // homeBloc = BlocProvider.of<HomeBloc>(context);
+    ////////////////////
+    // homeBloc.add(GetCustomerWalletEvent(limit: 10, offset: 1));
 
     super.initState();
   }
@@ -85,409 +89,427 @@ class _SuccessfulOrderState extends State<SuccessfulOrder> {
           error: error.toString());
     };
     return WillPopScope(
-        onWillPop: () async {
-          appBloc.add(ChangeBasePage(0));
-          // didCallOnWillPop = true;
-          context.go(GRouter.config.kRootRoute);
-          return false;
-        },
-        child: Scaffold(
-            resizeToAvoidBottomInset: true,
-            body: Stack(
+      onWillPop: () async {
+        appBloc.add(ChangeBasePage(0));
+        // didCallOnWillPop = true;
+        context.go(GRouter.config.kRootRoute);
+        return false;
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        body: BlocBuilder<HomeBloc, HomeState>(
+          buildWhen: (previous, current) => false,
+          // previous.getCustomerAddressStatus !=
+          //     current.getCustomerAddressStatus ||
+          // previous.getCustomerWalletStatus !=
+          //     current.getCustomerWalletStatus,
+          builder: (context, state) {
+            return Stack(
               children: [
-                Column(
-                  children: [
-                    Container(
-                      alignment: Alignment.topCenter,
-                      margin: EdgeInsets.only(top: 60),
-                      width: 1.sw,
-                      height: 280.h,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              SvgPicture.asset(
-                                AppAssets.success1Svg,
-                              ),
-                              SvgPicture.asset(
-                                AppAssets.success2Svg,
-                              )
-                            ],
-                          ),
-                          SizedBox(
-                            height: 10.h,
-                          ),
-                          Text(
-                            "${LocaleKeys.the_purchase_was_completed_successfully.tr()} ",
-                            style: context.textTheme.bodyMedium?.rr.copyWith(
-                                color: const Color(0xff1D1D1D),
-                                letterSpacing: 0.18,
-                                fontSize: 14,
-                                height: 1.33),
-                          ),
-                          SizedBox(
-                            height: 8.h,
-                          ),
-                          Text(
-                            "${LocaleKeys.your_order_number.tr()} ",
-                            style: context.textTheme.bodyMedium?.rr.copyWith(
-                                color: const Color(0xff1D1D1D),
-                                letterSpacing: 0.18,
-                                fontSize: 12,
-                                height: 1.33),
-                          ),
-                          Text(
-                            "TTISA10012",
-                            style: context.textTheme.bodyMedium?.br.copyWith(
-                                color: const Color(0xff404040),
-                                letterSpacing: 0.18,
-                                fontSize: 20,
-                                height: 1.33),
-                          ),
-                          SizedBox(
-                            height: 8.h,
-                          ),
-                          Row(
+                SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      buildPurchaseWasCompletedWidget(context),
+                      //////////////////////
+                      Container(
+                        margin: EdgeInsets.symmetric(horizontal: 10),
+                        alignment: Alignment.topCenter,
+                        child: Column(
+                          children: [
+                            buildBagWidget(context),
+                            //////////////////////////////
+                            state.getCustomerWalletStatus ==
+                                    GetCustomerWalletStatus.failure
+                                ? TryAgainWidget(
+                                    tryAgain: () {
+                                      BlocProvider.of<HomeBloc>(context).add(
+                                        GetCustomerWalletEvent(
+                                            limit: 10, offset: 1),
+                                      );
+                                    },
+                                  )
+                                : state.getCustomerWalletStatus ==
+                                        GetCustomerWalletStatus.loading
+                                    ? TrydosShimmerLoading(
+                                        width: 1.sw,
+                                        logoTextWidth: 15,
+                                        height: 70,
+                                        logoTextHeight: 15,
+                                      )
+                                    : buildAddressAndPaymentWidget(
+                                        context,
+                                        state.customerWalletModel!.data
+                                            .totalWalletBalance!),
+                            //////////
+                            SizedBox(
+                              height: 100,
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                ////////////////////////////////
+                Positioned(
+                  bottom: 0,
+                  child: Container(
+                    height: 90,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Color.fromRGBO(255, 255, 255, 1),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          blurRadius: 10,
+                          blurStyle: BlurStyle.solid,
+                          color: Color(0xffF1F1F1),
+                        ),
+                      ],
+                      color: Color.fromRGBO(255, 255, 255, 1),
+                    ),
+                    width: 1.sw,
+                    child: InkWell(
+                      onTap: () {
+                        appBloc.add(ChangeBasePage(0));
+                        context.go(GRouter.config.kRootRoute);
+                      },
+                      child: Container(
+                        height: 70.h,
+                        margin:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            color: Color(0xff1D1D1D)),
+                        child: Center(
+                          child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              SvgPicture.asset(
-                                AppAssets.orderInvoiceSvg,
+                              Text(
+                                LocaleKeys.done.tr(),
+                                style: context.textTheme.bodyMedium?.mr
+                                    .copyWith(
+                                        color: const Color(0xffFEFEFE),
+                                        letterSpacing: 0.18,
+                                        fontSize: 18,
+                                        height: 0.8),
                               ),
                               SizedBox(
-                                width: 10.w,
+                                height: 10.h,
                               ),
                               Text(
-                                "${LocaleKeys.order_invoice.tr()} ",
+                                LocaleKeys.back_to_home_page.tr(),
                                 style: context.textTheme.bodyMedium?.rr
                                     .copyWith(
-                                        color: const Color(0xff1D1D1D),
+                                        color: const Color(0xffFEFEFE),
                                         letterSpacing: 0.18,
-                                        fontSize: 12,
-                                        height: 1.33),
-                              )
+                                        fontSize: 14,
+                                        height: 0.8),
+                              ),
                             ],
                           ),
-                          SizedBox(
-                            height: 10.h,
-                          ),
-                          SvgPicture.asset(
-                            AppAssets.infoSvg,
-                          ),
-                          SizedBox(
-                            height: 10.h,
-                          ),
-                          Text(
-                            "${LocaleKeys.you_can_track_the_status_of_your_order_through.tr()} ",
-                            style: context.textTheme.bodyMedium?.rr.copyWith(
-                                color: const Color(0xff388CFF),
-                                letterSpacing: 0.18,
-                                fontSize: 12,
-                                height: 1.33),
-                          ),
-                          SizedBox(
-                            height: 10.h,
-                          ),
-                          Text(
-                            "${LocaleKeys.my_account_my_orders.tr()} ",
-                            style: context.textTheme.bodyMedium?.rr.copyWith(
-                                color: const Color(0xff388CFF),
-                                letterSpacing: 0.18,
-                                fontSize: 12,
-                                height: 1.33),
-                          )
-                        ],
+                        ),
                       ),
                     ),
-                    Container(
-                      child: Container(
-                          margin: EdgeInsets.symmetric(horizontal: 10),
-                          color: Color.fromARGB(255, 255, 255, 255),
-                          child: Container(
-                              alignment: Alignment.topCenter,
-                              child: Center(
-                                  child: Column(children: [
-                                Container(
-                                    height: 190.h,
-                                    width: 1.sw,
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                            height: 22.h,
-                                            child: Row(children: [
-                                              SvgPicture.asset(
-                                                AppAssets.bagsSvg,
-                                                height: 20,
-                                              ),
-                                              SizedBox(
-                                                width: 7.w,
-                                              ),
-                                              Text(
-                                                "${LocaleKeys.your_shopping_bag.tr()} ",
-                                                style: context
-                                                    .textTheme.bodyMedium?.ra
-                                                    .copyWith(
-                                                        color: const Color(
-                                                            0xff1D1D1D),
-                                                        letterSpacing: 0.18,
-                                                        fontSize: 14,
-                                                        height: 1.33),
-                                              ),
-                                              Text(
-                                                "${widget.cartImages.length} item",
-                                                style: context
-                                                    .textTheme.bodyMedium?.br
-                                                    .copyWith(
-                                                        color: const Color(
-                                                            0xff1D1D1D),
-                                                        letterSpacing: 0.18,
-                                                        fontSize: 13,
-                                                        height: 1.33),
-                                              ),
-                                            ])),
-                                        Container(
-                                          margin: EdgeInsets.only(
-                                              top: 5.h,
-                                              left: (LanguageService
-                                                          .languageCode ==
-                                                      "ar")
-                                                  ? 0
-                                                  : 10,
-                                              right: (LanguageService
-                                                          .languageCode ==
-                                                      "ar")
-                                                  ? 10
-                                                  : 0),
-                                          height: 160.h,
-                                          child: ListView.separated(
-                                              separatorBuilder:
-                                                  (context, index) => SizedBox(
-                                                        width: 5,
-                                                      ),
-                                              scrollDirection: Axis.horizontal,
-                                              itemCount:
-                                                  widget.cartImages.length,
-                                              itemBuilder: (context, index) =>
-                                                  Container(
-                                                    decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              15),
-                                                      color: Color(0x707070),
-                                                    ),
-                                                    width: 91.w,
-                                                    child: Column(
-                                                      children: [
-                                                        Container(
-                                                          height: 122.h,
-                                                          child:
-                                                              ProductDetailsImageWidget(
-                                                            withBackGroundShadow:
-                                                                true,
-                                                            withInnerShadow:
-                                                                false,
-                                                            imageFit:
-                                                                BoxFit.cover,
-                                                            blurRadius: 0,
-                                                            imageUrl: widget
-                                                                    .cartImages[
-                                                                index]["image"],
-                                                            width: 91.w,
-                                                            radius: 15,
-                                                          ),
-                                                        ),
-                                                        SizedBox(
-                                                          height: 2,
-                                                        ),
-                                                        Text(
-                                                          '${widget.cartImages[index]["size"]}',
-                                                          style: context
-                                                              .textTheme
-                                                              .bodyMedium
-                                                              ?.rr
-                                                              .copyWith(
-                                                                  color: const Color(
-                                                                      0xff1D1D1D),
-                                                                  letterSpacing:
-                                                                      0.18,
-                                                                  fontSize: 10,
-                                                                  height: 1.33),
-                                                        ),
-                                                        Text(
-                                                          '${widget.cartImages[index]["color"]}',
-                                                          style: context
-                                                              .textTheme
-                                                              .bodyMedium
-                                                              ?.rr
-                                                              .copyWith(
-                                                                  color: const Color(
-                                                                      0xff1D1D1D),
-                                                                  letterSpacing:
-                                                                      0.18,
-                                                                  fontSize: 10,
-                                                                  height: 1.33),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  )),
-                                        )
-                                      ],
-                                    )),
-                                Container(
-                                    height: 285.h,
-                                    width: 1.sw,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Container(
-                                            margin: EdgeInsets.only(
-                                                left: 10, right: 10),
-                                            child: Row(children: [
-                                              SvgPicture.asset(
-                                                AppAssets.deliveryAddressSvg,
-                                                height: 15,
-                                              ),
-                                              SizedBox(
-                                                width: 7.w,
-                                              ),
-                                              Text(
-                                                "${LocaleKeys.shipping_delivery_address.tr()} ",
-                                                style: context
-                                                    .textTheme.bodyMedium?.ra
-                                                    .copyWith(
-                                                        color: const Color(
-                                                            0xff1D1D1D),
-                                                        letterSpacing: 0.18,
-                                                        fontSize: 14,
-                                                        height: 0.8),
-                                              ),
-                                              SizedBox(
-                                                width: 5.w,
-                                              ),
-                                              SvgPicture.asset(
-                                                AppAssets.freeShippingSvg,
-                                              )
-                                            ])),
-                                        SizedBox(
-                                          height: 5.h,
-                                        ),
-                                        Container(
-                                            margin: EdgeInsets.symmetric(
-                                                horizontal: 35.w),
-                                            child: Text(
-                                              "${LocaleKeys.shipment_will_be_sent_to_the_address_below.tr()} ",
-                                              style: context
-                                                  .textTheme.bodyMedium?.ra
-                                                  .copyWith(
-                                                      color: const Color(
-                                                          0xff8D8D8D),
-                                                      letterSpacing: 0.18,
-                                                      fontSize: 12,
-                                                      height: 0.8),
-                                            )),
-                                        SizedBox(
-                                          height: 5.h,
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 10),
-                                          child: AddressInfoWithContactInfoCart(
-                                            cartChoosed: true,
-                                            placeOrder: false,
-                                            successfulOrder: true,
-                                            isDelete: false,
-                                            customerAddressesInfo:
-                                                widget.customerAddressesInfo,
-                                            context: context,
-                                            index: -1,
-                                            indexTap: -2,
-                                            onTapDelete: () {},
-                                            onTapEdit: () {
-                                              ;
-                                            },
-                                          ),
-                                        ),
-                                        PaymentMethod(
-                                          fromSuccessOrder: true,
-                                          paymentMethod: widget.paymentMethod,
-                                          fromPalceOrder: true,
-                                          availablePaymentMethod:
-                                              widget.availablePaymentMethod,
-                                        )
-                                      ],
-                                    )),
-                                Container(
-                                    height: 100.h,
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: Color.fromRGBO(255, 255, 255, 1),
-                                      ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          blurRadius: 10,
-                                          blurStyle: BlurStyle.solid,
-                                          color: Color(0xffF1F1F1),
-                                        )
-                                      ],
-                                      color: Color.fromRGBO(255, 255, 255, 1),
-                                    ),
-                                    width: 1.sw,
-                                    child: InkWell(
-                                      onTap: () {
-                                        appBloc.add(ChangeBasePage(0));
-                                        context.go(GRouter.config.kRootRoute);
-                                      },
-                                      child: Container(
-                                        height: 70.h,
-                                        margin: EdgeInsets.symmetric(
-                                            horizontal: 10, vertical: 10),
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(20),
-                                            color: Color(0xff1D1D1D)),
-                                        child: Center(
-                                            child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              LocaleKeys.done.tr(),
-                                              style: context
-                                                  .textTheme.bodyMedium?.mr
-                                                  .copyWith(
-                                                      color: const Color(
-                                                          0xffFEFEFE),
-                                                      letterSpacing: 0.18,
-                                                      fontSize: 18,
-                                                      height: 0.8),
-                                            ),
-                                            SizedBox(
-                                              height: 10.h,
-                                            ),
-                                            Text(
-                                              LocaleKeys.back_to_home_page.tr(),
-                                              style: context
-                                                  .textTheme.bodyMedium?.rr
-                                                  .copyWith(
-                                                      color: const Color(
-                                                          0xffFEFEFE),
-                                                      letterSpacing: 0.18,
-                                                      fontSize: 14,
-                                                      height: 0.8),
-                                            )
-                                          ],
-                                        )),
-                                      ),
-                                    ))
-                              ])))),
-                    )
-                  ],
+                  ),
+                )
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget buildAddressAndPaymentWidget(
+      BuildContext context, double walletBalance) {
+    return Container(
+      height: 270,
+      width: 1.sw,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            margin: EdgeInsets.only(left: 10, right: 10),
+            child: Row(
+              children: [
+                SvgPicture.asset(
+                  AppAssets.deliveryAddressSvg,
+                  height: 15,
+                ),
+                SizedBox(
+                  width: 7.w,
+                ),
+                Text(
+                  "${LocaleKeys.shipping_delivery_address.tr()} ",
+                  style: context.textTheme.bodyMedium?.ra.copyWith(
+                      color: const Color(0xff1D1D1D),
+                      letterSpacing: 0.18,
+                      fontSize: 14,
+                      height: 0.8),
+                ),
+                SizedBox(
+                  width: 5.w,
+                ),
+                SvgPicture.asset(
+                  AppAssets.freeShippingSvg,
                 ),
               ],
-            )));
+            ),
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 35.w),
+            child: Text(
+              "${LocaleKeys.shipment_will_be_sent_to_the_address_below.tr()} ",
+              style: context.textTheme.bodyMedium?.ra.copyWith(
+                  color: const Color(0xff8D8D8D),
+                  letterSpacing: 0.18,
+                  fontSize: 12,
+                  height: 0.8),
+            ),
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: addressInfoWithContactInfoCart(
+              cartChoosed: true,
+              placeOrder: false,
+              successfulOrder: true,
+              isDelete: false,
+              customerAddressesInfo: widget.customerAddressesInfo,
+              context: context,
+              index: -1,
+              indexTap: -2,
+              onTapDelete: () {},
+              onTapEdit: () {
+                ;
+              },
+            ),
+          ),
+          PaymentMethod(
+            fromSuccessOrder: true,
+            paymentMethods: widget.paymentMethods,
+            fromPalceOrder: true,
+            availablePaymentMethod: widget.availablePaymentMethod,
+            walletBalance: walletBalance,
+            totalPrice: widget.totalPrice,
+            decimalPointSetting: widget.decimalPointSetting,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildBagWidget(BuildContext context) {
+    return Container(
+      height: 165,
+      width: 1.sw,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            height: 22,
+            child: Row(
+              children: [
+                SvgPicture.asset(
+                  AppAssets.bagsSvg,
+                  height: 20,
+                ),
+                SizedBox(
+                  width: 7.w,
+                ),
+                Text(
+                  "${LocaleKeys.your_shopping_bag.tr()} ",
+                  style: context.textTheme.bodyMedium?.ra.copyWith(
+                      color: const Color(0xff1D1D1D),
+                      letterSpacing: 0.18,
+                      fontSize: 14,
+                      height: 1.33),
+                ),
+                Text(
+                  "${widget.cartImages.length} item",
+                  style: context.textTheme.bodyMedium?.br.copyWith(
+                      color: const Color(0xff1D1D1D),
+                      letterSpacing: 0.18,
+                      fontSize: 13,
+                      height: 1.33),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 2,
+          ),
+          Container(
+            margin: EdgeInsets.only(
+                top: 5.h,
+                left: (LanguageService.languageCode == "ar") ? 0 : 10,
+                right: (LanguageService.languageCode == "ar") ? 10 : 0),
+            height: 135,
+            child: ListView.separated(
+              separatorBuilder: (context, index) => SizedBox(
+                width: 5,
+              ),
+              scrollDirection: Axis.horizontal,
+              itemCount: widget.cartImages.length,
+              itemBuilder: (context, index) => Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  color: Color(0x707070),
+                ),
+                width: 91.w,
+                child: Column(
+                  children: [
+                    Container(
+                      height: 100,
+                      child: ProductDetailsImageWidget(
+                        withBackGroundShadow: true,
+                        withInnerShadow: false,
+                        imageFit: BoxFit.cover,
+                        blurRadius: 0,
+                        imageUrl: widget.cartImages[index]["image"],
+                        width: 91.w,
+                        radius: 15,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 2,
+                    ),
+                    Text(
+                      '${widget.cartImages[index]["size"]}',
+                      style: context.textTheme.bodyMedium?.rr.copyWith(
+                          color: const Color(0xff1D1D1D),
+                          letterSpacing: 0.18,
+                          fontSize: 10,
+                          height: 1.33),
+                    ),
+                    Text(
+                      '${widget.cartImages[index]["color"]}',
+                      style: context.textTheme.bodyMedium?.rr.copyWith(
+                          color: const Color(0xff1D1D1D),
+                          letterSpacing: 0.18,
+                          fontSize: 10,
+                          height: 1.33),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Container buildPurchaseWasCompletedWidget(BuildContext context) {
+    return Container(
+      alignment: Alignment.topCenter,
+      margin: EdgeInsets.only(top: 50),
+      width: 1.sw,
+      height: 255,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              SvgPicture.asset(
+                AppAssets.success1Svg,
+              ),
+              SvgPicture.asset(
+                AppAssets.success2Svg,
+              )
+            ],
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Text(
+            "${LocaleKeys.the_purchase_was_completed_successfully.tr()} ",
+            style: context.textTheme.bodyMedium?.rr.copyWith(
+                color: const Color(0xff1D1D1D),
+                letterSpacing: 0.18,
+                fontSize: 14,
+                height: 1.33),
+          ),
+          SizedBox(
+            height: 8,
+          ),
+          Text(
+            "${LocaleKeys.your_order_number.tr()} ",
+            style: context.textTheme.bodyMedium?.rr.copyWith(
+                color: const Color(0xff1D1D1D),
+                letterSpacing: 0.18,
+                fontSize: 12,
+                height: 1.33),
+          ),
+          Text(
+            "TTISA10012",
+            style: context.textTheme.bodyMedium?.br.copyWith(
+                color: const Color(0xff404040),
+                letterSpacing: 0.18,
+                fontSize: 20,
+                height: 1.33),
+          ),
+          SizedBox(
+            height: 8,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SvgPicture.asset(
+                AppAssets.orderInvoiceSvg,
+              ),
+              SizedBox(
+                width: 10.w,
+              ),
+              Text(
+                "${LocaleKeys.order_invoice.tr()} ",
+                style: context.textTheme.bodyMedium?.rr.copyWith(
+                    color: const Color(0xff1D1D1D),
+                    letterSpacing: 0.18,
+                    fontSize: 12,
+                    height: 1.33),
+              )
+            ],
+          ),
+          SizedBox(
+            height: 8,
+          ),
+          SvgPicture.asset(
+            AppAssets.infoSvg,
+          ),
+          SizedBox(
+            height: 8,
+          ),
+          Text(
+            "${LocaleKeys.you_can_track_the_status_of_your_order_through.tr()} ",
+            style: context.textTheme.bodyMedium?.rr.copyWith(
+                color: const Color(0xff388CFF),
+                letterSpacing: 0.18,
+                fontSize: 12,
+                height: 1.33),
+          ),
+          SizedBox(
+            height: 8,
+          ),
+          Text(
+            "${LocaleKeys.my_account_my_orders.tr()} ",
+            style: context.textTheme.bodyMedium?.rr.copyWith(
+                color: const Color(0xff388CFF),
+                letterSpacing: 0.18,
+                fontSize: 12,
+                height: 1.33),
+          )
+        ],
+      ),
+    );
   }
 }

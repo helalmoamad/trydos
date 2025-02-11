@@ -92,6 +92,7 @@ import '../../../story/presentation/bloc/story_bloc.dart';
 import '../../domain/use_cases/add_item_to_cart_usecase.dart';
 import '../../domain/use_cases/get_customer_wallet_usecase.dart';
 import '../../domain/use_cases/get_stories_for_product_usecase.dart';
+import '../../domain/use_cases/place_order_usecase.dart';
 import 'home_event.dart';
 
 import 'home_state.dart';
@@ -148,6 +149,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.requestForNotificationWhenProductBecameAvailableUseCase,
     this.getProductsWithFiltersUseCase,
     this.getCustomerWalletUseCase,
+    this.placeOrderUsecase,
   ) : super(HomeState()) {
     on<HomeEvent>((event, emit) {});
 
@@ -334,6 +336,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<GetCommentForProductEvent>(
       _onGetCommentForProductEvent,
     );
+    on<PlaceOrderEvent>(
+      _onPlaceOrderEvent,
+    );
   }
 
   Map<String, bool> boutiquesThatEnablesToRequestItsProductsUsingFiveFilters =
@@ -382,6 +387,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final AddCustomerAddressUseCase addCustomerAddressUseCase;
   final UpdateCustomerAddressUseCase updateCustomerAddressUseCase;
   final DeleteCustomerAddressUseCase deleteCustomerAddressUseCase;
+  final PlaceOrderUsecase placeOrderUsecase;
 
   final GetCustomerWalletUseCase getCustomerWalletUseCase;
 
@@ -2870,6 +2876,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     response.fold(
       (l) {
         if (!isFailedTheFirstTime.contains('GetCustomerWalletEvent')) {
+          add(
+            GetCustomerWalletEvent(limit: event.limit, offset: event.offset),
+          );
           isFailedTheFirstTime.add('GetCustomerWalletEvent');
         }
         emit(
@@ -2880,6 +2889,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       },
       (r) {
         isFailedTheFirstTime.remove('GetCustomerWalletEvent');
+
         emit(
           state.copyWith(
             getCustomerWalletStatus: GetCustomerWalletStatus.success,
@@ -4965,5 +4975,50 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             fcmToken: event.fcmToken, userId: event.userId));
 
     response.fold((l) {}, (r) {});
+  }
+
+  FutureOr<void> _onPlaceOrderEvent(
+    PlaceOrderEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    debugPrint(event.placeOrderParams.paymentMethod);
+    debugPrint(event.placeOrderParams.addressId.toString());
+    debugPrint(event.placeOrderParams.payByWallet.toString());
+    ///////////////////////////
+    emit(
+      state.copyWith(
+        placeOrderStatus: PlaceOrderStatus.loading,
+      ),
+    );
+
+    final response = await placeOrderUsecase.call(
+      event.placeOrderParams,
+    );
+
+    response.fold(
+      (l) {
+        if (!isFailedTheFirstTime.contains('PlaceOrderEvent')) {
+          add(
+            PlaceOrderEvent(placeOrderParams: event.placeOrderParams),
+          );
+          isFailedTheFirstTime.add('PlaceOrderEvent');
+        }
+        emit(
+          state.copyWith(
+            placeOrderStatus: PlaceOrderStatus.failure,
+          ),
+        );
+      },
+      (r) {
+        isFailedTheFirstTime.remove('PlaceOrderEvent');
+
+        emit(
+          state.copyWith(
+            placeOrderStatus: PlaceOrderStatus.success,
+            placeOrderModel: r,
+          ),
+        );
+      },
+    );
   }
 }

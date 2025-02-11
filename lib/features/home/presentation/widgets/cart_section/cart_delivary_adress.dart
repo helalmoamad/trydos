@@ -12,6 +12,7 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
+import 'package:trydos/features/app/trydos_shimmer_loading.dart';
 import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
@@ -20,23 +21,22 @@ import 'package:trydos/features/home/presentation/widgets/cart_section/add_shipp
 import 'package:trydos/features/home/presentation/widgets/cart_section/payment_method.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/place_order.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_image_widget.dart';
+import 'package:trydos/features/story/presentation/widget/try_again.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/language_service.dart';
-
+import '../../../../../common/constant/payment_methods.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 
 class CartDelivaryAddress extends StatefulWidget {
   final List<Map<String, String>> cartImages;
-  final List<String> availablePaymentMethod;
-  final String totalPrice;
+  final double totalPrice;
   final String currencySympole;
   const CartDelivaryAddress({
     required this.totalPrice,
     required this.cartImages,
     required this.currencySympole,
     Key? key,
-    required this.availablePaymentMethod,
   });
   @override
   State<CartDelivaryAddress> createState() => _CartDelivaryAddressState();
@@ -47,7 +47,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
   final ValueNotifier<int> indexTap = ValueNotifier(0);
   final ValueNotifier<bool> showDeleteAddress = ValueNotifier(false);
   final ValueNotifier<bool> showPanel = ValueNotifier(false);
-  final ValueNotifier<String> paymentMethod = ValueNotifier("");
+  final ValueNotifier<List<String>> paymentMethods = ValueNotifier([]);
   final PanelController panelController = PanelController();
   late HomeBloc homeBloc;
   bool showDialogToResetSession = true;
@@ -115,11 +115,23 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                 previous.addAddressToOrderStatus !=
                     current.addAddressToOrderStatus ||
                 previous.removeAddressToOrderStatus !=
-                    current.removeAddressToOrderStatus,
+                    current.removeAddressToOrderStatus ||
+                previous.getCustomerWalletStatus !=
+                    current.getCustomerWalletStatus,
             builder: (context, state) {
+              List<String> availablePaymentMethod = state
+                      .getCartShippingItemsModel!
+                      .data!
+                      .availablePaymentMethod ??
+                  [];
               return ValueListenableBuilder<bool>(
                 valueListenable: showDeleteAddress,
                 builder: (context, _showDeleteAddress, _) {
+                  double walletBalance = state.customerWalletModel == null
+                      ? 0
+                      : state.customerWalletModel!.data.totalWalletBalance! *
+                          state.getCurrencyForCountryModel!.data!.currency!
+                              .exchangeRate!;
                   return Stack(
                     children: [
                       Container(
@@ -169,14 +181,48 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                                             (state.listOfAddressInfoClassToSave
                                                     .isNullOrEmpty)
                                                 ? SizedBox.shrink()
-                                                : PaymentMethod(
-                                                    fromSuccessOrder: false,
-                                                    fromPalceOrder: false,
-                                                    availablePaymentMethod: widget
-                                                        .availablePaymentMethod,
-                                                    paymentMethod:
-                                                        paymentMethod,
-                                                  ),
+                                                : state.getCustomerWalletStatus ==
+                                                        GetCustomerWalletStatus
+                                                            .failure
+                                                    ? TryAgainWidget(
+                                                        tryAgain: () {
+                                                          BlocProvider.of<
+                                                                      HomeBloc>(
+                                                                  context)
+                                                              .add(
+                                                            GetCustomerWalletEvent(
+                                                                limit: 10,
+                                                                offset: 1),
+                                                          );
+                                                        },
+                                                      )
+                                                    : state.getCustomerWalletStatus ==
+                                                            GetCustomerWalletStatus
+                                                                .loading
+                                                        ? TrydosShimmerLoading(
+                                                            width: 1.sw,
+                                                            logoTextWidth: 15,
+                                                            height: 70,
+                                                            logoTextHeight: 15,
+                                                          )
+                                                        : PaymentMethod(
+                                                            fromSuccessOrder:
+                                                                false,
+                                                            walletBalance:
+                                                                walletBalance,
+                                                            fromPalceOrder:
+                                                                false,
+                                                            availablePaymentMethod:
+                                                                availablePaymentMethod,
+                                                            paymentMethods:
+                                                                paymentMethods,
+                                                            totalPrice: widget
+                                                                .totalPrice,
+                                                            decimalPointSetting:
+                                                                state.startingSetting
+                                                                        ?.decimalPointSetting ??
+                                                                    2,
+                                                          ),
                                             ////////////
                                             SizedBox(
                                               height: 25.h,
@@ -254,7 +300,12 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                                                 .isNullOrEmpty)
                                             ? SizedBox.shrink()
                                             : buildShippingButton(
-                                                state, _indexTap),
+                                                state,
+                                                _indexTap,
+                                                walletBalance,
+                                                widget.totalPrice,
+                                                availablePaymentMethod,
+                                              ),
                                       ),
                                       ///////////////
                                       Positioned(
@@ -307,7 +358,8 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
     );
   }
 
-  Container buildShippingButton(HomeState state, int _indexTap) {
+  Widget buildShippingButton(HomeState state, int _indexTap,
+      double walletBalance, double total, List<String> availablePaymentMethod) {
     return Container(
       height: 100.h,
       decoration: BoxDecoration(
@@ -324,22 +376,40 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
         color: Color.fromRGBO(255, 255, 255, 1),
       ),
       width: 1.sw,
-      child: ValueListenableBuilder<String>(
-        valueListenable: paymentMethod,
+      child: ValueListenableBuilder<List<String>>(
+        valueListenable: paymentMethods,
         builder: (context, _paymentMethod, _) {
+          bool check = false;
+          if (_paymentMethod.isNotEmpty) {
+            if (total > walletBalance) {
+              if (_paymentMethod.length == 1 &&
+                  _paymentMethod.contains(PaymentMethods.trydosWallet)) {
+                check = false;
+              } else {
+                check = true;
+              }
+            } else {
+              check = true;
+            }
+          } else {
+            check = false;
+          }
           return InkWell(
             onTap: () {
-              if (_paymentMethod != "") {
+              if (check) {
                 HelperFunctions.slidingNavigation(
                   context,
                   PlaceOrder(
                     customerAddressesInfo:
                         state.listOfAddressInfoClassToSave![_indexTap],
-                    paymentMethod: paymentMethod,
-                    availablePaymentMethod: widget.availablePaymentMethod,
+                    walletBalance: walletBalance,
+                    paymentMethods: paymentMethods,
+                    availablePaymentMethod: availablePaymentMethod,
                     cartImages: widget.cartImages,
                     currencySympole: widget.currencySympole,
                     totalPrice: widget.totalPrice,
+                    decimalPointSetting:
+                        state.startingSetting?.decimalPointSetting ?? 2,
                   ),
                 );
               }
@@ -354,9 +424,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                 borderRadius: BorderRadius.circular(
                   20,
                 ),
-                color: _paymentMethod != ""
-                    ? Color(0xff346BFF)
-                    : Color(0xffC4C2C2),
+                color: check ? Color(0xff346BFF) : Color(0xffC4C2C2),
               ),
               child: Center(
                 child: Column(
@@ -393,7 +461,8 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                               height: 0.8),
                         ),
                         Text(
-                          ' ${widget.totalPrice} ',
+                          widget.totalPrice.toStringAsFixed(
+                              state.startingSetting?.decimalPointSetting ?? 2),
                           style: context.textTheme.bodyMedium?.br.copyWith(
                               color: const Color(0xffFEFEFE),
                               letterSpacing: 0.18,
@@ -610,7 +679,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                   onTap: () {
                     indexTap.value = index;
                   },
-                  child: AddressInfoWithContactInfoCart(
+                  child: addressInfoWithContactInfoCart(
                     cartChoosed: false,
                     isDelete: false,
                     customerAddressesInfo:
@@ -628,12 +697,13 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                     onTapEdit: () {
                       panelController.close();
                       HelperFunctions.slidingNavigation(
-                          context,
-                          AddShippingAdress(
-                            addressInfoClassToEdid:
-                                state.listOfAddressInfoClassToSave![index],
-                            fromEdid: true,
-                          ));
+                        context,
+                        AddShippingAdress(
+                          addressInfoClassToEdid:
+                              state.listOfAddressInfoClassToSave![index],
+                          fromEdid: true,
+                        ),
+                      );
                     },
                   ),
                 ),
@@ -762,7 +832,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
             !state.listOfAddressInfoClassToSave.isNullOrEmpty
                 ? Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: AddressInfoWithContactInfoCart(
+                    child: addressInfoWithContactInfoCart(
                       cartChoosed: true,
                       isDelete: false,
                       customerAddressesInfo:
@@ -1070,7 +1140,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: AddressInfoWithContactInfoCart(
+            child: addressInfoWithContactInfoCart(
               cartChoosed: false,
               context: context,
               isDelete: true,
@@ -1215,20 +1285,21 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
   }
 }
 
-Widget AddressInfoWithContactInfoCart(
-    {required CustomerAddressesInfo customerAddressesInfo,
-    required int index,
-    required int indexTap,
-    required bool isDelete,
-    bool? placeOrder,
-    bool? successfulOrder,
-    required bool cartChoosed,
-    required BuildContext context,
-    required void Function()? onTapEdit,
-    required void Function()? onTapDelete}) {
+Widget addressInfoWithContactInfoCart({
+  required CustomerAddressesInfo customerAddressesInfo,
+  required int index,
+  required int indexTap,
+  required bool isDelete,
+  bool? placeOrder,
+  bool? successfulOrder,
+  required bool cartChoosed,
+  required BuildContext context,
+  required void Function()? onTapEdit,
+  required void Function()? onTapDelete,
+}) {
   return Container(
       height: (placeOrder ?? false)
-          ? 130.h
+          ? 120
           : (!isDelete && cartChoosed)
               ? 125.h
               : 90.h,
