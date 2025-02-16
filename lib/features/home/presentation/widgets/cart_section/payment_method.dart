@@ -18,7 +18,7 @@ import '../../../../../common/constant/payment_methods.dart';
 class PaymentMethod extends StatefulWidget {
   final ValueNotifier<List<String>> paymentMethods;
   final List<String> availablePaymentMethod;
-  final double walletBalance;
+  final double amount;
   final double totalPrice;
   final bool fromPalceOrder;
   final bool fromSuccessOrder;
@@ -29,7 +29,7 @@ class PaymentMethod extends StatefulWidget {
     required this.fromSuccessOrder,
     required this.availablePaymentMethod,
     required this.totalPrice,
-    required this.walletBalance,
+    required this.amount,
     required this.decimalPointSetting,
   });
 
@@ -60,9 +60,6 @@ class _PaymentMethodState extends State<PaymentMethod> {
 
   @override
   Widget build(BuildContext context) {
-    String iso = prefsRepository.userCountryIsAvailable == 1
-        ? prefsRepository.userChoosedCountryIso ?? ''
-        : prefsRepository.countryIso ?? '';
     FlutterError.onError = (FlutterErrorDetails error) {
       try {
         BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
@@ -115,7 +112,9 @@ class _PaymentMethodState extends State<PaymentMethod> {
                       horizontal: 29.w,
                     ),
                     child: Text(
-                      "${LocaleKeys.please_choose_your_payment_method_about_your_bag.tr()} ",
+                      widget.fromSuccessOrder
+                          ? "${LocaleKeys.your_payment_method_about_your_bag.tr()} "
+                          : "${LocaleKeys.please_choose_your_payment_method_about_your_bag.tr()} ",
                       style: context.textTheme.bodyMedium?.rr.copyWith(
                           color: const Color(0xff8D8D8D),
                           letterSpacing: 0.18,
@@ -145,7 +144,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                                 PaymentMethods.trydosWallet,
                               );
                             } else {
-                              if (widget.walletBalance > 0) {
+                              if (widget.amount > 0) {
                                 if (widget.paymentMethods.value.isNotEmpty) {
                                   widget.paymentMethods.value =
                                       List.from(widget.paymentMethods.value)
@@ -164,8 +163,20 @@ class _PaymentMethodState extends State<PaymentMethod> {
                               }
                             }
                           },
-                          child:
-                              buildTrydosWalletWidget(_paymentMethods, context),
+                          child: PaymentMethodCard(
+                            paymentMethod: _paymentMethods,
+                            fromPalceOrder: widget.fromPalceOrder,
+                            fromSuccessOrder: widget.fromSuccessOrder,
+                            currentPaymentMethod: PaymentMethods.trydosWallet,
+                            svg: AppAssets.trydosWalletSvg,
+                            title: LanguageService.languageCode == "ar"
+                                ? "${LocaleKeys.wallet.tr()} ${LocaleKeys.trydos.tr()}"
+                                : "${LocaleKeys.trydos.tr()} ${LocaleKeys.wallet.tr()}",
+                            cardWidgets: buildTrydosWalletWidget(
+                              context: context,
+                              fromSuccessOrder: widget.fromSuccessOrder,
+                            ),
+                          ),
                         ),
                   /////////////////////
                   (!(_paymentMethods.contains(PaymentMethods.trydosWallet)) &&
@@ -197,7 +208,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                             } else {
                               if (widget.paymentMethods.value
                                   .contains(PaymentMethods.trydosWallet)) {
-                                if (widget.walletBalance < widget.totalPrice) {
+                                if (widget.amount < widget.totalPrice) {
                                   widget.paymentMethods.value =
                                       List.from(widget.paymentMethods.value)
                                         ..removeWhere(
@@ -232,8 +243,16 @@ class _PaymentMethodState extends State<PaymentMethod> {
                               }
                             }
                           },
-                          child:
-                              buildCardPaymentWidget(_paymentMethods, context),
+                          child: PaymentMethodCard(
+                            fromPalceOrder: widget.fromPalceOrder,
+                            paymentMethod: _paymentMethods,
+                            fromSuccessOrder: widget.fromSuccessOrder,
+                            currentPaymentMethod: PaymentMethods.card,
+                            svg: AppAssets.creditCards,
+                            title: "${LocaleKeys.credit_cards.tr()}",
+                            cardWidgets: buildCardPaymentWidget(
+                                fromSuccessOrder: widget.fromSuccessOrder),
+                          ),
                         ),
                   ////////////////////////
                   (!(_paymentMethods.contains(PaymentMethods.card)) &&
@@ -267,7 +286,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                             } else {
                               if (widget.paymentMethods.value
                                   .contains(PaymentMethods.trydosWallet)) {
-                                if (widget.walletBalance < widget.totalPrice) {
+                                if (widget.amount < widget.totalPrice) {
                                   widget.paymentMethods.value =
                                       List.from(widget.paymentMethods.value)
                                         ..removeWhere(
@@ -302,7 +321,16 @@ class _PaymentMethodState extends State<PaymentMethod> {
                               }
                             }
                           },
-                          child: buildCryptoWidget(_paymentMethods, context),
+                          child: PaymentMethodCard(
+                            fromPalceOrder: widget.fromPalceOrder,
+                            paymentMethod: _paymentMethods,
+                            fromSuccessOrder: widget.fromSuccessOrder,
+                            currentPaymentMethod: PaymentMethods.crypto,
+                            svg: AppAssets.cryptoSvg,
+                            title: "${LocaleKeys.Crypto.tr()}",
+                            cardWidgets: buildCryptoWidget(
+                                fromSuccessOrder: widget.fromSuccessOrder),
+                          ),
                         ),
                   ////////////////////////
                   (!(_paymentMethods.contains(PaymentMethods.crypto)) &&
@@ -317,8 +345,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                   (!(_paymentMethods.contains(PaymentMethods.cod)) &&
                               widget.fromPalceOrder) ||
                           !widget.availablePaymentMethod
-                              .contains(PaymentMethods.cod) ||
-                          iso != 'SY'
+                              .contains(PaymentMethods.cod)
                       ? SizedBox.shrink()
                       : InkWell(
                           onTap: () {
@@ -334,7 +361,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                             } else {
                               if (widget.paymentMethods.value
                                   .contains(PaymentMethods.trydosWallet)) {
-                                if (widget.walletBalance < widget.totalPrice) {
+                                if (widget.amount < widget.totalPrice) {
                                   widget.paymentMethods.value =
                                       List.from(widget.paymentMethods.value)
                                         ..removeWhere(
@@ -369,7 +396,17 @@ class _PaymentMethodState extends State<PaymentMethod> {
                               }
                             }
                           },
-                          child: buildCodWidget(_paymentMethods, context),
+                          child: PaymentMethodCard(
+                            fromPalceOrder: widget.fromPalceOrder,
+                            paymentMethod: _paymentMethods,
+                            fromSuccessOrder: widget.fromSuccessOrder,
+                            currentPaymentMethod: PaymentMethods.cod,
+                            svg: AppAssets.earnMoneySvg,
+                            title: "${LocaleKeys.cod.tr()}",
+                            cardWidgets: buildCodWidget(
+                              fromSuccessOrder: widget.fromSuccessOrder,
+                            ),
+                          ),
                         ),
                 ],
               ),
@@ -380,97 +417,39 @@ class _PaymentMethodState extends State<PaymentMethod> {
     );
   }
 
-  Widget buildCodWidget(List<String> _paymentMethod, BuildContext context) {
-    return Container(
-      height: 40.h,
-      width: 1.sw,
-      decoration: BoxDecoration(
-        border: Border.all(
-            color: widget.fromPalceOrder
-                ? Color(0xffC4C2C2)
-                : _paymentMethod.contains(PaymentMethods.cod)
-                    ? Color(0xff388CFF)
-                    : Color(0xffF8F8F8)),
-        color: Color(0xffF8F8F8),
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          SizedBox(width: 29.w),
-          SvgPicture.asset(
-            AppAssets.earnMoneySvg,
-            color: _paymentMethod.contains(PaymentMethods.cod) &&
-                    !widget.fromSuccessOrder
-                ? Color(0xff1D1D1D)
-                : null,
+  Widget buildOrderTotal() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          "${LocaleKeys.total.tr()}  ",
+          style: context.textTheme.bodyMedium?.rr.copyWith(
+              color: const Color(0xffD3D3D3),
+              letterSpacing: 0.18,
+              fontSize: 12,
+              height: 1.33),
+        ),
+        Text(
+          widget.amount.toStringAsFixed(widget.decimalPointSetting),
+          style: context.textTheme.bodyMedium?.sbt.copyWith(
+            color: const Color(0xff1D1D1D),
+            letterSpacing: 0.18,
+            fontSize: 12,
+            height: 1.33,
           ),
-          SizedBox(width: 10.w),
-          Text(
-            "${LocaleKeys.cod.tr()}",
-            style: context.textTheme.bodyMedium?.rr.copyWith(
-                color: _paymentMethod.contains(PaymentMethods.cod)
-                    ? Color(0xff1D1D1D)
-                    : Color(0xffC4C2C2),
-                letterSpacing: 0.18,
-                fontSize: 12,
-                height: 1.33),
-          ),
-          // Spacer(),
-          // Row(
-          //   mainAxisAlignment: MainAxisAlignment.center,
-          //   children: [
-          //     SvgPicture.asset(AppAssets.crypto1Svg),
-          //     SizedBox(width: 5.w),
-          //     SvgPicture.asset(AppAssets.crypto2Svg),
-          //     SizedBox(width: 5.w),
-          //     SvgPicture.asset(AppAssets.crypto3Svg),
-          //     SizedBox(width: 5.w),
-          //     SvgPicture.asset(AppAssets.crypto4Svg),
-          //   ],
-          // ),
-          // SizedBox(width: 30.w)
-        ],
-      ),
+        ),
+      ],
     );
   }
 
-  Widget buildCryptoWidget(List<String> _paymentMethod, BuildContext context) {
-    return Container(
-      height: 40.h,
-      width: 1.sw,
-      decoration: BoxDecoration(
-        border: Border.all(
-            color: widget.fromPalceOrder
-                ? Color(0xffC4C2C2)
-                : _paymentMethod.contains(PaymentMethods.crypto)
-                    ? Color(0xff388CFF)
-                    : Color(0xffF8F8F8)),
-        color: Color(0xffF8F8F8),
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          SizedBox(width: 29.w),
-          SvgPicture.asset(AppAssets.cryptoSvg,
-              color: _paymentMethod.contains(PaymentMethods.crypto) &&
-                      !widget.fromSuccessOrder
-                  ? Color(0xff1D1D1D)
-                  : null),
-          SizedBox(width: 10.w),
-          Text(
-            "${LocaleKeys.Crypto.tr()}",
-            style: context.textTheme.bodyMedium?.rr.copyWith(
-                color: _paymentMethod.contains(PaymentMethods.crypto)
-                    ? Color(0xff1D1D1D)
-                    : Color(0xffC4C2C2),
-                letterSpacing: 0.18,
-                fontSize: 12,
-                height: 1.33),
-          ),
-          Spacer(),
-          Row(
+  Widget buildCodWidget({required bool fromSuccessOrder}) {
+    return fromSuccessOrder ? buildOrderTotal() : SizedBox.shrink();
+  }
+
+  Widget buildCryptoWidget({required bool fromSuccessOrder}) {
+    return fromSuccessOrder
+        ? buildOrderTotal()
+        : Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SvgPicture.asset(AppAssets.crypto1Svg),
@@ -481,130 +460,129 @@ class _PaymentMethodState extends State<PaymentMethod> {
               SizedBox(width: 5.w),
               SvgPicture.asset(AppAssets.crypto4Svg),
             ],
-          ),
-          SizedBox(width: 30.w)
-        ],
-      ),
-    );
+          );
   }
 
-  Widget buildCardPaymentWidget(
-      List<String> _paymentMethod, BuildContext context) {
-    return Center(
-      child: Container(
-          height: 40.h,
-          width: 1.sw,
-          decoration: BoxDecoration(
-            border: Border.all(
-                color: widget.fromPalceOrder
-                    ? Color(0xffC4C2C2)
-                    : _paymentMethod.contains(PaymentMethods.card)
-                        ? Color(0xff388CFF)
-                        : Color(0xffF8F8F8)),
-            color: Color(0xffF8F8F8),
-            borderRadius: BorderRadius.circular(15),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
+  Widget buildCardPaymentWidget({required bool fromSuccessOrder}) {
+    return fromSuccessOrder
+        ? buildOrderTotal()
+        : Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(width: 29.w),
-              SvgPicture.asset(AppAssets.creditCards,
-                  color: _paymentMethod.contains(PaymentMethods.card) &&
-                          !widget.fromSuccessOrder
-                      ? Color(0xff1D1D1D)
-                      : null),
-              SizedBox(width: 10.w),
-              Text(
-                "${LocaleKeys.credit_cards.tr()}",
-                style: context.textTheme.bodyMedium?.rr.copyWith(
-                    color: _paymentMethod.contains(PaymentMethods.card)
-                        ? Color(0xff1D1D1D)
-                        : Color(0xffC4C2C2),
-                    letterSpacing: 0.18,
-                    fontSize: 12,
-                    height: 1.33),
-              ),
-              Spacer(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SvgPicture.asset(AppAssets.visaSvg),
-                  SizedBox(width: 5.w),
-                  SvgPicture.asset(AppAssets.masterCardSvg),
-                  SizedBox(width: 5.w),
-                  SvgPicture.asset(AppAssets.maestroSvg),
-                  SizedBox(width: 5.w),
-                  SvgPicture.asset(AppAssets.americanExpressSvg),
-                  SizedBox(width: 5.w),
-                  SvgPicture.asset(AppAssets.applePaySvg),
-                  SizedBox(width: 5.w),
-                  SvgPicture.asset(AppAssets.googlePaySvg),
-                ],
-              ),
-              SizedBox(width: 30.w)
+              SvgPicture.asset(AppAssets.visaSvg),
+              SizedBox(width: 5.w),
+              SvgPicture.asset(AppAssets.masterCardSvg),
+              SizedBox(width: 5.w),
+              SvgPicture.asset(AppAssets.maestroSvg),
+              SizedBox(width: 5.w),
+              SvgPicture.asset(AppAssets.americanExpressSvg),
+              SizedBox(width: 5.w),
+              SvgPicture.asset(AppAssets.applePaySvg),
+              SizedBox(width: 5.w),
+              SvgPicture.asset(AppAssets.googlePaySvg),
             ],
-          )),
-    );
+          );
   }
 
-  Widget buildTrydosWalletWidget(
-      List<String> _paymentMethod, BuildContext context) {
+  Widget buildTrydosWalletWidget({
+    required bool fromSuccessOrder,
+    required BuildContext context,
+  }) {
+    return Row(
+      children: [
+        Text(
+          fromSuccessOrder
+              ? "${LocaleKeys.total.tr()}  "
+              : "${LocaleKeys.your_balance.tr()}  ",
+          style: context.textTheme.bodyMedium?.rr.copyWith(
+              color: const Color(0xffD3D3D3),
+              letterSpacing: 0.18,
+              fontSize: 12,
+              height: 1.33),
+        ),
+        Text(
+          widget.amount.toStringAsFixed(widget.decimalPointSetting),
+          style: context.textTheme.bodyMedium?.sbt.copyWith(
+            color: const Color(0xff1D1D1D),
+            letterSpacing: 0.18,
+            fontSize: 12,
+            height: 1.33,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class PaymentMethodCard extends StatelessWidget {
+  const PaymentMethodCard({
+    super.key,
+    required this.fromPalceOrder,
+    required this.paymentMethod,
+    required this.fromSuccessOrder,
+    required this.currentPaymentMethod,
+    required this.title,
+    required this.svg,
+    required this.cardWidgets,
+  });
+
+  final bool fromPalceOrder;
+  final bool fromSuccessOrder;
+  final String currentPaymentMethod;
+  final String title;
+  final String svg;
+  final List<String> paymentMethod;
+  final Widget cardWidgets;
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       height: 40.h,
       width: 1.sw,
       decoration: BoxDecoration(
         border: Border.all(
-            color: widget.fromPalceOrder
-                ? Color(0xffC4C2C2)
-                : _paymentMethod.contains(PaymentMethods.trydosWallet)
-                    ? Color(0xff388CFF)
-                    : Color(0xffF8F8F8)),
-        color: Color(0xffF8F8F8),
+          color: fromSuccessOrder
+              ? Color.fromARGB(255, 255, 255, 255)
+              : fromPalceOrder
+                  ? Color(0xffC4C2C2)
+                  : paymentMethod.contains(currentPaymentMethod)
+                      ? Color(0xff388CFF)
+                      : Color(0xffF8F8F8),
+        ),
+        color: fromSuccessOrder || fromPalceOrder
+            ? Color.fromARGB(255, 255, 255, 255)
+            : Color(0xffF8F8F8),
         borderRadius: BorderRadius.circular(15),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          SizedBox(width: 29.w),
-          SvgPicture.asset(AppAssets.trydosWalletSvg,
-              color: _paymentMethod.contains(PaymentMethods.trydosWallet) &&
-                      !widget.fromSuccessOrder
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 26.w),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            SvgPicture.asset(
+              svg,
+              color: paymentMethod.contains(currentPaymentMethod) &&
+                      !fromSuccessOrder
                   ? Color(0xff1D1D1D)
-                  : null),
-          SizedBox(width: 10.w),
-          Text(
-            LanguageService.languageCode == "ar"
-                ? "${LocaleKeys.wallet.tr()} ${LocaleKeys.trydos.tr()}"
-                : "${LocaleKeys.trydos.tr()} ${LocaleKeys.wallet.tr()}",
-            style: context.textTheme.bodyMedium?.rr.copyWith(
-                color: _paymentMethod.contains(PaymentMethods.trydosWallet)
-                    ? Color(0xff1D1D1D)
-                    : Color(0xffC4C2C2),
-                letterSpacing: 0.18,
-                fontSize: 12,
-                height: 1.33),
-          ),
-          Spacer(),
-          Text(
-            widget.fromSuccessOrder
-                ? "${LocaleKeys.total.tr()}  "
-                : "${LocaleKeys.your_balance.tr()}  ",
-            style: context.textTheme.bodyMedium?.rr.copyWith(
-                color: const Color(0xffD3D3D3),
-                letterSpacing: 0.18,
-                fontSize: 12,
-                height: 1.33),
-          ),
-          Text(
-            widget.walletBalance.toStringAsFixed(widget.decimalPointSetting),
-            style: context.textTheme.bodyMedium?.sbt.copyWith(
-                color: const Color(0xff1D1D1D),
-                letterSpacing: 0.18,
-                fontSize: 12,
-                height: 1.33),
-          ),
-          SizedBox(width: 30.w)
-        ],
+                  : null,
+            ),
+            SizedBox(width: 10.w),
+            Text(
+              title,
+              style: context.textTheme.bodyMedium?.rr.copyWith(
+                  color: paymentMethod.contains(currentPaymentMethod)
+                      ? Color(0xff1D1D1D)
+                      : Color(0xffC4C2C2),
+                  letterSpacing: 0.18,
+                  fontSize: 12,
+                  height: 1.33),
+            ),
+            //////////////////
+            Spacer(),
+            ///////////////////
+            cardWidgets,
+          ],
+        ),
       ),
     );
   }

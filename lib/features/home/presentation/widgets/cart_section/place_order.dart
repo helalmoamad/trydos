@@ -23,6 +23,7 @@ import 'package:trydos/service/language_service.dart';
 import '../../../../../common/constant/payment_methods.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
+import '../../../data/models/place_order_model.dart';
 import '../../../domain/use_cases/place_order_usecase.dart';
 import '../../manager/home_state.dart';
 import 'payment_webview.dart';
@@ -91,363 +92,364 @@ class _PlaceOrderState extends State<PlaceOrder> {
             Navigator.of(context).pop();
 
             return false;
-            // منع الإغلاق بعد تنفيذ pop
           }
-
-          // يسمح بالإغلاق إذا لم تنطبق أي من الشروط
         }
         return true;
       },
       child: Scaffold(
-          resizeToAvoidBottomInset: true,
-          body: BlocConsumer<HomeBloc, HomeState>(
-            listener: (context, state) {
-              debugPrint(state.placeOrderStatus.toString());
-              if (state.placeOrderStatus == PlaceOrderStatus.success) {
-                debugPrint(state.placeOrderModel!.data.url.toString());
+        resizeToAvoidBottomInset: true,
+        body: BlocConsumer<HomeBloc, HomeState>(
+          listener: (context, state) {
+            debugPrint('placeOrderStatus:  ${state.placeOrderStatus}');
 
-                if (state.placeOrderModel!.data.url != null) {
-                  HelperFunctions.slidingNavigation(
-                    context,
-                    PaymentWebview(
-                      url: state.placeOrderModel!.data.url!,
-                    ),
-                  );
+            if (state.placeOrderStatus == PlaceOrderStatus.success) {
+              List<PlaceOrderDataModel>? data = state.placeOrderModel!.data!;
+
+              debugPrint('The url is : ${data[0].url}');
+
+              if (data[0].url != null) {
+                HelperFunctions.slidingNavigation(
+                  context,
+                  PaymentWebview(
+                    url: data[0].url!,
+                  ),
+                );
+              } else {
+                List<Map<String, String>> cartImages = [];
+                double orderAmount = 0;
+                /////////////////////////////////////////////////
+                data.forEach(
+                  (e) {
+                    orderAmount = orderAmount + e.orderAmount!;
+                    e.details!.forEach(
+                      (element) {
+                        for (var i = 0; i < (element.qty ?? 0); i++) {
+                          cartImages.add(
+                            {
+                              "image": element.productDetails!.images![0],
+                              "size": element.variation == null
+                                  ? ""
+                                  : element.variation?.size ?? "",
+                              "color": element.variation == null
+                                  ? ""
+                                  : element.variation?.color ?? ""
+                            },
+                          );
+                        }
+                      },
+                    );
+                  },
+                );
+                ////////////////////////////////
+                CustomerAddressesInfo customerAddressesInfo =
+                    CustomerAddressesInfo(
+                  id: data[0].shippingAddress,
+                  address: data[0].shippingAddressData!.address ?? '',
+                  addressDetail:
+                      data[0].shippingAddressData!.addressDetail ?? '',
+                  contactInfo: ContactInfo(
+                    name: data[0].shippingAddressData!.contactPersonName ?? '',
+                    alternativePhone:
+                        data[0].shippingAddressData!.alternativePhone ?? '',
+                    phone: data[0].shippingAddressData!.phone ?? '',
+                  ),
+                  location: Location(
+                    latitude: data[0].shippingAddressData!.latitude ?? '',
+                    longitude: data[0].shippingAddressData!.longitude ?? '',
+                  ),
+                  regionDetails: RegionDetails(
+                    country: data[0].shippingAddressData!.country ?? '',
+                    province: data[0].shippingAddressData!.province ?? '',
+                    city: data[0].shippingAddressData!.city ?? '',
+                    town: data[0].shippingAddressData!.town ?? '',
+                    street: data[0].shippingAddressData!.street ?? '',
+                    building: data[0].shippingAddressData!.building ?? '',
+                  ),
+                );
+                /////////////////////////
+                widget.paymentMethods.value =
+                    List.from(widget.paymentMethods.value)..clear();
+
+                String paymentMethod = '';
+
+                if (data[0].paymentMethod == 'trydos_wallet') {
+                  paymentMethod = PaymentMethods.trydosWallet;
+                } else if (data[0].paymentMethod == 'cash_on_delivery') {
+                  paymentMethod = PaymentMethods.cod;
                 } else {
-                  HelperFunctions.slidingNavigation(
-                    context,
-                    SuccessfullOrder(
-                      cartImages: widget.cartImages,
-                      currencySympole: widget.currencySympole,
-                      availablePaymentMethod: widget.availablePaymentMethod,
-                      customerAddressesInfo: widget.customerAddressesInfo,
-                      paymentMethods: widget.paymentMethods,
-                      totalPrice: widget.totalPrice,
-                      decimalPointSetting: widget.decimalPointSetting,
-                    ),
-                  );
+                  paymentMethod = data[0].paymentMethod ?? '';
                 }
+
+                widget.paymentMethods.value =
+                    List.from(widget.paymentMethods.value)..add(paymentMethod);
+                /////////////////////////
+                HelperFunctions.slidingNavigation(
+                  context,
+                  SuccessfullOrder(
+                    cartImages: cartImages,
+                    currencySympole: widget.currencySympole,
+                    availablePaymentMethod: widget.availablePaymentMethod,
+                    customerAddressesInfo: customerAddressesInfo,
+                    paymentMethods: widget.paymentMethods,
+                    totalPrice: widget.totalPrice,
+                    decimalPointSetting: widget.decimalPointSetting,
+                    orderAmount: orderAmount,
+                    orderGroupId: data[0].orderGroupId ?? '',
+                  ),
+                );
               }
-            },
-            listenWhen: (previous, current) =>
-                previous.placeOrderStatus != current.placeOrderStatus,
-            buildWhen: (previous, current) =>
-                previous.placeOrderStatus != current.placeOrderStatus,
-            builder: (context, state) {
-              return Stack(
-                children: [
-                  Column(
-                    children: [
-                      buildPageHeader(context),
-                      /////////////////////
-                      Expanded(
-                        child: Container(
-                          margin: EdgeInsets.symmetric(horizontal: 10),
-                          alignment: Alignment.topCenter,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              buildBagItemsWidget(context),
-                              //////////////////////////////////
-                              SizedBox(
-                                height: 12.h,
-                              ),
-                              //////////////////////////////////
-                              buildAddress(context),
-                              //////////////////////////////////
-                              PaymentMethod(
-                                fromSuccessOrder: false,
-                                walletBalance: widget.walletBalance,
-                                fromPalceOrder: true,
-                                paymentMethods: widget.paymentMethods,
-                                availablePaymentMethod:
-                                    widget.availablePaymentMethod,
-                                totalPrice: widget.totalPrice,
-                                decimalPointSetting: widget.decimalPointSetting,
-                              ),
-                              /////////////////////////
-                              Spacer(),
-                              buildAgreeToPoliciesWidget(),
-                              //////////////////////////
-                              ValueListenableBuilder<bool>(
-                                valueListenable: agreeToPolicies,
-                                builder: (context, _agreeToPolicies, _) {
-                                  return state.placeOrderStatus ==
-                                          PlaceOrderStatus.loading
-                                      ? Shimmer.fromColors(
-                                          baseColor: Colors.grey[300]!,
-                                          highlightColor: Colors.grey[100]!,
-                                          child: Container(
-                                            height: 70.h,
-                                            margin: EdgeInsets.symmetric(
-                                                horizontal: 10, vertical: 10),
-                                            decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(20),
-                                                color: Color(0xffC4C2C2)
-                                                    .withOpacity(0.5)),
-                                            child: Center(
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Text(
-                                                    LocaleKeys.place_order.tr(),
-                                                    style: context.textTheme
-                                                        .bodyMedium?.mr
-                                                        .copyWith(
-                                                            color: const Color(
-                                                                0xffFEFEFE),
-                                                            letterSpacing: 0.18,
-                                                            fontSize: 18,
-                                                            height: 0.8),
-                                                  ),
-                                                  SizedBox(
-                                                    height: 10.h,
-                                                  ),
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      Text(
-                                                        '${widget.cartImages.length} ',
-                                                        style: context.textTheme
-                                                            .bodyMedium?.br
-                                                            .copyWith(
-                                                                color: const Color(
-                                                                    0xffFEFEFE),
-                                                                letterSpacing:
-                                                                    0.18,
-                                                                fontSize: 14,
-                                                                height: 0.8),
-                                                      ),
-                                                      Text(
-                                                        LocaleKeys.item.tr(),
-                                                        style: context.textTheme
-                                                            .bodyMedium?.rr
-                                                            .copyWith(
-                                                                color: const Color(
-                                                                    0xffFEFEFE),
-                                                                letterSpacing:
-                                                                    0.18,
-                                                                fontSize: 14,
-                                                                height: 0.8),
-                                                      ),
-                                                      Text(
-                                                        ' ${widget.totalPrice} ',
-                                                        style: context.textTheme
-                                                            .bodyMedium?.br
-                                                            .copyWith(
-                                                                color: const Color(
-                                                                    0xffFEFEFE),
-                                                                letterSpacing:
-                                                                    0.18,
-                                                                fontSize: 14,
-                                                                height: 0.8),
-                                                      ),
-                                                      Text(
-                                                        "${widget.currencySympole}",
-                                                        style: context.textTheme
-                                                            .bodyMedium?.rr
-                                                            .copyWith(
-                                                                color: const Color(
-                                                                    0xffFEFEFE),
-                                                                letterSpacing:
-                                                                    0.18,
-                                                                fontSize: 14,
-                                                                height: 0.8),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        )
-                                      : Container(
-                                          height: 90,
-                                          decoration: BoxDecoration(
-                                            border: Border.all(
-                                              color: Color.fromRGBO(
-                                                  255, 255, 255, 1),
-                                            ),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                blurRadius: 10,
-                                                blurStyle: BlurStyle.solid,
-                                                color: Color(0xffF1F1F1),
-                                              )
-                                            ],
-                                            color: Color.fromRGBO(
-                                                255, 255, 255, 1),
-                                          ),
-                                          width: 1.sw,
-                                          child: InkWell(
-                                            onTap: () {
-                                              if (_agreeToPolicies) {
-                                                String paymentMethod = '';
-                                                int payByWallet = 0;
+            }
+          },
+          listenWhen: (previous, current) =>
+              previous.placeOrderStatus != current.placeOrderStatus,
+          buildWhen: (previous, current) =>
+              previous.placeOrderStatus != current.placeOrderStatus,
+          builder: (context, state) {
+            return Column(
+              children: [
+                buildPageHeader(context),
+                /////////////////////
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Container(
+                      margin: EdgeInsets.symmetric(horizontal: 10),
+                      alignment: Alignment.topCenter,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          buildBagItemsWidget(context),
+                          //////////////////////////////////
+                          SizedBox(
+                            height: 12.h,
+                          ),
+                          //////////////////////////////////
+                          buildAddress(context),
+                          //////////////////////////////////
+                          PaymentMethod(
+                            fromSuccessOrder: false,
+                            amount: widget.walletBalance,
+                            fromPalceOrder: true,
+                            paymentMethods: widget.paymentMethods,
+                            availablePaymentMethod:
+                                widget.availablePaymentMethod,
+                            totalPrice: widget.totalPrice,
+                            decimalPointSetting: widget.decimalPointSetting,
+                          ),
+                          /////////////////////////
+                          SizedBox(
+                            height: 40.h,
+                          ),
+                          //////////////////////////////////
+                          buildAgreeToPoliciesWidget(),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                // //////////////////////////
+                buildPlaceOrderButton(state)
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
 
-                                                if (widget.paymentMethods.value
-                                                        .length ==
-                                                    1) {
-                                                  paymentMethod = widget
-                                                      .paymentMethods.value[0];
-                                                  //////////////
-                                                  payByWallet = 0;
-                                                } else {
-                                                  if (widget
-                                                          .paymentMethods.value
-                                                          .contains(PaymentMethods
-                                                              .trydosWallet) &&
-                                                      widget.paymentMethods
-                                                              .value.length ==
-                                                          2) {
-                                                    paymentMethod = widget
-                                                        .paymentMethods.value
-                                                        .firstWhere(
-                                                      (element) =>
-                                                          element !=
-                                                          PaymentMethods
-                                                              .trydosWallet,
-                                                    );
-                                                    payByWallet = 1;
-                                                  }
-                                                }
-
-                                                PlaceOrderParams
-                                                    placeOrderParams =
-                                                    PlaceOrderParams(
-                                                  addressId: widget
-                                                      .customerAddressesInfo
-                                                      .id!,
-                                                  orderNote: 'orderNote',
-                                                  paymentMethod: paymentMethod,
-                                                  payByWallet: payByWallet,
-                                                );
-
-                                                BlocProvider.of<HomeBloc>(
-                                                        context)
-                                                    .add(
-                                                  PlaceOrderEvent(
-                                                      placeOrderParams:
-                                                          placeOrderParams),
-                                                );
-                                              }
-                                            },
-                                            child: Container(
-                                              height: 70.h,
-                                              margin: EdgeInsets.symmetric(
-                                                  horizontal: 10, vertical: 10),
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                  color: _agreeToPolicies
-                                                      ? Color(0xff346BFF)
-                                                      : Color(0xffC4C2C2)),
-                                              child: Center(
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Text(
-                                                      LocaleKeys.place_order
-                                                          .tr(),
-                                                      style: context.textTheme
-                                                          .bodyMedium?.mr
-                                                          .copyWith(
-                                                              color: const Color(
-                                                                  0xffFEFEFE),
-                                                              letterSpacing:
-                                                                  0.18,
-                                                              fontSize: 18,
-                                                              height: 0.8),
-                                                    ),
-                                                    SizedBox(
-                                                      height: 10.h,
-                                                    ),
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Text(
-                                                          '${widget.cartImages.length} ',
-                                                          style: context
-                                                              .textTheme
-                                                              .bodyMedium
-                                                              ?.br
-                                                              .copyWith(
-                                                                  color: const Color(
-                                                                      0xffFEFEFE),
-                                                                  letterSpacing:
-                                                                      0.18,
-                                                                  fontSize: 14,
-                                                                  height: 0.8),
-                                                        ),
-                                                        Text(
-                                                          LocaleKeys.item.tr(),
-                                                          style: context
-                                                              .textTheme
-                                                              .bodyMedium
-                                                              ?.rr
-                                                              .copyWith(
-                                                                  color: const Color(
-                                                                      0xffFEFEFE),
-                                                                  letterSpacing:
-                                                                      0.18,
-                                                                  fontSize: 14,
-                                                                  height: 0.8),
-                                                        ),
-                                                        Text(
-                                                          ' ${widget.totalPrice} ',
-                                                          style: context
-                                                              .textTheme
-                                                              .bodyMedium
-                                                              ?.br
-                                                              .copyWith(
-                                                                  color: const Color(
-                                                                      0xffFEFEFE),
-                                                                  letterSpacing:
-                                                                      0.18,
-                                                                  fontSize: 14,
-                                                                  height: 0.8),
-                                                        ),
-                                                        Text(
-                                                          "${widget.currencySympole}",
-                                                          style: context
-                                                              .textTheme
-                                                              .bodyMedium
-                                                              ?.rr
-                                                              .copyWith(
-                                                                  color: const Color(
-                                                                      0xffFEFEFE),
-                                                                  letterSpacing:
-                                                                      0.18,
-                                                                  fontSize: 14,
-                                                                  height: 0.8),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                },
-                              )
-                            ],
+  Widget buildPlaceOrderButton(HomeState state) {
+    return ValueListenableBuilder<bool>(
+      valueListenable: agreeToPolicies,
+      builder: (context, _agreeToPolicies, _) {
+        return state.placeOrderStatus == PlaceOrderStatus.loading
+            ? Shimmer.fromColors(
+                baseColor: Colors.grey[300]!,
+                highlightColor: Colors.grey[100]!,
+                child: Container(
+                  height: 60,
+                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Color(0xffC4C2C2).withOpacity(0.5),
+                  ),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          LocaleKeys.place_order.tr(),
+                          style: context.textTheme.bodyMedium?.mr.copyWith(
+                            color: const Color(0xffFEFEFE),
+                            letterSpacing: 0.18,
+                            fontSize: 18,
+                            height: 0.8,
                           ),
                         ),
-                      ),
-                    ],
+                        SizedBox(
+                          height: 10.h,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              '${widget.cartImages.length} ',
+                              style: context.textTheme.bodyMedium?.br.copyWith(
+                                  color: const Color(0xffFEFEFE),
+                                  letterSpacing: 0.18,
+                                  fontSize: 14,
+                                  height: 0.8),
+                            ),
+                            Text(
+                              LocaleKeys.item.tr(),
+                              style: context.textTheme.bodyMedium?.rr.copyWith(
+                                  color: const Color(0xffFEFEFE),
+                                  letterSpacing: 0.18,
+                                  fontSize: 14,
+                                  height: 0.8),
+                            ),
+                            Text(
+                              ' ${widget.totalPrice} ',
+                              style: context.textTheme.bodyMedium?.br.copyWith(
+                                  color: const Color(0xffFEFEFE),
+                                  letterSpacing: 0.18,
+                                  fontSize: 14,
+                                  height: 0.8),
+                            ),
+                            Text(
+                              "${widget.currencySympole}",
+                              style: context.textTheme.bodyMedium?.rr.copyWith(
+                                  color: const Color(0xffFEFEFE),
+                                  letterSpacing: 0.18,
+                                  fontSize: 14,
+                                  height: 0.8),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ],
+                ),
+              )
+            : Container(
+                height: 80,
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Color.fromRGBO(255, 255, 255, 1),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 10,
+                      blurStyle: BlurStyle.solid,
+                      color: Color(0xffF1F1F1),
+                    )
+                  ],
+                  color: Color.fromRGBO(255, 255, 255, 1),
+                ),
+                width: 1.sw,
+                child: InkWell(
+                  onTap: () {
+                    if (_agreeToPolicies) {
+                      String paymentMethod = '';
+                      int payByWallet = 0;
+
+                      if (widget.paymentMethods.value.length == 1) {
+                        paymentMethod = widget.paymentMethods.value[0];
+                        //////////////
+                        payByWallet = 0;
+                      } else {
+                        if (widget.paymentMethods.value
+                                .contains(PaymentMethods.trydosWallet) &&
+                            widget.paymentMethods.value.length == 2) {
+                          paymentMethod =
+                              widget.paymentMethods.value.firstWhere(
+                            (element) => element != PaymentMethods.trydosWallet,
+                          );
+                          payByWallet = 1;
+                        }
+                      }
+
+                      PlaceOrderParams placeOrderParams = PlaceOrderParams(
+                        addressId: widget.customerAddressesInfo.id!,
+                        orderNote: 'orderNote',
+                        paymentMethod: paymentMethod,
+                        payByWallet: payByWallet,
+                      );
+
+                      BlocProvider.of<HomeBloc>(context).add(
+                        PlaceOrderEvent(placeOrderParams: placeOrderParams),
+                      );
+                    }
+                  },
+                  child: Container(
+                    height: 70.h,
+                    margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: _agreeToPolicies
+                            ? Color(0xff346BFF)
+                            : Color(0xffC4C2C2)),
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            LocaleKeys.place_order.tr(),
+                            style: context.textTheme.bodyMedium?.mr.copyWith(
+                                color: const Color(0xffFEFEFE),
+                                letterSpacing: 0.18,
+                                fontSize: 18,
+                                height: 0.8),
+                          ),
+                          SizedBox(
+                            height: 10.h,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                '${widget.cartImages.length} ',
+                                style: context.textTheme.bodyMedium?.br
+                                    .copyWith(
+                                        color: const Color(0xffFEFEFE),
+                                        letterSpacing: 0.18,
+                                        fontSize: 14,
+                                        height: 0.8),
+                              ),
+                              Text(
+                                LocaleKeys.item.tr(),
+                                style: context.textTheme.bodyMedium?.rr
+                                    .copyWith(
+                                        color: const Color(0xffFEFEFE),
+                                        letterSpacing: 0.18,
+                                        fontSize: 14,
+                                        height: 0.8),
+                              ),
+                              Text(
+                                ' ${widget.totalPrice} ',
+                                style: context.textTheme.bodyMedium?.br
+                                    .copyWith(
+                                        color: const Color(0xffFEFEFE),
+                                        letterSpacing: 0.18,
+                                        fontSize: 14,
+                                        height: 0.8),
+                              ),
+                              Text(
+                                "${widget.currencySympole}",
+                                style: context.textTheme.bodyMedium?.rr
+                                    .copyWith(
+                                        color: const Color(0xffFEFEFE),
+                                        letterSpacing: 0.18,
+                                        fontSize: 14,
+                                        height: 0.8),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               );
-            },
-          )),
+      },
     );
   }
 

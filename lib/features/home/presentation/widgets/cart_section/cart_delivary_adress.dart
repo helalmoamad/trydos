@@ -208,7 +208,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                                                         : PaymentMethod(
                                                             fromSuccessOrder:
                                                                 false,
-                                                            walletBalance:
+                                                            amount:
                                                                 walletBalance,
                                                             fromPalceOrder:
                                                                 false,
@@ -361,7 +361,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
   Widget buildShippingButton(HomeState state, int _indexTap,
       double walletBalance, double total, List<String> availablePaymentMethod) {
     return Container(
-      height: 100.h,
+      height: 80,
       decoration: BoxDecoration(
         border: Border.all(
           color: Color.fromRGBO(255, 255, 255, 1),

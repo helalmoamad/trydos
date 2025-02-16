@@ -23,18 +23,17 @@ import 'package:trydos/routes/router.dart';
 import 'package:trydos/service/language_service.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
-import '../../../../app/trydos_shimmer_loading.dart';
-import '../../../../story/presentation/widget/try_again.dart';
-import '../../manager/home_state.dart';
 
 class SuccessfullOrder extends StatefulWidget {
   final List<Map<String, String>> cartImages;
   final double totalPrice;
+  final double orderAmount;
   final ValueNotifier<List<String>> paymentMethods;
   final List<String> availablePaymentMethod;
   final String currencySympole;
   final CustomerAddressesInfo customerAddressesInfo;
   final int decimalPointSetting;
+  final String orderGroupId;
   const SuccessfullOrder({
     required this.totalPrice,
     required this.customerAddressesInfo,
@@ -44,6 +43,8 @@ class SuccessfullOrder extends StatefulWidget {
     Key? key,
     required this.availablePaymentMethod,
     required this.decimalPointSetting,
+    required this.orderAmount,
+    required this.orderGroupId,
   });
   @override
   State<SuccessfullOrder> createState() => _SuccessfullOrderState();
@@ -59,9 +60,6 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
     appBloc = BlocProvider.of<AppBloc>(navigatorKey.currentState!.context);
 
     homeBloc = BlocProvider.of<HomeBloc>(context);
-
-    ////////////////////
-    // homeBloc.add(GetCustomerWalletEvent(limit: 10, offset: 1));
 
     super.initState();
   }
@@ -97,138 +95,118 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
       },
       child: Scaffold(
         resizeToAvoidBottomInset: true,
-        body: BlocBuilder<HomeBloc, HomeState>(
-          buildWhen: (previous, current) => false,
-          // previous.getCustomerAddressStatus !=
-          //     current.getCustomerAddressStatus ||
-          // previous.getCustomerWalletStatus !=
-          //     current.getCustomerWalletStatus,
-          builder: (context, state) {
-            return Stack(
-              children: [
-                SingleChildScrollView(
+        body: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: 10),
+                  alignment: Alignment.topCenter,
                   child: Column(
                     children: [
                       buildPurchaseWasCompletedWidget(context),
                       //////////////////////
-                      Container(
-                        margin: EdgeInsets.symmetric(horizontal: 10),
-                        alignment: Alignment.topCenter,
-                        child: Column(
-                          children: [
-                            buildBagWidget(context),
-                            //////////////////////////////
-                            state.getCustomerWalletStatus ==
-                                    GetCustomerWalletStatus.failure
-                                ? TryAgainWidget(
-                                    tryAgain: () {
-                                      BlocProvider.of<HomeBloc>(context).add(
-                                        GetCustomerWalletEvent(
-                                            limit: 10, offset: 1),
-                                      );
-                                    },
-                                  )
-                                : state.getCustomerWalletStatus ==
-                                        GetCustomerWalletStatus.loading
-                                    ? TrydosShimmerLoading(
-                                        width: 1.sw,
-                                        logoTextWidth: 15,
-                                        height: 70,
-                                        logoTextHeight: 15,
-                                      )
-                                    : buildAddressAndPaymentWidget(
-                                        context,
-                                        state.customerWalletModel!.data
-                                            .totalWalletBalance!),
-                            //////////
-                            SizedBox(
-                              height: 100,
-                            )
-                          ],
-                        ),
+                      buildBagWidget(context),
+                      //////////////////////////////
+                      SizedBox(
+                        height: 10.h,
                       ),
+                      //////////////////////////////
+                      buildAddressSuccessWidget(
+                        context,
+                      ),
+                      //////////////////////////////
+                      SizedBox(
+                        height: 10.h,
+                      ),
+                      //////////////////////////////
+                      PaymentMethod(
+                        paymentMethods: widget.paymentMethods,
+                        fromPalceOrder: true,
+                        fromSuccessOrder: true,
+                        availablePaymentMethod: widget.availablePaymentMethod,
+                        totalPrice: widget.totalPrice,
+                        amount: widget.orderAmount,
+                        decimalPointSetting: widget.decimalPointSetting,
+                      )
                     ],
                   ),
                 ),
-                ////////////////////////////////
-                Positioned(
-                  bottom: 0,
-                  child: Container(
-                    height: 90,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Color.fromRGBO(255, 255, 255, 1),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          blurRadius: 10,
-                          blurStyle: BlurStyle.solid,
-                          color: Color(0xffF1F1F1),
+              ),
+            ),
+            ////////////////////////////////
+            Container(
+              height: 80,
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Color.fromRGBO(255, 255, 255, 1),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    blurRadius: 10,
+                    blurStyle: BlurStyle.solid,
+                    color: Color(0xffF1F1F1),
+                  ),
+                ],
+                color: Color.fromRGBO(255, 255, 255, 1),
+              ),
+              width: 1.sw,
+              child: InkWell(
+                onTap: () {
+                  appBloc.add(ChangeBasePage(0));
+                  context.go(GRouter.config.kRootRoute);
+                  // print(widget.paymentMethods.value);
+                  // print(widget.availablePaymentMethod);
+                },
+                child: Container(
+                  height: 70.h,
+                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Color(0xff1D1D1D)),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          LocaleKeys.done.tr(),
+                          style: context.textTheme.bodyMedium?.mr.copyWith(
+                              color: const Color(0xffFEFEFE),
+                              letterSpacing: 0.18,
+                              fontSize: 18,
+                              height: 0.8),
+                        ),
+                        SizedBox(
+                          height: 10.h,
+                        ),
+                        Text(
+                          LocaleKeys.back_to_home_page.tr(),
+                          style: context.textTheme.bodyMedium?.rr.copyWith(
+                              color: const Color(0xffFEFEFE),
+                              letterSpacing: 0.18,
+                              fontSize: 14,
+                              height: 0.8),
                         ),
                       ],
-                      color: Color.fromRGBO(255, 255, 255, 1),
-                    ),
-                    width: 1.sw,
-                    child: InkWell(
-                      onTap: () {
-                        appBloc.add(ChangeBasePage(0));
-                        context.go(GRouter.config.kRootRoute);
-                      },
-                      child: Container(
-                        height: 70.h,
-                        margin:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: Color(0xff1D1D1D)),
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                LocaleKeys.done.tr(),
-                                style: context.textTheme.bodyMedium?.mr
-                                    .copyWith(
-                                        color: const Color(0xffFEFEFE),
-                                        letterSpacing: 0.18,
-                                        fontSize: 18,
-                                        height: 0.8),
-                              ),
-                              SizedBox(
-                                height: 10.h,
-                              ),
-                              Text(
-                                LocaleKeys.back_to_home_page.tr(),
-                                style: context.textTheme.bodyMedium?.rr
-                                    .copyWith(
-                                        color: const Color(0xffFEFEFE),
-                                        letterSpacing: 0.18,
-                                        fontSize: 14,
-                                        height: 0.8),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
                     ),
                   ),
-                )
-              ],
-            );
-          },
+                ),
+              ),
+            )
+          ],
         ),
       ),
     );
   }
 
-  Widget buildAddressAndPaymentWidget(
-      BuildContext context, double walletBalance) {
+  Widget buildAddressSuccessWidget(
+    BuildContext context,
+  ) {
     return Container(
-      height: 270,
+      height: 160,
       width: 1.sw,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
             margin: EdgeInsets.only(left: 10, right: 10),
@@ -291,15 +269,6 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
                 ;
               },
             ),
-          ),
-          PaymentMethod(
-            fromSuccessOrder: true,
-            paymentMethods: widget.paymentMethods,
-            fromPalceOrder: true,
-            availablePaymentMethod: widget.availablePaymentMethod,
-            walletBalance: walletBalance,
-            totalPrice: widget.totalPrice,
-            decimalPointSetting: widget.decimalPointSetting,
           ),
         ],
       ),
@@ -451,7 +420,7 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
                 height: 1.33),
           ),
           Text(
-            "TTISA10012",
+            widget.orderGroupId,
             style: context.textTheme.bodyMedium?.br.copyWith(
                 color: const Color(0xff404040),
                 letterSpacing: 0.18,

@@ -5012,6 +5012,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       (r) {
         isFailedTheFirstTime.remove('PlaceOrderEvent');
 
+        debugPrint('PlaceOrderStatus success');
+
+        debugPrint('orders length : ${r.data!.length}');
+        ////////////////////////////
         emit(
           state.copyWith(
             placeOrderStatus: PlaceOrderStatus.success,
