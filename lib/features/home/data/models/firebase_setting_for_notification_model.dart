@@ -161,7 +161,7 @@ class SubscribedTopic {
   final String? name;
   final String? showedName;
   final String? topic;
-  final List<dynamic>? variants;
+  final List<String>? variants;
 
   SubscribedTopic({
     this.name,
@@ -174,7 +174,7 @@ class SubscribedTopic {
     String? name,
     String? showedName,
     String? topic,
-    List<dynamic>? variants,
+    List<String>? variants,
   }) =>
       SubscribedTopic(
         name: name ?? this.name,
@@ -190,7 +190,7 @@ class SubscribedTopic {
         topic: json["topic"],
         variants: json["variants"] == null
             ? []
-            : List<dynamic>.from(json["variants"]!.map((x) => x)),
+            : List<String>.from(json["variants"]!.map((x) => x)),
       );
 
   Map<String, dynamic> toJson() => {
@@ -198,6 +198,6 @@ class SubscribedTopic {
         "showed_name": showedName,
         "topic": topic,
         "variants":
-            variants == null ? [] : List<dynamic>.from(variants!.map((x) => x)),
+            variants == null ? [] : List<String>.from(variants!.map((x) => x)),
       };
 }

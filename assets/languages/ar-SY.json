@@ -209,9 +209,9 @@
   "apply": "تطبيق",
   "applied": "المُطبَّق",
   "choosed": "المختار",
-  "notify_me_when_size_is_available": "اعلمني عندما يتوفر القياس",
+  "notify_me_when_quantity_is_available": "اعلمني عندما تتوفر الكمية",
   "we_will_inform_you_when_a": "سنعلمك حينما",
-  "size_is_available": "يتوفر القياس",
+  "quantity_is_available": "تتوفر الكمية",
   "send": "ارسال",
   "add": "اضافة ",
   "bag": "السلة",
@@ -335,5 +335,6 @@
   "you_can_track_the_status_of_your_order_through": "يمكنك تتبع حالة طلبك من خلال",
   "my_account_my_orders": "حسابي / طلباتي",
   "applied_your_coupon": "تم تطبيق قسيمتك",
-  "shipping_payment": "الشحن والدفع"
+  "shipping_payment": "الشحن والدفع",
+  "the_time_will_end": "الوقت سوف ينتهي"
 }

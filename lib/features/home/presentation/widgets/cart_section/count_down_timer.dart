@@ -32,8 +32,8 @@ class _CountDownTimerState extends State<CountDownTimer> {
       countdownTimerController = CountdownTimerController(
           endTime: endTime ?? 0,
           onEnd: () {
-            homeBloc
-                .add(ConvertItemFromCartToOldCartEvent(cartId: widget.cartId!));
+            homeBloc.add(GetOldCartItemEvent());
+            homeBloc.add(GetCartItemEvent());
           });
     }
 

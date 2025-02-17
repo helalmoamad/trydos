@@ -25,7 +25,7 @@ class SubscribeTopicFornotificationUseCase extends UseCase<
 
 class SubscribeTopicForNotificationParams {
   final String topic;
-
-  SubscribeTopicForNotificationParams({required this.topic});
-  Map<String, dynamic> get map => {"topic": topic};
+  final String? variant;
+  SubscribeTopicForNotificationParams({required this.topic, this.variant});
+  Map<String, dynamic> get map => {"topic": topic, "variant": variant};
 }

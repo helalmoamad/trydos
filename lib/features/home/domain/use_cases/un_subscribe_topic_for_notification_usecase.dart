@@ -26,7 +26,7 @@ class UnSubscribeTopicFornotificationUseCase extends UseCase<
 
 class UnSubscribeTopicForNotificationParams {
   final String topic;
-
-  UnSubscribeTopicForNotificationParams({required this.topic});
-  Map<String, dynamic> get map => {"topic": topic};
+  final String? variant;
+  UnSubscribeTopicForNotificationParams({required this.topic, this.variant});
+  Map<String, dynamic> get map => {"topic": topic, "variant": variant};
 }
