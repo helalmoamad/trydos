@@ -45,6 +45,14 @@ Map<TypeOfNotificationForMarketEnum, String> TypeOfNotificationForMarket = {
       "product cart expiration",
   TypeOfNotificationForMarketEnum.product_comment: "product comment",
   TypeOfNotificationForMarketEnum.product_discount: "product discount",
+  TypeOfNotificationForMarketEnum.product_when_change_in_price:
+      "product when change in price",
+  TypeOfNotificationForMarketEnum.product_before_stock_out:
+      "product before stock out",
+  TypeOfNotificationForMarketEnum.product_hurry_up_quantity:
+      "product hurry up notification quantity",
+  TypeOfNotificationForMarketEnum.product_hurry_up_time_left:
+      "product hurry up notification time left"
 };
 
 class HandlingMarketNotifications {
@@ -233,6 +241,7 @@ class HandlingMarketNotifications {
                       .push(PageRouteBuilder(
                     pageBuilder: (context, animation, secondaryAnimation) =>
                         ProductDetailsPage(
+                            fromNotificationComment: true,
                             fromNotification: fromBackground,
                             productSlugForOpeningChatDirectly:
                                 data["product_slug"].toString(),

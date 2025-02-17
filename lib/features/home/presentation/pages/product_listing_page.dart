@@ -128,6 +128,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
   final ValueNotifier<String?> showTitleForFilterList = ValueNotifier(null);
   final ValueNotifier<bool> displayBoutiqueIconInAppBar = ValueNotifier(false);
   final ValueNotifier<bool> fromSearchListing = ValueNotifier(false);
+  final ValueNotifier<int> currentActiveTab = ValueNotifier(-1);
   final PanelController panelControllerForCart = PanelController();
   bool isExpanded = false;
   final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
@@ -2703,84 +2704,83 @@ class _ProductListingPageState extends State<ProductListingPage> {
                           productSlug: products[tapIndex].slug,
                           productId: products[tapIndex].productId.toString()));
                     }
-                    return tapIndex == -1
-                        ? SizedBox.shrink()
-                        : Positioned(
-                            bottom: 5,
-                            child: Container(
-                              height: 1.sh,
-                              width: 1.sw,
-                              child: BlocBuilder<HomeBloc, HomeState>(
-                                  buildWhen: (previous, current) =>
-                                      previous.currentSelectedColorForEveryProduct != current.currentSelectedColorForEveryProduct ||
-                                      previous.getProductDetailWithoutSimilarRelatedProductsStatus !=
-                                          current
-                                              .getProductDetailWithoutSimilarRelatedProductsStatus ||
-                                      previous.currentSelectedColorForEveryProduct !=
-                                          current
-                                              .currentSelectedColorForEveryProduct ||
-                                      previous.changeSizesForEveryProduct !=
-                                          current.changeSizesForEveryProduct ||
-                                      previous.cartCollection !=
-                                          current.cartCollection,
-                                  builder: (context, state) {
-                                    String productId = state
-                                                    .cachedProductWithoutRelatedProductsModel[
-                                                products[tapIndex]
-                                                    .productId
-                                                    .toString()] !=
-                                            null
-                                        ? state
-                                                    .cachedProductWithoutRelatedProductsModel[
-                                                        products[tapIndex]
-                                                            .productId
-                                                            .toString()]!
-                                                    .product !=
-                                                null
-                                            ? state
+                    return Positioned(
+                        bottom: -20.h,
+                        child: Container(
+                          height: tapIndex == -1 ? 0 : 1.sh,
+                          width: 1.sw,
+                          child: BlocBuilder<HomeBloc, HomeState>(
+                              buildWhen: (previous, current) =>
+                                  previous.currentSelectedColorForEveryProduct != current.currentSelectedColorForEveryProduct ||
+                                  previous.getProductDetailWithoutSimilarRelatedProductsStatus !=
+                                      current
+                                          .getProductDetailWithoutSimilarRelatedProductsStatus ||
+                                  previous.currentSelectedColorForEveryProduct !=
+                                      current
+                                          .currentSelectedColorForEveryProduct ||
+                                  previous.changeSizesForEveryProduct !=
+                                      current.changeSizesForEveryProduct ||
+                                  previous.cartCollection !=
+                                      current.cartCollection,
+                              builder: (context, state) {
+                                String productId = state
+                                                .cachedProductWithoutRelatedProductsModel[
+                                            products[tapIndex]
+                                                .productId
+                                                .toString()] !=
+                                        null
+                                    ? state
                                                 .cachedProductWithoutRelatedProductsModel[
                                                     products[tapIndex]
                                                         .productId
                                                         .toString()]!
-                                                .product!
-                                                .id
-                                                .toString()
-                                            : ""
-                                        : "";
-                                    int currentSelectedColor =
-                                        state.currentSelectedColorForEveryProduct[
-                                                productId] ??
-                                            (products[tapIndex]
-                                                        .syncColorImages
-                                                        ?.length ??
-                                                    0) ~/
-                                                2;
-                                    if (state.getProductDetailWithoutSimilarRelatedProductsStatus !=
-                                            GetProductDetailWithoutSimilarRelatedProductsStatus
-                                                .success &&
-                                        (prefsRepository.isTokenExpired ??
-                                            false ||
-                                                prefsRepository.marketToken ==
-                                                    "" ||
-                                                prefsRepository.marketToken ==
-                                                    null)) {
-                                      Future.delayed(
-                                        Duration(seconds: 5),
-                                        () {
-                                          homeBloc.add(
-                                              GetProductDatailsWithoutRelatedProductsEvent(
-                                                  productSlug:
-                                                      products[tapIndex].slug,
-                                                  productId: products[tapIndex]
-                                                      .productId
-                                                      .toString()));
-                                        },
-                                      );
-                                    }
-                                    if (productId != "" &&
-                                        tapIndex != -1 &&
-                                        changeAppearSizeForProduct) {
-                                      homeBloc.add(AddSizesFotColorsEvent(
+                                                .product !=
+                                            null
+                                        ? state
+                                            .cachedProductWithoutRelatedProductsModel[
+                                                products[tapIndex]
+                                                    .productId
+                                                    .toString()]!
+                                            .product!
+                                            .id
+                                            .toString()
+                                        : ""
+                                    : "";
+                                int currentSelectedColor =
+                                    state.currentSelectedColorForEveryProduct[
+                                            productId] ??
+                                        (products[tapIndex]
+                                                    .syncColorImages
+                                                    ?.length ??
+                                                0) ~/
+                                            2;
+                                if (state.getProductDetailWithoutSimilarRelatedProductsStatus !=
+                                        GetProductDetailWithoutSimilarRelatedProductsStatus
+                                            .success &&
+                                    (prefsRepository.isTokenExpired ??
+                                        false ||
+                                            prefsRepository.marketToken == "" ||
+                                            prefsRepository.marketToken ==
+                                                null)) {
+                                  Future.delayed(
+                                    Duration(seconds: 5),
+                                    () {
+                                      homeBloc.add(
+                                          GetProductDatailsWithoutRelatedProductsEvent(
+                                              productSlug:
+                                                  products[tapIndex].slug,
+                                              productId: products[tapIndex]
+                                                  .productId
+                                                  .toString()));
+                                    },
+                                  );
+                                }
+                                if (productId != "" &&
+                                    tapIndex != -1 &&
+                                    changeAppearSizeForProduct) {
+                                  Future.delayed(
+                                      Duration(milliseconds: 500),
+                                      () => homeBloc.add(AddSizesForColorsEvent(
                                           currentColorName: !products[tapIndex]
                                                   .colors
                                                   .isNullOrEmpty
@@ -2807,155 +2807,167 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                       .product!
                                                       .variation
                                                   : null
-                                              : null));
-                                      Future.delayed(
-                                          Duration(microseconds: 300),
-                                          () => panelControllerForCart.open());
-                                      changeAppearSizeForProduct = false;
-                                    }
-                                    return ProductDetailsBottomSheet(
-                                      tapIndexToAddProductToCart:
-                                          tapIndexToAddProductToCart,
-                                      fromListingPage: true,
-                                      productIdForCashData: products[tapIndex]
-                                          .productId
-                                          .toString(),
-                                      panelController: panelControllerForCart,
-                                      productSlugForTopic: state
-                                              .cachedProductWithoutRelatedProductsModel[
-                                                  products[tapIndex]
-                                                      .productId
-                                                      .toString()]
-                                              ?.product
-                                              ?.slugEnTopic ??
-                                          "",
-                                      productDescription: HtmlParser.parseHTML(
-                                              products[tapIndex].details ?? "")
-                                          .text,
-                                      countOfPieces: state
-                                                      .cachedProductWithoutRelatedProductsModel[
-                                                  products[tapIndex]
-                                                      .productId
-                                                      .toString()] !=
+                                              : null)));
+                                  Future.delayed(Duration(milliseconds: 800),
+                                      () => panelControllerForCart.open());
+                                  changeAppearSizeForProduct = false;
+                                }
+                                return ProductDetailsBottomSheet(
+                                  currentActiveTab: currentActiveTab,
+                                  qtyForproductWithoutVariant: state
+                                      .cachedProductWithoutRelatedProductsModel[
+                                          products[tapIndex]
+                                              .productId
+                                              .toString()]
+                                      ?.product
+                                      ?.leftStock,
+                                  collectedAfterOrdering: state
+                                          .cachedProductWithoutRelatedProductsModel[
+                                              products[tapIndex]
+                                                  .productId
+                                                  .toString()]
+                                          ?.product
+                                          ?.collectedAfterOrdering ==
+                                      1,
+                                  tapIndexToAddProductToCart:
+                                      tapIndexToAddProductToCart,
+                                  fromListingPage: true,
+                                  productIdForCashData:
+                                      products[tapIndex].productId.toString(),
+                                  panelController: panelControllerForCart,
+                                  productSlugForTopic: state
+                                          .cachedProductWithoutRelatedProductsModel[
+                                              products[tapIndex]
+                                                  .productId
+                                                  .toString()]
+                                          ?.product
+                                          ?.slugEnTopic ??
+                                      "",
+                                  productDescription: HtmlParser.parseHTML(
+                                          products[tapIndex].details ?? "")
+                                      .text,
+                                  countOfPieces: state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                              products[tapIndex]
+                                                  .productId
+                                                  .toString()] !=
+                                          null
+                                      ? state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                                      products[tapIndex]
+                                                          .productId
+                                                          .toString()]!
+                                                  .product !=
                                               null
                                           ? state
-                                                      .cachedProductWithoutRelatedProductsModel[
-                                                          products[tapIndex]
-                                                              .productId
-                                                              .toString()]!
-                                                      .product !=
-                                                  null
-                                              ? state
-                                                      .cachedProductWithoutRelatedProductsModel[
-                                                          products[tapIndex]
-                                                              .productId
-                                                              .toString()]!
-                                                      .product!
-                                                      .countOfPieces ??
-                                                  0
-                                              : 0
-                                          : 0,
-                                      addToBagButtonShapeNotifier:
-                                          addToBagButtonShapeNotifier,
-                                      currentColornum: products[tapIndex]
-                                              .colors
-                                              .isNullOrEmpty
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                                      products[tapIndex]
+                                                          .productId
+                                                          .toString()]!
+                                                  .product!
+                                                  .countOfPieces ??
+                                              0
+                                          : 0
+                                      : 0,
+                                  addToBagButtonShapeNotifier:
+                                      addToBagButtonShapeNotifier,
+                                  currentColornum:
+                                      products[tapIndex].colors.isNullOrEmpty
                                           ? ''
                                           : products[tapIndex]
                                                   .colors![currentSelectedColor]
                                                   .color ??
                                               "",
-                                      boutiqueIcon: state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()] !=
+                                  boutiqueIcon: state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()] !=
+                                          null
+                                      ? state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                                      products[tapIndex]
+                                                          .productId
+                                                          .toString()]!
+                                                  .product !=
                                               null
                                           ? state
-                                                      .cachedProductWithoutRelatedProductsModel[
-                                                          products[tapIndex]
-                                                              .productId
-                                                              .toString()]!
-                                                      .product !=
-                                                  null
-                                              ? state
-                                                          .cachedProductWithoutRelatedProductsModel[
-                                                              products[tapIndex]
-                                                                  .productId
-                                                                  .toString()]!
-                                                          .product!
-                                                          .boutique !=
-                                                      null
-                                                  ? state
-                                                              .cachedProductWithoutRelatedProductsModel[
-                                                                  products[tapIndex]
-                                                                      .productId
-                                                                      .toString()]!
-                                                              .product!
-                                                              .boutique!
-                                                              .icon !=
-                                                          null
-                                                      ? state
-                                                              .cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!
-                                                              .product!
-                                                              .boutique!
-                                                              .icon!
-                                                              .filePath ??
-                                                          ""
-                                                      : ""
-                                                  : ""
-                                              : ""
-                                          : "",
-                                      boutiqueId: state
-                                                      .cachedProductWithoutRelatedProductsModel[
-                                                  products[tapIndex]
-                                                      .productId
-                                                      .toString()] !=
-                                              null
-                                          ? state
-                                                      .cachedProductWithoutRelatedProductsModel[
-                                                          products[tapIndex]
-                                                              .productId
-                                                              .toString()]!
-                                                      .product !=
-                                                  null
-                                              ? state
-                                                          .cachedProductWithoutRelatedProductsModel[
-                                                              products[tapIndex]
-                                                                  .productId
-                                                                  .toString()]!
-                                                          .product!
-                                                          .boutique !=
-                                                      null
-                                                  ? state
                                                       .cachedProductWithoutRelatedProductsModel[
                                                           products[tapIndex]
                                                               .productId
                                                               .toString()]!
                                                       .product!
-                                                      .boutique!
-                                                      .id!
-                                                  : 0
+                                                      .boutique !=
+                                                  null
+                                              ? state
+                                                          .cachedProductWithoutRelatedProductsModel[
+                                                              products[tapIndex]
+                                                                  .productId
+                                                                  .toString()]!
+                                                          .product!
+                                                          .boutique!
+                                                          .icon !=
+                                                      null
+                                                  ? state
+                                                          .cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!
+                                                          .product!
+                                                          .boutique!
+                                                          .icon!
+                                                          .filePath ??
+                                                      ""
+                                                  : ""
+                                              : ""
+                                          : ""
+                                      : "",
+                                  boutiqueId: state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                              products[tapIndex]
+                                                  .productId
+                                                  .toString()] !=
+                                          null
+                                      ? state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                                      products[tapIndex]
+                                                          .productId
+                                                          .toString()]!
+                                                  .product !=
+                                              null
+                                          ? state
+                                                      .cachedProductWithoutRelatedProductsModel[
+                                                          products[tapIndex]
+                                                              .productId
+                                                              .toString()]!
+                                                      .product!
+                                                      .boutique !=
+                                                  null
+                                              ? state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                                      products[tapIndex]
+                                                          .productId
+                                                          .toString()]!
+                                                  .product!
+                                                  .boutique!
+                                                  .id!
                                               : 0
-                                          : 0,
-                                      currentColorName: products[tapIndex]
-                                              .colors
-                                              .isNullOrEmpty
+                                          : 0
+                                      : 0,
+                                  currentColorName:
+                                      products[tapIndex].colors.isNullOrEmpty
                                           ? ''
                                           : products[tapIndex]
                                                   .colors![currentSelectedColor]
                                                   .name ??
                                               "",
-                                      productItem: products[tapIndex].copyWith(
-                                          productId: int.tryParse(productId)),
-                                      currentColor: currentSelectedColor,
-                                      maxAllowedToAddCart: state
-                                              .cachedProductWithoutRelatedProductsModel[
-                                                  products[tapIndex]
-                                                      .productId
-                                                      .toString()]
-                                              ?.product
-                                              ?.maxAllowedQty ??
-                                          "0",
-                                    );
-                                  }),
-                            ));
+                                  productItem: products[tapIndex].copyWith(
+                                      productId: int.tryParse(productId)),
+                                  currentColor: currentSelectedColor,
+                                  maxAllowedToAddCart: state
+                                          .cachedProductWithoutRelatedProductsModel[
+                                              products[tapIndex]
+                                                  .productId
+                                                  .toString()]
+                                          ?.product
+                                          ?.maxAllowedQty ??
+                                      "0",
+                                );
+                              }),
+                        ));
                   })
             ],
           ),

@@ -63,7 +63,7 @@ abstract class MarketEndPoints {
   static final storeFcmOfMarketEP = 'firebase_device_tokens'.countryScope();
   static final getNotificationTypeForProductEP =
       'notification_types/customer-notification-to-choose'.webScope();
-
+//******************************************** */
   static final getOldCartItemsEP = 'get_old_cart'.oldCartScope();
   static final hideItemsInOldCartEP = 'hide'.oldCartScope();
   static final convertItemInOldCartToCartEP = 'convert_to_cart'.oldCartScope();
