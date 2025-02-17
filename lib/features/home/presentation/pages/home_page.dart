@@ -95,6 +95,7 @@ class _HomePageState extends State<HomePage> {
     authBloc = BlocProvider.of<AuthBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
     homeBloc.add(GetNotificationTypeProductEvent());
+    homeBloc.add(GetFirebaseSettingForNotificationEvent());
     appBloc.add(ChangeIndexForSearch(0));
     homeBloc.add(GetPopularSearchItemEvent());
     Future.delayed(Duration(seconds: 7), () {});

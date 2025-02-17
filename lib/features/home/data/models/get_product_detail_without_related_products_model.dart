@@ -68,7 +68,7 @@ class Product {
   final bool? isFavSeller;
   final bool? isLiked;
   final int? countOfLikes;
-
+  final int? collectedAfterOrdering;
   final int? countOfPieces;
   final List<dynamic>? reviews;
   final bool? hasWholeSale;
@@ -85,6 +85,7 @@ class Product {
     this.model,
     this.features,
     this.inStock,
+    this.collectedAfterOrdering,
     this.countOfPieces,
     this.variation,
     this.isLiked,
@@ -126,6 +127,7 @@ class Product {
     bool? hasDiscount,
     bool? hasTax,
     String? deliveryAt,
+    int? collectedAfterOrdering,
     String? tax,
     int? countOfPieces,
     String? unitPrice,
@@ -168,6 +170,8 @@ class Product {
         currentStock: currentStock ?? this.currentStock,
         leftStock: leftStock ?? this.leftStock,
         isLiked: isLiked ?? this.isLiked,
+        collectedAfterOrdering:
+            collectedAfterOrdering ?? this.collectedAfterOrdering,
         countOfLikes: countOfLikes ?? this.countOfLikes,
         reviewsCount: reviewsCount ?? this.reviewsCount,
         sellerId: sellerId ?? this.sellerId,
@@ -196,6 +200,7 @@ class Product {
       boutique: json["boutique"] == null
           ? null
           : BoutiqueForCart.fromJson(json["boutique"]),
+      collectedAfterOrdering: json["collected_after_ordering"],
       maxAllowedQty: json["max_allowed_qty"].toString(),
       inStock: json["in_stock"],
       variation: json["variation"] == null
@@ -250,6 +255,7 @@ class Product {
             ? []
             : List<dynamic>.from(choiceOptions!.map((x) => x.toJson())),
         "has_discount": hasDiscount,
+        "collected_after_ordering": collectedAfterOrdering,
         "has_tax": hasTax,
         "delivery_at": deliveryAt,
         "slug_en_topic": slugEnTopic,

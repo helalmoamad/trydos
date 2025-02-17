@@ -8,6 +8,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
@@ -33,6 +34,7 @@ class NotifyWhenQuantityAvailableButton extends StatefulWidget {
 
   final String unAvailableSize;
   final String productId;
+
   final String selectedColorName;
   final int notificationTypeId;
 
@@ -45,7 +47,8 @@ class _NotifyWhenQuantityAvailableButtonState
     extends State<NotifyWhenQuantityAvailableButton>
     with SingleTickerProviderStateMixin {
   late final AnimationController animationController;
-
+  bool isVariantRequestNotification = false;
+  String variant = "";
   @override
   void initState() {
     animationController = AnimationController(
@@ -76,135 +79,184 @@ class _NotifyWhenQuantityAvailableButtonState
     };
     return BlocBuilder<HomeBloc, HomeState>(
       buildWhen: (p, c) =>
-          p.isSizeRequestNotification != c.isSizeRequestNotification,
+          p.getFirebaseSettingForNotificationStatus !=
+          c.getFirebaseSettingForNotificationStatus,
       builder: (context, state) {
-        return AnimatedBuilder(
-            animation: animationController,
-            builder: (context, child) {
-              final sineValue = sin(3 * 2 * pi * animationController.value);
-              return Transform.translate(
-                  offset: Offset(sineValue * 3, 0),
-                  child: SizedBox(
-                    width: 1.sw - 40,
-                    child: Stack(
-                      alignment: Alignment.topRight,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            HapticFeedback.lightImpact();
-                            BlocProvider.of<HomeBloc>(context).add(
-                                RequestForNotificationWhenProductBecameAvailableEvent(
-                                    widget.productId,
-                                    widget.notificationTypeId,
-                                    widget.unAvailableSize,
-                                    widget.selectedColorName));
-                          },
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.fastLinearToSlowEaseIn,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: state.isSizeRequestNotification
-                                        .contains(widget.unAvailableSize)
-                                    ? const Color(0xffFFFCE6)
-                                    : const Color(0xffE6F1FF)),
-                            child: Center(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 10),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
-                                      children: [
-                                        const Spacer(),
-                                        SvgPicture.asset(
-                                          state.isSizeRequestNotification
-                                                  .contains(
-                                                      widget.unAvailableSize)
-                                              ? AppAssets.notificationIconSvg
-                                              : AppAssets
-                                                  .notificationOutlinedIconSvg,
-                                          height: 30,
-                                        ),
-                                        const Spacer()
-                                      ],
-                                    ),
-                                    const SizedBox(
-                                      height: 5,
-                                    ),
-                                    if (!state.isSizeRequestNotification
-                                        .contains(widget.unAvailableSize)) ...{
-                                      MyTextWidget(
-                                        '${LocaleKeys.notify_me_when_size_is_available.tr()}',
-                                        style: textTheme.titleMedium?.rq
-                                            .copyWith(
-                                                height: 15 / 12,
-                                                color: const Color(0xff505050)),
-                                      )
-                                    } else ...{
+        if (widget.unAvailableSize != "") {
+          variant = widget.selectedColorName == ''
+              ? widget.unAvailableSize
+              : "${widget.selectedColorName}-${widget.unAvailableSize}";
+        } else {
+          variant =
+              widget.selectedColorName == '' ? "" : widget.selectedColorName;
+        }
+
+        state.firebaseSettingForNotificationModel?.data?.firebaseSettings
+            ?.subscribedTopics
+            ?.forEach((element) {
+          if (element.topic
+                  ?.contains("product_availability_${widget.productId}") ??
+              false) {
+            if (variant == "") {
+              isVariantRequestNotification = true;
+            } else if (element.variants!.contains(variant)) {
+              isVariantRequestNotification = true;
+            }
+          } else {
+            isVariantRequestNotification = false;
+          }
+        });
+        Widget GetNotifyMeButtum() {
+          return AnimatedBuilder(
+              animation: animationController,
+              builder: (context, child) {
+                final sineValue = sin(3 * 2 * pi * animationController.value);
+                return Transform.translate(
+                    offset: Offset(sineValue * 3, 0),
+                    child: SizedBox(
+                      width: 1.sw - 50.h,
+                      child: Stack(
+                        alignment: Alignment.topRight,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              if (state
+                                      .getFirebaseSettingForNotificationStatus ==
+                                  GetFirebaseSettingForNotificationStatus
+                                      .loading) {
+                                return;
+                              }
+                              if (isVariantRequestNotification) {
+                                BlocProvider.of<HomeBloc>(context).add(
+                                    RequestForNotificationWhenProductBecameAvailableEvent(
+                                        widget.productId,
+                                        widget.notificationTypeId,
+                                        widget.unAvailableSize,
+                                        widget.selectedColorName,
+                                        false));
+                                return;
+                              }
+                              HapticFeedback.lightImpact();
+                              BlocProvider.of<HomeBloc>(context).add(
+                                  RequestForNotificationWhenProductBecameAvailableEvent(
+                                      widget.productId,
+                                      widget.notificationTypeId,
+                                      widget.unAvailableSize,
+                                      widget.selectedColorName,
+                                      true));
+                            },
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.fastLinearToSlowEaseIn,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  color: isVariantRequestNotification
+                                      ? const Color(0xffFFFCE6)
+                                      : const Color(0xffE6F1FF)),
+                              child: Center(
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 10),
+                                  child: Column(
+                                    children: [
                                       Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
                                         children: [
-                                          MyTextWidget(
-                                            '${LocaleKeys.we_will_inform_you_when_a.tr()} ',
-                                            style: textTheme.titleMedium?.rq
-                                                .copyWith(
-                                                    height: 15 / 12,
-                                                    color: const Color(
-                                                        0xff505050)),
+                                          const Spacer(),
+                                          SvgPicture.asset(
+                                            isVariantRequestNotification
+                                                ? AppAssets.notificationIconSvg
+                                                : AppAssets
+                                                    .notificationOutlinedIconSvg,
+                                            height: 30,
                                           ),
-                                          MyTextWidget(
-                                            '${widget.unAvailableSize} ',
-                                            style: textTheme.titleMedium?.bq
-                                                .copyWith(
-                                                    height: 15 / 12,
-                                                    color: const Color(
-                                                        0xff505050)),
-                                          ),
-                                          MyTextWidget(
-                                            '${LocaleKeys.size_is_available.tr()}',
-                                            style: textTheme.titleMedium?.rq
-                                                .copyWith(
-                                                    height: 15 / 12,
-                                                    color: const Color(
-                                                        0xff505050)),
-                                          ),
+                                          const Spacer()
                                         ],
-                                      )
-                                    }
-                                  ],
+                                      ),
+                                      const SizedBox(
+                                        height: 5,
+                                      ),
+                                      if (!isVariantRequestNotification) ...{
+                                        MyTextWidget(
+                                          '${LocaleKeys.notify_me_when_quantity_is_available.tr()}',
+                                          style: textTheme.titleMedium?.rq
+                                              .copyWith(
+                                                  height: 15 / 12,
+                                                  color:
+                                                      const Color(0xff505050)),
+                                        )
+                                      } else ...{
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            MyTextWidget(
+                                              '${LocaleKeys.we_will_inform_you_when_a.tr()} ',
+                                              style: textTheme.titleMedium?.rq
+                                                  .copyWith(
+                                                      height: 15 / 12,
+                                                      color: const Color(
+                                                          0xff505050)),
+                                            ),
+                                            /*    MyTextWidget(
+                                              '${widget.unAvailableSize} ',
+                                              style: textTheme.titleMedium?.bq
+                                                  .copyWith(
+                                                      height: 15 / 12,
+                                                      color: const Color(
+                                                          0xff505050)),
+                                            ),*/
+                                            MyTextWidget(
+                                              '${LocaleKeys.quantity_is_available.tr()}',
+                                              style: textTheme.titleMedium?.rq
+                                                  .copyWith(
+                                                      height: 15 / 12,
+                                                      color: const Color(
+                                                          0xff505050)),
+                                            ),
+                                          ],
+                                        )
+                                      }
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                        Positioned(
-                          top: -35,
-                          right: -35,
-                          child: Container(
-                            width: 55,
-                            height: 55,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: colorScheme.white),
+                          Positioned(
+                            top: -35,
+                            right: -35,
+                            child: Container(
+                              width: 55,
+                              height: 55,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  color: colorScheme.white),
+                            ),
                           ),
-                        ),
-                        SvgPicture.asset(
-                          state.isSizeRequestNotification
-                                  .contains(widget.unAvailableSize)
-                              ? AppAssets.notificationOutlinedIconSvg
-                              : AppAssets.notificationIconSvg,
-                          height: 15.h,
-                        ),
-                      ],
-                    ),
-                  ));
-            });
+                          SvgPicture.asset(
+                            isVariantRequestNotification
+                                ? AppAssets.notificationOutlinedIconSvg
+                                : AppAssets.notificationIconSvg,
+                            height: 15.h,
+                          ),
+                        ],
+                      ),
+                    ));
+              });
+        }
+
+        return state.getFirebaseSettingForNotificationStatus ==
+                GetFirebaseSettingForNotificationStatus.loading
+            ? Shimmer.fromColors(
+                baseColor: Colors.grey.shade300,
+                highlightColor: Colors.grey.shade100,
+                enabled: true,
+                child: GetNotifyMeButtum())
+            : GetNotifyMeButtum();
       },
     );
   }

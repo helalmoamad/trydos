@@ -73,14 +73,14 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           ? null
           : StartingSetting.fromJson(
               json['startingSetting'] as Map<String, dynamic>),
-      sizes:
+      sizesForEachColor:
           (json['sizes'] as List<dynamic>?)?.map((e) => e as String).toList() ??
               const [],
-      sizesQuantities: (json['sizesQuantities'] as List<dynamic>?)
+      sizesQuantitiesForEachColor: (json['sizesQuantities'] as List<dynamic>?)
               ?.map((e) => (e as num).toInt())
               .toList() ??
           const [],
-      isSizeRequestNotification:
+      isVariantRequestNotification:
           (json['isSizeRequestNotification'] as List<dynamic>?)
                   ?.map((e) => e as String)
                   .toList() ??
@@ -571,9 +571,9 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
               ))),
       'storiesForProduct':
           instance.storiesForProduct?.map((e) => e.toJson()).toList(),
-      'sizes': instance.sizes,
-      'sizesQuantities': instance.sizesQuantities,
-      'isSizeRequestNotification': instance.isSizeRequestNotification,
+      'sizes': instance.sizesForEachColor,
+      'sizesQuantities': instance.sizesQuantitiesForEachColor,
+      'isSizeRequestNotification': instance.isVariantRequestNotification,
       'countOfProductExpectedByFiltering':
           instance.countOfProductExpectedByFiltering,
       'prefAppliedFilterForExtendFilter':

@@ -264,7 +264,10 @@ class Cart {
   final dynamic flashDealDetails;
   final dynamic flashDealMaxAllowedQuantity;
   final int? shippingDays;
-  final bool? haveHurryUpNotify;
+
+  final bool? haveHurryUpNotifyTimeLeft;
+  final bool? haveHurryUpNotifyQty;
+  final int? qtyLeft;
   final int? timeLeftInMinutes;
 
   Cart({
@@ -299,7 +302,9 @@ class Cart {
     this.flashDealDetails,
     this.flashDealMaxAllowedQuantity,
     this.shippingDays,
-    this.haveHurryUpNotify,
+    this.haveHurryUpNotifyTimeLeft,
+    this.haveHurryUpNotifyQty,
+    this.qtyLeft,
     this.timeLeftInMinutes,
   });
 
@@ -334,7 +339,9 @@ class Cart {
     DateTime? createdAt,
     dynamic flashDealDetails,
     int? shippingDays,
-    bool? haveHurryUpNotify,
+    bool? haveHurryUpNotifyTimeLeft,
+    bool? haveHurryUpNotifyQty,
+    int? qtyLeft,
     int? timeLeftInMinutes,
     dynamic flashDealMaxAllowedQuantity,
   }) =>
@@ -364,7 +371,10 @@ class Cart {
         shop: shop ?? this.shop,
         countOfPieces: countOfPieces ?? this.countOfPieces,
         shippingDays: shippingDays ?? this.shippingDays,
-        haveHurryUpNotify: haveHurryUpNotify ?? this.haveHurryUpNotify,
+        haveHurryUpNotifyTimeLeft:
+            haveHurryUpNotifyTimeLeft ?? this.haveHurryUpNotifyTimeLeft,
+        haveHurryUpNotifyQty: haveHurryUpNotifyQty ?? this.haveHurryUpNotifyQty,
+        qtyLeft: qtyLeft ?? this.qtyLeft,
         timeLeftInMinutes: timeLeftInMinutes ?? this.timeLeftInMinutes,
         brand: brand ?? this.brand,
         boutique: boutique ?? this.boutique,
@@ -416,7 +426,9 @@ class Cart {
             : DateTime.parse(json["created_at"]),
         flashDealDetails: json["flash_deal_details"],
         shippingDays: json["shipping_days"],
-        haveHurryUpNotify: json["have_hurry_up_notify"],
+        haveHurryUpNotifyTimeLeft: json["have_hurry_up_notify_time_left"],
+        haveHurryUpNotifyQty: json["have_hurry_up_notify_qty"],
+        qtyLeft: json["qty_left"],
         timeLeftInMinutes: json["time_left_in_minutes"],
         flashDealMaxAllowedQuantity: json["flash_deal_max_allowed_quantity"],
       );
@@ -448,7 +460,9 @@ class Cart {
         "slug": slug,
         "name": name,
         "shipping_days": shippingDays,
-        "have_hurry_up_notify": haveHurryUpNotify,
+        "have_hurry_up_notify_time_left": haveHurryUpNotifyTimeLeft,
+        "have_hurry_up_notify_qty": haveHurryUpNotifyQty,
+        "qty_left": qtyLeft,
         "time_left_in_minutes": timeLeftInMinutes,
         "shop": shop?.toJson(),
         "brand": brand?.toJson(),

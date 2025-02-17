@@ -136,8 +136,8 @@ class ChangeCountryLanguageForNotificationEvent extends HomeEvent {
 
 class SubscribeTopicForNotificationEvent extends HomeEvent {
   final String topic;
-
-  const SubscribeTopicForNotificationEvent({required this.topic});
+  final String? variant;
+  const SubscribeTopicForNotificationEvent({required this.topic, this.variant});
 
   @override
   // TODO: implement props
@@ -146,8 +146,9 @@ class SubscribeTopicForNotificationEvent extends HomeEvent {
 
 class UnSubscribeTopicForNotificationEvent extends HomeEvent {
   final String topic;
-
-  const UnSubscribeTopicForNotificationEvent({required this.topic});
+  final String? variant;
+  const UnSubscribeTopicForNotificationEvent(
+      {required this.topic, this.variant});
 
   @override
   // TODO: implement props
@@ -604,9 +605,13 @@ class RequestForNotificationWhenProductBecameAvailableEvent extends HomeEvent {
   final int notificationTypeId;
   final String size;
   final String selectedColorName;
-
-  RequestForNotificationWhenProductBecameAvailableEvent(this.productId,
-      this.notificationTypeId, this.size, this.selectedColorName);
+  final bool subsecribe;
+  RequestForNotificationWhenProductBecameAvailableEvent(
+      this.productId,
+      this.notificationTypeId,
+      this.size,
+      this.selectedColorName,
+      this.subsecribe);
 
   @override
   List<Object?> get props =>
@@ -622,11 +627,11 @@ class IscashedOreiginBotiqueEvent extends HomeEvent {
   List<Object?> get props => [iscashedOreiginBotique];
 }
 
-class AddSizesFotColorsEvent extends HomeEvent {
+class AddSizesForColorsEvent extends HomeEvent {
   final String currentColorName;
   final List<Variation>? variation;
 
-  const AddSizesFotColorsEvent(
+  const AddSizesForColorsEvent(
       {required this.currentColorName, required this.variation});
 
   @override
@@ -634,7 +639,8 @@ class AddSizesFotColorsEvent extends HomeEvent {
 }
 
 class GetCartItemEvent extends HomeEvent {
-  const GetCartItemEvent();
+  final bool? fromTerminitedStatusl;
+  const GetCartItemEvent({this.fromTerminitedStatusl});
 
   @override
   List<Object?> get props => [];
