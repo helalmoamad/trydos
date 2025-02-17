@@ -103,7 +103,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
             debugPrint('placeOrderStatus:  ${state.placeOrderStatus}');
 
             if (state.placeOrderStatus == PlaceOrderStatus.success) {
-              List<PlaceOrderDataModel>? data = state.placeOrderModel!.data!;
+              List<OrdersGroupDataModel>? data = state.placeOrderModel!.data!;
 
               debugPrint('The url is : ${data[0].url}');
 

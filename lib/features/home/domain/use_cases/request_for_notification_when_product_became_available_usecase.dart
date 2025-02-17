@@ -3,7 +3,6 @@ import 'package:injectable/injectable.dart';
 import 'package:trydos/features/home/data/models/get_only_message_from_api_model.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/use_case/use_case.dart';
-import '../../data/models/get_comment_for_product_model.dart';
 import '../repositories/home_repository.dart';
 
 @injectable

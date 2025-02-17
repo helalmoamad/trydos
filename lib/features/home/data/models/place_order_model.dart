@@ -1,12 +1,12 @@
-class PlaceOrderModel {
+class OrdersGroupModel {
   final bool? isSuccessful;
   final bool? hasContent;
   final int? code;
   final String? message;
   final dynamic detailedError;
-  final List<PlaceOrderDataModel>? data;
+  final List<OrdersGroupDataModel>? data;
 
-  PlaceOrderModel({
+  OrdersGroupModel({
     required this.isSuccessful,
     required this.hasContent,
     required this.code,
@@ -15,15 +15,15 @@ class PlaceOrderModel {
     required this.data,
   });
 
-  PlaceOrderModel copyWith({
+  OrdersGroupModel copyWith({
     bool? isSuccessful,
     bool? hasContent,
     int? code,
     String? message,
     dynamic detailedError,
-    List<PlaceOrderDataModel>? data,
+    List<OrdersGroupDataModel>? data,
   }) =>
-      PlaceOrderModel(
+      OrdersGroupModel(
         isSuccessful: isSuccessful ?? this.isSuccessful,
         hasContent: hasContent ?? this.hasContent,
         code: code ?? this.code,
@@ -32,15 +32,15 @@ class PlaceOrderModel {
         data: data ?? this.data,
       );
 
-  factory PlaceOrderModel.fromJson(Map<String, dynamic> json) =>
-      PlaceOrderModel(
+  factory OrdersGroupModel.fromJson(Map<String, dynamic> json) =>
+      OrdersGroupModel(
         isSuccessful: json["isSuccessful"] ?? '',
         hasContent: json["hasContent"] ?? false,
         code: json["code"] ?? 0,
         message: json["message"] ?? '',
         detailedError: json["detailed_error"],
-        data: List<PlaceOrderDataModel>.from(
-            json["data"].map((x) => PlaceOrderDataModel.fromJson(x))),
+        data: List<OrdersGroupDataModel>.from(
+            json["data"].map((x) => OrdersGroupDataModel.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -53,7 +53,7 @@ class PlaceOrderModel {
       };
 }
 
-class PlaceOrderDataModel {
+class OrdersGroupDataModel {
   final int? id;
   final int? customerId;
   final String? url;
@@ -84,7 +84,7 @@ class PlaceOrderDataModel {
   final bool? orderCanExchange;
   final List<PlaceOrderDetailsModel>? details;
 
-  PlaceOrderDataModel({
+  OrdersGroupDataModel({
     required this.id,
     required this.customerId,
     required this.url,
@@ -116,7 +116,7 @@ class PlaceOrderDataModel {
     required this.details,
   });
 
-  PlaceOrderDataModel copyWith({
+  OrdersGroupDataModel copyWith({
     int? id,
     int? customerId,
     String? url,
@@ -147,7 +147,7 @@ class PlaceOrderDataModel {
     bool? orderCanExchange,
     List<PlaceOrderDetailsModel>? details,
   }) =>
-      PlaceOrderDataModel(
+      OrdersGroupDataModel(
         id: id ?? this.id,
         customerId: customerId ?? this.customerId,
         url: url ?? this.url,
@@ -181,8 +181,8 @@ class PlaceOrderDataModel {
             partialPaymentByWallet ?? this.partialPaymentByWallet,
       );
 
-  factory PlaceOrderDataModel.fromJson(Map<String, dynamic> json) =>
-      PlaceOrderDataModel(
+  factory OrdersGroupDataModel.fromJson(Map<String, dynamic> json) =>
+      OrdersGroupDataModel(
         id: json["id"] ?? 0,
         customerId: json["customer_id"] ?? 0,
         url: json["url"],

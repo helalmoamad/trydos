@@ -641,19 +641,38 @@ class HomeRemoteDatasource {
     return getCustomerWallet();
   }
 
-  Future<PlaceOrderModel> placeOrder(
+  Future<OrdersGroupModel> placeOrder(
       {required Map<String, dynamic> params, required String paymentMethod}) {
-    PostClient<PlaceOrderModel> placeOrder = PostClient<PlaceOrderModel>(
+    PostClient<OrdersGroupModel> placeOrder = PostClient<OrdersGroupModel>(
       serverName: ServerName.market,
-      requestPrams: RequestConfig<PlaceOrderModel>(
+      requestPrams: RequestConfig<OrdersGroupModel>(
         endpoint: MarketEndPoints.placeOrderEP(paymentMethod),
         data: params,
-        response: ResponseValue<PlaceOrderModel>(
-          fromJson: (response) => PlaceOrderModel.fromJson(response),
+        response: ResponseValue<OrdersGroupModel>(
+          fromJson: (response) => OrdersGroupModel.fromJson(response),
         ),
       ),
     );
 
     return placeOrder();
+  }
+
+  Future<OrdersGroupModel> getOrdersByOrderGroupID({
+    required String orderGroupID,
+  }) {
+    GetClient<OrdersGroupModel> getOrdersByOrderGroupID =
+        GetClient<OrdersGroupModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<OrdersGroupModel>(
+        endpoint: MarketEndPoints.getOrdersByOrderGroupEP,
+        queryParameters: {
+          "order_group_id": orderGroupID,
+        },
+        response: ResponseValue<OrdersGroupModel>(
+            fromJson: (response) => OrdersGroupModel.fromJson(response)),
+      ),
+    );
+
+    return getOrdersByOrderGroupID();
   }
 }

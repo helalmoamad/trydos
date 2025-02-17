@@ -91,6 +91,7 @@ import '../../../chat/presentation/manager/chat_event.dart';
 import '../../../story/presentation/bloc/story_bloc.dart';
 import '../../domain/use_cases/add_item_to_cart_usecase.dart';
 import '../../domain/use_cases/get_customer_wallet_usecase.dart';
+import '../../domain/use_cases/get_orders_by_order_group_usecase.dart';
 import '../../domain/use_cases/get_stories_for_product_usecase.dart';
 import '../../domain/use_cases/place_order_usecase.dart';
 import 'home_event.dart';
@@ -150,6 +151,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.getProductsWithFiltersUseCase,
     this.getCustomerWalletUseCase,
     this.placeOrderUsecase,
+    this.getOrdersByOrderGroupIDUsecase,
   ) : super(HomeState()) {
     on<HomeEvent>((event, emit) {});
 
@@ -339,6 +341,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<PlaceOrderEvent>(
       _onPlaceOrderEvent,
     );
+    on<GetOrdersByOrderGroupIDEvent>(
+      _onGetOrdersByOrderGroupIDEvent,
+    );
   }
 
   Map<String, bool> boutiquesThatEnablesToRequestItsProductsUsingFiveFilters =
@@ -388,6 +393,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final UpdateCustomerAddressUseCase updateCustomerAddressUseCase;
   final DeleteCustomerAddressUseCase deleteCustomerAddressUseCase;
   final PlaceOrderUsecase placeOrderUsecase;
+  final GetOrdersByOrderGroupIDUsecase getOrdersByOrderGroupIDUsecase;
 
   final GetCustomerWalletUseCase getCustomerWalletUseCase;
 
@@ -5020,6 +5026,56 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           state.copyWith(
             placeOrderStatus: PlaceOrderStatus.success,
             placeOrderModel: r,
+          ),
+        );
+      },
+    );
+  }
+
+  FutureOr<void> _onGetOrdersByOrderGroupIDEvent(
+    GetOrdersByOrderGroupIDEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    ///////////////////////////
+    emit(
+      state.copyWith(
+        getOrdersByOrderGroupIDStatus: GetOrdersByOrderGroupIDStatus.loading,
+      ),
+    );
+
+    final response = await getOrdersByOrderGroupIDUsecase.call(
+      event.orderGroupId,
+    );
+
+    response.fold(
+      (l) {
+        if (!isFailedTheFirstTime.contains('GetOrdersByOrderGroupIDEvent') &&
+            l.statusCode != 400) {
+          add(
+            GetOrdersByOrderGroupIDEvent(orderGroupId: event.orderGroupId),
+          );
+          isFailedTheFirstTime.add('GetOrdersByOrderGroupIDEvent');
+        }
+
+        emit(
+          state.copyWith(
+            getOrdersByOrderGroupIDStatus:
+                GetOrdersByOrderGroupIDStatus.failure,
+          ),
+        );
+      },
+      (r) {
+        isFailedTheFirstTime.remove('GetOrdersByOrderGroupIDEvent');
+
+        debugPrint('GetOrdersByOrderGroupIDEvent success');
+
+        debugPrint('orders length : ${r.data!.length}');
+        ////////////////////////////
+        emit(
+          state.copyWith(
+            getOrdersByOrderGroupIDStatus:
+                GetOrdersByOrderGroupIDStatus.success,
+            getOrdersByOrderGroupIDModel: r,
           ),
         );
       },

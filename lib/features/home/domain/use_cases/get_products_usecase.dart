@@ -1,9 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
-import 'package:trydos/features/home/data/models/home_sections_response_model.dart';
-import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
-import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/use_case/use_case.dart';
 import '../repositories/home_repository.dart';

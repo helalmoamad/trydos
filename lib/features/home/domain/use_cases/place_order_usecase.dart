@@ -6,13 +6,13 @@ import '../../../../core/use_case/use_case.dart';
 import '../../data/models/place_order_model.dart';
 
 @injectable
-class PlaceOrderUsecase extends UseCase<PlaceOrderModel, PlaceOrderParams> {
+class PlaceOrderUsecase extends UseCase<OrdersGroupModel, PlaceOrderParams> {
   final HomeRepository repository;
 
   PlaceOrderUsecase(this.repository);
 
   @override
-  Future<Either<Failure, PlaceOrderModel>> call(
+  Future<Either<Failure, OrdersGroupModel>> call(
     PlaceOrderParams params,
   ) {
     return repository.placeOrder(

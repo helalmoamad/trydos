@@ -967,3 +967,15 @@ class PlaceOrderEvent extends HomeEvent {
   // TODO: implement props
   List<Object?> get props => [placeOrderParams];
 }
+
+class GetOrdersByOrderGroupIDEvent extends HomeEvent {
+  final String orderGroupId;
+
+  GetOrdersByOrderGroupIDEvent({
+    required this.orderGroupId,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [orderGroupId];
+}

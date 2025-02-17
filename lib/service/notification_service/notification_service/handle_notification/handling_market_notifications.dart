@@ -1,27 +1,20 @@
 import 'dart:convert';
-
-import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
 import 'package:trydos/base_page.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
-import 'package:trydos/features/home/data/models/get_count_likes_of_product_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
-import 'package:trydos/features/home/presentation/pages/cart_page.dart';
-import 'package:trydos/features/home/presentation/pages/home_page.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/main.dart';
-import 'package:trydos/routes/router.dart';
 import 'package:trydos/service/language_service.dart';
 
 enum TypeOfNotificationForMarketEnum {

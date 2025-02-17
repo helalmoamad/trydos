@@ -317,13 +317,24 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   }
 
   @override
-  Future<Either<Failure, PlaceOrderModel>> placeOrder({
+  Future<Either<Failure, OrdersGroupModel>> placeOrder({
     required Map<String, dynamic> params,
     required String paymentMethod,
   }) async {
     return handlingExceptionRequest(
       tryCall: () =>
           dataSource.placeOrder(params: params, paymentMethod: paymentMethod),
+    );
+  }
+
+  @override
+  Future<Either<Failure, OrdersGroupModel>> getOrdersByOrderGroupID({
+    required String orderGroupIdD,
+  }) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.getOrdersByOrderGroupID(
+        orderGroupID: orderGroupIdD,
+      ),
     );
   }
 }

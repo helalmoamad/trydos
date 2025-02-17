@@ -46,6 +46,9 @@ abstract class MarketEndPoints {
 
   static final getCustomerWalletEP = "wallet/list".customerScope();
 
+  static final getOrdersByOrderGroupEP =
+      "order/getOrdersByOrderGroupID".customerScope();
+
   static String placeOrderEP(String paymentMethod) =>
       "order/checkout/$paymentMethod".customerScope();
 

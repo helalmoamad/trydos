@@ -108,6 +108,8 @@ enum ChangeSizesForEveryProduct { init, loading, success, failure }
 
 enum PlaceOrderStatus { init, loading, success, failure }
 
+enum GetOrdersByOrderGroupIDStatus { init, loading, success, failure }
+
 @JsonSerializable(explicitToJson: true)
 @immutable
 class HomeState extends Equatable {
@@ -147,6 +149,7 @@ class HomeState extends Equatable {
     this.getAddressByCoordinatesModel,
     this.customerWalletModel,
     this.placeOrderModel,
+    this.getOrdersByOrderGroupIDModel,
     this.appliedFiltersByUser = const {},
     this.currentPage = 0,
     this.productStatus,
@@ -188,6 +191,7 @@ class HomeState extends Equatable {
     this.getAddressByCoordinatesStatus,
     this.getCustomerWalletStatus,
     this.placeOrderStatus = PlaceOrderStatus.init,
+    this.getOrdersByOrderGroupIDStatus = GetOrdersByOrderGroupIDStatus.init,
     this.getAddressByTextStatus,
     this.countOfProductExpectedByFiltering,
     this.getCartItemsStatus = GetCartItemsStatus.init,
@@ -225,8 +229,10 @@ class HomeState extends Equatable {
   final List<ResultSearch>? resultSearch;
   final GetAddressByCoordinatesModel? getAddressByCoordinatesModel;
   final CustomerWalletModel? customerWalletModel;
-  final PlaceOrderModel? placeOrderModel;
+  final OrdersGroupModel? placeOrderModel;
   final PlaceOrderStatus? placeOrderStatus;
+  final OrdersGroupModel? getOrdersByOrderGroupIDModel;
+  final GetOrdersByOrderGroupIDStatus? getOrdersByOrderGroupIDStatus;
   final List<ImageForAddToCart>? ListitemForAddToCart;
   final GetAddressByTextStatus? getAddressByTextStatus;
   final GetAddressByCoordinatesStatus? getAddressByCoordinatesStatus;
@@ -358,6 +364,8 @@ class HomeState extends Equatable {
         getCustomerWalletStatus,
         placeOrderStatus,
         placeOrderModel,
+        getOrdersByOrderGroupIDStatus,
+        getOrdersByOrderGroupIDModel,
         getAddressByTextStatus,
         listOfErrorSendedToMobileErrorLog,
         productContentForStatusOfOpeningProductDetailsDirectly,
@@ -422,8 +430,10 @@ class HomeState extends Equatable {
       final GetMainCategoriesStatus? getMainCategoriesStatus,
       final GetAddressByCoordinatesModel? getAddressByCoordinatesModel,
       final CustomerWalletModel? customerWalletModel,
-      final PlaceOrderModel? placeOrderModel,
+      final OrdersGroupModel? placeOrderModel,
       final PlaceOrderStatus? placeOrderStatus,
+      final OrdersGroupModel? getOrdersByOrderGroupIDModel,
+      final GetOrdersByOrderGroupIDStatus? getOrdersByOrderGroupIDStatus,
       final AddItemInCartStatus? addItemInCartStatus,
       final HideItemInOldCartStatus? hideItemInOldCartStatus,
       final ConvertItemFromOldcartToCartStatus?
@@ -567,6 +577,10 @@ class HomeState extends Equatable {
           getCustomerWalletStatus ?? this.getCustomerWalletStatus,
       placeOrderModel: placeOrderModel ?? this.placeOrderModel,
       placeOrderStatus: placeOrderStatus ?? this.placeOrderStatus,
+      getOrdersByOrderGroupIDModel:
+          getOrdersByOrderGroupIDModel ?? this.getOrdersByOrderGroupIDModel,
+      getOrdersByOrderGroupIDStatus:
+          getOrdersByOrderGroupIDStatus ?? this.getOrdersByOrderGroupIDStatus,
       getAddressByTextStatus:
           getAddressByTextStatus ?? this.getAddressByTextStatus,
       addOrRemoveLikeOfProductStatus:

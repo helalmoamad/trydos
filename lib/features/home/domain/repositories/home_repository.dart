@@ -109,8 +109,12 @@ abstract class HomeRepository {
     required int offset,
   });
 
-  Future<Either<Failure, PlaceOrderModel>> placeOrder({
+  Future<Either<Failure, OrdersGroupModel>> placeOrder({
     required Map<String, dynamic> params,
     required String paymentMethod,
+  });
+
+  Future<Either<Failure, OrdersGroupModel>> getOrdersByOrderGroupID({
+    required String orderGroupIdD,
   });
 }
