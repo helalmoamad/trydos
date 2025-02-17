@@ -25,7 +25,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 
 class SelectSizeContent extends StatefulWidget {
-  const SelectSizeContent({
+  SelectSizeContent({
     super.key,
     required this.scrollController,
     this.selectedColor,
@@ -33,6 +33,9 @@ class SelectSizeContent extends StatefulWidget {
     required this.sizes,
     required this.sizesQuantities,
     required this.productId,
+    required this.requestToNotifyMeFormFirstSize,
+    required this.collectedAfterOrdering,
+    required this.colorIsNotAvailableNotifier,
     required this.addToBagButtonShapeNotifier,
     required this.sizeIsNotAvailableNotifier,
   });
@@ -41,11 +44,13 @@ class SelectSizeContent extends StatefulWidget {
   final Color? selectedColor;
   final String? selectedColorName;
   final String productId;
-
+  final bool collectedAfterOrdering;
   final List<String> sizes;
   final List<int> sizesQuantities;
+  bool requestToNotifyMeFormFirstSize;
   final ValueNotifier<int> addToBagButtonShapeNotifier;
   final ValueNotifier<String?> sizeIsNotAvailableNotifier;
+  final ValueNotifier<String?> colorIsNotAvailableNotifier;
 
   @override
   State<SelectSizeContent> createState() => _SelectSizeContentState();
@@ -59,24 +64,26 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
       CarouselSliderController();
   late final ValueNotifier<int> currentIndexInSizes;
   late HomeBloc homeBloc;
+
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
     currentIndexInSizes = ValueNotifier(0);
 
-    if ((homeBloc.state.sizes?.length ?? 0) > 0) {
+    if ((homeBloc.state.sizesForEachColor?.length ?? 0) > 0) {
       int firstSizeSelected = max(
           0,
           (homeBloc.state.CurrentColorSizeForCart?['size'] ?? '') == ''
-              ? (homeBloc.state.sizes?.length ?? 0) ~/ 2
-              : homeBloc.state.sizes!.indexWhere((size) =>
+              ? (homeBloc.state.sizesForEachColor?.length ?? 0) ~/ 2
+              : homeBloc.state.sizesForEachColor!.indexWhere((size) =>
                   homeBloc.state.CurrentColorSizeForCart?['size'] == size));
       homeBloc.add(AddCurrentColorSizeEvent(
-          choice_1: homeBloc.state.sizes?[firstSizeSelected]));
+          choice_1: homeBloc.state.sizesForEachColor?[firstSizeSelected]));
       currentIndexInSizes.value = firstSizeSelected;
     } else {
       homeBloc.add(AddCurrentColorSizeEvent(choice_1: ""));
     }
+
     super.initState();
   }
 
@@ -96,13 +103,10 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
     };
     return BlocBuilder<HomeBloc, HomeState>(
       buildWhen: (p, c) =>
-          p.currentSelectedColorForEveryProduct !=
-              c.currentSelectedColorForEveryProduct ||
-          p.sizes?.length != c.sizes?.length ||
-          p.cartCollection != c.cartCollection,
+          p.changeSizesForEveryProduct != c.changeSizesForEveryProduct,
       builder: (context, state) {
-        sizes = state.sizes ?? [];
-        sizesQuantities = state.sizesQuantities ?? [];
+        sizes = state.sizesForEachColor ?? [];
+        sizesQuantities = state.sizesQuantitiesForEachColor ?? [];
 
         if (sizes.length > 0) {
           homeBloc.add(AddCurrentColorSizeEvent(
@@ -116,7 +120,6 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
             height: 210,
           );
         }
-
         return Container(
           decoration: BoxDecoration(
             color: colorScheme.white,
@@ -239,6 +242,30 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                               itemCount: sizes.length,
                               carouselController: carouselController,
                               itemBuilder: (ctx, index, _) {
+                                if (widget.requestToNotifyMeFormFirstSize) {
+                                  Future.delayed(
+                                    Duration(milliseconds: 300),
+                                    () {
+                                      if (sizesQuantities[currentIndex] == 0 &&
+                                          !widget.collectedAfterOrdering) {
+                                        widget.colorIsNotAvailableNotifier
+                                                .value =
+                                            widget.selectedColorName ?? null;
+
+                                        widget.sizeIsNotAvailableNotifier
+                                            .value = sizes[currentIndex];
+                                        widget.requestToNotifyMeFormFirstSize =
+                                            false;
+                                      } else {
+                                        widget.colorIsNotAvailableNotifier
+                                            .value = null;
+                                        widget.sizeIsNotAvailableNotifier
+                                            .value = null;
+                                      }
+                                    },
+                                  );
+                                }
+
                                 return Padding(
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 5),
@@ -287,11 +314,22 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                                     homeBloc.add(AddCurrentColorSizeEvent(
                                         choice_1: sizes[index]));
                                     HapticFeedback.lightImpact();
-                                    if (sizesQuantities[index] == 0) {
+                                    if (sizesQuantities[index] == 0 &&
+                                        !widget.collectedAfterOrdering) {
+                                      print(
+                                          "!!!!!!!!3333333333333333333333333333333333333333333333333333333333333333333333333!!!!!!!!!!!!!!!!!");
+
                                       widget.sizeIsNotAvailableNotifier.value =
                                           sizes[index];
+                                      widget.colorIsNotAvailableNotifier.value =
+                                          widget.selectedColorName ?? null;
                                     } else {
+                                      print(
+                                          "00000000000000!!!!!!!!3333333333333333333333333333333333333333333333333333333333333333333333333!!!!!!!!!!!!!!!!!");
+
                                       widget.sizeIsNotAvailableNotifier.value =
+                                          null;
+                                      widget.colorIsNotAvailableNotifier.value =
                                           null;
                                     }
                                   },

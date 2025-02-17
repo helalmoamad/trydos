@@ -56,9 +56,9 @@ class _PaymentMethodState extends State<PaymentMethod> {
           valueListenable: widget.paymentMethod,
           builder: (context, _paymentMethod, _) {
             return Container(
-              height: (widget.fromPalceOrder) ? 120.h : 203,
+              height: (widget.fromPalceOrder) ? 120 : 203,
               width: 1.sw,
-              padding: EdgeInsets.all(10.h),
+              padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
                   border: (widget.fromPalceOrder)
@@ -78,13 +78,13 @@ class _PaymentMethodState extends State<PaymentMethod> {
                         style: context.textTheme.bodyMedium?.rr.copyWith(
                             color: const Color(0xff1D1D1D),
                             letterSpacing: 0.18,
-                            fontSize: 14,
+                            fontSize: 14.sp,
                             height: 1.33),
                       ),
                     ],
                   ),
                   SizedBox(
-                    height: 2.h,
+                    height: 2,
                   ),
                   Padding(
                       padding: EdgeInsets.symmetric(
@@ -95,11 +95,11 @@ class _PaymentMethodState extends State<PaymentMethod> {
                         style: context.textTheme.bodyMedium?.rr.copyWith(
                             color: const Color(0xff8D8D8D),
                             letterSpacing: 0.18,
-                            fontSize: 12,
+                            fontSize: 12.sp,
                             height: 1.33),
                       )),
                   SizedBox(
-                    height: 12.h,
+                    height: 8,
                   ),
                   !(_paymentMethod == "trydos_wallet") && widget.fromPalceOrder
                       ? SizedBox.shrink()
@@ -116,7 +116,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                             }
                           },
                           child: Container(
-                              height: 40.h,
+                              height: 38,
                               width: 1.sw,
                               decoration: BoxDecoration(
                                 border: Border.all(
@@ -150,7 +150,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                                                 ? Color(0xff1D1D1D)
                                                 : Color(0xffC4C2C2),
                                             letterSpacing: 0.18,
-                                            fontSize: 12,
+                                            fontSize: 12.sp,
                                             height: 1.33),
                                   ),
                                   Spacer(),
@@ -181,7 +181,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                   (widget.fromPalceOrder)
                       ? SizedBox.shrink()
                       : SizedBox(
-                          height: 12.h,
+                          height: 8,
                         ),
                   !(_paymentMethod == "credit_cards") && widget.fromPalceOrder
                       ? SizedBox.shrink()
@@ -199,7 +199,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                           },
                           child: Center(
                             child: Container(
-                                height: 40.h,
+                                height: 38,
                                 width: 1.sw,
                                 decoration: BoxDecoration(
                                   border: Border.all(
@@ -231,7 +231,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                                                   ? Color(0xff1D1D1D)
                                                   : Color(0xffC4C2C2),
                                               letterSpacing: 0.18,
-                                              fontSize: 12,
+                                              fontSize: 12.sp,
                                               height: 1.33),
                                     ),
                                     Spacer(),
@@ -263,7 +263,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                   (widget.fromPalceOrder)
                       ? SizedBox.shrink()
                       : SizedBox(
-                          height: 12.h,
+                          height: 12,
                         ),
                   !(_paymentMethod == "Crypto") && widget.fromPalceOrder
                       ? SizedBox.shrink()
@@ -280,7 +280,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                             }
                           },
                           child: Container(
-                              height: 40.h,
+                              height: 38,
                               width: 1.sw,
                               decoration: BoxDecoration(
                                 border: Border.all(
@@ -337,7 +337,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
       (widget.fromPalceOrder)
           ? SizedBox.shrink()
           : SizedBox(
-              height: 25.h,
+              height: 25,
             ),
       (widget.fromPalceOrder)
           ? SizedBox.shrink()
@@ -353,7 +353,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                         child: InkWell(
                           onTap: () => isExpandedCoupon.value = !expandedCoupon,
                           child: Container(
-                              height: expandedCoupon ? 117.h : 50.h,
+                              height: expandedCoupon ? 117 : 50,
                               width: 1.sw,
                               padding: EdgeInsets.all(10.h),
                               decoration: BoxDecoration(
@@ -392,7 +392,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                                     !expandedCoupon
                                         ? SizedBox.shrink()
                                         : SizedBox(
-                                            height: 5.h,
+                                            height: 5,
                                           ),
                                     !expandedCoupon
                                         ? SizedBox.shrink()
@@ -420,14 +420,14 @@ class _PaymentMethodState extends State<PaymentMethod> {
                                     !expandedCoupon
                                         ? SizedBox.shrink()
                                         : SizedBox(
-                                            height: 10.h,
+                                            height: 10,
                                           ),
                                     !expandedCoupon
                                         ? SizedBox.shrink()
                                         : applayCoupon
                                             ? Container(
                                                 alignment: Alignment.center,
-                                                height: 40.h,
+                                                height: 40,
                                                 width: 1.sw,
                                                 padding: EdgeInsets.all(10.h),
                                                 decoration: BoxDecoration(
@@ -450,7 +450,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                                                           height: 1.33),
                                                 ))
                                             : Container(
-                                                height: 40.h,
+                                                height: 40,
                                                 width: 1.sw,
                                                 decoration: BoxDecoration(
                                                   color: Color(0xffF8F8F8),
@@ -486,7 +486,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                                                           width: 100.w,
                                                           padding:
                                                               EdgeInsets.all(
-                                                                  10.h),
+                                                                  10),
                                                           alignment:
                                                               Alignment.center,
                                                           decoration: BoxDecoration(

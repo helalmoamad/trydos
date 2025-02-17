@@ -121,7 +121,7 @@ class _RegistrationPageState extends State<RegistrationPage>
       },
       child: ValueListenableBuilder<int>(
           child: ValueListenableBuilder<bool>(
-              child: logo,
+              child: Container(margin: EdgeInsets.only(top: 20), child: logo),
               valueListenable: animate,
               builder: (context, yes, child) {
                 return Directionality(
@@ -130,7 +130,7 @@ class _RegistrationPageState extends State<RegistrationPage>
                       left: yes ? 40 : null,
                       right: yes ? 40 : null,
                       top: yes ? 50 : null,
-                      bottom: yes ? null : 456,
+                      bottom: yes ? null : 465.h,
                       duration: animationDuration,
                       child: child!),
                 );
@@ -150,7 +150,7 @@ class _RegistrationPageState extends State<RegistrationPage>
                 children: [
                   child!,
                   Positioned(
-                    top: 0,
+                    top: 10,
                     right: 0,
                     child: ValueListenableBuilder<int>(
                         valueListenable: pageContent,

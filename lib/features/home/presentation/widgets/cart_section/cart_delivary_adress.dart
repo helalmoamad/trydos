@@ -233,7 +233,7 @@ class _CartDelivaryAdressState extends State<CartDelivaryAdress> {
                         Column(
                           children: [
                             Container(
-                              margin: EdgeInsets.only(top: 60),
+                              margin: EdgeInsets.only(top: 50.h),
                               width: 1.sw,
                               height: 50.h,
                               child: Column(
@@ -356,8 +356,7 @@ class _CartDelivaryAdressState extends State<CartDelivaryAdress> {
                                                                   height:
                                                                       expanded
                                                                           ? 200
-                                                                          : 50
-                                                                              .h,
+                                                                          : 50,
                                                                   width: 1.sw,
                                                                   decoration: BoxDecoration(
                                                                       borderRadius:
@@ -385,11 +384,11 @@ class _CartDelivaryAdressState extends State<CartDelivaryAdress> {
                                                                               ),
                                                                               Text(
                                                                                 "${LocaleKeys.your_shopping_bag.tr()} ",
-                                                                                style: context.textTheme.bodyMedium?.ra.copyWith(color: const Color(0xff1D1D1D), letterSpacing: 0.18, fontSize: 14, height: 1.33),
+                                                                                style: context.textTheme.bodyMedium?.ra.copyWith(color: const Color(0xff1D1D1D), letterSpacing: 0.18, fontSize: 14.sp, height: 1.33),
                                                                               ),
                                                                               Text(
                                                                                 "${widget.cartImages.length} item",
-                                                                                style: context.textTheme.bodyMedium?.br.copyWith(color: const Color(0xff1D1D1D), letterSpacing: 0.18, fontSize: 13, height: 1.33),
+                                                                                style: context.textTheme.bodyMedium?.br.copyWith(color: const Color(0xff1D1D1D), letterSpacing: 0.18, fontSize: 13.sp, height: 1.33),
                                                                               ),
                                                                               Spacer(),
                                                                               Transform.rotate(
@@ -429,7 +428,7 @@ class _CartDelivaryAdressState extends State<CartDelivaryAdress> {
                                                                                         child: Column(
                                                                                           children: [
                                                                                             Container(
-                                                                                              height: 125.h,
+                                                                                              height: 118,
                                                                                               child: ProductDetailsImageWidget(
                                                                                                 withBackGroundShadow: true,
                                                                                                 withInnerShadow: false,
@@ -445,11 +444,11 @@ class _CartDelivaryAdressState extends State<CartDelivaryAdress> {
                                                                                             ),
                                                                                             Text(
                                                                                               '${widget.cartImages[index]["size"]}',
-                                                                                              style: context.textTheme.bodyMedium?.rr.copyWith(color: const Color(0xff1D1D1D), letterSpacing: 0.18, fontSize: 10, height: 1.33),
+                                                                                              style: context.textTheme.bodyMedium?.rr.copyWith(color: const Color(0xff1D1D1D), letterSpacing: 0.18, fontSize: 10.sp, height: 1.33),
                                                                                             ),
                                                                                             Text(
                                                                                               '${widget.cartImages[index]["color"]}',
-                                                                                              style: context.textTheme.bodyMedium?.rr.copyWith(color: const Color(0xff1D1D1D), letterSpacing: 0.18, fontSize: 10, height: 1.33),
+                                                                                              style: context.textTheme.bodyMedium?.rr.copyWith(color: const Color(0xff1D1D1D), letterSpacing: 0.18, fontSize: 10.sp, height: 1.33),
                                                                                             ),
                                                                                           ],
                                                                                         ),
@@ -466,7 +465,7 @@ class _CartDelivaryAdressState extends State<CartDelivaryAdress> {
                                                           height: !(state
                                                                   .listOfAddressInfoClassToSave
                                                                   .isNullOrEmpty)
-                                                              ? 220.h
+                                                              ? 220
                                                               : 203,
                                                           width: 1.sw,
                                                           decoration: BoxDecoration(
@@ -512,7 +511,7 @@ class _CartDelivaryAdressState extends State<CartDelivaryAdress> {
                                                                           style: context.textTheme.bodyMedium?.ra.copyWith(
                                                                               color: const Color(0xff1D1D1D),
                                                                               letterSpacing: 0.18,
-                                                                              fontSize: 14,
+                                                                              fontSize: 14.sp,
                                                                               height: 0.8),
                                                                         ),
                                                                         SizedBox(
@@ -526,7 +525,7 @@ class _CartDelivaryAdressState extends State<CartDelivaryAdress> {
                                                                         )
                                                                       ])),
                                                               SizedBox(
-                                                                height: 5.h,
+                                                                height: 5,
                                                               ),
                                                               Container(
                                                                   margin: EdgeInsets
@@ -543,13 +542,13 @@ class _CartDelivaryAdressState extends State<CartDelivaryAdress> {
                                                                             0xff8D8D8D),
                                                                         letterSpacing:
                                                                             0.18,
-                                                                        fontSize:
-                                                                            12,
+                                                                        fontSize: 12
+                                                                            .sp,
                                                                         height:
                                                                             0.8),
                                                                   )),
                                                               SizedBox(
-                                                                height: 12.h,
+                                                                height: 12,
                                                               ),
                                                               !state.listOfAddressInfoClassToSave
                                                                       .isNullOrEmpty
@@ -582,7 +581,7 @@ class _CartDelivaryAdressState extends State<CartDelivaryAdress> {
                                                                     )
                                                                   : Container(
                                                                       height:
-                                                                          85.h,
+                                                                          85,
                                                                       width:
                                                                           1.sw,
                                                                       padding: EdgeInsets.symmetric(
@@ -605,7 +604,7 @@ class _CartDelivaryAdressState extends State<CartDelivaryAdress> {
                                                                         children: [
                                                                           SizedBox(
                                                                             height:
-                                                                                8.h,
+                                                                                8,
                                                                           ),
                                                                           SvgPicture
                                                                               .asset(
@@ -613,7 +612,7 @@ class _CartDelivaryAdressState extends State<CartDelivaryAdress> {
                                                                           ),
                                                                           SizedBox(
                                                                             height:
-                                                                                18.h,
+                                                                                18,
                                                                           ),
                                                                           Text(
                                                                             "${LocaleKeys.your_address_list_is_empty.tr()} ",
@@ -625,7 +624,7 @@ class _CartDelivaryAdressState extends State<CartDelivaryAdress> {
                                                                           ),
                                                                           SizedBox(
                                                                             height:
-                                                                                8.h,
+                                                                                8,
                                                                           ),
                                                                           Text(
                                                                             "${LocaleKeys.you_can_also_create_multiple_addresses_to_use.tr()} ",
@@ -643,7 +642,7 @@ class _CartDelivaryAdressState extends State<CartDelivaryAdress> {
                                                                         .listOfAddressInfoClassToSave
                                                                         .isNullOrEmpty)
                                                                     ? 10
-                                                                    : 20.h,
+                                                                    : 20,
                                                               ),
                                                               !state.listOfAddressInfoClassToSave
                                                                       .isNullOrEmpty
@@ -656,7 +655,7 @@ class _CartDelivaryAdressState extends State<CartDelivaryAdress> {
                                                                       child:
                                                                           Container(
                                                                         height:
-                                                                            15.h,
+                                                                            15,
                                                                         width: 1
                                                                             .sw,
                                                                         child:
@@ -751,21 +750,9 @@ class _CartDelivaryAdressState extends State<CartDelivaryAdress> {
                                                       (state.listOfAddressInfoClassToSave
                                                               .isNullOrEmpty)
                                                           ? SizedBox.shrink()
-                                                          : ValueListenableBuilder<
-                                                                  bool>(
-                                                              valueListenable:
-                                                                  isExpanded,
-                                                              builder: (context,
-                                                                  _isExpanded,
-                                                                  _) {
-                                                                return SizedBox(
-                                                                  height:
-                                                                      !_isExpanded
-                                                                          ? 10.h
-                                                                          : 120
-                                                                              .h,
-                                                                );
-                                                              }),
+                                                          : SizedBox(
+                                                              height: 120,
+                                                            )
                                                     ])))),
                                         ValueListenableBuilder<bool>(
                                             valueListenable: showPanel,
@@ -791,7 +778,7 @@ class _CartDelivaryAdressState extends State<CartDelivaryAdress> {
                                                     .isNullOrEmpty)
                                                 ? SizedBox.shrink()
                                                 : Container(
-                                                    height: 100.h,
+                                                    height: 90,
                                                     decoration: BoxDecoration(
                                                       border: Border.all(
                                                         color: Color.fromRGBO(
@@ -916,7 +903,7 @@ class _CartDelivaryAdressState extends State<CartDelivaryAdress> {
                                                                                 height: 0.8),
                                                                           ),
                                                                         ],
-                                                                      ),
+                                                                      )
                                                                     ],
                                                                   )),
                                                                 ),
@@ -1302,10 +1289,10 @@ Widget AddressInfoWithContactInfoCart(
     required void Function()? onTapDelete}) {
   return Container(
       height: (placeOrder ?? false)
-          ? 130.h
+          ? 130
           : (!isDelete && cartChoosed)
-              ? 125.h
-              : 90.h,
+              ? 125
+              : 90,
       width: 1.sw,
       padding: EdgeInsets.only(
           right: LanguageService.languageCode == "ar" ? 20 : 10,
@@ -1523,17 +1510,17 @@ Widget AddressInfoWithContactInfoCart(
           !(!isDelete && cartChoosed)
               ? SizedBox.shrink()
               : SizedBox(
-                  height: 8.h,
+                  height: 15,
                 ),
           !(placeOrder ?? false)
               ? SizedBox.shrink()
               : SizedBox(
-                  height: 5.h,
+                  height: 5,
                 ),
           !(!isDelete && cartChoosed)
               ? SizedBox.shrink()
               : Container(
-                  height: 30.h,
+                  height: 30,
                   width: 1.sw,
                   decoration: BoxDecoration(
                       color: (placeOrder ?? false) || (successfulOrder ?? false)

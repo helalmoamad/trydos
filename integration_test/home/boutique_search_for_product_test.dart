@@ -20,6 +20,7 @@ void main() {
     (WidgetTester tester) async {
       // Initialize the main application
       app.main();
+
       await tester.pumpAndSettle();
       // Set test mode to true
       TestVariables.kTestMode = true;

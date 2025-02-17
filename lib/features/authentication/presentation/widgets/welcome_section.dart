@@ -268,7 +268,7 @@ class _WelcomeSectionState extends State<WelcomeSection> {
               ),
             ),
           ),
-          SizedBox(height: 50.h),
+          SizedBox(height: 60.h),
         ],
       ),
     );
