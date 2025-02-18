@@ -57,10 +57,11 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
 
   @override
   void initState() {
-    appBloc = BlocProvider.of<AppBloc>(navigatorKey.currentState!.context);
+    appBloc = BlocProvider.of<AppBloc>(context);
 
     homeBloc = BlocProvider.of<HomeBloc>(context);
-
+    homeBloc.add(RemoveItemsFromCartAfterOrderSuccessEvent());
+    homeBloc.add(GetCartItemEvent(fromTerminitedStatusl: true));
     super.initState();
   }
 

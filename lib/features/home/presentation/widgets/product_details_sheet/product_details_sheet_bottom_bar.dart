@@ -151,8 +151,8 @@ class _ProductDetailsSheetBottomBarState
           previous.updateItemInCartStatus != current.updateItemInCartStatus ||
           previous.addItemInCartStatus != current.addItemInCartStatus ||
           previous.deleteItemInCartStatus != current.deleteItemInCartStatus ||
-          previous.ListitemForAddToCart?.length !=
-              current.ListitemForAddToCart?.length ||
+          previous.listitemForAddToCart?.length !=
+              current.listitemForAddToCart?.length ||
           previous.getCommentForProductStatus !=
               current.getCommentForProductStatus ||
           previous.changeSizesForEveryProduct !=
@@ -568,7 +568,7 @@ class _ProductDetailsSheetBottomBarState
                                                                                                     height: 20,
                                                                                                     child: ListView.builder(
                                                                                                       itemBuilder: (context, index) {
-                                                                                                        return Align(widthFactor: 1 - (itemCount / 12 * 0.3), child: MyCachedNetworkImage(circleDimensions: 15, imageUrl: state.ListitemForAddToCart != null ? state.ListitemForAddToCart![index].images! : "", width: 15, imageWidth: 70, imageHeight: 70, imageFit: BoxFit.cover, height: 20)); /*Container(
+                                                                                                        return Align(widthFactor: 1 - (itemCount / 12 * 0.3), child: MyCachedNetworkImage(circleDimensions: 15, imageUrl: state.listitemForAddToCart != null ? state.listitemForAddToCart![index].images! : "", width: 15, imageWidth: 70, imageHeight: 70, imageFit: BoxFit.cover, height: 20)); /*Container(
                                                                                               width: 15,
                                                                                               height: 20,
                                                                                               decoration: BoxDecoration(
@@ -583,7 +583,7 @@ class _ProductDetailsSheetBottomBarState
                                                                                                       reverse: true,
                                                                                                       shrinkWrap: true,
                                                                                                       scrollDirection: Axis.horizontal,
-                                                                                                      itemCount: state.ListitemForAddToCart != null ? state.ListitemForAddToCart!.length : 0,
+                                                                                                      itemCount: state.listitemForAddToCart != null ? state.listitemForAddToCart!.length : 0,
                                                                                                     ),
                                                                                                   ),
                                                                                                 },

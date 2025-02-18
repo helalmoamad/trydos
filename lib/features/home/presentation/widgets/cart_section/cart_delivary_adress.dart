@@ -122,6 +122,8 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
             List<String> availablePaymentMethod =
                 state.getCartShippingItemsModel!.data!.availablePaymentMethod ??
                     [];
+            print(
+                "@@@@@@@@@@@@@@######################################################################################${availablePaymentMethod}");
             return ValueListenableBuilder<bool>(
               valueListenable: showDeleteAddress,
               builder: (context, _showDeleteAddress, _) {

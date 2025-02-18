@@ -654,6 +654,13 @@ class GetCartItemEvent extends HomeEvent {
   List<Object?> get props => [];
 }
 
+class RemoveItemsFromCartAfterOrderSuccessEvent extends HomeEvent {
+  const RemoveItemsFromCartAfterOrderSuccessEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
 class GetOldCartItemEvent extends HomeEvent {
   const GetOldCartItemEvent();
 

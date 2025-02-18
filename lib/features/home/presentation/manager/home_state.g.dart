@@ -305,7 +305,7 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               const {},
       fromSearchForSearchWithGemini:
           json['fromSearchForSearchWithGemini'] as bool? ?? false,
-      ListitemForAddToCart: (json['ListitemForAddToCart'] as List<dynamic>?)
+      listitemForAddToCart: (json['ListitemForAddToCart'] as List<dynamic>?)
           ?.map((e) => ImageForAddToCart.fromJson(e as Map<String, dynamic>))
           .toList(),
       getListOfProductsFoundedInCartStatus: $enumDecodeNullable(
@@ -508,7 +508,7 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'getOrdersByOrderGroupIDStatus': _$GetOrdersByOrderGroupIDStatusEnumMap[
           instance.getOrdersByOrderGroupIDStatus],
       'ListitemForAddToCart':
-          instance.ListitemForAddToCart?.map((e) => e.toJson()).toList(),
+          instance.listitemForAddToCart?.map((e) => e.toJson()).toList(),
       'getAddressByTextStatus':
           _$GetAddressByTextStatusEnumMap[instance.getAddressByTextStatus],
       'getAddressByCoordinatesStatus': _$GetAddressByCoordinatesStatusEnumMap[

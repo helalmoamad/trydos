@@ -388,6 +388,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<GetOrdersByOrderGroupIDEvent>(
       _onGetOrdersByOrderGroupIDEvent,
     );
+    on<RemoveItemsFromCartAfterOrderSuccessEvent>(
+      _onRemoveItemsFromCartAfterOrderSuccessEvent,
+    );
   }
 
   Map<String, bool> boutiquesThatEnablesToRequestItsProductsUsingFiveFilters =
@@ -499,6 +502,20 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       theReplyFromGemini: !event.resetTheReply ? event.theReplyFromGemini : "",
       fromSearchForSearchWithGemini: event.fromSearch,
     ));
+  }
+
+  FutureOr<void> _onRemoveItemsFromCartAfterOrderSuccessEvent(
+      RemoveItemsFromCartAfterOrderSuccessEvent event,
+      Emitter<HomeState> emit) async {
+    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+    emit(state.copyWith(
+      cartCollection: [],
+      currentQuantityForCart: {},
+      addImagesToProductIdForCart: {},
+      listitemForAddToCart: [],
+    ));
+    print(
+        "@@@@@@@@@@@${state.cartCollection}@@@@@@${state.currentQuantityForCart}@${state.addImagesToProductIdForCart}@${state.listitemForAddToCart}@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
   }
 
   FutureOr<void> _onAddAddressInfoClassEvent(
@@ -1120,7 +1137,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       appliedFiltersByUser: {},
       cashedOrginalBoutique: false,
       isGettingProductListingWithPagination: false,
-      ListitemForAddToCart: [],
+      listitemForAddToCart: [],
       getMainCategoriesStatus: GetMainCategoriesStatus.init,
       getAndAddCountViewOfProductStatus: {},
       getProductDetailWithoutSimilarRelatedProductsStatus:
@@ -2414,7 +2431,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           appliedFiltersByUser: {},
           cashedOrginalBoutique: false,
           isGettingProductListingWithPagination: false,
-          ListitemForAddToCart: [],
+          listitemForAddToCart: [],
           getMainCategoriesStatus: GetMainCategoriesStatus.init,
           getAndAddCountViewOfProductStatus: {},
           getProductDetailWithoutSimilarRelatedProductsStatus:
@@ -4551,7 +4568,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       ChangeSelectedFiltersEvent event, Emitter<HomeState> emit) {
     bool makeChoosedFiltersNull = false;
     String key = event.boutiqueSlug + (event.category ?? '');
-    print("AAAAAAAAAAAAAQQQQQQQQQQQQAAQQAQAQ${key}");
     Map<String, filters_model.GetProductFiltersModel?> choosedFilters =
         Map.of(state.choosedFiltersByUser);
     if (event.filtersChoosedByUser?.filters != null) {
@@ -4569,25 +4585,15 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       makeChoosedFiltersNull = true;
     }
     if (event.resetChoosedFilters || makeChoosedFiltersNull) {
-      print(
-          "111111111111AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
-
       choosedFilters[key] = null;
     } else {
-      print(
-          "222222222222AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQQQQQQQQQQQQQQQQQQQQQQQQQQ");
-
       choosedFilters[key] = event.filtersChoosedByUser;
     }
-    print(
-        "222222${choosedFilters[key]?.filters?.categories?.length}222222AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQQQQQQQQQQQQQQQQQQQQQQQQQQ");
 
     emit(state.copyWith(
         choosedFiltersByUser: Map.of(choosedFilters),
         isExpandedForLidtingPage: event.isExpandedForListing,
         theReplyFromGemini: event.resetChoosedFilters ? "" : null));
-    print(
-        ".......222222${state.choosedFiltersByUser[key]?.filters?.categories?.length}222222AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQQQQQQQQQQQQQQQQQQQQQQQQQQ");
 
     if (event.requestToUpdateFilters) {
       add(GetProductFiltersEvent(
@@ -4602,12 +4608,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   FutureOr<void> _onAddMultiItemsToCartEvent(
       AddMultiItemsToCartEvent event, Emitter<HomeState> emit) {
     List<ImageForAddToCart>? listitemForAddToCart =
-        List.of(state.ListitemForAddToCart ?? []);
-    print(
-        "/////////////////////////////////////8888888888888888${listitemForAddToCart.length}");
+        List.of(state.listitemForAddToCart ?? []);
     listitemForAddToCart.removeWhere((element) => element.quantity == 0);
-    print(
-        "///////////////////////////////////999999999999999999${listitemForAddToCart.length}");
     for (var i = 0; i < listitemForAddToCart.length; i++) {
       add(AddItemToCartEvent(
           finishAddAllTheItems: i == listitemForAddToCart.length - 1,
@@ -4637,7 +4639,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       );
     }
 
-    emit(state.copyWith(ListitemForAddToCart: []));
+    emit(state.copyWith(listitemForAddToCart: []));
   }
 
   FutureOr<void> _onGetAllowedCountriesEvent(
@@ -4660,7 +4662,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   FutureOr<void> _onUpdateListOfItemForAddToCartEvent(
       UpdateListOfItemForAddToCartEvent event, Emitter<HomeState> emit) async {
     if (event.resetTheList) {
-      emit(state.copyWith(ListitemForAddToCart: []));
+      emit(state.copyWith(listitemForAddToCart: []));
       return;
     }
 
@@ -4674,21 +4676,17 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             ? state.currentColorSizeForCart!["size"]
             : "");
 
-    List<ImageForAddToCart>? ListitemForAddToCart =
-        state.ListitemForAddToCart ?? [];
-    print(
-        "///////////////////////////////////999999999999999999${ListitemForAddToCart.length}");
+    List<ImageForAddToCart>? listitemForAddToCart =
+        state.listitemForAddToCart ?? [];
     ImageForAddToCart? newImageToAddToCart = imageForAddToCart;
     if (event.operation == "+") {
-      if (ListitemForAddToCart.isNullOrEmpty) {
-        ListitemForAddToCart.addAll([imageForAddToCart]);
-        emit(state.copyWith(ListitemForAddToCart: ListitemForAddToCart));
-        print(
-            "///////////////////////////////////999999999999999999${ListitemForAddToCart.length}");
+      if (listitemForAddToCart.isNullOrEmpty) {
+        listitemForAddToCart.addAll([imageForAddToCart]);
+        emit(state.copyWith(listitemForAddToCart: listitemForAddToCart));
         return;
       }
-      for (var i = 0; i < ListitemForAddToCart.length; i++) {
-        ImageForAddToCart element = ListitemForAddToCart[i];
+      for (var i = 0; i < listitemForAddToCart.length; i++) {
+        ImageForAddToCart element = listitemForAddToCart[i];
 
         if (element.images == imageForAddToCart.images &&
             element.colorName == imageForAddToCart.colorName &&
@@ -4703,7 +4701,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               images: element.images);
           break;
         } else {
-          if (!ListitemForAddToCart.any((element) =>
+          if (!listitemForAddToCart.any((element) =>
               (element.images == imageForAddToCart.images &&
                   element.colorName == imageForAddToCart.colorName &&
                   element.size == imageForAddToCart.size))) {
@@ -4711,16 +4709,16 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           }
         }
       }
-      emit(state.copyWith(ListitemForAddToCart: [
-        ...ListitemForAddToCart,
+      emit(state.copyWith(listitemForAddToCart: [
+        ...listitemForAddToCart,
         newImageToAddToCart!
       ]));
     } else {
-      if (ListitemForAddToCart.last.isDuplicate == true) {
-        ImageForAddToCart itemLast = ListitemForAddToCart.last;
+      if (listitemForAddToCart.last.isDuplicate == true) {
+        ImageForAddToCart itemLast = listitemForAddToCart.last;
 
         if (itemLast.isDuplicate == true) {
-          ListitemForAddToCart = ListitemForAddToCart.map((e) {
+          listitemForAddToCart = listitemForAddToCart.map((e) {
             if (e.quantity! > 0 &&
                 e.colorName == itemLast.colorName &&
                 e.size == itemLast.size &&
@@ -4734,12 +4732,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             }
             return e;
           }).toList();
-          ListitemForAddToCart.removeLast();
+          listitemForAddToCart.removeLast();
         }
       } else {
-        ListitemForAddToCart.removeLast();
+        listitemForAddToCart.removeLast();
       }
-      emit(state.copyWith(ListitemForAddToCart: ListitemForAddToCart));
+      emit(state.copyWith(listitemForAddToCart: listitemForAddToCart));
     }
   }
 

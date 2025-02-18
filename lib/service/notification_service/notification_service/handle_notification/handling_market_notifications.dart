@@ -28,6 +28,7 @@ enum TypeOfNotificationForMarketEnum {
   product_hurry_up_time_left,
   product_when_change_in_price,
   product_before_stock_out,
+  order_placed
 }
 
 Map<TypeOfNotificationForMarketEnum, String> TypeOfNotificationForMarket = {
@@ -45,7 +46,8 @@ Map<TypeOfNotificationForMarketEnum, String> TypeOfNotificationForMarket = {
   TypeOfNotificationForMarketEnum.product_hurry_up_quantity:
       "product hurry up notification quantity",
   TypeOfNotificationForMarketEnum.product_hurry_up_time_left:
-      "product hurry up notification time left"
+      "product hurry up notification time left",
+  TypeOfNotificationForMarketEnum.order_placed: "order placed"
 };
 
 class HandlingMarketNotifications {
@@ -80,8 +82,14 @@ class HandlingMarketNotifications {
 
   // هنا حسب نوع الاشعار نحدد إلى أي صفحة سننتقل او ماذا سنفعل
   static dealWithNotificationFromMarket(Map data, bool fromBackground) async {
-    GetIt.I<PrefsRepository>().setNotificationTypesOfMarketFromTerminated("");
+    // GetIt.I<PrefsRepository>().setNotificationTypesOfMarketFromTerminated("");
     //    BlocProvider.of<AppBloc>(context).add(ChangeBasePage(1));
+    if (data["type"] ==
+        TypeOfNotificationForMarket[
+            TypeOfNotificationForMarketEnum.order_placed]) {
+      GetIt.I<HomeBloc>().add(
+          GetOrdersByOrderGroupIDEvent(orderGroupId: data["order_group_id"]));
+    }
     if (data["type"] ==
             TypeOfNotificationForMarket[
                 TypeOfNotificationForMarketEnum.product_cart_expiration] ||

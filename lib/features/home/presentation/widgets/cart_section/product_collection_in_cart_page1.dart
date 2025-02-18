@@ -1107,7 +1107,7 @@ class _ProductCollectionInCartPage1State
                               LanguageService.languageCode != "ar" ? 5 : null,
                           left: LanguageService.languageCode != "ar" ? null : 5,
                         ),
-                        Positioned(
+                        /*   Positioned(
                           child: Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
@@ -1151,7 +1151,7 @@ class _ProductCollectionInCartPage1State
                               LanguageService.languageCode != "ar" ? 20 : null,
                           left:
                               LanguageService.languageCode != "ar" ? null : 20,
-                        ),
+                        )*/
                         Positioned(
                             bottom: -15,
                             child: isOldCart
