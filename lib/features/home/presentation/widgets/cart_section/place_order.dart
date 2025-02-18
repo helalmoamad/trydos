@@ -530,11 +530,10 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
   Widget buildAddress(BuildContext context) {
     return Container(
-      height: 180,
       width: 1.sw,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
             margin: EdgeInsets.only(top: 10, left: 10, right: 10),
@@ -565,7 +564,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
             ),
           ),
           SizedBox(
-            height: 5,
+            height: 5.h,
           ),
           Container(
             margin: EdgeInsets.symmetric(horizontal: 35.w),
@@ -579,7 +578,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
             ),
           ),
           SizedBox(
-            height: 10,
+            height: 12.h,
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),

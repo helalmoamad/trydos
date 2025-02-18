@@ -3,8 +3,12 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
+import 'package:trydos/common/helper/show_message.dart';
+import 'package:trydos/core/data/repository/prefs_repository_impl.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
@@ -101,6 +105,13 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     try {
+      if (err.response?.statusCode == 400) {
+        showMessage(jsonDecode(err.response.toString())["message"].toString(),
+            foreGroundColor: Colors.white,
+            backGroundColor: Colors.black,
+            showInRelease: true,
+            timeShowing: Toast.LENGTH_LONG);
+      }
       if (jsonDecode(err.response.toString())["message"]
               .toString()
               .contains("Unauth") &&

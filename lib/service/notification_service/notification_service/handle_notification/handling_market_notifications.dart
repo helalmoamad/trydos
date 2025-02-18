@@ -23,7 +23,11 @@ enum TypeOfNotificationForMarketEnum {
   product_discount,
   product_comment,
   category_created,
-  boutique_created
+  boutique_created,
+  product_hurry_up_quantity,
+  product_hurry_up_time_left,
+  product_when_change_in_price,
+  product_before_stock_out,
 }
 
 Map<TypeOfNotificationForMarketEnum, String> TypeOfNotificationForMarket = {
@@ -34,6 +38,14 @@ Map<TypeOfNotificationForMarketEnum, String> TypeOfNotificationForMarket = {
       "product cart expiration",
   TypeOfNotificationForMarketEnum.product_comment: "product comment",
   TypeOfNotificationForMarketEnum.product_discount: "product discount",
+  TypeOfNotificationForMarketEnum.product_when_change_in_price:
+      "product when change in price",
+  TypeOfNotificationForMarketEnum.product_before_stock_out:
+      "product before stock out",
+  TypeOfNotificationForMarketEnum.product_hurry_up_quantity:
+      "product hurry up notification quantity",
+  TypeOfNotificationForMarketEnum.product_hurry_up_time_left:
+      "product hurry up notification time left"
 };
 
 class HandlingMarketNotifications {
@@ -48,8 +60,14 @@ class HandlingMarketNotifications {
 
     if (message.data["title"] == "market") {
       if (data?["type"] ==
-          TypeOfNotificationForMarket[
-              TypeOfNotificationForMarketEnum.product_cart_expiration]) {
+              TypeOfNotificationForMarket[
+                  TypeOfNotificationForMarketEnum.product_cart_expiration] ||
+          data?["type"] ==
+              TypeOfNotificationForMarket[
+                  TypeOfNotificationForMarketEnum.product_hurry_up_time_left] ||
+          data?["type"] ==
+              TypeOfNotificationForMarket[
+                  TypeOfNotificationForMarketEnum.product_hurry_up_quantity]) {
         GetIt.I<HomeBloc>().add(GetOldCartItemEvent());
         GetIt.I<HomeBloc>().add(GetCartItemEvent());
       }
@@ -65,8 +83,14 @@ class HandlingMarketNotifications {
     GetIt.I<PrefsRepository>().setNotificationTypesOfMarketFromTerminated("");
     //    BlocProvider.of<AppBloc>(context).add(ChangeBasePage(1));
     if (data["type"] ==
-        TypeOfNotificationForMarket[
-            TypeOfNotificationForMarketEnum.product_cart_expiration]) {
+            TypeOfNotificationForMarket[
+                TypeOfNotificationForMarketEnum.product_cart_expiration] ||
+        data["type"] ==
+            TypeOfNotificationForMarket[
+                TypeOfNotificationForMarketEnum.product_hurry_up_time_left] ||
+        data["type"] ==
+            TypeOfNotificationForMarket[
+                TypeOfNotificationForMarketEnum.product_hurry_up_quantity]) {
       try {
         Future.delayed(
           Duration(seconds: 1),
@@ -107,6 +131,63 @@ class HandlingMarketNotifications {
                   )));
         } catch (e) {}
       }
+
+      if (data["type"] ==
+          TypeOfNotificationForMarket[
+              TypeOfNotificationForMarketEnum.product_before_stock_out]) {
+        try {
+          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
+              GetFullProductDetailsEvent(
+                  productSlug: data["product_slug"].toString(),
+                  productId: data["product_id"].toString()));
+          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
+              AddCurrentSelectedColorEvent(
+                  currentSelectedColor: 0,
+                  productId: data["product_id"].toString()));
+
+          Future.delayed(
+              Duration(seconds: 1),
+              () => Navigator.of(navigatorKey.currentState!.context)
+                      .push(PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        ProductDetailsPage(
+                            productSlugForOpeningChatDirectly:
+                                data["product_slug"].toString(),
+                            fromNotification: fromBackground,
+                            productIdForOpeningChatDirectly:
+                                data["product_id"].toString()),
+                  )));
+        } catch (e) {}
+      }
+
+      if (data["type"] ==
+          TypeOfNotificationForMarket[
+              TypeOfNotificationForMarketEnum.product_when_change_in_price]) {
+        try {
+          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
+              GetFullProductDetailsEvent(
+                  productSlug: data["product_slug"].toString(),
+                  productId: data["product_id"].toString()));
+          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
+              AddCurrentSelectedColorEvent(
+                  currentSelectedColor: 0,
+                  productId: data["product_id"].toString()));
+
+          Future.delayed(
+              Duration(seconds: 1),
+              () => Navigator.of(navigatorKey.currentState!.context)
+                      .push(PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        ProductDetailsPage(
+                            productSlugForOpeningChatDirectly:
+                                data["product_slug"].toString(),
+                            fromNotification: fromBackground,
+                            productIdForOpeningChatDirectly:
+                                data["product_id"].toString()),
+                  )));
+        } catch (e) {}
+      }
+
       if (data["type"] ==
           TypeOfNotificationForMarket[
               TypeOfNotificationForMarketEnum.product_discount]) {
@@ -153,6 +234,7 @@ class HandlingMarketNotifications {
                       .push(PageRouteBuilder(
                     pageBuilder: (context, animation, secondaryAnimation) =>
                         ProductDetailsPage(
+                            fromNotificationComment: true,
                             fromNotification: fromBackground,
                             productSlugForOpeningChatDirectly:
                                 data["product_slug"].toString(),
@@ -245,99 +327,125 @@ class SubsecribeOrUnSubsecribeToTopic {
       .toLowerCase();
 
   void SubsecribeToOtherTopic(String topic) async {
-    await FirebaseMessaging.instance.subscribeToTopic(topic);
-    GetIt.I<PrefsRepository>().setTopicThatAlreadySubsecribed(topic);
+    /*await FirebaseMessaging.instance.subscribeToTopic(topic);
+    GetIt.I<PrefsRepository>().setTopicThatAlreadySubsecribed(topic);*/
+    GetIt.I<HomeBloc>().add(SubscribeTopicForNotificationEvent(topic: topic));
   }
 
   void UnSubsecribeToOtherTopic(String topic) async {
-    await FirebaseMessaging.instance.unsubscribeFromTopic(topic);
-    GetIt.I<PrefsRepository>().removeTopicThatAlreadySubsecribed(topic);
+    /* await FirebaseMessaging.instance.unsubscribeFromTopic(topic);
+    GetIt.I<PrefsRepository>().removeTopicThatAlreadySubsecribed(topic);*/
+    GetIt.I<HomeBloc>().add(UnSubscribeTopicForNotificationEvent(topic: topic));
   }
 
   void SubsecribeToBoutiqueCreated() async {
-    await FirebaseMessaging.instance.subscribeToTopic(
+    /* await FirebaseMessaging.instance.subscribeToTopic(
         "boutique_created_${countryISo}_${LanguageService.languageCode}");
 
     GetIt.I<PrefsRepository>().setTopicThatAlreadySubsecribed(
-        "boutique_created_${countryISo}_${LanguageService.languageCode}");
+        "boutique_created_${countryISo}_${LanguageService.languageCode}");*/
+    GetIt.I<HomeBloc>()
+        .add(SubscribeTopicForNotificationEvent(topic: "boutique_created"));
   }
 
   void UnSubsecribeToBoutiqueCreated() async {
-    await FirebaseMessaging.instance.unsubscribeFromTopic(
+    /*await FirebaseMessaging.instance.unsubscribeFromTopic(
         "boutique_created_${countryISo}_${LanguageService.languageCode}");
 
     GetIt.I<PrefsRepository>().removeTopicThatAlreadySubsecribed(
-        "boutique_created_${countryISo}_${LanguageService.languageCode}");
+        "boutique_created_${countryISo}_${LanguageService.languageCode}");*/
+    GetIt.I<HomeBloc>()
+        .add(UnSubscribeTopicForNotificationEvent(topic: "boutique_created"));
   }
 
   void SubsecribeToCategoryCreated() async {
-    await FirebaseMessaging.instance.subscribeToTopic(
+    /*  await FirebaseMessaging.instance.subscribeToTopic(
         "category_created_${countryISo}_${LanguageService.languageCode}");
 
     GetIt.I<PrefsRepository>().setTopicThatAlreadySubsecribed(
-        "category_created_${countryISo}_${LanguageService.languageCode}");
+        "category_created_${countryISo}_${LanguageService.languageCode}");*/
+    GetIt.I<HomeBloc>()
+        .add(SubscribeTopicForNotificationEvent(topic: "category_created"));
   }
 
   void UnSubsecribeToCategoryCreated() async {
-    await FirebaseMessaging.instance.unsubscribeFromTopic(
+    /* await FirebaseMessaging.instance.unsubscribeFromTopic(
         "category_created_${countryISo}_${LanguageService.languageCode}");
     GetIt.I<PrefsRepository>().removeTopicThatAlreadySubsecribed(
-        "category_created_${countryISo}_${LanguageService.languageCode}");
+        "category_created_${countryISo}_${LanguageService.languageCode}");*/
+    GetIt.I<HomeBloc>()
+        .add(UnSubscribeTopicForNotificationEvent(topic: "category_created"));
   }
 
   void SubsecribeToProductDiscount(String productId) async {
-    await FirebaseMessaging.instance.subscribeToTopic(
+    /*  await FirebaseMessaging.instance.subscribeToTopic(
         "product_discount_${productId}_${countryISo}_${LanguageService.languageCode}");
     GetIt.I<PrefsRepository>().setTopicThatAlreadySubsecribed(
-        "product_discount_${productId}_${countryISo}_${LanguageService.languageCode}");
+        "product_discount_${productId}_${countryISo}_${LanguageService.languageCode}");*/
+    GetIt.I<HomeBloc>().add(SubscribeTopicForNotificationEvent(
+        topic: "product_discount_${productId}"));
   }
 
   void unSubsecribeToProductDiscount(String productId) async {
-    await FirebaseMessaging.instance.unsubscribeFromTopic(
+    /*  await FirebaseMessaging.instance.unsubscribeFromTopic(
         "product_discount_${productId}_${countryISo}_${LanguageService.languageCode}");
     GetIt.I<PrefsRepository>().removeTopicThatAlreadySubsecribed(
-        "product_discount_${productId}_${countryISo}_${LanguageService.languageCode}");
+        "product_discount_${productId}_${countryISo}_${LanguageService.languageCode}");*/
+    GetIt.I<HomeBloc>().add(UnSubscribeTopicForNotificationEvent(
+        topic: "product_discount_${productId}"));
   }
 
   void SubsecribeToProductComment(String productId) async {
-    await FirebaseMessaging.instance.subscribeToTopic(
+    /* await FirebaseMessaging.instance.subscribeToTopic(
         "product_comment_${productId}_${countryISo}_${LanguageService.languageCode}");
     GetIt.I<PrefsRepository>().setTopicThatAlreadySubsecribed(
-        "product_comment_${productId}_${countryISo}_${LanguageService.languageCode}");
+        "product_comment_${productId}_${countryISo}_${LanguageService.languageCode}");*/
+    GetIt.I<HomeBloc>().add(SubscribeTopicForNotificationEvent(
+        topic: "product_comment_${productId}"));
   }
 
   void UnSubsecribeToProductComment(String productId) async {
-    await FirebaseMessaging.instance.unsubscribeFromTopic(
+    /*   await FirebaseMessaging.instance.unsubscribeFromTopic(
         "product_comment_${productId}_${countryISo}_${LanguageService.languageCode}");
     GetIt.I<PrefsRepository>().removeTopicThatAlreadySubsecribed(
-        "product_comment_${productId}_${countryISo}_${LanguageService.languageCode}");
+        "product_comment_${productId}_${countryISo}_${LanguageService.languageCode}");*/
+    GetIt.I<HomeBloc>().add(UnSubscribeTopicForNotificationEvent(
+        topic: "product_comment_${productId}"));
   }
 
   void SubsecribeToProductHurryUpTimeLeft(String cartId) async {
-    await FirebaseMessaging.instance.subscribeToTopic(
+    /*   await FirebaseMessaging.instance.subscribeToTopic(
         "product_hurry_up_time_left_${cartId}_${countryISo}_${LanguageService.languageCode}");
     GetIt.I<PrefsRepository>().setTopicThatAlreadySubsecribed(
-        "product_hurry_up_time_left_${cartId}_${countryISo}_${LanguageService.languageCode}");
+        "product_hurry_up_time_left_${cartId}_${countryISo}_${LanguageService.languageCode}");*/
+    GetIt.I<HomeBloc>().add(SubscribeTopicForNotificationEvent(
+        topic: "product_hurry_up_time_left_${cartId}"));
   }
 
   void UnSubsecribeToProductHurryUpTimeLeft(String cartId) async {
-    await FirebaseMessaging.instance.unsubscribeFromTopic(
+    /* await FirebaseMessaging.instance.unsubscribeFromTopic(
         "product_hurry_up_time_left_${cartId}_${countryISo}_${LanguageService.languageCode}");
     GetIt.I<PrefsRepository>().removeTopicThatAlreadySubsecribed(
-        "product_hurry_up_time_left_${cartId}_${countryISo}_${LanguageService.languageCode}");
+        "product_hurry_up_time_left_${cartId}_${countryISo}_${LanguageService.languageCode}");*/
+    GetIt.I<HomeBloc>().add(UnSubscribeTopicForNotificationEvent(
+        topic: "product_hurry_up_time_left_${cartId}"));
   }
 
   void SubsecribeToProductHurryUpQuantity(String cartId) async {
-    await FirebaseMessaging.instance.subscribeToTopic(
+    /* await FirebaseMessaging.instance.subscribeToTopic(
         "product_hurry_up_quantity_${cartId}_${countryISo}_${LanguageService.languageCode}");
     GetIt.I<PrefsRepository>().setTopicThatAlreadySubsecribed(
-        "product_hurry_up_quantity_${cartId}_${countryISo}_${LanguageService.languageCode}");
+        "product_hurry_up_quantity_${cartId}_${countryISo}_${LanguageService.languageCode}");*/
+    GetIt.I<HomeBloc>().add(SubscribeTopicForNotificationEvent(
+        topic: "product_hurry_up_quantity_${cartId}"));
   }
 
   void UnSubsecribeToProductHurryUpQuantity(String cartId) async {
-    await FirebaseMessaging.instance.unsubscribeFromTopic(
+    /*  await FirebaseMessaging.instance.unsubscribeFromTopic(
         "product_hurry_up_quantity_${cartId}_${countryISo}_${LanguageService.languageCode}");
     GetIt.I<PrefsRepository>().removeTopicThatAlreadySubsecribed(
-        "product_hurry_up_quantity_${cartId}_${countryISo}_${LanguageService.languageCode}");
+        "product_hurry_up_quantity_${cartId}_${countryISo}_${LanguageService.languageCode}");*/
+    GetIt.I<HomeBloc>().add(UnSubscribeTopicForNotificationEvent(
+        topic: "product_hurry_up_quantity_${cartId}"));
   }
 }

@@ -105,256 +105,237 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
         return true;
       },
       child: Scaffold(
-          resizeToAvoidBottomInset: true,
-          body: BlocBuilder<HomeBloc, HomeState>(
-            buildWhen: (previous, current) =>
-                previous.getCustomerAddressStatus !=
-                    current.getCustomerAddressStatus ||
-                previous.editAddressToOrderStatus !=
-                    current.editAddressToOrderStatus ||
-                previous.addAddressToOrderStatus !=
-                    current.addAddressToOrderStatus ||
-                previous.removeAddressToOrderStatus !=
-                    current.removeAddressToOrderStatus ||
-                previous.getCustomerWalletStatus !=
-                    current.getCustomerWalletStatus,
-            builder: (context, state) {
-              List<String> availablePaymentMethod = state
-                      .getCartShippingItemsModel!
-                      .data!
-                      .availablePaymentMethod ??
-                  [];
-              return ValueListenableBuilder<bool>(
-                valueListenable: showDeleteAddress,
-                builder: (context, _showDeleteAddress, _) {
-                  double walletBalance = state.customerWalletModel == null
-                      ? 0
-                      : state.customerWalletModel!.data.totalWalletBalance! *
-                          state.getCurrencyForCountryModel!.data!.currency!
-                              .exchangeRate!;
-                  return Stack(
-                    children: [
-                      Container(
-                        child: Column(
-                          children: [
-                            buildPageHeader(context, state),
-                            ////////////////////////
-                            ValueListenableBuilder<int>(
-                              valueListenable: indexTap,
-                              builder: (context, _indexTap, _) {
-                                return Expanded(
-                                  child: Stack(
-                                    children: [
-                                      Container(
-                                        margin: EdgeInsets.symmetric(
-                                          horizontal: 10,
+        resizeToAvoidBottomInset: true,
+        body: BlocBuilder<HomeBloc, HomeState>(
+          buildWhen: (previous, current) =>
+              previous.getCustomerAddressStatus !=
+                  current.getCustomerAddressStatus ||
+              previous.editAddressToOrderStatus !=
+                  current.editAddressToOrderStatus ||
+              previous.addAddressToOrderStatus !=
+                  current.addAddressToOrderStatus ||
+              previous.removeAddressToOrderStatus !=
+                  current.removeAddressToOrderStatus ||
+              previous.getCustomerWalletStatus !=
+                  current.getCustomerWalletStatus,
+          builder: (context, state) {
+            List<String> availablePaymentMethod =
+                state.getCartShippingItemsModel!.data!.availablePaymentMethod ??
+                    [];
+            return ValueListenableBuilder<bool>(
+              valueListenable: showDeleteAddress,
+              builder: (context, _showDeleteAddress, _) {
+                double walletBalance = state.customerWalletModel == null
+                    ? 0
+                    : state.customerWalletModel!.data.totalWalletBalance! *
+                        state.getCurrencyForCountryModel!.data!.currency!
+                            .exchangeRate!;
+                return ValueListenableBuilder<int>(
+                    valueListenable: indexTap,
+                    builder: (context, _indexTap, _) {
+                      return Stack(
+                        children: [
+                          Column(
+                            children: [
+                              buildPageHeader(context, state),
+                              ///////////////////////
+                              Expanded(
+                                child: SingleChildScrollView(
+                                  child: Container(
+                                    margin: EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                    ),
+                                    color: Color.fromARGB(255, 255, 255, 255),
+                                    child: Column(
+                                      children: [
+                                        SizedBox(
+                                          height: 10.h,
                                         ),
-                                        color:
-                                            Color.fromARGB(255, 255, 255, 255),
-                                        child: ListView(
-                                          physics: ClampingScrollPhysics(),
-                                          padding: EdgeInsets.all(0),
-                                          children: [
-                                            SizedBox(
-                                              height: 10,
-                                            ),
-                                            ////////////////////
-                                            ValueListenableBuilder<bool>(
-                                              valueListenable: isExpanded,
-                                              builder: (context, expanded, _) {
-                                                return buildBagItemsWidget(
-                                                    expanded, context);
-                                              },
-                                            ),
-                                            /////////////////////
-                                            SizedBox(
-                                              height: 15,
-                                            ),
-                                            /////////////////////
-                                            buildAddressWidget(
-                                                state, context, _indexTap),
-                                            ////////////////////
-                                            SizedBox(
-                                              height: 20.h,
-                                            ),
-                                            ////////////////////
-                                            (state.listOfAddressInfoClassToSave
-                                                    .isNullOrEmpty)
-                                                ? SizedBox.shrink()
-                                                : state.getCustomerWalletStatus ==
-                                                        GetCustomerWalletStatus
-                                                            .failure
-                                                    ? TryAgainWidget(
-                                                        tryAgain: () {
-                                                          BlocProvider.of<
-                                                                      HomeBloc>(
-                                                                  context)
-                                                              .add(
-                                                            GetCustomerWalletEvent(
-                                                                limit: 10,
-                                                                offset: 1),
-                                                          );
-                                                        },
-                                                      )
-                                                    : state.getCustomerWalletStatus ==
-                                                            GetCustomerWalletStatus
-                                                                .loading
-                                                        ? TrydosShimmerLoading(
-                                                            width: 1.sw,
-                                                            logoTextWidth: 15,
-                                                            height: 70,
-                                                            logoTextHeight: 15,
-                                                          )
-                                                        : PaymentMethod(
-                                                            fromSuccessOrder:
-                                                                false,
-                                                            amount:
-                                                                walletBalance,
-                                                            fromPalceOrder:
-                                                                false,
-                                                            availablePaymentMethod:
-                                                                availablePaymentMethod,
-                                                            paymentMethods:
-                                                                paymentMethods,
-                                                            totalPrice: widget
-                                                                .totalPrice,
-                                                            decimalPointSetting:
-                                                                state.startingSetting
-                                                                        ?.decimalPointSetting ??
-                                                                    2,
-                                                          ),
-                                            ////////////
-                                            SizedBox(
-                                              height: 25.h,
-                                            ),
-                                            ValueListenableBuilder<bool>(
-                                              valueListenable: isExpandedCoupon,
-                                              builder:
-                                                  (context, expandedCoupon, _) {
-                                                return ValueListenableBuilder<
-                                                    bool>(
-                                                  valueListenable:
-                                                      isApplayCoupon,
-                                                  builder: (context,
-                                                      applayCoupon, _) {
-                                                    return buildCouponWidget(
-                                                        expandedCoupon,
-                                                        context,
-                                                        applayCoupon);
-                                                  },
-                                                );
-                                              },
-                                            ),
-                                            ////////////////
-                                            (state.listOfAddressInfoClassToSave
-                                                    .isNullOrEmpty)
-                                                ? SizedBox.shrink()
-                                                : ValueListenableBuilder<bool>(
-                                                    valueListenable: isExpanded,
-                                                    builder: (context,
-                                                        _isExpanded, _) {
-                                                      return ValueListenableBuilder<
-                                                          bool>(
-                                                        valueListenable:
-                                                            isExpandedCoupon,
-                                                        builder: (context,
-                                                            _isExpandedCoupon,
-                                                            child) {
-                                                          return SizedBox(
-                                                              height: _isExpanded
-                                                                  ? 120.h
-                                                                  : (_isExpandedCoupon && !_isExpanded)
-                                                                      ? 120.h
-                                                                      : 0);
-                                                        },
-                                                      );
-                                                    },
-                                                  ),
-                                          ],
+                                        ////////////////////
+                                        ValueListenableBuilder<bool>(
+                                          valueListenable: isExpanded,
+                                          builder: (context, expanded, _) {
+                                            return buildBagItemsWidget(
+                                                expanded, context);
+                                          },
                                         ),
-                                      ),
-                                      //////////////////////////////
-                                      ValueListenableBuilder<bool>(
-                                        valueListenable: showPanel,
-                                        builder: (context, _showPanel, _) {
-                                          return !_showPanel
-                                              ? SizedBox.shrink()
-                                              : InkWell(
-                                                  onTap: () {
-                                                    panelController.close();
-                                                    showPanel.value = false;
-                                                  },
-                                                  child: Container(
-                                                    width: 1.sh,
-                                                    height: 600,
-                                                    color: Color.fromRGBO(
-                                                        0, 0, 0, 0.65),
-                                                  ),
-                                                );
-                                        },
-                                      ),
-                                      Positioned(
-                                        bottom: 0,
-                                        child: (state
-                                                .listOfAddressInfoClassToSave
+                                        //////////////////////////////////
+                                        SizedBox(
+                                          height: 12.h,
+                                        ),
+                                        //////////////////////////////////
+                                        buildAddressWidget(
+                                            state, context, _indexTap),
+                                        ////////////////////
+                                        SizedBox(
+                                          height: 12.h,
+                                        ),
+                                        ////////////////////
+                                        (state.listOfAddressInfoClassToSave
                                                 .isNullOrEmpty)
                                             ? SizedBox.shrink()
-                                            : buildShippingButton(
-                                                state,
-                                                _indexTap,
-                                                walletBalance,
-                                                widget.totalPrice,
-                                                availablePaymentMethod,
-                                              ),
-                                      ),
-                                      ///////////////
-                                      Positioned(
-                                        bottom: 0,
-                                        child: Container(
-                                          height: 510,
-                                          width: 1.sw,
-                                          child: SlidingUpPanel(
-                                            controller: panelController,
-                                            borderRadius: BorderRadius.only(
-                                                topLeft: Radius.circular(30),
-                                                topRight: Radius.circular(30)),
-                                            isDraggable: true,
-                                            slideDirection: SlideDirection.UP,
-                                            onPanelClosed: () {
-                                              showPanel.value = false;
-                                            },
-                                            onPanelOpened: () {
-                                              showPanel.value = true;
-                                            },
-                                            minHeight: 0,
-                                            maxHeight: 510,
-                                            panelBuilder: (sc) =>
-                                                buildSlidingUpPanelWidgets(
-                                              context,
-                                              state,
-                                              _indexTap,
-                                              sc,
-                                            ),
-                                          ),
+                                            : state.getCustomerWalletStatus ==
+                                                    GetCustomerWalletStatus
+                                                        .failure
+                                                ? TryAgainWidget(
+                                                    tryAgain: () {
+                                                      BlocProvider.of<HomeBloc>(
+                                                              context)
+                                                          .add(
+                                                        GetCustomerWalletEvent(
+                                                            limit: 10,
+                                                            offset: 1),
+                                                      );
+                                                    },
+                                                  )
+                                                : state.getCustomerWalletStatus ==
+                                                        GetCustomerWalletStatus
+                                                            .loading
+                                                    ? TrydosShimmerLoading(
+                                                        width: 1.sw,
+                                                        logoTextWidth: 15,
+                                                        height: 70,
+                                                        logoTextHeight: 15,
+                                                      )
+                                                    : PaymentMethod(
+                                                        fromSuccessOrder: false,
+                                                        amount: walletBalance,
+                                                        fromPalceOrder: false,
+                                                        availablePaymentMethod:
+                                                            availablePaymentMethod,
+                                                        paymentMethods:
+                                                            paymentMethods,
+                                                        totalPrice:
+                                                            widget.totalPrice,
+                                                        decimalPointSetting: state
+                                                                .startingSetting
+                                                                ?.decimalPointSetting ??
+                                                            2,
+                                                      ),
+                                        ////////////
+                                        SizedBox(
+                                          height: 25.h,
                                         ),
-                                      )
-                                    ],
+                                        ValueListenableBuilder<bool>(
+                                          valueListenable: isExpandedCoupon,
+                                          builder:
+                                              (context, expandedCoupon, _) {
+                                            return ValueListenableBuilder<bool>(
+                                              valueListenable: isApplayCoupon,
+                                              builder:
+                                                  (context, applayCoupon, _) {
+                                                return buildCouponWidget(
+                                                    expandedCoupon,
+                                                    context,
+                                                    applayCoupon);
+                                              },
+                                            );
+                                          },
+                                        ),
+                                        ////////////////
+                                        (state.listOfAddressInfoClassToSave
+                                                .isNullOrEmpty)
+                                            ? SizedBox.shrink()
+                                            : ValueListenableBuilder<bool>(
+                                                valueListenable: isExpanded,
+                                                builder:
+                                                    (context, _isExpanded, _) {
+                                                  return ValueListenableBuilder<
+                                                      bool>(
+                                                    valueListenable:
+                                                        isExpandedCoupon,
+                                                    builder: (context,
+                                                        _isExpandedCoupon,
+                                                        child) {
+                                                      return SizedBox(
+                                                          height: _isExpanded
+                                                              ? 120.h
+                                                              : (_isExpandedCoupon &&
+                                                                      !_isExpanded)
+                                                                  ? 120.h
+                                                                  : 0);
+                                                    },
+                                                  );
+                                                },
+                                              ),
+                                      ],
+                                    ),
                                   ),
-                                );
-                              },
+                                ),
+                              ),
+                              ////////////////////////////
+                              (state.listOfAddressInfoClassToSave.isNullOrEmpty)
+                                  ? SizedBox.shrink()
+                                  : buildShippingButton(
+                                      state,
+                                      _indexTap,
+                                      walletBalance,
+                                      widget.totalPrice,
+                                      availablePaymentMethod,
+                                    ),
+                            ],
+                          ),
+                          //////////////////////////////
+                          ValueListenableBuilder<bool>(
+                            valueListenable: showPanel,
+                            builder: (context, _showPanel, _) {
+                              return !_showPanel
+                                  ? SizedBox.shrink()
+                                  : InkWell(
+                                      onTap: () {
+                                        panelController.close();
+                                        showPanel.value = false;
+                                      },
+                                      child: Container(
+                                        width: 1.sh,
+                                        color: Color.fromRGBO(0, 0, 0, 0.65),
+                                      ),
+                                    );
+                            },
+                          ),
+                          ///////////////
+                          Positioned(
+                            bottom: 0,
+                            child: Container(
+                              height: 510,
+                              width: 1.sw,
+                              child: SlidingUpPanel(
+                                controller: panelController,
+                                borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(30),
+                                    topRight: Radius.circular(30)),
+                                isDraggable: true,
+                                slideDirection: SlideDirection.UP,
+                                onPanelClosed: () {
+                                  showPanel.value = false;
+                                },
+                                onPanelOpened: () {
+                                  showPanel.value = true;
+                                },
+                                minHeight: 0,
+                                maxHeight: 510,
+                                panelBuilder: (sc) =>
+                                    buildSlidingUpPanelWidgets(
+                                  context,
+                                  state,
+                                  _indexTap,
+                                  sc,
+                                ),
+                              ),
                             ),
-                          ],
-                        ),
-                      ),
-                      _showDeleteAddress
-                          ? buildDeleteAddressWidget(context, state)
-                          : SizedBox.shrink()
-                    ],
-                  );
-                },
-              );
-            },
-          )),
+                          ),
+                          /////////////////////////////////////
+                          _showDeleteAddress
+                              ? buildDeleteAddressWidget(context, state)
+                              : SizedBox.shrink()
+                        ],
+                      );
+                    });
+              },
+            );
+          },
+        ),
+      ),
     );
   }
 
@@ -772,8 +753,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
   Widget buildAddressWidget(
       HomeState state, BuildContext context, int _indexTap) {
     return Container(
-        height:
-            !(state.listOfAddressInfoClassToSave.isNullOrEmpty) ? 225.h : 203,
+        // height: !(state.listOfAddressInfoClassToSave.isNullOrEmpty) ? 225 : 203,
         width: 1.sw,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
@@ -781,203 +761,206 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
             color: Color(0xffC4C2C2),
           ),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-                margin: EdgeInsets.only(top: 10, left: 10, right: 10),
-                child: Row(children: [
-                  SvgPicture.asset(
-                    AppAssets.deliveryAddressSvg,
-                    height: 16,
-                  ),
-                  SizedBox(
-                    width: 7.w,
-                  ),
-                  Text(
-                    "${LocaleKeys.shipping_delivery_address.tr()} ",
-                    style: context.textTheme.bodyMedium?.ra.copyWith(
-                        color: const Color(0xff1D1D1D),
-                        letterSpacing: 0.18,
-                        fontSize: 14,
-                        height: 0.8),
-                  ),
-                  SizedBox(
-                    width: 5.w,
-                  ),
-                  SvgPicture.asset(
-                    AppAssets.freeShippingSvg,
-                  )
-                ])),
-            SizedBox(
-              height: 5.h,
-            ),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 35.w),
-              child: Text(
-                !(state.listOfAddressInfoClassToSave.isNullOrEmpty)
-                    ? "${LocaleKeys.shipment_will_be_sent_to_the_address_below.tr()} "
-                    : "${LocaleKeys.please_enter_shipping_address_to_receive_your_bag.tr()} ",
-                style: context.textTheme.bodyMedium?.ra.copyWith(
-                    color: const Color(0xff8D8D8D),
-                    letterSpacing: 0.18,
-                    fontSize: 12,
-                    height: 0.8),
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                  margin: EdgeInsets.only(top: 10, left: 10, right: 10),
+                  child: Row(children: [
+                    SvgPicture.asset(
+                      AppAssets.deliveryAddressSvg,
+                      height: 16,
+                    ),
+                    SizedBox(
+                      width: 7.w,
+                    ),
+                    Text(
+                      "${LocaleKeys.shipping_delivery_address.tr()} ",
+                      style: context.textTheme.bodyMedium?.ra.copyWith(
+                          color: const Color(0xff1D1D1D),
+                          letterSpacing: 0.18,
+                          fontSize: 14,
+                          height: 0.8),
+                    ),
+                    SizedBox(
+                      width: 5.w,
+                    ),
+                    SvgPicture.asset(
+                      AppAssets.freeShippingSvg,
+                    )
+                  ])),
+              SizedBox(
+                height: 5.h,
               ),
-            ),
-            SizedBox(
-              height: 12.h,
-            ),
-            !state.listOfAddressInfoClassToSave.isNullOrEmpty
-                ? Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: addressInfoWithContactInfoCart(
-                      cartChoosed: true,
-                      isDelete: false,
-                      customerAddressesInfo:
-                          state.listOfAddressInfoClassToSave![_indexTap],
-                      context: context,
-                      index: -1,
-                      indexTap: _indexTap,
-                      onTapDelete: () {},
-                      onTapEdit: () {
-                        ;
-                      },
-                    ),
-                  )
-                : Container(
-                    height: 85.h,
-                    width: 1.sw,
-                    padding: EdgeInsets.symmetric(horizontal: 0),
-                    margin: EdgeInsets.symmetric(horizontal: 10),
-                    decoration: BoxDecoration(
-                        color: Color(0xffF8F8F8),
-                        borderRadius: BorderRadius.circular(15),
-                        border: Border.all(
-                            color: !state
-                                    .listOfAddressInfoClassToSave.isNullOrEmpty
-                                ? Color(0xff388CFF)
-                                : Color(0xffF8F8F8))),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          height: 8.h,
-                        ),
-                        SvgPicture.asset(
-                          AppAssets.chatWithQuestionSvg,
-                        ),
-                        SizedBox(
-                          height: 18.h,
-                        ),
-                        Text(
-                          "${LocaleKeys.your_address_list_is_empty.tr()} ",
-                          style: context.textTheme.bodyMedium?.ra.copyWith(
-                              color: const Color(0xffC4C2C2),
-                              letterSpacing: 0.18,
-                              fontSize: 12,
-                              height: 0.8),
-                        ),
-                        SizedBox(
-                          height: 8.h,
-                        ),
-                        Text(
-                          "${LocaleKeys.you_can_also_create_multiple_addresses_to_use.tr()} ",
-                          style: context.textTheme.bodyMedium?.ra.copyWith(
-                              color: const Color(0xffC4C2C2),
-                              letterSpacing: 0.18,
-                              fontSize: 12,
-                              height: 0.8),
-                        )
-                      ],
-                    ),
-                  ),
-            SizedBox(
-              height: !(state.listOfAddressInfoClassToSave.isNullOrEmpty)
-                  ? 10
-                  : 20.h,
-            ),
-            !state.listOfAddressInfoClassToSave.isNullOrEmpty
-                ? InkWell(
-                    onTap: () {
-                      panelController.open();
-                    },
-                    child: Container(
-                      height: 16.h,
-                      width: 1.sw,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Center(
-                            child: SvgPicture.asset(
-                              AppAssets.deliveryAddressSvg,
-                              width: 15,
-                              height: 15,
-                              color: Color(0xff8D8D8D),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 3,
-                          ),
-                          Text(
-                            "${LocaleKeys.show_address_list.tr()} ",
-                            style: context.textTheme.bodyMedium?.mr.copyWith(
-                                color: const Color(0xff8D8D8D),
-                                letterSpacing: 0.18,
-                                fontSize: 12,
-                                height: 1),
-                          ),
-                        ],
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 35.w),
+                child: Text(
+                  !(state.listOfAddressInfoClassToSave.isNullOrEmpty)
+                      ? "${LocaleKeys.shipment_will_be_sent_to_the_address_below.tr()} "
+                      : "${LocaleKeys.please_enter_shipping_address_to_receive_your_bag.tr()} ",
+                  style: context.textTheme.bodyMedium?.ra.copyWith(
+                      color: const Color(0xff8D8D8D),
+                      letterSpacing: 0.18,
+                      fontSize: 12,
+                      height: 0.8),
+                ),
+              ),
+              SizedBox(
+                height: 12.h,
+              ),
+              !state.listOfAddressInfoClassToSave.isNullOrEmpty
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: addressInfoWithContactInfoCart(
+                        cartChoosed: true,
+                        isDelete: false,
+                        customerAddressesInfo:
+                            state.listOfAddressInfoClassToSave![_indexTap],
+                        context: context,
+                        index: -1,
+                        indexTap: _indexTap,
+                        onTapDelete: () {},
+                        onTapEdit: () {
+                          ;
+                        },
                       ),
-                    ),
-                  )
-                : InkWell(
-                    onTap: () => HelperFunctions.slidingNavigation(
-                        context, AddShippingAdress()),
-                    child: Container(
-                      height: 40,
+                    )
+                  : Container(
+                      height: 85.h,
                       width: 1.sw,
+                      padding: EdgeInsets.symmetric(horizontal: 0),
                       margin: EdgeInsets.symmetric(horizontal: 10),
                       decoration: BoxDecoration(
-                          color: Color(0xffE8FFED),
+                          color: Color(0xffF8F8F8),
                           borderRadius: BorderRadius.circular(15),
-                          border: Border.all(color: Color(0xffC4C2C2))),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                          border: Border.all(
+                              color: !state.listOfAddressInfoClassToSave
+                                      .isNullOrEmpty
+                                  ? Color(0xff388CFF)
+                                  : Color(0xffF8F8F8))),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Center(
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                SvgPicture.asset(
-                                  AppAssets.addShippingAddressSvg,
-                                ),
-                                Positioned(
-                                  top: 2,
-                                  child: SvgPicture.asset(
-                                    AppAssets.addShippingAddressWhiteSvg,
-                                  ),
-                                ),
-                              ],
-                            ),
+                          SizedBox(
+                            height: 8.h,
+                          ),
+                          SvgPicture.asset(
+                            AppAssets.chatWithQuestionSvg,
                           ),
                           SizedBox(
-                            width: 3,
+                            height: 18.h,
                           ),
                           Text(
-                            "${LocaleKeys.add_shipping_address.tr()} ",
-                            style: context.textTheme.bodyMedium?.mr.copyWith(
-                                color: const Color(0xff1D1D1D),
+                            "${LocaleKeys.your_address_list_is_empty.tr()} ",
+                            style: context.textTheme.bodyMedium?.ra.copyWith(
+                                color: const Color(0xffC4C2C2),
                                 letterSpacing: 0.18,
                                 fontSize: 12,
-                                height: 1.33),
+                                height: 0.8),
                           ),
+                          SizedBox(
+                            height: 8.h,
+                          ),
+                          Text(
+                            "${LocaleKeys.you_can_also_create_multiple_addresses_to_use.tr()} ",
+                            style: context.textTheme.bodyMedium?.ra.copyWith(
+                                color: const Color(0xffC4C2C2),
+                                letterSpacing: 0.18,
+                                fontSize: 12,
+                                height: 0.8),
+                          )
                         ],
                       ),
                     ),
-                  )
-          ],
+              SizedBox(
+                height: !(state.listOfAddressInfoClassToSave.isNullOrEmpty)
+                    ? 10
+                    : 20.h,
+              ),
+              !state.listOfAddressInfoClassToSave.isNullOrEmpty
+                  ? InkWell(
+                      onTap: () {
+                        panelController.open();
+                      },
+                      child: Container(
+                        height: 16.h,
+                        width: 1.sw,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Center(
+                              child: SvgPicture.asset(
+                                AppAssets.deliveryAddressSvg,
+                                width: 15,
+                                height: 15,
+                                color: Color(0xff8D8D8D),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 3,
+                            ),
+                            Text(
+                              "${LocaleKeys.show_address_list.tr()} ",
+                              style: context.textTheme.bodyMedium?.mr.copyWith(
+                                  color: const Color(0xff8D8D8D),
+                                  letterSpacing: 0.18,
+                                  fontSize: 12,
+                                  height: 1),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  : InkWell(
+                      onTap: () => HelperFunctions.slidingNavigation(
+                          context, AddShippingAdress()),
+                      child: Container(
+                        height: 40,
+                        width: 1.sw,
+                        margin: EdgeInsets.symmetric(horizontal: 10),
+                        decoration: BoxDecoration(
+                            color: Color(0xffE8FFED),
+                            borderRadius: BorderRadius.circular(15),
+                            border: Border.all(color: Color(0xffC4C2C2))),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Center(
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  SvgPicture.asset(
+                                    AppAssets.addShippingAddressSvg,
+                                  ),
+                                  Positioned(
+                                    top: 2,
+                                    child: SvgPicture.asset(
+                                      AppAssets.addShippingAddressWhiteSvg,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(
+                              width: 3,
+                            ),
+                            Text(
+                              "${LocaleKeys.add_shipping_address.tr()} ",
+                              style: context.textTheme.bodyMedium?.mr.copyWith(
+                                  color: const Color(0xff1D1D1D),
+                                  letterSpacing: 0.18,
+                                  fontSize: 12,
+                                  height: 1.33),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+            ],
+          ),
         ));
   }
 
@@ -1298,15 +1281,17 @@ Widget addressInfoWithContactInfoCart({
   required void Function()? onTapDelete,
 }) {
   return Container(
-      height: (placeOrder ?? false)
-          ? 120
-          : (!isDelete && cartChoosed)
-              ? 125.h
-              : 90.h,
+      // height: (placeOrder ?? false)
+      //     ? 120
+      //     : (!isDelete && cartChoosed)
+      //         ? 125
+      //         : 90,
       width: 1.sw,
       padding: EdgeInsets.only(
-          right: LanguageService.languageCode == "ar" ? 20 : 10,
-          left: LanguageService.languageCode != "ar" ? 20 : 10),
+        right: LanguageService.languageCode == "ar" ? 20 : 10,
+        left: LanguageService.languageCode != "ar" ? 20 : 10,
+        bottom: 5,
+      ),
       decoration: BoxDecoration(
           color: (placeOrder ?? false) || (successfulOrder ?? false)
               ? Color(0xffFFFFFF)
@@ -1403,7 +1388,7 @@ Widget addressInfoWithContactInfoCart({
             child: Row(
               children: [
                 Text(
-                  "${customerAddressesInfo.regionDetails?.street ?? ""}${(customerAddressesInfo.regionDetails?.street?.length ?? 0) > 0 ? " | " : ""}${customerAddressesInfo.regionDetails?.town ?? ""}${(customerAddressesInfo.regionDetails?.town?.length ?? 0) > 0 ? " | " : ""}${customerAddressesInfo.regionDetails?.city ?? ""}${(customerAddressesInfo.regionDetails?.city?.length ?? 0) > 0 ? " | " : ""}${customerAddressesInfo.regionDetails?.province ?? ""} | ${customerAddressesInfo.regionDetails?.country ?? ''}",
+                  "${customerAddressesInfo.regionDetails?.building ?? ""}${(customerAddressesInfo.regionDetails?.building?.length ?? 0) > 0 ? " | " : ""}${customerAddressesInfo.regionDetails?.street ?? ""}${(customerAddressesInfo.regionDetails?.street?.length ?? 0) > 0 ? " | " : ""}${customerAddressesInfo.regionDetails?.town ?? ""}${(customerAddressesInfo.regionDetails?.town?.length ?? 0) > 0 ? " | " : ""}${customerAddressesInfo.regionDetails?.city ?? ""}${(customerAddressesInfo.regionDetails?.city?.length ?? 0) > 0 ? " | " : ""}${customerAddressesInfo.regionDetails?.province ?? ""} | ${customerAddressesInfo.regionDetails?.country ?? ''}",
                   style: context.textTheme.bodyMedium?.mr.copyWith(
                       color: isDelete
                           ? Color(0xffFFFFFF)
@@ -1520,17 +1505,17 @@ Widget addressInfoWithContactInfoCart({
           !(!isDelete && cartChoosed)
               ? SizedBox.shrink()
               : SizedBox(
-                  height: 8.h,
+                  height: 15,
                 ),
           !(placeOrder ?? false)
               ? SizedBox.shrink()
               : SizedBox(
-                  height: 5.h,
+                  height: 5,
                 ),
           !(!isDelete && cartChoosed)
               ? SizedBox.shrink()
               : Container(
-                  height: 30.h,
+                  height: 30,
                   width: 1.sw,
                   decoration: BoxDecoration(
                       color: (placeOrder ?? false) || (successfulOrder ?? false)

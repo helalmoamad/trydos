@@ -121,6 +121,86 @@ class GetCommentForProductEvent extends HomeEvent {
   List<Object?> get props => [productId];
 }
 
+class ChangeCountryLanguageForNotificationEvent extends HomeEvent {
+  final String country;
+  final String languageCode;
+  const ChangeCountryLanguageForNotificationEvent(
+      {required this.languageCode, required this.country});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [country, languageCode];
+}
+
+class SubscribeTopicForNotificationEvent extends HomeEvent {
+  final String topic;
+  final String? variant;
+  const SubscribeTopicForNotificationEvent({required this.topic, this.variant});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [topic];
+}
+
+class UnSubscribeTopicForNotificationEvent extends HomeEvent {
+  final String topic;
+  final String? variant;
+  const UnSubscribeTopicForNotificationEvent(
+      {required this.topic, this.variant});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [topic];
+}
+
+class UpdateEmailNotificationEvent extends HomeEvent {
+  final int email;
+
+  const UpdateEmailNotificationEvent({required this.email});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [email];
+}
+
+class UpdateFirebaseNotificationEvent extends HomeEvent {
+  final int firebase;
+
+  const UpdateFirebaseNotificationEvent({required this.firebase});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [firebase];
+}
+
+class UpdateWhatsappNotificationEvent extends HomeEvent {
+  final int whatsapp;
+
+  const UpdateWhatsappNotificationEvent({required this.whatsapp});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [whatsapp];
+}
+
+class UpdateNotificationFrequencyEvent extends HomeEvent {
+  final String notificationFrequency;
+
+  const UpdateNotificationFrequencyEvent({required this.notificationFrequency});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [notificationFrequency];
+}
+
+class GetFirebaseSettingForNotificationEvent extends HomeEvent {
+  const GetFirebaseSettingForNotificationEvent();
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+}
+
 class AddTimerStartedToHurryUpEvent extends HomeEvent {
   final bool isAddToList;
   final String cartId;
@@ -533,9 +613,13 @@ class RequestForNotificationWhenProductBecameAvailableEvent extends HomeEvent {
   final int notificationTypeId;
   final String size;
   final String selectedColorName;
-
-  RequestForNotificationWhenProductBecameAvailableEvent(this.productId,
-      this.notificationTypeId, this.size, this.selectedColorName);
+  final bool subsecribe;
+  RequestForNotificationWhenProductBecameAvailableEvent(
+      this.productId,
+      this.notificationTypeId,
+      this.size,
+      this.selectedColorName,
+      this.subsecribe);
 
   @override
   List<Object?> get props =>
@@ -551,11 +635,11 @@ class IscashedOreiginBotiqueEvent extends HomeEvent {
   List<Object?> get props => [iscashedOreiginBotique];
 }
 
-class AddSizesFotColorsEvent extends HomeEvent {
+class AddSizesForColorsEvent extends HomeEvent {
   final String currentColorName;
   final List<Variation>? variation;
 
-  const AddSizesFotColorsEvent(
+  const AddSizesForColorsEvent(
       {required this.currentColorName, required this.variation});
 
   @override
@@ -563,7 +647,8 @@ class AddSizesFotColorsEvent extends HomeEvent {
 }
 
 class GetCartItemEvent extends HomeEvent {
-  const GetCartItemEvent();
+  final bool? fromTerminitedStatusl;
+  const GetCartItemEvent({this.fromTerminitedStatusl});
 
   @override
   List<Object?> get props => [];

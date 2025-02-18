@@ -953,12 +953,12 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                     SizedBox(
                                       width: 2,
                                     ),
-                                    MyTextWidget(state
-                                            .getCurrencyForCountryModel!
-                                            .data!
-                                            .currency!
-                                            .symbol ??
-                                        "")
+                                    MyTextWidget(
+                                      state.getCurrencyForCountryModel!.data!
+                                              .currency!.symbol ??
+                                          "",
+                                      style: TextStyle(fontSize: 10),
+                                    )
                                   ].reversed.toList(),
                                 ),
                                 InkWell(

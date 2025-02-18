@@ -4,6 +4,7 @@ import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/core/api/methods/get.dart';
 import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
 import 'package:trydos/features/home/data/models/convert_item_from_oldCart_to_cart_model.dart';
+import 'package:trydos/features/home/data/models/firebase_setting_for_notification_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_coordinates_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_text_model.dart';
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
@@ -171,6 +172,144 @@ class HomeRemoteDatasource {
     );
 
     return addCustomerAddress();
+  }
+
+  Future<FirebaseSettingForNotificationModel>
+      changeCountryLanguageFornotification(Map<String, dynamic> params) {
+    PostClient<FirebaseSettingForNotificationModel>
+        changeCountryLanguageFornotification =
+        PostClient<FirebaseSettingForNotificationModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
+        endpoint: MarketEndPoints.changeCountryLanguageEP,
+        data: params,
+        response: ResponseValue<FirebaseSettingForNotificationModel>(
+            fromJson: (response) =>
+                FirebaseSettingForNotificationModel.fromJson(response)),
+      ),
+    );
+
+    return changeCountryLanguageFornotification();
+  }
+
+  Future<FirebaseSettingForNotificationModel> getMyFirebaseSettings() {
+    GetClient<FirebaseSettingForNotificationModel> getMyFirebaseSettings =
+        GetClient<FirebaseSettingForNotificationModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
+        endpoint: MarketEndPoints.getMyFirebaseSettingsEP,
+        response: ResponseValue<FirebaseSettingForNotificationModel>(
+            fromJson: (response) {
+          return FirebaseSettingForNotificationModel.fromJson(response);
+        }),
+      ),
+    );
+    return getMyFirebaseSettings();
+  }
+
+  Future<FirebaseSettingForNotificationModel> updateWhatsappNotification(
+      Map<String, dynamic> params) {
+    PostClient<FirebaseSettingForNotificationModel> updateWhatsappNotification =
+        PostClient<FirebaseSettingForNotificationModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
+        endpoint: MarketEndPoints.updateWhatsappEP,
+        data: params,
+        response: ResponseValue<FirebaseSettingForNotificationModel>(
+            fromJson: (response) =>
+                FirebaseSettingForNotificationModel.fromJson(response)),
+      ),
+    );
+
+    return updateWhatsappNotification();
+  }
+
+  Future<FirebaseSettingForNotificationModel> updateFirebaseNotification(
+      Map<String, dynamic> params) {
+    PostClient<FirebaseSettingForNotificationModel> updateFirebaseNotification =
+        PostClient<FirebaseSettingForNotificationModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
+        endpoint: MarketEndPoints.updateFirebaseEP,
+        data: params,
+        response: ResponseValue<FirebaseSettingForNotificationModel>(
+            fromJson: (response) =>
+                FirebaseSettingForNotificationModel.fromJson(response)),
+      ),
+    );
+
+    return updateFirebaseNotification();
+  }
+
+  Future<FirebaseSettingForNotificationModel> updateEmailNotification(
+      Map<String, dynamic> params) {
+    PostClient<FirebaseSettingForNotificationModel> updateEmailNotification =
+        PostClient<FirebaseSettingForNotificationModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
+        endpoint: MarketEndPoints.updateEmailEP,
+        data: params,
+        response: ResponseValue<FirebaseSettingForNotificationModel>(
+            fromJson: (response) =>
+                FirebaseSettingForNotificationModel.fromJson(response)),
+      ),
+    );
+
+    return updateEmailNotification();
+  }
+
+  Future<FirebaseSettingForNotificationModel> updateNotificationFrequency(
+      Map<String, dynamic> params) {
+    PostClient<FirebaseSettingForNotificationModel>
+        updateNotificationFrequency =
+        PostClient<FirebaseSettingForNotificationModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
+        endpoint: MarketEndPoints.updateNotificationFrequencyEP,
+        data: params,
+        response: ResponseValue<FirebaseSettingForNotificationModel>(
+            fromJson: (response) =>
+                FirebaseSettingForNotificationModel.fromJson(response)),
+      ),
+    );
+
+    return updateNotificationFrequency();
+  }
+
+  Future<FirebaseSettingForNotificationModel> unSubscribeTopicFornotification(
+      Map<String, dynamic> params) {
+    PostClient<FirebaseSettingForNotificationModel>
+        unSubscribeTopicFornotification =
+        PostClient<FirebaseSettingForNotificationModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
+        endpoint: MarketEndPoints.unsubscribeTopicEP,
+        data: params,
+        response: ResponseValue<FirebaseSettingForNotificationModel>(
+            fromJson: (response) =>
+                FirebaseSettingForNotificationModel.fromJson(response)),
+      ),
+    );
+
+    return unSubscribeTopicFornotification();
+  }
+
+  Future<FirebaseSettingForNotificationModel> subscribeTopicFornotification(
+      Map<String, dynamic> params) {
+    PostClient<FirebaseSettingForNotificationModel>
+        subscribeTopicFornotification =
+        PostClient<FirebaseSettingForNotificationModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<FirebaseSettingForNotificationModel>(
+        endpoint: MarketEndPoints.subscribeTopicEP,
+        data: params,
+        response: ResponseValue<FirebaseSettingForNotificationModel>(
+            fromJson: (response) =>
+                FirebaseSettingForNotificationModel.fromJson(response)),
+      ),
+    );
+
+    return subscribeTopicFornotification();
   }
 
   Future<ResponseOnlyMessageModel> updateCustomerAddress(

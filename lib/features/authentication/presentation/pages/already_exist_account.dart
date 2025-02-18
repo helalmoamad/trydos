@@ -146,8 +146,9 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                       Future.delayed(
                         Duration(seconds: 2),
                         () {
-                          context
-                              .go(GRouter.config.applicationRoutes.kBasePage);
+                          context.go(GRouter.config.applicationRoutes
+                                  .kRegistrationCompletedPage +
+                              '?userName=${prefsRepository.myMarketName}');
                         },
                       );
                     }

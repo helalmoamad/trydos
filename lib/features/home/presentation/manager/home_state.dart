@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:trydos/features/home/data/models/firebase_setting_for_notification_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_coordinates_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_text_model.dart';
 
@@ -106,6 +107,12 @@ enum GetAndAddCountViewOfProductStatus { init, loading, success, failure }
 
 enum ChangeSizesForEveryProduct { init, loading, success, failure }
 
+enum GetFirebaseSettingForNotificationStatus { init, loading, success, failure }
+
+enum UpdateWhatsappNotificationStatus { init, loading, success, failure }
+
+enum UpdateEmailappNotificationStatus { init, loading, success, failure }
+
 enum PlaceOrderStatus { init, loading, success, failure }
 
 enum GetOrdersByOrderGroupIDStatus { init, loading, success, failure }
@@ -113,105 +120,114 @@ enum GetOrdersByOrderGroupIDStatus { init, loading, success, failure }
 @JsonSerializable(explicitToJson: true)
 @immutable
 class HomeState extends Equatable {
-  const HomeState({
-    this.storiesForProduct,
-    this.getAndAddCountViewOfProductStatus = const {},
-    this.addItemInCartStatus,
-    this.convertItemFromOldcartToCartStatus,
-    this.resultSearch = const [],
-    this.hideItemInOldCartStatus,
-    this.changeSizesForEveryProduct,
-    this.searchWithOutFilterOffset,
-    this.searchWithFilterOffset,
-    this.getProductDetailWithoutSimilarRelatedProductsStatus =
-        GetProductDetailWithoutSimilarRelatedProductsStatus.init,
-    this.getStartingSettingsStatus = GetStartingSettingsStatus.init,
-    this.getMainCategoriesStatus = GetMainCategoriesStatus.init,
-    this.getCommentForProductStatus = GetCommentForProductStatus.init,
-    this.editAddressToOrderStatus,
-    this.addAddressToOrderStatus,
-    this.removeAddressToOrderStatus,
-    this.getFullProductDetailsStatus = GetFullProductDetailsStatus.init,
-    this.addCommentStatus = AddCommentStatus.init,
-    this.startingSetting,
-    this.sizes = const [],
-    this.sizesQuantities = const [],
-    this.isSizeRequestNotification = const [],
-    this.deleteItemInCartStatus,
-    this.oldcartCollection,
-    this.getOldCartItemsStatus = GetOLdCartItemsStatus.init,
-    this.getOldCartModel,
-    this.isGettingProductListingWithPagination = false,
-    this.isGettingProductListingWithPaginationForAppearProduct = false,
-    this.getProductFiltersStatus = const {},
-    this.getProductFiltersModel = const {},
-    this.choosedFiltersByUser = const {},
-    this.getAddressByCoordinatesModel,
-    this.customerWalletModel,
-    this.placeOrderModel,
-    this.getOrdersByOrderGroupIDModel,
-    this.appliedFiltersByUser = const {},
-    this.currentPage = 0,
-    this.productStatus,
-    this.updateItemInCartStatus,
-    this.getCustomerAddressStatus,
-    this.theReplyFromGemini,
-    this.productITemForCart = const {},
-    this.getCartShippingItemsModel,
-    this.reRequestTheseBoutiques = const {},
-    this.getCommentForProductModel = const {},
-    this.reRequestTheseProductListingInBoutiques = const {},
-    this.reRequestProductWithFilters = const {},
-    this.getProductListingStatus = GetProductListingStatus.init,
-    this.selectedCollection,
-    this.productContentForStatusOfOpeningProductDetailsDirectly,
-    this.cartCollection = const [],
-    //this.idForRequest,
-    this.getProductListingWithFiltersPaginationModels = const {},
-    this.getStoriesForProductStatus = GetStoriesForProductStatus.init,
-    this.mainCategoriesResponseModel,
-    this.sendRequestToGeminiStatus = SendRequestToGeminiStatus.init,
-    this.currentColorSizeForCart,
-    this.currentQuantityForCart,
-    this.addImagesToProductIdForCart = const {},
-    this.searchHistory,
-    this.cashedOrginalBoutique = false,
-    this.getAllowedCountriesModel,
-    this.currentIndexForMainCategoryEvent = -1,
-    //   this.moveUrlFromElasticToMarketServer = false,
-    this.prefAppliedFilterForExtendFilter,
-    this.cartIdsHurryUPTimerStarted = const {},
-    this.fromSearchForSearchWithGemini = false,
-    this.ListitemForAddToCart,
-    this.getListOfProductsFoundedInCartStatus =
-        GetListOfProductsFoundedInCartStatus.init,
-    this.getCurrencyForCountryModel,
-    this.isExpandedForListingPage = false,
-    this.popularSearchTerm,
-    this.getAddressByCoordinatesStatus,
-    this.getCustomerWalletStatus,
-    this.placeOrderStatus = PlaceOrderStatus.init,
-    this.getOrdersByOrderGroupIDStatus = GetOrdersByOrderGroupIDStatus.init,
-    this.getAddressByTextStatus,
-    this.countOfProductExpectedByFiltering,
-    this.getCartItemsStatus = GetCartItemsStatus.init,
-    this.getProductDetailWithoutRelatedProductsModel,
-    this.addOrRemoveLikeOfProductStatus = AddOrRemoveLikeOfProductStatus.init,
-    this.getProductListingPaginationWithoutFiltersModel = const {},
-    this.getProductListingWithFiltersPaginationWithPrefetchModels = const {},
-    this.getProductFiltersWithPrefetchModel = const {},
-    this.currentSelectedColorForEveryProduct = const {},
-    this.boutiquesThatDidPrefetch = const {},
-    this.notificationTypeForProductModel,
-    this.getNotificationTypeProductStatus,
-    this.listOfAddressInfoClassToSave = const [],
-    this.listOfErrorSendedToMobileErrorLog = const [],
-    this.boutiquesForEveryMainCategoryThatDidPrefetch = const {},
-    this.cachedProductWithoutRelatedProductsModel = const {},
-    this.getHomeBoutiquesPaginationObjectByMainCategory = const {},
-  });
+  const HomeState(
+      {this.storiesForProduct,
+      this.getAndAddCountViewOfProductStatus = const {},
+      this.addItemInCartStatus,
+      this.convertItemFromOldcartToCartStatus,
+      this.resultSearch = const [],
+      this.hideItemInOldCartStatus,
+      this.updateEmailappNotificationStatus,
+      this.updateWhatsappNotificationStatus,
+      this.changeSizesForEveryProduct,
+      this.searchWithOutFilterOffset,
+      this.searchWithFilterOffset,
+      this.getProductDetailWithoutSimilarRelatedProductsStatus =
+          GetProductDetailWithoutSimilarRelatedProductsStatus.init,
+      this.getStartingSettingsStatus = GetStartingSettingsStatus.init,
+      this.getMainCategoriesStatus = GetMainCategoriesStatus.init,
+      this.getCommentForProductStatus = GetCommentForProductStatus.init,
+      this.editAddressToOrderStatus,
+      this.addAddressToOrderStatus,
+      this.removeAddressToOrderStatus,
+      this.getFullProductDetailsStatus = GetFullProductDetailsStatus.init,
+      this.addCommentStatus = AddCommentStatus.init,
+      this.startingSetting,
+      this.sizesForEachColor = const [],
+      this.colorsForEachProduct = const [],
+      this.colorsQuantitiesForEachProduct = const [],
+      this.sizesQuantitiesForEachColor = const [],
+      this.isVariantRequestNotification = const [],
+      this.deleteItemInCartStatus,
+      this.oldcartCollection,
+      this.getOldCartItemsStatus = GetOLdCartItemsStatus.init,
+      this.getOldCartModel,
+      this.isGettingProductListingWithPagination = false,
+      this.isGettingProductListingWithPaginationForAppearProduct = false,
+      this.getProductFiltersStatus = const {},
+      this.getProductFiltersModel = const {},
+      this.choosedFiltersByUser = const {},
+      this.getAddressByCoordinatesModel,
+      this.customerWalletModel,
+      this.placeOrderModel,
+      this.getOrdersByOrderGroupIDModel,
+      this.appliedFiltersByUser = const {},
+      this.currentPage = 0,
+      this.productStatus,
+      this.updateItemInCartStatus,
+      this.getCustomerAddressStatus,
+      this.theReplyFromGemini,
+      this.productITemForCart = const {},
+      this.getCartShippingItemsModel,
+      this.reRequestTheseBoutiques = const {},
+      this.getCommentForProductModel = const {},
+      this.reRequestTheseProductListingInBoutiques = const {},
+      this.reRequestProductWithFilters = const {},
+      this.getProductListingStatus = GetProductListingStatus.init,
+      this.selectedCollection,
+      this.productContentForStatusOfOpeningProductDetailsDirectly,
+      this.cartCollection = const [],
+      //this.idForRequest,
+      this.getProductListingWithFiltersPaginationModels = const {},
+      this.getStoriesForProductStatus = GetStoriesForProductStatus.init,
+      this.mainCategoriesResponseModel,
+      this.sendRequestToGeminiStatus = SendRequestToGeminiStatus.init,
+      this.currentColorSizeForCart,
+      this.currentQuantityForCart,
+      this.addImagesToProductIdForCart = const {},
+      this.searchHistory,
+      this.cashedOrginalBoutique = false,
+      this.getAllowedCountriesModel,
+      this.currentIndexForMainCategoryEvent = -1,
+      //   this.moveUrlFromElasticToMarketServer = false,
+      this.prefAppliedFilterForExtendFilter,
+      this.cartIdsHurryUPTimerStarted = const {},
+      this.fromSearchForSearchWithGemini = false,
+      this.ListitemForAddToCart,
+      this.getListOfProductsFoundedInCartStatus =
+          GetListOfProductsFoundedInCartStatus.init,
+      this.getCurrencyForCountryModel,
+      this.isExpandedForListingPage = false,
+      this.popularSearchTerm,
+      this.getAddressByCoordinatesStatus,
+      this.getCustomerWalletStatus,
+      this.placeOrderStatus = PlaceOrderStatus.init,
+      this.getOrdersByOrderGroupIDStatus = GetOrdersByOrderGroupIDStatus.init,
+      this.getAddressByTextStatus,
+      this.countOfProductExpectedByFiltering,
+      this.getCartItemsStatus = GetCartItemsStatus.init,
+      this.getProductDetailWithoutRelatedProductsModel,
+      this.addOrRemoveLikeOfProductStatus = AddOrRemoveLikeOfProductStatus.init,
+      this.getProductListingPaginationWithoutFiltersModel = const {},
+      this.getProductListingWithFiltersPaginationWithPrefetchModels = const {},
+      this.getProductFiltersWithPrefetchModel = const {},
+      this.currentSelectedColorForEveryProduct = const {},
+      this.boutiquesThatDidPrefetch = const {},
+      this.notificationTypeForProductModel,
+      this.getNotificationTypeProductStatus,
+      this.listOfAddressInfoClassToSave = const [],
+      this.listOfErrorSendedToMobileErrorLog = const [],
+      this.boutiquesForEveryMainCategoryThatDidPrefetch = const {},
+      this.cachedProductWithoutRelatedProductsModel = const {},
+      this.getHomeBoutiquesPaginationObjectByMainCategory = const {},
+      this.getFirebaseSettingForNotificationStatus,
+      this.firebaseSettingForNotificationModel});
 
   final Map<String, bool> boutiquesThatDidPrefetch;
+  final GetFirebaseSettingForNotificationStatus?
+      getFirebaseSettingForNotificationStatus;
+  final FirebaseSettingForNotificationModel?
+      firebaseSettingForNotificationModel;
   final Map<String, bool> boutiquesForEveryMainCategoryThatDidPrefetch;
   final GetStartingSettingsStatus getStartingSettingsStatus;
   final Map<String, int> currentSelectedColorForEveryProduct;
@@ -282,6 +298,8 @@ class HomeState extends Equatable {
   final Map<String, int> cartIdsHurryUPTimerStarted;
   final GetListOfProductsFoundedInCartStatus
       getListOfProductsFoundedInCartStatus;
+  final UpdateEmailappNotificationStatus? updateEmailappNotificationStatus;
+  final UpdateWhatsappNotificationStatus? updateWhatsappNotificationStatus;
   final List<oldCart.OldCart>? oldcartCollection;
 
   final Map<String, bool> reRequestTheseBoutiques;
@@ -302,9 +320,11 @@ class HomeState extends Equatable {
   final Map<String, PaginationModel<boutiques_model.Boutique>>
       getHomeBoutiquesPaginationObjectByMainCategory;
   final List<Story>? storiesForProduct;
-  final List<String>? sizes;
-  final List<int>? sizesQuantities;
-  final List<String> isSizeRequestNotification;
+  final List<String>? sizesForEachColor;
+  final List<String>? colorsForEachProduct;
+  final List<int>? sizesQuantitiesForEachColor;
+  final List<int>? colorsQuantitiesForEachProduct;
+  final List<String> isVariantRequestNotification;
   final Map<String, int>? countOfProductExpectedByFiltering;
   final get_filters.Filter? prefAppliedFilterForExtendFilter;
   final Map<String, PaginationModel<product.Products>>
@@ -361,6 +381,9 @@ class HomeState extends Equatable {
         cashedOrginalBoutique,
         listOfAddressInfoClassToSave,
         getAddressByCoordinatesStatus,
+        updateEmailappNotificationStatus,
+        updateWhatsappNotificationStatus,
+
         getCustomerWalletStatus,
         placeOrderStatus,
         placeOrderModel,
@@ -377,7 +400,7 @@ class HomeState extends Equatable {
         choosedFiltersByUser,
         selectedCollection,
         currentPage,
-        sizesQuantities,
+        sizesQuantitiesForEachColor,
         isExpandedForListingPage,
         isGettingProductListingWithPagination,
         isGettingProductListingWithPaginationForAppearProduct,
@@ -396,7 +419,7 @@ class HomeState extends Equatable {
         getStoriesForProductStatus,
         getHomeBoutiquesPaginationObjectByMainCategory,
         storiesForProduct,
-        sizes,
+        sizesForEachColor,
         getFullProductDetailsStatus,
         countOfProductExpectedByFiltering,
         prefAppliedFilterForExtendFilter,
@@ -412,21 +435,27 @@ class HomeState extends Equatable {
         deleteItemInCartStatus,
         updateItemInCartStatus,
         currentSelectedColorForEveryProduct,
-        isSizeRequestNotification,
+        isVariantRequestNotification,
         selectedCollection,
         cashedOrginalBoutique,
         currentIndexForMainCategoryEvent,
         startingSetting,
         currentColorSizeForCart,
         getAddressByCoordinatesModel,
+        getFirebaseSettingForNotificationStatus,
         customerWalletModel,
         currentQuantityForCart,
+        firebaseSettingForNotificationModel,
         cachedProductWithoutRelatedProductsModel,
         addOrRemoveLikeOfProductStatus
       ];
 
   HomeState copyWith(
       {final GetStartingSettingsStatus? getStartingSettingsStatus,
+      final GetFirebaseSettingForNotificationStatus?
+          getFirebaseSettingForNotificationStatus,
+      final FirebaseSettingForNotificationModel?
+          firebaseSettingForNotificationModel,
       final GetMainCategoriesStatus? getMainCategoriesStatus,
       final GetAddressByCoordinatesModel? getAddressByCoordinatesModel,
       final CustomerWalletModel? customerWalletModel,
@@ -481,6 +510,8 @@ class HomeState extends Equatable {
       final AddOrRemoveLikeOfProductStatus? addOrRemoveLikeOfProductStatus,
       final bool? isGettingProductListingWithPagination,
       final GetCartItemsStatus? getCartItemsStatus,
+      final UpdateEmailappNotificationStatus? updateEmailappNotificationStatus,
+      final UpdateWhatsappNotificationStatus? updateWhatsappNotificationStatus,
       final GetOLdCartItemsStatus? getOldCartItemsStatus,
       Map<int, int?>? currentStoryInEachCollection,
       final AddCommentStatus? addCommentStatus,
@@ -488,9 +519,11 @@ class HomeState extends Equatable {
           getProductDetailWithoutRelatedProductsModel,
       int? selectedCollection,
       final Products? productContentForStatusOfOpeningProductDetailsDirectly,
-      List<String>? sizes,
-      List<int>? sizesQuantities,
-      List<String>? isSizeRequestNotification,
+      List<String>? sizesForEachColor,
+      List<int>? sizesQuantitiesForEachColor,
+      List<String>? colorsForEachProduct,
+      List<int>? colorsQuantitiesForProduct,
+      List<String>? isVariantRequestNotification,
       final String? theReplyFromGemini,
       final bool? isGettingProductListingWithPaginationForAppearProduct,
       int? currentIndexForMainCategoryEvent,
@@ -543,8 +576,10 @@ class HomeState extends Equatable {
       boutiquesForEveryMainCategoryThatDidPrefetch:
           boutiquesForEveryMainCategoryThatDidPrefetch ??
               this.boutiquesForEveryMainCategoryThatDidPrefetch,
+
       getAndAddCountViewOfProductStatus: getAndAddCountViewOfProductStatus ??
           this.getAndAddCountViewOfProductStatus,
+
       getAddressByCoordinatesModel:
           getAddressByCoordinatesModel ?? this.getAddressByCoordinatesModel,
       customerWalletModel: customerWalletModel ?? this.customerWalletModel,
@@ -552,14 +587,24 @@ class HomeState extends Equatable {
           hideItemInOldCartStatus ?? this.hideItemInOldCartStatus,
       getCommentForProductModel:
           getCommentForProductModel ?? this.getCommentForProductModel,
+      getFirebaseSettingForNotificationStatus:
+          getFirebaseSettingForNotificationStatus ??
+              this.getFirebaseSettingForNotificationStatus,
       updateItemInCartStatus:
           updateItemInCartStatus ?? this.updateItemInCartStatus,
+      colorsForEachProduct: colorsForEachProduct ?? this.colorsForEachProduct,
+      colorsQuantitiesForEachProduct:
+          colorsQuantitiesForProduct ?? this.colorsQuantitiesForEachProduct,
       notificationTypeForProductModel: notificationTypeForProductModel ??
           this.notificationTypeForProductModel,
       listOfAddressInfoClassToSave:
           listOfAdressInfoClassToSave ?? this.listOfAddressInfoClassToSave,
       removeAddressToOrderStatus:
           removeAddressToOrderStatus ?? this.removeAddressToOrderStatus,
+
+      firebaseSettingForNotificationModel:
+          firebaseSettingForNotificationModel ??
+              this.firebaseSettingForNotificationModel,
       changeSizesForEveryProduct:
           changeSizesForEveryProduct ?? this.changeSizesForEveryProduct,
       addAddressToOrderStatus:
@@ -592,14 +637,15 @@ class HomeState extends Equatable {
           this.listOfErrorSendedToMobileErrorLog,
       //   moveUrlFromElasticToMarketServer: moveUrlFromElasticToMarketServer ??
       //     this.moveUrlFromElasticToMarketServer,
-      sizes: sizes ?? this.sizes,
+      sizesForEachColor: sizesForEachColor ?? this.sizesForEachColor,
       getFullProductDetailsStatus:
           getFullProductDetailsStatus ?? this.getFullProductDetailsStatus,
-      sizesQuantities: sizesQuantities ?? this.sizesQuantities,
+      sizesQuantitiesForEachColor:
+          sizesQuantitiesForEachColor ?? this.sizesQuantitiesForEachColor,
       addCommentStatus: addCommentStatus ?? this.addCommentStatus,
 
-      isSizeRequestNotification:
-          isSizeRequestNotification ?? this.isSizeRequestNotification,
+      isVariantRequestNotification:
+          isVariantRequestNotification ?? this.isVariantRequestNotification,
       isGettingProductListingWithPagination:
           isGettingProductListingWithPagination ??
               this.isGettingProductListingWithPagination,
@@ -704,6 +750,10 @@ class HomeState extends Equatable {
       getProductListingPaginationWithoutFiltersModel:
           getProductListingPaginationWithoutFiltersModel ??
               this.getProductListingPaginationWithoutFiltersModel,
+      updateEmailappNotificationStatus: updateEmailappNotificationStatus ??
+          this.updateEmailappNotificationStatus,
+      updateWhatsappNotificationStatus: updateWhatsappNotificationStatus ??
+          this.updateWhatsappNotificationStatus,
       cachedProductWithoutRelatedProductsModel:
           cachedProductWithoutRelatedProductsModel ??
               this.cachedProductWithoutRelatedProductsModel,

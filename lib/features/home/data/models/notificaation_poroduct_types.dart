@@ -57,7 +57,7 @@ class NotificationType {
   final int? isChosenByCustomer;
   final DateTime? createdAt;
   final DateTime? updatedAt;
-  final List<dynamic>? customNotificationTypes;
+  final String? topic;
 
   NotificationType({
     this.id,
@@ -69,7 +69,7 @@ class NotificationType {
     this.isChosenByCustomer,
     this.createdAt,
     this.updatedAt,
-    this.customNotificationTypes,
+    this.topic,
   });
 
   NotificationType copyWith({
@@ -82,7 +82,7 @@ class NotificationType {
     int? isChosenByCustomer,
     DateTime? createdAt,
     DateTime? updatedAt,
-    List<dynamic>? customNotificationTypes,
+    String? topic,
   }) =>
       NotificationType(
         id: id ?? this.id,
@@ -94,8 +94,7 @@ class NotificationType {
         isChosenByCustomer: isChosenByCustomer ?? this.isChosenByCustomer,
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt ?? this.updatedAt,
-        customNotificationTypes:
-            customNotificationTypes ?? this.customNotificationTypes,
+        topic: topic ?? this.topic,
       );
 
   factory NotificationType.fromJson(Map<String, dynamic> json) =>
@@ -113,10 +112,7 @@ class NotificationType {
         updatedAt: json["updated_at"] == null
             ? null
             : DateTime.parse(json["updated_at"]),
-        customNotificationTypes: json["custom_notification_types"] == null
-            ? []
-            : List<dynamic>.from(
-                json["custom_notification_types"]!.map((x) => x)),
+        topic: json["topic"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -129,8 +125,6 @@ class NotificationType {
         "is_chosen_by_customer": isChosenByCustomer,
         "created_at": createdAt?.toIso8601String(),
         "updated_at": updatedAt?.toIso8601String(),
-        "custom_notification_types": customNotificationTypes == null
-            ? []
-            : List<dynamic>.from(customNotificationTypes!.map((x) => x)),
+        "topic": topic,
       };
 }

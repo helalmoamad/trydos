@@ -49,6 +49,7 @@ class _VerificationMethodsState extends State<VerificationMethods> {
 
   @override
   Widget build(BuildContext context) {
+    FocusScope.of(context).unfocus();
     FlutterError.onError = (FlutterErrorDetails error) {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
@@ -215,7 +216,6 @@ class _VerificationMethodsState extends State<VerificationMethods> {
                       Future.delayed(
                         Duration(milliseconds: 100),
                         () {
-                          FocusScope.of(context).requestFocus();
                           clickButton.value = -1;
                           widget.onChooseSms.call();
                         },

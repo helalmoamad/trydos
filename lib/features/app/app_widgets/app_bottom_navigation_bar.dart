@@ -26,6 +26,7 @@ import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/language_service.dart';
+import 'package:trydos/service/notification_service/setting_fitrbase_notification.dart';
 import '../../../common/test_utils/test_var.dart';
 import '../../../core/domin/repositories/prefs_repository.dart';
 import '../../../core/utils/theme_state.dart';
@@ -40,7 +41,9 @@ import '../blocs/app_bloc/app_state.dart';
 import '../my_text_widget.dart';
 
 class AppBottomNavBar extends StatefulWidget {
-  const AppBottomNavBar({Key? key}) : super(key: key);
+  final ValueNotifier<bool> isShowPanelForVerified;
+  const AppBottomNavBar({Key? key, required this.isShowPanelForVerified})
+      : super(key: key);
 
   @override
   State<AppBottomNavBar> createState() => _AppBottomNavBarState();
@@ -239,9 +242,9 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                     if (prefsRepository.isVerifiedPhone != true ||
                         (prefsRepository.isLogInToChat ?? false) != true ||
                         (prefsRepository.chatToken?.length ?? 0) > 10) {
-                      context.go(GRouter
-                          .config.applicationRoutes.kRegistrationPagePath);
-                    } else if (prefsRepository.myMarketName == null) {
+                      widget.isShowPanelForVerified.value = true;
+                    } else if ((prefsRepository.myMarketName?.length ?? 0) <
+                        3) {
                       showDialog(
                           context: context,
                           barrierDismissible: false,
@@ -316,7 +319,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                 builder: (context, homestate) {
                                   return Container(
                                     width: 300,
-                                    height: 300,
+                                    height: 350,
                                     child: Stack(
                                       children: [
                                         Positioned(
@@ -349,6 +352,17 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                   },
                                                   child: MyTextWidget(
                                                       'shared preferences'),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (_) =>
+                                                                SwitchListForNotification()));
+                                                  },
+                                                  child: MyTextWidget(
+                                                      'Firebase Setting'),
                                                 ),
                                                 TextButton(
                                                   onPressed: () {

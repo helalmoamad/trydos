@@ -51,7 +51,7 @@ class _LanguageDropdownState extends State<LanguageDropdown> {
           onChanged: (String? newValue) async {
             selectedlang = newValue;
             BlocProvider.of<HomeBloc>(context).add(ClearAllAppCashEvent());
-            List<String> topicTOUnSubsecribe =
+            /*   List<String> topicTOUnSubsecribe =
                 _prefsRepository.topicThatAlreadySubsecribed();
             topicTOUnSubsecribe.forEach(
               (element) {
@@ -60,7 +60,11 @@ class _LanguageDropdownState extends State<LanguageDropdown> {
                 print(
                     "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${element}");
               },
-            );
+            );*/
+            BlocProvider.of<HomeBloc>(context).add(
+                ChangeCountryLanguageForNotificationEvent(
+                    country: newValue!,
+                    languageCode: _prefsRepository.countryIso!.toLowerCase()));
             Future.delayed(
               Duration(microseconds: 500),
               () {

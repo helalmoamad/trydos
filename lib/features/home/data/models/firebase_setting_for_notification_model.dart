@@ -93,39 +93,111 @@ class Data {
 }
 
 class FirebaseSettings {
-  final List<String>? subscribedTopics;
-  final List<String>? unsubscribedTopics;
+  final String? email;
+  final String? firebase;
+  final String? whatsapp;
+  final List<SubscribedTopic>? subscribedTopics;
+  final List<SubscribedTopic>? unsubscribedTopics;
+  final String? notificationFrequency;
 
   FirebaseSettings({
+    this.email,
+    this.firebase,
+    this.whatsapp,
     this.subscribedTopics,
     this.unsubscribedTopics,
+    this.notificationFrequency,
   });
 
   FirebaseSettings copyWith({
-    List<String>? subscribedTopics,
-    List<String>? unsubscribedTopics,
+    String? email,
+    String? firebase,
+    String? whatsapp,
+    List<SubscribedTopic>? subscribedTopics,
+    List<SubscribedTopic>? unsubscribedTopics,
+    String? notificationFrequency,
   }) =>
       FirebaseSettings(
+        email: email ?? this.email,
+        firebase: firebase ?? this.firebase,
+        whatsapp: whatsapp ?? this.whatsapp,
         subscribedTopics: subscribedTopics ?? this.subscribedTopics,
         unsubscribedTopics: unsubscribedTopics ?? this.unsubscribedTopics,
+        notificationFrequency:
+            notificationFrequency ?? this.notificationFrequency,
       );
 
   factory FirebaseSettings.fromJson(Map<String, dynamic> json) =>
       FirebaseSettings(
+        email: json["email"].toString(),
+        firebase: json["firebase"].toString(),
+        whatsapp: json["whatsapp"].toString(),
         subscribedTopics: json["subscribed_topics"] == null
             ? []
-            : List<String>.from(json["subscribed_topics"]!.map((x) => x)),
+            : List<SubscribedTopic>.from(json["subscribed_topics"]!
+                .map((x) => SubscribedTopic.fromJson(x))),
         unsubscribedTopics: json["unsubscribed_topics"] == null
             ? []
-            : List<String>.from(json["unsubscribed_topics"]!.map((x) => x)),
+            : List<SubscribedTopic>.from(json["unsubscribed_topics"]!
+                .map((x) => SubscribedTopic.fromJson(x))),
+        notificationFrequency: json["notification_frequency"],
       );
 
   Map<String, dynamic> toJson() => {
+        "email": email.toString(),
+        "firebase": firebase.toString(),
+        "whatsapp": whatsapp.toString(),
         "subscribed_topics": subscribedTopics == null
             ? []
-            : List<dynamic>.from(subscribedTopics!.map((x) => x)),
+            : List<dynamic>.from(subscribedTopics!.map((x) => x.toJson())),
         "unsubscribed_topics": unsubscribedTopics == null
             ? []
-            : List<dynamic>.from(unsubscribedTopics!.map((x) => x)),
+            : List<dynamic>.from(unsubscribedTopics!.map((x) => x.toJson())),
+        "notification_frequency": notificationFrequency,
+      };
+}
+
+class SubscribedTopic {
+  final String? name;
+  final String? showedName;
+  final String? topic;
+  final List<String>? variants;
+
+  SubscribedTopic({
+    this.name,
+    this.showedName,
+    this.topic,
+    this.variants,
+  });
+
+  SubscribedTopic copyWith({
+    String? name,
+    String? showedName,
+    String? topic,
+    List<String>? variants,
+  }) =>
+      SubscribedTopic(
+        name: name ?? this.name,
+        showedName: showedName ?? this.showedName,
+        topic: topic ?? this.topic,
+        variants: variants ?? this.variants,
+      );
+
+  factory SubscribedTopic.fromJson(Map<String, dynamic> json) =>
+      SubscribedTopic(
+        name: json["name"],
+        showedName: json["showed_name"],
+        topic: json["topic"],
+        variants: json["variants"] == null
+            ? []
+            : List<String>.from(json["variants"]!.map((x) => x)),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "name": name,
+        "showed_name": showedName,
+        "topic": topic,
+        "variants":
+            variants == null ? [] : List<String>.from(variants!.map((x) => x)),
       };
 }

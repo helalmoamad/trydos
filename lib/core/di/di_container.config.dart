@@ -131,6 +131,8 @@ import '../../features/home/domain/use_cases/add_item_to_cart_usecase.dart'
     as _i1035;
 import '../../features/home/domain/use_cases/add_like_to_product_usecase.dart'
     as _i33;
+import '../../features/home/domain/use_cases/change_country_language_for_notification_usecase.dart'
+    as _i814;
 import '../../features/home/domain/use_cases/convert_item_from_oldCart_to_Cart_usecase.dart'
     as _i190;
 import '../../features/home/domain/use_cases/delete_customer_address_usecase.dart'
@@ -159,12 +161,14 @@ import '../../features/home/domain/use_cases/get_home_boutiqes_usecase.dart'
     as _i518;
 import '../../features/home/domain/use_cases/get_main_categories_usecase.dart'
     as _i158;
+import '../../features/home/domain/use_cases/get_my_firebase_settings_usecase.dart'
+    as _i171;
 import '../../features/home/domain/use_cases/get_notification_type_for_product_usecase.dart'
     as _i929;
 import '../../features/home/domain/use_cases/get_old_cart_item_usecase.dart'
     as _i318;
 import '../../features/home/domain/use_cases/get_orders_by_order_group_usecase.dart'
-    as _i59;
+    as _i1003;
 import '../../features/home/domain/use_cases/get_popular_search_terms_usecase.dart'
     as _i963;
 import '../../features/home/domain/use_cases/get_product_detail_without_related_products_uswcase.dart'
@@ -194,10 +198,22 @@ import '../../features/home/domain/use_cases/send_error_to_mobile_error_log.dart
     as _i78;
 import '../../features/home/domain/use_cases/store_fcm_token_of_market_usecase.dart'
     as _i366;
+import '../../features/home/domain/use_cases/subscribe_topic_for_notification_usecase.dart'
+    as _i687;
+import '../../features/home/domain/use_cases/un_subscribe_topic_for_notification_usecase.dart'
+    as _i424;
 import '../../features/home/domain/use_cases/update_customer_address_usecase.dart'
     as _i418;
+import '../../features/home/domain/use_cases/update_email_notification_usecase.dart'
+    as _i750;
+import '../../features/home/domain/use_cases/update_firebase_notification_usecase.dart'
+    as _i741;
 import '../../features/home/domain/use_cases/update_item_from_cart_usecase.dart'
     as _i802;
+import '../../features/home/domain/use_cases/update_notification_frequency_usecase.dart'
+    as _i432;
+import '../../features/home/domain/use_cases/update_whatsapp_notification_usecase.dart'
+    as _i744;
 import '../../features/home/presentation/manager/home_bloc.dart' as _i801;
 import '../../features/story/data/data_source/story_data_source.dart' as _i777;
 import '../../features/story/data/repository/story_repository_impl.dart'
@@ -314,6 +330,9 @@ Future<_i174.GetIt> $initGetIt(
       () => _i1035.AddItemToCartUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i33.AddLikeToProductUsecase>(
       () => _i33.AddLikeToProductUsecase(gh<_i0.HomeRepository>()));
+  gh.factory<_i814.ChangeCountryLanguageFornotificationUseCase>(() =>
+      _i814.ChangeCountryLanguageFornotificationUseCase(
+          gh<_i0.HomeRepository>()));
   gh.factory<_i190.ConvertItemFromOldcartToCartUsecase>(() =>
       _i190.ConvertItemFromOldcartToCartUsecase(gh<_i0.HomeRepository>()));
   gh.factory<_i71.DeleteCustomerAddressUseCase>(
@@ -344,10 +363,14 @@ Future<_i174.GetIt> $initGetIt(
       () => _i518.GetHomeBoutiqesUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i158.GetMainCategoriesUseCase>(
       () => _i158.GetMainCategoriesUseCase(gh<_i0.HomeRepository>()));
+  gh.factory<_i171.GetMyFirebaseSettingsUseCase>(
+      () => _i171.GetMyFirebaseSettingsUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i929.GetNotificationTypeProductUseCase>(
       () => _i929.GetNotificationTypeProductUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i318.GetOldCartItemUseCase>(
       () => _i318.GetOldCartItemUseCase(gh<_i0.HomeRepository>()));
+  gh.factory<_i1003.GetOrdersByOrderGroupIDUsecase>(
+      () => _i1003.GetOrdersByOrderGroupIDUsecase(gh<_i0.HomeRepository>()));
   gh.factory<_i963.GetPopularSearchItemUseCase>(
       () => _i963.GetPopularSearchItemUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i397.GetProductsWithoutFiltersUseCase>(
@@ -367,6 +390,8 @@ Future<_i174.GetIt> $initGetIt(
       () => _i533.GetStoryForProductUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i104.HideItemsInOldCartUseCase>(
       () => _i104.HideItemsInOldCartUseCase(gh<_i0.HomeRepository>()));
+  gh.factory<_i649.PlaceOrderUsecase>(
+      () => _i649.PlaceOrderUsecase(gh<_i0.HomeRepository>()));
   gh.factory<_i687.RemoveItemToCartUseCase>(
       () => _i687.RemoveItemToCartUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i715.RequestForNotificationWhenProductBecameAvailableUseCase>(
@@ -376,14 +401,24 @@ Future<_i174.GetIt> $initGetIt(
       () => _i78.SendErrorToMobileErrorLogUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i366.StoreFcmTokenOfMarketUseCase>(
       () => _i366.StoreFcmTokenOfMarketUseCase(gh<_i0.HomeRepository>()));
+  gh.factory<_i687.SubscribeTopicFornotificationUseCase>(() =>
+      _i687.SubscribeTopicFornotificationUseCase(gh<_i0.HomeRepository>()));
+  gh.factory<_i424.UnSubscribeTopicFornotificationUseCase>(() =>
+      _i424.UnSubscribeTopicFornotificationUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i418.UpdateCustomerAddressUseCase>(
       () => _i418.UpdateCustomerAddressUseCase(gh<_i0.HomeRepository>()));
+  gh.factory<_i750.UpdateEmailNotificationUseCase>(
+      () => _i750.UpdateEmailNotificationUseCase(gh<_i0.HomeRepository>()));
+  gh.factory<_i741.UpdateFirebaseNotificationUseCase>(
+      () => _i741.UpdateFirebaseNotificationUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i802.UpdateItemInCartUseCase>(
       () => _i802.UpdateItemInCartUseCase(gh<_i0.HomeRepository>()));
-  gh.factory<_i649.PlaceOrderUsecase>(
-      () => _i649.PlaceOrderUsecase(gh<_i0.HomeRepository>()));
-  gh.factory<_i59.GetOrdersByOrderGroupIDUsecase>(
-      () => _i59.GetOrdersByOrderGroupIDUsecase(gh<_i0.HomeRepository>()));
+  gh.factory<_i432.UpdateNotificationFrequencyUseCase>(
+      () => _i432.UpdateNotificationFrequencyUseCase(gh<_i0.HomeRepository>()));
+  gh.factory<_i744.UpdateWhatsappNotificationUseCase>(
+      () => _i744.UpdateWhatsappNotificationUseCase(gh<_i0.HomeRepository>()));
+  gh.lazySingleton<_i702.CommonUseRepository>(() =>
+      _i77.CommonUseRepositoryImpl(gh<_i672.CommonUseRemoteDataSource>()));
   gh.lazySingleton<_i801.HomeBloc>(() => _i801.HomeBloc(
         gh<_i158.GetMainCategoriesUseCase>(),
         gh<_i533.GetStoryForProductUseCase>(),
@@ -406,6 +441,14 @@ Future<_i174.GetIt> $initGetIt(
         gh<_i318.GetAllowedCountryUseCase>(),
         gh<_i929.GetNotificationTypeProductUseCase>(),
         gh<_i912.GetWidthAndHeightUseCase>(),
+        gh<_i171.GetMyFirebaseSettingsUseCase>(),
+        gh<_i750.UpdateEmailNotificationUseCase>(),
+        gh<_i741.UpdateFirebaseNotificationUseCase>(),
+        gh<_i432.UpdateNotificationFrequencyUseCase>(),
+        gh<_i744.UpdateWhatsappNotificationUseCase>(),
+        gh<_i814.ChangeCountryLanguageFornotificationUseCase>(),
+        gh<_i687.SubscribeTopicFornotificationUseCase>(),
+        gh<_i424.UnSubscribeTopicFornotificationUseCase>(),
         gh<_i347.GetProductDetailWithoutRelatedProductsUseCase>(),
         gh<_i815.GetStartingSettingsUseCase>(),
         gh<_i963.GetPopularSearchItemUseCase>(),
@@ -424,10 +467,8 @@ Future<_i174.GetIt> $initGetIt(
         gh<_i955.GetProductsWithFiltersUseCase>(),
         gh<_i361.GetCustomerWalletUseCase>(),
         gh<_i649.PlaceOrderUsecase>(),
-        gh<_i59.GetOrdersByOrderGroupIDUsecase>(),
+        gh<_i1003.GetOrdersByOrderGroupIDUsecase>(),
       ));
-  gh.lazySingleton<_i702.CommonUseRepository>(() =>
-      _i77.CommonUseRepositoryImpl(gh<_i672.CommonUseRemoteDataSource>()));
   gh.lazySingleton<_i1032.CallsRepository>(
       () => _i722.CallsRepositoryImpl(gh<_i1061.CallsRemoteDataSource>()));
   gh.lazySingleton<_i420.ChatRepository>(

@@ -79,7 +79,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
           builder: (context, _paymentMethods, _) {
             return Container(
               width: 1.sw,
-              padding: EdgeInsets.all(10.h),
+              padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
                   border: (widget.fromPalceOrder)
@@ -99,13 +99,13 @@ class _PaymentMethodState extends State<PaymentMethod> {
                         style: context.textTheme.bodyMedium?.rr.copyWith(
                             color: const Color(0xff1D1D1D),
                             letterSpacing: 0.18,
-                            fontSize: 14,
+                            fontSize: 14.sp,
                             height: 1.33),
                       ),
                     ],
                   ),
                   SizedBox(
-                    height: 2.h,
+                    height: 2,
                   ),
                   Padding(
                     padding: EdgeInsets.symmetric(
@@ -123,7 +123,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                     ),
                   ),
                   SizedBox(
-                    height: 12.h,
+                    height: 8,
                   ),
                   (!(_paymentMethods.contains(PaymentMethods.trydosWallet)) &&
                               widget.fromPalceOrder) ||
@@ -185,7 +185,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                               .contains(PaymentMethods.trydosWallet)
                       ? SizedBox.shrink()
                       : SizedBox(
-                          height: 12.h,
+                          height: 8,
                         ),
                   ////////////////////
                   (!(_paymentMethods.contains(PaymentMethods.card)) &&
@@ -339,7 +339,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                               .contains(PaymentMethods.crypto)
                       ? SizedBox.shrink()
                       : SizedBox(
-                          height: 12.h,
+                          height: 12,
                         ),
                   //////////////////////
                   (!(_paymentMethods.contains(PaymentMethods.cod)) &&

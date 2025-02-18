@@ -101,7 +101,7 @@ class _RegistrationPageState extends State<RegistrationPage>
       canPop: true,
       onPopInvokedWithResult: (didPop, result) {
         print(pageContent.value);
-
+        print("#######################@@@@@@@@@@@@@@@@@@!!!!!!!!!!");
         Future.delayed(Duration(milliseconds: 100), () {
           if (pageController.page == 2 || pageController.page == 1) {
             pageController.animateToPage(0,
@@ -110,7 +110,7 @@ class _RegistrationPageState extends State<RegistrationPage>
             return;
           }
           if ((pageController.page ?? 0) >= 3 &&
-              (pageController.page ?? 0) <= 5) {
+              (pageController.page ?? 0) < 5) {
             pageContent.value = 2;
             pageController.animateToPage(2,
                 duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
@@ -121,7 +121,7 @@ class _RegistrationPageState extends State<RegistrationPage>
       },
       child: ValueListenableBuilder<int>(
           child: ValueListenableBuilder<bool>(
-              child: logo,
+              child: Container(margin: EdgeInsets.only(top: 20), child: logo),
               valueListenable: animate,
               builder: (context, yes, child) {
                 return Directionality(
@@ -130,7 +130,7 @@ class _RegistrationPageState extends State<RegistrationPage>
                       left: yes ? 40 : null,
                       right: yes ? 40 : null,
                       top: yes ? 50 : null,
-                      bottom: yes ? null : 456,
+                      bottom: yes ? null : 465.h,
                       duration: animationDuration,
                       child: child!),
                 );
@@ -150,7 +150,7 @@ class _RegistrationPageState extends State<RegistrationPage>
                 children: [
                   child!,
                   Positioned(
-                    top: 0,
+                    top: 10,
                     right: 0,
                     child: ValueListenableBuilder<int>(
                         valueListenable: pageContent,
@@ -222,10 +222,10 @@ class _RegistrationPageState extends State<RegistrationPage>
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       SizedBox(
-                        height: 96,
+                        height: 96.h,
                       ),
                       SizedBox(
-                        height: 1.sh / 2.6,
+                        height: 1.sh / 2.5,
                         width: 1.sw,
                         child: WillPopScope(
                             child: PageView(
@@ -313,7 +313,7 @@ class _RegistrationPageState extends State<RegistrationPage>
                                     },
                                   ),
                                   VerifyOtp(
-                                      fromCart: false,
+                                      fromExpired: false,
                                       isVisWhatsApp: isVisWhatsApp,
                                       navigateToAddName: () {
                                         debugPrint('fromLogin:  $fromLogin');
@@ -358,6 +358,16 @@ class _RegistrationPageState extends State<RegistrationPage>
                                   )
                                 ]),
                             onWillPop: () async {
+                              if (pageController.page == 5.0) {
+                                BlocProvider.of<AppBloc>(context)
+                                    .add(ChangeBasePage(0));
+                                prefsRepository.setMyMarketName("");
+                                context.go(GRouter.config.applicationRoutes
+                                        .kRegistrationCompletedPage +
+                                    '?userName=');
+                                return false;
+                              }
+
                               if (PopScopeValue > 0) {
                                 if (PopScopeValue == 2 && fromLogin) {
                                   await pageController.animateToPage(

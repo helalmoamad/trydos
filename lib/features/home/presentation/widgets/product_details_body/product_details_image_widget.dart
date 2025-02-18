@@ -75,7 +75,7 @@ class ProductDetailsImageWidget extends StatelessWidget {
               boxShadow: withBackGroundShadow
                   ? [
                       BoxShadow(
-                        color: context.colorScheme.black.withOpacity(0.1),
+                        color: context.colorScheme.black.withOpacity(0.01),
                         offset: Offset(0, 0),
                         blurRadius: blurRadius ?? 10,
                       ),
@@ -96,7 +96,7 @@ class ProductDetailsImageWidget extends StatelessWidget {
                         imageHeight: imageHeight,
                         height: height ?? 464,
                         width: width ?? 320,
-                        imageFit: imageFit ?? BoxFit.cover,
+                        imageFit: BoxFit.fitWidth,
                       )),
           ),
           Container(

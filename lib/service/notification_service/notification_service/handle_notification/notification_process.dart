@@ -11,6 +11,8 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/main.dart';
 import 'package:trydos/routes/router.dart';
 import '../../../../base_page.dart';
@@ -48,10 +50,17 @@ class NotificationProcess {
   }
 
   Future fcmToken() async {
+    await FirebaseMessaging.instance.deleteToken();
     myFcmToken = await FirebaseMessaging.instance.getToken();
     print("myFcmToken : ${myFcmToken}");
     if (myFcmToken != null) {
       GetIt.I<PrefsRepository>().addFcmToken(myFcmToken!);
+      if (GetIt.I<PrefsRepository>().myMarketId != null) {
+        GetIt.I<HomeBloc>().add(StoreFcmTokenOfMarketEvent(
+            userId:
+                int.tryParse(GetIt.I<PrefsRepository>().myMarketId ?? '') ?? -1,
+            fcmToken: myFcmToken!));
+      }
     }
     log(myFcmToken.toString());
   }

@@ -75,6 +75,7 @@ class ProductDetailsPage extends StatefulWidget {
     super.key,
     this.productItem,
     this.fromNotification = false,
+    this.fromNotificationComment = false,
     this.productIdForOpeningChatDirectly,
     this.productSlugForOpeningChatDirectly,
   });
@@ -83,6 +84,7 @@ class ProductDetailsPage extends StatefulWidget {
   final String? productIdForOpeningChatDirectly;
   final String? productSlugForOpeningChatDirectly;
   final bool fromNotification;
+  bool fromNotificationComment;
 
   @override
   State<ProductDetailsPage> createState() => _ProductDetailsPageState();
@@ -101,13 +103,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   final PanelController panelControllerForBuyersCameraShots = PanelController();
   final PanelController panelControllerForReels = PanelController();
   final PanelController panelControllerForCart = PanelController();
+  final ValueNotifier<int> currentActiveTab = ValueNotifier(-1);
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
 
   bool showDialogToResetSession = true;
   @override
   void initState() {
-    print(
-        "###############################5%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%${widget.productItem?.slug}");
     if (widget.productItem != null) {
       productItem = widget.productItem!;
     }
@@ -156,6 +157,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     };
     return WillPopScope(
       onWillPop: () {
+        if (panelControllerForCart.isPanelOpen) {
+          panelControllerForCart.close();
+          return Future.value(false);
+        }
         if (widget.fromNotification) {
           context.go(GRouter.config.kRootRoute);
 
@@ -563,6 +568,14 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         p.cachedProductWithoutRelatedProductsModel !=
                             c.cachedProductWithoutRelatedProductsModel,
                     builder: (context, state) {
+                      state
+                          .cachedProductWithoutRelatedProductsModel[
+                              productItem?.productId.toString()]
+                          ?.product
+                          ?.variation
+                          ?.forEach(
+                        (element) {},
+                      );
                       String productId = widget
                               .productIdForOpeningChatDirectly ??
                           (state.cachedProductWithoutRelatedProductsModel[
@@ -602,28 +615,36 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                               .currentSelectedColorForEveryProduct[productId] ??
                           (productItem?.syncColorImages?.length ?? 0) ~/ 2;
 
-                      homeBloc.add(AddSizesFotColorsEvent(
-                          currentColorName: !productItem!.colors.isNullOrEmpty
-                              ? productItem!
-                                      .colors![currentSelectedColor].name ??
-                                  ""
-                              : "",
-                          variation: state.cachedProductWithoutRelatedProductsModel[
-                                      productItem?.productId.toString()] !=
-                                  null
-                              ? state
+                      Future.delayed(
+                        Duration(milliseconds: 300),
+                        () {
+                          homeBloc.add(AddSizesForColorsEvent(
+                              currentColorName:
+                                  !productItem!.colors.isNullOrEmpty
+                                      ? productItem!
+                                              .colors![currentSelectedColor]
+                                              .name ??
+                                          ""
+                                      : "",
+                              variation: state.cachedProductWithoutRelatedProductsModel[
+                                          productItem?.productId.toString()] !=
+                                      null
+                                  ? state
+                                              .cachedProductWithoutRelatedProductsModel[
+                                                  productItem?.productId
+                                                      .toString()]!
+                                              .product !=
+                                          null
+                                      ? state
                                           .cachedProductWithoutRelatedProductsModel[
                                               productItem?.productId
                                                   .toString()]!
-                                          .product !=
-                                      null
-                                  ? state
-                                      .cachedProductWithoutRelatedProductsModel[
-                                          productItem?.productId.toString()]!
-                                      .product!
-                                      .variation
-                                  : null
-                              : null));
+                                          .product!
+                                          .variation
+                                      : null
+                                  : null));
+                        },
+                      );
 
                       return ScrollConfiguration(
                         behavior: const CupertinoScrollBehavior(),
@@ -1071,6 +1092,13 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   }
                   productItem = state
                       .productContentForStatusOfOpeningProductDetailsDirectly!;
+                  Future.delayed(Duration(seconds: 1), () {
+                    if (widget.fromNotificationComment) {
+                      panelControllerForCart.open();
+                      currentActiveTab.value = 0;
+                      widget.fromNotificationComment = false;
+                    }
+                  });
                 }
                 return BlocBuilder<HomeBloc, HomeState>(
                   buildWhen: (previous, current) =>
@@ -1078,7 +1106,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           current.currentSelectedColorForEveryProduct ||
                       previous.getProductDetailWithoutSimilarRelatedProductsStatus !=
                           current
-                              .getProductDetailWithoutSimilarRelatedProductsStatus,
+                              .getProductDetailWithoutSimilarRelatedProductsStatus ||
+                      previous.changeSizesForEveryProduct !=
+                          current.changeSizesForEveryProduct,
                   builder: (context, state) {
                     String productId = state
                                     .cachedProductWithoutRelatedProductsModel[
@@ -1101,6 +1131,22 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         state.currentSelectedColorForEveryProduct[productId] ??
                             (productItem!.syncColorImages?.length ?? 0) ~/ 2;
                     return ProductDetailsBottomSheet(
+                      currentActiveTab: currentActiveTab,
+                      qtyForproductWithoutVariant: widget.productItem == null
+                          ? productItem?.leftStock
+                          : state
+                              .cachedProductWithoutRelatedProductsModel[
+                                  productItem!.productId.toString()]
+                              ?.product
+                              ?.leftStock,
+                      collectedAfterOrdering: widget.productItem == null
+                          ? productItem?.collectedAfterOrdering == 1
+                          : state
+                                  .cachedProductWithoutRelatedProductsModel[
+                                      productItem!.productId.toString()]
+                                  ?.product
+                                  ?.collectedAfterOrdering ==
+                              1,
                       productIdForCashData:
                           widget.productIdForOpeningChatDirectly ??
                               widget.productItem!.productId.toString(),

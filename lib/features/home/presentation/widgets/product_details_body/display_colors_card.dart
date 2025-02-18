@@ -202,7 +202,7 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
   int? prevModeForRunHero;
   RenderBox? renderBox;
   bool firstTime = true;
-
+  bool isColorWhite = false;
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
@@ -217,6 +217,12 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
           null, null, null, null, null, null, null,
           error: error.toString());
     };
+    bool isCloseToWhite(Color color, {int threshold = 30}) {
+      return (color.red > 255 - threshold &&
+          color.green > 255 - threshold &&
+          color.blue > 255 - threshold);
+    }
+
     return ValueListenableBuilder<int>(
         valueListenable: displayMode,
         builder: (context, mode, _) {
@@ -360,26 +366,50 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                               crossAxisAlignment:
                                                                   CrossAxisAlignment
                                                                       .center,
-                                                              children:
-                                                                  List.generate(
-                                                                      syncColorImageList!
-                                                                              .length ~/
-                                                                          2,
-                                                                      (index) =>
-                                                                          GestureDetector(
-                                                                            child:
-                                                                                ProductListingImageWidget(
-                                                                              width: 40 - index * 5,
-                                                                              height: 40 - index * 5,
-                                                                              imageWidth: 70,
-                                                                              imageHeight: 70,
-                                                                              withBackGroundShadow: true,
-                                                                              imageUrl: images[index],
-                                                                              innerShadowYOffset: 4,
-                                                                              borderColor: index == currentIndexInSlider ? Color(int.parse('0xff${widget.productItem.colors![currentIndexInSlider! % widget.productItem.colors!.length].color!.substring(1)}')) : Colors.white,
-                                                                              circleShape: true,
-                                                                            ),
-                                                                          )),
+                                                              children: List.generate(
+                                                                  syncColorImageList!
+                                                                          .length ~/
+                                                                      2,
+                                                                  (index) {
+                                                                isColorWhite =
+                                                                    isCloseToWhite(Color(
+                                                                        int.parse(
+                                                                            '0xff${widget.productItem.colors![currentIndexInSlider! % widget.productItem.colors!.length].color!.substring(1)}')));
+
+                                                                return GestureDetector(
+                                                                  child:
+                                                                      ProductListingImageWidget(
+                                                                    width: 40 -
+                                                                        index *
+                                                                            5,
+                                                                    height: 40 -
+                                                                        index *
+                                                                            5,
+                                                                    imageWidth:
+                                                                        70,
+                                                                    imageHeight:
+                                                                        70,
+                                                                    withBackGroundShadow:
+                                                                        true,
+                                                                    imageUrl:
+                                                                        images[
+                                                                            index],
+                                                                    innerShadowYOffset:
+                                                                        4,
+                                                                    borderColor: index ==
+                                                                            currentIndexInSlider
+                                                                        ? isColorWhite
+                                                                            ? Colors
+                                                                                .black
+                                                                            : Color(int.parse(
+                                                                                '0xff${widget.productItem.colors![currentIndexInSlider! % widget.productItem.colors!.length].color!.substring(1)}'))
+                                                                        : Colors
+                                                                            .white,
+                                                                    circleShape:
+                                                                        true,
+                                                                  ),
+                                                                );
+                                                              }),
                                                             ))
                                                         : Material(
                                                             color: Colors
@@ -468,6 +498,10 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                                   itemBuilder:
                                                                       (context,
                                                                           index) {
+                                                                    isColorWhite =
+                                                                        isCloseToWhite(
+                                                                            Color(int.parse('0xff${widget.productItem.colors![currentIndexInSlider! % widget.productItem.colors!.length].color!.substring(1)}')));
+
                                                                     return Visibility(
                                                                       visible: ((gallery3dControllerForCircles?.currentIndex ?? 0) < (syncColorImageList!.length ~/ 2) && index < (syncColorImageList!.length ~/ 2)) ||
                                                                           (gallery3dControllerForCircles?.currentIndex ?? 0) >=
@@ -488,7 +522,9 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                                             4,
                                                                         borderColor: index ==
                                                                                 currentIndexInSlider
-                                                                            ? Color(int.parse('0xff${widget.productItem.colors![currentIndexInSlider! % widget.productItem.colors!.length].color!.substring(1)}'))
+                                                                            ? isColorWhite
+                                                                                ? Colors.black
+                                                                                : Color(int.parse('0xff${widget.productItem.colors![currentIndexInSlider! % widget.productItem.colors!.length].color!.substring(1)}'))
                                                                             : Colors.white,
                                                                         circleShape:
                                                                             true,
@@ -634,8 +670,10 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                           innerShadowYOffset: 4,
                                                           borderColor: index ==
                                                                   currentIndexInSlider
-                                                              ? Color(int.parse(
-                                                                  '0xff${widget.productItem.colors![currentIndexInSlider! % widget.productItem.colors!.length].color!.substring(1)}'))
+                                                              ? isColorWhite
+                                                                  ? Colors.black
+                                                                  : Color(int.parse(
+                                                                      '0xff${widget.productItem.colors![currentIndexInSlider! % widget.productItem.colors!.length].color!.substring(1)}'))
                                                               : Colors.white,
                                                           circleShape:
                                                               mode == 1,

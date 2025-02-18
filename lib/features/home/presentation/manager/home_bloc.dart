@@ -22,6 +22,7 @@ import 'package:trydos/features/app/blocs/pre_caching_image_bloc/pre_caching_ima
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/authentication/domain/use_cases/get_customer_info_usecase.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
+import 'package:trydos/features/home/data/models/get_address_by_coordinates_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_text_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
@@ -43,6 +44,7 @@ import 'package:trydos/features/home/domain/use_cases/GetCommentForProductUseCas
 import 'package:trydos/features/home/domain/use_cases/add_comment_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/add_customer_address_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/add_like_to_product_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/change_country_language_for_notification_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/convert_item_from_oldCart_to_Cart_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/delete_customer_address_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/delete_like_of_product_usecase.dart';
@@ -56,6 +58,7 @@ import 'package:trydos/features/home/domain/use_cases/get_customer_addresses_use
 import 'package:trydos/features/home/domain/use_cases/get_full_product_details_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_home_boutiqes_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_main_categories_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/get_my_firebase_settings_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_notification_type_for_product_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_old_cart_item_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_popular_search_terms_usecase.dart';
@@ -70,8 +73,15 @@ import 'package:trydos/features/home/domain/use_cases/remove_item_from_cart_usec
 import 'package:trydos/features/home/domain/use_cases/request_for_notification_when_product_became_available_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/send_error_to_mobile_error_log.dart';
 import 'package:trydos/features/home/domain/use_cases/store_fcm_token_of_market_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/subscribe_topic_for_notification_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/un_subscribe_topic_for_notification_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/update_customer_address_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/update_email_notification_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/update_firebase_notification_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/update_item_from_cart_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/update_notification_frequency_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/update_whatsapp_notification_usecase.dart';
+import 'package:trydos/features/home/presentation/widgets/cart_section/add_shipping_address.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
 import 'package:trydos/features/story/domain/useCases/get_width_and_height_usecase.dart';
 import 'package:trydos/features/story/presentation/bloc/story_state.dart';
@@ -133,6 +143,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.getAllowedCountryUseCase,
     this.getNotificationTypeProductUseCase,
     this.getWidthAndHeightUseCase,
+    this.getMyFirebaseSettingsUseCase,
+    this.updateEmailNotificationUseCase,
+    this.updateFirebaseNotificationUseCase,
+    this.updateNotificationFrequencyUseCase,
+    this.updateWhatsappNotificationUseCase,
+    this.changeCountryLanguageFornotificationUseCase,
+    this.subscribeTopicFornotificationUseCase,
+    this.unSubscribeTopicFornotificationUseCase,
     this.getProductDetailWithoutRelatedProductsUseCase,
     this.getStartingSettingsUseCase,
     this.getPopularSearchItemUseCase,
@@ -196,6 +214,20 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<AddCurrentSelectedColorEvent>(
       _onAddCurrentSelectedColorEvent,
     );
+
+    on<ChangeCountryLanguageForNotificationEvent>(
+      _onChangeCountryLanguageForNotificationEvent,
+    );
+    on<SubscribeTopicForNotificationEvent>(
+      _onSubscribeTopicForNotificationEvent,
+    );
+    on<UnSubscribeTopicForNotificationEvent>(
+      _onUnSubscribeTopicForNotificationEvent,
+    );
+    on<GetFirebaseSettingForNotificationEvent>(
+      _onGetFirebaseSettingForNotificationEvent,
+    );
+
     on<UpdateListOfItemForAddToCartEvent>(
       _onUpdateListOfItemForAddToCartEvent,
     );
@@ -213,6 +245,18 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     );
     on<StoreFcmTokenOfMarketEvent>(
       _onStoreFcmTokenOfMarketEvent,
+    );
+    on<UpdateEmailNotificationEvent>(
+      _onUpdateEmailNotificationEvent,
+    );
+    on<UpdateFirebaseNotificationEvent>(
+      _onUpdateFirebaseNotificationEvent,
+    );
+    on<UpdateNotificationFrequencyEvent>(
+      _onUpdateNotificationFrequencyEvent,
+    );
+    on<UpdateWhatsappNotificationEvent>(
+      _onUpdateWhatsappNotificationEvent,
     );
     on<AddQuantityForCartEvent>(
       _onAddCurrentQuantityForCartEvent,
@@ -308,8 +352,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<AddProductItemForCartEvent>(
       _onAddProductItemForCartEvent,
     );
-    on<AddSizesFotColorsEvent>(
-      _onAddSizesFotColorsEvent,
+    on<AddSizesForColorsEvent>(
+      _onAddSizesForColorsEvent,
     );
     on<GetOldCartItemEvent>(_onGetOldCartItemEvent, transformer: restartable());
 
@@ -385,6 +429,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final GetProductFiltersUseCase getProductFiltersUseCase;
   final GetProductsWithoutFiltersUseCase getProductsWithoutFiltersUseCase;
   final AddItemToCartUseCase addItemToCartUseCase;
+  final UpdateEmailNotificationUseCase updateEmailNotificationUseCase;
+  final UpdateFirebaseNotificationUseCase updateFirebaseNotificationUseCase;
+  final UpdateWhatsappNotificationUseCase updateWhatsappNotificationUseCase;
+  final UpdateNotificationFrequencyUseCase updateNotificationFrequencyUseCase;
   final UpdateItemInCartUseCase updateItemInCartUseCase;
   final HideItemsInOldCartUseCase hideItemsInOldCartUseCase;
   final GetAllowedCountryUseCase getAllowedCountryUseCase;
@@ -396,6 +444,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final GetOrdersByOrderGroupIDUsecase getOrdersByOrderGroupIDUsecase;
 
   final GetCustomerWalletUseCase getCustomerWalletUseCase;
+
+  final SubscribeTopicFornotificationUseCase
+      subscribeTopicFornotificationUseCase;
+  final UnSubscribeTopicFornotificationUseCase
+      unSubscribeTopicFornotificationUseCase;
+  final ChangeCountryLanguageFornotificationUseCase
+      changeCountryLanguageFornotificationUseCase;
+  final GetMyFirebaseSettingsUseCase getMyFirebaseSettingsUseCase;
 
   final Smartlook smartLook = Smartlook.instance;
 
@@ -503,6 +559,286 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       emit(state.copyWith(
           addAddressToOrderStatus: AddAddressToOrderStatus.success,
           listOfAdressInfoClassToSave: listOfAddressInfoClassToSave));
+    });
+  }
+
+  FutureOr<void> _onUpdateWhatsappNotificationEvent(
+      UpdateWhatsappNotificationEvent event, Emitter<HomeState> emit) async {
+    emit(state.copyWith(
+        updateWhatsappNotificationStatus:
+            UpdateWhatsappNotificationStatus.loading));
+    final response = await updateWhatsappNotificationUseCase(
+        UpdateWhatsappNotificationParams(whatsapp: event.whatsapp));
+
+    response.fold((l) {
+      if (!isFailedTheFirstTime.contains('UpdateWhatsappNotificationEvent')) {
+        if (prefsRepository.isTokenExpired ?? false) {
+          Future.delayed(
+              Duration(seconds: 5),
+              () => add(
+                  UpdateWhatsappNotificationEvent(whatsapp: event.whatsapp)));
+        } else {
+          add(UpdateWhatsappNotificationEvent(whatsapp: event.whatsapp));
+        }
+        isFailedTheFirstTime.add('UpdateWhatsappNotificationEvent');
+      }
+      emit(state.copyWith(
+          updateWhatsappNotificationStatus:
+              UpdateWhatsappNotificationStatus.failure));
+    }, (r) async {
+      isFailedTheFirstTime.remove('UpdateWhatsappNotificationEvent');
+      emit(state.copyWith(
+        firebaseSettingForNotificationModel: r,
+        updateWhatsappNotificationStatus:
+            UpdateWhatsappNotificationStatus.success,
+      ));
+    });
+  }
+
+  FutureOr<void> _onUpdateEmailNotificationEvent(
+      UpdateEmailNotificationEvent event, Emitter<HomeState> emit) async {
+    emit(state.copyWith(
+        updateEmailappNotificationStatus:
+            UpdateEmailappNotificationStatus.loading));
+    final response = await updateEmailNotificationUseCase(
+        UpdateEmailNotificationParams(email: event.email));
+
+    response.fold((l) {
+      if (!isFailedTheFirstTime.contains('UpdateEmailNotificationEvent')) {
+        if (prefsRepository.isTokenExpired ?? false) {
+          Future.delayed(Duration(seconds: 5),
+              () => add(UpdateEmailNotificationEvent(email: event.email)));
+        } else {
+          add(UpdateEmailNotificationEvent(email: event.email));
+        }
+        isFailedTheFirstTime.add('UpdateEmailNotificationEvent');
+      }
+      emit(state.copyWith(
+          updateEmailappNotificationStatus:
+              UpdateEmailappNotificationStatus.failure));
+      showMessage(l.message,
+          foreGroundColor: Colors.white,
+          backGroundColor: Colors.black,
+          showInRelease: true,
+          timeShowing: Toast.LENGTH_LONG);
+    }, (r) async {
+      isFailedTheFirstTime.remove('UpdateEmailNotificationEvent');
+      emit(state.copyWith(
+        firebaseSettingForNotificationModel: r,
+        updateEmailappNotificationStatus:
+            UpdateEmailappNotificationStatus.success,
+      ));
+    });
+  }
+
+  FutureOr<void> _onUpdateFirebaseNotificationEvent(
+      UpdateFirebaseNotificationEvent event, Emitter<HomeState> emit) async {
+    emit(state.copyWith(
+        getFirebaseSettingForNotificationStatus:
+            GetFirebaseSettingForNotificationStatus.loading));
+    final response = await updateFirebaseNotificationUseCase(
+        UpdateFirebaseNotificationParams(firebase: event.firebase));
+
+    response.fold((l) {
+      if (!isFailedTheFirstTime.contains('UpdateFirebaseNotificationEvent')) {
+        if (prefsRepository.isTokenExpired ?? false) {
+          Future.delayed(
+              Duration(seconds: 5),
+              () => add(
+                  UpdateFirebaseNotificationEvent(firebase: event.firebase)));
+        } else {
+          add(UpdateFirebaseNotificationEvent(firebase: event.firebase));
+        }
+        isFailedTheFirstTime.add('UpdateFirebaseNotificationEvent');
+      }
+      emit(state.copyWith(
+          getFirebaseSettingForNotificationStatus:
+              GetFirebaseSettingForNotificationStatus.failure));
+    }, (r) async {
+      isFailedTheFirstTime.remove('UpdateFirebaseNotificationEvent');
+      emit(state.copyWith(
+        firebaseSettingForNotificationModel: r,
+        getFirebaseSettingForNotificationStatus:
+            GetFirebaseSettingForNotificationStatus.success,
+      ));
+    });
+  }
+
+  FutureOr<void> _onUpdateNotificationFrequencyEvent(
+      UpdateNotificationFrequencyEvent event, Emitter<HomeState> emit) async {
+    emit(state.copyWith(
+        getFirebaseSettingForNotificationStatus:
+            GetFirebaseSettingForNotificationStatus.loading));
+    final response = await updateNotificationFrequencyUseCase(
+        UpdateNotificationFrequencyParams(
+            notificationFrequency: event.notificationFrequency));
+
+    response.fold((l) {
+      if (!isFailedTheFirstTime.contains('UpdateNotificationFrequencyEvent')) {
+        if (prefsRepository.isTokenExpired ?? false) {
+          Future.delayed(
+              Duration(seconds: 5),
+              () => add(UpdateNotificationFrequencyEvent(
+                  notificationFrequency: event.notificationFrequency)));
+        } else {
+          add(UpdateNotificationFrequencyEvent(
+              notificationFrequency: event.notificationFrequency));
+        }
+        isFailedTheFirstTime.add('UpdateNotificationFrequencyEvent');
+      }
+      emit(state.copyWith(
+          getFirebaseSettingForNotificationStatus:
+              GetFirebaseSettingForNotificationStatus.failure));
+    }, (r) async {
+      isFailedTheFirstTime.remove('UpdateNotificationFrequencyEvent');
+      emit(state.copyWith(
+        firebaseSettingForNotificationModel: r,
+        getFirebaseSettingForNotificationStatus:
+            GetFirebaseSettingForNotificationStatus.success,
+      ));
+    });
+  }
+
+  FutureOr<void> _onSubscribeTopicForNotificationEvent(
+      SubscribeTopicForNotificationEvent event, Emitter<HomeState> emit) async {
+    emit(state.copyWith(
+        getFirebaseSettingForNotificationStatus:
+            GetFirebaseSettingForNotificationStatus.loading));
+    final response = await subscribeTopicFornotificationUseCase(
+        SubscribeTopicForNotificationParams(
+            topic: event.topic, variant: event.variant));
+
+    response.fold((l) {
+      if (!isFailedTheFirstTime
+          .contains('SubscribeTopicForNotificationEvent')) {
+        if (prefsRepository.isTokenExpired ?? false) {
+          Future.delayed(
+              Duration(seconds: 5),
+              () => add(SubscribeTopicForNotificationEvent(
+                  topic: event.topic, variant: event.variant)));
+        } else {
+          add(SubscribeTopicForNotificationEvent(
+              topic: event.topic, variant: event.variant));
+        }
+        isFailedTheFirstTime.add('SubscribeTopicForNotificationEvent');
+      }
+      emit(state.copyWith(
+          getFirebaseSettingForNotificationStatus:
+              GetFirebaseSettingForNotificationStatus.failure));
+    }, (r) async {
+      isFailedTheFirstTime.remove('SubscribeTopicForNotificationEvent');
+      emit(state.copyWith(
+        firebaseSettingForNotificationModel: r,
+        getFirebaseSettingForNotificationStatus:
+            GetFirebaseSettingForNotificationStatus.success,
+      ));
+    });
+  }
+
+  FutureOr<void> _onGetFirebaseSettingForNotificationEvent(
+      GetFirebaseSettingForNotificationEvent event,
+      Emitter<HomeState> emit) async {
+    emit(state.copyWith(
+        getFirebaseSettingForNotificationStatus:
+            GetFirebaseSettingForNotificationStatus.loading));
+    final response = await getMyFirebaseSettingsUseCase(NoParams());
+
+    response.fold((l) {
+      if (!isFailedTheFirstTime
+          .contains('GetFirebaseSettingForNotificationEvent')) {
+        if (prefsRepository.isTokenExpired ?? false) {
+          Future.delayed(Duration(seconds: 5),
+              () => add(GetFirebaseSettingForNotificationEvent()));
+        } else {
+          add(GetFirebaseSettingForNotificationEvent());
+        }
+        isFailedTheFirstTime.add('GetFirebaseSettingForNotificationEvent');
+      }
+      emit(state.copyWith(
+          getFirebaseSettingForNotificationStatus:
+              GetFirebaseSettingForNotificationStatus.failure));
+    }, (r) async {
+      isFailedTheFirstTime.remove('GetFirebaseSettingForNotificationEvent');
+      emit(state.copyWith(
+        firebaseSettingForNotificationModel: r,
+        getFirebaseSettingForNotificationStatus:
+            GetFirebaseSettingForNotificationStatus.success,
+      ));
+    });
+  }
+
+  FutureOr<void> _onUnSubscribeTopicForNotificationEvent(
+      UnSubscribeTopicForNotificationEvent event,
+      Emitter<HomeState> emit) async {
+    emit(state.copyWith(
+        getFirebaseSettingForNotificationStatus:
+            GetFirebaseSettingForNotificationStatus.loading));
+    final response = await unSubscribeTopicFornotificationUseCase(
+        UnSubscribeTopicForNotificationParams(
+            topic: event.topic, variant: event.variant));
+
+    response.fold((l) {
+      if (!isFailedTheFirstTime
+          .contains('UnSubscribeTopicForNotificationEvent')) {
+        if (prefsRepository.isTokenExpired ?? false) {
+          Future.delayed(
+              Duration(seconds: 5),
+              () => add(UnSubscribeTopicForNotificationEvent(
+                  topic: event.topic, variant: event.variant)));
+        } else {
+          add(UnSubscribeTopicForNotificationEvent(
+              topic: event.topic, variant: event.variant));
+        }
+        isFailedTheFirstTime.add('UnSubscribeTopicForNotificationEvent');
+      }
+      emit(state.copyWith(
+          getFirebaseSettingForNotificationStatus:
+              GetFirebaseSettingForNotificationStatus.failure));
+    }, (r) async {
+      isFailedTheFirstTime.remove('UnSubscribeTopicForNotificationEvent');
+      emit(state.copyWith(
+        firebaseSettingForNotificationModel: r,
+        getFirebaseSettingForNotificationStatus:
+            GetFirebaseSettingForNotificationStatus.success,
+      ));
+    });
+  }
+
+  FutureOr<void> _onChangeCountryLanguageForNotificationEvent(
+      ChangeCountryLanguageForNotificationEvent event,
+      Emitter<HomeState> emit) async {
+    emit(state.copyWith(
+        getFirebaseSettingForNotificationStatus:
+            GetFirebaseSettingForNotificationStatus.loading));
+    final response = await changeCountryLanguageFornotificationUseCase(
+        ChangeCountryLanguageFornotificationParams(
+            country: event.country, languageCode: event.languageCode));
+
+    response.fold((l) {
+      if (!isFailedTheFirstTime
+          .contains('ChangeCountryLanguageForNotificationEvent')) {
+        if (prefsRepository.isTokenExpired ?? false) {
+          Future.delayed(
+              Duration(seconds: 5),
+              () => add(ChangeCountryLanguageForNotificationEvent(
+                  country: event.country, languageCode: event.languageCode)));
+        } else {
+          add(ChangeCountryLanguageForNotificationEvent(
+              country: event.country, languageCode: event.languageCode));
+        }
+        isFailedTheFirstTime.add('ChangeCountryLanguageForNotificationEvent');
+      }
+
+      emit(state.copyWith(
+          getFirebaseSettingForNotificationStatus:
+              GetFirebaseSettingForNotificationStatus.failure));
+    }, (r) async {
+      isFailedTheFirstTime.remove('ChangeCountryLanguageForNotificationEvent');
+      emit(state.copyWith(
+        firebaseSettingForNotificationModel: r,
+        getFirebaseSettingForNotificationStatus:
+            GetFirebaseSettingForNotificationStatus.success,
+      ));
     });
   }
 
@@ -1275,8 +1611,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         : state.appliedFiltersByUser[key]?.filters?.copyWithSaveOtherField(
                 searchText: event.searchText, prices: prePrice) ??
             filters_model.Filter();
-    print(
-        "&&&&&&&&&&&&&&&&&&&&&&&&&&${filters.categories?.map((e) => '"${e.slug.toString()}"').toList()}&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&7");
 
     // List<filters_model.Attribute>? attribute;
     // attribute = filters.attributes.isNullOrEmpty
@@ -1317,8 +1651,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     //         ]
     //       : [],
     // );
-    print(
-        "&&&&&&&&&&&&&&&&&&&&${event.fromSearch}&${keyWithoutFilter}&&&&&&&&&&&&&&&&${((event.cashedOrginalBoutique && !(event.fromSearch ?? false)) && getProductListingWithFiltersPaginationModels[keyWithoutFilter]?.paginationStatus == PaginationStatus.success)}");
     if (!((event.cashedOrginalBoutique && !(event.fromSearch ?? false)) &&
         getProductListingWithFiltersPaginationModels[keyWithoutFilter]
                 ?.paginationStatus ==
@@ -1954,18 +2286,27 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                 attributes: attributes));
   }
 
-  FutureOr<void> _onAddSizesFotColorsEvent(
-      AddSizesFotColorsEvent event, Emitter<HomeState> emit) async {
+  FutureOr<void> _onAddSizesForColorsEvent(
+      AddSizesForColorsEvent event, Emitter<HomeState> emit) async {
     List<String> sizes = [];
     List<int> sizesQuantities = [];
-    List<String> isSizeRequestNotification = [];
+    List<String> colors = [];
+    List<int> colorsQuantities = [];
     String size;
+    String color;
     emit(state.copyWith(
-        sizes: [],
+        sizesForEachColor: [],
         changeSizesForEveryProduct: ChangeSizesForEveryProduct.loading));
+
     //emit(state.copyWith(sizes: sizes));
-    if (event.variation != null) {
+    if (!event.variation.isNullOrEmpty) {
       event.variation!.forEach((element) {
+        if (event.currentColorName != "") {
+          color = element.type!.split("-")[0];
+          colors.add(color);
+          colorsQuantities.add(element.qty ?? 0);
+        }
+
         if (element.type!.split("-")[0] == event.currentColorName ||
             event.currentColorName == '') {
           try {
@@ -1973,19 +2314,19 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                 element.type!.split("-")[event.currentColorName == '' ? 0 : 1];
             sizes.add(size);
             sizesQuantities.add(element.qty ?? 0);
-            if (element.variantNotifyForUser) {
-              isSizeRequestNotification.add(size);
-            }
+            if (element.variantNotifyForUser) {}
           } catch (e) {}
-          ;
         }
       });
-    }
+    } else {}
+
     emit(state.copyWith(
-        sizes: sizes,
-        changeSizesForEveryProduct: ChangeSizesForEveryProduct.success,
-        sizesQuantities: sizesQuantities,
-        isSizeRequestNotification: isSizeRequestNotification));
+      sizesForEachColor: sizes,
+      colorsForEachProduct: colors,
+      colorsQuantitiesForProduct: colorsQuantities,
+      changeSizesForEveryProduct: ChangeSizesForEveryProduct.success,
+      sizesQuantitiesForEachColor: sizesQuantities,
+    ));
   }
 
   FutureOr<void> _onGetProductDatailsWithoutRelatedProductsEvent(
@@ -1997,17 +2338,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         productStatus = Map.from(state.productStatus ?? {});
     if (productStatus[event.productId] != null) {
       if (productStatus[event.productId] ==
-              GetProductDetailWithoutSimilarRelatedProductsStatus.success &&
-          state.cachedProductWithoutRelatedProductsModel[event.productId]
-                  ?.product?.boutique?.id !=
-              null &&
-          state.cachedProductWithoutRelatedProductsModel[event.productId] !=
-              null) {
-        if (state.cachedProductWithoutRelatedProductsModel[event.productId]!
-                .product !=
-            null) {
-          return;
-        }
+          GetProductDetailWithoutSimilarRelatedProductsStatus.loading) {
+        return;
       }
     }
 
@@ -2116,8 +2448,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         '///////// Boutique items To Prefetch : $itemsToPrefetch /////////');
     try {
       for (int i = 0; i < itemsToPrefetch; i++) {
-        print(
-            "#@@@@@@@@@@@@@@@@@@@@@@@@@@@!!!!!!!!!!!!!!!!!!!!!!!!!${itemsToPrefetch}3333333334${currentSlug}");
         String slug = state
             .getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]!
             .items[i]
@@ -2131,8 +2461,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         //     categorySlugs.add(element.categorySlug ?? "");
         //   },
         // );
-        print(
-            "#@@@2222222222222@@@@@@@@@@@@@@@@@@@@@@@@!!!!!!!!!!!!!!!!!!!!!!!!!${itemsToPrefetch}3333333334${currentSlug}");
 
         add(GetProductWithFiltersWithoutCancelingPreviousEvents(
             categorySlugs: categorySlugs,
@@ -2762,8 +3090,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       isFailedTheFirstTime.remove('GetProductFiltersEvent'
           "${event.category}");
       try {
-        print(
-            "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq");
         Map<String, PaginationModel<product.Products>?>
             getProductListingWithFiltersPaginationModels =
             Map.of(state.getProductListingWithFiltersPaginationModels);
@@ -2779,8 +3105,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                     page: 2,
                     hasReachedMax: (r.data!.products?.length ?? 0) < kPageSize,
                     items: r.data!.products);
-        print(
-            "QQQQQQQQQQQQQQQQQQQQQQQQ4{${getProductListingWithFiltersPaginationModels[keyWithoutFilter]?.items.length}QQQQQQQQQQQQQQQQQ${keyWithoutFilter}qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq");
 
         emit(state.copyWith(
           getProductListingWithFiltersPaginationModels:
@@ -2790,8 +3114,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               Map.of({event.boutiqueSlug: r.data!.totalSize ?? 0}),
           //removeAlreadyChoosedFilters(r, filters),
         ));
-        print(
-            "******************--------------//////////////////**********&${state.getProductListingWithFiltersPaginationModels[keyWithoutFilter]?.items.length}----///////////////////////////////////////////////////////");
         // if (event.indexOfCategory < event.categorySlugs.length &&
         //     event.categorySlugs.length > 0) {
         //   add(GetProductWithFiltersWithoutCancelingPreviousEvents(
@@ -2947,6 +3269,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         );
       },
     );
+    await Future.delayed(
+      Duration(seconds: 5),
+      () {
+        emit(state.copyWith(
+          getAddressByCoordinatesStatus: GetAddressByCoordinatesStatus.failure,
+        ));
+      },
+    );
   }
 
   FutureOr<void> _onGetAddressByTextEvent(
@@ -2993,7 +3323,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       print('${l.hashCode}' +
           '133333333333333333333333333222222222222222222222222222222222222222222222222222222222222');
       if (!isFailedTheFirstTime.contains('GetCartItemEvent')) {
-        add(GetCartItemEvent());
+        add(GetCartItemEvent(
+            fromTerminitedStatusl: event.fromTerminitedStatusl));
         isFailedTheFirstTime.add('GetCartItemEvent');
       }
       emit(state.copyWith(getCartItemsStatus: GetCartItemsStatus.failure));
@@ -3024,12 +3355,17 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       });
       apisMustNotToRequest.add('GetCartItemEvent');
       isFailedTheFirstTime.remove('GetCartItemEvent');
-
+      if (event.fromTerminitedStatusl ?? false) {
+        emit(state.copyWith(
+          currentQuantityForCart: currentQuantity,
+          addImagesToProductIdForCart: addImagesToProductIdForCart,
+        ));
+      }
       Map<String, int> cartIdsHurryUPTimerStarted =
           Map.of(state.cartIdsHurryUPTimerStarted);
 
       for (var i = 0; i < cartCollection.length; i++) {
-        if ((cartCollection[i].haveHurryUpNotify ?? false) &&
+        if ((cartCollection[i].haveHurryUpNotifyTimeLeft ?? false) &&
             (cartIdsHurryUPTimerStarted[cartCollection[i].id.toString()] ==
                 null)) {
           add(AddTimerStartedToHurryUpEvent(
@@ -3044,7 +3380,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                   .round()));
         }
       }
-      /*   if (cartIdsHurryUPTimerStarted.isNotEmpty) {
+      if (cartIdsHurryUPTimerStarted.isNotEmpty) {
         for (var i = 0; i < cartIdsHurryUPTimerStarted.length; i++) {
           if (!cartCollection.contains(cartIdsHurryUPTimerStarted[i])) {
             add(AddTimerStartedToHurryUpEvent(
@@ -3053,10 +3389,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                 timeLeft: 0));
           }
         }
-      }*/
+      }
       emit(state.copyWith(
-          currentQuantityForCart: currentQuantity,
-          addImagesToProductIdForCart: addImagesToProductIdForCart,
+          //  currentQuantityForCart: currentQuantity,
+          //    addImagesToProductIdForCart: addImagesToProductIdForCart,
           getCartShippingItemsModel: r,
           cartCollection: List.of(cartCollection),
           getCartItemsStatus: GetCartItemsStatus.success));
@@ -3305,25 +3641,46 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     );
 
     response.fold((l) {
+      if (!isFailedTheFirstTime.contains('AddCartItemEvent')) {
+        if (prefsRepository.isTokenExpired ?? false) {
+          Future.delayed(
+            Duration(seconds: 5),
+            () {
+              add(AddItemToCartEvent(
+                  finishAddAllTheItems: event.finishAddAllTheItems,
+                  countOfPieces: event.countOfPieces,
+                  colorName: event.colorName,
+                  productSlugForTopic: event.productSlugForTopic,
+                  image: event.image,
+                  products: event.products,
+                  choice_1: event.choice_1,
+                  maxAllowed: event.maxAllowed,
+                  color: event.color,
+                  quantity: event.quantity));
+            },
+          );
+        } else {
+          add(AddItemToCartEvent(
+              finishAddAllTheItems: event.finishAddAllTheItems,
+              countOfPieces: event.countOfPieces,
+              colorName: event.colorName,
+              productSlugForTopic: event.productSlugForTopic,
+              image: event.image,
+              products: event.products,
+              choice_1: event.choice_1,
+              maxAllowed: event.maxAllowed,
+              color: event.color,
+              quantity: event.quantity));
+        }
+
+        isFailedTheFirstTime.add('AddCartItemEvent');
+        return;
+      }
       add(UpdateListOfItemForAddToCartEvent(
           imageForAddToCart: ImageForAddToCart(),
           operation: "remove",
           productId: event.products.productId.toString(),
           resetTheList: true));
-      if (!isFailedTheFirstTime.contains('AddCartItemEvent')) {
-        add(AddItemToCartEvent(
-            finishAddAllTheItems: event.finishAddAllTheItems,
-            countOfPieces: event.countOfPieces,
-            colorName: event.colorName,
-            productSlugForTopic: event.productSlugForTopic,
-            image: event.image,
-            products: event.products,
-            choice_1: event.choice_1,
-            maxAllowed: event.maxAllowed,
-            color: event.color,
-            quantity: event.quantity));
-        isFailedTheFirstTime.add('AddCartItemEvent');
-      }
       emit(state.copyWith(addItemInCartStatus: AddItemInCartStatus.failure));
       state.cartCollection!.remove(cart);
       if (PreOldCart.id != -1) {
@@ -3340,6 +3697,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         backGroundColor: Colors.black,
       );
     }, (r) {
+      isFailedTheFirstTime.remove('AddCartItemEvent');
       add(UpdateListOfItemForAddToCartEvent(
           imageForAddToCart: ImageForAddToCart(),
           operation: "remove",
@@ -3398,7 +3756,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                                             .id ??
                                         -1,
                                     event.choice_1 ?? "",
-                                    event.colorName));
+                                    event.colorName,
+                                    true));
                                 Navigator.of(context).pop();
                               }),
                         ]),
@@ -3427,14 +3786,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
         emit(state.copyWith(cartCollection: cartCollection));
       } else {
-        SubsecribeOrUnSubsecribeToTopic()
-            .SubsecribeToProductHurryUpQuantity(r.data!.idCart.toString());
-        SubsecribeOrUnSubsecribeToTopic()
-            .SubsecribeToProductHurryUpTimeLeft(r.data!.idCart.toString());
-        SubsecribeOrUnSubsecribeToTopic()
-            .SubsecribeToProductDiscount(event.products.productId.toString());
-        SubsecribeOrUnSubsecribeToTopic()
-            .SubsecribeToProductComment(event.products.productId.toString());
         Map<String, Map<int, List<String>>> addImagesToProductIdForCart =
             Map.from(state.addImagesToProductIdForCart);
         if (addImagesToProductIdForCart[event.products.productId.toString()] ==
@@ -3488,7 +3839,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             backGroundColor: Colors.black,
             showInRelease: true,
             timeShowing: Toast.LENGTH_SHORT);
-        isFailedTheFirstTime.remove('AddCartItemEvent');
       }
     });
   }
@@ -3564,7 +3914,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     }, (r) {
       Map<String, Map<int, List<String>>> addImagesToProductIdForCart =
           Map.from(state.addImagesToProductIdForCart);
-
       if (!addImagesToProductIdForCart[event.productId]![
               int.parse(event.itemId)]
           .isNullOrEmpty) {
@@ -3573,11 +3922,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           (element) => element == event.image,
         );
       }
-
-      SubsecribeOrUnSubsecribeToTopic()
-          .SubsecribeToProductHurryUpQuantity(event.itemId);
-      SubsecribeOrUnSubsecribeToTopic()
-          .SubsecribeToProductHurryUpTimeLeft(event.itemId);
       emit(state.copyWith(
           addImagesToProductIdForCart: addImagesToProductIdForCart,
           deleteItemInCartStatus: DeleteItemInCartStatus.success));
@@ -3899,7 +4243,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                                             .id ??
                                         -1,
                                     event.currentSize,
-                                    event.colorName));
+                                    event.colorName,
+                                    true));
                                 Navigator.of(context).pop();
                               }),
                         ]),
@@ -4466,14 +4811,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         : await deleteLikeOfProductUsecase(DeleteLikeOfParams(
             productId: event.productId,
             userId: GetIt.I<PrefsRepository>().myMarketId));
-    if (event.isFavourite) {
-      SubsecribeOrUnSubsecribeToTopic()
-          .SubsecribeToProductDiscount(event.productId);
-      SubsecribeOrUnSubsecribeToTopic()
-          .SubsecribeToProductComment(event.productId);
-      print(
-          "//////////////////////////////////////////////product_comment_${event.productSlugForTopic}");
-    } else {}
+
     response.fold((l) {
       Map<String, GetProductDetailWithoutRelatedProductsModel>
           cachedProductWithoutRelatedProductsModel =
@@ -4770,21 +5108,33 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   FutureOr<void> _onRequestForNotificationWhenProductBecameAvailableEvent(
       RequestForNotificationWhenProductBecameAvailableEvent event,
       Emitter<HomeState> emit) async {
-    List<String> isSizeRequestNotification = [];
     String variant = "";
     if (event.size != "") {
-      isSizeRequestNotification = List.of(state.isSizeRequestNotification);
-      isSizeRequestNotification.add(event.size);
       variant = event.selectedColorName == ''
           ? event.size
           : "${event.selectedColorName}-${event.size}";
-      emit(
-          state.copyWith(isSizeRequestNotification: isSizeRequestNotification));
     } else {
       variant = event.selectedColorName == '' ? "" : event.selectedColorName;
     }
 
-    final response =
+    if (event.subsecribe) {
+      add(SubscribeTopicForNotificationEvent(
+          topic: "product_availability_${event.productId}", variant: variant));
+    } else {
+      add(UnSubscribeTopicForNotificationEvent(
+          topic: "product_availability_${event.productId}", variant: variant));
+    }
+    /*  if (isVariantRequestNotification
+        .contains("${event.productId}_${variant}")) {
+      return;
+    }
+
+    isVariantRequestNotification.add("${event.productId}_${variant}");
+
+    emit(state.copyWith(
+        isVariantRequestNotification: isVariantRequestNotification));*/
+
+    /*  final response =
         await requestForNotificationWhenProductBecameAvailableUseCase(
             RequestForNotificationWhenProductBecameAvailableParams(
                 event.productId,
@@ -4798,19 +5148,18 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           showInRelease: true,
           timeShowing: Toast.LENGTH_SHORT);
 
-      if (event.size != "") {
-        isSizeRequestNotification = List.of(state.isSizeRequestNotification);
-        isSizeRequestNotification.remove(event.size);
-        emit(state.copyWith(
-            isSizeRequestNotification: isSizeRequestNotification));
-      }
+      isVariantRequestNotification =
+          List.of(state.isVariantRequestNotification);
+      isVariantRequestNotification.remove("${event.productId}_${variant}");
+      emit(state.copyWith(
+          isVariantRequestNotification: isVariantRequestNotification));
     }, (r) {
       showMessage("${LocaleKeys.your_request_add_successfuly.tr()}",
           foreGroundColor: Colors.white,
           backGroundColor: Colors.black,
           showInRelease: true,
           timeShowing: Toast.LENGTH_SHORT);
-    });
+    });*/
   }
 
   FutureOr<void> _onGetAndAddCountViewOfProductEvent(
@@ -4904,7 +5253,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     }, (r) {
       if (r.productItem?.productId == null) {
         emit(state.copyWith(
-          productContentForStatusOfOpeningProductDetailsDirectly: Products(),
+          productContentForStatusOfOpeningProductDetailsDirectly:
+              Products(isProductNotifiedForUser: false),
           getFullProductDetailsStatus: GetFullProductDetailsStatus.success,
         ));
 
@@ -4943,10 +5293,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     emit(state.copyWith(addCommentStatus: AddCommentStatus.loading));
     final response = await addCommentUseCase(
         AddCommentParams(productId: event.productId, comment: event.comment));
-    SubsecribeOrUnSubsecribeToTopic()
-        .SubsecribeToProductDiscount(event.productId);
-    SubsecribeOrUnSubsecribeToTopic()
-        .SubsecribeToProductComment(event.productId);
+
     response.fold((l) {
       emit(state.copyWith(addCommentStatus: AddCommentStatus.failure));
     }, (r) {
@@ -4976,6 +5323,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   FutureOr<void> _onStoreFcmTokenOfMarketEvent(
       StoreFcmTokenOfMarketEvent event, Emitter<HomeState> emit) async {
+    if (event.userId == -1) {
+      return;
+    }
     final response = await storeFcmTokenOfMarketUseCase(
         StoreFcmTokenOfMarketUseCaseParams(
             fcmToken: event.fcmToken, userId: event.userId));

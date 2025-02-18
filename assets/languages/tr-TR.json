@@ -209,9 +209,9 @@
   "apply": "Uygulama",
   "applied": "Uygulandı",
   "choosed": "Seçildi",
-  "notify_me_when_size_is_available": "Beden Mevcut Olduğunda Bana Bildir",
+  "notify_me_when_quantity_is_available": "Miktar mevcut olduğunda beni bilin",
   "we_will_inform_you_when_a": "Bir",
-  "size_is_available": "Beden Mevcut Olduğunda Sizi Bilgilendireceğiz",
+  "quantity_is_available": "Miktar mevcut",
   "send": "Gönder",
   "add": "Ekle",
   "bag": "Çanta",
@@ -336,5 +336,6 @@
   "you_can_track_the_status_of_your_order_through": "Siparişinizin Durumunu Aşağıdakiler Aracılığıyla Takip Edebilirsiniz",
   "my_account_my_orders": "Hesabım / Siparişlerim",
   "applied_your_coupon": "Kuponunuzu Uyguladınız",
-  "shipping_payment": "Kargolama ve Ödeme"
+  "shipping_payment": "Kargolama ve Ödeme",
+  "the_time_will_end": "Zaman bitecek"
 }

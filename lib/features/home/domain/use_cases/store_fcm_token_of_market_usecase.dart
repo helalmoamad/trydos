@@ -1,5 +1,8 @@
 import 'package:dartz/dartz.dart';
+import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+
 import '../../../../core/error/failures.dart';
 import '../../../../core/use_case/use_case.dart';
 import '../repositories/home_repository.dart';
@@ -28,5 +31,6 @@ class StoreFcmTokenOfMarketUseCaseParams {
   Map<String, dynamic> get map => {
         "device_token": fcmToken,
         "user_id": userId,
+        "auth_token": GetIt.I<PrefsRepository>().marketToken
       };
 }

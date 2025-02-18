@@ -224,10 +224,10 @@ abstract class LocaleKeys {
   static const apply = 'apply';
   static const applied = 'applied';
   static const choosed = 'choosed';
-  static const notify_me_when_size_is_available =
-      'notify_me_when_size_is_available';
+  static const notify_me_when_quantity_is_available =
+      'notify_me_when_quantity_is_available';
   static const we_will_inform_you_when_a = 'we_will_inform_you_when_a';
-  static const size_is_available = 'size_is_available';
+  static const quantity_is_available = 'quantity_is_available';
   static const send = 'send';
   static const add = 'add';
   static const bag = 'bag';
@@ -378,4 +378,5 @@ abstract class LocaleKeys {
   static const my_account_my_orders = 'my_account_my_orders';
   static const applied_your_coupon = 'applied_your_coupon';
   static const shipping_payment = 'shipping_payment';
+  static const the_time_will_end = 'the_time_will_end';
 }

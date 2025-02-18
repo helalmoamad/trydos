@@ -28,6 +28,12 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           const [],
       hideItemInOldCartStatus: $enumDecodeNullable(
           _$HideItemInOldCartStatusEnumMap, json['hideItemInOldCartStatus']),
+      updateEmailappNotificationStatus: $enumDecodeNullable(
+          _$UpdateEmailappNotificationStatusEnumMap,
+          json['updateEmailappNotificationStatus']),
+      updateWhatsappNotificationStatus: $enumDecodeNullable(
+          _$UpdateWhatsappNotificationStatusEnumMap,
+          json['updateWhatsappNotificationStatus']),
       changeSizesForEveryProduct: $enumDecodeNullable(
           _$ChangeSizesForEveryProductEnumMap,
           json['changeSizesForEveryProduct']),
@@ -73,15 +79,26 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           ? null
           : StartingSetting.fromJson(
               json['startingSetting'] as Map<String, dynamic>),
-      sizes:
-          (json['sizes'] as List<dynamic>?)?.map((e) => e as String).toList() ??
-              const [],
-      sizesQuantities: (json['sizesQuantities'] as List<dynamic>?)
-              ?.map((e) => (e as num).toInt())
+      sizesForEachColor: (json['sizesForEachColor'] as List<dynamic>?)
+              ?.map((e) => e as String)
               .toList() ??
           const [],
-      isSizeRequestNotification:
-          (json['isSizeRequestNotification'] as List<dynamic>?)
+      colorsForEachProduct: (json['colorsForEachProduct'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
+      colorsQuantitiesForEachProduct:
+          (json['colorsQuantitiesForEachProduct'] as List<dynamic>?)
+                  ?.map((e) => (e as num).toInt())
+                  .toList() ??
+              const [],
+      sizesQuantitiesForEachColor:
+          (json['sizesQuantitiesForEachColor'] as List<dynamic>?)
+                  ?.map((e) => (e as num).toInt())
+                  .toList() ??
+              const [],
+      isVariantRequestNotification:
+          (json['isVariantRequestNotification'] as List<dynamic>?)
                   ?.map((e) => e as String)
                   .toList() ??
               const [],
@@ -141,10 +158,10 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           ? null
           : OrdersGroupModel.fromJson(
               json['placeOrderModel'] as Map<String, dynamic>),
-      getOrdersByOrderGroupIDModel: json['getOrdersByCartGroupIDModel'] == null
+      getOrdersByOrderGroupIDModel: json['getOrdersByOrderGroupIDModel'] == null
           ? null
           : OrdersGroupModel.fromJson(
-              json['getOrdersByCartGroupIDModel'] as Map<String, dynamic>),
+              json['getOrdersByOrderGroupIDModel'] as Map<String, dynamic>),
       appliedFiltersByUser:
           (json['appliedFiltersByUser'] as Map<String, dynamic>?)?.map(
                 (k, e) => MapEntry(
@@ -313,8 +330,8 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               _$PlaceOrderStatusEnumMap, json['placeOrderStatus']) ??
           PlaceOrderStatus.init,
       getOrdersByOrderGroupIDStatus: $enumDecodeNullable(
-              _$GetOrdersByCartGroupIDStatusEnumMap,
-              json['getOrdersByCartGroupIDStatus']) ??
+              _$GetOrdersByOrderGroupIDStatusEnumMap,
+              json['getOrdersByOrderGroupIDStatus']) ??
           GetOrdersByOrderGroupIDStatus.init,
       getAddressByTextStatus: $enumDecodeNullable(
           _$GetAddressByTextStatusEnumMap, json['getAddressByTextStatus']),
@@ -433,10 +450,24 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
                             value as Map<String, dynamic>))),
               ) ??
               const {},
+      getFirebaseSettingForNotificationStatus: $enumDecodeNullable(
+          _$GetFirebaseSettingForNotificationStatusEnumMap,
+          json['getFirebaseSettingForNotificationStatus']),
+      firebaseSettingForNotificationModel:
+          json['firebaseSettingForNotificationModel'] == null
+              ? null
+              : FirebaseSettingForNotificationModel.fromJson(
+                  json['firebaseSettingForNotificationModel']
+                      as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'boutiquesThatDidPrefetch': instance.boutiquesThatDidPrefetch,
+      'getFirebaseSettingForNotificationStatus':
+          _$GetFirebaseSettingForNotificationStatusEnumMap[
+              instance.getFirebaseSettingForNotificationStatus],
+      'firebaseSettingForNotificationModel':
+          instance.firebaseSettingForNotificationModel?.toJson(),
       'boutiquesForEveryMainCategoryThatDidPrefetch':
           instance.boutiquesForEveryMainCategoryThatDidPrefetch,
       'getStartingSettingsStatus': _$GetStartingSettingsStatusEnumMap[
@@ -472,9 +503,9 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'customerWalletModel': instance.customerWalletModel?.toJson(),
       'placeOrderModel': instance.placeOrderModel?.toJson(),
       'placeOrderStatus': _$PlaceOrderStatusEnumMap[instance.placeOrderStatus],
-      'getOrdersByCartGroupIDModel':
+      'getOrdersByOrderGroupIDModel':
           instance.getOrdersByOrderGroupIDModel?.toJson(),
-      'getOrdersByCartGroupIDStatus': _$GetOrdersByCartGroupIDStatusEnumMap[
+      'getOrdersByOrderGroupIDStatus': _$GetOrdersByOrderGroupIDStatusEnumMap[
           instance.getOrdersByOrderGroupIDStatus],
       'ListitemForAddToCart':
           instance.ListitemForAddToCart?.map((e) => e.toJson()).toList(),
@@ -554,6 +585,12 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'getListOfProductsFoundedInCartStatus':
           _$GetListOfProductsFoundedInCartStatusEnumMap[
               instance.getListOfProductsFoundedInCartStatus]!,
+      'updateEmailappNotificationStatus':
+          _$UpdateEmailappNotificationStatusEnumMap[
+              instance.updateEmailappNotificationStatus],
+      'updateWhatsappNotificationStatus':
+          _$UpdateWhatsappNotificationStatusEnumMap[
+              instance.updateWhatsappNotificationStatus],
       'oldcartCollection':
           instance.oldcartCollection?.map((e) => e.toJson()).toList(),
       'reRequestTheseBoutiques': instance.reRequestTheseBoutiques,
@@ -586,9 +623,11 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
               ))),
       'storiesForProduct':
           instance.storiesForProduct?.map((e) => e.toJson()).toList(),
-      'sizes': instance.sizes,
-      'sizesQuantities': instance.sizesQuantities,
-      'isSizeRequestNotification': instance.isSizeRequestNotification,
+      'sizesForEachColor': instance.sizesForEachColor,
+      'colorsForEachProduct': instance.colorsForEachProduct,
+      'sizesQuantitiesForEachColor': instance.sizesQuantitiesForEachColor,
+      'colorsQuantitiesForEachProduct': instance.colorsQuantitiesForEachProduct,
+      'isVariantRequestNotification': instance.isVariantRequestNotification,
       'countOfProductExpectedByFiltering':
           instance.countOfProductExpectedByFiltering,
       'prefAppliedFilterForExtendFilter':
@@ -648,6 +687,20 @@ const _$HideItemInOldCartStatusEnumMap = {
   HideItemInOldCartStatus.loading: 'loading',
   HideItemInOldCartStatus.success: 'success',
   HideItemInOldCartStatus.failure: 'failure',
+};
+
+const _$UpdateEmailappNotificationStatusEnumMap = {
+  UpdateEmailappNotificationStatus.init: 'init',
+  UpdateEmailappNotificationStatus.loading: 'loading',
+  UpdateEmailappNotificationStatus.success: 'success',
+  UpdateEmailappNotificationStatus.failure: 'failure',
+};
+
+const _$UpdateWhatsappNotificationStatusEnumMap = {
+  UpdateWhatsappNotificationStatus.init: 'init',
+  UpdateWhatsappNotificationStatus.loading: 'loading',
+  UpdateWhatsappNotificationStatus.success: 'success',
+  UpdateWhatsappNotificationStatus.failure: 'failure',
 };
 
 const _$ChangeSizesForEveryProductEnumMap = {
@@ -804,7 +857,7 @@ const _$PlaceOrderStatusEnumMap = {
   PlaceOrderStatus.failure: 'failure',
 };
 
-const _$GetOrdersByCartGroupIDStatusEnumMap = {
+const _$GetOrdersByOrderGroupIDStatusEnumMap = {
   GetOrdersByOrderGroupIDStatus.init: 'init',
   GetOrdersByOrderGroupIDStatus.loading: 'loading',
   GetOrdersByOrderGroupIDStatus.success: 'success',
@@ -837,4 +890,11 @@ const _$GetNotificationTypeProductStatusEnumMap = {
   GetNotificationTypeProductStatus.loading: 'loading',
   GetNotificationTypeProductStatus.success: 'success',
   GetNotificationTypeProductStatus.failure: 'failure',
+};
+
+const _$GetFirebaseSettingForNotificationStatusEnumMap = {
+  GetFirebaseSettingForNotificationStatus.init: 'init',
+  GetFirebaseSettingForNotificationStatus.loading: 'loading',
+  GetFirebaseSettingForNotificationStatus.success: 'success',
+  GetFirebaseSettingForNotificationStatus.failure: 'failure',
 };

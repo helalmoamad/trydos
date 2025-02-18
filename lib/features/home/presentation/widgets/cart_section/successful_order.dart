@@ -155,8 +155,6 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
                 onTap: () {
                   appBloc.add(ChangeBasePage(0));
                   context.go(GRouter.config.kRootRoute);
-                  // print(widget.paymentMethods.value);
-                  // print(widget.availablePaymentMethod);
                 },
                 child: Container(
                   height: 70.h,

@@ -64,7 +64,7 @@ class PhoneFormField extends StatelessWidget {
     this.contentPadding,
     this.filledColor,
     this.bordersColor,
-    required this.focusNode,
+    this.focusNode,
   }) : super(key: key);
 
   final TextEditingController? controller;
@@ -93,7 +93,7 @@ class PhoneFormField extends StatelessWidget {
   final TextAlign textAlign;
   final EdgeInsets scrollPadding;
   final bool expands;
-  final FocusNode focusNode;
+  final FocusNode? focusNode;
   final bool readOnly;
   final bool autocorrect;
   final String obscuringCharacter;
@@ -276,8 +276,8 @@ class PhoneNumberFormatter extends TextInputFormatter {
         newText[newText.length - 1] == '0') {
       needEdit = oldText;
     }
-    if(country.name == '') return needEdit;
-    String result =  needEdit.substring(0, country.dialCode.length - 1) + ' ';
+    if (country.name == '') return needEdit;
+    String result = needEdit.substring(0, country.dialCode.length - 1) + ' ';
     for (int i = country.dialCode.length - 1; i < needEdit.length; i++) {
       result += needEdit[i];
       if ((i - country.dialCode.length + 2) % 3 == 0) {

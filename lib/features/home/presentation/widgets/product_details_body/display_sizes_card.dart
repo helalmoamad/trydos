@@ -227,9 +227,9 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
           buildWhen: (p, c) =>
               p.currentSelectedColorForEveryProduct !=
                   c.currentSelectedColorForEveryProduct ||
-              p.sizes != c.sizes,
+              p.sizesForEachColor != c.sizesForEachColor,
           builder: (context, state) {
-            sizes = state.sizes;
+            sizes = state.sizesForEachColor;
             sizes = [
               ...sizes ?? [],
               ...sizes ?? [],
@@ -332,7 +332,6 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                 ),
                                               ),
                                             ),
-                                            Spacer(),
                                             Padding(
                                                 padding: EdgeInsets.only(
                                                     right: (LanguageService
@@ -544,6 +543,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                             selectedSizeIndex,
                                                             _) {
                                                           return ListView.separated(
+                                                              reverse: true,
                                                               physics: BouncingScrollPhysics(),
                                                               padding: EdgeInsets.only(
                                                                   right: (LanguageService.languageCode == "ar")
@@ -642,7 +642,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                     width: 5,
                                                   ),
                                                   MyTextWidget(
-                                                    'L ',
+                                                    '${sizes?[currentSelectedSizeIndex.value]}',
                                                     style: textTheme
                                                         .titleMedium?.bq
                                                         .copyWith(
@@ -770,7 +770,9 @@ class SizeItemWidget extends StatelessWidget {
       height: height,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(180.0),
-          color: index == currentIndex ? Color(0xffF4F4F4) : Color(0xffF8F8F8)),
+          color: index == currentIndex
+              ? Color.fromARGB(192, 226, 216, 216)
+              : Color(0xffF8F8F8)),
       child: DottedBorder(
         radius: Radius.circular(180),
         borderType: BorderType.RRect,
