@@ -196,7 +196,8 @@ class _PaymentMethodState extends State<PaymentMethod> {
                       : InkWell(
                           onTap: () {
                             if (widget.fromPalceOrder ||
-                                widget.fromSuccessOrder) {
+                                widget.fromSuccessOrder ||
+                                widget.amount > widget.totalPrice) {
                               return;
                             }
                             /////////////////////
@@ -272,7 +273,8 @@ class _PaymentMethodState extends State<PaymentMethod> {
                       : InkWell(
                           onTap: () {
                             if (widget.fromPalceOrder ||
-                                widget.fromSuccessOrder) {
+                                widget.fromSuccessOrder ||
+                                widget.amount > widget.totalPrice) {
                               return;
                             }
                             //////////////////////////
@@ -350,7 +352,8 @@ class _PaymentMethodState extends State<PaymentMethod> {
                       : InkWell(
                           onTap: () {
                             if (widget.fromPalceOrder ||
-                                widget.fromSuccessOrder) {
+                                widget.fromSuccessOrder ||
+                                widget.amount > widget.totalPrice) {
                               return;
                             }
                             if (_paymentMethods.contains(PaymentMethods.cod)) {

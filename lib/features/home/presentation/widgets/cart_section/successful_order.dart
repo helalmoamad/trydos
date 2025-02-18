@@ -18,7 +18,6 @@ import 'package:trydos/features/home/presentation/widgets/cart_section/cart_deli
 import 'package:trydos/features/home/presentation/widgets/cart_section/payment_method.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_image_widget.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/main.dart';
 import 'package:trydos/routes/router.dart';
 import 'package:trydos/service/language_service.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
