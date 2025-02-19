@@ -135,6 +135,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                             .toStringAsFixed(widget.decimalPoint),
                         style: textTheme.headlineMedium?.rq.copyWith(
                           color: Color(0xffC4C2C2),
+                          fontSize: 24.sp,
                           decoration: TextDecoration.lineThrough,
                           height: 0,
                         ),
@@ -146,6 +147,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                         double.parse(widget.offerPrice)
                             .toStringAsFixed(widget.decimalPoint),
                         style: textTheme.headlineMedium?.bq.copyWith(
+                          fontSize: 24.sp,
                           color: Color(0xff505050),
                           height: 0,
                         ),
@@ -156,7 +158,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                       MyTextWidget(
                         widget.priceSymbol,
                         style: textTheme.titleMedium?.rq.copyWith(
-                          fontSize: 18,
+                          fontSize: 18.sp,
                           color: Color(0xffC4C2C2),
                           height: 0,
                         ),

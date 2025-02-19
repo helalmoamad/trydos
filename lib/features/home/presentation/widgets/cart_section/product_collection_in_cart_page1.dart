@@ -938,8 +938,8 @@ class _ProductCollectionInCartPage1State
                                             ),
                                     ),
                                     Container(
-                                      margin: EdgeInsets.symmetric(
-                                          horizontal: 30.w),
+                                      margin:
+                                          EdgeInsets.symmetric(horizontal: 5.w),
                                       child: Column(
                                         mainAxisAlignment:
                                             MainAxisAlignment.start,
