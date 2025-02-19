@@ -32,11 +32,13 @@ class CartDelivaryAddress extends StatefulWidget {
   final List<Map<String, String>> cartImages;
   final double totalPrice;
   final String currencySympole;
+  final String cartGroupId;
   const CartDelivaryAddress({
     required this.totalPrice,
     required this.cartImages,
     required this.currencySympole,
     Key? key,
+    required this.cartGroupId,
   });
   @override
   State<CartDelivaryAddress> createState() => _CartDelivaryAddressState();
@@ -61,8 +63,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
     ////////////////////
-    BlocProvider.of<HomeBloc>(context)
-        .add(GetCustomerWalletEvent(limit: 10, offset: 1));
+    homeBloc.add(GetCustomerWalletEvent(limit: 10, offset: 1));
     ////////////////////
     super.initState();
   }
@@ -386,6 +387,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                     customerAddressesInfo:
                         state.listOfAddressInfoClassToSave![_indexTap],
                     walletBalance: walletBalance,
+                    cartGroupId: widget.cartGroupId,
                     paymentMethods: paymentMethods,
                     availablePaymentMethod: availablePaymentMethod,
                     cartImages: widget.cartImages,

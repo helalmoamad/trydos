@@ -22,7 +22,6 @@ import 'package:trydos/features/app/blocs/pre_caching_image_bloc/pre_caching_ima
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/authentication/domain/use_cases/get_customer_info_usecase.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
-import 'package:trydos/features/home/data/models/get_address_by_coordinates_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_text_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
@@ -81,12 +80,10 @@ import 'package:trydos/features/home/domain/use_cases/update_firebase_notificati
 import 'package:trydos/features/home/domain/use_cases/update_item_from_cart_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/update_notification_frequency_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/update_whatsapp_notification_usecase.dart';
-import 'package:trydos/features/home/presentation/widgets/cart_section/add_shipping_address.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
 import 'package:trydos/features/story/domain/useCases/get_width_and_height_usecase.dart';
 import 'package:trydos/features/story/presentation/bloc/story_state.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/service/notification_service/notification_service/handle_notification/handling_market_notifications.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/data/model/pagination_model.dart';
@@ -101,6 +98,7 @@ import '../../../chat/presentation/manager/chat_event.dart';
 import '../../../story/presentation/bloc/story_bloc.dart';
 import '../../domain/use_cases/add_item_to_cart_usecase.dart';
 import '../../domain/use_cases/get_customer_wallet_usecase.dart';
+import '../../domain/use_cases/get_orders_by_cart_group_usecase.dart';
 import '../../domain/use_cases/get_orders_by_order_group_usecase.dart';
 import '../../domain/use_cases/get_stories_for_product_usecase.dart';
 import '../../domain/use_cases/place_order_usecase.dart';
@@ -170,6 +168,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.getCustomerWalletUseCase,
     this.placeOrderUsecase,
     this.getOrdersByOrderGroupIDUsecase,
+    this.getOrdersByCartGroupIDUsecase,
   ) : super(HomeState()) {
     on<HomeEvent>((event, emit) {});
 
@@ -388,6 +387,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<GetOrdersByOrderGroupIDEvent>(
       _onGetOrdersByOrderGroupIDEvent,
     );
+    on<GetOrdersByCartGroupIDEvent>(
+      _onGetOrdersByCartGroupIDEvent,
+    );
     on<RemoveItemsFromCartAfterOrderSuccessEvent>(
       _onRemoveItemsFromCartAfterOrderSuccessEvent,
     );
@@ -445,6 +447,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final DeleteCustomerAddressUseCase deleteCustomerAddressUseCase;
   final PlaceOrderUsecase placeOrderUsecase;
   final GetOrdersByOrderGroupIDUsecase getOrdersByOrderGroupIDUsecase;
+  final GetOrdersByCartGroupIDUsecase getOrdersByCartGroupIDUsecase;
 
   final GetCustomerWalletUseCase getCustomerWalletUseCase;
 
@@ -5397,8 +5400,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
     response.fold(
       (l) {
-        if (!isFailedTheFirstTime.contains('GetOrdersByOrderGroupIDEvent') &&
-            l.statusCode != 400) {
+        if (!isFailedTheFirstTime.contains('GetOrdersByOrderGroupIDEvent')) {
           add(
             GetOrdersByOrderGroupIDEvent(orderGroupId: event.orderGroupId),
           );
@@ -5424,6 +5426,54 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             getOrdersByOrderGroupIDStatus:
                 GetOrdersByOrderGroupIDStatus.success,
             getOrdersByOrderGroupIDModel: r,
+          ),
+        );
+      },
+    );
+  }
+
+  FutureOr<void> _onGetOrdersByCartGroupIDEvent(
+    GetOrdersByCartGroupIDEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    ///////////////////////////
+    emit(
+      state.copyWith(
+        getOrdersByCartGroupIDStatus: GetOrdersByCartGroupIDStatus.loading,
+      ),
+    );
+
+    final response = await getOrdersByCartGroupIDUsecase.call(
+      event.cartGroupId,
+    );
+
+    response.fold(
+      (l) {
+        if (!isFailedTheFirstTime.contains('GetOrdersByCartGroupIDEvent') &&
+            l.statusCode != 400) {
+          add(
+            GetOrdersByCartGroupIDEvent(cartGroupId: event.cartGroupId),
+          );
+          isFailedTheFirstTime.add('GetOrdersByCartGroupIDEvent');
+        }
+
+        emit(
+          state.copyWith(
+            getOrdersByCartGroupIDStatus: GetOrdersByCartGroupIDStatus.failure,
+          ),
+        );
+      },
+      (r) {
+        isFailedTheFirstTime.remove('GetOrdersByCartGroupIDEvent');
+
+        debugPrint('GetOrdersByCartGroupIDEvent success');
+
+        debugPrint('orders length : ${r.data!.length}');
+        ////////////////////////////
+        emit(
+          state.copyWith(
+            getOrdersByCartGroupIDStatus: GetOrdersByCartGroupIDStatus.success,
+            getOrdersByCartGroupIDModel: r,
           ),
         );
       },

@@ -162,6 +162,10 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           ? null
           : OrdersGroupModel.fromJson(
               json['getOrdersByOrderGroupIDModel'] as Map<String, dynamic>),
+      getOrdersByCartGroupIDModel: json['getOrdersByCartGroupIDModel'] == null
+          ? null
+          : OrdersGroupModel.fromJson(
+              json['getOrdersByCartGroupIDModel'] as Map<String, dynamic>),
       appliedFiltersByUser:
           (json['appliedFiltersByUser'] as Map<String, dynamic>?)?.map(
                 (k, e) => MapEntry(
@@ -305,7 +309,7 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               const {},
       fromSearchForSearchWithGemini:
           json['fromSearchForSearchWithGemini'] as bool? ?? false,
-      listitemForAddToCart: (json['ListitemForAddToCart'] as List<dynamic>?)
+      listitemForAddToCart: (json['listitemForAddToCart'] as List<dynamic>?)
           ?.map((e) => ImageForAddToCart.fromJson(e as Map<String, dynamic>))
           .toList(),
       getListOfProductsFoundedInCartStatus: $enumDecodeNullable(
@@ -333,6 +337,10 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               _$GetOrdersByOrderGroupIDStatusEnumMap,
               json['getOrdersByOrderGroupIDStatus']) ??
           GetOrdersByOrderGroupIDStatus.init,
+      getOrdersByCartGroupIDStatus: $enumDecodeNullable(
+              _$GetOrdersByCartGroupIDStatusEnumMap,
+              json['getOrdersByCartGroupIDStatus']) ??
+          GetOrdersByCartGroupIDStatus.init,
       getAddressByTextStatus: $enumDecodeNullable(
           _$GetAddressByTextStatusEnumMap, json['getAddressByTextStatus']),
       countOfProductExpectedByFiltering:
@@ -507,7 +515,11 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           instance.getOrdersByOrderGroupIDModel?.toJson(),
       'getOrdersByOrderGroupIDStatus': _$GetOrdersByOrderGroupIDStatusEnumMap[
           instance.getOrdersByOrderGroupIDStatus],
-      'ListitemForAddToCart':
+      'getOrdersByCartGroupIDModel':
+          instance.getOrdersByCartGroupIDModel?.toJson(),
+      'getOrdersByCartGroupIDStatus': _$GetOrdersByCartGroupIDStatusEnumMap[
+          instance.getOrdersByCartGroupIDStatus],
+      'listitemForAddToCart':
           instance.listitemForAddToCart?.map((e) => e.toJson()).toList(),
       'getAddressByTextStatus':
           _$GetAddressByTextStatusEnumMap[instance.getAddressByTextStatus],
@@ -862,6 +874,13 @@ const _$GetOrdersByOrderGroupIDStatusEnumMap = {
   GetOrdersByOrderGroupIDStatus.loading: 'loading',
   GetOrdersByOrderGroupIDStatus.success: 'success',
   GetOrdersByOrderGroupIDStatus.failure: 'failure',
+};
+
+const _$GetOrdersByCartGroupIDStatusEnumMap = {
+  GetOrdersByCartGroupIDStatus.init: 'init',
+  GetOrdersByCartGroupIDStatus.loading: 'loading',
+  GetOrdersByCartGroupIDStatus.success: 'success',
+  GetOrdersByCartGroupIDStatus.failure: 'failure',
 };
 
 const _$GetAddressByTextStatusEnumMap = {

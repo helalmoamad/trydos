@@ -134,6 +134,10 @@ abstract class HomeRepository {
   });
 
   Future<Either<Failure, OrdersGroupModel>> getOrdersByOrderGroupID({
-    required String orderGroupIdD,
+    required String orderGroupID,
+  });
+
+  Future<Either<Failure, OrdersGroupModel>> getOrdersByCartGroupID({
+    required String cartGroupID,
   });
 }

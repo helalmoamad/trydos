@@ -117,6 +117,8 @@ enum PlaceOrderStatus { init, loading, success, failure }
 
 enum GetOrdersByOrderGroupIDStatus { init, loading, success, failure }
 
+enum GetOrdersByCartGroupIDStatus { init, loading, success, failure }
+
 @JsonSerializable(explicitToJson: true)
 @immutable
 class HomeState extends Equatable {
@@ -161,6 +163,7 @@ class HomeState extends Equatable {
       this.customerWalletModel,
       this.placeOrderModel,
       this.getOrdersByOrderGroupIDModel,
+      this.getOrdersByCartGroupIDModel,
       this.appliedFiltersByUser = const {},
       this.currentPage = 0,
       this.productStatus,
@@ -203,6 +206,7 @@ class HomeState extends Equatable {
       this.getCustomerWalletStatus,
       this.placeOrderStatus = PlaceOrderStatus.init,
       this.getOrdersByOrderGroupIDStatus = GetOrdersByOrderGroupIDStatus.init,
+      this.getOrdersByCartGroupIDStatus = GetOrdersByCartGroupIDStatus.init,
       this.getAddressByTextStatus,
       this.countOfProductExpectedByFiltering,
       this.getCartItemsStatus = GetCartItemsStatus.init,
@@ -249,6 +253,8 @@ class HomeState extends Equatable {
   final PlaceOrderStatus? placeOrderStatus;
   final OrdersGroupModel? getOrdersByOrderGroupIDModel;
   final GetOrdersByOrderGroupIDStatus? getOrdersByOrderGroupIDStatus;
+  final OrdersGroupModel? getOrdersByCartGroupIDModel;
+  final GetOrdersByCartGroupIDStatus? getOrdersByCartGroupIDStatus;
   final List<ImageForAddToCart>? listitemForAddToCart;
   final GetAddressByTextStatus? getAddressByTextStatus;
   final GetAddressByCoordinatesStatus? getAddressByCoordinatesStatus;
@@ -389,6 +395,8 @@ class HomeState extends Equatable {
         placeOrderModel,
         getOrdersByOrderGroupIDStatus,
         getOrdersByOrderGroupIDModel,
+        getOrdersByCartGroupIDStatus,
+        getOrdersByCartGroupIDModel,
         getAddressByTextStatus,
         listOfErrorSendedToMobileErrorLog,
         productContentForStatusOfOpeningProductDetailsDirectly,
@@ -463,6 +471,8 @@ class HomeState extends Equatable {
       final PlaceOrderStatus? placeOrderStatus,
       final OrdersGroupModel? getOrdersByOrderGroupIDModel,
       final GetOrdersByOrderGroupIDStatus? getOrdersByOrderGroupIDStatus,
+      final OrdersGroupModel? getOrdersByCartGroupIDModel,
+      final GetOrdersByCartGroupIDStatus? getOrdersByCartGroupIDStatus,
       final AddItemInCartStatus? addItemInCartStatus,
       final HideItemInOldCartStatus? hideItemInOldCartStatus,
       final ConvertItemFromOldcartToCartStatus?
@@ -626,6 +636,10 @@ class HomeState extends Equatable {
           getOrdersByOrderGroupIDModel ?? this.getOrdersByOrderGroupIDModel,
       getOrdersByOrderGroupIDStatus:
           getOrdersByOrderGroupIDStatus ?? this.getOrdersByOrderGroupIDStatus,
+      getOrdersByCartGroupIDModel:
+          getOrdersByCartGroupIDModel ?? this.getOrdersByCartGroupIDModel,
+      getOrdersByCartGroupIDStatus:
+          getOrdersByCartGroupIDStatus ?? this.getOrdersByCartGroupIDStatus,
       getAddressByTextStatus:
           getAddressByTextStatus ?? this.getAddressByTextStatus,
       addOrRemoveLikeOfProductStatus:

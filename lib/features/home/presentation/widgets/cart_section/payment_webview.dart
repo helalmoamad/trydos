@@ -1,14 +1,19 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import '../../../../app/trydos_shimmer_loading.dart';
+import '../../manager/home_bloc.dart';
 
 class PaymentWebview extends StatefulWidget {
   final String url;
+  final String cartGroupId;
   const PaymentWebview({
     super.key,
     required this.url,
+    required this.cartGroupId,
   });
 
   @override
@@ -20,6 +25,7 @@ class _PaymentWebviewState extends State<PaymentWebview> {
   PullToRefreshController? pullToRefreshController;
   bool _isLoading = true;
   bool _hasError = false;
+  bool _isClosing = false;
 
   @override
   void initState() {
@@ -45,6 +51,12 @@ class _PaymentWebviewState extends State<PaymentWebview> {
         ),
       );
     }
+    setState(
+      () {
+        _isLoading = true;
+        _hasError = false;
+      },
+    );
   }
 
   @override
@@ -55,10 +67,22 @@ class _PaymentWebviewState extends State<PaymentWebview> {
           if (Navigator.canPop(context)) {
             if (Navigator.of(context).canPop()) {
               Navigator.of(context).pop();
+              /////////////////////////////////////////////
+              BlocProvider.of<HomeBloc>(context).add(
+                GetOrdersByCartGroupIDEvent(
+                  cartGroupId: widget.cartGroupId,
+                ),
+              );
 
               return false;
             }
           }
+          BlocProvider.of<HomeBloc>(context).add(
+            GetOrdersByCartGroupIDEvent(
+              cartGroupId: widget.cartGroupId,
+            ),
+          );
+
           return true;
         },
         child: Scaffold(
@@ -76,7 +100,7 @@ class _PaymentWebviewState extends State<PaymentWebview> {
           body: Stack(
             alignment: Alignment.center,
             children: [
-              buildWebView(),
+              if (!_hasError) buildWebView(),
               ///////////////
               if (_isLoading)
                 TrydosShimmerLoading(
@@ -99,7 +123,7 @@ class _PaymentWebviewState extends State<PaymentWebview> {
                       const SizedBox(height: 30),
                       ElevatedButton(
                         onPressed: () async {
-                          _reloadPage();
+                          await _reloadPage();
                         },
                         child: const Text("Retry"),
                       ),
@@ -126,9 +150,19 @@ class _PaymentWebviewState extends State<PaymentWebview> {
         controller.addJavaScriptHandler(
           handlerName: "closeIframe",
           callback: (args) {
-            debugPrint("Received 'closeIframe' event from JavaScript!");
             /////////////////////////////
-            Navigator.pop(context);
+            if (!_isClosing && mounted && Navigator.of(context).canPop()) {
+              debugPrint("Received 'closeIframe' event from JavaScript!");
+              _isClosing = true;
+              Navigator.of(context).pop();
+              /////////////////////////////////////////////
+              BlocProvider.of<HomeBloc>(context).add(
+                GetOrdersByCartGroupIDEvent(
+                  cartGroupId: widget.cartGroupId,
+                ),
+              );
+            }
+            ///////////////////////////////////
           },
         );
       },

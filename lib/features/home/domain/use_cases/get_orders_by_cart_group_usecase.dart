@@ -6,17 +6,17 @@ import '../../../../core/use_case/use_case.dart';
 import '../../data/models/place_order_model.dart';
 
 @injectable
-class GetOrdersByOrderGroupIDUsecase extends UseCase<OrdersGroupModel, String> {
+class GetOrdersByCartGroupIDUsecase extends UseCase<OrdersGroupModel, String> {
   final HomeRepository repository;
 
-  GetOrdersByOrderGroupIDUsecase(this.repository);
+  GetOrdersByCartGroupIDUsecase(this.repository);
 
   @override
   Future<Either<Failure, OrdersGroupModel>> call(
-    String orderGroupID,
+    String cartGroupID,
   ) {
-    return repository.getOrdersByOrderGroupID(
-      orderGroupID: orderGroupID,
+    return repository.getOrdersByCartGroupID(
+      cartGroupID: cartGroupID,
     );
   }
 }

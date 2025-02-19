@@ -283,6 +283,7 @@ class _CartPageState extends State<CartPage> {
               double totlalOfferPrice = 0;
               double totlalPrice = 0;
               String? priceSymbol;
+              String cartGroupId = '';
               double totlalQuantity = 0;
               double totlalDiscount = 0;
 
@@ -291,6 +292,8 @@ class _CartPageState extends State<CartPage> {
                 priceSymbol =
                     state.getCurrencyForCountryModel!.data!.currency!.symbol ??
                         "";
+
+                cartGroupId = state.cartCollection![0].cartGroupId ?? '';
 
                 totlalOfferPrice =
                     totlalOfferPrice + element.offerPrice! * element.quantity!;
@@ -1604,6 +1607,7 @@ class _CartPageState extends State<CartPage> {
                                                                                           CartDelivaryAddress(
                                                                                             cartImages: cartImages,
                                                                                             totalPrice: totlalOfferPrice,
+                                                                                            cartGroupId: cartGroupId,
                                                                                             currencySympole: priceSymbol ?? ' \$',
                                                                                           ),
                                                                                         );

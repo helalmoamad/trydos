@@ -33,6 +33,7 @@ class PlaceOrder extends StatefulWidget {
   final List<String> availablePaymentMethod;
   final double totalPrice;
   final double walletBalance;
+  final String cartGroupId;
   final ValueNotifier<List<String>> paymentMethods;
   final String currencySympole;
   final CustomerAddressesInfo customerAddressesInfo;
@@ -47,6 +48,7 @@ class PlaceOrder extends StatefulWidget {
     required this.availablePaymentMethod,
     required this.walletBalance,
     required this.decimalPointSetting,
+    required this.cartGroupId,
   });
   @override
   State<PlaceOrder> createState() => _PlaceOrderState();
@@ -98,160 +100,270 @@ class _PlaceOrderState extends State<PlaceOrder> {
       },
       child: Scaffold(
         resizeToAvoidBottomInset: true,
-        body: BlocConsumer<HomeBloc, HomeState>(
-          listener: (context, state) {
-            debugPrint('placeOrderStatus:  ${state.placeOrderStatus}');
+        body: BlocListener<HomeBloc, HomeState>(
+            listenWhen: (previous, current) =>
+                previous.placeOrderStatus != current.placeOrderStatus &&
+                current.placeOrderStatus == PlaceOrderStatus.success,
+            listener: (context, state) {
+              debugPrint('placeOrderStatus:  ${state.placeOrderStatus}');
 
-            if (state.placeOrderStatus == PlaceOrderStatus.success) {
-              List<OrdersGroupDataModel>? data = state.placeOrderModel!.data!;
+              if (state.placeOrderStatus == PlaceOrderStatus.success) {
+                List<OrdersGroupDataModel>? data = state.placeOrderModel!.data!;
 
-              debugPrint('The url is : ${data[0].url}');
+                debugPrint('The url is : ${data[0].url}');
 
-              if (data[0].url != null) {
-                HelperFunctions.slidingNavigation(
-                  context,
-                  PaymentWebview(
-                    url: data[0].url!,
-                  ),
-                );
-              } else {
-                List<Map<String, String>> cartImages = [];
-                double orderAmount = 0;
-                /////////////////////////////////////////////////
-                data.forEach(
-                  (e) {
-                    orderAmount = orderAmount + e.orderAmount!;
-                    e.details!.forEach(
-                      (element) {
-                        for (var i = 0; i < (element.qty ?? 0); i++) {
-                          cartImages.add(
-                            {
-                              "image": element.productDetails!.images![0],
-                              "size": element.variation == null
-                                  ? ""
-                                  : element.variation?.size ?? "",
-                              "color": element.variation == null
-                                  ? ""
-                                  : element.variation?.color ?? ""
-                            },
-                          );
-                        }
-                      },
-                    );
-                  },
-                );
-                ////////////////////////////////
-                CustomerAddressesInfo customerAddressesInfo =
-                    CustomerAddressesInfo(
-                  id: data[0].shippingAddress,
-                  address: data[0].shippingAddressData!.address ?? '',
-                  addressDetail:
-                      data[0].shippingAddressData!.addressDetail ?? '',
-                  contactInfo: ContactInfo(
-                    name: data[0].shippingAddressData!.contactPersonName ?? '',
-                    alternativePhone:
-                        data[0].shippingAddressData!.alternativePhone ?? '',
-                    phone: data[0].shippingAddressData!.phone ?? '',
-                  ),
-                  location: Location(
-                    latitude: data[0].shippingAddressData!.latitude ?? '',
-                    longitude: data[0].shippingAddressData!.longitude ?? '',
-                  ),
-                  regionDetails: RegionDetails(
-                    country: data[0].shippingAddressData!.country ?? '',
-                    province: data[0].shippingAddressData!.province ?? '',
-                    city: data[0].shippingAddressData!.city ?? '',
-                    town: data[0].shippingAddressData!.town ?? '',
-                    street: data[0].shippingAddressData!.street ?? '',
-                    building: data[0].shippingAddressData!.building ?? '',
-                  ),
-                );
-                /////////////////////////
-                widget.paymentMethods.value =
-                    List.from(widget.paymentMethods.value)..clear();
-
-                String paymentMethod = '';
-
-                if (data[0].paymentMethod == 'trydos_wallet') {
-                  paymentMethod = PaymentMethods.trydosWallet;
-                } else if (data[0].paymentMethod == 'cash_on_delivery') {
-                  paymentMethod = PaymentMethods.cod;
-                } else {
-                  paymentMethod = data[0].paymentMethod ?? '';
-                }
-
-                widget.paymentMethods.value =
-                    List.from(widget.paymentMethods.value)..add(paymentMethod);
-                /////////////////////////
-                HelperFunctions.slidingNavigation(
-                  context,
-                  SuccessfullOrder(
-                    cartImages: cartImages,
-                    currencySympole: widget.currencySympole,
-                    availablePaymentMethod: widget.availablePaymentMethod,
-                    customerAddressesInfo: customerAddressesInfo,
-                    paymentMethods: widget.paymentMethods,
-                    totalPrice: widget.totalPrice,
-                    decimalPointSetting: widget.decimalPointSetting,
-                    orderAmount: orderAmount,
-                    orderGroupId: data[0].orderGroupId ?? '',
-                  ),
-                );
-              }
-            }
-          },
-          listenWhen: (previous, current) =>
-              previous.placeOrderStatus != current.placeOrderStatus,
-          buildWhen: (previous, current) =>
-              previous.placeOrderStatus != current.placeOrderStatus,
-          builder: (context, state) {
-            return Column(
-              children: [
-                buildPageHeader(context),
-                /////////////////////
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Container(
-                      margin: EdgeInsets.symmetric(horizontal: 10),
-                      alignment: Alignment.topCenter,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          buildBagItemsWidget(context),
-                          //////////////////////////////////
-                          SizedBox(
-                            height: 12.h,
-                          ),
-                          //////////////////////////////////
-                          buildAddress(context),
-                          //////////////////////////////////
-                          PaymentMethod(
-                            fromSuccessOrder: false,
-                            amount: widget.walletBalance,
-                            fromPalceOrder: true,
-                            paymentMethods: widget.paymentMethods,
-                            availablePaymentMethod:
-                                widget.availablePaymentMethod,
-                            totalPrice: widget.totalPrice,
-                            decimalPointSetting: widget.decimalPointSetting,
-                          ),
-                          /////////////////////////
-                          SizedBox(
-                            height: 40.h,
-                          ),
-                          //////////////////////////////////
-                          buildAgreeToPoliciesWidget(),
-                        ],
-                      ),
+                if (data[0].url != null) {
+                  HelperFunctions.slidingNavigation(
+                    context,
+                    PaymentWebview(
+                      url: data[0].url!,
+                      cartGroupId: widget.cartGroupId,
                     ),
-                  ),
-                ),
-                // //////////////////////////
-                buildPlaceOrderButton(state)
-              ],
-            );
-          },
-        ),
+                  );
+                } else {
+                  List<Map<String, String>> cartImages = [];
+                  double orderAmount = 0;
+                  /////////////////////////////////////////////////
+                  data.forEach(
+                    (e) {
+                      orderAmount = orderAmount + e.orderAmount!;
+                      e.details!.forEach(
+                        (element) {
+                          for (var i = 0; i < (element.qty ?? 0); i++) {
+                            cartImages.add(
+                              {
+                                "image": element.productDetails!.images![0],
+                                "size": element.variation == null
+                                    ? ""
+                                    : element.variation?.size ?? "",
+                                "color": element.variation == null
+                                    ? ""
+                                    : element.variation?.color ?? ""
+                              },
+                            );
+                          }
+                        },
+                      );
+                    },
+                  );
+                  ////////////////////////////////
+                  CustomerAddressesInfo customerAddressesInfo =
+                      CustomerAddressesInfo(
+                    id: data[0].shippingAddress,
+                    address: data[0].shippingAddressData!.address ?? '',
+                    addressDetail:
+                        data[0].shippingAddressData!.addressDetail ?? '',
+                    contactInfo: ContactInfo(
+                      name:
+                          data[0].shippingAddressData!.contactPersonName ?? '',
+                      alternativePhone:
+                          data[0].shippingAddressData!.alternativePhone ?? '',
+                      phone: data[0].shippingAddressData!.phone ?? '',
+                    ),
+                    location: Location(
+                      latitude: data[0].shippingAddressData!.latitude ?? '',
+                      longitude: data[0].shippingAddressData!.longitude ?? '',
+                    ),
+                    regionDetails: RegionDetails(
+                      country: data[0].shippingAddressData!.country ?? '',
+                      province: data[0].shippingAddressData!.province ?? '',
+                      city: data[0].shippingAddressData!.city ?? '',
+                      town: data[0].shippingAddressData!.town ?? '',
+                      street: data[0].shippingAddressData!.street ?? '',
+                      building: data[0].shippingAddressData!.building ?? '',
+                    ),
+                  );
+                  /////////////////////////
+                  widget.paymentMethods.value =
+                      List.from(widget.paymentMethods.value)..clear();
+
+                  String paymentMethod = '';
+
+                  if (data[0].paymentMethod == 'trydos_wallet') {
+                    paymentMethod = PaymentMethods.trydosWallet;
+                  } else if (data[0].paymentMethod == 'cash_on_delivery') {
+                    paymentMethod = PaymentMethods.cod;
+                  } else {
+                    paymentMethod = data[0].paymentMethod ?? '';
+                  }
+
+                  widget.paymentMethods.value =
+                      List.from(widget.paymentMethods.value)
+                        ..add(paymentMethod);
+                  /////////////////////////
+                  HelperFunctions.slidingNavigation(
+                    context,
+                    SuccessfullOrder(
+                      cartImages: cartImages,
+                      currencySympole: widget.currencySympole,
+                      availablePaymentMethod: widget.availablePaymentMethod,
+                      customerAddressesInfo: customerAddressesInfo,
+                      paymentMethods: widget.paymentMethods,
+                      totalPrice: widget.totalPrice,
+                      decimalPointSetting: widget.decimalPointSetting,
+                      orderAmount: orderAmount,
+                      orderGroupId: data[0].orderGroupId ?? '',
+                    ),
+                  );
+                }
+              }
+            },
+            child: BlocListener<HomeBloc, HomeState>(
+              listenWhen: (previous, current) =>
+                  previous.getOrdersByCartGroupIDStatus !=
+                      current.getOrdersByCartGroupIDStatus &&
+                  current.getOrdersByCartGroupIDStatus ==
+                      GetOrdersByCartGroupIDStatus.success,
+              listener: (context, state) {
+                debugPrint(
+                    'getOrdersByCartGroupIDStatus:  ${state.getOrdersByCartGroupIDStatus}');
+
+                if (state.getOrdersByCartGroupIDStatus ==
+                    GetOrdersByCartGroupIDStatus.success) {
+                  List<OrdersGroupDataModel>? data =
+                      state.getOrdersByCartGroupIDModel!.data!;
+
+                  List<Map<String, String>> cartImages = [];
+                  double orderAmount = 0;
+                  /////////////////////////////////////////////////
+                  data.forEach(
+                    (e) {
+                      orderAmount = orderAmount + e.orderAmount!;
+                      e.details!.forEach(
+                        (element) {
+                          for (var i = 0; i < (element.qty ?? 0); i++) {
+                            cartImages.add(
+                              {
+                                "image": element.productDetails!.images![0],
+                                "size": element.variation == null
+                                    ? ""
+                                    : element.variation?.size ?? "",
+                                "color": element.variation == null
+                                    ? ""
+                                    : element.variation?.color ?? ""
+                              },
+                            );
+                          }
+                        },
+                      );
+                    },
+                  );
+                  ////////////////////////////////
+                  CustomerAddressesInfo customerAddressesInfo =
+                      CustomerAddressesInfo(
+                    id: data[0].shippingAddress,
+                    address: data[0].shippingAddressData!.address ?? '',
+                    addressDetail:
+                        data[0].shippingAddressData!.addressDetail ?? '',
+                    contactInfo: ContactInfo(
+                      name:
+                          data[0].shippingAddressData!.contactPersonName ?? '',
+                      alternativePhone:
+                          data[0].shippingAddressData!.alternativePhone ?? '',
+                      phone: data[0].shippingAddressData!.phone ?? '',
+                    ),
+                    location: Location(
+                      latitude: data[0].shippingAddressData!.latitude ?? '',
+                      longitude: data[0].shippingAddressData!.longitude ?? '',
+                    ),
+                    regionDetails: RegionDetails(
+                      country: data[0].shippingAddressData!.country ?? '',
+                      province: data[0].shippingAddressData!.province ?? '',
+                      city: data[0].shippingAddressData!.city ?? '',
+                      town: data[0].shippingAddressData!.town ?? '',
+                      street: data[0].shippingAddressData!.street ?? '',
+                      building: data[0].shippingAddressData!.building ?? '',
+                    ),
+                  );
+                  /////////////////////////
+                  widget.paymentMethods.value =
+                      List.from(widget.paymentMethods.value)..clear();
+
+                  String paymentMethod = '';
+
+                  if (data[0].paymentMethod == 'trydos_wallet') {
+                    paymentMethod = PaymentMethods.trydosWallet;
+                  } else if (data[0].paymentMethod == 'cash_on_delivery') {
+                    paymentMethod = PaymentMethods.cod;
+                  } else if (data[0].paymentMethod == 'crypto') {
+                    paymentMethod = PaymentMethods.crypto;
+                  }
+
+                  widget.paymentMethods.value =
+                      List.from(widget.paymentMethods.value)
+                        ..add(paymentMethod);
+                  /////////////////////////
+                  HelperFunctions.slidingNavigation(
+                    context,
+                    SuccessfullOrder(
+                      cartImages: cartImages,
+                      currencySympole: widget.currencySympole,
+                      availablePaymentMethod: widget.availablePaymentMethod,
+                      customerAddressesInfo: customerAddressesInfo,
+                      paymentMethods: widget.paymentMethods,
+                      totalPrice: widget.totalPrice,
+                      decimalPointSetting: widget.decimalPointSetting,
+                      orderAmount: orderAmount,
+                      orderGroupId: data[0].orderGroupId ?? '',
+                    ),
+                  );
+                }
+              },
+              child: BlocBuilder<HomeBloc, HomeState>(
+                buildWhen: (previous, current) =>
+                    previous.placeOrderStatus != current.placeOrderStatus ||
+                    previous.getOrdersByCartGroupIDStatus !=
+                        current.getOrdersByCartGroupIDStatus,
+                builder: (context, state) {
+                  return Column(
+                    children: [
+                      buildPageHeader(context),
+                      /////////////////////
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Container(
+                            margin: EdgeInsets.symmetric(horizontal: 10),
+                            alignment: Alignment.topCenter,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                buildBagItemsWidget(context),
+                                //////////////////////////////////
+                                SizedBox(
+                                  height: 12.h,
+                                ),
+                                //////////////////////////////////
+                                buildAddress(context),
+                                //////////////////////////////////
+                                PaymentMethod(
+                                  fromSuccessOrder: false,
+                                  amount: widget.walletBalance,
+                                  fromPalceOrder: true,
+                                  paymentMethods: widget.paymentMethods,
+                                  availablePaymentMethod:
+                                      widget.availablePaymentMethod,
+                                  totalPrice: widget.totalPrice,
+                                  decimalPointSetting:
+                                      widget.decimalPointSetting,
+                                ),
+                                /////////////////////////
+                                SizedBox(
+                                  height: 40.h,
+                                ),
+                                //////////////////////////////////
+                                buildAgreeToPoliciesWidget(),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      // //////////////////////////
+                      buildPlaceOrderButton(state)
+                    ],
+                  );
+                },
+              ),
+            )),
       ),
     );
   }

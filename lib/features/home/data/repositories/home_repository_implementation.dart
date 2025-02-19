@@ -386,11 +386,22 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
 
   @override
   Future<Either<Failure, OrdersGroupModel>> getOrdersByOrderGroupID({
-    required String orderGroupIdD,
+    required String orderGroupID,
   }) {
     return handlingExceptionRequest(
       tryCall: () => dataSource.getOrdersByOrderGroupID(
-        orderGroupID: orderGroupIdD,
+        orderGroupID: orderGroupID,
+      ),
+    );
+  }
+
+  @override
+  Future<Either<Failure, OrdersGroupModel>> getOrdersByCartGroupID({
+    required String cartGroupID,
+  }) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.getOrdersByCartGroupID(
+        cartGroupID: cartGroupID,
       ),
     );
   }

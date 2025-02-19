@@ -814,4 +814,23 @@ class HomeRemoteDatasource {
 
     return getOrdersByOrderGroupID();
   }
+
+  Future<OrdersGroupModel> getOrdersByCartGroupID({
+    required String cartGroupID,
+  }) {
+    GetClient<OrdersGroupModel> getOrdersByCartGroupID =
+        GetClient<OrdersGroupModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<OrdersGroupModel>(
+        endpoint: MarketEndPoints.getOrdersByCartGroupEP,
+        queryParameters: {
+          "cart_group_id": cartGroupID,
+        },
+        response: ResponseValue<OrdersGroupModel>(
+            fromJson: (response) => OrdersGroupModel.fromJson(response)),
+      ),
+    );
+
+    return getOrdersByCartGroupID();
+  }
 }
