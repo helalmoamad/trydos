@@ -3432,6 +3432,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       }
       emit(state.copyWith(getCartItemsStatus: GetCartItemsStatus.failure));
     }, (r) {
+      if (state.hideItemInOldCartStatus == HideItemInOldCartStatus.loading) {
+        return;
+      }
       oldCarts = r.data?.original?.data?.oldCart;
       oldCarts?.forEach((element) {
         oldCartCollection.add(element);
@@ -3961,18 +3964,18 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   FutureOr<void> _onHideItemInOldCartEvent(
       HideItemInOldCartEvent event, Emitter<HomeState> emit) async {
-    emit(state.copyWith(hideItemInOldCartStatus: HideItemInOldCartStatus.init));
     List<oldCart.OldCart>? preOldCartCollection = state.oldcartCollection;
+    List<oldCart.OldCart>? oldCartCollection = preOldCartCollection;
     oldCart.OldCart? cart;
     if (!(event.hideAll ?? false)) {
       cart = state.oldcartCollection!.firstWhere(
           (element) => element.id.toString() == event.oldCartId.toString());
 
-      preOldCartCollection!.remove(cart);
+      oldCartCollection!.remove(cart);
     }
 
     emit(state.copyWith(
-        oldCartCollection: (event.hideAll ?? false) ? [] : preOldCartCollection,
+        oldCartCollection: (event.hideAll ?? false) ? [] : oldCartCollection,
         hideItemInOldCartStatus: HideItemInOldCartStatus.loading));
     final response = await hideItemsInOldCartUseCase(HideItemsInOldCartParams(
         hideAll: event.hideAll ?? false, oLdCartId: event.oldCartId));
@@ -3995,18 +3998,15 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         backGroundColor: Colors.black,
       );
     }, (r) {
+      add(GetOldCartItemEvent());
       emit(state.copyWith(
         hideItemInOldCartStatus: HideItemInOldCartStatus.success,
       ));
-      print(
-          "LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL");
       showMessage(
         "${LocaleKeys.item_was_hidden_successfuly.tr()}",
         foreGroundColor: Colors.white,
         backGroundColor: Colors.black,
       );
-      print(
-          "10000000000000000000000000000000000LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL");
     });
   }
 
