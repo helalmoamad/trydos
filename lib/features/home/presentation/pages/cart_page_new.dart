@@ -36,9 +36,11 @@ import '../../../../service/firebase_analytics_service/firebase_analytics_servic
 
 class CartPage extends StatefulWidget {
   final bool? fromeFilters;
-  final bool? fromeNotification;
 
-  const CartPage({Key? key, this.fromeFilters, this.fromeNotification});
+  const CartPage({
+    Key? key,
+    this.fromeFilters,
+  });
   @override
   State<CartPage> createState() => _CartPageState();
 }
@@ -71,7 +73,6 @@ class _CartPageState extends State<CartPage> {
     homeBloc.add(GetCustomerAddressesEvent());
     fromForGroundNotification =
         appBloc.state.isFromForGroundNotification ?? false;
-    print("${widget.fromeNotification}" + "${fromForGroundNotification}");
 
     super.initState();
   }
@@ -280,36 +281,55 @@ class _CartPageState extends State<CartPage> {
                 );
               }
 
-              double totlalOfferPrice = 0;
               double totlalPrice = 0;
+              double totlalcashed = 0;
               String? priceSymbol;
               String cartGroupId = '';
               double totlalQuantity = 0;
+              double totlalPriceWithoutShipping = 0;
               double totlalDiscount = 0;
 
-              state.cartCollection!.forEach((element) {
-                totlalQuantity = totlalQuantity + (element.quantity ?? 0);
-                priceSymbol =
-                    state.getCurrencyForCountryModel!.data!.currency!.symbol ??
-                        "";
+              totlalcashed =
+                  (state.getCartShippingItemsModel?.data?.totalCash ?? 0) *
+                      state.getCurrencyForCountryModel!.data!.currency!
+                          .exchangeRate!;
+              totlalPrice =
+                  (state.getCartShippingItemsModel?.data?.total ?? 0) *
+                      state.getCurrencyForCountryModel!.data!.currency!
+                          .exchangeRate!;
 
+              totlalPriceWithoutShipping =
+                  (state.getCartShippingItemsModel?.data?.subTotal ?? 0) *
+                      state.getCurrencyForCountryModel!.data!.currency!
+                          .exchangeRate!;
+              totlalDiscount = (state.getCartShippingItemsModel?.data
+                          ?.totalDiscountOnProduct ??
+                      0) *
+                  state.getCurrencyForCountryModel!.data!.currency!
+                      .exchangeRate!;
+              priceSymbol =
+                  state.getCurrencyForCountryModel!.data!.currency!.symbol ??
+                      "";
+
+              state.cartCollection?.forEach((element) {
                 cartGroupId = state.cartCollection![0].cartGroupId ?? '';
+                totlalQuantity = totlalQuantity + (element.quantity ?? 0);
 
-                totlalOfferPrice =
-                    totlalOfferPrice + element.offerPrice! * element.quantity!;
-                totlalPrice = totlalPrice + element.price! * element.quantity!;
-                totlalDiscount = totlalDiscount +
-                    (element.price! - element.offerPrice!) * element.quantity!;
+                //   totlalOfferPrice =
+                //       totlalOfferPrice + element.offerPrice! * element.quantity!;
+                //   totlalOfferPrice = totlalPrice + element.price! * element.quantity!;
+                //   totlalDiscount = totlalDiscount +
+                //       (element.price! - element.offerPrice!) * element.quantity!;
               });
-              totlalOfferPrice = totlalOfferPrice *
-                  state.getCurrencyForCountryModel!.data!.currency!
-                      .exchangeRate!;
-              totlalPrice = totlalPrice *
-                  state.getCurrencyForCountryModel!.data!.currency!
-                      .exchangeRate!;
-              totlalDiscount = totlalDiscount *
-                  state.getCurrencyForCountryModel!.data!.currency!
-                      .exchangeRate!;
+              //  totlalOfferPrice = totlalOfferPrice *
+              //     state.getCurrencyForCountryModel!.data!.currency!
+              //         .exchangeRate!;
+              // totlalPrice = totlalPrice *
+              //     state.getCurrencyForCountryModel!.data!.currency!
+              //         .exchangeRate!;
+              //totlalDiscount = totlalDiscount *
+              //   state.getCurrencyForCountryModel!.data!.currency!
+              //     .exchangeRate!;
 
               return SingleChildScrollView(
                 child: Column(
@@ -990,7 +1010,7 @@ class _CartPageState extends State<CartPage> {
                                                                                   ),
                                                                                   Spacer(),
                                                                                   Text(
-                                                                                    " ${totlalPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
+                                                                                    " ${totlalPriceWithoutShipping.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
                                                                                     style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 13.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
                                                                                   ),
                                                                                   Text(
@@ -1066,7 +1086,7 @@ class _CartPageState extends State<CartPage> {
                                                                                       left: LanguageService.languageCode != "ar" ? 2 : 10.w,
                                                                                     ),
                                                                                     child: Text(
-                                                                                      "${LocaleKeys.total_discount.tr()} ${(totlalPrice == 0 ? 0 : ((totlalDiscount) / totlalPrice) * 100).toStringAsFixed(1)}% ",
+                                                                                      "${LocaleKeys.total_discount.tr()} ${(totlalPrice == 0 ? 0 : ((totlalDiscount) / totlalPriceWithoutShipping) * 100).toStringAsFixed(1)}% ",
                                                                                       strutStyle: LanguageService.languageCode != "ar" ? null : StrutStyle(height: 0.1, leading: 0.1),
                                                                                       style: context.textTheme.bodyMedium?.mr.copyWith(fontSize: 13.sp, color: const Color(0xffA28E5B), letterSpacing: 0.18, height: LanguageService.languageCode != "ar" ? 1.33 : 1),
                                                                                     ),
@@ -1232,7 +1252,7 @@ class _CartPageState extends State<CartPage> {
                                                                                     style: context.textTheme.bodyMedium?.br.copyWith(decoration: TextDecoration.lineThrough, decorationColor: const Color(0xff2FA52F), color: const Color(0xff2FA52F), fontSize: 13, letterSpacing: 0.18, height: 1.33),
                                                                                   ),
                                                                                   Text(
-                                                                                    " 0,00  ",
+                                                                                    " ${((state.getCartShippingItemsModel?.data?.totalShippingCost ?? 0) * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
                                                                                     style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 13.sp, color: const Color(0xff2FA52F), letterSpacing: 0.18, height: 1.33),
                                                                                   ),
                                                                                   Text(
@@ -1248,7 +1268,7 @@ class _CartPageState extends State<CartPage> {
                                                                                   left: LanguageService.languageCode != "ar" ? 25 : 10.w,
                                                                                 ),
                                                                                 child: Text(
-                                                                                  "${LocaleKeys.shipping_is_completely_free_without_any_extras.tr()} ",
+                                                                                  ((state.getCartShippingItemsModel?.data?.totalShippingCost ?? 0) * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2) != 0 ? "" : "${LocaleKeys.shipping_is_completely_free_without_any_extras.tr()} ",
                                                                                   style: context.textTheme.bodyMedium?.ra.copyWith(fontSize: 11.sp, color: const Color(0xff2FA52F), letterSpacing: 0.18, height: 1.33),
                                                                                 ),
                                                                               ),
@@ -1309,11 +1329,11 @@ class _CartPageState extends State<CartPage> {
                                                                                   ),
                                                                                   Spacer(),
                                                                                   Text(
-                                                                                    "${totlalPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
+                                                                                    "${(totlalPrice + totlalDiscount).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
                                                                                     style: context.textTheme.bodyMedium?.ra.copyWith(decoration: TextDecoration.lineThrough, fontSize: 16, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
                                                                                   ),
                                                                                   Text(
-                                                                                    "${totlalOfferPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
+                                                                                    "${totlalPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
                                                                                     style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 16.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
                                                                                   ),
                                                                                   Text(
@@ -1548,7 +1568,7 @@ class _CartPageState extends State<CartPage> {
                                                                                                 ),
                                                                                               ),
                                                                                               Text(
-                                                                                                " ${totlalOfferPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} ",
+                                                                                                " ${totlalPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} ",
                                                                                                 style: context.textTheme.bodyMedium?.ba.copyWith(
                                                                                                   fontSize: 14.sp,
                                                                                                   color: const Color(0xffFEFEFE),
@@ -1605,8 +1625,9 @@ class _CartPageState extends State<CartPage> {
                                                                                         HelperFunctions.slidingNavigation(
                                                                                           context,
                                                                                           CartDelivaryAddress(
+                                                                                            totalCashed: totlalcashed,
                                                                                             cartImages: cartImages,
-                                                                                            totalPrice: totlalOfferPrice,
+                                                                                            totalPrice: totlalPrice,
                                                                                             cartGroupId: cartGroupId,
                                                                                             currencySympole: priceSymbol ?? ' \$',
                                                                                           ),
@@ -1679,7 +1700,7 @@ class _CartPageState extends State<CartPage> {
                                                                                                       ),
                                                                                                     ),
                                                                                                     Text(
-                                                                                                      " ${totlalOfferPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} ",
+                                                                                                      " ${totlalPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} ",
                                                                                                       style: context.textTheme.bodyMedium?.ba.copyWith(
                                                                                                         fontSize: 14.sp,
                                                                                                         color: const Color(0xffFEFEFE),

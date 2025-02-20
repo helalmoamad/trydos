@@ -12,6 +12,7 @@ import 'package:trydos/features/home/data/models/get_product_filters_model.dart'
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/features/home/presentation/pages/cart_page_new.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/main.dart';
@@ -101,15 +102,17 @@ class HandlingMarketNotifications {
                 TypeOfNotificationForMarketEnum.product_hurry_up_quantity]) {
       try {
         Future.delayed(
-          Duration(seconds: 1),
-          () => Navigator.of(navigatorKey.currentState!.context)
-              .push(PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => BasePage(),
-          )),
-        );
+            Duration(seconds: 1),
+            () => Navigator.of(navigatorKey.currentState!.context).push(
+                  MaterialPageRoute(
+                    builder: (context) => CartPage(
+                      fromeFilters: true,
+                    ),
+                  ),
+                ));
 
-        BlocProvider.of<AppBloc>(navigatorKey.currentState!.context)
-            .add(ChangeBasePage(1));
+        //  BlocProvider.of<AppBloc>(navigatorKey.currentState!.context)
+        //   .add(ChangeBasePage(1));
       } catch (e) {}
     } else {
       if (data["type"] ==

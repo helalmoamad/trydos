@@ -59,7 +59,7 @@ class _PinItemState extends State<PinItem> with TickerProviderStateMixin {
     fadingController =
         AnimationController(vsync: this, duration: Duration(seconds: 1));
     animationController.addStatusListener(_updateStatus);
-    focusNodes[0].requestFocus();
+    Future.delayed(Duration(seconds: 1), () => focusNodes[0].requestFocus());
     widget.controller.value = zwspEditingValue;
     currentToType = 0;
     super.initState();
@@ -128,7 +128,7 @@ class _PinItemState extends State<PinItem> with TickerProviderStateMixin {
                       animation: fadingController,
                       builder: (context, child) {
                         return SizedBox(
-                            height: 60,
+                            height: 70.h,
                             width: 50.w,
                             child: DottedBorder(
                               borderPadding: EdgeInsets.zero,
@@ -198,7 +198,6 @@ class _PinItemState extends State<PinItem> with TickerProviderStateMixin {
                                     });
                                   },
                                   textAlign: TextAlign.center,
-                                  autofocus: widget.autoFocus,
                                   keyboardType: TextInputType.number,
                                   textDirection: TextDirection.ltr,
                                   autocorrect: false,
@@ -210,8 +209,8 @@ class _PinItemState extends State<PinItem> with TickerProviderStateMixin {
                                   inputFormatters: [
                                     FilteringTextInputFormatter.digitsOnly,
                                   ],
-                                  style:
-                                      context.textTheme.headlineSmall?.ra.copyWith(
+                                  style: context.textTheme.headlineSmall?.ra
+                                      .copyWith(
                                     color: const Color(0xff707070),
                                     height: 0.6,
                                     decoration: TextDecoration.none,

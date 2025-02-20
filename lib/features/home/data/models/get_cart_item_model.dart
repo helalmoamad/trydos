@@ -1,6 +1,6 @@
 class GetCartShippingItemsModel {
   final String? message;
-  final Data? data;
+  final CartShipping? data;
 
   GetCartShippingItemsModel({
     this.message,
@@ -9,7 +9,7 @@ class GetCartShippingItemsModel {
 
   GetCartShippingItemsModel copyWith({
     String? message,
-    Data? data,
+    CartShipping? data,
   }) =>
       GetCartShippingItemsModel(
         message: message ?? this.message,
@@ -19,7 +19,7 @@ class GetCartShippingItemsModel {
   factory GetCartShippingItemsModel.fromJson(Map<String, dynamic> json) =>
       GetCartShippingItemsModel(
         message: json["message"],
-        data: json["data"] == null ? null : Data.fromJson(json["data"]),
+        data: json["data"] == null ? null : CartShipping.fromJson(json["data"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -28,7 +28,7 @@ class GetCartShippingItemsModel {
       };
 }
 
-class Data {
+class CartShipping {
   final double? subTotal;
   final String? subTotalFormated;
   final double? totalTax;
@@ -56,7 +56,7 @@ class Data {
   final String? totalCashFormated;
   final List<Cart>? cart;
 
-  Data({
+  CartShipping({
     this.subTotal,
     this.subTotalFormated,
     this.totalTax,
@@ -85,7 +85,7 @@ class Data {
     this.cart,
   });
 
-  Data copyWith({
+  CartShipping copyWith({
     double? subTotal,
     String? subTotalFormated,
     double? totalTax,
@@ -113,7 +113,7 @@ class Data {
     String? totalCashFormated,
     List<Cart>? cart,
   }) =>
-      Data(
+      CartShipping(
         subTotal: subTotal ?? this.subTotal,
         subTotalFormated: subTotalFormated ?? this.subTotalFormated,
         totalTax: totalTax ?? this.totalTax,
@@ -149,7 +149,7 @@ class Data {
         cart: cart ?? this.cart,
       );
 
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
+  factory CartShipping.fromJson(Map<String, dynamic> json) => CartShipping(
         subTotal: json["sub_total"].toDouble(),
         subTotalFormated: json["sub_total_formated"],
         totalTax: json["total_tax"].toDouble(),

@@ -90,8 +90,6 @@ class _ProductCollectionInCartPage1State
           previous.addItemInCartStatus != current.addItemInCartStatus ||
           previous.updateItemInCartStatus != current.updateItemInCartStatus,
       builder: (context, state) {
-        print(
-            "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@${state.getCurrencyForCountryModel!.data!.currency!.exchangeRate}");
         return Container(
           padding: EdgeInsets.all(1),
           child: ListView.builder(
@@ -123,16 +121,16 @@ class _ProductCollectionInCartPage1State
                     bottom: (cartCollection?.length == 0)
                         ? (index == (oldCartCollection?.length ?? 0) - 1) &&
                                 isOldCart
-                            ? 220
+                            ? 260
                             : 0
                         : (oldCartCollection?.length == 0)
                             ? (index == (cartCollection?.length ?? 0) - 1) &&
                                     !isOldCart
-                                ? 220
+                                ? 260
                                 : 0
                             : (index == (oldCartCollection?.length ?? 0) - 1) &&
                                     isOldCart
-                                ? 220
+                                ? 260
                                 : 0),
                 child: Container(
                   margin: EdgeInsets.only(bottom: 7, right: 5, left: 5),
@@ -480,7 +478,7 @@ class _ProductCollectionInCartPage1State
                                                         "ar"
                                                     ? Alignment.centerLeft
                                                     : Alignment.centerRight,
-                                                width: 200,
+                                                width: 100,
                                                 height: 15,
                                                 child: Row(
                                                   mainAxisAlignment:

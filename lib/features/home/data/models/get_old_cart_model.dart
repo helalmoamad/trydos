@@ -106,94 +106,25 @@ class Original {
 }
 
 class OriginalData {
-  final double? subTotal;
-  final double? totalTax;
-  final double? totalDiscountOnProduct;
-  final double? totalShippingCost;
-  final double? couponDiscount;
-  final double? codCost;
-  final double? limitFree;
-  final double? estimatedTax;
-  final double? total;
-  final double? restForFreeShipping;
-  final double? totalCash;
-  final bool? hasCod;
-  final bool? showMessageResetForShippingFree;
   final List<String>? availablePaymentMethod;
   final List<OldCart>? oldCart;
 
   OriginalData({
-    this.subTotal,
-    this.totalTax,
-    this.totalDiscountOnProduct,
-    this.totalShippingCost,
-    this.couponDiscount,
-    this.codCost,
-    this.limitFree,
-    this.estimatedTax,
-    this.total,
-    this.restForFreeShipping,
-    this.totalCash,
-    this.hasCod,
-    this.showMessageResetForShippingFree,
     this.availablePaymentMethod,
     this.oldCart,
   });
 
   OriginalData copyWith({
-    double? subTotal,
-    double? totalTax,
-    double? totalDiscountOnProduct,
-    double? totalShippingCost,
-    double? couponDiscount,
-    double? codCost,
-    double? limitFree,
-    double? estimatedTax,
-    double? total,
-    double? restForFreeShipping,
-    double? totalCash,
-    bool? hasCod,
-    bool? showMessageResetForShippingFree,
     List<String>? availablePaymentMethod,
     List<OldCart>? oldCart,
   }) =>
       OriginalData(
-        subTotal: subTotal ?? this.subTotal,
-        totalTax: totalTax ?? this.totalTax,
-        totalDiscountOnProduct:
-            totalDiscountOnProduct ?? this.totalDiscountOnProduct,
-        totalShippingCost: totalShippingCost ?? this.totalShippingCost,
-        couponDiscount: couponDiscount ?? this.couponDiscount,
-        codCost: codCost ?? this.codCost,
-        limitFree: limitFree ?? this.limitFree,
-        estimatedTax: estimatedTax ?? this.estimatedTax,
-        total: total ?? this.total,
-        restForFreeShipping: restForFreeShipping ?? this.restForFreeShipping,
-        totalCash: totalCash ?? this.totalCash,
-        hasCod: hasCod ?? this.hasCod,
-        showMessageResetForShippingFree: showMessageResetForShippingFree ??
-            this.showMessageResetForShippingFree,
         availablePaymentMethod:
             availablePaymentMethod ?? this.availablePaymentMethod,
         oldCart: oldCart ?? this.oldCart,
       );
 
   factory OriginalData.fromJson(Map<String, dynamic> json) => OriginalData(
-        subTotal: json["sub_total"]?.toDouble(),
-        totalTax: double.tryParse(json["total_tax"].toString()),
-        totalDiscountOnProduct: json["total_discount_on_product"]?.toDouble(),
-        totalShippingCost:
-            double.tryParse(json["total_shipping_cost"].toString()),
-        couponDiscount: double.tryParse(json["coupon_discount"].toString()),
-        codCost: double.tryParse(json["cod_cost"].toString()),
-        limitFree: json["limitFree"]?.toDouble(),
-        estimatedTax: json["estimated_tax"]?.toDouble(),
-        total: json["total"]?.toDouble(),
-        restForFreeShipping: json["rest_for_free_shipping"]?.toDouble(),
-        totalCash: json["total_cash"]?.toDouble(),
-        hasCod: json["has_cod"],
-        showMessageResetForShippingFree:
-            json["show_message_reset_for_shipping_free"],
         availablePaymentMethod: json["available_payment_method"] == null
             ? []
             : List<String>.from(
@@ -205,19 +136,6 @@ class OriginalData {
       );
 
   Map<String, dynamic> toJson() => {
-        "sub_total": subTotal,
-        "total_tax": totalTax,
-        "total_discount_on_product": totalDiscountOnProduct,
-        "total_shipping_cost": totalShippingCost,
-        "coupon_discount": couponDiscount,
-        "cod_cost": codCost,
-        "limitFree": limitFree,
-        "estimated_tax": estimatedTax,
-        "total": total,
-        "rest_for_free_shipping": restForFreeShipping,
-        "total_cash": totalCash,
-        "has_cod": hasCod,
-        "show_message_reset_for_shipping_free": showMessageResetForShippingFree,
         "available_payment_method": availablePaymentMethod == null
             ? []
             : List<dynamic>.from(availablePaymentMethod!.map((x) => x)),

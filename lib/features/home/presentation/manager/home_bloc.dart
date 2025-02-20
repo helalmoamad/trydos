@@ -3334,14 +3334,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   FutureOr<void> _onGetCartItemEvent(
       GetCartItemEvent event, Emitter<HomeState> emit) async {
-    List<Cart> cartCollection = [];
-    List<Cart> carts;
-
     emit(state.copyWith(getCartItemsStatus: GetCartItemsStatus.loading));
     final response = await getCartItemUseCase(NoParams());
     response.fold((l) {
-      print('${l.hashCode}' +
-          '133333333333333333333333333222222222222222222222222222222222222222222222222222222222222');
       if (!isFailedTheFirstTime.contains('GetCartItemEvent')) {
         add(GetCartItemEvent(
             fromTerminitedStatusl: event.fromTerminitedStatusl));
@@ -3349,6 +3344,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       }
       emit(state.copyWith(getCartItemsStatus: GetCartItemsStatus.failure));
     }, (r) {
+      List<Cart> carts;
+      List<Cart> cartCollection = [];
       Map<String, Map<int, List<String>>> addImagesToProductIdForCart =
           Map.of(state.addImagesToProductIdForCart);
       List<String> cartIdIsFound = [];
@@ -3373,7 +3370,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       carts.forEach((element) {
         cartCollection.add(element);
       });
-      apisMustNotToRequest.add('GetCartItemEvent');
+
       isFailedTheFirstTime.remove('GetCartItemEvent');
       if (event.fromTerminitedStatusl ?? false) {
         emit(state.copyWith(
@@ -3381,10 +3378,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           addImagesToProductIdForCart: addImagesToProductIdForCart,
         ));
       }
-      Map<String, int> cartIdsHurryUPTimerStarted =
-          Map.of(state.cartIdsHurryUPTimerStarted);
+      //   Map<String, int> cartIdsHurryUPTimerStarted =
+      //    Map.of(state.cartIdsHurryUPTimerStarted);
 
-      for (var i = 0; i < cartCollection.length; i++) {
+      /* for (var i = 0; i < cartCollection.length; i++) {
         if ((cartCollection[i].haveHurryUpNotifyTimeLeft ?? false) &&
             (cartIdsHurryUPTimerStarted[cartCollection[i].id.toString()] ==
                 null)) {
@@ -3399,8 +3396,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                               1))
                   .round()));
         }
-      }
-      if (cartIdsHurryUPTimerStarted.isNotEmpty) {
+      }*/
+      /* if (cartIdsHurryUPTimerStarted.isNotEmpty) {
         for (var i = 0; i < cartIdsHurryUPTimerStarted.length; i++) {
           if (!cartCollection.contains(cartIdsHurryUPTimerStarted[i])) {
             add(AddTimerStartedToHurryUpEvent(
@@ -3409,10 +3406,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                 timeLeft: 0));
           }
         }
-      }
+      }*/
       emit(state.copyWith(
-          //  currentQuantityForCart: currentQuantity,
-          //    addImagesToProductIdForCart: addImagesToProductIdForCart,
           getCartShippingItemsModel: r,
           cartCollection: List.of(cartCollection),
           getCartItemsStatus: GetCartItemsStatus.success));
@@ -3726,7 +3721,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           operation: "remove",
           productId: event.products.productId.toString(),
           resetTheList: true));
-      emit(state.copyWith(addItemInCartStatus: AddItemInCartStatus.success));
+      emit(state.copyWith(
+        addItemInCartStatus: AddItemInCartStatus.success,
+        getCartShippingItemsModel:
+            GetCartShippingItemsModel(data: r.data?.cartShipping),
+      ));
       if (r.data == null || r.data == "" || (r.data?.status ?? 0) != 1) {
         showDialog(
           context: navigatorKey.currentState!.context,
@@ -3803,11 +3802,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         }*/
 
         return;
-      }
-      if (r.data!.status != 1) {
-        cartCollection.remove(cart);
-
-        emit(state.copyWith(cartCollection: cartCollection));
       } else {
         Map<String, Map<int, List<String>>> addImagesToProductIdForCart =
             Map.from(state.addImagesToProductIdForCart);
@@ -3856,7 +3850,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       }
 
       if (event.finishAddAllTheItems) {
-        add(GetCartItemEvent());
         showMessage(r.message!,
             foreGroundColor: Colors.white,
             backGroundColor: Colors.black,
@@ -3946,6 +3939,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         );
       }
       emit(state.copyWith(
+          getCartShippingItemsModel:
+              GetCartShippingItemsModel(data: r.data?.cartShipping),
           addImagesToProductIdForCart: addImagesToProductIdForCart,
           deleteItemInCartStatus: DeleteItemInCartStatus.success));
 
@@ -4281,20 +4276,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           }
         }).toList();
 
-        emit(state.copyWith(
-          cartCollection: cartCollection,
-        ));
-        if (event.fishAddAllTheItems) {
-          /*   showMessage(r.message!,
-              foreGroundColor: Colors.white,
-              backGroundColor: Colors.black,
-              showInRelease: true,
-              timeShowing: Toast.LENGTH_SHORT);
-          isFailedTheFirstTime.remove('AddCartItemEvent');*/
-        }
         isFailedTheFirstTime.remove('UpdateCartItemEvent');
+
         emit(state.copyWith(
-            updateItemInCartStatus: UpdateItemInCartStatus.success));
+            getCartShippingItemsModel:
+                GetCartShippingItemsModel(data: r.data?.cartShipping),
+            updateItemInCartStatus: UpdateItemInCartStatus.success,
+            cartCollection: cartCollection));
         return;
       }
       if (r.data!.status == 1) {
@@ -4361,7 +4349,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           isFailedTheFirstTime.remove('AddCartItemEvent');
         }
       }
+
       emit(state.copyWith(
+          getCartShippingItemsModel:
+              GetCartShippingItemsModel(data: r.data?.cartShipping),
           updateItemInCartStatus: UpdateItemInCartStatus.success));
     });
   }

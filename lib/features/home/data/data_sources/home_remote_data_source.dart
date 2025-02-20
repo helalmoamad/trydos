@@ -601,13 +601,15 @@ class HomeRemoteDatasource {
     return convertItemInOldCartToCart();
   }
 
-  Future<bool> removeItemToCart(Map<String, dynamic> params) {
-    PostClient<bool> removeItemToCart = PostClient<bool>(
+  Future<UpdateItemInCartModel> removeItemToCart(Map<String, dynamic> params) {
+    PostClient<UpdateItemInCartModel> removeItemToCart =
+        PostClient<UpdateItemInCartModel>(
       serverName: ServerName.market,
-      requestPrams: RequestConfig<bool>(
+      requestPrams: RequestConfig<UpdateItemInCartModel>(
         endpoint: MarketEndPoints.removeItemCartItemEP,
         data: params,
-        response: ResponseValue<bool>(returnValueOnSuccess: true),
+        response: ResponseValue<UpdateItemInCartModel>(
+            fromJson: (response) => UpdateItemInCartModel.fromJson(response)),
       ),
     );
     return removeItemToCart();
