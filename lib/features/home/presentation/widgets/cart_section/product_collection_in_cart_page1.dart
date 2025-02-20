@@ -1,34 +1,24 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_countdown_timer/countdown_timer_controller.dart';
-
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
-
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
-
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_old_cart_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
-
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
-import 'package:trydos/features/home/presentation/widgets/cart_section/count_down_timer.dart';
-
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_image_widget.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/routes/router.dart';
 import 'package:trydos/service/language_service.dart';
 
 class ProductCollectionInCartPage1 extends StatefulWidget {
@@ -1107,6 +1097,8 @@ class _ProductCollectionInCartPage1State
                               LanguageService.languageCode != "ar" ? 5 : null,
                           left: LanguageService.languageCode != "ar" ? null : 5,
                         ),
+
+                        ///////////////////////
                         /*   Positioned(
                           child: Container(
                             decoration: BoxDecoration(
@@ -1152,6 +1144,7 @@ class _ProductCollectionInCartPage1State
                           left:
                               LanguageService.languageCode != "ar" ? null : 20,
                         )*/
+                        //////////////////////
                         Positioned(
                             bottom: -15,
                             child: isOldCart

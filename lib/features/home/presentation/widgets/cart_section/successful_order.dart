@@ -33,6 +33,7 @@ class SuccessfullOrder extends StatefulWidget {
   final CustomerAddressesInfo customerAddressesInfo;
   final int decimalPointSetting;
   final String orderGroupId;
+  final String currencySymbol;
   const SuccessfullOrder({
     required this.totalPrice,
     required this.customerAddressesInfo,
@@ -44,6 +45,7 @@ class SuccessfullOrder extends StatefulWidget {
     required this.decimalPointSetting,
     required this.orderAmount,
     required this.orderGroupId,
+    required this.currencySymbol,
   });
   @override
   State<SuccessfullOrder> createState() => _SuccessfullOrderState();
@@ -128,6 +130,7 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
                         totalPrice: widget.totalPrice,
                         amount: widget.orderAmount,
                         decimalPointSetting: widget.decimalPointSetting,
+                        currencySymbol: widget.currencySymbol,
                       )
                     ],
                   ),

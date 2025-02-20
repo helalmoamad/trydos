@@ -140,4 +140,6 @@ abstract class HomeRepository {
   Future<Either<Failure, OrdersGroupModel>> getOrdersByCartGroupID({
     required String cartGroupID,
   });
+
+  Future<Either<Failure, OrdersGroupModel>> checkAvailabilityProductCart();
 }

@@ -206,6 +206,12 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                                                         fromPalceOrder: false,
                                                         availablePaymentMethod:
                                                             availablePaymentMethod,
+                                                        currencySymbol: state
+                                                                .getCurrencyForCountryModel!
+                                                                .data!
+                                                                .currency!
+                                                                .symbol ??
+                                                            '',
                                                         paymentMethods:
                                                             paymentMethods,
                                                         totalPrice:
@@ -393,6 +399,9 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                     cartImages: widget.cartImages,
                     currencySympole: widget.currencySympole,
                     totalPrice: widget.totalPrice,
+                    currencySymbol: state.getCurrencyForCountryModel!.data!
+                            .currency!.symbol ??
+                        "",
                     decimalPointSetting:
                         state.startingSetting?.decimalPointSetting ?? 2,
                   ),

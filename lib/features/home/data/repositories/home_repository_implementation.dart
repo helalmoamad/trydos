@@ -405,4 +405,11 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
       ),
     );
   }
+
+  @override
+  Future<Either<Failure, OrdersGroupModel>> checkAvailabilityProductCart() {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.checkAvailabilityProductCart(),
+    );
+  }
 }

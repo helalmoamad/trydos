@@ -23,6 +23,7 @@ class PaymentMethod extends StatefulWidget {
   final bool fromPalceOrder;
   final bool fromSuccessOrder;
   final int decimalPointSetting;
+  final String currencySymbol;
   const PaymentMethod({
     required this.paymentMethods,
     required this.fromPalceOrder,
@@ -31,6 +32,7 @@ class PaymentMethod extends StatefulWidget {
     required this.totalPrice,
     required this.amount,
     required this.decimalPointSetting,
+    required this.currencySymbol,
   });
 
   @override
@@ -433,7 +435,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
               height: 1.33),
         ),
         Text(
-          widget.amount.toStringAsFixed(widget.decimalPointSetting),
+          '${widget.amount.toStringAsFixed(widget.decimalPointSetting)} ${widget.currencySymbol}',
           style: context.textTheme.bodyMedium?.sbt.copyWith(
             color: const Color(0xff1D1D1D),
             letterSpacing: 0.18,
@@ -504,7 +506,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
               height: 1.33),
         ),
         Text(
-          widget.amount.toStringAsFixed(widget.decimalPointSetting),
+          '${widget.amount.toStringAsFixed(widget.decimalPointSetting)} ${widget.currencySymbol}',
           style: context.textTheme.bodyMedium?.sbt.copyWith(
             color: const Color(0xff1D1D1D),
             letterSpacing: 0.18,

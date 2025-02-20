@@ -38,6 +38,7 @@ class PlaceOrder extends StatefulWidget {
   final String currencySympole;
   final CustomerAddressesInfo customerAddressesInfo;
   final int decimalPointSetting;
+  final String currencySymbol;
   const PlaceOrder({
     required this.totalPrice,
     required this.customerAddressesInfo,
@@ -49,6 +50,7 @@ class PlaceOrder extends StatefulWidget {
     required this.walletBalance,
     required this.decimalPointSetting,
     required this.cartGroupId,
+    required this.currencySymbol,
   });
   @override
   State<PlaceOrder> createState() => _PlaceOrderState();
@@ -88,7 +90,6 @@ class _PlaceOrderState extends State<PlaceOrder> {
     };
     return WillPopScope(
       onWillPop: () async {
-        // didCallOnWillPop = true;
         if (Navigator.canPop(context)) {
           if (Navigator.of(context).canPop()) {
             Navigator.of(context).pop();
@@ -146,6 +147,10 @@ class _PlaceOrderState extends State<PlaceOrder> {
                       );
                     },
                   );
+                  /////////////////////////
+                  orderAmount = orderAmount *
+                      state.getCurrencyForCountryModel!.data!.currency!
+                          .exchangeRate!;
                   ////////////////////////////////
                   CustomerAddressesInfo customerAddressesInfo =
                       CustomerAddressesInfo(
@@ -203,6 +208,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                       decimalPointSetting: widget.decimalPointSetting,
                       orderAmount: orderAmount,
                       orderGroupId: data[0].orderGroupId ?? '',
+                      currencySymbol: widget.currencySymbol,
                     ),
                   );
                 }
@@ -248,6 +254,10 @@ class _PlaceOrderState extends State<PlaceOrder> {
                       );
                     },
                   );
+                  ////////////////////////////////
+                  orderAmount = orderAmount *
+                      state.getCurrencyForCountryModel!.data!.currency!
+                          .exchangeRate!;
                   ////////////////////////////////
                   CustomerAddressesInfo customerAddressesInfo =
                       CustomerAddressesInfo(
@@ -305,6 +315,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                       decimalPointSetting: widget.decimalPointSetting,
                       orderAmount: orderAmount,
                       orderGroupId: data[0].orderGroupId ?? '',
+                      currencySymbol: widget.currencySymbol,
                     ),
                   );
                 }
@@ -345,6 +356,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                   totalPrice: widget.totalPrice,
                                   decimalPointSetting:
                                       widget.decimalPointSetting,
+                                  currencySymbol: widget.currencySymbol,
                                 ),
                                 /////////////////////////
                                 SizedBox(

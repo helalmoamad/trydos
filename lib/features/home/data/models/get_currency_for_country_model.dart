@@ -87,7 +87,9 @@ class Currency {
         name: json["name"],
         symbol: json["symbol"],
         code: json["code"],
-        exchangeRate: json["exchange_rate"].toDouble(),
+        exchangeRate: json["exchange_rate"] == null
+            ? 0
+            : json["exchange_rate"].toDouble(),
       );
   Map<String, dynamic> toJson() => {
         "id": id,

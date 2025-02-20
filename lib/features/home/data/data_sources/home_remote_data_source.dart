@@ -833,4 +833,18 @@ class HomeRemoteDatasource {
 
     return getOrdersByCartGroupID();
   }
+
+  Future<OrdersGroupModel> checkAvailabilityProductCart() {
+    GetClient<OrdersGroupModel> checkAvailabilityProductCart =
+        GetClient<OrdersGroupModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<OrdersGroupModel>(
+        endpoint: MarketEndPoints.checkAvailabilityProductCartEP,
+        response: ResponseValue<OrdersGroupModel>(
+            fromJson: (response) => OrdersGroupModel.fromJson(response)),
+      ),
+    );
+
+    return checkAvailabilityProductCart();
+  }
 }
