@@ -64,7 +64,7 @@ class OrdersGroupDataModel {
   final double? orderAmount;
   final double? discountAmount;
   final double? shippingCost;
-  final int? partialPaymentByWallet;
+  final double? partialPaymentByWallet;
   final int? shippingAddress;
   final ShippingAddressDataModel? shippingAddressData;
   final dynamic billingAddress;
@@ -128,7 +128,7 @@ class OrdersGroupDataModel {
     double? discountAmount,
     double? shippingCost,
     int? shippingAddress,
-    int? partialPaymentByWallet,
+    double? partialPaymentByWallet,
     ShippingAddressDataModel? shippingAddressData,
     dynamic billingAddress,
     dynamic billingAddressData,
@@ -218,7 +218,9 @@ class OrdersGroupDataModel {
         showReturnRequest: json["show_return_request"] ?? false,
         editReturnRequest: json["edit_return_request"] ?? false,
         orderCanExchange: json["order_can_exchange"] ?? false,
-        partialPaymentByWallet: json["partial_payment_by_wallet"] ?? 0,
+        partialPaymentByWallet: json["partial_payment_by_wallet"] == null
+            ? 0
+            : json["partial_payment_by_wallet"].toDouble(),
         details: json["details"] == null
             ? null
             : List<PlaceOrderDetailsModel>.from(

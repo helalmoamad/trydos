@@ -24,6 +24,7 @@ class PaymentMethod extends StatefulWidget {
   final bool fromSuccessOrder;
   final int decimalPointSetting;
   final String currencySymbol;
+  final double partialPaymentByWallet;
   const PaymentMethod({
     required this.paymentMethods,
     required this.fromPalceOrder,
@@ -33,6 +34,7 @@ class PaymentMethod extends StatefulWidget {
     required this.amount,
     required this.decimalPointSetting,
     required this.currencySymbol,
+    this.partialPaymentByWallet = 0,
   });
 
   @override
@@ -506,7 +508,9 @@ class _PaymentMethodState extends State<PaymentMethod> {
               height: 1.33),
         ),
         Text(
-          '${widget.amount.toStringAsFixed(widget.decimalPointSetting)} ${widget.currencySymbol}',
+          widget.partialPaymentByWallet > 0
+              ? '${widget.partialPaymentByWallet.toStringAsFixed(widget.decimalPointSetting)} ${widget.currencySymbol}'
+              : '${widget.amount.toStringAsFixed(widget.decimalPointSetting)} ${widget.currencySymbol}',
           style: context.textTheme.bodyMedium?.sbt.copyWith(
             color: const Color(0xff1D1D1D),
             letterSpacing: 0.18,

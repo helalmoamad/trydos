@@ -350,8 +350,12 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
     );
   }
 
-  Widget buildShippingButton(HomeState state, int _indexTap,
-      double walletBalance, double total, List<String> availablePaymentMethod) {
+  Widget buildShippingButton(
+      HomeState state,
+      int _indexTap,
+      double walletBalance,
+      double total,
+      List<String> availablePaymentMethods) {
     return Container(
       height: 80,
       decoration: BoxDecoration(
@@ -397,10 +401,11 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                     walletBalance: walletBalance,
                     cartGroupId: widget.cartGroupId,
                     paymentMethods: paymentMethods,
-                    availablePaymentMethod: availablePaymentMethod,
+                    availablePaymentMethod: availablePaymentMethods,
                     cartImages: widget.cartImages,
                     currencySympole: widget.currencySympole,
                     totalPrice: widget.totalPrice,
+                    totalCashed: widget.totalCashed,
                     currencySymbol: state.getCurrencyForCountryModel!.data!
                             .currency!.symbol ??
                         "",
@@ -457,10 +462,11 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                               height: 0.8),
                         ),
                         Text(
-                          ((state.getCartShippingItemsModel?.data?.total ?? 0) *
-                                  (state.getCurrencyForCountryModel!.data!
-                                      .currency!.exchangeRate!))
-                              .toStringAsFixed(
+                          paymentMethods.value.contains(PaymentMethods.cod)
+                              ? widget.totalCashed.toStringAsFixed(
+                                  state.startingSetting?.decimalPointSetting ??
+                                      2)
+                              : widget.totalPrice.toStringAsFixed(
                                   state.startingSetting?.decimalPointSetting ??
                                       2),
                           style: context.textTheme.bodyMedium?.br.copyWith(

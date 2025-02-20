@@ -27,6 +27,7 @@ class SuccessfullOrder extends StatefulWidget {
   final List<Map<String, String>> cartImages;
   final double totalPrice;
   final double orderAmount;
+  final double partialPaymentByWallet;
   final ValueNotifier<List<String>> paymentMethods;
   final List<String> availablePaymentMethod;
   final String currencySympole;
@@ -46,6 +47,7 @@ class SuccessfullOrder extends StatefulWidget {
     required this.orderAmount,
     required this.orderGroupId,
     required this.currencySymbol,
+    required this.partialPaymentByWallet,
   });
   @override
   State<SuccessfullOrder> createState() => _SuccessfullOrderState();
@@ -129,6 +131,7 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
                         availablePaymentMethod: widget.availablePaymentMethod,
                         totalPrice: widget.totalPrice,
                         amount: widget.orderAmount,
+                        partialPaymentByWallet: widget.partialPaymentByWallet,
                         decimalPointSetting: widget.decimalPointSetting,
                         currencySymbol: widget.currencySymbol,
                       )

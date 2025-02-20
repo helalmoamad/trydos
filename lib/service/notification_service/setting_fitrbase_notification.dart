@@ -74,7 +74,7 @@ class _SwitchListForNotificationState extends State<SwitchListForNotification> {
         homeBloc.add(UpdateFirebaseNotificationEvent(firebase: 1));
       } else {
         SubsecribeOrUnSubsecribeToTopic()
-            .SubsecribeToOtherTopic(switchTopics[index]);
+            .subsecribeToOtherTopic(switchTopics[index]);
       }
       ;
     } else {
@@ -86,7 +86,7 @@ class _SwitchListForNotificationState extends State<SwitchListForNotification> {
         homeBloc.add(UpdateFirebaseNotificationEvent(firebase: 0));
       } else {
         SubsecribeOrUnSubsecribeToTopic()
-            .UnSubsecribeToOtherTopic(switchTopics[index]);
+            .unSubsecribeToOtherTopic(switchTopics[index]);
       }
     }
 

@@ -3,10 +3,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:trydos/base_page.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
-import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart';
@@ -16,7 +13,6 @@ import 'package:trydos/features/home/presentation/pages/cart_page_new.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/main.dart';
-import 'package:trydos/service/language_service.dart';
 
 enum TypeOfNotificationForMarketEnum {
   product_cart_expiration,
@@ -83,7 +79,7 @@ class HandlingMarketNotifications {
 
   // هنا حسب نوع الاشعار نحدد إلى أي صفحة سننتقل او ماذا سنفعل
   static dealWithNotificationFromMarket(Map data, bool fromBackground) async {
-    // GetIt.I<PrefsRepository>().setNotificationTypesOfMarketFromTerminated("");
+    GetIt.I<PrefsRepository>().setNotificationTypesOfMarketFromTerminated("");
     //    BlocProvider.of<AppBloc>(context).add(ChangeBasePage(1));
     if (data["type"] ==
         TypeOfNotificationForMarket[
@@ -337,19 +333,19 @@ class SubsecribeOrUnSubsecribeToTopic {
           "")
       .toLowerCase();
 
-  void SubsecribeToOtherTopic(String topic) async {
+  void subsecribeToOtherTopic(String topic) async {
     /*await FirebaseMessaging.instance.subscribeToTopic(topic);
     GetIt.I<PrefsRepository>().setTopicThatAlreadySubsecribed(topic);*/
     GetIt.I<HomeBloc>().add(SubscribeTopicForNotificationEvent(topic: topic));
   }
 
-  void UnSubsecribeToOtherTopic(String topic) async {
+  void unSubsecribeToOtherTopic(String topic) async {
     /* await FirebaseMessaging.instance.unsubscribeFromTopic(topic);
     GetIt.I<PrefsRepository>().removeTopicThatAlreadySubsecribed(topic);*/
     GetIt.I<HomeBloc>().add(UnSubscribeTopicForNotificationEvent(topic: topic));
   }
 
-  void SubsecribeToBoutiqueCreated() async {
+  void subsecribeToBoutiqueCreated() async {
     /* await FirebaseMessaging.instance.subscribeToTopic(
         "boutique_created_${countryISo}_${LanguageService.languageCode}");
 
@@ -359,7 +355,7 @@ class SubsecribeOrUnSubsecribeToTopic {
         .add(SubscribeTopicForNotificationEvent(topic: "boutique_created"));
   }
 
-  void UnSubsecribeToBoutiqueCreated() async {
+  void unSubsecribeToBoutiqueCreated() async {
     /*await FirebaseMessaging.instance.unsubscribeFromTopic(
         "boutique_created_${countryISo}_${LanguageService.languageCode}");
 
@@ -369,7 +365,7 @@ class SubsecribeOrUnSubsecribeToTopic {
         .add(UnSubscribeTopicForNotificationEvent(topic: "boutique_created"));
   }
 
-  void SubsecribeToCategoryCreated() async {
+  void subsecribeToCategoryCreated() async {
     /*  await FirebaseMessaging.instance.subscribeToTopic(
         "category_created_${countryISo}_${LanguageService.languageCode}");
 
@@ -379,7 +375,7 @@ class SubsecribeOrUnSubsecribeToTopic {
         .add(SubscribeTopicForNotificationEvent(topic: "category_created"));
   }
 
-  void UnSubsecribeToCategoryCreated() async {
+  void unSubsecribeToCategoryCreated() async {
     /* await FirebaseMessaging.instance.unsubscribeFromTopic(
         "category_created_${countryISo}_${LanguageService.languageCode}");
     GetIt.I<PrefsRepository>().removeTopicThatAlreadySubsecribed(
@@ -388,7 +384,7 @@ class SubsecribeOrUnSubsecribeToTopic {
         .add(UnSubscribeTopicForNotificationEvent(topic: "category_created"));
   }
 
-  void SubsecribeToProductDiscount(String productId) async {
+  void subsecribeToProductDiscount(String productId) async {
     /*  await FirebaseMessaging.instance.subscribeToTopic(
         "product_discount_${productId}_${countryISo}_${LanguageService.languageCode}");
     GetIt.I<PrefsRepository>().setTopicThatAlreadySubsecribed(
@@ -406,7 +402,7 @@ class SubsecribeOrUnSubsecribeToTopic {
         topic: "product_discount_${productId}"));
   }
 
-  void SubsecribeToProductComment(String productId) async {
+  void subsecribeToProductComment(String productId) async {
     /* await FirebaseMessaging.instance.subscribeToTopic(
         "product_comment_${productId}_${countryISo}_${LanguageService.languageCode}");
     GetIt.I<PrefsRepository>().setTopicThatAlreadySubsecribed(
@@ -415,7 +411,7 @@ class SubsecribeOrUnSubsecribeToTopic {
         topic: "product_comment_${productId}"));
   }
 
-  void UnSubsecribeToProductComment(String productId) async {
+  void unSubsecribeToProductComment(String productId) async {
     /*   await FirebaseMessaging.instance.unsubscribeFromTopic(
         "product_comment_${productId}_${countryISo}_${LanguageService.languageCode}");
     GetIt.I<PrefsRepository>().removeTopicThatAlreadySubsecribed(
@@ -424,7 +420,7 @@ class SubsecribeOrUnSubsecribeToTopic {
         topic: "product_comment_${productId}"));
   }
 
-  void SubsecribeToProductHurryUpTimeLeft(String cartId) async {
+  void subsecribeToProductHurryUpTimeLeft(String cartId) async {
     /*   await FirebaseMessaging.instance.subscribeToTopic(
         "product_hurry_up_time_left_${cartId}_${countryISo}_${LanguageService.languageCode}");
     GetIt.I<PrefsRepository>().setTopicThatAlreadySubsecribed(
@@ -433,7 +429,7 @@ class SubsecribeOrUnSubsecribeToTopic {
         topic: "product_hurry_up_time_left_${cartId}"));
   }
 
-  void UnSubsecribeToProductHurryUpTimeLeft(String cartId) async {
+  void unSubsecribeToProductHurryUpTimeLeft(String cartId) async {
     /* await FirebaseMessaging.instance.unsubscribeFromTopic(
         "product_hurry_up_time_left_${cartId}_${countryISo}_${LanguageService.languageCode}");
     GetIt.I<PrefsRepository>().removeTopicThatAlreadySubsecribed(
@@ -442,7 +438,7 @@ class SubsecribeOrUnSubsecribeToTopic {
         topic: "product_hurry_up_time_left_${cartId}"));
   }
 
-  void SubsecribeToProductHurryUpQuantity(String cartId) async {
+  void subsecribeToProductHurryUpQuantity(String cartId) async {
     /* await FirebaseMessaging.instance.subscribeToTopic(
         "product_hurry_up_quantity_${cartId}_${countryISo}_${LanguageService.languageCode}");
     GetIt.I<PrefsRepository>().setTopicThatAlreadySubsecribed(
@@ -451,7 +447,7 @@ class SubsecribeOrUnSubsecribeToTopic {
         topic: "product_hurry_up_quantity_${cartId}"));
   }
 
-  void UnSubsecribeToProductHurryUpQuantity(String cartId) async {
+  void unSubsecribeToProductHurryUpQuantity(String cartId) async {
     /*  await FirebaseMessaging.instance.unsubscribeFromTopic(
         "product_hurry_up_quantity_${cartId}_${countryISo}_${LanguageService.languageCode}");
     GetIt.I<PrefsRepository>().removeTopicThatAlreadySubsecribed(

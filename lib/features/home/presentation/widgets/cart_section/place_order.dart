@@ -32,6 +32,7 @@ class PlaceOrder extends StatefulWidget {
   final List<Map<String, String>> cartImages;
   final List<String> availablePaymentMethod;
   final double totalPrice;
+  final double totalCashed;
   final double walletBalance;
   final String cartGroupId;
   final ValueNotifier<List<String>> paymentMethods;
@@ -51,6 +52,7 @@ class PlaceOrder extends StatefulWidget {
     required this.decimalPointSetting,
     required this.cartGroupId,
     required this.currencySymbol,
+    required this.totalCashed,
   });
   @override
   State<PlaceOrder> createState() => _PlaceOrderState();
@@ -124,10 +126,13 @@ class _PlaceOrderState extends State<PlaceOrder> {
                 } else {
                   List<Map<String, String>> cartImages = [];
                   double orderAmount = 0;
+                  double partialPaymentByWallet = 0;
                   /////////////////////////////////////////////////
                   data.forEach(
                     (e) {
                       orderAmount = orderAmount + e.orderAmount!;
+                      partialPaymentByWallet =
+                          partialPaymentByWallet + e.partialPaymentByWallet!;
                       e.details!.forEach(
                         (element) {
                           for (var i = 0; i < (element.qty ?? 0); i++) {
@@ -195,6 +200,13 @@ class _PlaceOrderState extends State<PlaceOrder> {
                   widget.paymentMethods.value =
                       List.from(widget.paymentMethods.value)
                         ..add(paymentMethod);
+
+                  if (partialPaymentByWallet > 0) {
+                    widget.paymentMethods.value =
+                        List.from(widget.paymentMethods.value)
+                          ..add(PaymentMethods.trydosWallet);
+                  }
+
                   /////////////////////////
                   HelperFunctions.slidingNavigation(
                     context,
@@ -207,6 +219,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                       totalPrice: widget.totalPrice,
                       decimalPointSetting: widget.decimalPointSetting,
                       orderAmount: orderAmount,
+                      partialPaymentByWallet: partialPaymentByWallet,
                       orderGroupId: data[0].orderGroupId ?? '',
                       currencySymbol: widget.currencySymbol,
                     ),
@@ -231,10 +244,13 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
                   List<Map<String, String>> cartImages = [];
                   double orderAmount = 0;
+                  double partialPaymentByWallet = 0;
                   /////////////////////////////////////////////////
                   data.forEach(
                     (e) {
                       orderAmount = orderAmount + e.orderAmount!;
+                      partialPaymentByWallet =
+                          partialPaymentByWallet + e.partialPaymentByWallet!;
                       e.details!.forEach(
                         (element) {
                           for (var i = 0; i < (element.qty ?? 0); i++) {
@@ -302,6 +318,12 @@ class _PlaceOrderState extends State<PlaceOrder> {
                   widget.paymentMethods.value =
                       List.from(widget.paymentMethods.value)
                         ..add(paymentMethod);
+
+                  if (partialPaymentByWallet > 0) {
+                    widget.paymentMethods.value =
+                        List.from(widget.paymentMethods.value)
+                          ..add(PaymentMethods.trydosWallet);
+                  }
                   /////////////////////////
                   HelperFunctions.slidingNavigation(
                     context,
@@ -312,6 +334,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                       customerAddressesInfo: customerAddressesInfo,
                       paymentMethods: widget.paymentMethods,
                       totalPrice: widget.totalPrice,
+                      partialPaymentByWallet: partialPaymentByWallet,
                       decimalPointSetting: widget.decimalPointSetting,
                       orderAmount: orderAmount,
                       orderGroupId: data[0].orderGroupId ?? '',
@@ -431,7 +454,16 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                   height: 0.8),
                             ),
                             Text(
-                              ' ${widget.totalPrice} ',
+                              widget.paymentMethods.value
+                                      .contains(PaymentMethods.cod)
+                                  ? widget.totalCashed.toStringAsFixed(state
+                                          .startingSetting
+                                          ?.decimalPointSetting ??
+                                      2)
+                                  : widget.totalPrice.toStringAsFixed(state
+                                          .startingSetting
+                                          ?.decimalPointSetting ??
+                                      2),
                               style: context.textTheme.bodyMedium?.br.copyWith(
                                   color: const Color(0xffFEFEFE),
                                   letterSpacing: 0.18,
@@ -548,7 +580,16 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                         height: 0.8),
                               ),
                               Text(
-                                ' ${widget.totalPrice} ',
+                                widget.paymentMethods.value
+                                        .contains(PaymentMethods.cod)
+                                    ? widget.totalCashed.toStringAsFixed(state
+                                            .startingSetting
+                                            ?.decimalPointSetting ??
+                                        2)
+                                    : widget.totalPrice.toStringAsFixed(state
+                                            .startingSetting
+                                            ?.decimalPointSetting ??
+                                        2),
                                 style: context.textTheme.bodyMedium?.br
                                     .copyWith(
                                         color: const Color(0xffFEFEFE),
