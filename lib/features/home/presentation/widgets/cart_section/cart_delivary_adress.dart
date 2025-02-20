@@ -31,11 +31,13 @@ import '../../../../../service/firebase_analytics_service/firebase_analytics_ser
 class CartDelivaryAddress extends StatefulWidget {
   final List<Map<String, String>> cartImages;
   final double totalPrice;
+  final double totalCashed;
   final String currencySympole;
   final String cartGroupId;
   const CartDelivaryAddress({
     required this.totalPrice,
     required this.cartImages,
+    required this.totalCashed,
     required this.currencySympole,
     Key? key,
     required this.cartGroupId,
@@ -455,8 +457,12 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                               height: 0.8),
                         ),
                         Text(
-                          widget.totalPrice.toStringAsFixed(
-                              state.startingSetting?.decimalPointSetting ?? 2),
+                          ((state.getCartShippingItemsModel?.data?.total ?? 0) *
+                                  (state.getCurrencyForCountryModel!.data!
+                                      .currency!.exchangeRate!))
+                              .toStringAsFixed(
+                                  state.startingSetting?.decimalPointSetting ??
+                                      2),
                           style: context.textTheme.bodyMedium?.br.copyWith(
                               color: const Color(0xffFEFEFE),
                               letterSpacing: 0.18,

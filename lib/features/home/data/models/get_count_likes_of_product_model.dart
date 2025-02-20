@@ -1,4 +1,4 @@
-// To parse this JSON data, do
+/*// To parse this JSON data, do
 //
 //     final getHomeBoutiquesModel = getHomeBoutiquesModelFromJson(jsonString);
 
@@ -308,3 +308,4 @@ class MainCategoriesForProductId {
         "flat_photo_path": flatPhotoPath?.toJson(),
       };
 }
+*/

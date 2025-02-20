@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
+
 AddItemToCartModel addItemToCartModelFromJson(String str) =>
     AddItemToCartModel.fromJson(json.decode(str));
 
@@ -45,28 +47,35 @@ class AddItemToCartModel {
 class Data {
   final int? idCart;
   final int? status;
-
+  final CartShipping? cartShipping;
   Data({
     this.idCart,
     this.status,
+    this.cartShipping,
   });
 
   Data copyWith({
     int? idCart,
     int? status,
+    CartShipping? cartShipping,
   }) =>
       Data(
         idCart: idCart ?? this.idCart,
         status: status ?? this.status,
+        cartShipping: cartShipping ?? this.cartShipping,
       );
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
         idCart: json["id_cart"],
         status: json["status"],
+        cartShipping: json["cart_shipping"] == null
+            ? null
+            : CartShipping.fromJson(json["cart_shipping"]),
       );
 
   Map<String, dynamic> toJson() => {
         "id_cart": idCart,
         "status": status,
+        "cart_shipping": cartShipping?.toJson(),
       };
 }

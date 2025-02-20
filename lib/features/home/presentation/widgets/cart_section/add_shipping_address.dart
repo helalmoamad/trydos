@@ -107,7 +107,8 @@ class _AddShippingAdressState extends State<AddShippingAdress>
       if (latlng?.latitude != null && latlng?.longitude != null) {
         _currentLocation = latlng!;
       } else {
-        currentLocation = await location.getLocation();
+        currentLocation =
+            await location.getLocation().timeout(Duration(seconds: 15));
         _currentLocation =
             LatLng(currentLocation.latitude!, currentLocation.longitude!);
       }
@@ -162,7 +163,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
           double.tryParse(
               widget.addressInfoClassToEdid!.location!.longitude!)!);
       _kinitialPosition = CameraPosition(
-          bearing: 0, target: _currentLocation!, tilt: 0, zoom: 10);
+          bearing: 0, target: _currentLocation!, tilt: 0, zoom: 8);
       _goToCurrentLocation(latlng: _currentLocation);
       if (alternativePhoneController.text.length > 0) {
         visiblePrefixOptional.value = true;
@@ -210,7 +211,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
           target: LatLng(double.tryParse(country?.latitude ?? "0") ?? 0,
               double.tryParse(country?.longitude ?? "0") ?? 0),
           tilt: 0,
-          zoom: 10);
+          zoom: 6);
       //   _goToCurrentLocation(latlng: _currentLocation);
     }
     // appBloc = BlocProvider.of<AppBloc>(context);
@@ -305,7 +306,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                         height: height.toDouble(),
                         width: 1.sw,
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
+                            borderRadius: BorderRadius.circular(15.r),
                             border: Border.all(
                                 color: (isValidateBox &&
                                         controller.text.isNullOrEmpty)
@@ -624,7 +625,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                     height: height.toDouble(),
                     width: 1.sw,
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
+                        borderRadius: BorderRadius.circular(15.r),
                         border: Border.all(color: Color(0xffD3D3D3))),
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -811,6 +812,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
           // didCallOnWillPop = true;
           if (showFulMap.value == true) {
             showFulMap.value = false;
+            loadingToGoCurrentLoacation.value = false;
             return false;
           }
           if (Navigator.canPop(context)) {
@@ -887,6 +889,8 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                             InkWell(
                                               onTap: () {
                                                 if (showFulMap.value == true) {
+                                                  loadingToGoCurrentLoacation
+                                                      .value = false;
                                                   showFulMap.value = false;
                                                   return;
                                                 }
@@ -1062,8 +1066,8 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                           top:
                                                                               15),
                                                                       decoration: BoxDecoration(
-                                                                          borderRadius: BorderRadius.circular(
-                                                                              15),
+                                                                          borderRadius: BorderRadius.circular(15
+                                                                              .r),
                                                                           border:
                                                                               Border.all(color: Color(0xffD3D3D3))),
                                                                       child:
@@ -1078,7 +1082,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                             EdgeInsets.all(10),
                                                                         decoration: BoxDecoration(
                                                                             borderRadius:
-                                                                                BorderRadius.circular(15),
+                                                                                BorderRadius.circular(15.r),
                                                                             border: Border.all(color: Color(0xffD3D3D3))),
                                                                         child:
                                                                             GoogleMap(
@@ -1179,7 +1183,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                               child: Container(
                                                                                   width: 1.sw,
                                                                                   margin: EdgeInsets.symmetric(horizontal: 15.w),
-                                                                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(15), border: Border.all(color: isValidateBox && ((_currentLocation?.latitude ?? 0) == 0 || (_currentLocation?.longitude ?? 0) == 0) ? Colors.red : Color(0xffD3D3D3))),
+                                                                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.r), border: Border.all(color: isValidateBox && ((_currentLocation?.latitude ?? 0) == 0 || (_currentLocation?.longitude ?? 0) == 0) ? Colors.red : Color(0xffD3D3D3))),
                                                                                   height: 118,
                                                                                   child: Column(
                                                                                     children: [
@@ -1190,7 +1194,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                             clipBehavior: Clip.antiAlias,
                                                                                             height: 80,
                                                                                             margin: EdgeInsets.all(10.w),
-                                                                                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(15), border: Border.all(color: Color(0xffD3D3D3))),
+                                                                                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.r), border: Border.all(color: Color(0xffD3D3D3))),
                                                                                             child: IgnorePointer(
                                                                                               ignoring: true,
                                                                                               child: GoogleMap(
@@ -1232,7 +1236,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                               margin: EdgeInsets.all(10.w),
                                                                                               decoration: BoxDecoration(
                                                                                                 color: Color.fromRGBO(43, 44, 44, 0.7),
-                                                                                                borderRadius: BorderRadius.circular(15),
+                                                                                                borderRadius: BorderRadius.circular(15.r),
                                                                                               ),
                                                                                             ),
                                                                                           ),
@@ -1307,7 +1311,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                             .sw,
                                                                         decoration: BoxDecoration(
                                                                             borderRadius:
-                                                                                BorderRadius.circular(15),
+                                                                                BorderRadius.circular(15.r),
                                                                             border: Border.all(color: Color(0xffD3D3D3))),
                                                                         child:
                                                                             Padding(
@@ -1399,12 +1403,12 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                         builder: (context, child) => Transform.translate(
                                                                                           offset: Offset(!(finishSelectedByUserToAppear.length == 0) ? 0 : sin(3 * 2 * pi * animationController.value) * 5, 0),
                                                                                           child: state.getAddressByCoordinatesStatus == GetAddressByCoordinatesStatus.loading
-                                                                                              ? Shimmer.fromColors(baseColor: Colors.grey[500]!, highlightColor: Colors.grey[200]!, child: Container(margin: EdgeInsets.symmetric(vertical: 10.h), width: 1.sw, height: 53.h, decoration: BoxDecoration(borderRadius: BorderRadius.circular(15), border: Border.all(color: (isValidateBox && (finishSelectedByUserToAppear.length == 0)) ? Colors.red : Color(0xffD3D3D3))), child: Padding(padding: const EdgeInsets.all(8.0))))
+                                                                                              ? Shimmer.fromColors(baseColor: Colors.grey[500]!, highlightColor: Colors.grey[200]!, child: Container(margin: EdgeInsets.symmetric(vertical: 10.h), width: 1.sw, height: 53.h, decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.r), border: Border.all(color: (isValidateBox && (finishSelectedByUserToAppear.length == 0)) ? Colors.red : Color(0xffD3D3D3))), child: Padding(padding: const EdgeInsets.all(8.0))))
                                                                                               : Container(
                                                                                                   margin: EdgeInsets.symmetric(vertical: 10.h),
                                                                                                   width: 1.sw,
                                                                                                   height: 53,
-                                                                                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(15), border: Border.all(color: (isValidateBox && (finishSelectedByUserToAppear.length == 0)) ? Colors.red : Color(0xffD3D3D3))),
+                                                                                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.r), border: Border.all(color: (isValidateBox && (finishSelectedByUserToAppear.length == 0)) ? Colors.red : Color(0xffD3D3D3))),
                                                                                                   child: Padding(
                                                                                                     padding: const EdgeInsets.all(8.0),
                                                                                                     child: Column(
@@ -1595,7 +1599,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                           title: LocaleKeys
                                                                               .contact_phone
                                                                               .tr(),
-                                                                          hint:
+                                                                          hint: "${LocaleKeys.county_code.tr()} + " +
                                                                               '${LocaleKeys.enter_recipient_phone.tr()}'),
                                                                       SizedBox(
                                                                           height:
@@ -1613,9 +1617,9 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                               alternativePhoneController,
                                                                           hint2:
                                                                               "",
-                                                                          hint: LocaleKeys
-                                                                              .enter_alternative_recipient_phone
-                                                                              .tr(),
+                                                                          hint: "${LocaleKeys.county_code.tr()} + " +
+                                                                              LocaleKeys.enter_alternative_recipient_phone
+                                                                                  .tr(),
                                                                           title: LocaleKeys
                                                                               .alternative_phone
                                                                               .tr(),
@@ -1680,6 +1684,9 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                               InkWell(
                                                                 onTap:
                                                                     () async {
+                                                                  loadingToGoCurrentLoacation
+                                                                          .value =
+                                                                      false;
                                                                   showFulMap
                                                                           .value =
                                                                       false;
@@ -1722,7 +1729,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                       BoxDecoration(
                                                                     borderRadius:
                                                                         BorderRadius.circular(
-                                                                            20),
+                                                                            20.r),
                                                                     color: Color(
                                                                         0xff346BFF),
                                                                   ),
@@ -1925,7 +1932,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                   borderRadius:
                                                                       BorderRadius
                                                                           .circular(
-                                                                              20),
+                                                                              20.r),
                                                                   color: (reciptionNameController.text.length > 0 &&
                                                                           (finishSelectedByUserToAppear.length) >
                                                                               0 &&
@@ -2055,10 +2062,10 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                             borderRadius: BorderRadius.only(
                                                                 topLeft: Radius
                                                                     .circular(
-                                                                        30),
+                                                                        30.r),
                                                                 topRight: Radius
                                                                     .circular(
-                                                                        30))),
+                                                                        30.r))),
                                                         child: SlidingUpPanel(
                                                           controller:
                                                               panelController,
@@ -2072,10 +2079,10 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                               : BorderRadius.only(
                                                                   topLeft: Radius
                                                                       .circular(
-                                                                          30),
+                                                                          30.r),
                                                                   topRight: Radius
                                                                       .circular(
-                                                                          30)),
+                                                                          30.r)),
                                                           isDraggable: true,
                                                           slideDirection:
                                                               SlideDirection.UP,
@@ -2275,8 +2282,8 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                   width: 1.sw,
                                                                   decoration: BoxDecoration(
                                                                       borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              12),
+                                                                          BorderRadius.circular(12
+                                                                              .r),
                                                                       color: Color(
                                                                           0xffF8F8F8)),
                                                                   child:
@@ -2405,7 +2412,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                     TextSpan(style: context.textTheme.bodyMedium?.mr.copyWith(color: const Color(0xff8D8D8D), letterSpacing: 0.18, fontSize: 14, height: 1.2), text: (searchController.text.length) > 0 ? apprearfilterResultSearch.substring(searchController.text.length) : "")
                                                                                   ]),
                                                                                 ),
-                                                                                decoration: BoxDecoration(color: Color(0xffF8F8F8), borderRadius: BorderRadius.circular(12)),
+                                                                                decoration: BoxDecoration(color: Color(0xffF8F8F8), borderRadius: BorderRadius.circular(12.r)),
                                                                                 height: 50,
                                                                               ),
                                                                             );

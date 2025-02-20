@@ -117,7 +117,8 @@ abstract class HomeRepository {
 
   Future<Either<Failure, ConvertItemFromOldCartToCartModel>>
       convertItemInOldCartToCart(Map<String, dynamic> params);
-  Future<Either<Failure, bool>> removeItemToCart(Map<String, dynamic> params);
+  Future<Either<Failure, UpdateItemInCartModel>> removeItemToCart(
+      Map<String, dynamic> params);
   Future<Either<Failure, Comment>> addComment(Map<String, dynamic> params);
   Future<Either<Failure, ReadOnlyMessageFromApiModel>>
       requestForNotificationWhenProductBecameAvailable(

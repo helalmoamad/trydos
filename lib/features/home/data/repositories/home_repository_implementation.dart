@@ -294,7 +294,8 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   }
 
   @override
-  Future<Either<Failure, bool>> removeItemToCart(Map<String, dynamic> params) {
+  Future<Either<Failure, UpdateItemInCartModel>> removeItemToCart(
+      Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.removeItemToCart(params));
   }
