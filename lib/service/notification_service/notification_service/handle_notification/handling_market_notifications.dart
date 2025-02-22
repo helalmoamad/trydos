@@ -28,7 +28,7 @@ enum TypeOfNotificationForMarketEnum {
   order_placed
 }
 
-Map<TypeOfNotificationForMarketEnum, String> TypeOfNotificationForMarket = {
+Map<TypeOfNotificationForMarketEnum, String> typeOfNotificationForMarket = {
   TypeOfNotificationForMarketEnum.boutique_created: "boutique created",
   TypeOfNotificationForMarketEnum.category_created: "category created",
   TypeOfNotificationForMarketEnum.product_availability: "product availability",
@@ -59,13 +59,13 @@ class HandlingMarketNotifications {
 
     if (message.data["title"] == "market") {
       if (data?["type"] ==
-              TypeOfNotificationForMarket[
+              typeOfNotificationForMarket[
                   TypeOfNotificationForMarketEnum.product_cart_expiration] ||
           data?["type"] ==
-              TypeOfNotificationForMarket[
+              typeOfNotificationForMarket[
                   TypeOfNotificationForMarketEnum.product_hurry_up_time_left] ||
           data?["type"] ==
-              TypeOfNotificationForMarket[
+              typeOfNotificationForMarket[
                   TypeOfNotificationForMarketEnum.product_hurry_up_quantity]) {
         GetIt.I<HomeBloc>().add(GetOldCartItemEvent());
         GetIt.I<HomeBloc>().add(GetCartItemEvent());
@@ -82,19 +82,19 @@ class HandlingMarketNotifications {
     GetIt.I<PrefsRepository>().setNotificationTypesOfMarketFromTerminated("");
     //    BlocProvider.of<AppBloc>(context).add(ChangeBasePage(1));
     if (data["type"] ==
-        TypeOfNotificationForMarket[
+        typeOfNotificationForMarket[
             TypeOfNotificationForMarketEnum.order_placed]) {
       GetIt.I<HomeBloc>().add(
           GetOrdersByOrderGroupIDEvent(orderGroupId: data["order_group_id"]));
     }
     if (data["type"] ==
-            TypeOfNotificationForMarket[
+            typeOfNotificationForMarket[
                 TypeOfNotificationForMarketEnum.product_cart_expiration] ||
         data["type"] ==
-            TypeOfNotificationForMarket[
+            typeOfNotificationForMarket[
                 TypeOfNotificationForMarketEnum.product_hurry_up_time_left] ||
         data["type"] ==
-            TypeOfNotificationForMarket[
+            typeOfNotificationForMarket[
                 TypeOfNotificationForMarketEnum.product_hurry_up_quantity]) {
       try {
         Future.delayed(
@@ -112,7 +112,7 @@ class HandlingMarketNotifications {
       } catch (e) {}
     } else {
       if (data["type"] ==
-          TypeOfNotificationForMarket[
+          typeOfNotificationForMarket[
               TypeOfNotificationForMarketEnum.product_availability]) {
         try {
           BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
@@ -140,7 +140,7 @@ class HandlingMarketNotifications {
       }
 
       if (data["type"] ==
-          TypeOfNotificationForMarket[
+          typeOfNotificationForMarket[
               TypeOfNotificationForMarketEnum.product_before_stock_out]) {
         try {
           BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
@@ -168,7 +168,7 @@ class HandlingMarketNotifications {
       }
 
       if (data["type"] ==
-          TypeOfNotificationForMarket[
+          typeOfNotificationForMarket[
               TypeOfNotificationForMarketEnum.product_when_change_in_price]) {
         try {
           BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
@@ -196,7 +196,7 @@ class HandlingMarketNotifications {
       }
 
       if (data["type"] ==
-          TypeOfNotificationForMarket[
+          typeOfNotificationForMarket[
               TypeOfNotificationForMarketEnum.product_discount]) {
         try {
           BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
@@ -223,7 +223,7 @@ class HandlingMarketNotifications {
         } catch (e) {}
       }
       if (data["type"] ==
-          TypeOfNotificationForMarket[
+          typeOfNotificationForMarket[
               TypeOfNotificationForMarketEnum.product_comment]) {
         try {
           BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
@@ -251,7 +251,7 @@ class HandlingMarketNotifications {
         } catch (e) {}
       }
       if (data["type"] ==
-          TypeOfNotificationForMarket[
+          typeOfNotificationForMarket[
               TypeOfNotificationForMarketEnum.category_created]) {
         try {
           BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
@@ -291,7 +291,7 @@ class HandlingMarketNotifications {
         } catch (e) {}
       }
       if (data["type"] ==
-          TypeOfNotificationForMarket[
+          typeOfNotificationForMarket[
               TypeOfNotificationForMarketEnum.boutique_created]) {
         try {
           Map? boutiqueIcon = data["boutique_icon"] ?? {};

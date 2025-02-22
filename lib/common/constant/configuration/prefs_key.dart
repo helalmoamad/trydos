@@ -9,6 +9,8 @@ abstract class PrefsKey {
       r'__$__verifiedPhonePeforeExpiredToken__$__';
   static const currentCountry = r'__$__currentCountry__$__';
   static const onMessageRun = r'__$__onMessageRun__$__';
+  static const requestNotificationPermission =
+      r'__$__requestNotificationPermission__$__';
   static const tokenExpired = r'__$__tokenexpired__$__';
   static const isLogInToChat = r'__$__isLogInToChat__$__';
   static const userChatId = r'__$__userChatId__$__';

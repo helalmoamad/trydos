@@ -2443,6 +2443,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           listitemForAddToCart: [],
           getMainCategoriesStatus: GetMainCategoriesStatus.init,
           getAndAddCountViewOfProductStatus: {},
+          addItemInCartStatus: AddItemInCartStatus.init,
+          updateItemInCartStatus: UpdateItemInCartStatus.init,
+          deleteItemInCartStatus: DeleteItemInCartStatus.init,
+          getCartItemsStatus: GetCartItemsStatus.init,
+          getOldCartItemsStatus: GetOLdCartItemsStatus.init,
           getProductDetailWithoutSimilarRelatedProductsStatus:
               GetProductDetailWithoutSimilarRelatedProductsStatus.init,
           getStartingSettingsStatus: GetStartingSettingsStatus.init,

@@ -644,6 +644,17 @@ class PrefsRepositoryImpl extends PrefsRepository {
   Future<bool> setOnMessageRun(bool onMessageRun) =>
       _preferences.setBool(PrefsKey.onMessageRun, onMessageRun);
 
+  @override
+  // TODO: implement isRequestNotificationPermission
+  bool? get isRequestNotificationPermission =>
+      _preferences.getBool(PrefsKey.requestNotificationPermission);
+
+  @override
+  Future<bool> setRequestNotificationPermission(
+          bool requestNotificationPermission) =>
+      _preferences.setBool(PrefsKey.requestNotificationPermission,
+          requestNotificationPermission);
+
 // @override
 
 // List<Map<String,dynamic>> get localMessages {

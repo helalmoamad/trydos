@@ -32,6 +32,7 @@ abstract class PrefsRepository {
   bool? get isVerifiedPhone;
   bool? get isVerifiedPhonePeforeExpiredToken;
   bool? get isTokenExpired;
+  bool? get isRequestNotificationPermission;
   bool? get isSmartlookStarted;
 
   String? get myStoriesName;
@@ -55,6 +56,8 @@ abstract class PrefsRepository {
   String? get otpCode;
   int? get getdurtion;
   Future<bool> setVerifiedPhone(bool verifiedPhone);
+  Future<bool> setRequestNotificationPermission(
+      bool requestNotificationPermission);
   Future<bool> setVerifiedPhonePeforeExpiredToken(
       bool verifiedPhonePeforeExpiredToken);
   Future<bool> setTokenExpired(bool tokenExpired);
