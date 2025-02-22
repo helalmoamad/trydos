@@ -1096,352 +1096,357 @@ class _ProductCollectionInCartPage1State
                           left: LanguageService.languageCode != "ar" ? null : 5,
                         ),
 
-                        ///////////////////////
-                        /*   Positioned(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              color: Color(0x707070),
-                            ),
-                            width: 100,
-                            height: 40,
-                            child: !isOldCart &&
-                                    cartCollection![index].availableQuantity !=
-                                        null &&
-                                    ((cartCollection[index].availableQuantity ??
-                                            0) <
-                                        (cartCollection[index].quantity ?? 0))
-                                /*||
-                                            isOldCart &&
-                                                ((oldCartCollection![groupCartkeys[
-                                                                    index]]![
-                                                                indexes]
-                                                            .availableQuantity ??
-                                                        0) <
-                                                    (oldCartCollection![groupCartkeys[index]]![
-                                                                    indexes]
-                                                                .quantity ??
-                                                          
-                                                        0))*/
-                                ? Text(
-                                    " ${LocaleKeys.out_of_stock.tr()}",
-                                    style: context.textTheme.bodyMedium?.la
-                                        .copyWith(
-                                            fontWeight: FontWeight.w100,
-                                            fontSize: 12,
-                                            color: const Color.fromARGB(
-                                                255, 206, 9, 9),
-                                            letterSpacing: 0.18,
-                                            height: 1.33),
-                                  )
-                                : SizedBox.shrink(),
-                          ),
-                          top: 5,
-                          right:
-                              LanguageService.languageCode != "ar" ? 20 : null,
-                          left:
-                              LanguageService.languageCode != "ar" ? null : 20,
-                        )*/
                         //////////////////////
                         Positioned(
-                            bottom: -15,
-                            child: isOldCart
-                                ? Container(
-                                    width: 310,
+                          bottom: -15,
+                          child: isOldCart
+                              ? Container(
+                                  width: 310,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    color: Color(0xffF8F8F8),
+                                  ),
+                                  margin: EdgeInsets.only(
+                                      bottom: 20, left: 20, right: 20),
+                                  child: Container(
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(20),
                                       color: Color(0xffF8F8F8),
                                     ),
-                                    margin: EdgeInsets.only(
-                                        bottom: 20, left: 20, right: 20),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(20),
-                                        color: Color(0xffF8F8F8),
-                                      ),
-                                      height: 32,
-                                      child: Row(
-                                        children: [
-                                          SizedBox(
-                                            width: 10,
-                                          ),
-                                          SvgPicture.asset(
-                                              AppAssets.towCartSvg),
-                                          Text(
-                                              " ${LocaleKeys.out_of_bag.tr()} ",
-                                              style: context
-                                                  .textTheme.bodyMedium?.ba
-                                                  .copyWith(
-                                                fontSize: 12,
-                                                color: Color(0xff8D8D8D),
-                                              )),
-                                          Text(
-                                              "${LocaleKeys.time_running_out.tr()} ",
+                                    height: 32,
+                                    child: Row(
+                                      children: [
+                                        SizedBox(
+                                          width: 10,
+                                        ),
+                                        SvgPicture.asset(AppAssets.towCartSvg),
+                                        Text(" ${LocaleKeys.out_of_bag.tr()} ",
+                                            style: context
+                                                .textTheme.bodyMedium?.ba
+                                                .copyWith(
+                                              fontSize: 12,
+                                              color: Color(0xff8D8D8D),
+                                            )),
+                                        Text(
+                                            "${LocaleKeys.time_running_out.tr()} ",
+                                            style: context
+                                                .textTheme.bodyMedium?.ra
+                                                .copyWith(
+                                              fontSize: 12,
+                                              color: Color(0xff8D8D8D),
+                                            )),
+                                        Text(" -30:00",
+                                            style: context
+                                                .textTheme.bodyMedium?.ba
+                                                .copyWith(
+                                              fontSize: 12,
+                                              color: Color(0xff8D8D8D),
+                                            )),
+                                        InkWell(
+                                          onTap: () {
+                                            print(state.productITemForCart.keys
+                                                .toList());
+                                            int indexess = isOldCart
+                                                ? state
+                                                        .productITemForCart[
+                                                            oldCartCollection![index]
+                                                                .productId
+                                                                .toString()]!
+                                                        .syncColorImages
+                                                        .isNullOrEmpty
+                                                    ? -1
+                                                    : state.productITemForCart[oldCartCollection[index].productId.toString()]!.syncColorImages!.indexOf(
+                                                        state.productITemForCart[oldCartCollection[index].productId.toString()]!.syncColorImages!
+                                                            .firstWhere((element) =>
+                                                                element.colorName ==
+                                                                (!oldCartCollection![index]
+                                                                        .variations
+                                                                        .isNullOrEmpty
+                                                                    ? oldCartCollection[index].variations![0].color ??
+                                                                        ""
+                                                                    : "")))
+                                                : state
+                                                        .productITemForCart[
+                                                            cartCollection![index]
+                                                                .productId
+                                                                .toString()]!
+                                                        .syncColorImages
+                                                        .isNullOrEmpty
+                                                    ? -1
+                                                    : state
+                                                        .productITemForCart[cartCollection[index].productId.toString()]!
+                                                        .syncColorImages!
+                                                        .indexOf(state.productITemForCart[cartCollection[index].productId.toString()]!.syncColorImages!.firstWhere((element) => element.colorName == (!cartCollection![index].variations.isNullOrEmpty ? cartCollection[index].variations![0].color ?? "" : "")));
+                                            if (indexess != -1) {
+                                              BlocProvider.of<HomeBloc>(context)
+                                                  .add(AddCurrentSelectedColorEvent(
+                                                      currentSelectedColor:
+                                                          indexess,
+                                                      productId: isOldCart
+                                                          ? oldCartCollection![
+                                                                  index]
+                                                              .productId
+                                                              .toString()
+                                                          : cartCollection![
+                                                                  index]
+                                                              .productId
+                                                              .toString()));
+                                            }
+                                            HelperFunctions.slidingNavigation(
+                                                context,
+                                                ProductDetailsPage(
+                                                  productItem: isOldCart
+                                                      ? state.productITemForCart[
+                                                          oldCartCollection![
+                                                                  index]
+                                                              .productId
+                                                              .toString()]!
+                                                      : state.productITemForCart[
+                                                          cartCollection![index]
+                                                              .productId
+                                                              .toString()]!,
+                                                ));
+                                          },
+                                          child: Text(
+                                              " | ${LocaleKeys.add_again.tr()}",
                                               style: context
                                                   .textTheme.bodyMedium?.ra
                                                   .copyWith(
                                                 fontSize: 12,
                                                 color: Color(0xff8D8D8D),
                                               )),
-                                          Text(" -30:00",
-                                              style: context
-                                                  .textTheme.bodyMedium?.ba
-                                                  .copyWith(
-                                                fontSize: 12,
-                                                color: Color(0xff8D8D8D),
-                                              )),
-                                          InkWell(
-                                            onTap: () {
-                                              print(state
-                                                  .productITemForCart.keys
-                                                  .toList());
-                                              int indexess = isOldCart
-                                                  ? state
-                                                          .productITemForCart[
-                                                              oldCartCollection![index]
-                                                                  .productId
-                                                                  .toString()]!
-                                                          .syncColorImages
-                                                          .isNullOrEmpty
-                                                      ? -1
-                                                      : state.productITemForCart[oldCartCollection[index].productId.toString()]!.syncColorImages!.indexOf(state.productITemForCart[oldCartCollection[index].productId.toString()]!.syncColorImages!
-                                                          .firstWhere((element) =>
-                                                              element.colorName ==
-                                                              (!oldCartCollection![index]
-                                                                      .variations
-                                                                      .isNullOrEmpty
-                                                                  ? oldCartCollection[index].variations![0].color ??
-                                                                      ""
-                                                                  : "")))
-                                                  : state
-                                                          .productITemForCart[
-                                                              cartCollection![index]
-                                                                  .productId
-                                                                  .toString()]!
-                                                          .syncColorImages
-                                                          .isNullOrEmpty
-                                                      ? -1
-                                                      : state
-                                                          .productITemForCart[cartCollection[index].productId.toString()]!
-                                                          .syncColorImages!
-                                                          .indexOf(state.productITemForCart[cartCollection[index].productId.toString()]!.syncColorImages!.firstWhere((element) => element.colorName == (!cartCollection![index].variations.isNullOrEmpty ? cartCollection[index].variations![0].color ?? "" : "")));
-                                              if (indexess != -1) {
-                                                BlocProvider.of<HomeBloc>(
-                                                        context)
-                                                    .add(AddCurrentSelectedColorEvent(
-                                                        currentSelectedColor:
-                                                            indexess,
-                                                        productId: isOldCart
-                                                            ? oldCartCollection![
-                                                                    index]
-                                                                .productId
-                                                                .toString()
-                                                            : cartCollection![
-                                                                    index]
-                                                                .productId
-                                                                .toString()));
-                                              }
-                                              HelperFunctions.slidingNavigation(
-                                                  context,
-                                                  ProductDetailsPage(
-                                                    productItem: isOldCart
-                                                        ? state.productITemForCart[
-                                                            oldCartCollection![
-                                                                    index]
-                                                                .productId
-                                                                .toString()]!
-                                                        : state.productITemForCart[
-                                                            cartCollection![
-                                                                    index]
-                                                                .productId
-                                                                .toString()]!,
-                                                  ));
-                                            },
-                                            child: Text(
-                                                " | ${LocaleKeys.add_again.tr()}",
-                                                style: context
-                                                    .textTheme.bodyMedium?.ra
-                                                    .copyWith(
-                                                  fontSize: 12,
-                                                  color: Color(0xff8D8D8D),
-                                                )),
-                                          ),
-                                          Spacer(),
-                                          SvgPicture.asset(
-                                              AppAssets.chatWithQuestionSvg),
-                                          SizedBox(
-                                            width: 10,
-                                          )
-                                        ],
-                                      ),
+                                        ),
+                                        Spacer(),
+                                        SvgPicture.asset(
+                                            AppAssets.chatWithQuestionSvg),
+                                        SizedBox(
+                                          width: 10,
+                                        )
+                                      ],
                                     ),
-                                  )
-                                : !(state.cartCollection?[index]
-                                            .haveHurryUpNotifyTimeLeft ??
-                                        false)
-                                    ? (state.cartCollection?[index]
-                                                .haveHurryUpNotifyQty ??
-                                            false)
-                                        ? Container(
-                                            width: 315,
+                                  ),
+                                )
+                              : !(state.cartCollection?[index]
+                                          .haveHurryUpNotifyTimeLeft ??
+                                      false)
+                                  ? (state.cartCollection?[index]
+                                              .haveHurryUpNotifyQty ??
+                                          false)
+                                      ? Container(
+                                          width: 315,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                            color: Color(0xffFDFDEF),
+                                          ),
+                                          margin: EdgeInsets.only(
+                                              bottom: 20, left: 20, right: 20),
+                                          child: DottedBorder(
+                                              borderPadding: EdgeInsets.zero,
+                                              padding: EdgeInsets.zero,
+                                              borderType: BorderType.RRect,
+                                              strokeCap: StrokeCap.round,
+                                              strokeWidth: 0.5,
+                                              dashPattern: [3, 3],
+                                              radius: Radius.circular(20.0),
+                                              color: const Color(0xffD3D3D3),
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                  color: Color(0xffFDFDEF),
+                                                ),
+                                                height: 32,
+                                                child: Row(
+                                                  children: [
+                                                    SizedBox(
+                                                      width: 10,
+                                                    ),
+                                                    SvgPicture.asset(AppAssets
+                                                        .alarmClockSvg),
+                                                    Text(
+                                                        " ${LocaleKeys.hurry_up.tr()} ",
+                                                        style: context.textTheme
+                                                            .bodyMedium?.ba
+                                                            .copyWith(
+                                                          fontSize: 12,
+                                                          color:
+                                                              Color(0xffA28E5B),
+                                                        )),
+                                                    Text(
+                                                        "${LocaleKeys.quantity_running_out.tr()} ",
+                                                        style: context.textTheme
+                                                            .bodyMedium?.ra
+                                                            .copyWith(
+                                                          fontSize: 12,
+                                                          color:
+                                                              Color(0xffA28E5B),
+                                                        )),
+                                                    Text(
+                                                        " ${state.cartCollection?[index].qtyLeft}",
+                                                        style: context.textTheme
+                                                            .bodyMedium?.ba
+                                                            .copyWith(
+                                                          fontSize: 12,
+                                                          color:
+                                                              Color(0xffA28E5B),
+                                                        )),
+                                                    Text(
+                                                        " ${LocaleKeys.piece.tr()}",
+                                                        style: context.textTheme
+                                                            .bodyMedium?.ba
+                                                            .copyWith(
+                                                          fontSize: 12,
+                                                          color:
+                                                              Color(0xffA28E5B),
+                                                        )),
+                                                    /*    CountDownTimer(
+                                                    cartId: state
+                                                        .cartCollection?[index]
+                                                        .id
+                                                        .toString(),
+                                                  )*/
+                                                  ],
+                                                ),
+                                              )),
+                                        )
+                                      : SizedBox.shrink()
+                                  : Container(
+                                      width: 315,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        color: Color(0xffFDFDEF),
+                                      ),
+                                      margin: EdgeInsets.only(
+                                          bottom: 20, left: 20, right: 20),
+                                      child: DottedBorder(
+                                          borderPadding: EdgeInsets.zero,
+                                          padding: EdgeInsets.zero,
+                                          borderType: BorderType.RRect,
+                                          strokeCap: StrokeCap.round,
+                                          strokeWidth: 0.5,
+                                          dashPattern: [3, 3],
+                                          radius: Radius.circular(20.0),
+                                          color: const Color(0xffD3D3D3),
+                                          child: Container(
                                             decoration: BoxDecoration(
                                               borderRadius:
                                                   BorderRadius.circular(20),
                                               color: Color(0xffFDFDEF),
                                             ),
-                                            margin: EdgeInsets.only(
-                                                bottom: 20,
-                                                left: 20,
-                                                right: 20),
-                                            child: DottedBorder(
-                                                borderPadding: EdgeInsets.zero,
-                                                padding: EdgeInsets.zero,
-                                                borderType: BorderType.RRect,
-                                                strokeCap: StrokeCap.round,
-                                                strokeWidth: 0.5,
-                                                dashPattern: [3, 3],
-                                                radius: Radius.circular(20.0),
-                                                color: const Color(0xffD3D3D3),
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            20),
-                                                    color: Color(0xffFDFDEF),
-                                                  ),
-                                                  height: 32,
-                                                  child: Row(
-                                                    children: [
-                                                      SizedBox(
-                                                        width: 10,
-                                                      ),
-                                                      SvgPicture.asset(AppAssets
-                                                          .alarmClockSvg),
-                                                      Text(
-                                                          " ${LocaleKeys.hurry_up.tr()} ",
-                                                          style: context
-                                                              .textTheme
-                                                              .bodyMedium
-                                                              ?.ba
-                                                              .copyWith(
-                                                            fontSize: 12,
-                                                            color: Color(
-                                                                0xffA28E5B),
-                                                          )),
-                                                      Text(
-                                                          "${LocaleKeys.quantity_running_out.tr()} ",
-                                                          style: context
-                                                              .textTheme
-                                                              .bodyMedium
-                                                              ?.ra
-                                                              .copyWith(
-                                                            fontSize: 12,
-                                                            color: Color(
-                                                                0xffA28E5B),
-                                                          )),
-                                                      Text(
-                                                          " ${state.cartCollection?[index].qtyLeft}",
-                                                          style: context
-                                                              .textTheme
-                                                              .bodyMedium
-                                                              ?.ba
-                                                              .copyWith(
-                                                            fontSize: 12,
-                                                            color: Color(
-                                                                0xffA28E5B),
-                                                          )),
-                                                      Text(
-                                                          " ${LocaleKeys.piece.tr()}",
-                                                          style: context
-                                                              .textTheme
-                                                              .bodyMedium
-                                                              ?.ba
-                                                              .copyWith(
-                                                            fontSize: 12,
-                                                            color: Color(
-                                                                0xffA28E5B),
-                                                          )),
-                                                      /*    CountDownTimer(
-                                                    cartId: state
-                                                        .cartCollection?[index]
-                                                        .id
-                                                        .toString(),
-                                                  )*/
-                                                    ],
-                                                  ),
-                                                )),
-                                          )
-                                        : SizedBox.shrink()
-                                    : Container(
-                                        width: 315,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                          color: Color(0xffFDFDEF),
-                                        ),
-                                        margin: EdgeInsets.only(
-                                            bottom: 20, left: 20, right: 20),
-                                        child: DottedBorder(
-                                            borderPadding: EdgeInsets.zero,
-                                            padding: EdgeInsets.zero,
-                                            borderType: BorderType.RRect,
-                                            strokeCap: StrokeCap.round,
-                                            strokeWidth: 0.5,
-                                            dashPattern: [3, 3],
-                                            radius: Radius.circular(20.0),
-                                            color: const Color(0xffD3D3D3),
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(20),
-                                                color: Color(0xffFDFDEF),
-                                              ),
-                                              height: 32,
-                                              child: Row(
-                                                children: [
-                                                  SizedBox(
-                                                    width: 10,
-                                                  ),
-                                                  SvgPicture.asset(
-                                                      AppAssets.alarmClockSvg),
-                                                  Text(
-                                                      " ${LocaleKeys.hurry_up.tr()} ",
-                                                      style: context.textTheme
-                                                          .bodyMedium?.ba
-                                                          .copyWith(
-                                                        fontSize: 12,
-                                                        color:
-                                                            Color(0xffA28E5B),
-                                                      )),
-                                                  Text(
-                                                      "${LocaleKeys.the_time_will_end.tr()} ",
-                                                      style: context.textTheme
-                                                          .bodyMedium?.ra
-                                                          .copyWith(
-                                                        fontSize: 12,
-                                                        color:
-                                                            Color(0xffA28E5B),
-                                                      )),
-                                                  Text(
-                                                      " ${state.cartCollection?[index].timeLeftInMinutes}:00",
-                                                      style: context.textTheme
-                                                          .bodyMedium?.ba
-                                                          .copyWith(
-                                                        fontSize: 12,
-                                                        color:
-                                                            Color(0xffA28E5B),
-                                                      )),
+                                            height: 32,
+                                            child: Row(
+                                              children: [
+                                                SizedBox(
+                                                  width: 10,
+                                                ),
+                                                SvgPicture.asset(
+                                                    AppAssets.alarmClockSvg),
+                                                Text(
+                                                    " ${LocaleKeys.hurry_up.tr()} ",
+                                                    style: context.textTheme
+                                                        .bodyMedium?.ba
+                                                        .copyWith(
+                                                      fontSize: 12,
+                                                      color: Color(0xffA28E5B),
+                                                    )),
+                                                Text(
+                                                    "${LocaleKeys.the_time_will_end.tr()} ",
+                                                    style: context.textTheme
+                                                        .bodyMedium?.ra
+                                                        .copyWith(
+                                                      fontSize: 12,
+                                                      color: Color(0xffA28E5B),
+                                                    )),
+                                                Text(
+                                                    " ${state.cartCollection?[index].timeLeftInMinutes}:00",
+                                                    style: context.textTheme
+                                                        .bodyMedium?.ba
+                                                        .copyWith(
+                                                      fontSize: 12,
+                                                      color: Color(0xffA28E5B),
+                                                    )),
 
-                                                  /*    CountDownTimer(
+                                                /*    CountDownTimer(
                                                     cartId: state
                                                         .cartCollection?[index]
                                                         .id
                                                         .toString(),
                                                   )*/
-                                                ],
-                                              ),
-                                            )),
-                                      ))
+                                              ],
+                                            ),
+                                          )),
+                                    ),
+                        ),
+
+                        ///////////////////////
+                        !isOldCart &&
+                                cartCollection![index].checkAvailability ==
+                                    false
+                            ? Positioned(
+                                top: 0,
+                                right: LanguageService.languageCode != "ar"
+                                    ? null
+                                    : 0,
+                                left: LanguageService.languageCode != "ar"
+                                    ? 0
+                                    : null,
+                                child: Container(
+                                    width: 100,
+                                    height: 30,
+                                    decoration: BoxDecoration(
+                                      color: const Color.fromARGB(255, 0, 0, 0),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        " ${LocaleKeys.unavailable.tr()}",
+                                        style: context.textTheme.bodyMedium?.la
+                                            .copyWith(
+                                                fontWeight: FontWeight.w100,
+                                                fontSize: 12,
+                                                color: const Color.fromARGB(
+                                                    255, 255, 255, 255),
+                                                letterSpacing: 0.18,
+                                                height: 1.33),
+                                      ),
+                                    )),
+                              )
+                            : SizedBox.shrink(),
+                        // Positioned(
+                        //   top: 5,
+                        //   right:
+                        //       LanguageService.languageCode != "ar" ? null : 20,
+                        //   left:
+                        //       LanguageService.languageCode != "ar" ? 20 : null,
+                        //   child: Container(
+                        //     decoration: BoxDecoration(
+                        //       borderRadius: BorderRadius.circular(15),
+                        //       color: Color.fromARGB(0, 0, 0, 0),
+                        //     ),
+                        //     width: 100,
+                        //     height: 40,
+                        //     child: !isOldCart
+                        //         // &&
+                        //         //         cartCollection![index].availableQuantity !=
+                        //         //             null &&
+                        //         //         ((cartCollection[index].availableQuantity ??
+                        //         //                 0) <
+                        //         //             (cartCollection[index].quantity ?? 0))
+                        //         ? Text(
+                        //             " ${LocaleKeys.out_of_stock.tr()}",
+                        //             style: context.textTheme.bodyMedium?.la
+                        //                 .copyWith(
+                        //                     fontWeight: FontWeight.w100,
+                        //                     fontSize: 12,
+                        //                     color: const Color.fromARGB(
+                        //                         255, 206, 9, 9),
+                        //                     letterSpacing: 0.18,
+                        //                     height: 1.33),
+                        //           )
+                        //         : SizedBox.shrink(),
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),

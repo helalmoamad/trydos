@@ -159,6 +159,8 @@
   "quantity_running_out": "الكمية ستنفذ.",
   "shopping_bag": "سلة المشتريات",
   "out_of_stock": "انتهى من المخزن",
+  "you_have_to_delete_all_unavailable_products": "يجب عليك حذف جميع المنتجات غير المتوفرة",
+  "unavailable":"غير متوفر",
   "saved": "خصم",
   "your_cart_empty": "سلتك فارغة",
   "normal_price": "السعر الاساسي",

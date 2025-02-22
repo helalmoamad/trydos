@@ -97,6 +97,7 @@ import '../../../chat/presentation/manager/chat_bloc.dart';
 import '../../../chat/presentation/manager/chat_event.dart';
 import '../../../story/presentation/bloc/story_bloc.dart';
 import '../../domain/use_cases/add_item_to_cart_usecase.dart';
+import '../../domain/use_cases/check_availability_product_cart_usecase.dart';
 import '../../domain/use_cases/get_customer_wallet_usecase.dart';
 import '../../domain/use_cases/get_orders_by_cart_group_usecase.dart';
 import '../../domain/use_cases/get_orders_by_order_group_usecase.dart';
@@ -169,6 +170,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.placeOrderUsecase,
     this.getOrdersByOrderGroupIDUsecase,
     this.getOrdersByCartGroupIDUsecase,
+    this.checkAvailabilityProductCartUsecase,
   ) : super(HomeState()) {
     on<HomeEvent>((event, emit) {});
 
@@ -393,6 +395,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<RemoveItemsFromCartAfterOrderSuccessEvent>(
       _onRemoveItemsFromCartAfterOrderSuccessEvent,
     );
+    on<CheckAvailabilityProductCartEvent>(
+      _onCheckAvailabilityProductCartEvent,
+    );
   }
 
   Map<String, bool> boutiquesThatEnablesToRequestItsProductsUsingFiveFilters =
@@ -448,6 +453,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final PlaceOrderUsecase placeOrderUsecase;
   final GetOrdersByOrderGroupIDUsecase getOrdersByOrderGroupIDUsecase;
   final GetOrdersByCartGroupIDUsecase getOrdersByCartGroupIDUsecase;
+  final CheckAvailabilityProductCartUsecase checkAvailabilityProductCartUsecase;
 
   final GetCustomerWalletUseCase getCustomerWalletUseCase;
 
@@ -5465,6 +5471,54 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           state.copyWith(
             getOrdersByCartGroupIDStatus: GetOrdersByCartGroupIDStatus.success,
             getOrdersByCartGroupIDModel: r,
+          ),
+        );
+      },
+    );
+  }
+
+  FutureOr<void> _onCheckAvailabilityProductCartEvent(
+    CheckAvailabilityProductCartEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    ///////////////////////////
+    emit(
+      state.copyWith(
+        checkAvailabilityProductCartStatus:
+            CheckAvailabilityProductCartStatus.loading,
+      ),
+    );
+
+    final response = await checkAvailabilityProductCartUsecase.call(NoParams());
+
+    response.fold(
+      (l) {
+        if (!isFailedTheFirstTime
+            .contains('CheckAvailabilityProductCartEvent')) {
+          add(
+            CheckAvailabilityProductCartEvent(),
+          );
+          isFailedTheFirstTime.add('CheckAvailabilityProductCartEvent');
+        }
+
+        emit(
+          state.copyWith(
+            checkAvailabilityProductCartStatus:
+                CheckAvailabilityProductCartStatus.failure,
+          ),
+        );
+      },
+      (r) {
+        isFailedTheFirstTime.remove('CheckAvailabilityProductCartEvent');
+
+        debugPrint('CheckAvailabilityProductCartEvent success');
+
+        ////////////////////////////
+        emit(
+          state.copyWith(
+            checkAvailabilityProductCartStatus:
+                CheckAvailabilityProductCartStatus.success,
+            checkAvailabilityProductCartModel: r,
           ),
         );
       },

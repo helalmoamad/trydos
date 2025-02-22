@@ -159,6 +159,8 @@
   "quantity_running_out": "Quantity Running Out.",
   "shopping_bag": "Shopping Bag",
   "out_of_stock": "Out OF Stock",
+  "you_have_to_delete_all_unavailable_products": "You have to delete all unavailable products",
+  "unavailable":"unAvailable",
   "saved": "Saved",
   "your_cart_empty": "Your Bag Is Empty",
   "normal_price": "Normal Price",

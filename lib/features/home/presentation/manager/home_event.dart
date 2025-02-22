@@ -1083,3 +1083,11 @@ class GetOrdersByCartGroupIDEvent extends HomeEvent {
   // TODO: implement props
   List<Object?> get props => [cartGroupId];
 }
+
+class CheckAvailabilityProductCartEvent extends HomeEvent {
+  CheckAvailabilityProductCartEvent();
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+}

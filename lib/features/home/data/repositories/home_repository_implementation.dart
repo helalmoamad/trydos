@@ -38,6 +38,7 @@ import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart'
 import '../../../../core/api/handling_exception.dart';
 import '../../domain/repositories/home_repository.dart';
 import '../data_sources/home_remote_data_source.dart';
+import '../models/check_availability_product_cart_model.dart';
 import '../models/get_product_detail_without_related_products_model.dart';
 import '../models/get_story_for_product_model.dart';
 import '../models/starting_settings_response_model.dart';
@@ -408,7 +409,8 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   }
 
   @override
-  Future<Either<Failure, OrdersGroupModel>> checkAvailabilityProductCart() {
+  Future<Either<Failure, CheckAvailabilityProductCartModel>>
+      checkAvailabilityProductCart() {
     return handlingExceptionRequest(
       tryCall: () => dataSource.checkAvailabilityProductCart(),
     );

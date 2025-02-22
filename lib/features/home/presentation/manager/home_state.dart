@@ -25,6 +25,7 @@ import 'package:trydos/features/home/data/models/notificaation_poroduct_types.da
 import 'package:trydos/features/home/data/models/popular_search_terms_model.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
 import '../../../../core/data/model/pagination_model.dart';
+import '../../data/models/check_availability_product_cart_model.dart';
 import '../../data/models/customer_wallet_model.dart';
 import '../../data/models/get_cart_item_model.dart';
 import '../../data/models/get_old_cart_model.dart';
@@ -119,6 +120,8 @@ enum GetOrdersByOrderGroupIDStatus { init, loading, success, failure }
 
 enum GetOrdersByCartGroupIDStatus { init, loading, success, failure }
 
+enum CheckAvailabilityProductCartStatus { init, loading, success, failure }
+
 @JsonSerializable(explicitToJson: true)
 @immutable
 class HomeState extends Equatable {
@@ -164,6 +167,7 @@ class HomeState extends Equatable {
       this.placeOrderModel,
       this.getOrdersByOrderGroupIDModel,
       this.getOrdersByCartGroupIDModel,
+      this.checkAvailabilityProductCartModel,
       this.appliedFiltersByUser = const {},
       this.currentPage = 0,
       this.productStatus,
@@ -207,6 +211,8 @@ class HomeState extends Equatable {
       this.placeOrderStatus = PlaceOrderStatus.init,
       this.getOrdersByOrderGroupIDStatus = GetOrdersByOrderGroupIDStatus.init,
       this.getOrdersByCartGroupIDStatus = GetOrdersByCartGroupIDStatus.init,
+      this.checkAvailabilityProductCartStatus =
+          CheckAvailabilityProductCartStatus.init,
       this.getAddressByTextStatus,
       this.countOfProductExpectedByFiltering,
       this.getCartItemsStatus = GetCartItemsStatus.init,
@@ -255,6 +261,10 @@ class HomeState extends Equatable {
   final GetOrdersByOrderGroupIDStatus? getOrdersByOrderGroupIDStatus;
   final OrdersGroupModel? getOrdersByCartGroupIDModel;
   final GetOrdersByCartGroupIDStatus? getOrdersByCartGroupIDStatus;
+
+  final CheckAvailabilityProductCartModel? checkAvailabilityProductCartModel;
+  final CheckAvailabilityProductCartStatus? checkAvailabilityProductCartStatus;
+
   final List<ImageForAddToCart>? listitemForAddToCart;
   final GetAddressByTextStatus? getAddressByTextStatus;
   final GetAddressByCoordinatesStatus? getAddressByCoordinatesStatus;
@@ -397,6 +407,10 @@ class HomeState extends Equatable {
         getOrdersByOrderGroupIDModel,
         getOrdersByCartGroupIDStatus,
         getOrdersByCartGroupIDModel,
+
+        checkAvailabilityProductCartStatus,
+        checkAvailabilityProductCartModel,
+
         getAddressByTextStatus,
         listOfErrorSendedToMobileErrorLog,
         productContentForStatusOfOpeningProductDetailsDirectly,
@@ -473,6 +487,10 @@ class HomeState extends Equatable {
       final GetOrdersByOrderGroupIDStatus? getOrdersByOrderGroupIDStatus,
       final OrdersGroupModel? getOrdersByCartGroupIDModel,
       final GetOrdersByCartGroupIDStatus? getOrdersByCartGroupIDStatus,
+      final CheckAvailabilityProductCartModel?
+          checkAvailabilityProductCartModel,
+      final CheckAvailabilityProductCartStatus?
+          checkAvailabilityProductCartStatus,
       final AddItemInCartStatus? addItemInCartStatus,
       final HideItemInOldCartStatus? hideItemInOldCartStatus,
       final ConvertItemFromOldcartToCartStatus?
@@ -640,6 +658,12 @@ class HomeState extends Equatable {
           getOrdersByCartGroupIDModel ?? this.getOrdersByCartGroupIDModel,
       getOrdersByCartGroupIDStatus:
           getOrdersByCartGroupIDStatus ?? this.getOrdersByCartGroupIDStatus,
+
+      checkAvailabilityProductCartModel: checkAvailabilityProductCartModel ??
+          this.checkAvailabilityProductCartModel,
+      checkAvailabilityProductCartStatus: checkAvailabilityProductCartStatus ??
+          this.checkAvailabilityProductCartStatus,
+
       getAddressByTextStatus:
           getAddressByTextStatus ?? this.getAddressByTextStatus,
       addOrRemoveLikeOfProductStatus:

@@ -159,6 +159,8 @@
   "quantity_running_out": "Miktar Tükeniyor.",
   "shopping_bag": "Alışveriş Çantası",
   "out_of_stock": "Stokta Yok",
+  "you_have_to_delete_all_unavailable_products": "Mevcut olmayan tüm ürünleri silmelisiniz",
+  "unavailable":"müsait değil",
   "saved": "Kaydedildi",
   "your_cart_empty": "Çantanız Boş",
   "normal_price": "Normal Fiyat",

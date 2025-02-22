@@ -166,6 +166,12 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           ? null
           : OrdersGroupModel.fromJson(
               json['getOrdersByCartGroupIDModel'] as Map<String, dynamic>),
+      checkAvailabilityProductCartModel:
+          json['checkAvailabilityProductCartModel'] == null
+              ? null
+              : CheckAvailabilityProductCartModel.fromJson(
+                  json['checkAvailabilityProductCartModel']
+                      as Map<String, dynamic>),
       appliedFiltersByUser:
           (json['appliedFiltersByUser'] as Map<String, dynamic>?)?.map(
                 (k, e) => MapEntry(
@@ -341,6 +347,10 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               _$GetOrdersByCartGroupIDStatusEnumMap,
               json['getOrdersByCartGroupIDStatus']) ??
           GetOrdersByCartGroupIDStatus.init,
+      checkAvailabilityProductCartStatus: $enumDecodeNullable(
+              _$CheckAvailabilityProductCartStatusEnumMap,
+              json['checkAvailabilityProductCartStatus']) ??
+          CheckAvailabilityProductCartStatus.init,
       getAddressByTextStatus: $enumDecodeNullable(
           _$GetAddressByTextStatusEnumMap, json['getAddressByTextStatus']),
       countOfProductExpectedByFiltering:
@@ -519,6 +529,11 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           instance.getOrdersByCartGroupIDModel?.toJson(),
       'getOrdersByCartGroupIDStatus': _$GetOrdersByCartGroupIDStatusEnumMap[
           instance.getOrdersByCartGroupIDStatus],
+      'checkAvailabilityProductCartModel':
+          instance.checkAvailabilityProductCartModel?.toJson(),
+      'checkAvailabilityProductCartStatus':
+          _$CheckAvailabilityProductCartStatusEnumMap[
+              instance.checkAvailabilityProductCartStatus],
       'listitemForAddToCart':
           instance.listitemForAddToCart?.map((e) => e.toJson()).toList(),
       'getAddressByTextStatus':
@@ -881,6 +896,13 @@ const _$GetOrdersByCartGroupIDStatusEnumMap = {
   GetOrdersByCartGroupIDStatus.loading: 'loading',
   GetOrdersByCartGroupIDStatus.success: 'success',
   GetOrdersByCartGroupIDStatus.failure: 'failure',
+};
+
+const _$CheckAvailabilityProductCartStatusEnumMap = {
+  CheckAvailabilityProductCartStatus.init: 'init',
+  CheckAvailabilityProductCartStatus.loading: 'loading',
+  CheckAvailabilityProductCartStatus.success: 'success',
+  CheckAvailabilityProductCartStatus.failure: 'failure',
 };
 
 const _$GetAddressByTextStatusEnumMap = {

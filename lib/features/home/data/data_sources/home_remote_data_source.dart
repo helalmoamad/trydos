@@ -30,6 +30,7 @@ import '../../../../common/constant/configuration/stories_url_routes.dart';
 import '../../../../core/api/client_config.dart';
 import '../../../../core/api/methods/detect_server.dart';
 import '../../../../core/api/methods/post.dart';
+import '../models/check_availability_product_cart_model.dart';
 import '../models/customer_wallet_model.dart';
 import '../models/get_product_detail_without_related_products_model.dart';
 import '../models/get_product_filters_model.dart';
@@ -836,14 +837,15 @@ class HomeRemoteDatasource {
     return getOrdersByCartGroupID();
   }
 
-  Future<OrdersGroupModel> checkAvailabilityProductCart() {
-    GetClient<OrdersGroupModel> checkAvailabilityProductCart =
-        GetClient<OrdersGroupModel>(
+  Future<CheckAvailabilityProductCartModel> checkAvailabilityProductCart() {
+    GetClient<CheckAvailabilityProductCartModel> checkAvailabilityProductCart =
+        GetClient<CheckAvailabilityProductCartModel>(
       serverName: ServerName.market,
-      requestPrams: RequestConfig<OrdersGroupModel>(
+      requestPrams: RequestConfig<CheckAvailabilityProductCartModel>(
         endpoint: MarketEndPoints.checkAvailabilityProductCartEP,
-        response: ResponseValue<OrdersGroupModel>(
-            fromJson: (response) => OrdersGroupModel.fromJson(response)),
+        response: ResponseValue<CheckAvailabilityProductCartModel>(
+            fromJson: (response) =>
+                CheckAvailabilityProductCartModel.fromJson(response)),
       ),
     );
 

@@ -537,7 +537,9 @@ class PlaceOrderDetailsModel {
         isOdooProduct: json["is_odoo_product"],
         odooId: json["odoo_id"],
         odooOrderId: json["odoo_order_id"],
-        variation: Variation.fromJson(json["variation"]),
+        variation: json["variation"] == null
+            ? null
+            : Variation.fromJson(json["variation"]),
       );
 
   Map<String, dynamic> toJson() => {

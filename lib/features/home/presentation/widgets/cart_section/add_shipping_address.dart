@@ -421,6 +421,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                   .the_field_must_not_be_empty
                                                   .tr();
                                             }
+                                            return null;
                                           },
                                           onFieldSubmitted: (val) {
                                             FocusScope.of(context).unfocus();
@@ -490,6 +491,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                 .the_field_must_not_be_empty
                                                 .tr();
                                           }
+                                          return null;
                                         },
                                         onFieldSubmitted: (val) {
                                           FocusScope.of(context).unfocus();

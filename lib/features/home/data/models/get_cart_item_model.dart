@@ -257,6 +257,7 @@ class Cart {
   final bool? haveHurryUpNotifyQty;
   final int? qtyLeft;
   final int? timeLeftInMinutes;
+  final bool? checkAvailability;
 
   Cart({
     this.id,
@@ -294,6 +295,7 @@ class Cart {
     this.haveHurryUpNotifyQty,
     this.qtyLeft,
     this.timeLeftInMinutes,
+    this.checkAvailability,
   });
 
   Cart copyWith({
@@ -332,6 +334,7 @@ class Cart {
     int? qtyLeft,
     int? timeLeftInMinutes,
     dynamic flashDealMaxAllowedQuantity,
+    bool? checkAvailability,
   }) =>
       Cart(
         id: id ?? this.id,
@@ -371,6 +374,7 @@ class Cart {
         flashDealDetails: flashDealDetails ?? this.flashDealDetails,
         flashDealMaxAllowedQuantity:
             flashDealMaxAllowedQuantity ?? this.flashDealMaxAllowedQuantity,
+        checkAvailability: checkAvailability ?? this.checkAvailability,
       );
 
   factory Cart.fromJson(Map<String, dynamic> json) => Cart(
@@ -419,6 +423,7 @@ class Cart {
         qtyLeft: json["qty_left"],
         timeLeftInMinutes: json["time_left_in_minutes"],
         flashDealMaxAllowedQuantity: json["flash_deal_max_allowed_quantity"],
+        checkAvailability: json["check_availability"] ?? false,
       );
 
   Map<String, dynamic> toJson() => {
@@ -459,6 +464,7 @@ class Cart {
         "created_at": createdAt?.toIso8601String(),
         "flash_deal_details": flashDealDetails,
         "flash_deal_max_allowed_quantity": flashDealMaxAllowedQuantity,
+        "check_availability": checkAvailability,
       };
 }
 

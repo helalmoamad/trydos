@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -1614,6 +1615,17 @@ class _CartPageState extends State<CartPage> {
                                                                                         appBloc.add(ChangeBasePage(0));
                                                                                         return;
                                                                                       }
+                                                                                    } else if (state.cartCollection!.any(
+                                                                                      (element) => element.checkAvailability == false,
+                                                                                    )) {
+                                                                                      showMessage(
+                                                                                        " ${LocaleKeys.you_have_to_delete_all_unavailable_products.tr()}",
+                                                                                        foreGroundColor: Colors.white,
+                                                                                        backGroundColor: Colors.black,
+                                                                                        showInRelease: true,
+                                                                                        timeShowing: Toast.LENGTH_LONG,
+                                                                                      );
+                                                                                      return;
                                                                                     } else {
                                                                                       if (prefsRepository.isVerifiedPhone != true) {
                                                                                         if ((prefsRepository.isVerifiedPhonePeforeExpiredToken ?? false)) {
