@@ -176,12 +176,12 @@ class _ProductDetailsSheetMoreOptionsContentState
                                                         "") +
                                                     "_${widget.productId}")) {
                                               SubsecribeOrUnSubsecribeToTopic()
-                                                  .UnSubsecribeToOtherTopic(
+                                                  .unSubsecribeToOtherTopic(
                                                       ("${state.notificationTypeForProductModel?.notificationTypes?[index].topic ?? ""}" +
                                                           "_${widget.productId}"));
                                             } else {
                                               SubsecribeOrUnSubsecribeToTopic()
-                                                  .SubsecribeToOtherTopic(
+                                                  .subsecribeToOtherTopic(
                                                       ("${state.notificationTypeForProductModel?.notificationTypes?[index].topic ?? ""}" +
                                                           "_${widget.productId}"));
                                             }

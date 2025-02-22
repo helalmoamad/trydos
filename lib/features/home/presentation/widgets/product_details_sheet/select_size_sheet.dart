@@ -269,37 +269,48 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                                 return Padding(
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 5),
-                                  child: Center(
-                                    child: Text(
-                                      sizes[index],
-                                      style:
-                                          textTheme.headlineLarge?.bq.copyWith(
-                                        height: 1.3,
-                                        fontSize: 18.sp,
-                                        /*index != currentIndex
-                                            ? index < currentIndex
-                                                ? max(
-                                                    10.sp,
-                                                    (25 -
-                                                            (currentIndex -
-                                                                    index) *
-                                                                5)
-                                                        .sp)
-                                                : max(
-                                                    10.sp,
-                                                    (25 -
-                                                            (index -
-                                                                    currentIndex) *
-                                                                5)
-                                                        .sp)
-                                            : 20.sp,*/
-                                        color: index == currentIndex
-                                            ? Colors.white
-                                            : sizesQuantities[index] == 0
-                                                ? const Color(0xffFF5F61)
-                                                : sizesQuantities[index] < 3
-                                                    ? const Color(0xffFFAF5F)
-                                                    : const Color(0xff505050),
+                                  child: Container(
+                                    width: 65,
+                                    child: GestureDetector(
+                                      onTap: () =>
+                                          carouselController.animateToPage(
+                                        index,
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          sizes[index],
+                                          style: textTheme.headlineLarge?.bq
+                                              .copyWith(
+                                            height: 1.3,
+                                            fontSize: 18.sp,
+                                            /*index != currentIndex
+                                                ? index < currentIndex
+                                                    ? max(
+                                                        10.sp,
+                                                        (25 -
+                                                                (currentIndex -
+                                                                        index) *
+                                                                    5)
+                                                            .sp)
+                                                    : max(
+                                                        10.sp,
+                                                        (25 -
+                                                                (index -
+                                                                        currentIndex) *
+                                                                    5)
+                                                            .sp)
+                                                : 20.sp,*/
+                                            color: index == currentIndex
+                                                ? Colors.white
+                                                : sizesQuantities[index] == 0
+                                                    ? const Color(0xffFF5F61)
+                                                    : sizesQuantities[index] < 3
+                                                        ? const Color(
+                                                            0xffFFAF5F)
+                                                        : const Color(
+                                                            0xff505050),
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -316,17 +327,11 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                                     HapticFeedback.lightImpact();
                                     if (sizesQuantities[index] == 0 &&
                                         !widget.collectedAfterOrdering) {
-                                      print(
-                                          "!!!!!!!!3333333333333333333333333333333333333333333333333333333333333333333333333!!!!!!!!!!!!!!!!!");
-
                                       widget.sizeIsNotAvailableNotifier.value =
                                           sizes[index];
                                       widget.colorIsNotAvailableNotifier.value =
                                           widget.selectedColorName ?? null;
                                     } else {
-                                      print(
-                                          "00000000000000!!!!!!!!3333333333333333333333333333333333333333333333333333333333333333333333333!!!!!!!!!!!!!!!!!");
-
                                       widget.sizeIsNotAvailableNotifier.value =
                                           null;
                                       widget.colorIsNotAvailableNotifier.value =

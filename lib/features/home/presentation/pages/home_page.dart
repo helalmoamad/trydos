@@ -90,7 +90,11 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    PermissionServices().requestNotificationPermission();
+    if (!(prefsRepository.isRequestNotificationPermission ?? false)) {
+      PermissionServices().requestNotificationPermission();
+      prefsRepository.setRequestNotificationPermission(true);
+    }
+
     appBloc = BlocProvider.of<AppBloc>(context);
     authBloc = BlocProvider.of<AuthBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);

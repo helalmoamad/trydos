@@ -84,36 +84,36 @@ class LocalNotificationService {
       Map? data = convert.jsonDecode(message.data["body"] ?? "") ?? {};
 
       if (data?["type"] ==
-              TypeOfNotificationForMarket[
+              typeOfNotificationForMarket[
                   TypeOfNotificationForMarketEnum.product_availability] ||
           data?["type"] ==
-              TypeOfNotificationForMarket[
+              typeOfNotificationForMarket[
                   TypeOfNotificationForMarketEnum.product_comment] ||
           data?["type"] ==
-              TypeOfNotificationForMarket[
+              typeOfNotificationForMarket[
                   TypeOfNotificationForMarketEnum.category_created] ||
           data?["type"] ==
-              TypeOfNotificationForMarket[
+              typeOfNotificationForMarket[
                   TypeOfNotificationForMarketEnum.product_discount] ||
           data?["type"] ==
-              TypeOfNotificationForMarket[
+              typeOfNotificationForMarket[
                   TypeOfNotificationForMarketEnum.product_cart_expiration] ||
           data?["type"] ==
-              TypeOfNotificationForMarket[
+              typeOfNotificationForMarket[
                   TypeOfNotificationForMarketEnum.product_hurry_up_quantity] ||
           data?["type"] ==
-              TypeOfNotificationForMarket[
+              typeOfNotificationForMarket[
                   TypeOfNotificationForMarketEnum.product_hurry_up_time_left] ||
           data?["type"] ==
-              TypeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+              typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
                   .product_when_change_in_price] ||
           data?["type"] ==
-              TypeOfNotificationForMarket[
+              typeOfNotificationForMarket[
                   TypeOfNotificationForMarketEnum.product_before_stock_out]) {
         imageUrl = data?["image"] ?? "";
       }
       if (data?["type"] ==
-          TypeOfNotificationForMarket[
+          typeOfNotificationForMarket[
               TypeOfNotificationForMarketEnum.boutique_created]) {
         List<BunnerBoutique>? boutiqueBannerList = List<BunnerBoutique>.from(
             data?["banner"]!.map((x) => BunnerBoutique.fromJson(x)));
