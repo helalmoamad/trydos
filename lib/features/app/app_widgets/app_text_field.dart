@@ -60,6 +60,7 @@ class AppTextField extends StatelessWidget {
     this.filledColor,
     this.isErrorBorder = true,
     this.bordersColor,
+    this.isPrefixIconConstraints = true,
   }) : super(key: key);
 
   final TextEditingController? controller;
@@ -111,6 +112,7 @@ class AppTextField extends StatelessWidget {
   final Color? filledColor;
   final Color? bordersColor;
   final double? roundingCornersValue;
+  final bool isPrefixIconConstraints;
   @override
   Widget build(BuildContext context) {
     return TextFormField(
@@ -163,13 +165,16 @@ class AppTextField extends StatelessWidget {
       decoration: InputDecoration(
         errorMaxLines: 1,
         errorStyle: context.textTheme.bodyMedium?.mr.copyWith(
-            color: const Color.fromARGB(255, 201, 22, 22),
-            letterSpacing: 0.18,
-            fontSize: 11,
-            height: 0.8),
+          color: const Color.fromARGB(255, 201, 22, 22),
+          letterSpacing: 0.18,
+          fontSize: 11,
+          height: 0.8,
+        ),
         prefix: prefix,
-        prefixIconConstraints: BoxConstraints(
-            maxWidth: 2, maxHeight: 2, minHeight: 2, minWidth: 2),
+        prefixIconConstraints: isPrefixIconConstraints
+            ? BoxConstraints(
+                maxWidth: 2, maxHeight: 2, minHeight: 2, minWidth: 2)
+            : null,
         border: OutlineInputBorder(
           borderSide: BorderSide(
               color: bordersColor ?? context.colorScheme.borderTextField,

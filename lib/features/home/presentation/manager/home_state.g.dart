@@ -882,6 +882,7 @@ const _$PlaceOrderStatusEnumMap = {
   PlaceOrderStatus.loading: 'loading',
   PlaceOrderStatus.success: 'success',
   PlaceOrderStatus.failure: 'failure',
+  PlaceOrderStatus.unavailable: 'unavailable',
 };
 
 const _$GetOrdersByOrderGroupIDStatusEnumMap = {

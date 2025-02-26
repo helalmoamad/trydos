@@ -1091,3 +1091,12 @@ class CheckAvailabilityProductCartEvent extends HomeEvent {
   // TODO: implement props
   List<Object?> get props => [];
 }
+
+class ApplyCouponEvent extends HomeEvent {
+  final String code;
+  ApplyCouponEvent({required this.code});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [code];
+}

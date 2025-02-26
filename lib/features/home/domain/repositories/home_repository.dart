@@ -23,6 +23,7 @@ import 'package:trydos/features/home/data/models/response_only_message_model.dar
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
 import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
 import '../../../../core/error/failures.dart';
+import '../../data/models/apply_coupon_model.dart';
 import '../../data/models/check_availability_product_cart_model.dart';
 import '../../data/models/customer_wallet_model.dart';
 import '../../data/models/get_full_product_details_model.dart';
@@ -145,4 +146,8 @@ abstract class HomeRepository {
 
   Future<Either<Failure, CheckAvailabilityProductCartModel>>
       checkAvailabilityProductCart();
+
+  Future<Either<Failure, ApplyCouponModel>> applyCoupon({
+    required String code,
+  });
 }

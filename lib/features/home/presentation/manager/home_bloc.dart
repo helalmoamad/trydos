@@ -97,6 +97,7 @@ import '../../../chat/presentation/manager/chat_bloc.dart';
 import '../../../chat/presentation/manager/chat_event.dart';
 import '../../../story/presentation/bloc/story_bloc.dart';
 import '../../domain/use_cases/add_item_to_cart_usecase.dart';
+import '../../domain/use_cases/apply_coupon_usecase.dart';
 import '../../domain/use_cases/check_availability_product_cart_usecase.dart';
 import '../../domain/use_cases/get_customer_wallet_usecase.dart';
 import '../../domain/use_cases/get_orders_by_cart_group_usecase.dart';
@@ -171,6 +172,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.getOrdersByOrderGroupIDUsecase,
     this.getOrdersByCartGroupIDUsecase,
     this.checkAvailabilityProductCartUsecase,
+    this.applyCouponUsecase,
   ) : super(HomeState()) {
     on<HomeEvent>((event, emit) {});
 
@@ -398,6 +400,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<CheckAvailabilityProductCartEvent>(
       _onCheckAvailabilityProductCartEvent,
     );
+    on<ApplyCouponEvent>(
+      _onApplyCouponEvent,
+    );
   }
 
   Map<String, bool> boutiquesThatEnablesToRequestItsProductsUsingFiveFilters =
@@ -456,6 +461,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final CheckAvailabilityProductCartUsecase checkAvailabilityProductCartUsecase;
 
   final GetCustomerWalletUseCase getCustomerWalletUseCase;
+
+  final ApplyCouponUsecase applyCouponUsecase;
 
   final SubscribeTopicFornotificationUseCase
       subscribeTopicFornotificationUseCase;
@@ -2451,6 +2458,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           getProductDetailWithoutSimilarRelatedProductsStatus:
               GetProductDetailWithoutSimilarRelatedProductsStatus.init,
           getStartingSettingsStatus: GetStartingSettingsStatus.init,
+          placeOrderStatus: PlaceOrderStatus.init,
+          checkAvailabilityProductCartStatus:
+              CheckAvailabilityProductCartStatus.init,
+          applyCouponStatus: ApplyCouponStatus.init,
         )
         .toJson();
   }
@@ -5356,17 +5367,25 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
     response.fold(
       (l) {
-        if (!isFailedTheFirstTime.contains('PlaceOrderEvent')) {
-          add(
-            PlaceOrderEvent(placeOrderParams: event.placeOrderParams),
+        if (l.statusCode == 403) {
+          emit(
+            state.copyWith(
+              placeOrderStatus: PlaceOrderStatus.unavailable,
+            ),
           );
-          isFailedTheFirstTime.add('PlaceOrderEvent');
+        } else {
+          if (!isFailedTheFirstTime.contains('PlaceOrderEvent')) {
+            add(
+              PlaceOrderEvent(placeOrderParams: event.placeOrderParams),
+            );
+            isFailedTheFirstTime.add('PlaceOrderEvent');
+          }
+          emit(
+            state.copyWith(
+              placeOrderStatus: PlaceOrderStatus.failure,
+            ),
+          );
         }
-        emit(
-          state.copyWith(
-            placeOrderStatus: PlaceOrderStatus.failure,
-          ),
-        );
       },
       (r) {
         isFailedTheFirstTime.remove('PlaceOrderEvent');
@@ -5526,6 +5545,75 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             checkAvailabilityProductCartModel: r,
           ),
         );
+      },
+    );
+  }
+
+  FutureOr<void> _onApplyCouponEvent(
+    ApplyCouponEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    ///////////////////////////
+    emit(
+      state.copyWith(
+        applyCouponStatus: ApplyCouponStatus.loading,
+      ),
+    );
+
+    final response = await applyCouponUsecase.call(event.code);
+
+    response.fold(
+      (l) {
+        if (!isFailedTheFirstTime.contains('ApplyCouponEvent')) {
+          add(
+            CheckAvailabilityProductCartEvent(),
+          );
+          isFailedTheFirstTime.add('ApplyCouponEvent');
+        }
+
+        emit(
+          state.copyWith(
+            applyCouponStatus: ApplyCouponStatus.failure,
+          ),
+        );
+      },
+      (r) {
+        isFailedTheFirstTime.remove('ApplyCouponEvent');
+        var data = r.data;
+
+        if (data!.status == 0) {
+          emit(
+            state.copyWith(
+              applyCouponStatus: ApplyCouponStatus.failure,
+              applyCouponModel: r,
+            ),
+          );
+          //////////////
+          showMessage(
+            r.message ?? 'invalid',
+            foreGroundColor: Colors.white,
+            backGroundColor: Colors.black,
+            showInRelease: true,
+            timeShowing: Toast.LENGTH_LONG,
+          );
+        } else {
+          debugPrint('ApplyCouponEvent success');
+          ////////////////////////////
+          emit(
+            state.copyWith(
+              applyCouponStatus: ApplyCouponStatus.success,
+              applyCouponModel: r,
+            ),
+          );
+          //////////////
+          showMessage(
+            r.message ?? 'Success',
+            foreGroundColor: Colors.white,
+            backGroundColor: Colors.black,
+            showInRelease: true,
+            timeShowing: Toast.LENGTH_LONG,
+          );
+        }
       },
     );
   }

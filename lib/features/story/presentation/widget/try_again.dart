@@ -6,7 +6,7 @@ import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../app/my_text_widget.dart';
 
 class TryAgainWidget extends StatelessWidget {
-  final Function tryAgain;
+  final Function() tryAgain;
 
   const TryAgainWidget({required this.tryAgain, super.key});
 
@@ -16,7 +16,9 @@ class TryAgainWidget extends StatelessWidget {
         child: Column(
       children: [
         ElevatedButton(
-            onPressed: tryAgain.call(),
+            onPressed: () {
+              tryAgain();
+            },
             child: MyTextWidget(LocaleKeys.try_again.tr()))
       ],
     ));

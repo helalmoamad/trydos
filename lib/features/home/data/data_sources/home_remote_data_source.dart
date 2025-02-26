@@ -30,6 +30,7 @@ import '../../../../common/constant/configuration/stories_url_routes.dart';
 import '../../../../core/api/client_config.dart';
 import '../../../../core/api/methods/detect_server.dart';
 import '../../../../core/api/methods/post.dart';
+import '../models/apply_coupon_model.dart';
 import '../models/check_availability_product_cart_model.dart';
 import '../models/customer_wallet_model.dart';
 import '../models/get_product_detail_without_related_products_model.dart';
@@ -850,5 +851,23 @@ class HomeRemoteDatasource {
     );
 
     return checkAvailabilityProductCart();
+  }
+
+  Future<ApplyCouponModel> applyCoupon({
+    required String code,
+  }) {
+    GetClient<ApplyCouponModel> applyCoupon = GetClient<ApplyCouponModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<ApplyCouponModel>(
+        endpoint: MarketEndPoints.applyCouponEP,
+        queryParameters: {
+          "code": code,
+        },
+        response: ResponseValue<ApplyCouponModel>(
+            fromJson: (response) => ApplyCouponModel.fromJson(response)),
+      ),
+    );
+
+    return applyCoupon();
   }
 }

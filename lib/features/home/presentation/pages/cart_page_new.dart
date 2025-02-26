@@ -129,582 +129,678 @@ class _CartPageState extends State<CartPage> {
       },
       child: Scaffold(
           resizeToAvoidBottomInset: true,
-          body: BlocBuilder<HomeBloc, HomeState>(
-            buildWhen: (previous, current) {
-              return previous.getCartItemsStatus !=
-                      current.getCartItemsStatus ||
-                  previous.getCurrencyForCountryModel !=
-                      current.getCurrencyForCountryModel ||
-                  previous.deleteItemInCartStatus !=
-                      current.deleteItemInCartStatus ||
-                  previous.getOldCartItemsStatus !=
-                      current.getOldCartItemsStatus ||
-                  previous.convertItemFromOldcartToCartStatus !=
-                      current.convertItemFromOldcartToCartStatus ||
-                  previous.hideItemInOldCartStatus !=
-                      current.hideItemInOldCartStatus ||
-                  previous.addItemInCartStatus != current.addItemInCartStatus ||
-                  previous.updateItemInCartStatus !=
-                      current.updateItemInCartStatus ||
-                  previous.cartCollection!.length !=
-                      current.cartCollection?.length ||
-                  previous.oldcartCollection?.length !=
-                      current.oldcartCollection!.length;
-            },
-            builder: (context, state) {
-              cartImages = [];
+          body: BlocListener<HomeBloc, HomeState>(
+            listenWhen: (previous, current) =>
+                previous.checkAvailabilityProductCartStatus !=
+                    current.checkAvailabilityProductCartStatus &&
+                current.checkAvailabilityProductCartStatus ==
+                    CheckAvailabilityProductCartStatus.success,
+            listener: (context, state) {
+              if (state.checkAvailabilityProductCartStatus ==
+                  CheckAvailabilityProductCartStatus.success) {
+                print('CheckAvailabilityProductCart');
+                print(state.checkAvailabilityProductCartModel!.data!);
 
-              state.cartCollection?.forEach(
-                (element) {
-                  for (var i = 0; i < (element.quantity ?? 0); i++) {
-                    cartImages.add({
-                      "image": element.image ?? "",
-                      "size": element.variations?.isNullOrEmpty ?? false
-                          ? ""
-                          : element.variations?[0].size ?? "",
-                      "color": element.variations?.isNullOrEmpty ?? false
-                          ? ""
-                          : element.variations?[0].color ?? ""
-                    });
+                if (state
+                    .checkAvailabilityProductCartModel!.data!.isNullOrEmpty) {
+                  double totlalcashed =
+                      (state.getCartShippingItemsModel?.data?.totalCash ?? 0) *
+                          state.getCurrencyForCountryModel!.data!.currency!
+                              .exchangeRate!;
+
+                  double totlalPrice =
+                      (state.getCartShippingItemsModel?.data?.total ?? 0) *
+                          state.getCurrencyForCountryModel!.data!.currency!
+                              .exchangeRate!;
+                  String cartGroupId =
+                      state.cartCollection?[0].cartGroupId ?? '';
+
+                  String priceSymbol = state
+                          .getCurrencyForCountryModel!.data!.currency!.symbol ??
+                      "";
+                  ////////////////////////////////
+                  HelperFunctions.slidingNavigation(
+                    context,
+                    CartDelivaryAddress(
+                      totalCashed: totlalcashed,
+                      cartImages: cartImages,
+                      totalPrice: totlalPrice,
+                      cartGroupId: cartGroupId,
+                      currencySympole: priceSymbol,
+                    ),
+                  );
+                } else {
+                  var cartCollection = state.cartCollection!;
+
+                  for (var checkAvailabilityData
+                      in state.checkAvailabilityProductCartModel!.data!) {
+                    for (var cartData in cartCollection) {
+                      if (cartData.id == checkAvailabilityData.cartId) {
+                        cartData = cartData.copyWith(checkAvailability: false);
+                        break;
+                      }
+                    }
                   }
-                },
-              );
-              /*if ((prefsRepository.isTokenExpired ??
-                      false ||
-                          prefsRepository.marketToken == "" ||
-                          prefsRepository.marketToken == null) &&
-                  showDialogToResetSession &&
-                  GetIt.I<AuthBloc>().state.registerGuestStatus !=
-                      RegisterGuestStatus.loading) {
-                return Center(
-                  child: Container(
-                    alignment: Alignment.center,
-                    width: 400,
-                    height: 300,
-                    child: AlertDialog(
-                      title: MyTextWidget(
-                        "${LocaleKeys.it_has_been_along_time_since_your_account.tr()}",
-                      ),
-                      actions: <Widget>[
-                        Container(
-                          alignment: Alignment.center,
-                          width: 300,
-                          child: Row(
-                            mainAxisAlignment: (prefsRepository
-                                        .isVerifiedPhonePeforeExpiredToken ??
-                                    false)
-                                ? MainAxisAlignment.center
-                                : MainAxisAlignment.spaceAround,
-                            children: [
-                              (prefsRepository
+                  state.copyWith(cartCollection: cartCollection);
+                  //////////////////////////
+                  showMessage(
+                    " ${LocaleKeys.you_have_to_delete_all_unavailable_products.tr()}",
+                    foreGroundColor: Colors.white,
+                    backGroundColor: Colors.black,
+                    showInRelease: true,
+                    timeShowing: Toast.LENGTH_LONG,
+                  );
+                }
+              }
+            },
+            child: BlocBuilder<HomeBloc, HomeState>(
+              buildWhen: (previous, current) {
+                return previous.getCartItemsStatus !=
+                        current.getCartItemsStatus ||
+                    previous.getCurrencyForCountryModel !=
+                        current.getCurrencyForCountryModel ||
+                    previous.deleteItemInCartStatus !=
+                        current.deleteItemInCartStatus ||
+                    previous.getOldCartItemsStatus !=
+                        current.getOldCartItemsStatus ||
+                    previous.convertItemFromOldcartToCartStatus !=
+                        current.convertItemFromOldcartToCartStatus ||
+                    previous.hideItemInOldCartStatus !=
+                        current.hideItemInOldCartStatus ||
+                    previous.addItemInCartStatus !=
+                        current.addItemInCartStatus ||
+                    previous.updateItemInCartStatus !=
+                        current.updateItemInCartStatus ||
+                    previous.cartCollection!.length !=
+                        current.cartCollection?.length ||
+                    previous.oldcartCollection?.length !=
+                        current.oldcartCollection!.length ||
+                    previous.checkAvailabilityProductCartStatus !=
+                        current.checkAvailabilityProductCartStatus;
+              },
+              builder: (context, state) {
+                cartImages = [];
+
+                state.cartCollection?.forEach(
+                  (element) {
+                    for (var i = 0; i < (element.quantity ?? 0); i++) {
+                      cartImages.add(
+                        {
+                          "image": element.image ?? "",
+                          "size": element.variations?.isNullOrEmpty ?? false
+                              ? ""
+                              : element.variations?[0].size ?? "",
+                          "color": element.variations?.isNullOrEmpty ?? false
+                              ? ""
+                              : element.variations?[0].color ?? ""
+                        },
+                      );
+                    }
+                  },
+                );
+                /*if ((prefsRepository.isTokenExpired ??
+                        false ||
+                            prefsRepository.marketToken == "" ||
+                            prefsRepository.marketToken == null) &&
+                    showDialogToResetSession &&
+                    GetIt.I<AuthBloc>().state.registerGuestStatus !=
+                        RegisterGuestStatus.loading) {
+                  return Center(
+                    child: Container(
+                      alignment: Alignment.center,
+                      width: 400,
+                      height: 300,
+                      child: AlertDialog(
+                        title: MyTextWidget(
+                          "${LocaleKeys.it_has_been_along_time_since_your_account.tr()}",
+                        ),
+                        actions: <Widget>[
+                          Container(
+                            alignment: Alignment.center,
+                            width: 300,
+                            child: Row(
+                              mainAxisAlignment: (prefsRepository
                                           .isVerifiedPhonePeforeExpiredToken ??
                                       false)
-                                  ? SizedBox.shrink()
-                                  : Container(
-                                      alignment: Alignment.center,
-                                      width: 130,
-                                      child: AppElevatedButton(
-                                        textStyle: TextStyle(fontSize: 16),
-                                        onPressed: () async {
-                                          showDialogToResetSession = false;
-
-                                          String? deviceId =
-                                              await HelperFunctions
-                                                  .getDeviceId();
-
-                                          GetIt.I<AuthBloc>().add(
-                                              RegisterGuestEvent(
-                                                  oldGuestUserId:
-                                                      prefsRepository.myMarketId
-                                                          .toString(),
-                                                  deviceId: deviceId!));
-                                          setState(() {});
-                                        },
-                                        text:
-                                            "${LocaleKeys.reset_your_count.tr()}",
-                                      ),
-                                    ),
-                              Container(
-                                alignment: Alignment.center,
-                                width: 130,
-                                child: AppElevatedButton(
-                                  textStyle: TextStyle(fontSize: 16),
-                                  onPressed: () {
-                                    showDialogToResetSession = false;
-
-                                    Future.delayed(
-                                      Duration(microseconds: 300),
-                                      () {
-                                        Navigator.of(context)
-                                            .push(PageRouteBuilder(
-                                          pageBuilder: (context, animation,
-                                                  secondaryAnimation) =>
-                                              RegistrationPage(
-                                            fromExpiredToken: true,
-                                          ),
-                                        ));
-                                      },
-                                    );
-                                  },
-                                  text: '${LocaleKeys.go_to_log_in.tr()}',
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                );
-              }*/
-              if (state.cartCollection == null ||
-                  state.cartCollection!.isEmpty) {
-                isExpanded.value = false;
-                isVerified.value = true;
-              }
-              if (state.getCartItemsStatus == GetCartItemsStatus.failure &&
-                  (state.getCartShippingItemsModel == null)) {
-                return Padding(
-                  padding: EdgeInsets.only(top: 100),
-                  child: Center(child: TryAgainWidget(tryAgain: () {
-                    BlocProvider.of<HomeBloc>(context).add(GetCartItemEvent());
-                  })),
-                );
-              }
-
-              if (state.getCartShippingItemsModel == null &&
-                      state.getCartItemsStatus != GetCartItemsStatus.success ||
-                  (state.getOldCartModel == null &&
-                      state.getOldCartItemsStatus !=
-                          GetOLdCartItemsStatus.success)) {
-                return Center(
-                  child: TrydosLoader(),
-                );
-              }
-
-              double totlalPrice = 0;
-              double totlalcashed = 0;
-              String? priceSymbol;
-              String cartGroupId = '';
-              double totlalQuantity = 0;
-              double totlalPriceWithoutShipping = 0;
-              double totlalDiscount = 0;
-
-              totlalcashed =
-                  (state.getCartShippingItemsModel?.data?.totalCash ?? 0) *
-                      state.getCurrencyForCountryModel!.data!.currency!
-                          .exchangeRate!;
-              totlalPrice =
-                  (state.getCartShippingItemsModel?.data?.total ?? 0) *
-                      state.getCurrencyForCountryModel!.data!.currency!
-                          .exchangeRate!;
-
-              totlalPriceWithoutShipping =
-                  (state.getCartShippingItemsModel?.data?.subTotal ?? 0) *
-                      state.getCurrencyForCountryModel!.data!.currency!
-                          .exchangeRate!;
-              totlalDiscount = (state.getCartShippingItemsModel?.data
-                          ?.totalDiscountOnProduct ??
-                      0) *
-                  state.getCurrencyForCountryModel!.data!.currency!
-                      .exchangeRate!;
-              priceSymbol =
-                  state.getCurrencyForCountryModel!.data!.currency!.symbol ??
-                      "";
-
-              state.cartCollection?.forEach((element) {
-                cartGroupId = state.cartCollection![0].cartGroupId ?? '';
-                totlalQuantity = totlalQuantity + (element.quantity ?? 0);
-
-                //   totlalOfferPrice =
-                //       totlalOfferPrice + element.offerPrice! * element.quantity!;
-                //   totlalOfferPrice = totlalPrice + element.price! * element.quantity!;
-                //   totlalDiscount = totlalDiscount +
-                //       (element.price! - element.offerPrice!) * element.quantity!;
-              });
-              //  totlalOfferPrice = totlalOfferPrice *
-              //     state.getCurrencyForCountryModel!.data!.currency!
-              //         .exchangeRate!;
-              // totlalPrice = totlalPrice *
-              //     state.getCurrencyForCountryModel!.data!.currency!
-              //         .exchangeRate!;
-              //totlalDiscount = totlalDiscount *
-              //   state.getCurrencyForCountryModel!.data!.currency!
-              //     .exchangeRate!;
-
-              return SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(top: 60.h),
-                      padding: EdgeInsets.symmetric(horizontal: 10.h),
-                      width: 1.sw,
-                      height: 50.h,
-                      child: Column(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.symmetric(horizontal: 10.h),
-                            height: 50.h,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
+                                  ? MainAxisAlignment.center
+                                  : MainAxisAlignment.spaceAround,
                               children: [
-                                InkWell(
-                                  onTap: () {
-                                    // didCallOnWillPop = true;
-                                    if (Navigator.canPop(context)) {
-                                      if (focusNode.hasFocus) {
-                                        focusNode.previousFocus();
-                                      }
-                                      if (Navigator.of(context).canPop()) {
-                                        Navigator.of(context).pop();
-                                        return;
-                                        // منع الإغلاق بعد تنفيذ pop
-                                      }
-
-                                      // يسمح بالإغلاق إذا لم تنطبق أي من الشروط
-
-                                      appBloc.add(ChangeBasePage(0));
-                                      homeBloc.add(
-                                          ResetAllSelectedAppliedFilterEvent());
-                                      return;
-                                    } else {
-                                      appBloc.add(ChangeBasePage(0));
-                                      return;
-                                    }
-                                  },
-                                  child: !(LanguageService.languageCode != "ar")
-                                      ? Transform.rotate(
-                                          angle: pi,
-                                          alignment: Alignment.center,
-                                          child: Container(
-                                            width: 40.w,
-                                            child: SvgPicture.asset(
-                                                AppAssets.backIconArrowSvg,
-                                                height: 20.h),
-                                          ),
-                                        )
-                                      : Container(
-                                          width: 40.w,
-                                          child: SvgPicture.asset(
-                                            AppAssets.backIconArrowSvg,
-                                            height: 20.h,
-                                          ),
+                                (prefsRepository
+                                            .isVerifiedPhonePeforeExpiredToken ??
+                                        false)
+                                    ? SizedBox.shrink()
+                                    : Container(
+                                        alignment: Alignment.center,
+                                        width: 130,
+                                        child: AppElevatedButton(
+                                          textStyle: TextStyle(fontSize: 16),
+                                          onPressed: () async {
+                                            showDialogToResetSession = false;
+            
+                                            String? deviceId =
+                                                await HelperFunctions
+                                                    .getDeviceId();
+            
+                                            GetIt.I<AuthBloc>().add(
+                                                RegisterGuestEvent(
+                                                    oldGuestUserId:
+                                                        prefsRepository.myMarketId
+                                                            .toString(),
+                                                    deviceId: deviceId!));
+                                            setState(() {});
+                                          },
+                                          text:
+                                              "${LocaleKeys.reset_your_count.tr()}",
                                         ),
+                                      ),
+                                Container(
+                                  alignment: Alignment.center,
+                                  width: 130,
+                                  child: AppElevatedButton(
+                                    textStyle: TextStyle(fontSize: 16),
+                                    onPressed: () {
+                                      showDialogToResetSession = false;
+            
+                                      Future.delayed(
+                                        Duration(microseconds: 300),
+                                        () {
+                                          Navigator.of(context)
+                                              .push(PageRouteBuilder(
+                                            pageBuilder: (context, animation,
+                                                    secondaryAnimation) =>
+                                                RegistrationPage(
+                                              fromExpiredToken: true,
+                                            ),
+                                          ));
+                                        },
+                                      );
+                                    },
+                                    text: '${LocaleKeys.go_to_log_in.tr()}',
+                                  ),
                                 ),
-                                Spacer(),
-                                SvgPicture.asset(
-                                  AppAssets.bagsSvg,
-                                  height: 20,
-                                ),
-                                SizedBox(
-                                  width: 7.w,
-                                ),
-                                Text(
-                                  "${LocaleKeys.shopping_bag.tr()} ",
-                                  style: context.textTheme.bodyMedium?.ra
-                                      .copyWith(
-                                          color: const Color(0xff505050),
-                                          letterSpacing: 0.18,
-                                          fontSize: 13.sp,
-                                          height: 1.33),
-                                ),
-                                Text(
-                                  "${state.cartCollection?.length} ",
-                                  style: context.textTheme.bodyMedium?.br
-                                      .copyWith(
-                                          color: const Color(0xff505050),
-                                          letterSpacing: 0.18,
-                                          fontSize: 13.sp,
-                                          height: 1.33),
-                                ),
-                                Text(
-                                  "${LocaleKeys.item.tr()}",
-                                  strutStyle:
-                                      LanguageService.languageCode != "ar"
-                                          ? null
-                                          : StrutStyle(
-                                              height: 1.2.sp, leading: 0.3),
-                                  style: context.textTheme.bodyMedium?.br
-                                      .copyWith(
-                                          color: const Color(0xff505050),
-                                          letterSpacing: 0.18,
-                                          fontSize: 14.sp,
-                                          height: 1.33),
-                                ),
-                                SizedBox(
-                                  width: LanguageService.languageCode != "ar"
-                                      ? 0
-                                      : 20.w,
-                                ),
-                                Spacer(),
-                                SvgPicture.asset(
-                                  AppAssets.shareSvg,
-                                  height: 20,
-                                  width: 20,
-                                  color: Color(0xff3C3C3C),
-                                )
                               ],
                             ),
-                          ),
-                          /*container(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: Color(0xffF8F8F8)),
-                              margin: EdgeInsets.only(top: 5.h),
-                              height: 30.h,
+                          )
+                        ],
+                      ),
+                    ),
+                  );
+                }*/
+                if (state.cartCollection == null ||
+                    state.cartCollection!.isEmpty) {
+                  isExpanded.value = false;
+                  isVerified.value = true;
+                }
+                if (state.getCartItemsStatus == GetCartItemsStatus.failure &&
+                    (state.getCartShippingItemsModel == null)) {
+                  return Padding(
+                    padding: EdgeInsets.only(top: 100),
+                    child: Center(
+                      child: TryAgainWidget(
+                        tryAgain: () {
+                          BlocProvider.of<HomeBloc>(context)
+                              .add(GetCartItemEvent());
+                        },
+                      ),
+                    ),
+                  );
+                }
+
+                if (state.getCartShippingItemsModel == null &&
+                        state.getCartItemsStatus !=
+                            GetCartItemsStatus.success ||
+                    (state.getOldCartModel == null &&
+                        state.getOldCartItemsStatus !=
+                            GetOLdCartItemsStatus.success)) {
+                  return Center(
+                    child: TrydosLoader(),
+                  );
+                }
+
+                double totlalPrice = 0;
+                String? priceSymbol;
+                double totlalQuantity = 0;
+                double totlalPriceWithoutShipping = 0;
+                double totlalDiscount = 0;
+
+                totlalPrice =
+                    (state.getCartShippingItemsModel?.data?.total ?? 0) *
+                        state.getCurrencyForCountryModel!.data!.currency!
+                            .exchangeRate!;
+
+                totlalPriceWithoutShipping =
+                    (state.getCartShippingItemsModel?.data?.subTotal ?? 0) *
+                        state.getCurrencyForCountryModel!.data!.currency!
+                            .exchangeRate!;
+                totlalDiscount = (state.getCartShippingItemsModel?.data
+                            ?.totalDiscountOnProduct ??
+                        0) *
+                    state.getCurrencyForCountryModel!.data!.currency!
+                        .exchangeRate!;
+                priceSymbol =
+                    state.getCurrencyForCountryModel!.data!.currency!.symbol ??
+                        "";
+
+                state.cartCollection?.forEach((element) {
+                  totlalQuantity = totlalQuantity + (element.quantity ?? 0);
+
+                  //   totlalOfferPrice =
+                  //       totlalOfferPrice + element.offerPrice! * element.quantity!;
+                  //   totlalOfferPrice = totlalPrice + element.price! * element.quantity!;
+                  //   totlalDiscount = totlalDiscount +
+                  //       (element.price! - element.offerPrice!) * element.quantity!;
+                });
+                //  totlalOfferPrice = totlalOfferPrice *
+                //     state.getCurrencyForCountryModel!.data!.currency!
+                //         .exchangeRate!;
+                // totlalPrice = totlalPrice *
+                //     state.getCurrencyForCountryModel!.data!.currency!
+                //         .exchangeRate!;
+                //totlalDiscount = totlalDiscount *
+                //   state.getCurrencyForCountryModel!.data!.currency!
+                //     .exchangeRate!;
+
+                return SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(top: 60.h),
+                        padding: EdgeInsets.symmetric(horizontal: 10.h),
+                        width: 1.sw,
+                        height: 50.h,
+                        child: Column(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.symmetric(horizontal: 10.h),
+                              height: 50.h,
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   InkWell(
-                                      onTap: () {
-                                        /* HelperFunctions.slidingNavigation(
-                                                  context,
-                                                  CartPage2(
-                                                    getCartShippingItemsModel: state
-                                                        .getCartShippingItemsModel!,
-                                                  ));*/
-                                      },
-                                      child: SvgPicture.asset(
-                                          AppAssets.countItemSvg)),
-                                  Text(" ${state.cartCollection!.length} ",
+                                    onTap: () {
+                                      // didCallOnWillPop = true;
+                                      if (Navigator.canPop(context)) {
+                                        if (focusNode.hasFocus) {
+                                          focusNode.previousFocus();
+                                        }
+                                        if (Navigator.of(context).canPop()) {
+                                          Navigator.of(context).pop();
+                                          return;
+                                          // منع الإغلاق بعد تنفيذ pop
+                                        }
+
+                                        // يسمح بالإغلاق إذا لم تنطبق أي من الشروط
+
+                                        appBloc.add(ChangeBasePage(0));
+                                        homeBloc.add(
+                                            ResetAllSelectedAppliedFilterEvent());
+                                        return;
+                                      } else {
+                                        appBloc.add(ChangeBasePage(0));
+                                        return;
+                                      }
+                                    },
+                                    child: !(LanguageService.languageCode !=
+                                            "ar")
+                                        ? Transform.rotate(
+                                            angle: pi,
+                                            alignment: Alignment.center,
+                                            child: Container(
+                                              width: 40.w,
+                                              child: SvgPicture.asset(
+                                                  AppAssets.backIconArrowSvg,
+                                                  height: 20.h),
+                                            ),
+                                          )
+                                        : Container(
+                                            width: 40.w,
+                                            child: SvgPicture.asset(
+                                              AppAssets.backIconArrowSvg,
+                                              height: 20.h,
+                                            ),
+                                          ),
+                                  ),
+                                  Spacer(),
+                                  SvgPicture.asset(
+                                    AppAssets.bagsSvg,
+                                    height: 20,
+                                  ),
+                                  SizedBox(
+                                    width: 7.w,
+                                  ),
+                                  Text(
+                                    "${LocaleKeys.shopping_bag.tr()} ",
+                                    style: context.textTheme.bodyMedium?.ra
+                                        .copyWith(
+                                            color: const Color(0xff505050),
+                                            letterSpacing: 0.18,
+                                            fontSize: 13.sp,
+                                            height: 1.33),
+                                  ),
+                                  Text(
+                                    "${state.cartCollection?.length} ",
+                                    style: context.textTheme.bodyMedium?.br
+                                        .copyWith(
+                                            color: const Color(0xff505050),
+                                            letterSpacing: 0.18,
+                                            fontSize: 13.sp,
+                                            height: 1.33),
+                                  ),
+                                  Text(
+                                    "${LocaleKeys.item.tr()}",
+                                    strutStyle:
+                                        LanguageService.languageCode != "ar"
+                                            ? null
+                                            : StrutStyle(
+                                                height: 1.2.sp, leading: 0.3),
+                                    style: context.textTheme.bodyMedium?.br
+                                        .copyWith(
+                                            color: const Color(0xff505050),
+                                            letterSpacing: 0.18,
+                                            fontSize: 14.sp,
+                                            height: 1.33),
+                                  ),
+                                  SizedBox(
+                                    width: LanguageService.languageCode != "ar"
+                                        ? 0
+                                        : 20.w,
+                                  ),
+                                  Spacer(),
+                                  SvgPicture.asset(
+                                    AppAssets.shareSvg,
+                                    height: 20,
+                                    width: 20,
+                                    color: Color(0xff3C3C3C),
+                                  )
+                                ],
+                              ),
+                            ),
+                            /*container(
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: Color(0xffF8F8F8)),
+                                margin: EdgeInsets.only(top: 5.h),
+                                height: 30.h,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    InkWell(
+                                        onTap: () {
+                                          /* HelperFunctions.slidingNavigation(
+                                                    context,
+                                                    CartPage2(
+                                                      getCartShippingItemsModel: state
+                                                          .getCartShippingItemsModel!,
+                                                    ));*/
+                                        },
+                                        child: SvgPicture.asset(
+                                            AppAssets.countItemSvg)),
+                                    Text(" ${state.cartCollection!.length} ",
+                                        style: context.textTheme.bodyMedium?.mr
+                                            .copyWith(
+                                                fontSize: 13,
+                                                color: const Color(0xff5D5C5D),
+                                                letterSpacing: 0.18,
+                                                height: 1.33)),
+                                    Text(
+                                      "item ",
+                                      style: context.textTheme.bodyMedium?.la
+                                          .copyWith(
+                                              fontSize: 13,
+                                              color: const Color(0xff8D8D8D),
+                                              letterSpacing: 0.18,
+                                              height: 1.33),
+                                    ),
+                                    Text(
+                                      "${totlaPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}",
                                       style: context.textTheme.bodyMedium?.mr
                                           .copyWith(
                                               fontSize: 13,
                                               color: const Color(0xff5D5C5D),
                                               letterSpacing: 0.18,
-                                              height: 1.33)),
-                                  Text(
-                                    "item ",
-                                    style: context.textTheme.bodyMedium?.la
-                                        .copyWith(
-                                            fontSize: 13,
-                                            color: const Color(0xff8D8D8D),
-                                            letterSpacing: 0.18,
-                                            height: 1.33),
-                                  ),
-                                  Text(
-                                    "${totlaPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}",
-                                    style: context.textTheme.bodyMedium?.mr
-                                        .copyWith(
-                                            fontSize: 13,
-                                            color: const Color(0xff5D5C5D),
-                                            letterSpacing: 0.18,
-                                            height: 1.33),
-                                  ),
-                                  Text(
-                                    " ${priceSymbol ?? '\$'} ",
-                                    style: context.textTheme.bodyMedium?.la
-                                        .copyWith(
-                                            fontSize: 13,
-                                            color: const Color(0xff8D8D8D),
-                                            letterSpacing: 0.18,
-                                            height: 1.33),
-                                  ),
-                                ],
-                              ),
-                            ),*/
-                        ],
+                                              height: 1.33),
+                                    ),
+                                    Text(
+                                      " ${priceSymbol ?? '\$'} ",
+                                      style: context.textTheme.bodyMedium?.la
+                                          .copyWith(
+                                              fontSize: 13,
+                                              color: const Color(0xff8D8D8D),
+                                              letterSpacing: 0.18,
+                                              height: 1.33),
+                                    ),
+                                  ],
+                                ),
+                              ),*/
+                          ],
+                        ),
                       ),
-                    ),
-                    Container(
-                      color: Color.fromARGB(255, 255, 255, 255),
-                      child: Container(
-                        color: ((state.cartCollection == null ||
-                                    state.cartCollection!.isEmpty) &&
-                                (state.oldcartCollection == null ||
-                                    state.oldcartCollection!.isEmpty))
-                            ? Color(0xffF8F8F8)
-                            : Color(0xffFEFEFE),
-                        alignment: Alignment.topCenter,
-                        child: Stack(
-                          children: [
-                            ((state.cartCollection == null ||
-                                        state.cartCollection!.isEmpty) &&
-                                    (state.oldcartCollection == null ||
-                                        state.oldcartCollection!.isEmpty))
-                                ? Center(
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        SizedBox(
-                                          height: (1.sh / 2) -
-                                              ((widget.fromeFilters ?? false)
-                                                  ? 140.h
-                                                  : 200.h),
-                                        ),
-                                        Container(
-                                          height: 20,
-                                          child: SvgPicture.asset(
-                                            AppAssets.cartSvg,
-                                            color: const Color(0xff8E8E8E),
+                      Container(
+                        color: Color.fromARGB(255, 255, 255, 255),
+                        child: Container(
+                          color: ((state.cartCollection == null ||
+                                      state.cartCollection!.isEmpty) &&
+                                  (state.oldcartCollection == null ||
+                                      state.oldcartCollection!.isEmpty))
+                              ? Color(0xffF8F8F8)
+                              : Color(0xffFEFEFE),
+                          alignment: Alignment.topCenter,
+                          child: Stack(
+                            children: [
+                              ((state.cartCollection == null ||
+                                          state.cartCollection!.isEmpty) &&
+                                      (state.oldcartCollection == null ||
+                                          state.oldcartCollection!.isEmpty))
+                                  ? Center(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          SizedBox(
+                                            height: (1.sh / 2) -
+                                                ((widget.fromeFilters ?? false)
+                                                    ? 140.h
+                                                    : 200.h),
+                                          ),
+                                          Container(
+                                            height: 20,
+                                            child: SvgPicture.asset(
+                                              AppAssets.cartSvg,
+                                              color: const Color(0xff8E8E8E),
+                                              height: 20,
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          Container(
+                                            child: Text(
+                                              "${LocaleKeys.your_cart_empty.tr()}",
+                                              style: context
+                                                  .textTheme.bodyMedium?.mr
+                                                  .copyWith(
+                                                      fontSize: 13.sp,
+                                                      color: const Color(
+                                                          0xff8E8E8E),
+                                                      letterSpacing: 0.18,
+                                                      height: 1.33),
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 15,
+                                          ),
+                                          Container(
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              textAlign: TextAlign.center,
+                                              "${LocaleKeys.see_our_many_offers.tr()}",
+                                              style: context
+                                                  .textTheme.bodyMedium?.ra
+                                                  .copyWith(
+                                                      fontSize: 11.sp,
+                                                      color: const Color(
+                                                          0xff505050),
+                                                      letterSpacing: 0.18,
+                                                      height: 1.33),
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 370.h,
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  : Container(
+                                      height: widget.fromeFilters ?? false
+                                          ? (1.sh - 140.h)
+                                          : 1.sh - 210.h,
+                                      child: ListView(
+                                        padding: EdgeInsets.only(top: 0),
+                                        shrinkWrap: true,
+                                        physics:
+                                            AlwaysScrollableScrollPhysics(),
+                                        children: [
+                                          (state.cartCollection == null ||
+                                                  state.cartCollection!.isEmpty)
+                                              ? SizedBox.shrink()
+                                              : ProductCollectionInCartPage1(
+                                                  isOldCart: false,
+                                                  oldCartCollection:
+                                                      state.oldcartCollection ??
+                                                          [],
+                                                  cartCollection:
+                                                      state.cartCollection ??
+                                                          [],
+                                                  priceSymbol: priceSymbol,
+                                                ),
+                                          SizedBox(
                                             height: 20,
                                           ),
-                                        ),
-                                        SizedBox(
-                                          height: 10,
-                                        ),
-                                        Container(
-                                          child: Text(
-                                            "${LocaleKeys.your_cart_empty.tr()}",
-                                            style: context
-                                                .textTheme.bodyMedium?.mr
-                                                .copyWith(
-                                                    fontSize: 13.sp,
-                                                    color:
-                                                        const Color(0xff8E8E8E),
-                                                    letterSpacing: 0.18,
-                                                    height: 1.33),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: 15,
-                                        ),
-                                        Container(
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            textAlign: TextAlign.center,
-                                            "${LocaleKeys.see_our_many_offers.tr()}",
-                                            style: context
-                                                .textTheme.bodyMedium?.ra
-                                                .copyWith(
-                                                    fontSize: 11.sp,
-                                                    color:
-                                                        const Color(0xff505050),
-                                                    letterSpacing: 0.18,
-                                                    height: 1.33),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: 370.h,
-                                        ),
-                                      ],
-                                    ),
-                                  )
-                                : Container(
-                                    height: widget.fromeFilters ?? false
-                                        ? (1.sh - 140.h)
-                                        : 1.sh - 210.h,
-                                    child: ListView(
-                                      padding: EdgeInsets.only(top: 0),
-                                      shrinkWrap: true,
-                                      physics: AlwaysScrollableScrollPhysics(),
-                                      children: [
-                                        (state.cartCollection == null ||
-                                                state.cartCollection!.isEmpty)
-                                            ? SizedBox.shrink()
-                                            : ProductCollectionInCartPage1(
-                                                isOldCart: false,
-                                                oldCartCollection:
-                                                    state.oldcartCollection ??
-                                                        [],
-                                                cartCollection:
-                                                    state.cartCollection ?? [],
-                                                priceSymbol: priceSymbol,
-                                              ),
-                                        SizedBox(
-                                          height: 20,
-                                        ),
-                                        state.oldcartCollection != null
-                                            ? !state.oldcartCollection!.isEmpty
-                                                ? Center(
-                                                    child: MyTextWidget(
-                                                    "${LocaleKeys.old_cart.tr()}",
-                                                    style: TextStyle(
-                                                        color: Colors.black,
-                                                        fontSize: 24),
-                                                  ))
-                                                : SizedBox.shrink()
-                                            : SizedBox.shrink(),
-                                        SizedBox(
-                                          height: 10,
-                                        ),
-                                        state.oldcartCollection != null
-                                            ? !state.oldcartCollection!.isEmpty
-                                                ? Container(
-                                                    height: 70,
-                                                    padding:
-                                                        EdgeInsets.all(20.w),
-                                                    child: Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment.end,
-                                                      children: [
-                                                        ElevatedButton(
-                                                            onPressed: () {
-                                                              GetIt.I<HomeBloc>()
-                                                                  .add(
-                                                                      HideItemInOldCartEvent(
-                                                                hideAll: true,
-                                                              ));
-                                                            },
-                                                            child: MyTextWidget(
-                                                              "${LocaleKeys.hide_all.tr()}",
-                                                              style: TextStyle(
-                                                                  color: Colors
-                                                                      .red,
-                                                                  fontSize:
-                                                                      14.sp),
-                                                            ))
-                                                      ],
+                                          state.oldcartCollection != null
+                                              ? !state.oldcartCollection!
+                                                      .isEmpty
+                                                  ? Center(
+                                                      child: MyTextWidget(
+                                                      "${LocaleKeys.old_cart.tr()}",
+                                                      style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 24),
                                                     ))
-                                                : SizedBox.shrink()
-                                            : SizedBox.shrink(),
-                                        (state.oldcartCollection == null ||
-                                                state
-                                                    .oldcartCollection!.isEmpty)
-                                            ? SizedBox.shrink()
-                                            : ProductCollectionInCartPage1(
-                                                isOldCart: true,
-                                                oldCartCollection:
-                                                    state.oldcartCollection ??
-                                                        [],
-                                                cartCollection:
-                                                    state.cartCollection ?? [],
-                                                priceSymbol: priceSymbol,
-                                              ),
-                                      ],
-                                    ),
-                                  ),
-                            ValueListenableBuilder<bool>(
-                                valueListenable: moreInfo,
-                                builder: (context, isMoreInfo, _) {
-                                  return ValueListenableBuilder<bool>(
-                                      valueListenable: isExpanded,
-                                      builder: (context, expanded, _) {
-                                        return !(expanded || isMoreInfo)
-                                            ? SizedBox.shrink()
-                                            : InkWell(
-                                                onTap: () {
-                                                  isExpanded.value = false;
-                                                  moreInfo.value = false;
-                                                  Future.delayed(
-                                                    Duration(microseconds: 300),
-                                                    () {
-                                                      panelController.close();
-                                                    },
-                                                  );
-                                                },
-                                                child: Container(
-                                                  height: 600.h,
-                                                  color: Color.fromRGBO(
-                                                      29, 29, 29, 0.6),
+                                                  : SizedBox.shrink()
+                                              : SizedBox.shrink(),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          state.oldcartCollection != null
+                                              ? !state.oldcartCollection!
+                                                      .isEmpty
+                                                  ? Container(
+                                                      height: 70,
+                                                      padding:
+                                                          EdgeInsets.all(20.w),
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .end,
+                                                        children: [
+                                                          ElevatedButton(
+                                                              onPressed: () {
+                                                                GetIt.I<HomeBloc>()
+                                                                    .add(
+                                                                        HideItemInOldCartEvent(
+                                                                  hideAll: true,
+                                                                ));
+                                                              },
+                                                              child:
+                                                                  MyTextWidget(
+                                                                "${LocaleKeys.hide_all.tr()}",
+                                                                style: TextStyle(
+                                                                    color: Colors
+                                                                        .red,
+                                                                    fontSize:
+                                                                        14.sp),
+                                                              ))
+                                                        ],
+                                                      ))
+                                                  : SizedBox.shrink()
+                                              : SizedBox.shrink(),
+                                          (state.oldcartCollection == null ||
+                                                  state.oldcartCollection!
+                                                      .isEmpty)
+                                              ? SizedBox.shrink()
+                                              : ProductCollectionInCartPage1(
+                                                  isOldCart: true,
+                                                  oldCartCollection:
+                                                      state.oldcartCollection ??
+                                                          [],
+                                                  cartCollection:
+                                                      state.cartCollection ??
+                                                          [],
+                                                  priceSymbol: priceSymbol,
                                                 ),
-                                              );
-                                      });
-                                }),
-                            ValueListenableBuilder<bool>(
-                                valueListenable: moreInfo,
-                                builder: (context, isMoreInfo, _) {
-                                  return ValueListenableBuilder<bool>(
-                                    valueListenable: isVerified,
-                                    builder: (context, isverified, _) {
-                                      return ValueListenableBuilder<bool>(
-                                          valueListenable: isExpanded,
-                                          builder: (context, expanded, _) {
-                                            return Positioned(
-                                              bottom: -15,
-                                              child: Container(
-                                                decoration: BoxDecoration(
+                                        ],
+                                      ),
+                                    ),
+                              ValueListenableBuilder<bool>(
+                                  valueListenable: moreInfo,
+                                  builder: (context, isMoreInfo, _) {
+                                    return ValueListenableBuilder<bool>(
+                                        valueListenable: isExpanded,
+                                        builder: (context, expanded, _) {
+                                          return !(expanded || isMoreInfo)
+                                              ? SizedBox.shrink()
+                                              : InkWell(
+                                                  onTap: () {
+                                                    isExpanded.value = false;
+                                                    moreInfo.value = false;
+                                                    Future.delayed(
+                                                      Duration(
+                                                          microseconds: 300),
+                                                      () {
+                                                        panelController.close();
+                                                      },
+                                                    );
+                                                  },
+                                                  child: Container(
+                                                    height: 600.h,
+                                                    color: Color.fromRGBO(
+                                                        29, 29, 29, 0.6),
+                                                  ),
+                                                );
+                                        });
+                                  }),
+                              ValueListenableBuilder<bool>(
+                                  valueListenable: moreInfo,
+                                  builder: (context, isMoreInfo, _) {
+                                    return ValueListenableBuilder<bool>(
+                                      valueListenable: isVerified,
+                                      builder: (context, isverified, _) {
+                                        return ValueListenableBuilder<bool>(
+                                            valueListenable: isExpanded,
+                                            builder: (context, expanded, _) {
+                                              return Positioned(
+                                                bottom: -15,
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                      borderRadius: ((state
+                                                                      .cartCollection ==
+                                                                  null ||
+                                                              state
+                                                                  .cartCollection!
+                                                                  .isEmpty))
+                                                          ? null
+                                                          : BorderRadius.only(
+                                                              topLeft: Radius
+                                                                  .circular(30),
+                                                              topRight: Radius
+                                                                  .circular(
+                                                                      30))),
+                                                  height: isMoreInfo
+                                                      ? 1.sh - 220.h
+                                                      : null,
+                                                  width: 1.sw,
+                                                  child: SlidingUpPanel(
+                                                    controller: panelController,
                                                     borderRadius:
                                                         ((state.cartCollection ==
                                                                     null ||
@@ -718,804 +814,743 @@ class _CartPageState extends State<CartPage> {
                                                                         30),
                                                                 topRight: Radius
                                                                     .circular(
-                                                                        30))),
-                                                height: isMoreInfo
-                                                    ? 1.sh - 220.h
-                                                    : null,
-                                                width: 1.sw,
-                                                child: SlidingUpPanel(
-                                                  controller: panelController,
-                                                  borderRadius:
-                                                      ((state.cartCollection ==
-                                                                  null ||
-                                                              state
-                                                                  .cartCollection!
-                                                                  .isEmpty))
-                                                          ? null
-                                                          : BorderRadius.only(
-                                                              topLeft: Radius
-                                                                  .circular(30),
-                                                              topRight: Radius
-                                                                  .circular(
-                                                                      30)),
-                                                  isDraggable: true,
-                                                  slideDirection:
-                                                      SlideDirection.UP,
-                                                  onPanelClosed: () {
-                                                    isExpanded.value = false;
-                                                    moreInfo.value = false;
-                                                  },
-                                                  onPanelOpened: () => isExpanded
-                                                          .value =
-                                                      ((state.cartCollection ==
-                                                                      null ||
-                                                                  state
-                                                                      .cartCollection!
-                                                                      .isEmpty)) ||
-                                                              isMoreInfo
-                                                          ? false
-                                                          : true,
-                                                  minHeight:
-                                                      ((state.cartCollection ==
-                                                                  null ||
-                                                              state
-                                                                  .cartCollection!
-                                                                  .isEmpty))
-                                                          ? 100
-                                                          : !isverified
-                                                              ? 510
-                                                              : 258,
-                                                  maxHeight: isMoreInfo
-                                                      ? 1.sh - 250.h
-                                                      : ((state.cartCollection ==
-                                                                  null ||
-                                                              state
-                                                                  .cartCollection!
-                                                                  .isEmpty))
-                                                          ? 120
-                                                          : !isverified
-                                                              ? 680
-                                                              : 447,
-                                                  panelBuilder: (sc) =>
-                                                      Container(
-                                                    alignment:
-                                                        Alignment.topLeft,
-                                                    decoration: BoxDecoration(
-                                                        boxShadow: [
-                                                          BoxShadow(
-                                                              color: Color(
-                                                                  0xffF8F8F8),
-                                                              spreadRadius: 0.1,
-                                                              blurRadius: 0.1)
-                                                        ],
-                                                        border: Border.all(
-                                                            color: Color(
-                                                                0xffF8F8F8)),
-                                                        color:
-                                                            Color(0xffFFFFFF),
-                                                        borderRadius:
-                                                            BorderRadius.only(
-                                                                topLeft: Radius
-                                                                    .circular(
-                                                                        30),
-                                                                topRight: Radius
-                                                                    .circular(
-                                                                        30))),
-                                                    height: ((state.cartCollection ==
-                                                                null ||
-                                                            state
-                                                                .cartCollection!
-                                                                .isEmpty))
-                                                        ? 100.h
-                                                        : expanded
-                                                            ? !isverified
-                                                                ? 780.h
-                                                                : 485.h
+                                                                        30)),
+                                                    isDraggable: true,
+                                                    slideDirection:
+                                                        SlideDirection.UP,
+                                                    onPanelClosed: () {
+                                                      isExpanded.value = false;
+                                                      moreInfo.value = false;
+                                                    },
+                                                    onPanelOpened: () => isExpanded
+                                                            .value =
+                                                        ((state.cartCollection ==
+                                                                        null ||
+                                                                    state
+                                                                        .cartCollection!
+                                                                        .isEmpty)) ||
+                                                                isMoreInfo
+                                                            ? false
+                                                            : true,
+                                                    minHeight:
+                                                        ((state.cartCollection ==
+                                                                    null ||
+                                                                state
+                                                                    .cartCollection!
+                                                                    .isEmpty))
+                                                            ? 100
                                                             : !isverified
-                                                                ? 610.h
-                                                                : 260.h,
-                                                    width: 1.sw,
-                                                    child: Container(
-                                                      decoration: ((state.cartCollection ==
-                                                                  null ||
-                                                              state
-                                                                  .cartCollection!
-                                                                  .isEmpty))
-                                                          ? null
-                                                          : BoxDecoration(
-                                                              border: Border.all(
-                                                                  color: Color(
-                                                                      0xffFFFFFF)),
+                                                                ? 510
+                                                                : 258,
+                                                    maxHeight: isMoreInfo
+                                                        ? 1.sh - 250.h
+                                                        : ((state.cartCollection ==
+                                                                    null ||
+                                                                state
+                                                                    .cartCollection!
+                                                                    .isEmpty))
+                                                            ? 120
+                                                            : !isverified
+                                                                ? 680
+                                                                : 447,
+                                                    panelBuilder: (sc) =>
+                                                        Container(
+                                                      alignment:
+                                                          Alignment.topLeft,
+                                                      decoration: BoxDecoration(
+                                                          boxShadow: [
+                                                            BoxShadow(
+                                                                color: Color(
+                                                                    0xffF8F8F8),
+                                                                spreadRadius:
+                                                                    0.1,
+                                                                blurRadius: 0.1)
+                                                          ],
+                                                          border: Border.all(
                                                               color: Color(
-                                                                  0xffFFFFFF),
-                                                              borderRadius: BorderRadius.only(
+                                                                  0xffF8F8F8)),
+                                                          color:
+                                                              Color(0xffFFFFFF),
+                                                          borderRadius:
+                                                              BorderRadius.only(
                                                                   topLeft: Radius
                                                                       .circular(
                                                                           30),
-                                                                  topRight:
-                                                                      Radius.circular(
+                                                                  topRight: Radius
+                                                                      .circular(
                                                                           30))),
-                                                      child: Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            ((state.cartCollection ==
-                                                                        null ||
-                                                                    state
-                                                                        .cartCollection!
-                                                                        .isEmpty))
-                                                                ? SizedBox
-                                                                    .shrink()
-                                                                : SizedBox(
-                                                                    height: 10,
-                                                                  ),
-                                                            ((state.cartCollection ==
-                                                                        null ||
-                                                                    state
-                                                                        .cartCollection!
-                                                                        .isEmpty))
-                                                                ? SizedBox
-                                                                    .shrink()
-                                                                : InkWell(
-                                                                    onTap: () {
-                                                                      if (isverified) {
-                                                                        moreInfo.value =
-                                                                            true;
-                                                                        Future
-                                                                            .delayed(
-                                                                          Duration(
-                                                                              microseconds: 500),
+                                                      height: ((state.cartCollection ==
+                                                                  null ||
+                                                              state
+                                                                  .cartCollection!
+                                                                  .isEmpty))
+                                                          ? 100.h
+                                                          : expanded
+                                                              ? !isverified
+                                                                  ? 780.h
+                                                                  : 485.h
+                                                              : !isverified
+                                                                  ? 610.h
+                                                                  : 260.h,
+                                                      width: 1.sw,
+                                                      child: Container(
+                                                        decoration: ((state
+                                                                        .cartCollection ==
+                                                                    null ||
+                                                                state
+                                                                    .cartCollection!
+                                                                    .isEmpty))
+                                                            ? null
+                                                            : BoxDecoration(
+                                                                border: Border.all(
+                                                                    color: Color(
+                                                                        0xffFFFFFF)),
+                                                                color: Color(
+                                                                    0xffFFFFFF),
+                                                                borderRadius: BorderRadius.only(
+                                                                    topLeft:
+                                                                        Radius.circular(
+                                                                            30),
+                                                                    topRight:
+                                                                        Radius.circular(
+                                                                            30))),
+                                                        child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              ((state.cartCollection ==
+                                                                          null ||
+                                                                      state
+                                                                          .cartCollection!
+                                                                          .isEmpty))
+                                                                  ? SizedBox
+                                                                      .shrink()
+                                                                  : SizedBox(
+                                                                      height:
+                                                                          10,
+                                                                    ),
+                                                              ((state.cartCollection ==
+                                                                          null ||
+                                                                      state
+                                                                          .cartCollection!
+                                                                          .isEmpty))
+                                                                  ? SizedBox
+                                                                      .shrink()
+                                                                  : InkWell(
+                                                                      onTap:
                                                                           () {
-                                                                            panelController.open();
-                                                                          },
-                                                                        );
-                                                                      }
-                                                                    },
-                                                                    child:
-                                                                        Center(
-                                                                      child: SvgPicture
-                                                                          .asset(
-                                                                        AppAssets
-                                                                            .chatWithQuestionSvg,
-                                                                        height:
-                                                                            14,
+                                                                        if (isverified) {
+                                                                          moreInfo.value =
+                                                                              true;
+                                                                          Future
+                                                                              .delayed(
+                                                                            Duration(microseconds: 500),
+                                                                            () {
+                                                                              panelController.open();
+                                                                            },
+                                                                          );
+                                                                        }
+                                                                      },
+                                                                      child:
+                                                                          Center(
+                                                                        child: SvgPicture
+                                                                            .asset(
+                                                                          AppAssets
+                                                                              .chatWithQuestionSvg,
+                                                                          height:
+                                                                              14,
+                                                                        ),
                                                                       ),
                                                                     ),
-                                                                  ),
-                                                            ((state.cartCollection ==
-                                                                        null ||
-                                                                    state
-                                                                        .cartCollection!
-                                                                        .isEmpty))
-                                                                ? SizedBox
-                                                                    .shrink()
-                                                                : SizedBox(
-                                                                    height: 5,
-                                                                  ),
-                                                            ((state.cartCollection ==
-                                                                        null ||
-                                                                    state
-                                                                        .cartCollection!
-                                                                        .isEmpty))
-                                                                ? SizedBox
-                                                                    .shrink()
-                                                                : Container(
-                                                                    height: 27,
-                                                                    child:
-                                                                        CartDetailsSheetHeader(),
-                                                                  ),
-                                                            !isMoreInfo
-                                                                ? SizedBox
-                                                                    .shrink()
-                                                                : SizedBox(
-                                                                    height:
-                                                                        1.sh /
-                                                                            2.1,
-                                                                  ),
-                                                            Container(
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                      border:
-                                                                          Border
-                                                                              .all(
+                                                              ((state.cartCollection ==
+                                                                          null ||
+                                                                      state
+                                                                          .cartCollection!
+                                                                          .isEmpty))
+                                                                  ? SizedBox
+                                                                      .shrink()
+                                                                  : SizedBox(
+                                                                      height: 5,
+                                                                    ),
+                                                              ((state.cartCollection ==
+                                                                          null ||
+                                                                      state
+                                                                          .cartCollection!
+                                                                          .isEmpty))
+                                                                  ? SizedBox
+                                                                      .shrink()
+                                                                  : Container(
+                                                                      height:
+                                                                          27,
+                                                                      child:
+                                                                          CartDetailsSheetHeader(),
+                                                                    ),
+                                                              !isMoreInfo
+                                                                  ? SizedBox
+                                                                      .shrink()
+                                                                  : SizedBox(
+                                                                      height:
+                                                                          1.sh /
+                                                                              2.1,
+                                                                    ),
+                                                              Container(
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                        border: Border
+                                                                            .all(
+                                                                          color:
+                                                                              Color(0xffF8F8F8),
+                                                                        ),
                                                                         color: Color(
                                                                             0xffF8F8F8),
-                                                                      ),
-                                                                      color: Color(
-                                                                          0xffF8F8F8),
-                                                                      borderRadius:
-                                                                          BorderRadius.all(
-                                                                              Radius.circular(30))),
-                                                              margin: EdgeInsets
-                                                                  .symmetric(
-                                                                      horizontal:
-                                                                          10),
-                                                              child: Column(
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .start,
-                                                                children: [
-                                                                  !expanded
-                                                                      ? SizedBox
-                                                                          .shrink()
-                                                                      : Container(
-                                                                          margin:
-                                                                              EdgeInsets.all(18),
-                                                                          width:
-                                                                              65,
-                                                                          height:
-                                                                              18,
-                                                                          child:
-                                                                              Row(
-                                                                            mainAxisAlignment:
-                                                                                MainAxisAlignment.start,
-                                                                            crossAxisAlignment:
-                                                                                CrossAxisAlignment.start,
-                                                                            children: [
-                                                                              SvgPicture.asset(
-                                                                                AppAssets.countItemSvg,
-                                                                                color: Color(0xff1D1D1D),
-                                                                                height: 12,
-                                                                              ),
-                                                                              Text(
-                                                                                " ${LocaleKeys.item.tr()} ",
-                                                                                style: context.textTheme.bodyMedium?.mr.copyWith(fontSize: 13.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
-                                                                              ),
-                                                                              Text(
-                                                                                "${totlalQuantity.round()}",
-                                                                                style: context.textTheme.bodyMedium?.ba.copyWith(fontSize: 13.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
-                                                                              ),
-                                                                            ],
-                                                                          ),
-                                                                        ),
-                                                                  !expanded
-                                                                      ? SizedBox
-                                                                          .shrink()
-                                                                      : Container(
-                                                                          width:
-                                                                              400.w,
-                                                                          height:
-                                                                              50.h,
-                                                                          padding:
-                                                                              EdgeInsets.only(
-                                                                            right: LanguageService.languageCode != "ar"
-                                                                                ? 10.w
-                                                                                : 0,
-                                                                            left: LanguageService.languageCode != "ar"
-                                                                                ? 0
-                                                                                : 10.w,
-                                                                          ),
-                                                                          margin:
-                                                                              EdgeInsets.symmetric(horizontal: 10.w),
-                                                                          child:
-                                                                              Column(
-                                                                            mainAxisAlignment:
-                                                                                MainAxisAlignment.start,
-                                                                            crossAxisAlignment:
-                                                                                CrossAxisAlignment.start,
-                                                                            children: [
-                                                                              Row(
-                                                                                children: [
-                                                                                  Container(
-                                                                                    height: 17.h,
-                                                                                    margin: EdgeInsets.only(
-                                                                                      right: LanguageService.languageCode != "ar" ? 10.w : 25,
-                                                                                      left: LanguageService.languageCode != "ar" ? 25 : 10.w,
-                                                                                    ),
-                                                                                    child: Text(
-                                                                                      "${LocaleKeys.details.tr()} ",
-                                                                                      strutStyle: LanguageService.languageCode != "ar" ? null : StrutStyle(height: 0.1, leading: 0.1),
-                                                                                      style: context.textTheme.bodyMedium?.mr.copyWith(fontSize: 13.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: LanguageService.languageCode != "ar" ? 1.33 : 1),
-                                                                                    ),
-                                                                                  ),
-                                                                                  Spacer(),
-                                                                                  Text(
-                                                                                    " ${totlalPriceWithoutShipping.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
-                                                                                    style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 13.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
-                                                                                  ),
-                                                                                  Text(
-                                                                                    "${priceSymbol ?? "\$"}",
-                                                                                    style: context.textTheme.bodyMedium?.mr.copyWith(fontSize: 13.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
-                                                                                  ),
-                                                                                ],
-                                                                              ),
-                                                                              Container(
-                                                                                height: 18.h,
-                                                                                margin: EdgeInsets.only(
-                                                                                  right: LanguageService.languageCode != "ar" ? 10.w : 25,
-                                                                                  left: LanguageService.languageCode != "ar" ? 25 : 10.w,
+                                                                        borderRadius:
+                                                                            BorderRadius.all(Radius.circular(30))),
+                                                                margin: EdgeInsets
+                                                                    .symmetric(
+                                                                        horizontal:
+                                                                            10),
+                                                                child: Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  children: [
+                                                                    !expanded
+                                                                        ? SizedBox
+                                                                            .shrink()
+                                                                        : Container(
+                                                                            margin:
+                                                                                EdgeInsets.all(18),
+                                                                            width:
+                                                                                65,
+                                                                            height:
+                                                                                18,
+                                                                            child:
+                                                                                Row(
+                                                                              mainAxisAlignment: MainAxisAlignment.start,
+                                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                                              children: [
+                                                                                SvgPicture.asset(
+                                                                                  AppAssets.countItemSvg,
+                                                                                  color: Color(0xff1D1D1D),
+                                                                                  height: 12,
                                                                                 ),
-                                                                                child: Text(
-                                                                                  "${LocaleKeys.normal_price.tr()} ",
-                                                                                  style: context.textTheme.bodyMedium?.ra.copyWith(fontSize: 11.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
+                                                                                Text(
+                                                                                  " ${LocaleKeys.item.tr()} ",
+                                                                                  style: context.textTheme.bodyMedium?.mr.copyWith(fontSize: 13.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
                                                                                 ),
-                                                                              ),
-                                                                            ],
-                                                                          ),
-                                                                        ),
-                                                                  !expanded
-                                                                      ? SizedBox
-                                                                          .shrink()
-                                                                      : SizedBox(
-                                                                          height:
-                                                                              5.h,
-                                                                        ),
-                                                                  !expanded
-                                                                      ? SizedBox
-                                                                          .shrink()
-                                                                      : Container(
-                                                                          padding:
-                                                                              EdgeInsets.only(
-                                                                            right: LanguageService.languageCode != "ar"
-                                                                                ? 10.w
-                                                                                : 0,
-                                                                            left: LanguageService.languageCode != "ar"
-                                                                                ? 0
-                                                                                : 10.w,
-                                                                          ),
-                                                                          width:
-                                                                              400.w,
-                                                                          height:
-                                                                              50.h,
-                                                                          margin:
-                                                                              EdgeInsets.symmetric(horizontal: 10.w),
-                                                                          child:
-                                                                              Column(
-                                                                            mainAxisAlignment:
-                                                                                MainAxisAlignment.start,
-                                                                            crossAxisAlignment:
-                                                                                CrossAxisAlignment.start,
-                                                                            children: [
-                                                                              Row(
-                                                                                children: [
-                                                                                  Container(
-                                                                                    margin: EdgeInsets.only(
-                                                                                      right: LanguageService.languageCode != "ar" ? 10.w : 4,
-                                                                                      left: LanguageService.languageCode != "ar" ? 2 : 8.w,
-                                                                                    ),
-                                                                                    child: SvgPicture.asset(
-                                                                                      AppAssets.totalDiscountCartSvg,
-                                                                                      color: Color(0xffFE0364),
-                                                                                      height: 12,
-                                                                                    ),
-                                                                                  ),
-                                                                                  Container(
-                                                                                    height: 17.h,
-                                                                                    margin: EdgeInsets.only(
-                                                                                      right: LanguageService.languageCode != "ar" ? 10.w : 2,
-                                                                                      left: LanguageService.languageCode != "ar" ? 2 : 10.w,
-                                                                                    ),
-                                                                                    child: Text(
-                                                                                      "${LocaleKeys.total_discount.tr()} ${(totlalPrice == 0 ? 0 : ((totlalDiscount) / totlalPriceWithoutShipping) * 100).toStringAsFixed(1)}% ",
-                                                                                      strutStyle: LanguageService.languageCode != "ar" ? null : StrutStyle(height: 0.1, leading: 0.1),
-                                                                                      style: context.textTheme.bodyMedium?.mr.copyWith(fontSize: 13.sp, color: const Color(0xffA28E5B), letterSpacing: 0.18, height: LanguageService.languageCode != "ar" ? 1.33 : 1),
-                                                                                    ),
-                                                                                  ),
-                                                                                  Spacer(),
-                                                                                  Text(
-                                                                                    "- ${(totlalDiscount).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
-                                                                                    style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 13.sp, color: const Color(0xffA28E5B), letterSpacing: 0.18, height: 1.33),
-                                                                                  ),
-                                                                                  Text(
-                                                                                    "${priceSymbol ?? "\$"}",
-                                                                                    style: context.textTheme.bodyMedium?.mr.copyWith(fontSize: 13.sp, color: const Color(0xffA28E5B), letterSpacing: 0.18, height: 1.33),
-                                                                                  ),
-                                                                                ],
-                                                                              ),
-                                                                              Container(
-                                                                                height: 17.h,
-                                                                                margin: EdgeInsets.only(
-                                                                                  right: LanguageService.languageCode != "ar" ? 10.w : 25,
-                                                                                  left: LanguageService.languageCode != "ar" ? 25 : 10.w,
+                                                                                Text(
+                                                                                  "${totlalQuantity.round()}",
+                                                                                  style: context.textTheme.bodyMedium?.ba.copyWith(fontSize: 13.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
                                                                                 ),
-                                                                                child: Text(
-                                                                                  "${LocaleKeys.all_inclusve_without_addition.tr()} ",
-                                                                                  style: context.textTheme.bodyMedium?.ra.copyWith(fontSize: 11.sp, color: const Color(0xffA28E5B), letterSpacing: 0.18, height: 1.33),
-                                                                                ),
-                                                                              ),
-                                                                            ],
+                                                                              ],
+                                                                            ),
                                                                           ),
-                                                                        ),
-                                                                  !expanded
-                                                                      ? SizedBox
-                                                                          .shrink()
-                                                                      : SizedBox(
-                                                                          height:
-                                                                              5.h,
-                                                                        ),
-                                                                  !expanded
-                                                                      ? SizedBox
-                                                                          .shrink()
-                                                                      : Container(
-                                                                          padding:
-                                                                              EdgeInsets.only(
-                                                                            right: LanguageService.languageCode != "ar"
-                                                                                ? 10.w
-                                                                                : 2,
-                                                                            left: LanguageService.languageCode != "ar"
-                                                                                ? 2
-                                                                                : 10.w,
-                                                                          ),
-                                                                          width:
-                                                                              400.w,
-                                                                          height:
-                                                                              50.h,
-                                                                          margin:
-                                                                              EdgeInsets.symmetric(horizontal: 10.w),
-                                                                          child:
-                                                                              Column(
-                                                                            mainAxisAlignment:
-                                                                                MainAxisAlignment.start,
-                                                                            crossAxisAlignment:
-                                                                                CrossAxisAlignment.start,
-                                                                            children: [
-                                                                              Row(
-                                                                                children: [
-                                                                                  Container(
-                                                                                    margin: EdgeInsets.only(right: LanguageService.languageCode != "ar" ? 10.w : 2, left: LanguageService.languageCode != "ar" ? 2 : 10.w),
-                                                                                    child: SvgPicture.asset(
-                                                                                      AppAssets.giftCartSvg,
-                                                                                      color: Color(0xff5BA260),
-                                                                                      height: 12,
+                                                                    !expanded
+                                                                        ? SizedBox
+                                                                            .shrink()
+                                                                        : Container(
+                                                                            width:
+                                                                                400.w,
+                                                                            height:
+                                                                                50.h,
+                                                                            padding:
+                                                                                EdgeInsets.only(
+                                                                              right: LanguageService.languageCode != "ar" ? 10.w : 0,
+                                                                              left: LanguageService.languageCode != "ar" ? 0 : 10.w,
+                                                                            ),
+                                                                            margin:
+                                                                                EdgeInsets.symmetric(horizontal: 10.w),
+                                                                            child:
+                                                                                Column(
+                                                                              mainAxisAlignment: MainAxisAlignment.start,
+                                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                                              children: [
+                                                                                Row(
+                                                                                  children: [
+                                                                                    Container(
+                                                                                      height: 17.h,
+                                                                                      margin: EdgeInsets.only(
+                                                                                        right: LanguageService.languageCode != "ar" ? 10.w : 25,
+                                                                                        left: LanguageService.languageCode != "ar" ? 25 : 10.w,
+                                                                                      ),
+                                                                                      child: Text(
+                                                                                        "${LocaleKeys.details.tr()} ",
+                                                                                        strutStyle: LanguageService.languageCode != "ar" ? null : StrutStyle(height: 0.1, leading: 0.1),
+                                                                                        style: context.textTheme.bodyMedium?.mr.copyWith(fontSize: 13.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: LanguageService.languageCode != "ar" ? 1.33 : 1),
+                                                                                      ),
                                                                                     ),
-                                                                                  ),
-                                                                                  Container(
-                                                                                    height: 17.h,
-                                                                                    margin: EdgeInsets.only(
-                                                                                      right: LanguageService.languageCode != "ar" ? 10.w : 2,
-                                                                                      left: LanguageService.languageCode != "ar" ? 2 : 10.w,
-                                                                                    ),
-                                                                                    child: Text(
-                                                                                      "${LocaleKeys.gift.tr()}",
-                                                                                      style: context.textTheme.bodyMedium?.mr.copyWith(fontSize: 13.sp, color: const Color(0xff5BA260), letterSpacing: 0.18, height: 1.33),
-                                                                                    ),
-                                                                                  ),
-                                                                                  Spacer(),
-                                                                                  Text(
-                                                                                    "- ${0}  ",
-                                                                                    style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 13.sp, color: const Color(0xff5BA260), letterSpacing: 0.18, height: 1.33),
-                                                                                  ),
-                                                                                  Text(
-                                                                                    "${priceSymbol ?? "\$"}",
-                                                                                    style: context.textTheme.bodyMedium?.mr.copyWith(fontSize: 13.sp, color: const Color(0xff5BA260), letterSpacing: 0.18, height: 1.33),
-                                                                                  ),
-                                                                                ],
-                                                                              ),
-                                                                              Container(
-                                                                                height: 17.h,
-                                                                                margin: EdgeInsets.only(
-                                                                                  right: LanguageService.languageCode != "ar" ? 10.w : 25,
-                                                                                  left: LanguageService.languageCode != "ar" ? 25 : 10.w,
-                                                                                ),
-                                                                                child: Text(
-                                                                                  "${LocaleKeys.first_shopping.tr()} ",
-                                                                                  style: context.textTheme.bodyMedium?.ra.copyWith(fontSize: 11.sp, color: const Color(0xff5BA260), letterSpacing: 0.18, height: 1.33),
-                                                                                ),
-                                                                              ),
-                                                                            ],
-                                                                          ),
-                                                                        ),
-                                                                  SizedBox(
-                                                                    height: 5.h,
-                                                                  ),
-                                                                  !expanded
-                                                                      ? SizedBox
-                                                                          .shrink()
-                                                                      : Container(
-                                                                          padding:
-                                                                              EdgeInsets.only(
-                                                                            right: LanguageService.languageCode != "ar"
-                                                                                ? 10.w
-                                                                                : 2,
-                                                                            left: LanguageService.languageCode != "ar"
-                                                                                ? 2
-                                                                                : 10.w,
-                                                                          ),
-                                                                          width:
-                                                                              400.w,
-                                                                          height:
-                                                                              50.h,
-                                                                          margin:
-                                                                              EdgeInsets.symmetric(horizontal: 10.w),
-                                                                          child:
-                                                                              Column(
-                                                                            mainAxisAlignment:
-                                                                                MainAxisAlignment.start,
-                                                                            crossAxisAlignment:
-                                                                                CrossAxisAlignment.start,
-                                                                            children: [
-                                                                              Row(
-                                                                                children: [
-                                                                                  Container(
-                                                                                    margin: EdgeInsets.only(right: LanguageService.languageCode != "ar" ? 10 : 2, left: LanguageService.languageCode != "ar" ? 2 : 10),
-                                                                                    child: SvgPicture.asset(
-                                                                                      AppAssets.shappingCartSvg,
-                                                                                      color: Color(0xffBEF4CD),
-                                                                                      height: 12,
-                                                                                    ),
-                                                                                  ),
-                                                                                  Container(
-                                                                                    height: 17.h,
-                                                                                    margin: EdgeInsets.only(
-                                                                                      right: LanguageService.languageCode != "ar" ? 10.w : 2,
-                                                                                      left: LanguageService.languageCode != "ar" ? 2 : 10.w,
-                                                                                    ),
-                                                                                    child: Text(
-                                                                                      "${LocaleKeys.shipping.tr()} ",
-                                                                                      strutStyle: LanguageService.languageCode != "ar" ? null : StrutStyle(height: 0.1, leading: 0.1),
-                                                                                      style: context.textTheme.bodyMedium?.mr.copyWith(fontSize: 13.sp, color: const Color(0xff2FA52F), letterSpacing: 0.18, height: LanguageService.languageCode != "ar" ? 1.33 : 1),
-                                                                                    ),
-                                                                                  ),
-                                                                                  Spacer(),
-                                                                                  Text(
-                                                                                    "0",
-                                                                                    style: context.textTheme.bodyMedium?.br.copyWith(decoration: TextDecoration.lineThrough, decorationColor: const Color(0xff2FA52F), color: const Color(0xff2FA52F), fontSize: 13, letterSpacing: 0.18, height: 1.33),
-                                                                                  ),
-                                                                                  Text(
-                                                                                    " ${((state.getCartShippingItemsModel?.data?.totalShippingCost ?? 0) * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
-                                                                                    style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 13.sp, color: const Color(0xff2FA52F), letterSpacing: 0.18, height: 1.33),
-                                                                                  ),
-                                                                                  Text(
-                                                                                    "${priceSymbol ?? "\$"}",
-                                                                                    style: context.textTheme.bodyMedium?.mr.copyWith(fontSize: 13.sp, color: const Color(0xff2FA52F), letterSpacing: 0.18, height: 1.33),
-                                                                                  ),
-                                                                                ],
-                                                                              ),
-                                                                              Container(
-                                                                                height: 18.h,
-                                                                                margin: EdgeInsets.only(
-                                                                                  right: LanguageService.languageCode != "ar" ? 10.w : 25,
-                                                                                  left: LanguageService.languageCode != "ar" ? 25 : 10.w,
-                                                                                ),
-                                                                                child: Text(
-                                                                                  ((state.getCartShippingItemsModel?.data?.totalShippingCost ?? 0) * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2) != 0 ? "" : "${LocaleKeys.shipping_is_completely_free_without_any_extras.tr()} ",
-                                                                                  style: context.textTheme.bodyMedium?.ra.copyWith(fontSize: 11.sp, color: const Color(0xff2FA52F), letterSpacing: 0.18, height: 1.33),
-                                                                                ),
-                                                                              ),
-                                                                            ],
-                                                                          ),
-                                                                        ),
-                                                                  SizedBox(
-                                                                    height:
-                                                                        expanded
-                                                                            ? 0
-                                                                            : 10.h,
-                                                                  ),
-                                                                  ((state.cartCollection ==
-                                                                              null ||
-                                                                          state
-                                                                              .cartCollection!
-                                                                              .isEmpty))
-                                                                      ? SizedBox
-                                                                          .shrink()
-                                                                      : Container(
-                                                                          width:
-                                                                              400.w,
-                                                                          height:
-                                                                              50.h,
-                                                                          decoration: BoxDecoration(
-                                                                              color: Color(0xffF8F8F8),
-                                                                              borderRadius: BorderRadius.all(Radius.circular(12))),
-                                                                          padding:
-                                                                              EdgeInsets.only(
-                                                                            right: LanguageService.languageCode != "ar"
-                                                                                ? 10.w
-                                                                                : 2,
-                                                                            left: LanguageService.languageCode != "ar"
-                                                                                ? 2
-                                                                                : 10.w,
-                                                                          ),
-                                                                          margin:
-                                                                              EdgeInsets.symmetric(horizontal: 10.w),
-                                                                          child:
-                                                                              Column(
-                                                                            mainAxisAlignment:
-                                                                                MainAxisAlignment.start,
-                                                                            crossAxisAlignment:
-                                                                                CrossAxisAlignment.start,
-                                                                            children: [
-                                                                              Row(
-                                                                                children: [
-                                                                                  Container(
-                                                                                    height: 17.h,
-                                                                                    margin: EdgeInsets.only(
-                                                                                      right: LanguageService.languageCode != "ar" ? 10.w : 25,
-                                                                                      left: LanguageService.languageCode != "ar" ? 25 : 10.w,
-                                                                                    ),
-                                                                                    child: Text(
-                                                                                      "${LocaleKeys.total.tr()}",
+                                                                                    Spacer(),
+                                                                                    Text(
+                                                                                      " ${totlalPriceWithoutShipping.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
                                                                                       style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 13.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
                                                                                     ),
-                                                                                  ),
-                                                                                  Spacer(),
-                                                                                  Text(
-                                                                                    "${(totlalPrice + totlalDiscount).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
-                                                                                    style: context.textTheme.bodyMedium?.ra.copyWith(decoration: TextDecoration.lineThrough, fontSize: 16, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
-                                                                                  ),
-                                                                                  Text(
-                                                                                    "${totlalPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
-                                                                                    style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 16.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
-                                                                                  ),
-                                                                                  Text(
-                                                                                    "${priceSymbol ?? "\$"}",
-                                                                                    style: context.textTheme.bodyMedium?.mr.copyWith(fontSize: 16.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
-                                                                                  ),
-                                                                                  SizedBox(
-                                                                                    width: 5.w,
-                                                                                  ),
-                                                                                  Container(
-                                                                                      width: 20,
-                                                                                      height: 20,
-                                                                                      child: Container(
-                                                                                          alignment: Alignment.centerRight,
-                                                                                          height: 14,
-                                                                                          child: SvgPicture.asset(
-                                                                                            AppAssets.chatWithQuestionSvg,
-                                                                                            color: Color(0xff8E8E8E),
-                                                                                            height: 14,
-                                                                                          ))),
-                                                                                ],
-                                                                              ),
-                                                                              Container(
-                                                                                height: 17.h,
-                                                                                margin: EdgeInsets.only(
-                                                                                  right: LanguageService.languageCode != "ar" ? 10.w : 25,
-                                                                                  left: LanguageService.languageCode != "ar" ? 25 : 10.w,
+                                                                                    Text(
+                                                                                      "${priceSymbol ?? "\$"}",
+                                                                                      style: context.textTheme.bodyMedium?.mr.copyWith(fontSize: 13.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
+                                                                                    ),
+                                                                                  ],
                                                                                 ),
-                                                                                child: Text(
-                                                                                  "${LocaleKeys.click_to_show_all_discount.tr()} ",
-                                                                                  style: context.textTheme.bodyMedium?.ra.copyWith(fontSize: 11.sp, color: const Color(0xff8D8D8D), letterSpacing: 0.18, height: 1.33),
-                                                                                ),
-                                                                              ),
-                                                                            ],
-                                                                          ),
-                                                                        ),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                            expanded
-                                                                ? Spacer()
-                                                                : SizedBox
-                                                                    .shrink(),
-                                                            SizedBox(
-                                                              height: expanded
-                                                                  ? 0
-                                                                  : ((state.cartCollection ==
-                                                                              null ||
-                                                                          state
-                                                                              .cartCollection!
-                                                                              .isEmpty))
-                                                                      ? 0
-                                                                      : isMoreInfo
-                                                                          ? 10
-                                                                          : 60,
-                                                            ),
-                                                            !isverified
-                                                                ? Container(
-                                                                    height: 200,
-                                                                    child: Stack(
-                                                                        children: [
-                                                                          PageView(
-                                                                              physics: NeverScrollableScrollPhysics(),
-                                                                              controller: pageController,
-                                                                              children: (prefsRepository.isVerifiedPhonePeforeExpiredToken ?? false)
-                                                                                  ? [
-                                                                                      VerifyOtp(
-                                                                                          fromExpired: true,
-                                                                                          isVisWhatsApp: 1,
-                                                                                          navigateToAddName: () {},
-                                                                                          navigateTocart: () {
-                                                                                            isVerified.value = true;
-                                                                                          },
-                                                                                          fromLogin: false,
-                                                                                          onLoginFailed: () {
-                                                                                            //   pageController.animateToPage(3, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-                                                                                          },
-                                                                                          goBack: () {
-                                                                                            // pageController.animateToPage(1, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-                                                                                          },
-                                                                                          methodIcon: AppAssets.whatsappSvg,
-                                                                                          phoneNumber: prefsRepository.myPhoneNumber!),
-                                                                                    ]
-                                                                                  : [
-                                                                                      InsertPhoneTab(
-                                                                                        fromLogin: false,
-                                                                                        focusNode: focusNode,
-                                                                                        moveToNextStep: (String phoneNumber) {
-                                                                                          this.phoneNumber = phoneNumber.replaceAll(' ', '');
-                                                                                          pageController.animateToPage(1, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-                                                                                          setState(() {});
-                                                                                        },
-                                                                                      ),
-                                                                                      VerificationMethods(
-                                                                                        phoneNumber: phoneNumber,
-                                                                                        onChooseWhatsapp: () {
-                                                                                          isVisWhatsApp = 1;
-                                                                                          print("###################33333#${isVisWhatsApp}");
-                                                                                          pageController.animateToPage(2, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-
-                                                                                          if (prefsRepository.isTimerForOtpRunning ?? false) {
-                                                                                            showMessage('${LocaleKeys.you_must_wait_for_some_seconds_before_try_again.tr()}');
-                                                                                            return;
-                                                                                          }
-                                                                                          authBloc.add(SendOtpEvent(phone: phoneNumber, isViaWhatsApp: 1));
-                                                                                        },
-                                                                                        goBackToPhone: () {
-                                                                                          pageController.animateToPage(0, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-                                                                                        },
-                                                                                        onChooseSms: () {
-                                                                                          isVisWhatsApp = 0;
-                                                                                          pageController.animateToPage(3, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-                                                                                          authBloc.add(SendOtpEvent(phone: phoneNumber, isViaWhatsApp: 0));
-                                                                                        },
-                                                                                      ),
-                                                                                      VerifyOtp(
-                                                                                          fromExpired: true,
-                                                                                          isVisWhatsApp: isVisWhatsApp,
-                                                                                          navigateToAddName: () {},
-                                                                                          navigateTocart: () {
-                                                                                            isVerified.value = true;
-                                                                                          },
-                                                                                          fromLogin: false,
-                                                                                          onLoginFailed: () {
-                                                                                            pageController.animateToPage(3, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-                                                                                          },
-                                                                                          goBack: () {
-                                                                                            pageController.animateToPage(1, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-                                                                                          },
-                                                                                          methodIcon: isVisWhatsApp == 1 ? AppAssets.whatsappSvg : AppAssets.smsSvg,
-                                                                                          phoneNumber: phoneNumber),
-                                                                                    ]),
-                                                                          Positioned(
-                                                                            top:
-                                                                                0,
-                                                                            left: LanguageService.languageCode != "ar"
-                                                                                ? null
-                                                                                : 0,
-                                                                            right: LanguageService.languageCode != "ar"
-                                                                                ? 0
-                                                                                : null,
-                                                                            child:
                                                                                 Container(
-                                                                              margin: EdgeInsets.all(10),
-                                                                              height: 20,
-                                                                              width: 40,
-                                                                              child: InkWell(
-                                                                                  onTap: () => isVerified.value = true,
-                                                                                  child: SvgPicture.asset(
-                                                                                    AppAssets.closeSvg,
-                                                                                    height: 15,
-                                                                                    width: 30,
-                                                                                    color: Color(0xffFF5F61),
-                                                                                  )),
+                                                                                  height: 18.h,
+                                                                                  margin: EdgeInsets.only(
+                                                                                    right: LanguageService.languageCode != "ar" ? 10.w : 25,
+                                                                                    left: LanguageService.languageCode != "ar" ? 25 : 10.w,
+                                                                                  ),
+                                                                                  child: Text(
+                                                                                    "${LocaleKeys.normal_price.tr()} ",
+                                                                                    style: context.textTheme.bodyMedium?.ra.copyWith(fontSize: 11.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
+                                                                                  ),
+                                                                                ),
+                                                                              ],
                                                                             ),
-                                                                          )
-                                                                        ]),
-                                                                  )
-                                                                : Container(
-                                                                    margin: EdgeInsets.only(
-                                                                        bottom: ((state.cartCollection == null ||
-                                                                                state.cartCollection!.isEmpty))
-                                                                            ? 20
-                                                                            : 10),
-                                                                    height:
-                                                                        70.h,
-                                                                    child: BlocBuilder<
-                                                                            AuthBloc,
-                                                                            AuthState>(
-                                                                        buildWhen: (p,
-                                                                                c) =>
-                                                                            p.verifyOtpSignInStatus != c.verifyOtpSignInStatus ||
-                                                                            p.verifyOtpSignUpStatus !=
-                                                                                c.verifyOtpSignUpStatus ||
-                                                                            c.verifyGuestPhoneStatus != p.verifyGuestPhoneStatus,
-                                                                        builder: (context, authState) {
-                                                                          return (authState.verifyGuestPhoneStatus == VerifyGuestPhoneStatus.loading || authState.verifyOtpSignInStatus == VerifyOtpSignInStatus.loading || authState.verifyOtpSignUpStatus == VerifyOtpSignUpStatus.loading || state.addItemInCartStatus == AddItemInCartStatus.loading || state.deleteItemInCartStatus == DeleteItemInCartStatus.loading || state.updateItemInCartStatus == UpdateItemInCartStatus.loading)
-                                                                              ? Shimmer.fromColors(
-                                                                                  baseColor: Colors.grey[200]!,
-                                                                                  highlightColor: Colors.grey[100]!,
-                                                                                  child: Container(
+                                                                          ),
+                                                                    !expanded
+                                                                        ? SizedBox
+                                                                            .shrink()
+                                                                        : SizedBox(
+                                                                            height:
+                                                                                5.h,
+                                                                          ),
+                                                                    !expanded
+                                                                        ? SizedBox
+                                                                            .shrink()
+                                                                        : Container(
+                                                                            padding:
+                                                                                EdgeInsets.only(
+                                                                              right: LanguageService.languageCode != "ar" ? 10.w : 0,
+                                                                              left: LanguageService.languageCode != "ar" ? 0 : 10.w,
+                                                                            ),
+                                                                            width:
+                                                                                400.w,
+                                                                            height:
+                                                                                50.h,
+                                                                            margin:
+                                                                                EdgeInsets.symmetric(horizontal: 10.w),
+                                                                            child:
+                                                                                Column(
+                                                                              mainAxisAlignment: MainAxisAlignment.start,
+                                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                                              children: [
+                                                                                Row(
+                                                                                  children: [
+                                                                                    Container(
+                                                                                      margin: EdgeInsets.only(
+                                                                                        right: LanguageService.languageCode != "ar" ? 10.w : 4,
+                                                                                        left: LanguageService.languageCode != "ar" ? 2 : 8.w,
+                                                                                      ),
+                                                                                      child: SvgPicture.asset(
+                                                                                        AppAssets.totalDiscountCartSvg,
+                                                                                        color: Color(0xffFE0364),
+                                                                                        height: 12,
+                                                                                      ),
+                                                                                    ),
+                                                                                    Container(
+                                                                                      height: 17.h,
+                                                                                      margin: EdgeInsets.only(
+                                                                                        right: LanguageService.languageCode != "ar" ? 10.w : 2,
+                                                                                        left: LanguageService.languageCode != "ar" ? 2 : 10.w,
+                                                                                      ),
+                                                                                      child: Text(
+                                                                                        "${LocaleKeys.total_discount.tr()} ${(totlalPrice == 0 ? 0 : ((totlalDiscount) / totlalPriceWithoutShipping) * 100).toStringAsFixed(1)}% ",
+                                                                                        strutStyle: LanguageService.languageCode != "ar" ? null : StrutStyle(height: 0.1, leading: 0.1),
+                                                                                        style: context.textTheme.bodyMedium?.mr.copyWith(fontSize: 13.sp, color: const Color(0xffA28E5B), letterSpacing: 0.18, height: LanguageService.languageCode != "ar" ? 1.33 : 1),
+                                                                                      ),
+                                                                                    ),
+                                                                                    Spacer(),
+                                                                                    Text(
+                                                                                      "- ${(totlalDiscount).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
+                                                                                      style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 13.sp, color: const Color(0xffA28E5B), letterSpacing: 0.18, height: 1.33),
+                                                                                    ),
+                                                                                    Text(
+                                                                                      "${priceSymbol ?? "\$"}",
+                                                                                      style: context.textTheme.bodyMedium?.mr.copyWith(fontSize: 13.sp, color: const Color(0xffA28E5B), letterSpacing: 0.18, height: 1.33),
+                                                                                    ),
+                                                                                  ],
+                                                                                ),
+                                                                                Container(
+                                                                                  height: 17.h,
+                                                                                  margin: EdgeInsets.only(
+                                                                                    right: LanguageService.languageCode != "ar" ? 10.w : 25,
+                                                                                    left: LanguageService.languageCode != "ar" ? 25 : 10.w,
+                                                                                  ),
+                                                                                  child: Text(
+                                                                                    "${LocaleKeys.all_inclusve_without_addition.tr()} ",
+                                                                                    style: context.textTheme.bodyMedium?.ra.copyWith(fontSize: 11.sp, color: const Color(0xffA28E5B), letterSpacing: 0.18, height: 1.33),
+                                                                                  ),
+                                                                                ),
+                                                                              ],
+                                                                            ),
+                                                                          ),
+                                                                    !expanded
+                                                                        ? SizedBox
+                                                                            .shrink()
+                                                                        : SizedBox(
+                                                                            height:
+                                                                                5.h,
+                                                                          ),
+                                                                    !expanded
+                                                                        ? SizedBox
+                                                                            .shrink()
+                                                                        : Container(
+                                                                            padding:
+                                                                                EdgeInsets.only(
+                                                                              right: LanguageService.languageCode != "ar" ? 10.w : 2,
+                                                                              left: LanguageService.languageCode != "ar" ? 2 : 10.w,
+                                                                            ),
+                                                                            width:
+                                                                                400.w,
+                                                                            height:
+                                                                                50.h,
+                                                                            margin:
+                                                                                EdgeInsets.symmetric(horizontal: 10.w),
+                                                                            child:
+                                                                                Column(
+                                                                              mainAxisAlignment: MainAxisAlignment.start,
+                                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                                              children: [
+                                                                                Row(
+                                                                                  children: [
+                                                                                    Container(
+                                                                                      margin: EdgeInsets.only(right: LanguageService.languageCode != "ar" ? 10.w : 2, left: LanguageService.languageCode != "ar" ? 2 : 10.w),
+                                                                                      child: SvgPicture.asset(
+                                                                                        AppAssets.giftCartSvg,
+                                                                                        color: Color(0xff5BA260),
+                                                                                        height: 12,
+                                                                                      ),
+                                                                                    ),
+                                                                                    Container(
+                                                                                      height: 17.h,
+                                                                                      margin: EdgeInsets.only(
+                                                                                        right: LanguageService.languageCode != "ar" ? 10.w : 2,
+                                                                                        left: LanguageService.languageCode != "ar" ? 2 : 10.w,
+                                                                                      ),
+                                                                                      child: Text(
+                                                                                        "${LocaleKeys.gift.tr()}",
+                                                                                        style: context.textTheme.bodyMedium?.mr.copyWith(fontSize: 13.sp, color: const Color(0xff5BA260), letterSpacing: 0.18, height: 1.33),
+                                                                                      ),
+                                                                                    ),
+                                                                                    Spacer(),
+                                                                                    Text(
+                                                                                      "- ${0}  ",
+                                                                                      style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 13.sp, color: const Color(0xff5BA260), letterSpacing: 0.18, height: 1.33),
+                                                                                    ),
+                                                                                    Text(
+                                                                                      "${priceSymbol ?? "\$"}",
+                                                                                      style: context.textTheme.bodyMedium?.mr.copyWith(fontSize: 13.sp, color: const Color(0xff5BA260), letterSpacing: 0.18, height: 1.33),
+                                                                                    ),
+                                                                                  ],
+                                                                                ),
+                                                                                Container(
+                                                                                  height: 17.h,
+                                                                                  margin: EdgeInsets.only(
+                                                                                    right: LanguageService.languageCode != "ar" ? 10.w : 25,
+                                                                                    left: LanguageService.languageCode != "ar" ? 25 : 10.w,
+                                                                                  ),
+                                                                                  child: Text(
+                                                                                    "${LocaleKeys.first_shopping.tr()} ",
+                                                                                    style: context.textTheme.bodyMedium?.ra.copyWith(fontSize: 11.sp, color: const Color(0xff5BA260), letterSpacing: 0.18, height: 1.33),
+                                                                                  ),
+                                                                                ),
+                                                                              ],
+                                                                            ),
+                                                                          ),
+                                                                    SizedBox(
+                                                                      height:
+                                                                          5.h,
+                                                                    ),
+                                                                    !expanded
+                                                                        ? SizedBox
+                                                                            .shrink()
+                                                                        : Container(
+                                                                            padding:
+                                                                                EdgeInsets.only(
+                                                                              right: LanguageService.languageCode != "ar" ? 10.w : 2,
+                                                                              left: LanguageService.languageCode != "ar" ? 2 : 10.w,
+                                                                            ),
+                                                                            width:
+                                                                                400.w,
+                                                                            height:
+                                                                                50.h,
+                                                                            margin:
+                                                                                EdgeInsets.symmetric(horizontal: 10.w),
+                                                                            child:
+                                                                                Column(
+                                                                              mainAxisAlignment: MainAxisAlignment.start,
+                                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                                              children: [
+                                                                                Row(
+                                                                                  children: [
+                                                                                    Container(
+                                                                                      margin: EdgeInsets.only(right: LanguageService.languageCode != "ar" ? 10 : 2, left: LanguageService.languageCode != "ar" ? 2 : 10),
+                                                                                      child: SvgPicture.asset(
+                                                                                        AppAssets.shappingCartSvg,
+                                                                                        color: Color(0xffBEF4CD),
+                                                                                        height: 12,
+                                                                                      ),
+                                                                                    ),
+                                                                                    Container(
+                                                                                      height: 17.h,
+                                                                                      margin: EdgeInsets.only(
+                                                                                        right: LanguageService.languageCode != "ar" ? 10.w : 2,
+                                                                                        left: LanguageService.languageCode != "ar" ? 2 : 10.w,
+                                                                                      ),
+                                                                                      child: Text(
+                                                                                        "${LocaleKeys.shipping.tr()} ",
+                                                                                        strutStyle: LanguageService.languageCode != "ar" ? null : StrutStyle(height: 0.1, leading: 0.1),
+                                                                                        style: context.textTheme.bodyMedium?.mr.copyWith(fontSize: 13.sp, color: const Color(0xff2FA52F), letterSpacing: 0.18, height: LanguageService.languageCode != "ar" ? 1.33 : 1),
+                                                                                      ),
+                                                                                    ),
+                                                                                    Spacer(),
+                                                                                    Text(
+                                                                                      "0",
+                                                                                      style: context.textTheme.bodyMedium?.br.copyWith(decoration: TextDecoration.lineThrough, decorationColor: const Color(0xff2FA52F), color: const Color(0xff2FA52F), fontSize: 13, letterSpacing: 0.18, height: 1.33),
+                                                                                    ),
+                                                                                    Text(
+                                                                                      " ${((state.getCartShippingItemsModel?.data?.totalShippingCost ?? 0) * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
+                                                                                      style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 13.sp, color: const Color(0xff2FA52F), letterSpacing: 0.18, height: 1.33),
+                                                                                    ),
+                                                                                    Text(
+                                                                                      "${priceSymbol ?? "\$"}",
+                                                                                      style: context.textTheme.bodyMedium?.mr.copyWith(fontSize: 13.sp, color: const Color(0xff2FA52F), letterSpacing: 0.18, height: 1.33),
+                                                                                    ),
+                                                                                  ],
+                                                                                ),
+                                                                                Container(
+                                                                                  height: 18.h,
+                                                                                  margin: EdgeInsets.only(
+                                                                                    right: LanguageService.languageCode != "ar" ? 10.w : 25,
+                                                                                    left: LanguageService.languageCode != "ar" ? 25 : 10.w,
+                                                                                  ),
+                                                                                  child: Text(
+                                                                                    ((state.getCartShippingItemsModel?.data?.totalShippingCost ?? 0) * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2) != 0 ? "" : "${LocaleKeys.shipping_is_completely_free_without_any_extras.tr()} ",
+                                                                                    style: context.textTheme.bodyMedium?.ra.copyWith(fontSize: 11.sp, color: const Color(0xff2FA52F), letterSpacing: 0.18, height: 1.33),
+                                                                                  ),
+                                                                                ),
+                                                                              ],
+                                                                            ),
+                                                                          ),
+                                                                    SizedBox(
+                                                                      height: expanded
+                                                                          ? 0
+                                                                          : 10.h,
+                                                                    ),
+                                                                    ((state.cartCollection ==
+                                                                                null ||
+                                                                            state
+                                                                                .cartCollection!.isEmpty))
+                                                                        ? SizedBox
+                                                                            .shrink()
+                                                                        : Container(
+                                                                            width:
+                                                                                400.w,
+                                                                            height:
+                                                                                50.h,
+                                                                            decoration:
+                                                                                BoxDecoration(color: Color(0xffF8F8F8), borderRadius: BorderRadius.all(Radius.circular(12))),
+                                                                            padding:
+                                                                                EdgeInsets.only(
+                                                                              right: LanguageService.languageCode != "ar" ? 10.w : 2,
+                                                                              left: LanguageService.languageCode != "ar" ? 2 : 10.w,
+                                                                            ),
+                                                                            margin:
+                                                                                EdgeInsets.symmetric(horizontal: 10.w),
+                                                                            child:
+                                                                                Column(
+                                                                              mainAxisAlignment: MainAxisAlignment.start,
+                                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                                              children: [
+                                                                                Row(
+                                                                                  children: [
+                                                                                    Container(
+                                                                                      height: 17.h,
+                                                                                      margin: EdgeInsets.only(
+                                                                                        right: LanguageService.languageCode != "ar" ? 10.w : 25,
+                                                                                        left: LanguageService.languageCode != "ar" ? 25 : 10.w,
+                                                                                      ),
+                                                                                      child: Text(
+                                                                                        "${LocaleKeys.total.tr()}",
+                                                                                        style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 13.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
+                                                                                      ),
+                                                                                    ),
+                                                                                    Spacer(),
+                                                                                    Text(
+                                                                                      "${(totlalPrice + totlalDiscount).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
+                                                                                      style: context.textTheme.bodyMedium?.ra.copyWith(decoration: TextDecoration.lineThrough, fontSize: 16, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
+                                                                                    ),
+                                                                                    Text(
+                                                                                      "${totlalPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
+                                                                                      style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 16.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
+                                                                                    ),
+                                                                                    Text(
+                                                                                      "${priceSymbol ?? "\$"}",
+                                                                                      style: context.textTheme.bodyMedium?.mr.copyWith(fontSize: 16.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
+                                                                                    ),
+                                                                                    SizedBox(
+                                                                                      width: 5.w,
+                                                                                    ),
+                                                                                    Container(
+                                                                                        width: 20,
+                                                                                        height: 20,
+                                                                                        child: Container(
+                                                                                            alignment: Alignment.centerRight,
+                                                                                            height: 14,
+                                                                                            child: SvgPicture.asset(
+                                                                                              AppAssets.chatWithQuestionSvg,
+                                                                                              color: Color(0xff8E8E8E),
+                                                                                              height: 14,
+                                                                                            ))),
+                                                                                  ],
+                                                                                ),
+                                                                                Container(
+                                                                                  height: 17.h,
+                                                                                  margin: EdgeInsets.only(
+                                                                                    right: LanguageService.languageCode != "ar" ? 10.w : 25,
+                                                                                    left: LanguageService.languageCode != "ar" ? 25 : 10.w,
+                                                                                  ),
+                                                                                  child: Text(
+                                                                                    "${LocaleKeys.click_to_show_all_discount.tr()} ",
+                                                                                    style: context.textTheme.bodyMedium?.ra.copyWith(fontSize: 11.sp, color: const Color(0xff8D8D8D), letterSpacing: 0.18, height: 1.33),
+                                                                                  ),
+                                                                                ),
+                                                                              ],
+                                                                            ),
+                                                                          ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                              expanded
+                                                                  ? Spacer()
+                                                                  : SizedBox
+                                                                      .shrink(),
+                                                              SizedBox(
+                                                                height: expanded
+                                                                    ? 0
+                                                                    : ((state.cartCollection ==
+                                                                                null ||
+                                                                            state.cartCollection!.isEmpty))
+                                                                        ? 0
+                                                                        : isMoreInfo
+                                                                            ? 10
+                                                                            : 60,
+                                                              ),
+                                                              !isverified
+                                                                  ? Container(
+                                                                      height:
+                                                                          200,
+                                                                      child: Stack(
+                                                                          children: [
+                                                                            PageView(
+                                                                                physics: NeverScrollableScrollPhysics(),
+                                                                                controller: pageController,
+                                                                                children: (prefsRepository.isVerifiedPhonePeforeExpiredToken ?? false)
+                                                                                    ? [
+                                                                                        VerifyOtp(
+                                                                                            fromExpired: true,
+                                                                                            isVisWhatsApp: 1,
+                                                                                            navigateToAddName: () {},
+                                                                                            navigateTocart: () {
+                                                                                              isVerified.value = true;
+                                                                                            },
+                                                                                            fromLogin: false,
+                                                                                            onLoginFailed: () {
+                                                                                              //   pageController.animateToPage(3, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+                                                                                            },
+                                                                                            goBack: () {
+                                                                                              // pageController.animateToPage(1, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+                                                                                            },
+                                                                                            methodIcon: AppAssets.whatsappSvg,
+                                                                                            phoneNumber: prefsRepository.myPhoneNumber!),
+                                                                                      ]
+                                                                                    : [
+                                                                                        InsertPhoneTab(
+                                                                                          fromLogin: false,
+                                                                                          focusNode: focusNode,
+                                                                                          moveToNextStep: (String phoneNumber) {
+                                                                                            this.phoneNumber = phoneNumber.replaceAll(' ', '');
+                                                                                            pageController.animateToPage(1, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+                                                                                            setState(() {});
+                                                                                          },
+                                                                                        ),
+                                                                                        VerificationMethods(
+                                                                                          phoneNumber: phoneNumber,
+                                                                                          onChooseWhatsapp: () {
+                                                                                            isVisWhatsApp = 1;
+                                                                                            print("###################33333#${isVisWhatsApp}");
+                                                                                            pageController.animateToPage(2, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+
+                                                                                            if (prefsRepository.isTimerForOtpRunning ?? false) {
+                                                                                              showMessage('${LocaleKeys.you_must_wait_for_some_seconds_before_try_again.tr()}');
+                                                                                              return;
+                                                                                            }
+                                                                                            authBloc.add(SendOtpEvent(phone: phoneNumber, isViaWhatsApp: 1));
+                                                                                          },
+                                                                                          goBackToPhone: () {
+                                                                                            pageController.animateToPage(0, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+                                                                                          },
+                                                                                          onChooseSms: () {
+                                                                                            isVisWhatsApp = 0;
+                                                                                            pageController.animateToPage(3, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+                                                                                            authBloc.add(SendOtpEvent(phone: phoneNumber, isViaWhatsApp: 0));
+                                                                                          },
+                                                                                        ),
+                                                                                        VerifyOtp(
+                                                                                            fromExpired: true,
+                                                                                            isVisWhatsApp: isVisWhatsApp,
+                                                                                            navigateToAddName: () {},
+                                                                                            navigateTocart: () {
+                                                                                              isVerified.value = true;
+                                                                                            },
+                                                                                            fromLogin: false,
+                                                                                            onLoginFailed: () {
+                                                                                              pageController.animateToPage(3, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+                                                                                            },
+                                                                                            goBack: () {
+                                                                                              pageController.animateToPage(1, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+                                                                                            },
+                                                                                            methodIcon: isVisWhatsApp == 1 ? AppAssets.whatsappSvg : AppAssets.smsSvg,
+                                                                                            phoneNumber: phoneNumber),
+                                                                                      ]),
+                                                                            Positioned(
+                                                                              top: 0,
+                                                                              left: LanguageService.languageCode != "ar" ? null : 0,
+                                                                              right: LanguageService.languageCode != "ar" ? 0 : null,
+                                                                              child: Container(
+                                                                                margin: EdgeInsets.all(10),
+                                                                                height: 20,
+                                                                                width: 40,
+                                                                                child: InkWell(
+                                                                                    onTap: () => isVerified.value = true,
+                                                                                    child: SvgPicture.asset(
+                                                                                      AppAssets.closeSvg,
+                                                                                      height: 15,
+                                                                                      width: 30,
+                                                                                      color: Color(0xffFF5F61),
+                                                                                    )),
+                                                                              ),
+                                                                            )
+                                                                          ]),
+                                                                    )
+                                                                  : Container(
+                                                                      margin: EdgeInsets.only(
+                                                                          bottom: ((state.cartCollection == null || state.cartCollection!.isEmpty))
+                                                                              ? 20
+                                                                              : 10),
+                                                                      height:
+                                                                          70.h,
+                                                                      child: BlocBuilder<
+                                                                              AuthBloc,
+                                                                              AuthState>(
+                                                                          buildWhen: (p, c) =>
+                                                                              p.verifyOtpSignInStatus != c.verifyOtpSignInStatus ||
+                                                                              p.verifyOtpSignUpStatus != c.verifyOtpSignUpStatus ||
+                                                                              c.verifyGuestPhoneStatus != p.verifyGuestPhoneStatus,
+                                                                          builder: (context, authState) {
+                                                                            return (authState.verifyGuestPhoneStatus == VerifyGuestPhoneStatus.loading || authState.verifyOtpSignInStatus == VerifyOtpSignInStatus.loading || authState.verifyOtpSignUpStatus == VerifyOtpSignUpStatus.loading || state.addItemInCartStatus == AddItemInCartStatus.loading || state.deleteItemInCartStatus == DeleteItemInCartStatus.loading || state.updateItemInCartStatus == UpdateItemInCartStatus.loading || (state.checkAvailabilityProductCartStatus == CheckAvailabilityProductCartStatus.loading))
+                                                                                ? Shimmer.fromColors(
+                                                                                    baseColor: Colors.grey[200]!,
+                                                                                    highlightColor: Colors.grey[100]!,
+                                                                                    child: Container(
                                                                                       alignment: Alignment.center,
                                                                                       child: Column(
                                                                                         mainAxisAlignment: MainAxisAlignment.center,
@@ -1594,180 +1629,172 @@ class _CartPageState extends State<CartPage> {
                                                                                       decoration: BoxDecoration(
                                                                                         borderRadius: BorderRadius.circular(20),
                                                                                         color: Color(0xff3C3C3C),
-                                                                                      )))
-                                                                              : InkWell(
-                                                                                  onTap: () {
-                                                                                    if ((state.cartCollection == null || state.cartCollection!.isEmpty)) {
-                                                                                      // didCallOnWillPop = true;
-                                                                                      if (Navigator.canPop(context)) {
-                                                                                        if (Navigator.of(context).canPop()) {
-                                                                                          Navigator.of(context).pop();
+                                                                                      ),
+                                                                                    ),
+                                                                                  )
+                                                                                : InkWell(
+                                                                                    onTap: () {
+                                                                                      if ((state.cartCollection == null || state.cartCollection!.isEmpty)) {
+                                                                                        if (Navigator.canPop(context)) {
+                                                                                          if (Navigator.of(context).canPop()) {
+                                                                                            Navigator.of(context).pop();
+                                                                                            return;
+                                                                                          }
+
+                                                                                          appBloc.add(ChangeBasePage(0));
+                                                                                          homeBloc.add(ResetAllSelectedAppliedFilterEvent());
                                                                                           return;
-                                                                                          // منع الإغلاق بعد تنفيذ pop
+                                                                                        } else {
+                                                                                          appBloc.add(ChangeBasePage(0));
+                                                                                          return;
                                                                                         }
-
-                                                                                        // يسمح بالإغلاق إذا لم تنطبق أي من الشروط
-
-                                                                                        appBloc.add(ChangeBasePage(0));
-                                                                                        homeBloc.add(ResetAllSelectedAppliedFilterEvent());
-                                                                                        return;
-                                                                                      } else {
-                                                                                        appBloc.add(ChangeBasePage(0));
-                                                                                        return;
-                                                                                      }
-                                                                                    } else if (state.cartCollection!.any(
-                                                                                      (element) => element.checkAvailability == false,
-                                                                                    )) {
-                                                                                      showMessage(
-                                                                                        " ${LocaleKeys.you_have_to_delete_all_unavailable_products.tr()}",
-                                                                                        foreGroundColor: Colors.white,
-                                                                                        backGroundColor: Colors.black,
-                                                                                        showInRelease: true,
-                                                                                        timeShowing: Toast.LENGTH_LONG,
-                                                                                      );
-                                                                                      return;
-                                                                                    } else {
-                                                                                      if (prefsRepository.isVerifiedPhone != true) {
-                                                                                        if ((prefsRepository.isVerifiedPhonePeforeExpiredToken ?? false)) {
-                                                                                          authBloc.add(SendOtpEvent(phone: prefsRepository.myPhoneNumber!, isViaWhatsApp: 1));
-                                                                                          ;
-                                                                                        }
-                                                                                        isVerified.value = false;
-                                                                                      } else {
-                                                                                        HelperFunctions.slidingNavigation(
-                                                                                          context,
-                                                                                          CartDelivaryAddress(
-                                                                                            totalCashed: totlalcashed,
-                                                                                            cartImages: cartImages,
-                                                                                            totalPrice: totlalPrice,
-                                                                                            cartGroupId: cartGroupId,
-                                                                                            currencySympole: priceSymbol ?? ' \$',
-                                                                                          ),
+                                                                                      } else if (state.cartCollection!.any(
+                                                                                        (element) => element.checkAvailability == false,
+                                                                                      )) {
+                                                                                        showMessage(
+                                                                                          " ${LocaleKeys.you_have_to_delete_all_unavailable_products.tr()}",
+                                                                                          foreGroundColor: Colors.white,
+                                                                                          backGroundColor: Colors.black,
+                                                                                          showInRelease: true,
+                                                                                          timeShowing: Toast.LENGTH_LONG,
                                                                                         );
+                                                                                        return;
+                                                                                      } else {
+                                                                                        if (prefsRepository.isVerifiedPhone != true) {
+                                                                                          if ((prefsRepository.isVerifiedPhonePeforeExpiredToken ?? false)) {
+                                                                                            authBloc.add(SendOtpEvent(phone: prefsRepository.myPhoneNumber!, isViaWhatsApp: 1));
+                                                                                            ;
+                                                                                          }
+                                                                                          isVerified.value = false;
+                                                                                        } else {
+                                                                                          BlocProvider.of<HomeBloc>(context).add(
+                                                                                            CheckAvailabilityProductCartEvent(),
+                                                                                          );
+                                                                                        }
                                                                                       }
-                                                                                    }
-                                                                                    ;
-                                                                                  },
-                                                                                  child: Container(
-                                                                                      alignment: Alignment.center,
-                                                                                      child: ((state.cartCollection == null || state.cartCollection!.isEmpty))
-                                                                                          ? Text(
-                                                                                              "${LocaleKeys.back_to_home.tr()}",
-                                                                                              style: context.textTheme.bodyMedium?.la.copyWith(
-                                                                                                fontSize: 18.sp,
-                                                                                                color: const Color(0xffFEFEFE),
-                                                                                                letterSpacing: 0.18,
+                                                                                      ;
+                                                                                    },
+                                                                                    child: Container(
+                                                                                        alignment: Alignment.center,
+                                                                                        child: ((state.cartCollection == null || state.cartCollection!.isEmpty))
+                                                                                            ? Text(
+                                                                                                "${LocaleKeys.back_to_home.tr()}",
+                                                                                                style: context.textTheme.bodyMedium?.la.copyWith(
+                                                                                                  fontSize: 18.sp,
+                                                                                                  color: const Color(0xffFEFEFE),
+                                                                                                  letterSpacing: 0.18,
+                                                                                                ),
+                                                                                              )
+                                                                                            : Column(
+                                                                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                                                                mainAxisSize: MainAxisSize.min,
+                                                                                                children: [
+                                                                                                  Row(
+                                                                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                                                                    children: [
+                                                                                                      Text(
+                                                                                                        "${LocaleKeys.confirm.tr()} ",
+                                                                                                        style: context.textTheme.bodyMedium?.la.copyWith(
+                                                                                                          fontSize: 17.sp,
+                                                                                                          color: const Color(0xffFEFEFE),
+                                                                                                          letterSpacing: 0.18,
+                                                                                                        ),
+                                                                                                      ),
+                                                                                                      Text(
+                                                                                                        "&",
+                                                                                                        style: context.textTheme.bodyMedium?.ld.copyWith(
+                                                                                                          fontSize: 17.sp,
+                                                                                                          color: const Color(0xffFEFEFE),
+                                                                                                          letterSpacing: 0.18,
+                                                                                                        ),
+                                                                                                      ),
+                                                                                                      Text(
+                                                                                                        " ${LocaleKeys.continues.tr()}",
+                                                                                                        style: context.textTheme.bodyMedium?.la.copyWith(
+                                                                                                          fontSize: 17.sp,
+                                                                                                          color: const Color(0xffFEFEFE),
+                                                                                                          letterSpacing: 0.18,
+                                                                                                        ),
+                                                                                                      ),
+                                                                                                    ],
+                                                                                                  ),
+                                                                                                  Row(
+                                                                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                                                                    children: [
+                                                                                                      Text(
+                                                                                                        "${totlalQuantity.round()} ",
+                                                                                                        style: context.textTheme.bodyMedium?.ba.copyWith(
+                                                                                                          fontSize: 14.sp,
+                                                                                                          color: const Color(0xffFEFEFE),
+                                                                                                          letterSpacing: 0.18,
+                                                                                                        ),
+                                                                                                      ),
+                                                                                                      Text(
+                                                                                                        "${LocaleKeys.item.tr()}",
+                                                                                                        style: context.textTheme.bodyMedium?.ra.copyWith(
+                                                                                                          fontSize: 14.sp,
+                                                                                                          color: const Color(0xffFEFEFE),
+                                                                                                          letterSpacing: 0.18,
+                                                                                                        ),
+                                                                                                      ),
+                                                                                                      Text(
+                                                                                                        " ${totlalPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} ",
+                                                                                                        style: context.textTheme.bodyMedium?.ba.copyWith(
+                                                                                                          fontSize: 14.sp,
+                                                                                                          color: const Color(0xffFEFEFE),
+                                                                                                          letterSpacing: 0.18,
+                                                                                                        ),
+                                                                                                      ),
+                                                                                                      Text(
+                                                                                                        priceSymbol ?? ' \$',
+                                                                                                        style: context.textTheme.bodyMedium?.ra.copyWith(
+                                                                                                          decorationColor: Color(0xffFEFEFE),
+                                                                                                          fontSize: 14.sp,
+                                                                                                          color: Color(0xffFEFEFE),
+                                                                                                        ),
+                                                                                                      )
+                                                                                                    ],
+                                                                                                  ),
+                                                                                                  SizedBox(
+                                                                                                    height: 5,
+                                                                                                  )
+                                                                                                ],
                                                                                               ),
-                                                                                            )
-                                                                                          : Column(
-                                                                                              mainAxisAlignment: MainAxisAlignment.center,
-                                                                                              mainAxisSize: MainAxisSize.min,
-                                                                                              children: [
-                                                                                                Row(
-                                                                                                  mainAxisAlignment: MainAxisAlignment.center,
-                                                                                                  children: [
-                                                                                                    Text(
-                                                                                                      "${LocaleKeys.confirm.tr()} ",
-                                                                                                      style: context.textTheme.bodyMedium?.la.copyWith(
-                                                                                                        fontSize: 17.sp,
-                                                                                                        color: const Color(0xffFEFEFE),
-                                                                                                        letterSpacing: 0.18,
-                                                                                                      ),
-                                                                                                    ),
-                                                                                                    Text(
-                                                                                                      "&",
-                                                                                                      style: context.textTheme.bodyMedium?.ld.copyWith(
-                                                                                                        fontSize: 17.sp,
-                                                                                                        color: const Color(0xffFEFEFE),
-                                                                                                        letterSpacing: 0.18,
-                                                                                                      ),
-                                                                                                    ),
-                                                                                                    Text(
-                                                                                                      " ${LocaleKeys.continues.tr()}",
-                                                                                                      style: context.textTheme.bodyMedium?.la.copyWith(
-                                                                                                        fontSize: 17.sp,
-                                                                                                        color: const Color(0xffFEFEFE),
-                                                                                                        letterSpacing: 0.18,
-                                                                                                      ),
-                                                                                                    ),
-                                                                                                  ],
-                                                                                                ),
-                                                                                                Row(
-                                                                                                  mainAxisAlignment: MainAxisAlignment.center,
-                                                                                                  children: [
-                                                                                                    Text(
-                                                                                                      "${totlalQuantity.round()} ",
-                                                                                                      style: context.textTheme.bodyMedium?.ba.copyWith(
-                                                                                                        fontSize: 14.sp,
-                                                                                                        color: const Color(0xffFEFEFE),
-                                                                                                        letterSpacing: 0.18,
-                                                                                                      ),
-                                                                                                    ),
-                                                                                                    Text(
-                                                                                                      "${LocaleKeys.item.tr()}",
-                                                                                                      style: context.textTheme.bodyMedium?.ra.copyWith(
-                                                                                                        fontSize: 14.sp,
-                                                                                                        color: const Color(0xffFEFEFE),
-                                                                                                        letterSpacing: 0.18,
-                                                                                                      ),
-                                                                                                    ),
-                                                                                                    Text(
-                                                                                                      " ${totlalPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} ",
-                                                                                                      style: context.textTheme.bodyMedium?.ba.copyWith(
-                                                                                                        fontSize: 14.sp,
-                                                                                                        color: const Color(0xffFEFEFE),
-                                                                                                        letterSpacing: 0.18,
-                                                                                                      ),
-                                                                                                    ),
-                                                                                                    Text(
-                                                                                                      priceSymbol ?? ' \$',
-                                                                                                      style: context.textTheme.bodyMedium?.ra.copyWith(
-                                                                                                        decorationColor: Color(0xffFEFEFE),
-                                                                                                        fontSize: 14.sp,
-                                                                                                        color: Color(0xffFEFEFE),
-                                                                                                      ),
-                                                                                                    )
-                                                                                                  ],
-                                                                                                ),
-                                                                                                SizedBox(
-                                                                                                  height: 5,
-                                                                                                )
-                                                                                              ],
-                                                                                            ),
-                                                                                      margin: EdgeInsets.symmetric(horizontal: 20.w),
-                                                                                      width: 390.w,
-                                                                                      height: 70.h,
-                                                                                      decoration: BoxDecoration(
-                                                                                        borderRadius: BorderRadius.circular(20),
-                                                                                        color: Color(0xff3C3C3C),
-                                                                                      )),
-                                                                                );
-                                                                        }),
-                                                                  ),
-                                                            SizedBox(
-                                                              height: 5,
-                                                            )
-                                                          ],
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .start),
+                                                                                        margin: EdgeInsets.symmetric(horizontal: 20.w),
+                                                                                        width: 390.w,
+                                                                                        height: 70.h,
+                                                                                        decoration: BoxDecoration(
+                                                                                          borderRadius: BorderRadius.circular(20),
+                                                                                          color: Color(0xff3C3C3C),
+                                                                                        )),
+                                                                                  );
+                                                                          }),
+                                                                    ),
+                                                              SizedBox(
+                                                                height: 5,
+                                                              )
+                                                            ],
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .start),
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
-                                              ),
-                                            );
-                                          });
-                                    },
-                                  );
-                                })
-                          ],
+                                              );
+                                            });
+                                      },
+                                    );
+                                  })
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              );
-            },
+                    ],
+                  ),
+                );
+              },
+            ),
           )),
     );
   }

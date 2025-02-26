@@ -3,6 +3,7 @@ import 'package:injectable/injectable.dart';
 import 'package:trydos/core/error/failures.dart';
 
 import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
+import 'package:trydos/features/home/data/models/apply_coupon_model.dart';
 import 'package:trydos/features/home/data/models/convert_item_from_oldCart_to_cart_model.dart';
 import 'package:trydos/features/home/data/models/customer_wallet_model.dart';
 import 'package:trydos/features/home/data/models/firebase_setting_for_notification_model.dart';
@@ -413,6 +414,15 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
       checkAvailabilityProductCart() {
     return handlingExceptionRequest(
       tryCall: () => dataSource.checkAvailabilityProductCart(),
+    );
+  }
+
+  @override
+  Future<Either<Failure, ApplyCouponModel>> applyCoupon({
+    required String code,
+  }) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.applyCoupon(code: code),
     );
   }
 }

@@ -5,13 +5,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
+import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
+import 'package:trydos/core/utils/extensions/state_ext.dart';
+import 'package:trydos/core/utils/extensions/string.dart';
+import 'package:trydos/features/app/app_widgets/app_text_field.dart';
 import 'package:trydos/features/app/trydos_shimmer_loading.dart';
 import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
@@ -61,6 +66,9 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
   final ValueNotifier<bool> isExpandedCoupon = ValueNotifier(false);
   final ValueNotifier<bool> isApplayCoupon = ValueNotifier(false);
 
+  final GlobalKey<FormState> _formKey = GlobalKey();
+  final TextEditingController couponKey = TextEditingController();
+
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
@@ -109,242 +117,263 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
       },
       child: Scaffold(
         resizeToAvoidBottomInset: true,
-        body: BlocBuilder<HomeBloc, HomeState>(
-          buildWhen: (previous, current) =>
-              previous.getCustomerAddressStatus !=
-                  current.getCustomerAddressStatus ||
-              previous.editAddressToOrderStatus !=
-                  current.editAddressToOrderStatus ||
-              previous.addAddressToOrderStatus !=
-                  current.addAddressToOrderStatus ||
-              previous.removeAddressToOrderStatus !=
-                  current.removeAddressToOrderStatus ||
-              previous.getCustomerWalletStatus !=
-                  current.getCustomerWalletStatus,
-          builder: (context, state) {
-            List<String> availablePaymentMethod =
-                state.getCartShippingItemsModel!.data!.availablePaymentMethod ??
-                    [];
-            print(
-                "@@@@@@@@@@@@@@######################################################################################${availablePaymentMethod}");
-            return ValueListenableBuilder<bool>(
-              valueListenable: showDeleteAddress,
-              builder: (context, _showDeleteAddress, _) {
-                double walletBalance = state.customerWalletModel == null
-                    ? 0
-                    : state.customerWalletModel!.data.totalWalletBalance! *
-                        state.getCurrencyForCountryModel!.data!.currency!
-                            .exchangeRate!;
-                return ValueListenableBuilder<int>(
-                    valueListenable: indexTap,
-                    builder: (context, _indexTap, _) {
-                      return Stack(
-                        children: [
-                          Column(
-                            children: [
-                              buildPageHeader(context, state),
-                              ///////////////////////
-                              Expanded(
-                                child: SingleChildScrollView(
-                                  child: Container(
-                                    margin: EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                    ),
-                                    color: Color.fromARGB(255, 255, 255, 255),
-                                    child: Column(
-                                      children: [
-                                        SizedBox(
-                                          height: 10.h,
-                                        ),
-                                        ////////////////////
-                                        ValueListenableBuilder<bool>(
-                                          valueListenable: isExpanded,
-                                          builder: (context, expanded, _) {
-                                            return buildBagItemsWidget(
-                                                expanded, context);
-                                          },
-                                        ),
-                                        //////////////////////////////////
-                                        SizedBox(
-                                          height: 12.h,
-                                        ),
-                                        //////////////////////////////////
-                                        buildAddressWidget(
-                                            state, context, _indexTap),
-                                        ////////////////////
-                                        SizedBox(
-                                          height: 12.h,
-                                        ),
-                                        ////////////////////
-                                        (state.listOfAddressInfoClassToSave
-                                                .isNullOrEmpty)
-                                            ? SizedBox.shrink()
-                                            : state.getCustomerWalletStatus ==
-                                                    GetCustomerWalletStatus
-                                                        .failure
-                                                ? TryAgainWidget(
-                                                    tryAgain: () {
-                                                      BlocProvider.of<HomeBloc>(
-                                                              context)
-                                                          .add(
-                                                        GetCustomerWalletEvent(
-                                                            limit: 10,
-                                                            offset: 1),
-                                                      );
-                                                    },
-                                                  )
-                                                : state.getCustomerWalletStatus ==
-                                                        GetCustomerWalletStatus
-                                                            .loading
-                                                    ? TrydosShimmerLoading(
-                                                        width: 1.sw,
-                                                        logoTextWidth: 15,
-                                                        height: 70,
-                                                        logoTextHeight: 15,
-                                                      )
-                                                    : PaymentMethod(
-                                                        fromSuccessOrder: false,
-                                                        amount: walletBalance,
-                                                        fromPalceOrder: false,
-                                                        availablePaymentMethod:
-                                                            availablePaymentMethod,
-                                                        currencySymbol: state
-                                                                .getCurrencyForCountryModel!
-                                                                .data!
-                                                                .currency!
-                                                                .symbol ??
-                                                            '',
-                                                        paymentMethods:
-                                                            paymentMethods,
-                                                        totalPrice:
-                                                            widget.totalPrice,
-                                                        decimalPointSetting: state
-                                                                .startingSetting
-                                                                ?.decimalPointSetting ??
-                                                            2,
-                                                      ),
-                                        ////////////
-                                        SizedBox(
-                                          height: 25.h,
-                                        ),
-                                        ValueListenableBuilder<bool>(
-                                          valueListenable: isExpandedCoupon,
-                                          builder:
-                                              (context, expandedCoupon, _) {
-                                            return ValueListenableBuilder<bool>(
-                                              valueListenable: isApplayCoupon,
-                                              builder:
-                                                  (context, applayCoupon, _) {
-                                                return buildCouponWidget(
+        body: BlocListener<HomeBloc, HomeState>(
+          listenWhen: (previous, current) =>
+              previous.applyCouponStatus != current.applyCouponStatus &&
+              (current.applyCouponStatus == ApplyCouponStatus.success),
+          listener: (context, state) {
+            if (state.applyCouponStatus == ApplyCouponStatus.success) {
+              var data = state.applyCouponModel;
+              if (data!.data!.status == 1) {
+                isApplayCoupon.value = true;
+              }
+            }
+          },
+          child: BlocBuilder<HomeBloc, HomeState>(
+            buildWhen: (previous, current) =>
+                previous.getCustomerAddressStatus !=
+                    current.getCustomerAddressStatus ||
+                previous.editAddressToOrderStatus !=
+                    current.editAddressToOrderStatus ||
+                previous.addAddressToOrderStatus !=
+                    current.addAddressToOrderStatus ||
+                previous.removeAddressToOrderStatus !=
+                    current.removeAddressToOrderStatus ||
+                previous.getCustomerWalletStatus !=
+                    current.getCustomerWalletStatus ||
+                previous.applyCouponStatus != current.applyCouponStatus,
+            builder: (context, state) {
+              List<String> availablePaymentMethod = state
+                      .getCartShippingItemsModel!
+                      .data!
+                      .availablePaymentMethod ??
+                  [];
+
+              return ValueListenableBuilder<bool>(
+                valueListenable: showDeleteAddress,
+                builder: (context, _showDeleteAddress, _) {
+                  double walletBalance = state.customerWalletModel == null
+                      ? 0
+                      : state.customerWalletModel!.data.totalWalletBalance! *
+                          state.getCurrencyForCountryModel!.data!.currency!
+                              .exchangeRate!;
+                  return ValueListenableBuilder<int>(
+                      valueListenable: indexTap,
+                      builder: (context, _indexTap, _) {
+                        return Stack(
+                          children: [
+                            Column(
+                              children: [
+                                buildPageHeader(context, state),
+                                ///////////////////////
+                                Expanded(
+                                  child: SingleChildScrollView(
+                                    child: Container(
+                                      margin: EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                      ),
+                                      color: Color.fromARGB(255, 255, 255, 255),
+                                      child: Column(
+                                        children: [
+                                          SizedBox(
+                                            height: 10.h,
+                                          ),
+                                          ////////////////////
+                                          ValueListenableBuilder<bool>(
+                                            valueListenable: isExpanded,
+                                            builder: (context, expanded, _) {
+                                              return buildBagItemsWidget(
+                                                  expanded, context);
+                                            },
+                                          ),
+                                          //////////////////////////////////
+                                          SizedBox(
+                                            height: 12.h,
+                                          ),
+                                          //////////////////////////////////
+                                          buildAddressWidget(
+                                              state, context, _indexTap),
+                                          ////////////////////
+                                          SizedBox(
+                                            height: 12.h,
+                                          ),
+                                          ////////////////////
+                                          (state.listOfAddressInfoClassToSave
+                                                  .isNullOrEmpty)
+                                              ? SizedBox.shrink()
+                                              : state.getCustomerWalletStatus ==
+                                                      GetCustomerWalletStatus
+                                                          .failure
+                                                  ? TryAgainWidget(
+                                                      tryAgain: () {
+                                                        BlocProvider.of<
+                                                                    HomeBloc>(
+                                                                context)
+                                                            .add(
+                                                          GetCustomerWalletEvent(
+                                                              limit: 10,
+                                                              offset: 1),
+                                                        );
+                                                      },
+                                                    )
+                                                  : state.getCustomerWalletStatus ==
+                                                          GetCustomerWalletStatus
+                                                              .loading
+                                                      ? TrydosShimmerLoading(
+                                                          width: 1.sw,
+                                                          logoTextWidth: 15,
+                                                          height: 70,
+                                                          logoTextHeight: 15,
+                                                        )
+                                                      : PaymentMethod(
+                                                          fromSuccessOrder:
+                                                              false,
+                                                          amount: walletBalance,
+                                                          fromPalceOrder: false,
+                                                          availablePaymentMethod:
+                                                              availablePaymentMethod,
+                                                          currencySymbol: state
+                                                                  .getCurrencyForCountryModel!
+                                                                  .data!
+                                                                  .currency!
+                                                                  .symbol ??
+                                                              '',
+                                                          paymentMethods:
+                                                              paymentMethods,
+                                                          totalPrice:
+                                                              widget.totalPrice,
+                                                          decimalPointSetting: state
+                                                                  .startingSetting
+                                                                  ?.decimalPointSetting ??
+                                                              2,
+                                                        ),
+                                          ////////////
+                                          SizedBox(
+                                            height: 25.h,
+                                          ),
+                                          ValueListenableBuilder<bool>(
+                                            valueListenable: isExpandedCoupon,
+                                            builder:
+                                                (context, expandedCoupon, _) {
+                                              return ValueListenableBuilder<
+                                                  bool>(
+                                                valueListenable: isApplayCoupon,
+                                                builder:
+                                                    (context, applayCoupon, _) {
+                                                  return buildCouponWidget(
                                                     expandedCoupon,
                                                     context,
-                                                    applayCoupon);
-                                              },
-                                            );
-                                          },
-                                        ),
-                                        ////////////////
-                                        (state.listOfAddressInfoClassToSave
-                                                .isNullOrEmpty)
-                                            ? SizedBox.shrink()
-                                            : ValueListenableBuilder<bool>(
-                                                valueListenable: isExpanded,
-                                                builder:
-                                                    (context, _isExpanded, _) {
-                                                  return ValueListenableBuilder<
-                                                      bool>(
-                                                    valueListenable:
-                                                        isExpandedCoupon,
-                                                    builder: (context,
-                                                        _isExpandedCoupon,
-                                                        child) {
-                                                      return SizedBox(
-                                                          height: _isExpanded
-                                                              ? 120.h
-                                                              : (_isExpandedCoupon &&
-                                                                      !_isExpanded)
-                                                                  ? 120.h
-                                                                  : 0);
-                                                    },
+                                                    applayCoupon,
+                                                    state,
                                                   );
                                                 },
-                                              ),
-                                      ],
+                                              );
+                                            },
+                                          ),
+                                          ////////////////
+                                          (state.listOfAddressInfoClassToSave
+                                                  .isNullOrEmpty)
+                                              ? SizedBox.shrink()
+                                              : ValueListenableBuilder<bool>(
+                                                  valueListenable: isExpanded,
+                                                  builder: (context,
+                                                      _isExpanded, _) {
+                                                    return ValueListenableBuilder<
+                                                        bool>(
+                                                      valueListenable:
+                                                          isExpandedCoupon,
+                                                      builder: (context,
+                                                          _isExpandedCoupon,
+                                                          child) {
+                                                        return SizedBox(
+                                                            height: _isExpanded
+                                                                ? 120.h
+                                                                : (_isExpandedCoupon &&
+                                                                        !_isExpanded)
+                                                                    ? 120.h
+                                                                    : 0);
+                                                      },
+                                                    );
+                                                  },
+                                                ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              ////////////////////////////
-                              (state.listOfAddressInfoClassToSave.isNullOrEmpty)
-                                  ? SizedBox.shrink()
-                                  : buildShippingButton(
-                                      state,
-                                      _indexTap,
-                                      walletBalance,
-                                      widget.totalPrice,
-                                      availablePaymentMethod,
-                                    ),
-                            ],
-                          ),
-                          //////////////////////////////
-                          ValueListenableBuilder<bool>(
-                            valueListenable: showPanel,
-                            builder: (context, _showPanel, _) {
-                              return !_showPanel
-                                  ? SizedBox.shrink()
-                                  : InkWell(
-                                      onTap: () {
-                                        panelController.close();
-                                        showPanel.value = false;
-                                      },
-                                      child: Container(
-                                        width: 1.sh,
-                                        color: Color.fromRGBO(0, 0, 0, 0.65),
+                                ////////////////////////////
+                                (state.listOfAddressInfoClassToSave
+                                        .isNullOrEmpty)
+                                    ? SizedBox.shrink()
+                                    : buildShippingButton(
+                                        state,
+                                        _indexTap,
+                                        walletBalance,
+                                        widget.totalPrice,
+                                        availablePaymentMethod,
                                       ),
-                                    );
-                            },
-                          ),
-                          ///////////////
-                          Positioned(
-                            bottom: 0,
-                            child: Container(
-                              height: 510,
-                              width: 1.sw,
-                              child: SlidingUpPanel(
-                                controller: panelController,
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(30),
-                                    topRight: Radius.circular(30)),
-                                isDraggable: true,
-                                slideDirection: SlideDirection.UP,
-                                onPanelClosed: () {
-                                  showPanel.value = false;
-                                },
-                                onPanelOpened: () {
-                                  showPanel.value = true;
-                                },
-                                minHeight: 0,
-                                maxHeight: 510,
-                                panelBuilder: (sc) =>
-                                    buildSlidingUpPanelWidgets(
-                                  context,
-                                  state,
-                                  _indexTap,
-                                  sc,
+                              ],
+                            ),
+                            //////////////////////////////
+                            ValueListenableBuilder<bool>(
+                              valueListenable: showPanel,
+                              builder: (context, _showPanel, _) {
+                                return !_showPanel
+                                    ? SizedBox.shrink()
+                                    : InkWell(
+                                        onTap: () {
+                                          panelController.close();
+                                          showPanel.value = false;
+                                        },
+                                        child: Container(
+                                          width: 1.sh,
+                                          color: Color.fromRGBO(0, 0, 0, 0.65),
+                                        ),
+                                      );
+                              },
+                            ),
+                            ///////////////
+                            Positioned(
+                              bottom: 0,
+                              child: Container(
+                                height: 510,
+                                width: 1.sw,
+                                child: SlidingUpPanel(
+                                  controller: panelController,
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(30),
+                                      topRight: Radius.circular(30)),
+                                  isDraggable: true,
+                                  slideDirection: SlideDirection.UP,
+                                  onPanelClosed: () {
+                                    showPanel.value = false;
+                                  },
+                                  onPanelOpened: () {
+                                    showPanel.value = true;
+                                  },
+                                  minHeight: 0,
+                                  maxHeight: 510,
+                                  panelBuilder: (sc) =>
+                                      buildSlidingUpPanelWidgets(
+                                    context,
+                                    state,
+                                    _indexTap,
+                                    sc,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          /////////////////////////////////////
-                          _showDeleteAddress
-                              ? buildDeleteAddressWidget(context, state)
-                              : SizedBox.shrink()
-                        ],
-                      );
-                    });
-              },
-            );
-          },
+                            /////////////////////////////////////
+                            _showDeleteAddress
+                                ? buildDeleteAddressWidget(context, state)
+                                : SizedBox.shrink()
+                          ],
+                        );
+                      });
+                },
+              );
+            },
+          ),
         ),
       ),
     );
@@ -390,122 +419,209 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
           } else {
             check = false;
           }
-          return InkWell(
-            onTap: () {
-              if (check) {
-                HelperFunctions.slidingNavigation(
-                  context,
-                  PlaceOrder(
-                    customerAddressesInfo:
-                        state.listOfAddressInfoClassToSave![_indexTap],
-                    walletBalance: walletBalance,
-                    cartGroupId: widget.cartGroupId,
-                    paymentMethods: paymentMethods,
-                    availablePaymentMethod: availablePaymentMethods,
-                    cartImages: widget.cartImages,
-                    currencySympole: widget.currencySympole,
-                    totalPrice: widget.totalPrice,
-                    totalCashed: widget.totalCashed,
-                    currencySymbol: state.getCurrencyForCountryModel!.data!
-                            .currency!.symbol ??
-                        "",
-                    decimalPointSetting:
-                        state.startingSetting?.decimalPointSetting ?? 2,
+          return (state.applyCouponStatus == ApplyCouponStatus.loading)
+              ? Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    height: 60,
+                    margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Color(0xffC4C2C2).withOpacity(0.5),
+                    ),
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            LocaleKeys.confirm_shipping_payment.tr(),
+                            style: context.textTheme.bodyMedium?.mr.copyWith(
+                                color: const Color(0xffFEFEFE),
+                                letterSpacing: 0.18,
+                                fontSize: 18,
+                                height: 0.8),
+                          ),
+                          SizedBox(
+                            height: 10.h,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                '${widget.cartImages.length} ',
+                                style: context.textTheme.bodyMedium?.br
+                                    .copyWith(
+                                        color: const Color(0xffFEFEFE),
+                                        letterSpacing: 0.18,
+                                        fontSize: 14,
+                                        height: 0.8),
+                              ),
+                              Text(
+                                LocaleKeys.item.tr(),
+                                style: context.textTheme.bodyMedium?.rr
+                                    .copyWith(
+                                        color: const Color(0xffFEFEFE),
+                                        letterSpacing: 0.18,
+                                        fontSize: 14,
+                                        height: 0.8),
+                              ),
+                              Text(
+                                paymentMethods.value
+                                        .contains(PaymentMethods.cod)
+                                    ? widget.totalCashed.toStringAsFixed(state
+                                            .startingSetting
+                                            ?.decimalPointSetting ??
+                                        2)
+                                    : widget.totalPrice.toStringAsFixed(state
+                                            .startingSetting
+                                            ?.decimalPointSetting ??
+                                        2),
+                                style: context.textTheme.bodyMedium?.br
+                                    .copyWith(
+                                        color: const Color(0xffFEFEFE),
+                                        letterSpacing: 0.18,
+                                        fontSize: 14,
+                                        height: 0.8),
+                              ),
+                              Text(
+                                "${widget.currencySympole}",
+                                style: context.textTheme.bodyMedium?.rr
+                                    .copyWith(
+                                        color: const Color(0xffFEFEFE),
+                                        letterSpacing: 0.18,
+                                        fontSize: 14,
+                                        height: 0.8),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                )
+              : InkWell(
+                  onTap: () {
+                    if (check) {
+                      HelperFunctions.slidingNavigation(
+                        context,
+                        PlaceOrder(
+                          customerAddressesInfo:
+                              state.listOfAddressInfoClassToSave![_indexTap],
+                          walletBalance: walletBalance,
+                          cartGroupId: widget.cartGroupId,
+                          paymentMethods: paymentMethods,
+                          availablePaymentMethod: availablePaymentMethods,
+                          cartImages: widget.cartImages,
+                          currencySympole: widget.currencySympole,
+                          totalPrice: widget.totalPrice,
+                          totalCashed: widget.totalCashed,
+                          currencySymbol: state.getCurrencyForCountryModel!
+                                  .data!.currency!.symbol ??
+                              "",
+                          decimalPointSetting:
+                              state.startingSetting?.decimalPointSetting ?? 2,
+                        ),
+                      );
+                    }
+                  },
+                  child: Container(
+                    height: 70.h,
+                    margin: EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(
+                        20,
+                      ),
+                      color: check ? Color(0xff346BFF) : Color(0xffC4C2C2),
+                    ),
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            LocaleKeys.confirm_shipping_payment.tr(),
+                            style: context.textTheme.bodyMedium?.mr.copyWith(
+                                color: const Color(0xffFEFEFE),
+                                letterSpacing: 0.18,
+                                fontSize: 18,
+                                height: 0.8),
+                          ),
+                          SizedBox(
+                            height: 10.h,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                '${widget.cartImages.length} ',
+                                style: context.textTheme.bodyMedium?.br
+                                    .copyWith(
+                                        color: const Color(0xffFEFEFE),
+                                        letterSpacing: 0.18,
+                                        fontSize: 14,
+                                        height: 0.8),
+                              ),
+                              Text(
+                                LocaleKeys.item.tr(),
+                                style: context.textTheme.bodyMedium?.rr
+                                    .copyWith(
+                                        color: const Color(0xffFEFEFE),
+                                        letterSpacing: 0.18,
+                                        fontSize: 14,
+                                        height: 0.8),
+                              ),
+                              Text(
+                                paymentMethods.value
+                                        .contains(PaymentMethods.cod)
+                                    ? widget.totalCashed.toStringAsFixed(state
+                                            .startingSetting
+                                            ?.decimalPointSetting ??
+                                        2)
+                                    : widget.totalPrice.toStringAsFixed(state
+                                            .startingSetting
+                                            ?.decimalPointSetting ??
+                                        2),
+                                style: context.textTheme.bodyMedium?.br
+                                    .copyWith(
+                                        color: const Color(0xffFEFEFE),
+                                        letterSpacing: 0.18,
+                                        fontSize: 14,
+                                        height: 0.8),
+                              ),
+                              Text(
+                                "${widget.currencySympole}",
+                                style: context.textTheme.bodyMedium?.rr
+                                    .copyWith(
+                                        color: const Color(0xffFEFEFE),
+                                        letterSpacing: 0.18,
+                                        fontSize: 14,
+                                        height: 0.8),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 );
-              }
-            },
-            child: Container(
-              height: 70.h,
-              margin: EdgeInsets.symmetric(
-                horizontal: 10,
-                vertical: 10,
-              ),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(
-                  20,
-                ),
-                color: check ? Color(0xff346BFF) : Color(0xffC4C2C2),
-              ),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      LocaleKeys.confirm_shipping_payment.tr(),
-                      style: context.textTheme.bodyMedium?.mr.copyWith(
-                          color: const Color(0xffFEFEFE),
-                          letterSpacing: 0.18,
-                          fontSize: 18,
-                          height: 0.8),
-                    ),
-                    SizedBox(
-                      height: 10.h,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          '${widget.cartImages.length} ',
-                          style: context.textTheme.bodyMedium?.br.copyWith(
-                              color: const Color(0xffFEFEFE),
-                              letterSpacing: 0.18,
-                              fontSize: 14,
-                              height: 0.8),
-                        ),
-                        Text(
-                          LocaleKeys.item.tr(),
-                          style: context.textTheme.bodyMedium?.rr.copyWith(
-                              color: const Color(0xffFEFEFE),
-                              letterSpacing: 0.18,
-                              fontSize: 14,
-                              height: 0.8),
-                        ),
-                        Text(
-                          paymentMethods.value.contains(PaymentMethods.cod)
-                              ? widget.totalCashed.toStringAsFixed(
-                                  state.startingSetting?.decimalPointSetting ??
-                                      2)
-                              : widget.totalPrice.toStringAsFixed(
-                                  state.startingSetting?.decimalPointSetting ??
-                                      2),
-                          style: context.textTheme.bodyMedium?.br.copyWith(
-                              color: const Color(0xffFEFEFE),
-                              letterSpacing: 0.18,
-                              fontSize: 14,
-                              height: 0.8),
-                        ),
-                        Text(
-                          "${widget.currencySympole}",
-                          style: context.textTheme.bodyMedium?.rr.copyWith(
-                              color: const Color(0xffFEFEFE),
-                              letterSpacing: 0.18,
-                              fontSize: 14,
-                              height: 0.8),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
         },
       ),
     );
   }
 
-  Widget buildCouponWidget(
-      bool expandedCoupon, BuildContext context, bool applayCoupon) {
+  Widget buildCouponWidget(bool expandedCoupon, BuildContext context,
+      bool applayCoupon, HomeState state) {
     return AnimatedContainer(
       duration: Duration(seconds: 2),
       curve: Curves.easeInOut,
       child: InkWell(
         onTap: () => isExpandedCoupon.value = !expandedCoupon,
         child: Container(
-          height: expandedCoupon ? 118.h : 50.h,
           width: 1.sw,
-          padding: EdgeInsets.all(10.h),
+          padding: EdgeInsets.all(10),
           decoration: BoxDecoration(
               color: expandedCoupon ? Color(0xffFFFFFF) : Color(0xffF8F8F8),
               borderRadius: BorderRadius.circular(15),
@@ -524,10 +640,11 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                   Text(
                     "${LocaleKeys.i_have_discount_coupon.tr()} ",
                     style: context.textTheme.bodyMedium?.rr.copyWith(
-                        color: const Color(0xff1D1D1D),
-                        letterSpacing: 0.18,
-                        fontSize: 14,
-                        height: 1.33),
+                      color: const Color(0xff1D1D1D),
+                      letterSpacing: 0.18,
+                      fontSize: 14,
+                      height: 1.33,
+                    ),
                   ),
                 ],
               ),
@@ -545,12 +662,12 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                             ? "${LocaleKeys.applied_your_coupon.tr()} XXXSSSA "
                             : "${LocaleKeys.please_enter_coupon_information.tr()} ",
                         style: context.textTheme.bodyMedium?.rr.copyWith(
-                            color: const Color(0xff8D8D8D),
-                            letterSpacing: 0.18,
-                            fontSize: 12,
-                            height: LanguageService.languageCode == "ar"
-                                ? 0.8
-                                : 1.33),
+                          color: const Color(0xff8D8D8D),
+                          letterSpacing: 0.18,
+                          fontSize: 12,
+                          height:
+                              LanguageService.languageCode == "ar" ? 0.8 : 1.33,
+                        ),
                       ),
                     ),
               !expandedCoupon
@@ -573,56 +690,145 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                             "- 100 USD ",
                             textAlign: TextAlign.center,
                             style: context.textTheme.bodyMedium?.br.copyWith(
-                                color: const Color(0xff1D1D1D),
-                                letterSpacing: 0.18,
-                                fontSize: 14,
-                                height: 1.33),
-                          ))
-                      : Container(
-                          height: 40.h,
-                          width: 1.sw,
-                          decoration: BoxDecoration(
-                            color: Color(0xffF8F8F8),
-                            borderRadius: BorderRadius.circular(15),
+                              color: const Color(0xff1D1D1D),
+                              letterSpacing: 0.18,
+                              fontSize: 14,
+                              height: 1.33,
+                            ),
                           ),
+                        )
+                      : Form(
+                          key: _formKey,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              SizedBox(width: 29.w),
-                              SvgPicture.asset(AppAssets.trydosWalletSvg),
-                              SizedBox(width: 10.w),
-                              Text(
-                                "${LocaleKeys.coupon_no.tr()}",
-                                style: context.textTheme.bodyMedium?.rr
-                                    .copyWith(
-                                        color: const Color(0xffC4C2C2),
-                                        letterSpacing: 0.18,
-                                        fontSize: 12,
-                                        height: 1.33),
-                              ),
-                              Spacer(),
-                              InkWell(
-                                onTap: () =>
-                                    isApplayCoupon.value = !applayCoupon,
+                              Expanded(
+                                flex: 3,
                                 child: Container(
-                                    width: 100.w,
-                                    padding: EdgeInsets.all(10.h),
-                                    alignment: Alignment.center,
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(15),
-                                        border: Border.all(
-                                            color: Color(0xff388CFF))),
-                                    child: Text(
-                                      "${LocaleKeys.apply.tr()} ",
-                                      textAlign: TextAlign.center,
-                                      style: context.textTheme.bodyMedium?.rr
-                                          .copyWith(
-                                              color: const Color(0xff1D1D1D),
-                                              letterSpacing: 0.18,
-                                              fontSize: 14,
-                                              height: 1),
-                                    )),
-                              )
+                                  height: 60,
+                                  margin: EdgeInsets.symmetric(vertical: 5),
+                                  color: colorScheme.white,
+                                  padding: EdgeInsets.symmetric(vertical: 5),
+                                  child: AppTextField(
+                                    controller: couponKey,
+                                    textInputType: TextInputType.text,
+                                    filledColor: colorScheme.grey50,
+                                    bordersColor: colorScheme.grey50,
+                                    hintText: LocaleKeys.coupon_no.tr(),
+                                    validator: (value) {
+                                      if (value.isNullOrEmpty) {
+                                        return LocaleKeys
+                                            .the_field_must_not_be_empty
+                                            .tr();
+                                      }
+                                      return null;
+                                    },
+                                    hintTextStyle: textTheme.bodySmall?.lr
+                                        .copyWith(
+                                            color: const Color(0xffD3D3D3)),
+                                    contentPadding:
+                                        EdgeInsetsDirectional.fromSTEB(
+                                            20, 10, 20, 10),
+                                    isPrefixIconConstraints: false,
+                                    prefixIcon: Container(
+                                      width: 20,
+                                      height: 20,
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Spacer(),
+                                          Padding(
+                                            padding: const EdgeInsets.all(9),
+                                            child: SvgPicture.asset(
+                                              AppAssets.trydosWalletSvg,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              //////////////////////
+                              SizedBox(
+                                width: 2,
+                              ),
+                              //////////////////////
+                              Expanded(
+                                flex: 1,
+                                child: (state.applyCouponStatus ==
+                                        ApplyCouponStatus.loading)
+                                    ? Shimmer.fromColors(
+                                        baseColor: Colors.grey[300]!,
+                                        highlightColor: Colors.grey[100]!,
+                                        child: Container(
+                                          height: 60,
+                                          margin: EdgeInsets.symmetric(
+                                              horizontal: 10, vertical: 10),
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                            color: Color(0xffC4C2C2)
+                                                .withOpacity(0.5),
+                                          ),
+                                          child: Container(
+                                            padding: EdgeInsets.all(16.h),
+                                            alignment: Alignment.center,
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(15),
+                                                border: Border.all(
+                                                    color: Color(0xff388CFF))),
+                                            child: Text(
+                                              "${LocaleKeys.apply.tr()} ",
+                                              textAlign: TextAlign.center,
+                                              style: context
+                                                  .textTheme.bodyMedium?.rr
+                                                  .copyWith(
+                                                      color: const Color(
+                                                          0xff1D1D1D),
+                                                      letterSpacing: 0.18,
+                                                      fontSize: 14,
+                                                      height: 1),
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    : InkWell(
+                                        onTap: () {
+                                          if (_formKey.currentState!
+                                              .validate()) {
+                                            BlocProvider.of<HomeBloc>(context)
+                                                .add(
+                                              ApplyCouponEvent(
+                                                  code: couponKey.text),
+                                            );
+                                          }
+                                        },
+                                        child: Container(
+                                          padding: EdgeInsets.all(16.h),
+                                          alignment: Alignment.center,
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
+                                              border: Border.all(
+                                                  color: Color(0xff388CFF))),
+                                          child: Text(
+                                            "${LocaleKeys.apply.tr()} ",
+                                            textAlign: TextAlign.center,
+                                            style: context
+                                                .textTheme.bodyMedium?.rr
+                                                .copyWith(
+                                                    color:
+                                                        const Color(0xff1D1D1D),
+                                                    letterSpacing: 0.18,
+                                                    fontSize: 14,
+                                                    height: 1),
+                                          ),
+                                        ),
+                                      ),
+                              ),
                             ],
                           ),
                         ),

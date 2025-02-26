@@ -26,6 +26,7 @@ extension ScopeApi on String {
   String searchScope() => '$_api/${_currentVersion}/products/$this';
   String notificationScope() =>
       '$_api/${_currentVersion}/product_notification/$this';
+  String couponScope() => '$_api/${_currentVersion}/coupon/$this';
   String firebaseTokensScope({bool current = false}) =>
       '$_api/${_currentVersion}/firebase_device_tokens${this != '' ? '/$this' : ''}';
 }
@@ -118,6 +119,8 @@ abstract class MarketEndPoints {
 
   static final getProductListingWithoutFiltersEP = 'products'.mobileScope();
   static final getProductListingWithFiltersEP = 'with_filter'.productsScope();
+
+  static final applyCouponEP = 'apply'.couponScope();
 
   static final storeFcmEP = ''.firebaseTokensScope();
 }

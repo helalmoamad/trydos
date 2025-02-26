@@ -78,7 +78,9 @@ class _ProductCollectionInCartPage1State
           previous.getOldCartItemsStatus != current.getOldCartItemsStatus ||
           previous.deleteItemInCartStatus != current.deleteItemInCartStatus ||
           previous.addItemInCartStatus != current.addItemInCartStatus ||
-          previous.updateItemInCartStatus != current.updateItemInCartStatus,
+          previous.updateItemInCartStatus != current.updateItemInCartStatus ||
+          previous.checkAvailabilityProductCartStatus !=
+              current.checkAvailabilityProductCartStatus,
       builder: (context, state) {
         return Container(
           padding: EdgeInsets.all(1),
@@ -1403,7 +1405,7 @@ class _ProductCollectionInCartPage1State
                                         " ${LocaleKeys.unavailable.tr()}",
                                         style: context.textTheme.bodyMedium?.la
                                             .copyWith(
-                                                fontWeight: FontWeight.w100,
+                                                fontWeight: FontWeight.w500,
                                                 fontSize: 12,
                                                 color: const Color.fromARGB(
                                                     255, 255, 255, 255),

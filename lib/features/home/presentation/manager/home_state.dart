@@ -25,6 +25,7 @@ import 'package:trydos/features/home/data/models/notificaation_poroduct_types.da
 import 'package:trydos/features/home/data/models/popular_search_terms_model.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
 import '../../../../core/data/model/pagination_model.dart';
+import '../../data/models/apply_coupon_model.dart';
 import '../../data/models/check_availability_product_cart_model.dart';
 import '../../data/models/customer_wallet_model.dart';
 import '../../data/models/get_cart_item_model.dart';
@@ -114,13 +115,15 @@ enum UpdateWhatsappNotificationStatus { init, loading, success, failure }
 
 enum UpdateEmailappNotificationStatus { init, loading, success, failure }
 
-enum PlaceOrderStatus { init, loading, success, failure }
+enum PlaceOrderStatus { init, loading, success, failure, unavailable }
 
 enum GetOrdersByOrderGroupIDStatus { init, loading, success, failure }
 
 enum GetOrdersByCartGroupIDStatus { init, loading, success, failure }
 
 enum CheckAvailabilityProductCartStatus { init, loading, success, failure }
+
+enum ApplyCouponStatus { init, loading, success, failure }
 
 @JsonSerializable(explicitToJson: true)
 @immutable
@@ -165,6 +168,7 @@ class HomeState extends Equatable {
       this.getAddressByCoordinatesModel,
       this.customerWalletModel,
       this.placeOrderModel,
+      this.applyCouponModel,
       this.getOrdersByOrderGroupIDModel,
       this.getOrdersByCartGroupIDModel,
       this.checkAvailabilityProductCartModel,
@@ -209,6 +213,7 @@ class HomeState extends Equatable {
       this.getAddressByCoordinatesStatus,
       this.getCustomerWalletStatus,
       this.placeOrderStatus = PlaceOrderStatus.init,
+      this.applyCouponStatus = ApplyCouponStatus.init,
       this.getOrdersByOrderGroupIDStatus = GetOrdersByOrderGroupIDStatus.init,
       this.getOrdersByCartGroupIDStatus = GetOrdersByCartGroupIDStatus.init,
       this.checkAvailabilityProductCartStatus =
@@ -257,6 +262,8 @@ class HomeState extends Equatable {
   final CustomerWalletModel? customerWalletModel;
   final OrdersGroupModel? placeOrderModel;
   final PlaceOrderStatus? placeOrderStatus;
+  final ApplyCouponModel? applyCouponModel;
+  final ApplyCouponStatus? applyCouponStatus;
   final OrdersGroupModel? getOrdersByOrderGroupIDModel;
   final GetOrdersByOrderGroupIDStatus? getOrdersByOrderGroupIDStatus;
   final OrdersGroupModel? getOrdersByCartGroupIDModel;
@@ -403,6 +410,8 @@ class HomeState extends Equatable {
         getCustomerWalletStatus,
         placeOrderStatus,
         placeOrderModel,
+        applyCouponStatus,
+        applyCouponModel,
         getOrdersByOrderGroupIDStatus,
         getOrdersByOrderGroupIDModel,
         getOrdersByCartGroupIDStatus,
@@ -483,6 +492,8 @@ class HomeState extends Equatable {
       final CustomerWalletModel? customerWalletModel,
       final OrdersGroupModel? placeOrderModel,
       final PlaceOrderStatus? placeOrderStatus,
+      final ApplyCouponModel? applyCouponModel,
+      final ApplyCouponStatus? applyCouponStatus,
       final OrdersGroupModel? getOrdersByOrderGroupIDModel,
       final GetOrdersByOrderGroupIDStatus? getOrdersByOrderGroupIDStatus,
       final OrdersGroupModel? getOrdersByCartGroupIDModel,
@@ -650,6 +661,8 @@ class HomeState extends Equatable {
           getCustomerWalletStatus ?? this.getCustomerWalletStatus,
       placeOrderModel: placeOrderModel ?? this.placeOrderModel,
       placeOrderStatus: placeOrderStatus ?? this.placeOrderStatus,
+      applyCouponModel: applyCouponModel ?? this.applyCouponModel,
+      applyCouponStatus: applyCouponStatus ?? this.applyCouponStatus,
       getOrdersByOrderGroupIDModel:
           getOrdersByOrderGroupIDModel ?? this.getOrdersByOrderGroupIDModel,
       getOrdersByOrderGroupIDStatus:

@@ -55,50 +55,38 @@ class CheckAvailabilityProductCartModel {
 }
 
 class CheckAvailabilityProductCartDataModel {
-  final int? id;
-  final String? name;
-  final String? pictureUrl;
+  final int? cartId;
+  final int? productId;
   final String? cause;
-  final int? cartPosition;
 
   CheckAvailabilityProductCartDataModel({
-    required this.id,
-    required this.name,
-    required this.pictureUrl,
+    required this.cartId,
+    required this.productId,
     required this.cause,
-    required this.cartPosition,
   });
 
   CheckAvailabilityProductCartDataModel copyWith({
-    int? id,
-    String? name,
-    String? pictureUrl,
+    int? cartId,
+    int? productId,
     String? cause,
-    int? cartPosition,
   }) =>
       CheckAvailabilityProductCartDataModel(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        pictureUrl: pictureUrl ?? this.pictureUrl,
+        cartId: cartId ?? this.cartId,
+        productId: productId ?? this.productId,
         cause: cause ?? this.cause,
-        cartPosition: cartPosition ?? this.cartPosition,
       );
 
   factory CheckAvailabilityProductCartDataModel.fromJson(
           Map<String, dynamic> json) =>
       CheckAvailabilityProductCartDataModel(
-        id: json["id"],
-        name: json["name"] ?? '',
-        pictureUrl: json["picture_url"] ?? '',
+        cartId: json["cart_id"],
+        productId: json["product_id"],
         cause: json["cause"] ?? '',
-        cartPosition: json["cart_position"] ?? 0,
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "name": name,
-        "picture_url": pictureUrl,
+        "cart_id": cartId,
+        "product_id": productId,
         "cause": cause,
-        "cart_position": cartPosition,
       };
 }
