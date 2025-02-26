@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
@@ -30,14 +31,11 @@ import '../../../../../service/firebase_analytics_service/firebase_analytics_ser
 
 class CartDelivaryAddress extends StatefulWidget {
   final List<Map<String, String>> cartImages;
-  final double totalPrice;
-  final double totalCashed;
+
   final String currencySympole;
   final String cartGroupId;
   const CartDelivaryAddress({
-    required this.totalPrice,
     required this.cartImages,
-    required this.totalCashed,
     required this.currencySympole,
     Key? key,
     required this.cartGroupId,
@@ -57,14 +55,23 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
   bool showDialogToResetSession = true;
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   int indexToDelete = 0;
-
+  int? preTapIndex;
   final ValueNotifier<bool> isExpandedCoupon = ValueNotifier(false);
   final ValueNotifier<bool> isApplayCoupon = ValueNotifier(false);
-
+  double totlalPrice = 0;
+  double totlalCash = 0;
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
+    Future.delayed(Duration(milliseconds: 200), () {
+      indexTap.value = homeBloc.state.currentAddressChoosed ?? 0;
+
+      preTapIndex = indexTap.value;
+    });
+    print(
+        "######################################################################${homeBloc.state.currentAddressChoosed ?? 0}");
     ////////////////////
+    homeBloc.add(GetCustomerAddressesEvent());
     homeBloc.add(GetCustomerWalletEvent(limit: 10, offset: 1));
     ////////////////////
     super.initState();
@@ -119,14 +126,37 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                   current.addAddressToOrderStatus ||
               previous.removeAddressToOrderStatus !=
                   current.removeAddressToOrderStatus ||
+              previous.setCustomerAddressDefaultStatus !=
+                  current.setCustomerAddressDefaultStatus ||
               previous.getCustomerWalletStatus !=
-                  current.getCustomerWalletStatus,
+                  current.getCustomerWalletStatus ||
+              previous.getCartItemsStatus != current.getCartItemsStatus,
           builder: (context, state) {
+            totlalCash = (state.getCartShippingItemsModel?.data?.totalCash ??
+                    0) *
+                state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!;
+            totlalPrice = (state.getCartShippingItemsModel?.data?.total ?? 0) *
+                state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!;
+            if (state.setCustomerAddressDefaultStatus ==
+                SetCustomerAddressDefaultStatus.success) {
+              Future.delayed(
+                Duration(seconds: 2),
+                () {
+                  preTapIndex = indexTap.value;
+                  homeBloc
+                      .add(SetCurrentAddressChoosedEvent(index: preTapIndex));
+                },
+              );
+            }
+            if (state.setCustomerAddressDefaultStatus ==
+                SetCustomerAddressDefaultStatus.failure) {
+              Future.delayed(Duration(seconds: 2),
+                  () => indexTap.value = preTapIndex ?? 0);
+            }
+
             List<String> availablePaymentMethod =
                 state.getCartShippingItemsModel!.data!.availablePaymentMethod ??
                     [];
-            print(
-                "@@@@@@@@@@@@@@######################################################################################${availablePaymentMethod}");
             return ValueListenableBuilder<bool>(
               valueListenable: showDeleteAddress,
               builder: (context, _showDeleteAddress, _) {
@@ -184,13 +214,13 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                                                         .failure
                                                 ? TryAgainWidget(
                                                     tryAgain: () {
-                                                      BlocProvider.of<HomeBloc>(
+                                                      /*   BlocProvider.of<HomeBloc>(
                                                               context)
                                                           .add(
                                                         GetCustomerWalletEvent(
                                                             limit: 10,
                                                             offset: 1),
-                                                      );
+                                                      );*/
                                                     },
                                                   )
                                                 : state.getCustomerWalletStatus ==
@@ -216,8 +246,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                                                             '',
                                                         paymentMethods:
                                                             paymentMethods,
-                                                        totalPrice:
-                                                            widget.totalPrice,
+                                                        totalPrice: totlalPrice,
                                                         decimalPointSetting: state
                                                                 .startingSetting
                                                                 ?.decimalPointSetting ??
@@ -281,7 +310,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                                       state,
                                       _indexTap,
                                       walletBalance,
-                                      widget.totalPrice,
+                                      totlalPrice,
                                       availablePaymentMethod,
                                     ),
                             ],
@@ -319,6 +348,11 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                                 slideDirection: SlideDirection.UP,
                                 onPanelClosed: () {
                                   showPanel.value = false;
+                                  homeBloc.add(SetCustomerAddressDefaultEvent(
+                                      adressId: state
+                                          .listOfAddressInfoClassToSave![
+                                              _indexTap]
+                                          .id));
                                 },
                                 onPanelOpened: () {
                                   showPanel.value = true;
@@ -404,8 +438,8 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                     availablePaymentMethod: availablePaymentMethods,
                     cartImages: widget.cartImages,
                     currencySympole: widget.currencySympole,
-                    totalPrice: widget.totalPrice,
-                    totalCashed: widget.totalCashed,
+                    totalPrice: totlalPrice,
+                    totalCashed: totlalCash,
                     currencySymbol: state.getCurrencyForCountryModel!.data!
                             .currency!.symbol ??
                         "",
@@ -415,80 +449,105 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                 );
               }
             },
-            child: Container(
-              height: 70.h,
-              margin: EdgeInsets.symmetric(
-                horizontal: 10,
-                vertical: 10,
-              ),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(
-                  20,
-                ),
-                color: check ? Color(0xff346BFF) : Color(0xffC4C2C2),
-              ),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      LocaleKeys.confirm_shipping_payment.tr(),
-                      style: context.textTheme.bodyMedium?.mr.copyWith(
-                          color: const Color(0xffFEFEFE),
-                          letterSpacing: 0.18,
-                          fontSize: 18,
-                          height: 0.8),
+            child: state.setCustomerAddressDefaultStatus ==
+                    SetCustomerAddressDefaultStatus.loading
+                ? Shimmer.fromColors(
+                    baseColor: Colors.grey.shade300,
+                    highlightColor: Colors.grey.shade100,
+                    enabled: true,
+                    child: Container(
+                        height: 70.h,
+                        margin: EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 10,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(
+                            20,
+                          ),
+                          color: check ? Color(0xff346BFF) : Color(0xffC4C2C2),
+                        )))
+                : Container(
+                    height: 70.h,
+                    margin: EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 10,
                     ),
-                    SizedBox(
-                      height: 10.h,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(
+                        20,
+                      ),
+                      color: check ? Color(0xff346BFF) : Color(0xffC4C2C2),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          '${widget.cartImages.length} ',
-                          style: context.textTheme.bodyMedium?.br.copyWith(
-                              color: const Color(0xffFEFEFE),
-                              letterSpacing: 0.18,
-                              fontSize: 14,
-                              height: 0.8),
-                        ),
-                        Text(
-                          LocaleKeys.item.tr(),
-                          style: context.textTheme.bodyMedium?.rr.copyWith(
-                              color: const Color(0xffFEFEFE),
-                              letterSpacing: 0.18,
-                              fontSize: 14,
-                              height: 0.8),
-                        ),
-                        Text(
-                          paymentMethods.value.contains(PaymentMethods.cod)
-                              ? widget.totalCashed.toStringAsFixed(
-                                  state.startingSetting?.decimalPointSetting ??
-                                      2)
-                              : widget.totalPrice.toStringAsFixed(
-                                  state.startingSetting?.decimalPointSetting ??
-                                      2),
-                          style: context.textTheme.bodyMedium?.br.copyWith(
-                              color: const Color(0xffFEFEFE),
-                              letterSpacing: 0.18,
-                              fontSize: 14,
-                              height: 0.8),
-                        ),
-                        Text(
-                          "${widget.currencySympole}",
-                          style: context.textTheme.bodyMedium?.rr.copyWith(
-                              color: const Color(0xffFEFEFE),
-                              letterSpacing: 0.18,
-                              fontSize: 14,
-                              height: 0.8),
-                        ),
-                      ],
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            LocaleKeys.confirm_shipping_payment.tr(),
+                            style: context.textTheme.bodyMedium?.mr.copyWith(
+                                color: const Color(0xffFEFEFE),
+                                letterSpacing: 0.18,
+                                fontSize: 18,
+                                height: 0.8),
+                          ),
+                          SizedBox(
+                            height: 10.h,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                '${widget.cartImages.length} ',
+                                style: context.textTheme.bodyMedium?.br
+                                    .copyWith(
+                                        color: const Color(0xffFEFEFE),
+                                        letterSpacing: 0.18,
+                                        fontSize: 14,
+                                        height: 0.8),
+                              ),
+                              Text(
+                                LocaleKeys.item.tr(),
+                                style: context.textTheme.bodyMedium?.rr
+                                    .copyWith(
+                                        color: const Color(0xffFEFEFE),
+                                        letterSpacing: 0.18,
+                                        fontSize: 14,
+                                        height: 0.8),
+                              ),
+                              Text(
+                                paymentMethods.value
+                                        .contains(PaymentMethods.cod)
+                                    ? totlalCash.toStringAsFixed(state
+                                            .startingSetting
+                                            ?.decimalPointSetting ??
+                                        2)
+                                    : totlalPrice.toStringAsFixed(state
+                                            .startingSetting
+                                            ?.decimalPointSetting ??
+                                        2),
+                                style: context.textTheme.bodyMedium?.br
+                                    .copyWith(
+                                        color: const Color(0xffFEFEFE),
+                                        letterSpacing: 0.18,
+                                        fontSize: 14,
+                                        height: 0.8),
+                              ),
+                              Text(
+                                "${widget.currencySympole}",
+                                style: context.textTheme.bodyMedium?.rr
+                                    .copyWith(
+                                        color: const Color(0xffFEFEFE),
+                                        letterSpacing: 0.18,
+                                        fontSize: 14,
+                                        height: 0.8),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
-                ),
-              ),
-            ),
+                  ),
           );
         },
       ),

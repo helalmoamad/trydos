@@ -159,8 +159,12 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                   },
                   child: BlocBuilder<HomeBloc, HomeState>(
                     buildWhen: (previous, current) {
-                      return previous.cartCollection?.length !=
-                              current.cartCollection?.length ||
+                      return previous.updateItemInCartStatus !=
+                              current.updateItemInCartStatus ||
+                          previous.addItemInCartStatus !=
+                              current.addItemInCartStatus ||
+                          previous.deleteItemInCartStatus !=
+                              current.deleteItemInCartStatus ||
                           previous.getCartItemsStatus !=
                               current.getCartItemsStatus;
                     },

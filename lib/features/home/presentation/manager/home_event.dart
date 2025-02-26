@@ -346,6 +346,26 @@ class DeleteAdressInfoClassEvent extends HomeEvent {
   List<Object?> get props => [adressInfoClassId];
 }
 
+class SetCustomerAddressDefaultEvent extends HomeEvent {
+  final int? adressId;
+
+  const SetCustomerAddressDefaultEvent({required this.adressId});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [adressId];
+}
+
+class SetCurrentAddressChoosedEvent extends HomeEvent {
+  final int? index;
+
+  const SetCurrentAddressChoosedEvent({required this.index});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [index];
+}
+
 class EditAdressInfoClassEvent extends HomeEvent {
   final CustomerAddressesInfo? addressInfoClassToSave;
   final int preIdToEdit;
@@ -792,7 +812,8 @@ class RemoveItemFormCartEvent extends HomeEvent {
 
 class UpdateItemInCartEvent extends HomeEvent {
   final String cartId;
-  final int quantity;
+  final int totalQuantity;
+  final int newQuantity;
   final String currentSize;
   final String productId;
   final bool fishAddAllTheItems;
@@ -803,8 +824,9 @@ class UpdateItemInCartEvent extends HomeEvent {
   final double? maxAllowed;
 
   UpdateItemInCartEvent({
-    required this.quantity,
+    required this.totalQuantity,
     required this.colorName,
+    required this.newQuantity,
     this.fishAddAllTheItems = true,
     required this.cartId,
     required this.image,
@@ -942,6 +964,15 @@ class ChangeCurrentIndexForMainCategoryEvent extends HomeEvent {
   final int index;
 
   ChangeCurrentIndexForMainCategoryEvent({this.index = 0});
+
+  @override
+  List<Object?> get props => [];
+}
+
+class ChangeCurrentIndexForUpdatCartEvent extends HomeEvent {
+  final int index;
+
+  ChangeCurrentIndexForUpdatCartEvent({this.index = 0});
 
   @override
   List<Object?> get props => [];

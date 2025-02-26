@@ -11,6 +11,7 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
+import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_old_cart_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
@@ -22,7 +23,7 @@ import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/language_service.dart';
 
 class ProductCollectionInCartPage1 extends StatefulWidget {
-  const ProductCollectionInCartPage1({
+  ProductCollectionInCartPage1({
     super.key,
     required this.priceSymbol,
     required this.oldCartCollection,
@@ -34,7 +35,6 @@ class ProductCollectionInCartPage1 extends StatefulWidget {
   final List<OldCart>? oldCartCollection;
 
   final bool isOldCart;
-
   final String? priceSymbol;
   @override
   State<ProductCollectionInCartPage1> createState() =>
@@ -43,8 +43,10 @@ class ProductCollectionInCartPage1 extends StatefulWidget {
 
 class _ProductCollectionInCartPage1State
     extends State<ProductCollectionInCartPage1> {
+  late HomeBloc homeBloc;
   @override
   void initState() {
+    homeBloc = BlocProvider.of<HomeBloc>(context);
     super.initState();
   }
 
@@ -667,7 +669,7 @@ class _ProductCollectionInCartPage1State
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Container(
-                                      width: 60.w,
+                                      width: 70.w,
                                       height: 24,
                                       child: isOldCart
                                           ? Row(
@@ -796,15 +798,26 @@ class _ProductCollectionInCartPage1State
                                               children: [
                                                 InkWell(
                                                     onTap: () {
-                                                      print(
-                                                          "---------------------------------------------------------------------------------------------------------------");
+                                                      homeBloc.add(
+                                                          ChangeCurrentIndexForUpdatCartEvent(
+                                                              index: index));
+                                                      if (index ==
+                                                              (state.currentIndexForUpdateCart ??
+                                                                  0) &&
+                                                          (state.updateItemInCartStatus ==
+                                                              UpdateItemInCartStatus
+                                                                  .loading)) {
+                                                        return;
+                                                      }
                                                       (cartCollection![index].quantity ?? 0) > 1
                                                           ? GetIt.I<HomeBloc>().add(UpdateItemInCartEvent(
+                                                              newQuantity: -1,
                                                               maxAllowed: double.tryParse(
                                                                   cartCollection[index].maxAllowedQty ??
                                                                       "0"),
-                                                              countOfPieces: cartCollection[index]
-                                                                  .countOfPieces,
+                                                              countOfPieces:
+                                                                  cartCollection[index]
+                                                                      .countOfPieces,
                                                               currentSize: !cartCollection[index]
                                                                       .variations
                                                                       .isNullOrEmpty
@@ -814,13 +827,13 @@ class _ProductCollectionInCartPage1State
                                                               colorName: !cartCollection[index]
                                                                       .variations
                                                                       .isNullOrEmpty
-                                                                  ? cartCollection[index]
-                                                                          .variations![0]
-                                                                          .color ??
+                                                                  ? cartCollection[index].variations![0].color ??
                                                                       ""
                                                                   : "",
-                                                              productId: cartCollection[index].productId.toString(),
-                                                              quantity: (cartCollection[index].quantity ?? 0) - 1,
+                                                              productId: cartCollection[index]
+                                                                  .productId
+                                                                  .toString(),
+                                                              totalQuantity: (cartCollection[index].quantity ?? 0) - 1,
                                                               image: cartCollection[index].image ?? "",
                                                               cartId: cartCollection[index].id.toString(),
                                                               boutiqueId: cartCollection[index].boutique!.id.toString()))
@@ -863,21 +876,45 @@ class _ProductCollectionInCartPage1State
                                                               ),
                                                             ),
                                                           )),
-                                                Text(
-                                                    "${cartCollection[index].quantity ?? 0}",
-                                                    style: context.textTheme
-                                                        .bodyMedium?.mr
-                                                        .copyWith(
-                                                            fontWeight:
-                                                                FontWeight.w100,
-                                                            fontSize: 14.sp,
-                                                            color: const Color(
-                                                                0xff1D1D1D),
-                                                            letterSpacing: 0.18,
-                                                            height: 1.33)),
+                                                ((state.currentIndexForUpdateCart ??
+                                                                0) ==
+                                                            index) &&
+                                                        state.updateItemInCartStatus ==
+                                                            UpdateItemInCartStatus
+                                                                .loading
+                                                    ? TrydosLoader(
+                                                        size: 14.sp,
+                                                      )
+                                                    : Text(
+                                                        "${cartCollection[index].quantity ?? 0}",
+                                                        style: context.textTheme
+                                                            .bodyMedium?.mr
+                                                            .copyWith(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w100,
+                                                                fontSize: 16.sp,
+                                                                color: const Color(
+                                                                    0xff1D1D1D),
+                                                                letterSpacing:
+                                                                    0.18,
+                                                                height: 1.33)),
                                                 InkWell(
                                                   onTap: () {
+                                                    homeBloc.add(
+                                                        ChangeCurrentIndexForUpdatCartEvent(
+                                                            index: index));
+
+                                                    if (index ==
+                                                            (state.currentIndexForUpdateCart ??
+                                                                0) &&
+                                                        (state.updateItemInCartStatus ==
+                                                            UpdateItemInCartStatus
+                                                                .loading)) {
+                                                      return;
+                                                    }
                                                     GetIt.I<HomeBloc>().add(UpdateItemInCartEvent(
+                                                        newQuantity: 1,
                                                         maxAllowed: double.tryParse(
                                                             cartCollection![index].maxAllowedQty ??
                                                                 "0"),
@@ -900,7 +937,7 @@ class _ProductCollectionInCartPage1State
                                                                 ""
                                                             : "",
                                                         productId: cartCollection[index].productId.toString(),
-                                                        quantity: (cartCollection[index].quantity ?? 0) + 1,
+                                                        totalQuantity: (cartCollection[index].quantity ?? 0) + 1,
                                                         image: cartCollection[index].image ?? "",
                                                         cartId: cartCollection[index].id.toString(),
                                                         boutiqueId: cartCollection[index].boutique!.id.toString()));
@@ -924,6 +961,9 @@ class _ProductCollectionInCartPage1State
                                                   MainAxisAlignment
                                                       .spaceBetween,
                                             ),
+                                    ),
+                                    SizedBox(
+                                      width: 30.w,
                                     ),
                                     Container(
                                       margin:

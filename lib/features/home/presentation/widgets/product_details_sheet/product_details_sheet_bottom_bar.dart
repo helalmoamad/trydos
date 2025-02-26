@@ -19,6 +19,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/app_elvated_button.dart';
+import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/app/trydos_shimmer_loading.dart';
@@ -28,6 +29,8 @@ import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
+import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
+    as product;
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
@@ -63,6 +66,7 @@ class ProductDetailsSheetBottomBar extends StatefulWidget {
       required this.currentActiveTab,
       required this.qtyForproductWithoutVariant,
       required this.collectedAfterOrder,
+      required this.products,
       required this.sizeIsNotAvailableNotifier,
       required this.imageUrl});
 
@@ -74,6 +78,7 @@ class ProductDetailsSheetBottomBar extends StatefulWidget {
   final String imageUrl;
   final int countOfPieces;
   final bool collectedAfterOrder;
+  final product.Products products;
   final int? qtyForproductWithoutVariant;
   final String productIdForCashproducts;
   final String productIdForRequestApi;
@@ -295,80 +300,6 @@ class _ProductDetailsSheetBottomBarState
                                                           : GestureDetector(
                                                               onTapDown:
                                                                   (details) {
-                                                                if (((prefsRepository.marketToken?.length ??
-                                                                                0) <
-                                                                            5 ||
-                                                                        prefsRepository.marketToken ==
-                                                                            "" ||
-                                                                        prefsRepository.marketToken ==
-                                                                            null) &&
-                                                                    GetIt.I<AuthBloc>()
-                                                                            .state
-                                                                            .registerGuestStatus !=
-                                                                        RegisterGuestStatus
-                                                                            .loading) {
-                                                                  Future.delayed(
-                                                                      Duration(seconds: 1),
-                                                                      () => showDialog(
-                                                                            context:
-                                                                                context,
-                                                                            builder: (context) => Center(
-                                                                                child: Container(
-                                                                              alignment: Alignment.center,
-                                                                              width: 400,
-                                                                              height: 300,
-                                                                              child: AlertDialog(
-                                                                                title: MyTextWidget(
-                                                                                  "${LocaleKeys.it_has_been_along_time_since_your_account.tr()}",
-                                                                                ),
-                                                                                actions: <Widget>[
-                                                                                  Container(
-                                                                                    alignment: Alignment.center,
-                                                                                    width: 300,
-                                                                                    child: Row(
-                                                                                      mainAxisAlignment: (prefsRepository.isVerifiedPhonePeforeExpiredToken ?? false) ? MainAxisAlignment.center : MainAxisAlignment.spaceAround,
-                                                                                      children: [
-                                                                                        (prefsRepository.isVerifiedPhonePeforeExpiredToken ?? false)
-                                                                                            ? SizedBox.shrink()
-                                                                                            : Container(
-                                                                                                alignment: Alignment.center,
-                                                                                                width: 130,
-                                                                                                child: AppElevatedButton(
-                                                                                                  textStyle: TextStyle(fontSize: 16),
-                                                                                                  onPressed: () async {
-                                                                                                    Navigator.of(context).pop();
-                                                                                                    String? deviceId = await HelperFunctions.getDeviceId();
-
-                                                                                                    GetIt.I<AuthBloc>().add(RegisterGuestEvent(oldGuestUserId: prefsRepository.myMarketId.toString(), deviceId: deviceId!));
-                                                                                                  },
-                                                                                                  text: "${LocaleKeys.reset_your_count.tr()}",
-                                                                                                ),
-                                                                                              ),
-                                                                                        Container(
-                                                                                          alignment: Alignment.center,
-                                                                                          width: 130,
-                                                                                          child: AppElevatedButton(
-                                                                                            textStyle: TextStyle(fontSize: 16),
-                                                                                            onPressed: () {
-                                                                                              Navigator.of(context).pop();
-                                                                                              Navigator.of(context).push(PageRouteBuilder(
-                                                                                                pageBuilder: (context, animation, secondaryAnimation) => RegistrationPage(
-                                                                                                  fromExpiredToken: true,
-                                                                                                ),
-                                                                                              ));
-                                                                                            },
-                                                                                            text: '${LocaleKeys.go_to_log_in.tr()}',
-                                                                                          ),
-                                                                                        ),
-                                                                                      ],
-                                                                                    ),
-                                                                                  )
-                                                                                ],
-                                                                              ),
-                                                                            )),
-                                                                          ));
-                                                                  return;
-                                                                }
                                                                 if (currentTab !=
                                                                     3) {
                                                                   print(
@@ -401,63 +332,85 @@ class _ProductDetailsSheetBottomBarState
                                                                       .lightImpact();
                                                                   if (itemCount >
                                                                       0) {
-                                                                    if (details
-                                                                            .localPosition
-                                                                            .dx <=
-                                                                        50.w) {
-                                                                      animationController
-                                                                          .forward();
-                                                                      widget
-                                                                          .addToBagButtonShapeNotifier
-                                                                          .value--;
-                                                                      homeBloc
-                                                                          .add(
-                                                                        UpdateListOfItemForAddToCartEvent(
-                                                                            productId: widget
-                                                                                .productIdForRequestApi,
-                                                                            imageForAddToCart:
-                                                                                imageForAddToCart,
-                                                                            operation:
-                                                                                "-"),
-                                                                      );
-                                                                      print(
-                                                                          '111111111111111');
-                                                                      //////////////////////////////
-                                                                      FirebaseAnalyticsService
-                                                                          .logEventForSession(
-                                                                        eventName:
-                                                                            AnalyticsEventsConst.buttonClicked,
-                                                                        executedEventName:
-                                                                            AnalyticsExecutedEventNameConst.decreaseQtyButton,
-                                                                      );
-                                                                    } else if (details
+                                                                    if (state.updateItemInCartStatus == UpdateItemInCartStatus.loading ||
+                                                                        state.addItemInCartStatus ==
+                                                                            UpdateItemInCartStatus
+                                                                                .loading ||
+                                                                        state.deleteItemInCartStatus ==
+                                                                            UpdateItemInCartStatus.loading) {
+                                                                      return;
+                                                                    }
+                                                                    /*  if (details
                                                                             .localPosition
                                                                             .dx >=
                                                                         (1.sw - 90)
-                                                                            .w) {
-                                                                      animationController
-                                                                          .forward();
-                                                                      widget
-                                                                          .addToBagButtonShapeNotifier
-                                                                          .value++;
-                                                                      homeBloc.add(UpdateListOfItemForAddToCartEvent(
-                                                                          productId: widget
-                                                                              .productIdForRequestApi,
-                                                                          imageForAddToCart:
-                                                                              imageForAddToCart,
-                                                                          operation:
-                                                                              "+"));
-                                                                      print(
-                                                                          '22222222222222');
-                                                                      //////////////////////////////
-                                                                      FirebaseAnalyticsService
-                                                                          .logEventForSession(
-                                                                        eventName:
-                                                                            AnalyticsEventsConst.buttonClicked,
-                                                                        executedEventName:
-                                                                            AnalyticsExecutedEventNameConst.increaseQtyButton,
-                                                                      );
-                                                                    } else {
+                                                                            .w) {*/
+                                                                    animationController
+                                                                        .forward();
+                                                                    widget
+                                                                        .onFinishBuying
+                                                                        .call(itemCount
+                                                                            .toString());
+                                                                    widget
+                                                                        .addToBagButtonShapeNotifier
+                                                                        .value++;
+                                                                    homeBloc.add(UpdateListOfItemForAddToCartEvent(
+                                                                        productId:
+                                                                            widget
+                                                                                .productIdForRequestApi,
+                                                                        imageForAddToCart:
+                                                                            imageForAddToCart,
+                                                                        operation:
+                                                                            "+"));
+                                                                    homeBloc
+                                                                        .add(
+                                                                      AddMultiItemsToCartEvent(
+                                                                        maxAllowed:
+                                                                            state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]?.product?.maxAllowedQty ??
+                                                                                "0",
+                                                                        boutiqueIcon: state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi] !=
+                                                                                null
+                                                                            ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product != null
+                                                                                ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.boutique != null
+                                                                                    ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.boutique!.icon != null
+                                                                                        ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.boutique!.icon!.filePath ?? ""
+                                                                                        : ""
+                                                                                    : ""
+                                                                                : ""
+                                                                            : "",
+                                                                        productSlugForTopic:
+                                                                            state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]?.product?.slugEnTopic ??
+                                                                                "",
+                                                                        boutiqueId: state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi] !=
+                                                                                null
+                                                                            ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.boutique != null
+                                                                                ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.boutique!.id!
+                                                                                : 0
+                                                                            : 0,
+                                                                        products:
+                                                                            widget.products,
+                                                                        id: state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi] !=
+                                                                                null
+                                                                            ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product != null
+                                                                                ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.id.toString()
+                                                                                : ""
+                                                                            : "",
+                                                                      ),
+                                                                    );
+                                                                    print(
+                                                                        '22222222222222');
+                                                                    //////////////////////////////
+                                                                    FirebaseAnalyticsService
+                                                                        .logEventForSession(
+                                                                      eventName:
+                                                                          AnalyticsEventsConst
+                                                                              .buttonClicked,
+                                                                      executedEventName:
+                                                                          AnalyticsExecutedEventNameConst
+                                                                              .increaseQtyButton,
+                                                                    );
+                                                                    //  }
+                                                                    /*     else {
                                                                       animationController
                                                                           .forward();
                                                                       widget
@@ -475,15 +428,7 @@ class _ProductDetailsSheetBottomBarState
                                                                       widget
                                                                           .addToBagButtonShapeNotifier
                                                                           .value = 0;
-                                                                      homeBloc.add(UpdateListOfItemForAddToCartEvent(
-                                                                          productId: widget
-                                                                              .productIdForRequestApi,
-                                                                          resetTheList:
-                                                                              true,
-                                                                          imageForAddToCart:
-                                                                              imageForAddToCart,
-                                                                          operation:
-                                                                              "remove"));
+
                                                                       print(
                                                                           '33333333333333');
                                                                       //////////////////////////////
@@ -494,10 +439,22 @@ class _ProductDetailsSheetBottomBarState
                                                                         executedEventName:
                                                                             AnalyticsExecutedEventNameConst.addProductToBagButton,
                                                                       );
-                                                                    }
+                                                                    }*/
                                                                   } else {
+                                                                    if (state.updateItemInCartStatus == UpdateItemInCartStatus.loading ||
+                                                                        state.addItemInCartStatus ==
+                                                                            UpdateItemInCartStatus
+                                                                                .loading ||
+                                                                        state.deleteItemInCartStatus ==
+                                                                            UpdateItemInCartStatus.loading) {
+                                                                      return;
+                                                                    }
                                                                     animationController
                                                                         .forward();
+                                                                    widget
+                                                                        .onFinishBuying
+                                                                        .call(itemCount
+                                                                            .toString());
                                                                     widget
                                                                         .addToBagButtonShapeNotifier
                                                                         .value++;
@@ -509,6 +466,41 @@ class _ProductDetailsSheetBottomBarState
                                                                             imageForAddToCart,
                                                                         operation:
                                                                             "+"));
+                                                                    homeBloc
+                                                                        .add(
+                                                                      AddMultiItemsToCartEvent(
+                                                                        maxAllowed:
+                                                                            state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]?.product?.maxAllowedQty ??
+                                                                                "0",
+                                                                        boutiqueIcon: state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi] !=
+                                                                                null
+                                                                            ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product != null
+                                                                                ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.boutique != null
+                                                                                    ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.boutique!.icon != null
+                                                                                        ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.boutique!.icon!.filePath ?? ""
+                                                                                        : ""
+                                                                                    : ""
+                                                                                : ""
+                                                                            : "",
+                                                                        productSlugForTopic:
+                                                                            state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]?.product?.slugEnTopic ??
+                                                                                "",
+                                                                        boutiqueId: state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi] !=
+                                                                                null
+                                                                            ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.boutique != null
+                                                                                ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.boutique!.id!
+                                                                                : 0
+                                                                            : 0,
+                                                                        products:
+                                                                            widget.products,
+                                                                        id: state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi] !=
+                                                                                null
+                                                                            ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product != null
+                                                                                ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.id.toString()
+                                                                                : ""
+                                                                            : "",
+                                                                      ),
+                                                                    );
                                                                     print(
                                                                         '44444444444');
                                                                     //////////////////////////////
@@ -549,7 +541,14 @@ class _ProductDetailsSheetBottomBarState
                                                                                   AnimatedContainer(
                                                                                     duration: const Duration(milliseconds: 300),
                                                                                     curve: Curves.fastLinearToSlowEaseIn,
-                                                                                    decoration: BoxDecoration(border: Border.all(color: Colors.blue), borderRadius: BorderRadius.circular(20), color: itemCount > 0 ? const Color(0xffCEFFE6) : const Color(0xffF8F8F8)),
+                                                                                    decoration: BoxDecoration(
+                                                                                        border: Border.all(color: Colors.blue),
+                                                                                        borderRadius: BorderRadius.circular(20),
+                                                                                        color: state.updateItemInCartStatus == UpdateItemInCartStatus.loading || state.addItemInCartStatus == AddItemInCartStatus.loading || state.deleteItemInCartStatus == DeleteItemInCartStatus.loading
+                                                                                            ? const Color(0xffF8F8F8)
+                                                                                            : itemCount > 0
+                                                                                                ? const Color(0xffCEFFE6)
+                                                                                                : const Color(0xffF8F8F8)),
                                                                                     child: Center(
                                                                                       child: Padding(
                                                                                         padding: const EdgeInsets.symmetric(vertical: 10),
@@ -559,10 +558,12 @@ class _ProductDetailsSheetBottomBarState
                                                                                               mainAxisAlignment: MainAxisAlignment.center,
                                                                                               crossAxisAlignment: CrossAxisAlignment.end,
                                                                                               children: [
-                                                                                                SvgPicture.asset(
-                                                                                                  AppAssets.bagSvg,
-                                                                                                  height: 30.h,
-                                                                                                ),
+                                                                                                state.updateItemInCartStatus == UpdateItemInCartStatus.loading || state.addItemInCartStatus == AddItemInCartStatus.loading || state.deleteItemInCartStatus == DeleteItemInCartStatus.loading
+                                                                                                    ? TrydosLoader(size: 20.h)
+                                                                                                    : SvgPicture.asset(
+                                                                                                        AppAssets.bagSvg,
+                                                                                                        height: 30.h,
+                                                                                                      ),
                                                                                                 if (itemCount > 0) ...{
                                                                                                   SizedBox(
                                                                                                     height: 20,
@@ -672,7 +673,7 @@ class _ProductDetailsSheetBottomBarState
                                                                                     ),
                                                                                   ),
                                                                                   if (itemCount > 0) ...{
-                                                                                    Positioned(
+                                                                                    /*    Positioned(
                                                                                       top: -35,
                                                                                       left: -35,
                                                                                       child: Container(
@@ -680,8 +681,8 @@ class _ProductDetailsSheetBottomBarState
                                                                                         height: 55,
                                                                                         decoration: BoxDecoration(border: Border.all(color: Colors.blue), borderRadius: BorderRadius.circular(20), color: colorScheme.white),
                                                                                       ),
-                                                                                    ),
-                                                                                    Positioned(
+                                                                                    ),*/
+                                                                                    /*  Positioned(
                                                                                       left: 0,
                                                                                       child: Padding(
                                                                                         padding: EdgeInsets.only(top: itemCount == 1 ? 0 : 7.h),
@@ -690,7 +691,7 @@ class _ProductDetailsSheetBottomBarState
                                                                                           height: itemCount == 1 ? 15.h : 3.h,
                                                                                         ),
                                                                                       ),
-                                                                                    ),
+                                                                                    ),*/
                                                                                   },
                                                                                   Positioned(
                                                                                     top: -35,

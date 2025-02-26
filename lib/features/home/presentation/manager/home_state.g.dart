@@ -63,6 +63,9 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           GetCommentForProductStatus.init,
       editAddressToOrderStatus: $enumDecodeNullable(
           _$EditAddressToOrderStatusEnumMap, json['editAddressToOrderStatus']),
+      currentSelectedColorForEveryProductStatus: $enumDecodeNullable(
+          _$CurrentSelectedColorForEveryProductStatusEnumMap,
+          json['currentSelectedColorForEveryProductStatus']),
       addAddressToOrderStatus: $enumDecodeNullable(
           _$AddAddressToOrderStatusEnumMap, json['addAddressToOrderStatus']),
       removeAddressToOrderStatus: $enumDecodeNullable(
@@ -105,14 +108,14 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       deleteItemInCartStatus: $enumDecodeNullable(
           _$DeleteItemInCartStatusEnumMap, json['deleteItemInCartStatus']),
       oldcartCollection: (json['oldcartCollection'] as List<dynamic>?)
-          ?.map((e) => OldCart.fromJson(e as Map<String, dynamic>))
+          ?.map((e) => oldCart.OldCart.fromJson(e as Map<String, dynamic>))
           .toList(),
       getOldCartItemsStatus: $enumDecodeNullable(
               _$GetOLdCartItemsStatusEnumMap, json['getOldCartItemsStatus']) ??
           GetOLdCartItemsStatus.init,
       getOldCartModel: json['getOldCartModel'] == null
           ? null
-          : GetOldCartModel.fromJson(
+          : oldCart.GetOldCartModel.fromJson(
               json['getOldCartModel'] as Map<String, dynamic>),
       isGettingProductListingWithPagination:
           json['isGettingProductListingWithPagination'] as bool? ?? false,
@@ -154,6 +157,9 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           ? null
           : CustomerWalletModel.fromJson(
               json['customerWalletModel'] as Map<String, dynamic>),
+      setCustomerAddressDefaultStatus: $enumDecodeNullable(
+          _$SetCustomerAddressDefaultStatusEnumMap,
+          json['setCustomerAddressDefaultStatus']),
       placeOrderModel: json['placeOrderModel'] == null
           ? null
           : OrdersGroupModel.fromJson(
@@ -496,6 +502,9 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           instance.getCommentForProductStatus]!,
       'productITemForCart':
           instance.productITemForCart.map((k, e) => MapEntry(k, e.toJson())),
+      'currentSelectedColorForEveryProductStatus':
+          _$CurrentSelectedColorForEveryProductStatusEnumMap[
+              instance.currentSelectedColorForEveryProductStatus],
       'convertItemFromOldcartToCartStatus':
           _$ConvertItemFromOldcartToCartStatusEnumMap[
               instance.convertItemFromOldcartToCartStatus],
@@ -515,6 +524,9 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
               MapEntry(k, _$GetAndAddCountViewOfProductStatusEnumMap[e]!)),
       'popularSearchTerm':
           instance.popularSearchTerm?.map((e) => e.toJson()).toList(),
+      'setCustomerAddressDefaultStatus':
+          _$SetCustomerAddressDefaultStatusEnumMap[
+              instance.setCustomerAddressDefaultStatus],
       'resultSearch': instance.resultSearch?.map((e) => e.toJson()).toList(),
       'getAddressByCoordinatesModel':
           instance.getAddressByCoordinatesModel?.toJson(),
@@ -772,6 +784,13 @@ const _$EditAddressToOrderStatusEnumMap = {
   EditAddressToOrderStatus.failure: 'failure',
 };
 
+const _$CurrentSelectedColorForEveryProductStatusEnumMap = {
+  CurrentSelectedColorForEveryProductStatus.init: 'init',
+  CurrentSelectedColorForEveryProductStatus.loading: 'loading',
+  CurrentSelectedColorForEveryProductStatus.success: 'success',
+  CurrentSelectedColorForEveryProductStatus.failure: 'failure',
+};
+
 const _$AddAddressToOrderStatusEnumMap = {
   AddAddressToOrderStatus.init: 'init',
   AddAddressToOrderStatus.loading: 'loading',
@@ -819,6 +838,13 @@ const _$GetProductFiltersStatusEnumMap = {
   GetProductFiltersStatus.loading: 'loading',
   GetProductFiltersStatus.success: 'success',
   GetProductFiltersStatus.failure: 'failure',
+};
+
+const _$SetCustomerAddressDefaultStatusEnumMap = {
+  SetCustomerAddressDefaultStatus.init: 'init',
+  SetCustomerAddressDefaultStatus.loading: 'loading',
+  SetCustomerAddressDefaultStatus.success: 'success',
+  SetCustomerAddressDefaultStatus.failure: 'failure',
 };
 
 const _$UpdateItemInCartStatusEnumMap = {

@@ -32,6 +32,7 @@ import 'package:trydos/features/authentication/presentation/pages/first_register
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
+import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/pages/cart_page_new.dart';
@@ -192,8 +193,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                               previous.getProductDetailWithoutSimilarRelatedProductsStatus !=
                                   current
                                       .getProductDetailWithoutSimilarRelatedProductsStatus ||
-                              previous.cartCollection?.length !=
-                                  current.cartCollection?.length ||
+                              previous.updateItemInCartStatus !=
+                                  current.updateItemInCartStatus ||
+                              previous.addItemInCartStatus !=
+                                  current.addItemInCartStatus ||
+                              previous.deleteItemInCartStatus !=
+                                  current.deleteItemInCartStatus ||
                               previous.getCartItemsStatus !=
                                   current.getCartItemsStatus,
                           builder: (context, state) {
@@ -347,7 +352,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                   : 50,
                               child: InkWell(
                                   onTap: () {
-                                    panelControllerForCart.close();
+                                    //    panelControllerForCart.close();
                                     homeBloc.add(
                                       AddMultiItemsToCartEvent(
                                         maxAllowed: state
@@ -1108,7 +1113,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           current
                               .getProductDetailWithoutSimilarRelatedProductsStatus ||
                       previous.changeSizesForEveryProduct !=
-                          current.changeSizesForEveryProduct,
+                          current.changeSizesForEveryProduct ||
+                      previous.currentColorSizeForCart?["size"] !=
+                          current.currentColorSizeForCart?["size"],
                   builder: (context, state) {
                     String productId = state
                                     .cachedProductWithoutRelatedProductsModel[
@@ -1129,16 +1136,36 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         : "";
                     int currentSelectedColor =
                         state.currentSelectedColorForEveryProduct[productId] ??
-                            (productItem!.syncColorImages?.length ?? 0) ~/ 2;
+                            (productItem?.syncColorImages?.length ?? 0) ~/ 2;
+                    String currentSelectedColorName =
+                        ((productItem?.colors?.length ?? 0) > 0)
+                            ? productItem!.colors![currentSelectedColor].name ??
+                                ""
+                            : "";
+                    String currentVariantType =
+                        "${currentSelectedColorName != "" ? currentSelectedColorName : ""}" +
+                            "${(state.currentColorSizeForCart?["size"] != null && state.currentColorSizeForCart?["size"] != "") ? "-" : ""}" +
+                            "${(state.currentColorSizeForCart?["size"] != null && state.currentColorSizeForCart?["size"] != "") ? "${state.currentColorSizeForCart?["size"]}" : ""}";
+                    Variation? currentVariation = state
+                        .cachedProductWithoutRelatedProductsModel[
+                            productItem?.productId.toString()]
+                        ?.product
+                        ?.variation
+                        ?.firstWhere(
+                      (element) => element.type!.contains(currentVariantType),
+                      orElse: () {
+                        return Variation(variantNotifyForUser: false);
+                      },
+                    );
                     return ProductDetailsBottomSheet(
                       currentActiveTab: currentActiveTab,
                       qtyForproductWithoutVariant: widget.productItem == null
-                          ? productItem?.leftStock
+                          ? productItem?.currentStock
                           : state
                               .cachedProductWithoutRelatedProductsModel[
                                   productItem!.productId.toString()]
                               ?.product
-                              ?.leftStock,
+                              ?.currentStock,
                       collectedAfterOrdering: widget.productItem == null
                           ? productItem?.collectedAfterOrdering == 1
                           : state
@@ -1243,8 +1270,22 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           ? ''
                           : productItem!.colors![currentSelectedColor].name ??
                               "",
-                      productItem: productItem!
-                          .copyWith(productId: int.tryParse(productId)),
+                      productItem: productItem!.copyWith(
+                          productId: int.tryParse(productId),
+                          price: currentVariation?.price != null
+                              ? currentVariation?.price
+                              : productItem!.price,
+                          offerPrice: currentVariation?.offerPrice != null
+                              ? currentVariation?.offerPrice
+                              : productItem!.offerPrice,
+                          priceFormatted:
+                              currentVariation?.priceFormated != null
+                                  ? currentVariation?.priceFormated
+                                  : productItem!.priceFormatted,
+                          offerPriceFormatted:
+                              currentVariation?.offerPriceFormated != null
+                                  ? currentVariation?.offerPriceFormated
+                                  : productItem!.offerPriceFormatted),
                       currentColor: currentSelectedColor,
                       maxAllowedToAddCart: state
                               .cachedProductWithoutRelatedProductsModel[

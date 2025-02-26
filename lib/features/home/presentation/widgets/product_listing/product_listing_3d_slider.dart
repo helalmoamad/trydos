@@ -14,6 +14,7 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/svg_network_widget.dart';
+import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as listing;
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
@@ -193,9 +194,11 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
         currentIndex: 0,
         initialIndex: 0,
         scrollTime: 1);
-    homeBloc.add(AddCurrentSelectedColorEvent(
-        currentSelectedColor: syncColorImageList!.length ~/ 4,
-        productId: widget.productItem.productId.toString()));
+    Future.delayed(
+        Duration(milliseconds: 600),
+        () => homeBloc.add(AddCurrentSelectedColorEvent(
+            currentSelectedColor: syncColorImageList!.length ~/ 4,
+            productId: widget.productItem.productId.toString())));
     gallery3dControllerForCircles =
         syncColorImageList.isNullOrEmpty || syncColorImageList!.length < 3
             ? null
@@ -500,14 +503,6 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                             itemHeight: 240,
                                             threeImages: sliderData.item1,
                                             onItemClick: (index) {
-                                              homeBloc.add(
-                                                  AddCurrentSelectedColorEvent(
-                                                      currentSelectedColor:
-                                                          gallery3dControllerForCircles!
-                                                              .currentIndex,
-                                                      productId: widget
-                                                          .productItem.productId
-                                                          .toString()));
                                               widget.setThisEnabled
                                                   .call(-1, -1);
                                             },
@@ -540,6 +535,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                                                 1);
                                                 currentColorIndex.value =
                                                     prevIndexInFirstSlider;
+
                                                 gallery3dControllerForCircles!
                                                     .animateTo(
                                                         prevIndexInFirstSlider,
@@ -565,6 +561,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                                         .value =
                                                     prevIndexInFirstSlider;
                                               }
+
                                               if (scrollToLeft) {
                                                 updateImagesForThreeColorsSlider(
                                                     true,
@@ -585,6 +582,15 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                 ValueListenableBuilder<int>(
                                   valueListenable: currentColorIndex,
                                   builder: (context, currentIndex, _) {
+                                    Future.delayed(
+                                        Duration(seconds: 1),
+                                        () => homeBloc.add(
+                                            AddCurrentSelectedColorEvent(
+                                                currentSelectedColor:
+                                                    currentIndex,
+                                                productId: widget
+                                                    .productItem.productId
+                                                    .toString())));
                                     return MyTextWidget(
                                       syncColorImageList.isNullOrEmpty
                                           ? ""
@@ -907,15 +913,60 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                       child: BlocBuilder<HomeBloc, HomeState>(
                           buildWhen: (previous, current) =>
                               previous.getCurrencyForCountryModel !=
-                              current.getCurrencyForCountryModel,
+                                  current.getCurrencyForCountryModel ||
+                              previous.currentSelectedColorForEveryProductStatus !=
+                                  current
+                                      .currentSelectedColorForEveryProductStatus,
                           builder: (context, state) {
+                            print(
+                                "!0000000000000000000000000000000000000000000000000000000000000111111111111111111111111111");
+
+                            int currentSelectedColor = state
+                                        .currentSelectedColorForEveryProduct[
+                                    widget.productItem.productId.toString()] ??
+                                (widget.productItem.syncColorImages?.length ??
+                                        0) ~/
+                                    2;
+                            String currentSelectedColorName =
+                                ((widget.productItem.colors?.length ?? 0) > 0)
+                                    ? widget
+                                            .productItem
+                                            .colors![currentSelectedColor]
+                                            .name ??
+                                        ""
+                                    : "";
+                            String currentVariantType =
+                                "${currentSelectedColorName != "" ? currentSelectedColorName : ""}" +
+                                    "${(state.currentColorSizeForCart?["size"] != null && state.currentColorSizeForCart?["size"] != "") ? "-" : ""}" +
+                                    "${(state.currentColorSizeForCart?["size"] != null && state.currentColorSizeForCart?["size"] != "") ? "${state.currentColorSizeForCart?["size"]}" : ""}";
+
+                            print(
+                                "!1111111111111111111111111111111111111111111111000${widget.productItem.variation}000000000000000000000000000000000000000000000111111111111111111111111111");
+
+                            Variation? currentVariation =
+                                widget.productItem.variation?.firstWhere(
+                              (element) {
+                                return element.type!
+                                    .contains(currentVariantType);
+                              },
+                              orElse: () {
+                                return Variation(variantNotifyForUser: false);
+                              },
+                            );
+                            print(
+                                "!0000000000${currentVariantType}000000${currentVariation?.offerPrice}000000000000000000000000000000000000000000000111111111111111111111111111");
+
+                            double price = currentVariation?.price ??
+                                widget.productItem.price!;
+                            double offerPrice = currentVariation?.offerPrice ??
+                                widget.productItem.offerPrice!;
                             return Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
                                 Row(
                                   children: [
                                     MyTextWidget(
-                                      (widget.productItem.price! *
+                                      (price *
                                               state
                                                   .getCurrencyForCountryModel!
                                                   .data!
@@ -935,7 +986,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                       width: 2,
                                     ),
                                     MyTextWidget(
-                                      (widget.productItem.offerPrice! *
+                                      (offerPrice *
                                               state
                                                   .getCurrencyForCountryModel!
                                                   .data!
@@ -1137,11 +1188,6 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                             false);
                                       }
                                     } else {
-                                      homeBloc.add(AddCurrentSelectedColorEvent(
-                                          currentSelectedColor: index,
-                                          productId: widget
-                                              .productItem.productId
-                                              .toString()));
                                       gallery3dControllerForCircles!
                                           .animateTo(index, true);
                                       int stepCount = 0;

@@ -264,8 +264,6 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
           if ((state.getProductFiltersModel[key]?.filters == null &&
               state.cashedOrginalBoutique &&
               state.appliedFiltersByUser[key] == null)) {
-            print(
-                'ssssaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa${key} ${state.choosedFiltersByUser}');
             return SizedBox.shrink();
           }
           GetProductFiltersModel? appliedFiltersByUser =
@@ -274,7 +272,6 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
 
           if (!isExpanded &&
               (appliedFiltersByUser?.filters?.searchText?.length ?? 0) < 3) {
-            currentAppliedFilterSllug;
             if ((appliedFiltersByUser?.filters?.categories?.length ?? 0) > 0) {
               currentAppliedFilterSllug =
                   appliedFiltersByUser?.filters?.categories?[0].slug;
@@ -350,22 +347,39 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
               currentAppliedFilterSllug == "Empty" &&
               state.getProductFiltersWithPrefetchModel['${widget.boutiqueSlug}' + 'Empty' + '${(widget.category ?? '')}']?.filters != null &&
               (state.getProductListingWithFiltersPaginationWithPrefetchModels["${widget.boutiqueSlug}" + "Empty" + "${widget.category ?? ""}"]?.paginationStatus == PaginationStatus.success)) {
-            filters = (state
-                            .getProductListingWithFiltersPaginationWithPrefetchModels[
-                                '${widget.boutiqueSlug}' +
-                                    'Empty' +
-                                    '${(widget.category ?? '')}']
-                            ?.items
-                            .length ??
-                        0) ==
-                    1
-                ? filter_model.Filter()
-                : state
-                    .getProductFiltersWithPrefetchModel[
-                        '${widget.boutiqueSlug}' +
-                            'Empty' +
-                            '${(widget.category ?? '')}']
-                    ?.filters;
+            if ((appliedFiltersByUser?.filters?.searchText?.length ?? 0) < 3) {
+              filters = (state
+                              .getProductListingWithFiltersPaginationWithPrefetchModels[
+                                  '${widget.boutiqueSlug}' +
+                                      'Empty' +
+                                      '${(widget.category ?? '')}']
+                              ?.items
+                              .length ??
+                          0) ==
+                      1
+                  ? filter_model.Filter()
+                  : state
+                      .getProductFiltersWithPrefetchModel[
+                          '${widget.boutiqueSlug}' +
+                              'Empty' +
+                              '${(widget.category ?? '')}']
+                      ?.filters;
+            } else {
+              filters = (state
+                              .getProductListingWithFiltersPaginationWithPrefetchModels[
+                                  '${widget.boutiqueSlug}' +
+                                      '${(widget.category ?? '')}']
+                              ?.items
+                              .length ??
+                          0) ==
+                      1
+                  ? filter_model.Filter()
+                  : state
+                      .getProductFiltersWithPrefetchModel[
+                          '${widget.boutiqueSlug}' +
+                              '${(widget.category ?? '')}']
+                      ?.filters;
+            }
           } else {
             filters = (state
                                 .getProductListingWithFiltersPaginationModels[
@@ -641,8 +655,6 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                         .productListingFilterListKey),
                                 isInViewPortCondition: (double deltaTop,
                                     double deltaBottom, double vpWidth) {
-                                  print(
-                                      'fucjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj $deltaTop $deltaBottom $vpWidth');
                                   return deltaTop <= (0.5 * vpWidth) &&
                                       deltaBottom >= (0.7 * vpWidth);
                                 },
@@ -699,6 +711,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                     .expandingFiltersStack,
                                                 scaleTheTopItemInFiltersStack:
                                                     scaleTheTopItemInFiltersStack,
+                                                controller:
+                                                    widget.textController,
                                                 workWithChoosedFilter:
                                                     isExpanded,
                                                 category: widget.category,
@@ -1378,8 +1392,6 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                         Tuple2(minPrice!,
                                                             maxPrice!);
                                                   }
-                                                  print(
-                                                      "ddddddddddddddddddddddddddddddddddddddeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
                                                   homeBloc.add(
                                                       AddPrefAppliedFilterForExtendFilterEvent(
                                                           prefAppliedFilter:

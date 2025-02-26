@@ -1,185 +1,165 @@
+// To parse this JSON data, do
+//
+//     final getCartShippingItemsModel = getCartShippingItemsModelFromJson(jsonString);
+
+import 'dart:convert';
+
+GetCartShippingItemsModel getCartShippingItemsModelFromJson(String str) =>
+    GetCartShippingItemsModel.fromJson(json.decode(str));
+
+String getCartShippingItemsModelToJson(GetCartShippingItemsModel data) =>
+    json.encode(data.toJson());
+
 class GetCartShippingItemsModel {
+  final bool? isSuccessful;
+  final bool? hasContent;
+  final int? code;
   final String? message;
+  final dynamic detailedError;
   final CartShipping? data;
 
   GetCartShippingItemsModel({
+    this.isSuccessful,
+    this.hasContent,
+    this.code,
     this.message,
+    this.detailedError,
     this.data,
   });
 
   GetCartShippingItemsModel copyWith({
+    bool? isSuccessful,
+    bool? hasContent,
+    int? code,
     String? message,
+    dynamic detailedError,
     CartShipping? data,
   }) =>
       GetCartShippingItemsModel(
+        isSuccessful: isSuccessful ?? this.isSuccessful,
+        hasContent: hasContent ?? this.hasContent,
+        code: code ?? this.code,
         message: message ?? this.message,
+        detailedError: detailedError ?? this.detailedError,
         data: data ?? this.data,
       );
 
   factory GetCartShippingItemsModel.fromJson(Map<String, dynamic> json) =>
       GetCartShippingItemsModel(
+        isSuccessful: json["isSuccessful"],
+        hasContent: json["hasContent"],
+        code: json["code"],
         message: json["message"],
+        detailedError: json["detailed_error"],
         data: json["data"] == null ? null : CartShipping.fromJson(json["data"]),
       );
 
   Map<String, dynamic> toJson() => {
+        "isSuccessful": isSuccessful,
+        "hasContent": hasContent,
+        "code": code,
         "message": message,
+        "detailed_error": detailedError,
         "data": data?.toJson(),
       };
 }
 
 class CartShipping {
   final double? subTotal;
-  final String? subTotalFormated;
-  final double? totalTax;
-  final String? totalTaxFormated;
-  final double? totalDiscountOnProduct;
-  final String? totalDiscountOnProductFormated;
-  final double? totalShippingCost;
-  final String? totalShippingCostFormated;
-  final double? couponDiscount;
-  final String? couponDiscountFormated;
-  final double? codCost;
-  final String? codCostFormated;
-  final bool? hasCod;
+  final int? totalTax;
+  final int? totalShippingCost;
+  final double? productsDiscount;
+  final int? couponDiscount;
+  final double? totalDiscount;
+  final int? codCost;
   final double? limitFree;
-  final String? limitFreeFormated;
   final double? estimatedTax;
-  final String? estimatedTaxFormated;
   final double? total;
-  final String? totalFormated;
   final double? restForFreeShipping;
-  final String? restForFreeShippingFormatted;
+  final double? totalCash;
+  final bool? hasCod;
   final bool? showMessageResetForShippingFree;
   final List<String>? availablePaymentMethod;
-  final double? totalCash;
-  final String? totalCashFormated;
   final List<Cart>? cart;
 
   CartShipping({
     this.subTotal,
-    this.subTotalFormated,
     this.totalTax,
-    this.totalTaxFormated,
-    this.totalDiscountOnProduct,
-    this.totalDiscountOnProductFormated,
     this.totalShippingCost,
-    this.totalShippingCostFormated,
+    this.productsDiscount,
     this.couponDiscount,
-    this.couponDiscountFormated,
+    this.totalDiscount,
     this.codCost,
-    this.codCostFormated,
-    this.hasCod,
     this.limitFree,
-    this.limitFreeFormated,
     this.estimatedTax,
-    this.estimatedTaxFormated,
     this.total,
-    this.totalFormated,
     this.restForFreeShipping,
-    this.restForFreeShippingFormatted,
+    this.totalCash,
+    this.hasCod,
     this.showMessageResetForShippingFree,
     this.availablePaymentMethod,
-    this.totalCash,
-    this.totalCashFormated,
     this.cart,
   });
 
   CartShipping copyWith({
     double? subTotal,
-    String? subTotalFormated,
-    double? totalTax,
-    String? totalTaxFormated,
-    double? totalDiscountOnProduct,
-    String? totalDiscountOnProductFormated,
-    double? totalShippingCost,
-    String? totalShippingCostFormated,
-    double? couponDiscount,
-    String? couponDiscountFormated,
-    double? codCost,
-    String? codCostFormated,
-    bool? hasCod,
+    int? totalTax,
+    int? totalShippingCost,
+    double? productsDiscount,
+    int? couponDiscount,
+    double? totalDiscount,
+    int? codCost,
     double? limitFree,
-    String? limitFreeFormated,
     double? estimatedTax,
-    String? estimatedTaxFormated,
     double? total,
-    String? totalFormated,
     double? restForFreeShipping,
-    String? restForFreeShippingFormatted,
+    double? totalCash,
+    bool? hasCod,
     bool? showMessageResetForShippingFree,
     List<String>? availablePaymentMethod,
-    double? totalCash,
-    String? totalCashFormated,
     List<Cart>? cart,
   }) =>
       CartShipping(
         subTotal: subTotal ?? this.subTotal,
-        subTotalFormated: subTotalFormated ?? this.subTotalFormated,
         totalTax: totalTax ?? this.totalTax,
-        totalTaxFormated: totalTaxFormated ?? this.totalTaxFormated,
-        totalDiscountOnProduct:
-            totalDiscountOnProduct ?? this.totalDiscountOnProduct,
-        totalDiscountOnProductFormated: totalDiscountOnProductFormated ??
-            this.totalDiscountOnProductFormated,
         totalShippingCost: totalShippingCost ?? this.totalShippingCost,
-        totalShippingCostFormated:
-            totalShippingCostFormated ?? this.totalShippingCostFormated,
+        productsDiscount: productsDiscount ?? this.productsDiscount,
         couponDiscount: couponDiscount ?? this.couponDiscount,
-        couponDiscountFormated:
-            couponDiscountFormated ?? this.couponDiscountFormated,
+        totalDiscount: totalDiscount ?? this.totalDiscount,
         codCost: codCost ?? this.codCost,
-        codCostFormated: codCostFormated ?? this.codCostFormated,
-        hasCod: hasCod ?? this.hasCod,
         limitFree: limitFree ?? this.limitFree,
-        limitFreeFormated: limitFreeFormated ?? this.limitFreeFormated,
         estimatedTax: estimatedTax ?? this.estimatedTax,
-        estimatedTaxFormated: estimatedTaxFormated ?? this.estimatedTaxFormated,
         total: total ?? this.total,
-        totalFormated: totalFormated ?? this.totalFormated,
         restForFreeShipping: restForFreeShipping ?? this.restForFreeShipping,
-        restForFreeShippingFormatted:
-            restForFreeShippingFormatted ?? this.restForFreeShippingFormatted,
+        totalCash: totalCash ?? this.totalCash,
+        hasCod: hasCod ?? this.hasCod,
         showMessageResetForShippingFree: showMessageResetForShippingFree ??
             this.showMessageResetForShippingFree,
         availablePaymentMethod:
             availablePaymentMethod ?? this.availablePaymentMethod,
-        totalCash: totalCash ?? this.totalCash,
-        totalCashFormated: totalCashFormated ?? this.totalCashFormated,
         cart: cart ?? this.cart,
       );
 
   factory CartShipping.fromJson(Map<String, dynamic> json) => CartShipping(
-        subTotal: json["sub_total"].toDouble(),
-        subTotalFormated: json["sub_total_formated"],
-        totalTax: json["total_tax"].toDouble(),
-        totalTaxFormated: json["total_tax_formated"],
-        totalDiscountOnProduct: json["total_discount_on_product"].toDouble(),
-        totalDiscountOnProductFormated:
-            json["total_discount_on_product_formated"],
-        totalShippingCost: json["total_shipping_cost"].toDouble(),
-        totalShippingCostFormated: json["total_shipping_cost_formated"],
-        couponDiscount: json["coupon_discount"].toDouble(),
-        couponDiscountFormated: json["coupon_discount_formated"],
-        codCost: json["cod_cost"].toDouble(),
-        codCostFormated: json["cod_cost_formated"],
+        subTotal: json["sub_total"]?.toDouble(),
+        totalTax: json["total_tax"],
+        totalShippingCost: json["total_shipping_cost"],
+        productsDiscount: json["products_discount"]?.toDouble(),
+        couponDiscount: json["coupon_discount"],
+        totalDiscount: json["total_discount"]?.toDouble(),
+        codCost: json["cod_cost"],
+        limitFree: double.tryParse(json["limitFree"].toString()),
+        estimatedTax: json["estimated_tax"]?.toDouble(),
+        total: json["total"]?.toDouble(),
+        restForFreeShipping: json["rest_for_free_shipping"]?.toDouble(),
+        totalCash: json["total_cash"]?.toDouble(),
         hasCod: json["has_cod"],
-        limitFree: json["limitFree"].toDouble(),
-        limitFreeFormated: json["limitFree_formated"],
-        estimatedTax: json["estimated_tax"].toDouble(),
-        estimatedTaxFormated: json["estimated_tax_formated"],
-        total: json["total"].toDouble(),
-        totalFormated: json["total_formated"],
-        restForFreeShipping: json["rest_for_free_shipping"].toDouble(),
-        restForFreeShippingFormatted: json["rest_for_free_shipping_formatted"],
         showMessageResetForShippingFree:
             json["show_message_reset_for_shipping_free"],
         availablePaymentMethod: json["available_payment_method"] == null
             ? []
             : List<String>.from(
                 json["available_payment_method"]!.map((x) => x)),
-        totalCash: json["total_cash"].toDouble(),
-        totalCashFormated: json["total_cash_formated"],
         cart: json["cart"] == null
             ? []
             : List<Cart>.from(json["cart"]!.map((x) => Cart.fromJson(x))),
@@ -187,32 +167,22 @@ class CartShipping {
 
   Map<String, dynamic> toJson() => {
         "sub_total": subTotal,
-        "sub_total_formated": subTotalFormated,
         "total_tax": totalTax,
-        "total_tax_formated": totalTaxFormated,
-        "total_discount_on_product": totalDiscountOnProduct,
-        "total_discount_on_product_formated": totalDiscountOnProductFormated,
         "total_shipping_cost": totalShippingCost,
-        "total_shipping_cost_formated": totalShippingCostFormated,
+        "products_discount": productsDiscount,
         "coupon_discount": couponDiscount,
-        "coupon_discount_formated": couponDiscountFormated,
+        "total_discount": totalDiscount,
         "cod_cost": codCost,
-        "cod_cost_formated": codCostFormated,
-        "has_cod": hasCod,
-        "limitFree": limitFree,
-        "limitFree_formated": limitFreeFormated,
+        "limitFree": limitFree?.toDouble(),
         "estimated_tax": estimatedTax,
-        "estimated_tax_formated": estimatedTaxFormated,
         "total": total,
-        "total_formated": totalFormated,
         "rest_for_free_shipping": restForFreeShipping,
-        "rest_for_free_shipping_formatted": restForFreeShippingFormatted,
+        "total_cash": totalCash,
+        "has_cod": hasCod,
         "show_message_reset_for_shipping_free": showMessageResetForShippingFree,
         "available_payment_method": availablePaymentMethod == null
             ? []
             : List<dynamic>.from(availablePaymentMethod!.map((x) => x)),
-        "total_cash": totalCash,
-        "total_cash_formated": totalCashFormated,
         "cart": cart == null
             ? []
             : List<dynamic>.from(cart!.map((x) => x.toJson())),
@@ -224,157 +194,143 @@ class Cart {
   final String? uuid;
   final int? customerId;
   final String? cartGroupId;
-  final String? image;
   final int? productId;
   final List<Choice>? choices;
   final List<VariationCart>? variations;
   final String? variant;
-  final double? availableQuantity;
+  final int? availableQuantity;
   final String? maxAllowedQty;
   final String? vendorName;
   final int? quantity;
-  final double? price;
-  final String? priceFormatted;
-  final double? offerPrice;
-  final String? offerPriceFormatted;
-  final int? tax;
   final double? discount;
-  final String? discountFormatted;
+  final double? price;
+  final double? offerPrice;
+  final int? tax;
   final String? slug;
   final String? name;
-
   final int? countOfPieces;
   final Shop? shop;
+  final bool? checkAvailability;
   final CartBrand? brand;
   final BoutiquesCart? boutique;
   final String? thumbnail;
-  final DateTime? createdAt;
-  final dynamic flashDealDetails;
-  final dynamic flashDealMaxAllowedQuantity;
+  final String? image;
   final int? shippingDays;
-
   final bool? haveHurryUpNotifyTimeLeft;
   final bool? haveHurryUpNotifyQty;
   final int? qtyLeft;
   final int? timeLeftInMinutes;
-  final bool? checkAvailability;
+  final dynamic flashDealDetails;
+  final dynamic flashDealMaxAllowedQuantity;
+  final DateTime? createdAt;
 
   Cart({
     this.id,
     this.customerId,
     this.cartGroupId,
+    this.uuid,
     this.productId,
-    this.image,
     this.choices,
     this.variations,
     this.variant,
-    this.uuid,
     this.availableQuantity,
     this.maxAllowedQty,
     this.vendorName,
     this.quantity,
-    this.price,
-    this.priceFormatted,
-    this.offerPrice,
-    this.offerPriceFormatted,
-    this.tax,
-    this.countOfPieces,
     this.discount,
-    this.discountFormatted,
+    this.price,
+    this.offerPrice,
+    this.tax,
     this.slug,
     this.name,
+    this.countOfPieces,
     this.shop,
+    this.checkAvailability,
     this.brand,
     this.boutique,
     this.thumbnail,
-    this.createdAt,
-    this.flashDealDetails,
-    this.flashDealMaxAllowedQuantity,
+    this.image,
     this.shippingDays,
     this.haveHurryUpNotifyTimeLeft,
     this.haveHurryUpNotifyQty,
     this.qtyLeft,
     this.timeLeftInMinutes,
-    this.checkAvailability,
+    this.flashDealDetails,
+    this.flashDealMaxAllowedQuantity,
+    this.createdAt,
   });
 
   Cart copyWith({
     int? id,
+    String? uuid,
     int? customerId,
     String? cartGroupId,
     int? productId,
     List<Choice>? choices,
     List<VariationCart>? variations,
     String? variant,
-    double? availableQuantity,
+    int? availableQuantity,
     String? maxAllowedQty,
-    String? image,
     String? vendorName,
     int? quantity,
-    String? uuid,
-    double? price,
-    int? countOfPieces,
-    String? priceFormatted,
-    String? discountFormatted,
-    double? offerPrice,
-    String? offerPriceFormatted,
-    int? tax,
     double? discount,
+    double? price,
+    double? offerPrice,
+    int? tax,
     String? slug,
     String? name,
+    int? countOfPieces,
     Shop? shop,
+    bool? checkAvailability,
     CartBrand? brand,
     BoutiquesCart? boutique,
     String? thumbnail,
-    DateTime? createdAt,
-    dynamic flashDealDetails,
+    String? image,
     int? shippingDays,
     bool? haveHurryUpNotifyTimeLeft,
     bool? haveHurryUpNotifyQty,
     int? qtyLeft,
     int? timeLeftInMinutes,
+    dynamic flashDealDetails,
     dynamic flashDealMaxAllowedQuantity,
-    bool? checkAvailability,
+    DateTime? createdAt,
   }) =>
       Cart(
         id: id ?? this.id,
+        uuid: uuid ?? this.uuid,
         customerId: customerId ?? this.customerId,
         cartGroupId: cartGroupId ?? this.cartGroupId,
         productId: productId ?? this.productId,
         choices: choices ?? this.choices,
-        image: image ?? this.image,
         variations: variations ?? this.variations,
-        priceFormatted: priceFormatted ?? this.priceFormatted,
-        discountFormatted: discountFormatted ?? this.discountFormatted,
         variant: variant ?? this.variant,
         availableQuantity: availableQuantity ?? this.availableQuantity,
         maxAllowedQty: maxAllowedQty ?? this.maxAllowedQty,
         vendorName: vendorName ?? this.vendorName,
         quantity: quantity ?? this.quantity,
+        discount: discount ?? this.discount,
         price: price ?? this.price,
         offerPrice: offerPrice ?? this.offerPrice,
-        offerPriceFormatted: offerPriceFormatted ?? this.offerPriceFormatted,
         tax: tax ?? this.tax,
-        discount: discount ?? this.discount,
         slug: slug ?? this.slug,
-        uuid: uuid ?? this.uuid,
         name: name ?? this.name,
-        shop: shop ?? this.shop,
         countOfPieces: countOfPieces ?? this.countOfPieces,
+        shop: shop ?? this.shop,
+        checkAvailability: checkAvailability ?? this.checkAvailability,
+        brand: brand ?? this.brand,
+        boutique: boutique ?? this.boutique,
+        thumbnail: thumbnail ?? this.thumbnail,
+        image: image ?? this.image,
         shippingDays: shippingDays ?? this.shippingDays,
         haveHurryUpNotifyTimeLeft:
             haveHurryUpNotifyTimeLeft ?? this.haveHurryUpNotifyTimeLeft,
         haveHurryUpNotifyQty: haveHurryUpNotifyQty ?? this.haveHurryUpNotifyQty,
         qtyLeft: qtyLeft ?? this.qtyLeft,
         timeLeftInMinutes: timeLeftInMinutes ?? this.timeLeftInMinutes,
-        brand: brand ?? this.brand,
-        boutique: boutique ?? this.boutique,
-        thumbnail: thumbnail ?? this.thumbnail,
-        createdAt: createdAt ?? this.createdAt,
         flashDealDetails: flashDealDetails ?? this.flashDealDetails,
         flashDealMaxAllowedQuantity:
             flashDealMaxAllowedQuantity ?? this.flashDealMaxAllowedQuantity,
-        checkAvailability: checkAvailability ?? this.checkAvailability,
+        createdAt: createdAt ?? this.createdAt,
       );
 
   factory Cart.fromJson(Map<String, dynamic> json) => Cart(
@@ -392,44 +348,40 @@ class Cart {
             : List<VariationCart>.from(
                 json["variations"]!.map((x) => VariationCart.fromJson(x))),
         variant: json["variant"],
-        countOfPieces: json["count_of_pieces"],
-        availableQuantity: json["available_quantity"].toDouble(),
+        availableQuantity: json["available_quantity"],
         maxAllowedQty: json["max_allowed_qty"],
         vendorName: json["vendor_name"],
         quantity: json["quantity"],
-        image: json["image"],
-        price: json["price"].toDouble(),
-        offerPrice: json["offer_price"]?.toDouble(),
-        offerPriceFormatted: json["offer_price_formatted"],
-        priceFormatted: json["price_formatted"],
-        discountFormatted: json["discount_formatted"],
-        tax: json["tax"],
         discount: json["discount"]?.toDouble(),
+        price: json["price"]?.toDouble(),
+        offerPrice: json["offer_price"]?.toDouble(),
+        tax: json["tax"],
         slug: json["slug"],
         name: json["name"],
+        countOfPieces: json["count_of_pieces"],
         shop: json["shop"] == null ? null : Shop.fromJson(json["shop"]),
+        checkAvailability: json["check_availability"],
         brand: json["brand"] == null ? null : CartBrand.fromJson(json["brand"]),
         boutique: json["boutique"] == null
             ? null
             : BoutiquesCart.fromJson(json["boutique"]),
         thumbnail: json["thumbnail"],
-        createdAt: json["created_at"] == null
-            ? null
-            : DateTime.parse(json["created_at"]),
-        flashDealDetails: json["flash_deal_details"],
+        image: json["image"],
         shippingDays: json["shipping_days"],
         haveHurryUpNotifyTimeLeft: json["have_hurry_up_notify_time_left"],
         haveHurryUpNotifyQty: json["have_hurry_up_notify_qty"],
         qtyLeft: json["qty_left"],
         timeLeftInMinutes: json["time_left_in_minutes"],
+        flashDealDetails: json["flash_deal_details"],
         flashDealMaxAllowedQuantity: json["flash_deal_max_allowed_quantity"],
-        checkAvailability: json["check_availability"] ?? false,
+        createdAt: json["created_at"] == null
+            ? null
+            : DateTime.parse(json["created_at"]),
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "uuid": uuid,
-        "image": image,
         "customer_id": customerId,
         "cart_group_id": cartGroupId,
         "product_id": productId,
@@ -444,27 +396,27 @@ class Cart {
         "max_allowed_qty": maxAllowedQty,
         "vendor_name": vendorName,
         "quantity": quantity,
-        "count_of_pieces": countOfPieces,
+        "discount": discount,
         "price": price,
         "offer_price": offerPrice,
-        "offer_price_formatted": offerPriceFormatted,
         "tax": tax,
-        "discount": discount,
         "slug": slug,
         "name": name,
+        "count_of_pieces": countOfPieces,
+        "shop": shop?.toJson(),
+        "check_availability": checkAvailability,
+        "brand": brand?.toJson(),
+        "boutique": boutique?.toJson(),
+        "thumbnail": thumbnail,
+        "image": image,
         "shipping_days": shippingDays,
         "have_hurry_up_notify_time_left": haveHurryUpNotifyTimeLeft,
         "have_hurry_up_notify_qty": haveHurryUpNotifyQty,
         "qty_left": qtyLeft,
         "time_left_in_minutes": timeLeftInMinutes,
-        "shop": shop?.toJson(),
-        "brand": brand?.toJson(),
-        "boutique": boutique?.toJson(),
-        "thumbnail": thumbnail,
-        "created_at": createdAt?.toIso8601String(),
         "flash_deal_details": flashDealDetails,
         "flash_deal_max_allowed_quantity": flashDealMaxAllowedQuantity,
-        "check_availability": checkAvailability,
+        "created_at": createdAt?.toIso8601String(),
       };
 }
 
@@ -535,34 +487,40 @@ class IconCart {
 class CartBrand {
   final int? id;
   final String? name;
+  final String? slug;
   final String? image;
 
   CartBrand({
     this.id,
     this.name,
+    this.slug,
     this.image,
   });
 
   CartBrand copyWith({
     int? id,
     String? name,
+    String? slug,
     String? image,
   }) =>
       CartBrand(
         id: id ?? this.id,
         name: name ?? this.name,
+        slug: slug ?? this.slug,
         image: image ?? this.image,
       );
 
   factory CartBrand.fromJson(Map<String, dynamic> json) => CartBrand(
         id: json["id"],
         name: json["name"],
+        slug: json["slug"],
         image: json["image"],
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "name": name,
+        "slug": slug,
         "image": image,
       };
 }

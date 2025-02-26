@@ -295,8 +295,7 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   }
 
   @override
-  Future<Either<Failure, UpdateItemInCartModel>> removeItemToCart(
-      Map<String, dynamic> params) {
+  Future<Either<Failure, bool>> removeItemToCart(Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.removeItemToCart(params));
   }
@@ -305,6 +304,13 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   Future<Either<Failure, GetCurrencyForCountryModel>> getCurrencyForCountry() {
     return handlingExceptionRequest(
         tryCall: () => dataSource.getCurrencyForCountry());
+  }
+
+  @override
+  Future<Either<Failure, bool>> setCustomerAddressDefault(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.setCustomerAddressDefault(params));
   }
 
   @override
