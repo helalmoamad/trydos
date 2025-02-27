@@ -937,11 +937,8 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                     : "";
                             String currentVariantType =
                                 "${currentSelectedColorName != "" ? currentSelectedColorName : ""}" +
-                                    "${(state.currentColorSizeForCart?["size"] != null && state.currentColorSizeForCart?["size"] != "") ? "-" : ""}" +
+                                    "${(state.currentColorSizeForCart?["size"] != null && state.currentColorSizeForCart?["size"] != "") && (currentSelectedColorName != "") ? "-" : ""}" +
                                     "${(state.currentColorSizeForCart?["size"] != null && state.currentColorSizeForCart?["size"] != "") ? "${state.currentColorSizeForCart?["size"]}" : ""}";
-
-                            print(
-                                "!1111111111111111111111111111111111111111111111000${widget.productItem.variation}000000000000000000000000000000000000000000000111111111111111111111111111");
 
                             Variation? currentVariation =
                                 widget.productItem.variation?.firstWhere(
@@ -953,8 +950,6 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                 return Variation(variantNotifyForUser: false);
                               },
                             );
-                            print(
-                                "!0000000000${currentVariantType}000000${currentVariation?.offerPrice}000000000000000000000000000000000000000000000111111111111111111111111111");
 
                             double price = currentVariation?.price ??
                                 widget.productItem.price!;

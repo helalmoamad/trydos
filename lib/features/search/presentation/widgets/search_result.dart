@@ -75,7 +75,7 @@ class _SearchResultState extends ThemeState<SearchResult> {
         builder: (context, state) {
           String key =
               'search' + (state.cashedOrginalBoutique ? 'withoutFilter' : "");
-          if (state.getProductListingWithFiltersPaginationModels[key]
+          if (state.getProductListingWithFiltersPaginationModels['search']
                   ?.paginationStatus ==
               PaginationStatus.loading) {
             print(

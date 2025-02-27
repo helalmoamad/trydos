@@ -1144,8 +1144,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             : "";
                     String currentVariantType =
                         "${currentSelectedColorName != "" ? currentSelectedColorName : ""}" +
-                            "${(state.currentColorSizeForCart?["size"] != null && state.currentColorSizeForCart?["size"] != "") ? "-" : ""}" +
+                            "${(state.currentColorSizeForCart?["size"] != null && state.currentColorSizeForCart?["size"] != "") && (currentSelectedColorName != "") ? "-" : ""}" +
                             "${(state.currentColorSizeForCart?["size"] != null && state.currentColorSizeForCart?["size"] != "") ? "${state.currentColorSizeForCart?["size"]}" : ""}";
+
+                    print(
+                        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@###${currentVariantType}##################################################");
+
                     Variation? currentVariation = state
                         .cachedProductWithoutRelatedProductsModel[
                             productItem?.productId.toString()]

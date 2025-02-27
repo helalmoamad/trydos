@@ -416,9 +416,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<ApplyCouponEvent>(
       _onApplyCouponEvent,
     );
-    on<GetCartOverviewEvent>(
-      _onGetCartOverviewEvent,
-    );
+    on<GetCartOverviewEvent>(_onGetCartOverviewEvent,
+        transformer: restartable());
   }
 
   Map<String, bool> boutiquesThatEnablesToRequestItsProductsUsingFiveFilters =
@@ -541,15 +540,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   FutureOr<void> _onRemoveItemsFromCartAfterOrderSuccessEvent(
       RemoveItemsFromCartAfterOrderSuccessEvent event,
       Emitter<HomeState> emit) async {
-    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
     emit(state.copyWith(
       cartCollection: [],
       currentQuantityForCart: {},
       addImagesToProductIdForCart: {},
       listitemForAddToCart: [],
     ));
-    print(
-        "@@@@@@@@@@@${state.cartCollection}@@@@@@${state.currentQuantityForCart}@${state.addImagesToProductIdForCart}@${state.listitemForAddToCart}@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
   }
 
   FutureOr<void> _onAddAddressInfoClassEvent(
@@ -603,6 +599,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           listOfAdressInfoClassToSave: listOfAddressInfoClassToSave,
           addAddressToOrderStatus: AddAddressToOrderStatus.failure));
     }, (r) async {
+      add(GetCartOverviewEvent());
       add(GetCustomerAddressesEvent());
       showMessage(r.message ?? "",
           foreGroundColor: Colors.white,
@@ -997,6 +994,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           setCustomerAddressDefaultStatus:
               SetCustomerAddressDefaultStatus.failure));
     }, (r) async {
+      add(GetCustomerAddressesEvent());
+      add(GetCartOverviewEvent());
       isFailedTheFirstTime.remove('SetCustomerAddressDefaultEvent');
 
       emit(state.copyWith(
@@ -3425,46 +3424,59 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     final response = await getCartItemUseCase(NoParams());
     response.fold((l) {
       if (!isFailedTheFirstTime.contains('GetCartItemEvent')) {
-        add(GetCartItemEvent(
-            fromTerminitedStatusl: event.fromTerminitedStatusl));
+        add(GetCartItemEvent());
         isFailedTheFirstTime.add('GetCartItemEvent');
       }
       emit(state.copyWith(getCartItemsStatus: GetCartItemsStatus.failure));
     }, (r) {
       List<Cart> carts;
       List<Cart> cartCollection = [];
-      Map<String, Map<int, List<String>>> addImagesToProductIdForCart =
-          Map.of(state.addImagesToProductIdForCart);
+      Map<String, Map<int, List<String>>> addImagesToProductIdForCart = {};
+
       List<String> cartIdIsFound = [];
-      r.data?.cart?.forEach(
-        (element) => cartIdIsFound.add(element.id.toString()),
-      );
-      addImagesToProductIdForCart.forEach((key, value) {
-        value.removeWhere(
-          (keyes, valuees) {
-            return !cartIdIsFound.contains(keyes.toString());
-          },
-        );
+      r.data?.cart?.forEach((element) {
+        cartIdIsFound.add(element.id.toString());
+        add(AddQuantityForCartEvent(
+            quantity: element.quantity ?? 0,
+            productId: element.productId.toString(),
+            currentSize: element.variations?[0].size ?? "",
+            cartId: element.id ?? 0,
+            colorName: element.variations?[0].color ?? ""));
+        if (addImagesToProductIdForCart[element.productId.toString()] == null) {
+          addImagesToProductIdForCart[element.productId.toString()] = {};
+        }
+        if (!addImagesToProductIdForCart[element.productId.toString()]![
+                element.id]
+            .isNullOrEmpty) {
+          for (int i = 0; i < element.quantity!; i++) {
+            addImagesToProductIdForCart[element..productId.toString()]![
+                    element.id]!
+                .add(element.image ?? "");
+          }
+          ;
+        } else {
+          addImagesToProductIdForCart[element.productId.toString()]!
+              .addAll({element.id!: []});
+
+          addImagesToProductIdForCart[element.productId.toString()]![
+              element.id!] = [];
+
+          for (int i = 0; i < element.quantity!; i++) {
+            addImagesToProductIdForCart[element.productId.toString()]![
+                    element.id]!
+                .add(element.image ?? "");
+          }
+          ;
+        }
       });
-      addImagesToProductIdForCart.removeWhere(
-        (key, value) => value.isEmpty,
-      );
-      Map<String, List<int>> currentQuantity =
-          Map.of(state.currentQuantityForCart ?? {});
-      currentQuantity.removeWhere(
-          (key, value) => !cartIdIsFound.contains(value[1].toString()));
+
       carts = r.data!.cart!;
       carts.forEach((element) {
         cartCollection.add(element);
       });
 
       isFailedTheFirstTime.remove('GetCartItemEvent');
-      if (event.fromTerminitedStatusl ?? false) {
-        emit(state.copyWith(
-          currentQuantityForCart: currentQuantity,
-          addImagesToProductIdForCart: addImagesToProductIdForCart,
-        ));
-      }
+
       //   Map<String, int> cartIdsHurryUPTimerStarted =
       //    Map.of(state.cartIdsHurryUPTimerStarted);
 
@@ -3495,6 +3507,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         }
       }*/
       emit(state.copyWith(
+          addImagesToProductIdForCart: addImagesToProductIdForCart,
           getCartShippingItemsModel: r,
           cartCollection: List.of(cartCollection),
           getCartItemsStatus: GetCartItemsStatus.success));
@@ -3804,6 +3817,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         backGroundColor: Colors.black,
       );
     }, (r) {
+      add(GetCartOverviewEvent());
       Variation? variation;
       List<Variation>? listVariation = state
               .cachedProductWithoutRelatedProductsModel[
@@ -4065,6 +4079,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         backGroundColor: Colors.black,
       );
     }, (r) {
+      add(GetCartOverviewEvent());
       Variation? variation;
       List<Variation>? listVariation =
           state.cachedProductWithoutRelatedProductsModel[
@@ -4375,6 +4390,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       emit(state.copyWith(
           updateItemInCartStatus: UpdateItemInCartStatus.failure));
     }, (r) {
+      add(GetCartOverviewEvent());
       Variation? variation;
       List<Variation>? listVariation =
           state.cachedProductWithoutRelatedProductsModel[
@@ -4569,17 +4585,18 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   FutureOr<void> _onAddCurrentQuantityForCartEvent(
       AddQuantityForCartEvent event, Emitter<HomeState> emit) async {
-    Map<String, List<int>> CurrentQuantity = state.currentQuantityForCart ?? {};
+    Map<String, List<int>> currentQuantity = state.currentQuantityForCart ?? {};
     String key =
         "${event.productId}" + "${event.colorName}" + "${event.currentSize}";
-    if (!CurrentQuantity[key].isNullOrEmpty) {
-      CurrentQuantity[key] = [event.quantity, event.cartId];
+    if (!currentQuantity[key].isNullOrEmpty) {
+      currentQuantity[key] = [event.quantity, event.cartId];
     } else {
-      CurrentQuantity.addAll({
+      currentQuantity.addAll({
         key: [event.quantity, event.cartId]
       });
     }
-    emit(state.copyWith(currentQuantityForCart: CurrentQuantity));
+    currentQuantity.removeWhere((key, value) => value[0] == 0);
+    emit(state.copyWith(currentQuantityForCart: currentQuantity));
   }
 
   FutureOr<void> _onGetNotificationTypeProductEvent(
@@ -5550,7 +5567,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       ),
     );
 
-    final response = await placeOrderUsecase.call(
+    final response = await placeOrderUsecase(
       event.placeOrderParams,
     );
 
@@ -5604,7 +5621,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       ),
     );
 
-    final response = await getOrdersByOrderGroupIDUsecase.call(
+    final response = await getOrdersByOrderGroupIDUsecase(
       event.orderGroupId,
     );
 
@@ -5653,7 +5670,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       ),
     );
 
-    final response = await getOrdersByCartGroupIDUsecase.call(
+    final response = await getOrdersByCartGroupIDUsecase(
       event.cartGroupId,
     );
 
@@ -5702,7 +5719,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       ),
     );
 
-    final response = await checkAvailabilityProductCartUsecase.call(NoParams());
+    final response = await checkAvailabilityProductCartUsecase(NoParams());
 
     response.fold(
       (l) {
@@ -5749,7 +5766,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       ),
     );
 
-    final response = await applyCouponUsecase.call(event.code);
+    final response = await applyCouponUsecase(event.code);
 
     response.fold(
       (l) {
@@ -5818,7 +5835,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       ),
     );
 
-    final response = await getCartOverviewUseCase.call(NoParams());
+    final response = await getCartOverviewUseCase(NoParams());
 
     response.fold(
       (l) {
@@ -5836,15 +5853,17 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         );
       },
       (r) {
+        List<Cart>? cart = state.getCartShippingItemsModel?.data?.cart;
+        GetCartShippingItemsModel? getCartShippingItemsModel =
+            r.copyWith(data: r.data?.copyWith(cart: cart));
         isFailedTheFirstTime.remove('GetCartOverviewEvent');
 
         debugPrint('GetCartOverviewEvent success');
         ////////////////////////////
         emit(
           state.copyWith(
-            getCartOverviewStatus: GetCartOverviewStatus.success,
-            getCartOverviewModel: r,
-          ),
+              getCartOverviewStatus: GetCartOverviewStatus.success,
+              getCartShippingItemsModel: getCartShippingItemsModel),
         );
       },
     );

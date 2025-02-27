@@ -62,7 +62,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
   bool showDialogToResetSession = true;
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   int indexToDelete = 0;
-  int? preTapIndex;
+
   final ValueNotifier<bool> isExpandedCoupon = ValueNotifier(false);
   final ValueNotifier<bool> isApplayCoupon = ValueNotifier(false);
 
@@ -73,11 +73,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
-    Future.delayed(Duration(milliseconds: 200), () {
-      indexTap.value = homeBloc.state.currentAddressChoosed ?? 0;
 
-      preTapIndex = indexTap.value;
-    });
     print(
         "######################################################################${homeBloc.state.currentAddressChoosed ?? 0}");
     ////////////////////
@@ -144,14 +140,26 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                     current.getCustomerAddressStatus ||
                 previous.editAddressToOrderStatus !=
                     current.editAddressToOrderStatus ||
+                previous.setCustomerAddressDefaultStatus !=
+                    current.setCustomerAddressDefaultStatus ||
                 previous.addAddressToOrderStatus !=
                     current.addAddressToOrderStatus ||
                 previous.removeAddressToOrderStatus !=
                     current.removeAddressToOrderStatus ||
                 previous.getCustomerWalletStatus !=
                     current.getCustomerWalletStatus ||
+                previous.getCartOverviewStatus !=
+                    current.getCartOverviewStatus ||
                 previous.applyCouponStatus != current.applyCouponStatus,
             builder: (context, state) {
+              Future.delayed(Duration(milliseconds: 200), () {
+                if (state.setCustomerAddressDefaultStatus !=
+                        SetCustomerAddressDefaultStatus.loading &&
+                    state.getCustomerAddressStatus !=
+                        GetCustomerAddressesStatus.loading) {
+                  indexTap.value = state.currentAddressChoosed ?? 0;
+                }
+              });
               List<String> availablePaymentMethod = state
                       .getCartShippingItemsModel!
                       .data!
@@ -433,7 +441,10 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
           } else {
             check = false;
           }
-          return (state.applyCouponStatus == ApplyCouponStatus.loading)
+          return (state.applyCouponStatus == ApplyCouponStatus.loading ||
+                  state.setCustomerAddressDefaultStatus ==
+                      SetCustomerAddressDefaultStatus.loading ||
+                  state.getCartOverviewStatus == GetCartOverviewStatus.loading)
               ? Shimmer.fromColors(
                   baseColor: Colors.grey[300]!,
                   highlightColor: Colors.grey[100]!,
@@ -516,6 +527,11 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                 )
               : InkWell(
                   onTap: () {
+                    if (state.getCartOverviewStatus ==
+                        GetCartOverviewStatus.failure) {
+                      homeBloc.add(GetCartOverviewEvent());
+                      return;
+                    }
                     if (check) {
                       HelperFunctions.slidingNavigation(
                         context,
@@ -1559,7 +1575,7 @@ Widget addressInfoWithContactInfoCart({
             height: 5,
           ),
           Container(
-            width: 360,
+            width: 360.w,
             height: 16,
             child: Row(
               children: [
@@ -1628,9 +1644,10 @@ Widget addressInfoWithContactInfoCart({
             ),
           ),
           Container(
-            width: 350,
+            width: 350.w,
             height: 16,
-            child: Row(
+            child: ListView(
+              scrollDirection: Axis.horizontal,
               children: [
                 Text(
                   "${customerAddressesInfo.regionDetails?.building ?? ""}${(customerAddressesInfo.regionDetails?.building?.length ?? 0) > 0 ? " | " : ""}${customerAddressesInfo.regionDetails?.street ?? ""}${(customerAddressesInfo.regionDetails?.street?.length ?? 0) > 0 ? " | " : ""}${customerAddressesInfo.regionDetails?.town ?? ""}${(customerAddressesInfo.regionDetails?.town?.length ?? 0) > 0 ? " | " : ""}${customerAddressesInfo.regionDetails?.city ?? ""}${(customerAddressesInfo.regionDetails?.city?.length ?? 0) > 0 ? " | " : ""}${customerAddressesInfo.regionDetails?.province ?? ""} | ${customerAddressesInfo.regionDetails?.country ?? ''}",
@@ -1648,7 +1665,7 @@ Widget addressInfoWithContactInfoCart({
             ),
           ),
           Container(
-            width: 350,
+            width: 350.w,
             height: 16,
             child: Row(
               children: [
@@ -1668,7 +1685,7 @@ Widget addressInfoWithContactInfoCart({
             ),
           ),
           Container(
-            width: 350,
+            width: 350.w,
             height: 16,
             child: Row(
               children: [

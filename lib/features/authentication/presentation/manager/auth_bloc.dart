@@ -275,7 +275,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         _prefsRepository.setVerifiedPhone(r.data!.data?.isPhoneVerified == 1);
         _prefsRepository.setPhoneNumber((r.data!.data?.phone).toString());
         GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
-        GetIt.I<HomeBloc>().add(GetCartItemEvent(fromTerminitedStatusl: true));
+        GetIt.I<HomeBloc>().add(GetCartItemEvent());
         GetIt.I<HomeBloc>().add(GetOldCartItemEvent());
         GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
 
@@ -375,8 +375,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           _prefsRepository.setTokenExpired(false);
           NotificationProcess().fcmToken();
           GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
-          GetIt.I<HomeBloc>()
-              .add(GetCartItemEvent(fromTerminitedStatusl: true));
+          GetIt.I<HomeBloc>().add(GetCartItemEvent());
           GetIt.I<HomeBloc>().add(GetOldCartItemEvent());
           GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
           _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
@@ -446,7 +445,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         _prefsRepository.setMarketToken(r.data!.token!);
         _prefsRepository.setTokenExpired(false);
         GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
-        GetIt.I<HomeBloc>().add(GetCartItemEvent(fromTerminitedStatusl: true));
+        GetIt.I<HomeBloc>().add(GetCartItemEvent());
         GetIt.I<HomeBloc>().add(GetOldCartItemEvent());
         GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
         ;
@@ -518,7 +517,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
       GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
-      GetIt.I<HomeBloc>().add(GetCartItemEvent(fromTerminitedStatusl: true));
+      GetIt.I<HomeBloc>().add(GetCartItemEvent());
       GetIt.I<HomeBloc>().add(GetOldCartItemEvent());
       GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
       NotificationProcess().fcmToken();
