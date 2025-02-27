@@ -1100,3 +1100,11 @@ class ApplyCouponEvent extends HomeEvent {
   // TODO: implement props
   List<Object?> get props => [code];
 }
+
+class GetCartOverviewEvent extends HomeEvent {
+  GetCartOverviewEvent();
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+}

@@ -870,4 +870,19 @@ class HomeRemoteDatasource {
 
     return applyCoupon();
   }
+
+  Future<GetCartShippingItemsModel> getCartOverview() {
+    GetClient<GetCartShippingItemsModel> getCartOverview =
+        GetClient<GetCartShippingItemsModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<GetCartShippingItemsModel>(
+        endpoint: MarketEndPoints.getCartOverviewEP,
+        response: ResponseValue<GetCartShippingItemsModel>(
+            fromJson: (response) =>
+                GetCartShippingItemsModel.fromJson(response)),
+      ),
+    );
+
+    return getCartOverview();
+  }
 }

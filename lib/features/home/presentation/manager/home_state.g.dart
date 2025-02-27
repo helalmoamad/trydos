@@ -158,6 +158,14 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           ? null
           : OrdersGroupModel.fromJson(
               json['placeOrderModel'] as Map<String, dynamic>),
+      applyCouponModel: json['applyCouponModel'] == null
+          ? null
+          : ApplyCouponModel.fromJson(
+              json['applyCouponModel'] as Map<String, dynamic>),
+      getCartOverviewModel: json['getCartOverviewModel'] == null
+          ? null
+          : GetCartShippingItemsModel.fromJson(
+              json['getCartOverviewModel'] as Map<String, dynamic>),
       getOrdersByOrderGroupIDModel: json['getOrdersByOrderGroupIDModel'] == null
           ? null
           : OrdersGroupModel.fromJson(
@@ -339,6 +347,12 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       placeOrderStatus: $enumDecodeNullable(
               _$PlaceOrderStatusEnumMap, json['placeOrderStatus']) ??
           PlaceOrderStatus.init,
+      applyCouponStatus: $enumDecodeNullable(
+              _$ApplyCouponStatusEnumMap, json['applyCouponStatus']) ??
+          ApplyCouponStatus.init,
+      getCartOverviewStatus: $enumDecodeNullable(
+              _$GetCartOverviewStatusEnumMap, json['getCartOverviewStatus']) ??
+          GetCartOverviewStatus.init,
       getOrdersByOrderGroupIDStatus: $enumDecodeNullable(
               _$GetOrdersByOrderGroupIDStatusEnumMap,
               json['getOrdersByOrderGroupIDStatus']) ??
@@ -521,6 +535,12 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'customerWalletModel': instance.customerWalletModel?.toJson(),
       'placeOrderModel': instance.placeOrderModel?.toJson(),
       'placeOrderStatus': _$PlaceOrderStatusEnumMap[instance.placeOrderStatus],
+      'applyCouponModel': instance.applyCouponModel?.toJson(),
+      'applyCouponStatus':
+          _$ApplyCouponStatusEnumMap[instance.applyCouponStatus],
+      'getCartOverviewModel': instance.getCartOverviewModel?.toJson(),
+      'getCartOverviewStatus':
+          _$GetCartOverviewStatusEnumMap[instance.getCartOverviewStatus],
       'getOrdersByOrderGroupIDModel':
           instance.getOrdersByOrderGroupIDModel?.toJson(),
       'getOrdersByOrderGroupIDStatus': _$GetOrdersByOrderGroupIDStatusEnumMap[
@@ -883,6 +903,20 @@ const _$PlaceOrderStatusEnumMap = {
   PlaceOrderStatus.success: 'success',
   PlaceOrderStatus.failure: 'failure',
   PlaceOrderStatus.unavailable: 'unavailable',
+};
+
+const _$ApplyCouponStatusEnumMap = {
+  ApplyCouponStatus.init: 'init',
+  ApplyCouponStatus.loading: 'loading',
+  ApplyCouponStatus.success: 'success',
+  ApplyCouponStatus.failure: 'failure',
+};
+
+const _$GetCartOverviewStatusEnumMap = {
+  GetCartOverviewStatus.init: 'init',
+  GetCartOverviewStatus.loading: 'loading',
+  GetCartOverviewStatus.success: 'success',
+  GetCartOverviewStatus.failure: 'failure',
 };
 
 const _$GetOrdersByOrderGroupIDStatusEnumMap = {

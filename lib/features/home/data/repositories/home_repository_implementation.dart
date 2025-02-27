@@ -425,4 +425,11 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
       tryCall: () => dataSource.applyCoupon(code: code),
     );
   }
+
+  @override
+  Future<Either<Failure, GetCartShippingItemsModel>> getCartOverview() {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.getCartOverview(),
+    );
+  }
 }

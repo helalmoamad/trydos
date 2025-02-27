@@ -73,6 +73,7 @@ abstract class MarketEndPoints {
       'product_list_in_cart_and_old_cart'.cartScope();
   static final checkAvailabilityProductCartEP =
       'check_availability_product_cart'.cartScope();
+  static final getCartOverviewEP = 'cart_overview'.cartScope();
 
   static final storeFcmOfMarketEP = 'firebase_device_tokens'.countryScope();
   static final getNotificationTypeForProductEP =

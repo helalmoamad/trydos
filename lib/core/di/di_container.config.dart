@@ -151,6 +151,8 @@ import '../../features/home/domain/use_cases/get_allowed_country_usecase.dart'
     as _i318;
 import '../../features/home/domain/use_cases/get_cart_item_usecase.dart'
     as _i307;
+import '../../features/home/domain/use_cases/get_cart_overview_usecase.dart'
+    as _i675;
 import '../../features/home/domain/use_cases/get_count_view_of_product_usecase.dart'
     as _i922;
 import '../../features/home/domain/use_cases/get_currency_for_country_usecase.dart'
@@ -429,6 +431,10 @@ Future<_i174.GetIt> $initGetIt(
       _i812.CheckAvailabilityProductCartUsecase(gh<_i0.HomeRepository>()));
   gh.factory<_i493.ApplyCouponUsecase>(
       () => _i493.ApplyCouponUsecase(gh<_i0.HomeRepository>()));
+  gh.factory<_i675.GetCartOverviewUseCase>(
+      () => _i675.GetCartOverviewUseCase(gh<_i0.HomeRepository>()));
+  gh.lazySingleton<_i702.CommonUseRepository>(() =>
+      _i77.CommonUseRepositoryImpl(gh<_i672.CommonUseRemoteDataSource>()));
   gh.lazySingleton<_i801.HomeBloc>(() => _i801.HomeBloc(
         gh<_i158.GetMainCategoriesUseCase>(),
         gh<_i533.GetStoryForProductUseCase>(),
@@ -481,9 +487,8 @@ Future<_i174.GetIt> $initGetIt(
         gh<_i59.GetOrdersByCartGroupIDUsecase>(),
         gh<_i812.CheckAvailabilityProductCartUsecase>(),
         gh<_i493.ApplyCouponUsecase>(),
+        gh<_i675.GetCartOverviewUseCase>(),
       ));
-  gh.lazySingleton<_i702.CommonUseRepository>(() =>
-      _i77.CommonUseRepositoryImpl(gh<_i672.CommonUseRemoteDataSource>()));
   gh.lazySingleton<_i1032.CallsRepository>(
       () => _i722.CallsRepositoryImpl(gh<_i1061.CallsRemoteDataSource>()));
   gh.lazySingleton<_i420.ChatRepository>(

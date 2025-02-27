@@ -150,4 +150,6 @@ abstract class HomeRepository {
   Future<Either<Failure, ApplyCouponModel>> applyCoupon({
     required String code,
   });
+
+  Future<Either<Failure, GetCartShippingItemsModel>> getCartOverview();
 }

@@ -99,6 +99,7 @@ import '../../../story/presentation/bloc/story_bloc.dart';
 import '../../domain/use_cases/add_item_to_cart_usecase.dart';
 import '../../domain/use_cases/apply_coupon_usecase.dart';
 import '../../domain/use_cases/check_availability_product_cart_usecase.dart';
+import '../../domain/use_cases/get_cart_overview_usecase.dart';
 import '../../domain/use_cases/get_customer_wallet_usecase.dart';
 import '../../domain/use_cases/get_orders_by_cart_group_usecase.dart';
 import '../../domain/use_cases/get_orders_by_order_group_usecase.dart';
@@ -173,6 +174,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.getOrdersByCartGroupIDUsecase,
     this.checkAvailabilityProductCartUsecase,
     this.applyCouponUsecase,
+    this.getCartOverviewUseCase,
   ) : super(HomeState()) {
     on<HomeEvent>((event, emit) {});
 
@@ -403,6 +405,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<ApplyCouponEvent>(
       _onApplyCouponEvent,
     );
+    on<GetCartOverviewEvent>(
+      _onGetCartOverviewEvent,
+    );
   }
 
   Map<String, bool> boutiquesThatEnablesToRequestItsProductsUsingFiveFilters =
@@ -413,6 +418,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final GetWidthAndHeightUseCase getWidthAndHeightUseCase;
   final GetHomeBoutiqesUseCase getHomeBoutiqesUseCase;
   final GetCartItemUseCase getCartItemUseCase;
+  final GetCartOverviewUseCase getCartOverviewUseCase;
   final GetOldCartItemUseCase getOldCartItemUseCase;
   final GetNotificationTypeProductUseCase getNotificationTypeProductUseCase;
   final ConvertItemFromOldcartToCartUsecase convertItemFromOldcartToCartUsecase;
@@ -5614,6 +5620,49 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             timeShowing: Toast.LENGTH_LONG,
           );
         }
+      },
+    );
+  }
+
+  FutureOr<void> _onGetCartOverviewEvent(
+    GetCartOverviewEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    ///////////////////////////
+    emit(
+      state.copyWith(
+        getCartOverviewStatus: GetCartOverviewStatus.loading,
+      ),
+    );
+
+    final response = await getCartOverviewUseCase.call(NoParams());
+
+    response.fold(
+      (l) {
+        if (!isFailedTheFirstTime.contains('GetCartOverviewEvent')) {
+          add(
+            GetCartOverviewEvent(),
+          );
+          isFailedTheFirstTime.add('GetCartOverviewEvent');
+        }
+
+        emit(
+          state.copyWith(
+            getCartOverviewStatus: GetCartOverviewStatus.failure,
+          ),
+        );
+      },
+      (r) {
+        isFailedTheFirstTime.remove('GetCartOverviewEvent');
+
+        debugPrint('GetCartOverviewEvent success');
+        ////////////////////////////
+        emit(
+          state.copyWith(
+            getCartOverviewStatus: GetCartOverviewStatus.success,
+            getCartOverviewModel: r,
+          ),
+        );
       },
     );
   }

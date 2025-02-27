@@ -125,6 +125,8 @@ enum CheckAvailabilityProductCartStatus { init, loading, success, failure }
 
 enum ApplyCouponStatus { init, loading, success, failure }
 
+enum GetCartOverviewStatus { init, loading, success, failure }
+
 @JsonSerializable(explicitToJson: true)
 @immutable
 class HomeState extends Equatable {
@@ -169,6 +171,7 @@ class HomeState extends Equatable {
       this.customerWalletModel,
       this.placeOrderModel,
       this.applyCouponModel,
+      this.getCartOverviewModel,
       this.getOrdersByOrderGroupIDModel,
       this.getOrdersByCartGroupIDModel,
       this.checkAvailabilityProductCartModel,
@@ -214,6 +217,7 @@ class HomeState extends Equatable {
       this.getCustomerWalletStatus,
       this.placeOrderStatus = PlaceOrderStatus.init,
       this.applyCouponStatus = ApplyCouponStatus.init,
+      this.getCartOverviewStatus = GetCartOverviewStatus.init,
       this.getOrdersByOrderGroupIDStatus = GetOrdersByOrderGroupIDStatus.init,
       this.getOrdersByCartGroupIDStatus = GetOrdersByCartGroupIDStatus.init,
       this.checkAvailabilityProductCartStatus =
@@ -264,6 +268,8 @@ class HomeState extends Equatable {
   final PlaceOrderStatus? placeOrderStatus;
   final ApplyCouponModel? applyCouponModel;
   final ApplyCouponStatus? applyCouponStatus;
+  final GetCartShippingItemsModel? getCartOverviewModel;
+  final GetCartOverviewStatus? getCartOverviewStatus;
   final OrdersGroupModel? getOrdersByOrderGroupIDModel;
   final GetOrdersByOrderGroupIDStatus? getOrdersByOrderGroupIDStatus;
   final OrdersGroupModel? getOrdersByCartGroupIDModel;
@@ -412,6 +418,8 @@ class HomeState extends Equatable {
         placeOrderModel,
         applyCouponStatus,
         applyCouponModel,
+        getCartOverviewStatus,
+        getCartOverviewModel,
         getOrdersByOrderGroupIDStatus,
         getOrdersByOrderGroupIDModel,
         getOrdersByCartGroupIDStatus,
@@ -494,6 +502,8 @@ class HomeState extends Equatable {
       final PlaceOrderStatus? placeOrderStatus,
       final ApplyCouponModel? applyCouponModel,
       final ApplyCouponStatus? applyCouponStatus,
+      final GetCartShippingItemsModel? getCartOverviewModel,
+      final GetCartOverviewStatus? getCartOverviewStatus,
       final OrdersGroupModel? getOrdersByOrderGroupIDModel,
       final GetOrdersByOrderGroupIDStatus? getOrdersByOrderGroupIDStatus,
       final OrdersGroupModel? getOrdersByCartGroupIDModel,
@@ -663,6 +673,9 @@ class HomeState extends Equatable {
       placeOrderStatus: placeOrderStatus ?? this.placeOrderStatus,
       applyCouponModel: applyCouponModel ?? this.applyCouponModel,
       applyCouponStatus: applyCouponStatus ?? this.applyCouponStatus,
+      getCartOverviewModel: getCartOverviewModel ?? this.getCartOverviewModel,
+      getCartOverviewStatus:
+          getCartOverviewStatus ?? this.getCartOverviewStatus,
       getOrdersByOrderGroupIDModel:
           getOrdersByOrderGroupIDModel ?? this.getOrdersByOrderGroupIDModel,
       getOrdersByOrderGroupIDStatus:
