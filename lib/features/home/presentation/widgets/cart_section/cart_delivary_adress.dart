@@ -40,12 +40,12 @@ class CartDelivaryAddress extends StatefulWidget {
   final String currencySympole;
   final String cartGroupId;
   const CartDelivaryAddress({
-    required this.totalPrice,
     required this.cartImages,
-    required this.totalCashed,
     required this.currencySympole,
     Key? key,
     required this.cartGroupId,
+    required this.totalPrice,
+    required this.totalCashed,
   });
   @override
   State<CartDelivaryAddress> createState() => _CartDelivaryAddressState();
@@ -62,17 +62,26 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
   bool showDialogToResetSession = true;
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   int indexToDelete = 0;
-
+  int? preTapIndex;
   final ValueNotifier<bool> isExpandedCoupon = ValueNotifier(false);
   final ValueNotifier<bool> isApplayCoupon = ValueNotifier(false);
 
   final GlobalKey<FormState> _formKey = GlobalKey();
   final TextEditingController couponKey = TextEditingController();
-
+  double totlalPrice = 0;
+  double totlalCash = 0;
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
+    Future.delayed(Duration(milliseconds: 200), () {
+      indexTap.value = homeBloc.state.currentAddressChoosed ?? 0;
+
+      preTapIndex = indexTap.value;
+    });
+    print(
+        "######################################################################${homeBloc.state.currentAddressChoosed ?? 0}");
     ////////////////////
+    homeBloc.add(GetCustomerAddressesEvent());
     homeBloc.add(GetCustomerWalletEvent(limit: 10, offset: 1));
     ////////////////////
     super.initState();
@@ -309,7 +318,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                                         state,
                                         _indexTap,
                                         walletBalance,
-                                        widget.totalPrice,
+                                        totlalPrice,
                                         availablePaymentMethod,
                                       ),
                               ],
@@ -347,6 +356,11 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                                   slideDirection: SlideDirection.UP,
                                   onPanelClosed: () {
                                     showPanel.value = false;
+                                    homeBloc.add(SetCustomerAddressDefaultEvent(
+                                        adressId: state
+                                            .listOfAddressInfoClassToSave![
+                                                _indexTap]
+                                            .id));
                                   },
                                   onPanelOpened: () {
                                     showPanel.value = true;

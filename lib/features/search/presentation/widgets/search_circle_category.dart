@@ -340,10 +340,26 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                                       homeBloc.add(ChangeSelectedFiltersEvent(
                                           fromHomePageSearch: true,
                                           boutiqueSlug: key,
+                                          requestToUpdateFilters:
+                                              (widget.controller.text.length >
+                                                      2)
+                                                  ? false
+                                                  : true,
                                           filtersChoosedByUser:
                                               GetProductFiltersModel(
                                                   filters:
                                                       prevChoosedFilterToAddToIt)));
+                                      if (widget.controller.text.length > 2) {
+                                        homeBloc.add(
+                                            GetProductsWithFiltersEvent(
+                                                fromChoosed: true,
+                                                offset: 1,
+                                                boutiqueSlug: 'search',
+                                                resetChoosedFilters: false,
+                                                fromSearch: true,
+                                                searchText:
+                                                    widget.controller.text));
+                                      }
                                     },
                                     child: Stack(
                                       children: [
@@ -525,15 +541,35 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                                                                   .slug)
                                                         ]);
                                                   }
-                                                  homeBloc.add(
-                                                      ChangeSelectedFiltersEvent(
-                                                          fromHomePageSearch:
-                                                              true,
-                                                          boutiqueSlug: key,
-                                                          filtersChoosedByUser:
-                                                              GetProductFiltersModel(
-                                                                  filters:
-                                                                      prevChoosedFilterToAddToIt)));
+                                                  homeBloc.add(ChangeSelectedFiltersEvent(
+                                                      fromHomePageSearch: true,
+                                                      boutiqueSlug: key,
+                                                      requestToUpdateFilters:
+                                                          (widget.controller.text
+                                                                      .length >
+                                                                  2)
+                                                              ? false
+                                                              : true,
+                                                      filtersChoosedByUser:
+                                                          GetProductFiltersModel(
+                                                              filters:
+                                                                  prevChoosedFilterToAddToIt)));
+                                                  if (widget.controller.text
+                                                          .length >
+                                                      2) {
+                                                    homeBloc.add(
+                                                        GetProductsWithFiltersEvent(
+                                                            fromChoosed: true,
+                                                            offset: 1,
+                                                            boutiqueSlug:
+                                                                'search',
+                                                            resetChoosedFilters:
+                                                                false,
+                                                            fromSearch: true,
+                                                            searchText: widget
+                                                                .controller
+                                                                .text));
+                                                  }
                                                 },
                                                 child: Stack(
                                                   children: [

@@ -213,7 +213,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                                     borderRadius: BorderRadius.circular(180),
                                     color: sizesQuantities[currentIndex] == 0
                                         ? const Color(0xffFF5F61)
-                                        : sizesQuantities[currentIndex] < 3
+                                        : sizesQuantities[currentIndex] <= 10
                                             ? const Color(0xffFFAF5F)
                                             : const Color.fromARGB(
                                                 255, 75, 61, 61),
@@ -304,7 +304,8 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                                                 ? Colors.white
                                                 : sizesQuantities[index] == 0
                                                     ? const Color(0xffFF5F61)
-                                                    : sizesQuantities[index] < 3
+                                                    : sizesQuantities[index] <=
+                                                            10
                                                         ? const Color(
                                                             0xffFFAF5F)
                                                         : const Color(
@@ -392,7 +393,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         MyTextWidget(
-                          'M ',
+                          '${sizes[currentIndex]} ',
                           style: textTheme.titleMedium?.bq.copyWith(
                               height: 1, color: const Color(0xff505050)),
                         ),
@@ -402,7 +403,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                               height: 1, color: const Color(0xff505050)),
                         ),
                         MyTextWidget(
-                          'Size ',
+                          '${LocaleKeys.size.tr()} ',
                           style: textTheme.titleMedium?.bq.copyWith(
                               height: 1, color: const Color(0xff505050)),
                         ),
@@ -411,7 +412,7 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                           style: textTheme.titleMedium?.rq.copyWith(
                               height: 1, color: const Color(0xff505050)),
                         ),
-                        if (sizesQuantities[currentIndex] < 3) ...{
+                        if (sizesQuantities[currentIndex] <= 10) ...{
                           MyTextWidget(
                             '${LocaleKeys.last.tr()} ',
                             style: textTheme.titleMedium?.rq.copyWith(

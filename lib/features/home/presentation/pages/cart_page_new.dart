@@ -70,7 +70,7 @@ class _CartPageState extends State<CartPage> {
     appBloc = BlocProvider.of<AppBloc>(context);
     authBloc = BlocProvider.of<AuthBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
-    homeBloc.add(GetCartItemEvent());
+
     homeBloc.add(GetCustomerAddressesEvent());
     fromForGroundNotification =
         appBloc.state.isFromForGroundNotification ?? false;
@@ -372,11 +372,11 @@ class _CartPageState extends State<CartPage> {
                     (state.getCartShippingItemsModel?.data?.subTotal ?? 0) *
                         state.getCurrencyForCountryModel!.data!.currency!
                             .exchangeRate!;
-                totlalDiscount = (state.getCartShippingItemsModel?.data
-                            ?.totalDiscountOnProduct ??
-                        0) *
-                    state.getCurrencyForCountryModel!.data!.currency!
-                        .exchangeRate!;
+                totlalDiscount =
+                    (state.getCartShippingItemsModel?.data?.productsDiscount ??
+                            0) *
+                        state.getCurrencyForCountryModel!.data!.currency!
+                            .exchangeRate!;
                 priceSymbol =
                     state.getCurrencyForCountryModel!.data!.currency!.symbol ??
                         "";
@@ -1640,6 +1640,8 @@ class _CartPageState extends State<CartPage> {
                                                                                             Navigator.of(context).pop();
                                                                                             return;
                                                                                           }
+
+                                                                                          // يسمح بالإغلاق إذا لم تنطبق أي من الشروط
 
                                                                                           appBloc.add(ChangeBasePage(0));
                                                                                           homeBloc.add(ResetAllSelectedAppliedFilterEvent());

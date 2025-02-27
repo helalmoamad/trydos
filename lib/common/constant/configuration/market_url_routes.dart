@@ -45,6 +45,8 @@ abstract class MarketEndPoints {
   static final addCustomerAddressEP = "address/add".customerScope();
   static final getCustomerAddressesEP = "address/list".customerScope();
 
+  static final setCustomerAddressDefaultEP =
+      "address/set-default".customerScope();
   static final getCustomerWalletEP = "wallet/list".customerScope();
 
   static final getOrdersByOrderGroupEP =

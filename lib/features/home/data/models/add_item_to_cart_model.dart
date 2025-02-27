@@ -47,11 +47,10 @@ class AddItemToCartModel {
 class Data {
   final int? idCart;
   final int? status;
-  final CartShipping? cartShipping;
+
   Data({
     this.idCart,
     this.status,
-    this.cartShipping,
   });
 
   Data copyWith({
@@ -62,20 +61,15 @@ class Data {
       Data(
         idCart: idCart ?? this.idCart,
         status: status ?? this.status,
-        cartShipping: cartShipping ?? this.cartShipping,
       );
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
         idCart: json["id_cart"],
         status: json["status"],
-        cartShipping: json["cart_shipping"] == null
-            ? null
-            : CartShipping.fromJson(json["cart_shipping"]),
       );
 
   Map<String, dynamic> toJson() => {
         "id_cart": idCart,
         "status": status,
-        "cart_shipping": cartShipping?.toJson(),
       };
 }

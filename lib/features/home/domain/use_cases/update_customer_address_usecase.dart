@@ -36,12 +36,14 @@ class UpdateCustomerAddressParams {
   final String province;
   final String building;
   final String contactPersonName;
+  final String iso;
 
   UpdateCustomerAddressParams(
       {required this.id,
       required this.address,
       required this.addressDetail,
       required this.country,
+      required this.iso,
       required this.city,
       required this.district,
       required this.town,
@@ -57,6 +59,7 @@ class UpdateCustomerAddressParams {
   Map<String, dynamic> get map => {
         "id": id,
         "address": address,
+        "iso": iso,
         "address_detail": addressDetail,
         "country": country,
         "contact_person_name": contactPersonName,

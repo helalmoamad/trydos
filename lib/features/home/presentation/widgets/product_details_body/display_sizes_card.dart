@@ -68,7 +68,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
   List<int> controllersToStopScroll = [];
   int? prevMode;
   final GlobalKey selectSizeCardKey = GlobalKey();
-
+  List<int> sizesQuantities = [];
   void changingModeListener() {
     if (renderBox == null && selectSizeCardKey.currentContext != null) {
       renderBox =
@@ -230,6 +230,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
               p.sizesForEachColor != c.sizesForEachColor,
           builder: (context, state) {
             sizes = state.sizesForEachColor;
+            sizesQuantities = state.sizesQuantitiesForEachColor ?? [];
             sizes = [
               ...sizes ?? [],
               ...sizes ?? [],
@@ -437,7 +438,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                                         // key: ValueKey('gallery3dControllerForCircles${widget.itemIndex}'),
                                                                         controller: gallery3dControllerForCircles!,
                                                                         denyScrolling: true,
-                                                                        width: 190,
+                                                                        width: 150,
                                                                         stopScrollingOnEdges: (double primaryDelta) {
                                                                           return (primaryDelta <= 0 && gallery3dControllerForCircles!.currentIndex == (sizes!.length ~/ 2 - 1)) ||
                                                                               (primaryDelta >= 0 && gallery3dControllerForCircles!.currentIndex == 0);
@@ -636,65 +637,92 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                 mainAxisAlignment:
                                                     MainAxisAlignment.center,
                                                 children: [
-                                                  SvgPicture.asset(AppAssets
-                                                      .registerInfoSvg),
-                                                  SizedBox(
-                                                    width: 5,
-                                                  ),
-                                                  MyTextWidget(
-                                                    '${sizes?[currentSelectedSizeIndex.value]}',
-                                                    style: textTheme
-                                                        .titleMedium?.bq
-                                                        .copyWith(
-                                                            height: 1,
-                                                            color: const Color(
-                                                                0xff505050)),
-                                                  ),
-                                                  MyTextWidget(
-                                                    '${LocaleKeys.recommended.tr()} ',
-                                                    style: textTheme
-                                                        .titleMedium?.rq
-                                                        .copyWith(
-                                                            height: 1,
-                                                            color: const Color(
-                                                                0xff505050)),
-                                                  ),
-                                                  MyTextWidget(
-                                                    '${LocaleKeys.size.tr()} ',
-                                                    style: textTheme
-                                                        .titleMedium?.bq
-                                                        .copyWith(
-                                                            height: 1,
-                                                            color: const Color(
-                                                                0xff505050)),
-                                                  ),
-                                                  MyTextWidget(
-                                                    '${LocaleKeys.for_you.tr()} ',
-                                                    style: textTheme
-                                                        .titleMedium?.rq
-                                                        .copyWith(
-                                                            height: 1,
-                                                            color: const Color(
-                                                                0xff505050)),
-                                                  ),
-                                                  MyTextWidget(
-                                                    '${LocaleKeys.last.tr()} ',
-                                                    style: textTheme
-                                                        .titleMedium?.rq
-                                                        .copyWith(
-                                                            height: 1,
-                                                            color: const Color(
-                                                                0xffFFAF5F)),
-                                                  ),
-                                                  MyTextWidget(
-                                                    '2',
-                                                    style: textTheme
-                                                        .titleMedium?.mq
-                                                        .copyWith(
-                                                            height: 1,
-                                                            color: const Color(
-                                                                0xffFFAF5F)),
-                                                  ),
+                                                  if (sizesQuantities[
+                                                          currentSelectedSizeIndex
+                                                              .value] ==
+                                                      0) ...{
+                                                    MyTextWidget(
+                                                      '${LocaleKeys.not_available_now_stock.tr()}',
+                                                      style: textTheme
+                                                          .titleMedium?.mq
+                                                          .copyWith(
+                                                              height: 1,
+                                                              color: const Color(
+                                                                  0xffFF5F61)),
+                                                    )
+                                                  },
+                                                  if (sizesQuantities[
+                                                          currentSelectedSizeIndex
+                                                              .value] >
+                                                      0) ...{
+                                                    SvgPicture.asset(AppAssets
+                                                        .registerInfoSvg),
+                                                    SizedBox(
+                                                      width: 5,
+                                                    ),
+                                                    MyTextWidget(
+                                                      '${sizes?[currentSelectedSizeIndex.value]}',
+                                                      style: textTheme
+                                                          .titleMedium?.bq
+                                                          .copyWith(
+                                                              height: 1,
+                                                              color: const Color(
+                                                                  0xff505050)),
+                                                    ),
+                                                    MyTextWidget(
+                                                      '${LocaleKeys.recommended.tr()} ',
+                                                      style: textTheme
+                                                          .titleMedium?.rq
+                                                          .copyWith(
+                                                              height: 1,
+                                                              color: const Color(
+                                                                  0xff505050)),
+                                                    ),
+                                                    MyTextWidget(
+                                                      '${LocaleKeys.size.tr()} ',
+                                                      style: textTheme
+                                                          .titleMedium?.bq
+                                                          .copyWith(
+                                                              height: 1,
+                                                              color: const Color(
+                                                                  0xff505050)),
+                                                    ),
+                                                    MyTextWidget(
+                                                      '${LocaleKeys.for_you.tr()} ',
+                                                      style: textTheme
+                                                          .titleMedium?.rq
+                                                          .copyWith(
+                                                              height: 1,
+                                                              color: const Color(
+                                                                  0xff505050)),
+                                                    ),
+                                                    if (sizesQuantities[
+                                                            currentSelectedSizeIndex
+                                                                .value] <
+                                                        10) ...{
+                                                      MyTextWidget(
+                                                        '${LocaleKeys.last.tr()} ',
+                                                        style: textTheme
+                                                            .titleMedium?.rq
+                                                            .copyWith(
+                                                                height: 1,
+                                                                color: const Color(
+                                                                    0xffFFAF5F)),
+                                                      ),
+                                                      MyTextWidget(
+                                                        sizesQuantities[
+                                                                currentSelectedSizeIndex
+                                                                    .value]
+                                                            .toString(),
+                                                        style: textTheme
+                                                            .titleMedium?.mq
+                                                            .copyWith(
+                                                                height: 1,
+                                                                color: const Color(
+                                                                    0xffFFAF5F)),
+                                                      ),
+                                                    }
+                                                  }
                                                 ],
                                               )),
                                           SizedBox(

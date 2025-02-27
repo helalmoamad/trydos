@@ -217,7 +217,7 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
           null, null, null, null, null, null, null,
           error: error.toString());
     };
-    bool isCloseToWhite(Color color, {int threshold = 30}) {
+    bool isCloseToWhite(Color color, {int threshold = 50}) {
       return (color.red > 255 - threshold &&
           color.green > 255 - threshold &&
           color.blue > 255 - threshold);
@@ -374,7 +374,7 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                                 isColorWhite =
                                                                     isCloseToWhite(Color(
                                                                         int.parse(
-                                                                            '0xff${widget.productItem.colors![currentIndexInSlider! % widget.productItem.colors!.length].color!.substring(1)}')));
+                                                                            '0xff${(widget.productItem.colors?.length ?? 0) == 0 ? "" : widget.productItem.colors![currentIndexInSlider! % widget.productItem.colors!.length].color!.substring(1)}')));
 
                                                                 return GestureDetector(
                                                                   child:
@@ -402,7 +402,7 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                                             ? Colors
                                                                                 .black
                                                                             : Color(int.parse(
-                                                                                '0xff${widget.productItem.colors![currentIndexInSlider! % widget.productItem.colors!.length].color!.substring(1)}'))
+                                                                                '0xff${(widget.productItem.colors?.length ?? 0) == 0 ? "" : widget.productItem.colors![currentIndexInSlider! % widget.productItem.colors!.length].color!.substring(1)}'))
                                                                         : Colors
                                                                             .white,
                                                                     circleShape:

@@ -204,6 +204,8 @@ import '../../features/home/domain/use_cases/request_for_notification_when_produ
     as _i715;
 import '../../features/home/domain/use_cases/send_error_to_mobile_error_log.dart'
     as _i78;
+import '../../features/home/domain/use_cases/set_customer_address_default_usecase.dart'
+    as _i1064;
 import '../../features/home/domain/use_cases/store_fcm_token_of_market_usecase.dart'
     as _i366;
 import '../../features/home/domain/use_cases/subscribe_topic_for_notification_usecase.dart'
@@ -433,6 +435,8 @@ Future<_i174.GetIt> $initGetIt(
       () => _i493.ApplyCouponUsecase(gh<_i0.HomeRepository>()));
   gh.factory<_i675.GetCartOverviewUseCase>(
       () => _i675.GetCartOverviewUseCase(gh<_i0.HomeRepository>()));
+  gh.factory<_i1064.SetCustomerAddressDefaultUseCase>(
+      () => _i1064.SetCustomerAddressDefaultUseCase(gh<_i0.HomeRepository>()));
   gh.lazySingleton<_i702.CommonUseRepository>(() =>
       _i77.CommonUseRepositoryImpl(gh<_i672.CommonUseRemoteDataSource>()));
   gh.lazySingleton<_i801.HomeBloc>(() => _i801.HomeBloc(
@@ -447,6 +451,7 @@ Future<_i174.GetIt> $initGetIt(
         gh<_i33.AddLikeToProductUsecase>(),
         gh<_i802.UpdateItemInCartUseCase>(),
         gh<_i1035.AddItemToCartUseCase>(),
+        gh<_i1064.SetCustomerAddressDefaultUseCase>(),
         gh<_i939.GetCommentForProductUseCase>(),
         gh<_i518.GetHomeBoutiqesUseCase>(),
         gh<_i71.DeleteCustomerAddressUseCase>(),

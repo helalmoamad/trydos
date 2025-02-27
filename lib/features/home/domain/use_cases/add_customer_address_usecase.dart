@@ -38,6 +38,7 @@ class AddCustomerAddressParams {
   final String province;
   final String building;
   final String contactPersonName;
+  final String iso;
   AddCustomerAddressParams(
       {required this.address,
       required this.addressDetail,
@@ -45,6 +46,7 @@ class AddCustomerAddressParams {
       required this.city,
       required this.district,
       required this.town,
+      required this.iso,
       required this.street,
       required this.zip,
       required this.phone,
@@ -69,6 +71,7 @@ class AddCustomerAddressParams {
         "longitude": longitude,
         "province": province == "" ? null : province,
         "building": building == "" ? null : building,
-        "zip": ""
+        "zip": "",
+        "iso": iso
       };
 }

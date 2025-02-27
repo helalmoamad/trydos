@@ -55,7 +55,7 @@ class CustomerAddressesInfo {
   final String? address;
   final String? addressDetail;
   final ContactInfo? contactInfo;
-
+  final int? isDefault;
   CustomerAddressesInfo({
     this.id,
     this.location,
@@ -63,6 +63,7 @@ class CustomerAddressesInfo {
     this.address,
     this.addressDetail,
     this.contactInfo,
+    this.isDefault,
   });
 
   CustomerAddressesInfo copyWith({
@@ -72,6 +73,7 @@ class CustomerAddressesInfo {
     String? address,
     String? addressDetail,
     ContactInfo? contactInfo,
+    int? isDefault,
   }) =>
       CustomerAddressesInfo(
         id: id ?? this.id,
@@ -80,11 +82,13 @@ class CustomerAddressesInfo {
         address: address ?? this.address,
         addressDetail: addressDetail ?? this.addressDetail,
         contactInfo: contactInfo ?? this.contactInfo,
+        isDefault: isDefault ?? this.isDefault,
       );
 
   factory CustomerAddressesInfo.fromJson(Map<String, dynamic> json) =>
       CustomerAddressesInfo(
         id: json["id"],
+        isDefault: json["is_default"],
         location: json["location"] == null
             ? null
             : Location.fromJson(json["location"]),
@@ -105,6 +109,7 @@ class CustomerAddressesInfo {
         "address": address,
         "address_detail": addressDetail,
         "contact_info": contactInfo?.toJson(),
+        "is_default": isDefault,
       };
 }
 

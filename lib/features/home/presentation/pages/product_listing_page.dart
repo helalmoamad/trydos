@@ -28,6 +28,7 @@ import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/features/app/animated_search_bar/animated_search_bar.dart';
 import 'package:trydos/features/app/app_widgets/gallery_and_camera_dialog_widget.dart';
+
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as filter_products;
@@ -550,13 +551,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                           c.theReplyFromGemini) &&
                                   c.fromSearchForSearchWithGemini == false),
                           builder: (context, state) {
-                            print(
-                                "////////////////////////////////////////%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5${state.boutiquesForEveryMainCategoryThatDidPrefetch}");
-
                             if (state.theReplyFromGemini != "" &&
                                 state.fromSearchForSearchWithGemini == false) {
-                              print(
-                                  "///////////////////////***********${widget.fromSearch}****##########################${widget.boutiqueSlug}");
                               controller.text = state.theReplyFromGemini ?? "";
                               Filter filters =
                                   BlocProvider.of<HomeBloc>(context)
@@ -587,8 +583,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                   searchText: state.theReplyFromGemini,
                                 )),
                               ));
-                              print(
-                                  "/000000000000000000000000///////////////////////////////////////%%%%%%%%%%%%%%%%%%%%%%%%%%%%%0000000000000000000000000");
 
                               BlocProvider.of<HomeBloc>(context).add(
                                   GetProductsWithFiltersEvent(
@@ -599,13 +593,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                       fromSearch: widget.fromSearch,
                                       searchText: state.theReplyFromGemini));
                             }
-                            print(
-                                'statusssss ${state.getProductListingWithFiltersPaginationModels['women-section-67withoutFilter']?.paginationStatus}');
                             if (!(state.isExpandedForListingPage ?? false) &&
                                 !itExpendForFirst) {
-                              print(
-                                  "........................................................++++++++++++++++++++++++++++++++++++++++++++++++++++////////////////////////////////////////%%%%%%%%%%%%%%%%%%%%%%%%%%%%%0000000000000000000000000");
-
                               /*    homeBloc.add(GetProductsWithFiltersEvent(
                                   cashedOrginalBoutique: fromSearch ?? false,
                                   boutiqueSlug: widget.boutiqueSlug,
@@ -1260,8 +1249,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                 }
                                                                 if (text.length >
                                                                     2) {
-                                                                  print(
-                                                                      "----------++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
                                                                   resetSearchAfterSearchingWhileRemoveSearch =
                                                                       true;
                                                                   Filter filters = homeBloc
@@ -1929,7 +1916,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                         : currentAppliedFilterSllug !=
                                                                 "null"
                                                             ? 145
-                                                            : 115,
+                                                            : widget.fromSearch
+                                                                ? 145
+                                                                : 115,
                                                 flexibleSpace:
                                                     StackedFiltersList(
                                                         expandingFiltersStack:
@@ -2031,8 +2020,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                             //             ?.paginationStatus);
                                           },
                                           builder: (context, state) {
-                                            print(
-                                                "***************************************************${state.cashedOrginalBoutique}");
                                             isExpanded = state
                                                     .isExpandedForListingPage ??
                                                 false;
@@ -2185,16 +2172,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                       return InkWell(
                                                         onTap: () async {
                                                           Future.delayed(
-                                                              Duration(
-                                                                  milliseconds:
-                                                                      100), () {
-                                                            print("${prefsRepository.myMarketId.toString()}" +
-                                                                "55555555555555555555555555555555555555555");
-                                                            print("${prefsRepository.myMarketName.toString()}" +
-                                                                "554${GetIt.I<PrefsRepository>().serverTime}4555554444${prefsRepository.countryIso.toString()}444444444${LanguageService.languageCode == 'ar' ? 'ae' : LanguageService.languageCode}444444444444${GetIt.I<PrefsRepository>().currentEvent}44444444444444444444444444445555555555555555555555");
-                                                          });
-
-                                                          Future.delayed(
                                                             Duration(
                                                                 milliseconds:
                                                                     100),
@@ -2324,15 +2301,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                 '${(widget.category ?? '')}']!
                                                         .items
                                                         .isNullOrEmpty)) {
-                                              print(
-                                                  "2222222222222222222222222222222222222222222222222222222222222222222222222222222222211111111111111111111111111${state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + 'withoutFilter' + '${(widget.category ?? '')}']?.paginationStatus}//${state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + 'withoutFilter' + '${(widget.category ?? '')}']!.items.isNullOrEmpty}////////////////////////////////////---------------------------------");
-
                                               return ProductListingLoading();
                                             }
                                             if ((state
                                                             .getProductListingWithFiltersPaginationModels[
                                                                 '${widget.boutiqueSlug}' +
-                                                                    'withoutFilter' +
+                                                                    '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
                                                                     '${(widget.category ?? '')}']
                                                             ?.paginationStatus ==
                                                         PaginationStatus
@@ -2340,7 +2314,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                     state
                                                         .getProductListingWithFiltersPaginationModels[
                                                             '${widget.boutiqueSlug}' +
-                                                                'withoutFilter' +
+                                                                '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
                                                                 '${(widget.category ?? '')}']!
                                                         .items
                                                         .isNullOrEmpty) ||
@@ -2364,8 +2338,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                 ),
                                               );
                                             }
-                                            print(
-                                                'fcfcfcfcfcsfasfafas1132132142141');
                                             // String key = (widget
                                             //             .boutiqueSlug ??
                                             //         '') +
@@ -2430,10 +2402,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                             .loading &&
                                                     !state
                                                         .cashedOrginalBoutique)) {
-                                              print(
-                                                  "################################################${state.cashedOrginalBoutique}");
-                                              print("11111111111111111111111111111${(((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}'] == null || state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']!.items.isNullOrEmpty) && state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}}'
-                                                  '${(widget.category ?? '')}']?.paginationStatus != PaginationStatus.success) && state.cashedOrginalBoutique)}1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111//////////////////////////////////////---------------------------------");
                                               return ProductListingLoading(
                                                 key: TestVariables.kTestMode
                                                     ? Key(WidgetsKeys
@@ -2514,17 +2482,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                       int index) {
                                                     return InkWell(
                                                       onTap: () {
-                                                        Future.delayed(
-                                                          Duration(
-                                                              milliseconds:
-                                                                  100),
-                                                          () {
-                                                            print("${prefsRepository.myMarketId.toString()}" +
-                                                                "55555555555555555555555555555555555555555");
-                                                            print("${prefsRepository.myMarketName.toString()}" +
-                                                                "554${GetIt.I<PrefsRepository>().serverTime}4555554444${prefsRepository.countryIso.toString()}444444444${LanguageService.languageCode == 'ar' ? 'ae' : LanguageService.languageCode}444444444444${GetIt.I<PrefsRepository>().currentEvent}44444444444444444444444444445555555555555555555555");
-                                                          },
-                                                        );
                                                         Future.delayed(
                                                           Duration(
                                                               milliseconds:
@@ -2746,6 +2703,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                             .toString()
                                         : ""
                                     : "";
+
                                 int currentSelectedColor =
                                     state.currentSelectedColorForEveryProduct[
                                             productId] ??
@@ -2754,6 +2712,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                     ?.length ??
                                                 0) ~/
                                             2;
+
                                 if (state.getProductDetailWithoutSimilarRelatedProductsStatus !=
                                         GetProductDetailWithoutSimilarRelatedProductsStatus
                                             .success &&
@@ -2820,7 +2779,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               .productId
                                               .toString()]
                                       ?.product
-                                      ?.leftStock,
+                                      ?.currentStock,
                                   collectedAfterOrdering: state
                                           .cachedProductWithoutRelatedProductsModel[
                                               products[tapIndex]
@@ -2995,8 +2954,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
           (BuildContext context, int index) {
             return InkWell(
               onTap: () {
-                print(
-                    '/////////// Go to details  /////// ${products[index].categories?[0].name} ///////');
                 Future.delayed(
                   Duration(milliseconds: 100),
                 ).then(
