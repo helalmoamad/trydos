@@ -70,7 +70,7 @@ class _CartPageState extends State<CartPage> {
     appBloc = BlocProvider.of<AppBloc>(context);
     authBloc = BlocProvider.of<AuthBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
-
+    homeBloc.add(GetOldCartItemEvent());
     homeBloc.add(GetCustomerAddressesEvent());
     fromForGroundNotification =
         appBloc.state.isFromForGroundNotification ?? false;
@@ -208,6 +208,8 @@ class _CartPageState extends State<CartPage> {
                         current.getOldCartItemsStatus ||
                     previous.convertItemFromOldcartToCartStatus !=
                         current.convertItemFromOldcartToCartStatus ||
+                    previous.getListOfProductsFoundedInCartStatus !=
+                        current.getListOfProductsFoundedInCartStatus ||
                     previous.hideItemInOldCartStatus !=
                         current.hideItemInOldCartStatus ||
                     previous.addItemInCartStatus !=
@@ -218,10 +220,15 @@ class _CartPageState extends State<CartPage> {
                         current.cartCollection?.length ||
                     previous.oldcartCollection?.length !=
                         current.oldcartCollection!.length ||
+                    previous.getCartOverviewStatus !=
+                        current.getCartOverviewStatus ||
                     previous.checkAvailabilityProductCartStatus !=
                         current.checkAvailabilityProductCartStatus;
               },
               builder: (context, state) {
+                print(
+                    "4444444440000000000000000000000000000000000004444444444444@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!${state.currentQuantityForCart}");
+
                 cartImages = [];
 
                 state.cartCollection?.forEach(
@@ -1305,10 +1312,10 @@ class _CartPageState extends State<CartPage> {
                                                                                       ),
                                                                                     ),
                                                                                     Spacer(),
-                                                                                    Text(
+                                                                                    /*    Text(
                                                                                       "0",
                                                                                       style: context.textTheme.bodyMedium?.br.copyWith(decoration: TextDecoration.lineThrough, decorationColor: const Color(0xff2FA52F), color: const Color(0xff2FA52F), fontSize: 13, letterSpacing: 0.18, height: 1.33),
-                                                                                    ),
+                                                                                    ),*/
                                                                                     Text(
                                                                                       " ${((state.getCartShippingItemsModel?.data?.totalShippingCost ?? 0) * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
                                                                                       style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 13.sp, color: const Color(0xff2FA52F), letterSpacing: 0.18, height: 1.33),
@@ -1326,7 +1333,7 @@ class _CartPageState extends State<CartPage> {
                                                                                     left: LanguageService.languageCode != "ar" ? 25 : 10.w,
                                                                                   ),
                                                                                   child: Text(
-                                                                                    ((state.getCartShippingItemsModel?.data?.totalShippingCost ?? 0) * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2) != 0 ? "" : "${LocaleKeys.shipping_is_completely_free_without_any_extras.tr()} ",
+                                                                                    (state.getCartShippingItemsModel?.data?.totalShippingCost ?? 0) != 0 ? "" : "${LocaleKeys.shipping_is_completely_free_without_any_extras.tr()} ",
                                                                                     style: context.textTheme.bodyMedium?.ra.copyWith(fontSize: 11.sp, color: const Color(0xff2FA52F), letterSpacing: 0.18, height: 1.33),
                                                                                   ),
                                                                                 ),
@@ -1549,7 +1556,7 @@ class _CartPageState extends State<CartPage> {
                                                                               p.verifyOtpSignUpStatus != c.verifyOtpSignUpStatus ||
                                                                               c.verifyGuestPhoneStatus != p.verifyGuestPhoneStatus,
                                                                           builder: (context, authState) {
-                                                                            return (authState.verifyGuestPhoneStatus == VerifyGuestPhoneStatus.loading || authState.verifyOtpSignInStatus == VerifyOtpSignInStatus.loading || authState.verifyOtpSignUpStatus == VerifyOtpSignUpStatus.loading || state.addItemInCartStatus == AddItemInCartStatus.loading || state.deleteItemInCartStatus == DeleteItemInCartStatus.loading || state.updateItemInCartStatus == UpdateItemInCartStatus.loading || (state.checkAvailabilityProductCartStatus == CheckAvailabilityProductCartStatus.loading))
+                                                                            return (authState.verifyGuestPhoneStatus == VerifyGuestPhoneStatus.loading || state.getCartOverviewStatus == GetCartOverviewStatus.loading || authState.verifyOtpSignInStatus == VerifyOtpSignInStatus.loading || authState.verifyOtpSignUpStatus == VerifyOtpSignUpStatus.loading || state.addItemInCartStatus == AddItemInCartStatus.loading || state.deleteItemInCartStatus == DeleteItemInCartStatus.loading || state.updateItemInCartStatus == UpdateItemInCartStatus.loading || (state.checkAvailabilityProductCartStatus == CheckAvailabilityProductCartStatus.loading))
                                                                                 ? Shimmer.fromColors(
                                                                                     baseColor: Colors.grey[200]!,
                                                                                     highlightColor: Colors.grey[100]!,
@@ -1653,6 +1660,12 @@ class _CartPageState extends State<CartPage> {
                                                                                           appBloc.add(ChangeBasePage(0));
                                                                                           return;
                                                                                         }
+                                                                                      } else if (state.getCartOverviewStatus == GetCartOverviewStatus.failure) {
+                                                                                        homeBloc.add(GetCartOverviewEvent());
+                                                                                        return;
+                                                                                      } else if (state.checkAvailabilityProductCartStatus == CheckAvailabilityProductCartStatus.failure) {
+                                                                                        homeBloc.add(CheckAvailabilityProductCartEvent());
+                                                                                        return;
                                                                                       } else if (state.cartCollection!.any(
                                                                                         (element) => element.checkAvailability == false,
                                                                                       )) {

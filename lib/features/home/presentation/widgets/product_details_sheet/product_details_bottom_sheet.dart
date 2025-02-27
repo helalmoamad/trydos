@@ -115,7 +115,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
   late HomeBloc homeBloc;
   List<double>? orginalHeight;
   List<double>? orginalWidth;
-
+  bool isMoving = false;
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
@@ -428,30 +428,109 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                             //mainAxisSize: MainAxisSize.min,
                             children: [
                               if (currentTab == 3) ...{
-                                ProductDetailsImageWidget(
-                                  width: 198.w,
-                                  height: 280.h,
-                                  imageWidth: 320,
-                                  imageHeight: 464,
-                                  orginalWidth: double.tryParse(
-                                      gallery3dControllerForCircles != null
-                                          ? orginalWidth![currentIndexInSlider]
-                                              .toString()
-                                          : widget.productItem.images![0]
-                                              .originalWidth
-                                              .toString()),
-                                  orginalHeight: double.tryParse(
-                                      gallery3dControllerForCircles != null
-                                          ? orginalHeight![currentIndexInSlider]
-                                              .toString()
-                                          : widget.productItem.images![0]
-                                              .originalHeight
-                                              .toString()),
-                                  imageUrl: gallery3dControllerForCircles !=
-                                          null
-                                      ? images[currentIndexInSlider]
-                                      : widget.productItem.images![0].filePath,
-                                ),
+                                Container(
+                                    alignment: Alignment.center,
+                                    width: 1.sw,
+                                    child: Stack(
+                                      children: [
+                                        Center(
+                                          child: ProductDetailsImageWidget(
+                                            width: 198.w,
+                                            height: 280.h,
+                                            imageWidth: 320,
+                                            imageHeight: 464,
+                                            orginalWidth: double.tryParse(
+                                                gallery3dControllerForCircles !=
+                                                        null
+                                                    ? orginalWidth![
+                                                            currentIndexInSlider]
+                                                        .toString()
+                                                    : widget
+                                                        .productItem
+                                                        .images![0]
+                                                        .originalWidth
+                                                        .toString()),
+                                            orginalHeight: double.tryParse(
+                                                gallery3dControllerForCircles !=
+                                                        null
+                                                    ? orginalHeight![
+                                                            currentIndexInSlider]
+                                                        .toString()
+                                                    : widget
+                                                        .productItem
+                                                        .images![0]
+                                                        .originalHeight
+                                                        .toString()),
+                                            imageUrl:
+                                                gallery3dControllerForCircles !=
+                                                        null
+                                                    ? images[
+                                                        currentIndexInSlider]
+                                                    : widget.productItem
+                                                        .images![0].filePath,
+                                          ),
+                                        ),
+                                        AnimatedPositioned(
+                                            duration:
+                                                Duration(milliseconds: 1700),
+                                            top: isMoving ? -300 : 0,
+                                            left:
+                                                LanguageService.languageCode ==
+                                                        "ar"
+                                                    ? isMoving
+                                                        ? -300
+                                                        : (1.sw / 2) - 100.w
+                                                    : null,
+                                            right:
+                                                LanguageService.languageCode !=
+                                                        "ar"
+                                                    ? isMoving
+                                                        ? -300
+                                                        : (1.sw / 2) - 100.w
+                                                    : null,
+                                            child: AnimatedOpacity(
+                                              duration: Duration(seconds: 0),
+                                              opacity: isMoving ? 1 : 0,
+                                              child: ProductDetailsImageWidget(
+                                                width: 200.w,
+                                                height: 280.h,
+                                                imageWidth: 320,
+                                                imageHeight: 464,
+                                                orginalWidth: double.tryParse(
+                                                    gallery3dControllerForCircles !=
+                                                            null
+                                                        ? orginalWidth![
+                                                                currentIndexInSlider]
+                                                            .toString()
+                                                        : widget
+                                                            .productItem
+                                                            .images![0]
+                                                            .originalWidth
+                                                            .toString()),
+                                                orginalHeight: double.tryParse(
+                                                    gallery3dControllerForCircles !=
+                                                            null
+                                                        ? orginalHeight![
+                                                                currentIndexInSlider]
+                                                            .toString()
+                                                        : widget
+                                                            .productItem
+                                                            .images![0]
+                                                            .originalHeight
+                                                            .toString()),
+                                                imageUrl:
+                                                    gallery3dControllerForCircles !=
+                                                            null
+                                                        ? images[
+                                                            currentIndexInSlider]
+                                                        : widget
+                                                            .productItem
+                                                            .images![0]
+                                                            .filePath,
+                                              ),
+                                            ))
+                                      ],
+                                    )),
                                 5.verticalSpace,
                                 Material(
                                   color: Colors.transparent,
@@ -988,9 +1067,17 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                           .toString(),
                                     ),
                                   );*/
+                                  Future.delayed(
+                                      Duration(milliseconds: 300),
+                                      () => setState(() {
+                                            isMoving = true;
+                                          }));
 
-                                  print(
-                                      "@@@@@@@@@@@@@@@##EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEeee");
+                                  Future.delayed(
+                                      Duration(seconds: 2),
+                                      () => setState(() {
+                                            isMoving = false;
+                                          }));
                                 },
                                 panelController: widget.panelController,
                                 clickOnComments: () {

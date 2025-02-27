@@ -667,8 +667,7 @@ class AddSizesForColorsEvent extends HomeEvent {
 }
 
 class GetCartItemEvent extends HomeEvent {
-  final bool? fromTerminitedStatusl;
-  const GetCartItemEvent({this.fromTerminitedStatusl});
+  const GetCartItemEvent();
 
   @override
   List<Object?> get props => [];

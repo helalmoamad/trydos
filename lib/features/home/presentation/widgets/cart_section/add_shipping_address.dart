@@ -1221,81 +1221,79 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                         (context,
                                                                             isValidateBox,
                                                                             _) {
-                                                                      return AnimatedBuilder(
-                                                                          animation:
-                                                                              animationController,
-                                                                          builder: (context, child) =>
-                                                                              Transform.translate(
-                                                                                offset: Offset(!(isValidateBox && ((_currentLocation?.latitude ?? 0) == 0 || (_currentLocation?.longitude ?? 0) == 0)) ? 0 : sin(3 * 2 * pi * animationController.value) * 5, 0),
-                                                                                child: Container(
-                                                                                    width: 1.sw,
-                                                                                    margin: EdgeInsets.symmetric(horizontal: 15.w),
-                                                                                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.r), border: Border.all(color: isValidateBox && ((_currentLocation?.latitude ?? 0) == 0 || (_currentLocation?.longitude ?? 0) == 0) ? Colors.red : Color(0xffD3D3D3))),
-                                                                                    height: 118,
-                                                                                    child: Column(
-                                                                                      children: [
-                                                                                        Stack(
-                                                                                          alignment: Alignment.center,
-                                                                                          children: [
-                                                                                            Container(
-                                                                                              clipBehavior: Clip.antiAlias,
-                                                                                              height: 80,
-                                                                                              margin: EdgeInsets.all(10.w),
-                                                                                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.r), border: Border.all(color: Color(0xffD3D3D3))),
-                                                                                              child: IgnorePointer(
-                                                                                                ignoring: true,
-                                                                                                child: GoogleMap(
-                                                                                                  zoomControlsEnabled: false,
-                                                                                                  compassEnabled: false,
-                                                                                                  markers: _markersInSmallMap.toSet(),
-                                                                                                  zoomGesturesEnabled: false,
-                                                                                                  mapType: MapType.normal,
-                                                                                                  initialCameraPosition: _kinitialPosition,
-                                                                                                  onMapCreated: (GoogleMapController controller) {
-                                                                                                    mapController = controller;
-                                                                                                  },
-                                                                                                ),
-                                                                                              ),
-                                                                                            ),
-                                                                                            InkWell(
-                                                                                              onTap: () {
-                                                                                                if ((_locationFromSearch?.latitude != null && _locationFromSearch?.longitude != null)) {
-                                                                                                  _goToCurrentLocation(latlng: _locationFromSearch);
-                                                                                                }
+                                                                      return Container(
+                                                                          width: 1
+                                                                              .sw,
+                                                                          margin: EdgeInsets.symmetric(
+                                                                              horizontal: 15
+                                                                                  .w),
+                                                                          decoration: BoxDecoration(
+                                                                              borderRadius: BorderRadius.circular(15.r),
+                                                                              border: Border.all(color: Color(0xffD3D3D3))),
+                                                                          height: 118,
+                                                                          child: Column(
+                                                                            children: [
+                                                                              Stack(
+                                                                                alignment: Alignment.center,
+                                                                                children: [
+                                                                                  Container(
+                                                                                    clipBehavior: Clip.antiAlias,
+                                                                                    height: 80,
+                                                                                    margin: EdgeInsets.all(10.w),
+                                                                                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.r), border: Border.all(color: Color(0xffD3D3D3))),
+                                                                                    child: IgnorePointer(
+                                                                                      ignoring: true,
+                                                                                      child: GoogleMap(
+                                                                                        zoomControlsEnabled: false,
+                                                                                        compassEnabled: false,
+                                                                                        markers: _markersInSmallMap.toSet(),
+                                                                                        zoomGesturesEnabled: false,
+                                                                                        mapType: MapType.normal,
+                                                                                        initialCameraPosition: _kinitialPosition,
+                                                                                        onMapCreated: (GoogleMapController controller) {
+                                                                                          mapController = controller;
+                                                                                        },
+                                                                                      ),
+                                                                                    ),
+                                                                                  ),
+                                                                                  InkWell(
+                                                                                    onTap: () {
+                                                                                      if ((_locationFromSearch?.latitude != null && _locationFromSearch?.longitude != null)) {
+                                                                                        _goToCurrentLocation(latlng: _locationFromSearch);
+                                                                                      }
 
-                                                                                                showFulMap.value = true;
-                                                                                              },
-                                                                                              child: Container(
-                                                                                                child: Row(
-                                                                                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                                                                  children: [
-                                                                                                    Text(
-                                                                                                      "${LocaleKeys.locate_your_location_on_map.tr()} ",
-                                                                                                      style: context.textTheme.bodyMedium?.mr.copyWith(color: const Color(0xffF4F4F4), letterSpacing: 0.18, fontSize: 12, height: 0.8),
-                                                                                                    ),
-                                                                                                    SvgPicture.asset(
-                                                                                                      AppAssets.navigationSvg,
-                                                                                                    ),
-                                                                                                  ],
-                                                                                                ),
-                                                                                                height: 35,
-                                                                                                width: 210.w,
-                                                                                                margin: EdgeInsets.all(10.w),
-                                                                                                decoration: BoxDecoration(
-                                                                                                  color: Color.fromRGBO(43, 44, 44, 0.7),
-                                                                                                  borderRadius: BorderRadius.circular(15.r),
-                                                                                                ),
-                                                                                              ),
-                                                                                            ),
-                                                                                          ],
-                                                                                        ),
-                                                                                        Text(
-                                                                                          "${LocaleKeys.location_is_accurate_making_it_easy_to_receive_shipments.tr()} ",
-                                                                                          style: context.textTheme.bodyMedium?.mr.copyWith(color: const Color(0xff505050), letterSpacing: 0.18, fontSize: 12, height: 0.8),
-                                                                                        ),
-                                                                                      ],
-                                                                                    )),
-                                                                              ));
+                                                                                      showFulMap.value = true;
+                                                                                    },
+                                                                                    child: Container(
+                                                                                      child: Row(
+                                                                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                                                        children: [
+                                                                                          Text(
+                                                                                            "${LocaleKeys.locate_your_location_on_map.tr()} ",
+                                                                                            style: context.textTheme.bodyMedium?.mr.copyWith(color: const Color(0xffF4F4F4), letterSpacing: 0.18, fontSize: 12, height: 0.8),
+                                                                                          ),
+                                                                                          SvgPicture.asset(
+                                                                                            AppAssets.navigationSvg,
+                                                                                          ),
+                                                                                        ],
+                                                                                      ),
+                                                                                      height: 35,
+                                                                                      width: 210.w,
+                                                                                      margin: EdgeInsets.all(10.w),
+                                                                                      decoration: BoxDecoration(
+                                                                                        color: Color.fromRGBO(43, 44, 44, 0.7),
+                                                                                        borderRadius: BorderRadius.circular(15.r),
+                                                                                      ),
+                                                                                    ),
+                                                                                  ),
+                                                                                ],
+                                                                              ),
+                                                                              Text(
+                                                                                "${LocaleKeys.location_is_accurate_making_it_easy_to_receive_shipments.tr()} ",
+                                                                                style: context.textTheme.bodyMedium?.mr.copyWith(color: const Color(0xff505050), letterSpacing: 0.18, fontSize: 12, height: 0.8),
+                                                                              ),
+                                                                            ],
+                                                                          ));
                                                                     }),
                                                             isShowFulMap
                                                                 ? SizedBox
@@ -1844,12 +1842,6 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                             .text
                                                                             .length >
                                                                         0 &&
-                                                                    !((_currentLocation?.latitude ??
-                                                                                0) ==
-                                                                            0 &&
-                                                                        (_currentLocation?.longitude ??
-                                                                                0) ==
-                                                                            0) &&
                                                                     detailsAddressController
                                                                             .text
                                                                             .length >
@@ -1966,9 +1958,6 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                               0 &&
                                                                           detailsAddressController.text.length >
                                                                               0 &&
-                                                                          ((_currentLocation?.latitude ?? 0) != 0 ||
-                                                                              (_currentLocation?.longitude ?? 0) !=
-                                                                                  0) &&
                                                                           contactPhoneController.text.length >
                                                                               0)
                                                                       ? Color(

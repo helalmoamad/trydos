@@ -64,7 +64,7 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
 
     homeBloc = BlocProvider.of<HomeBloc>(context);
     homeBloc.add(RemoveItemsFromCartAfterOrderSuccessEvent());
-    homeBloc.add(GetCartItemEvent(fromTerminitedStatusl: true));
+    homeBloc.add(GetCartItemEvent());
     super.initState();
   }
 

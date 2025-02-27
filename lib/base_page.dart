@@ -683,8 +683,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                     if (prefsRepository.marketToken != null) {
                                       homeBloc
                                           .add(GetCurrencyForCountryEvent());
-                                      homeBloc.add(GetCartItemEvent(
-                                          fromTerminitedStatusl: true));
+                                      homeBloc.add(GetCartItemEvent());
                                       homeBloc
                                           .add(GetProductsListInCartEvent());
                                     }

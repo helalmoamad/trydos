@@ -284,6 +284,7 @@ class HomeState extends Equatable {
   final PlaceOrderStatus? placeOrderStatus;
   final ApplyCouponModel? applyCouponModel;
   final ApplyCouponStatus? applyCouponStatus;
+
   final GetCartOverviewStatus? getCartOverviewStatus;
   final OrdersGroupModel? getOrdersByOrderGroupIDModel;
   final GetOrdersByOrderGroupIDStatus? getOrdersByOrderGroupIDStatus;
@@ -437,6 +438,7 @@ class HomeState extends Equatable {
         applyCouponStatus,
         applyCouponModel,
         getCartOverviewStatus,
+
         getOrdersByOrderGroupIDStatus,
         getOrdersByOrderGroupIDModel,
         getOrdersByCartGroupIDStatus,
