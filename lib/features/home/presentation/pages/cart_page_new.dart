@@ -167,6 +167,9 @@ class _CartPageState extends State<CartPage> {
                       totalPrice: totlalPrice,
                       cartGroupId: cartGroupId,
                       currencySympole: priceSymbol,
+                      couponDiscount: state.getCartShippingItemsModel?.data
+                              ?.couponDiscount ??
+                          0,
                     ),
                   );
                 } else {

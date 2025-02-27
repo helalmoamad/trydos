@@ -183,7 +183,6 @@ class HomeState extends Equatable {
       this.setCustomerAddressDefaultStatus,
       this.placeOrderModel,
       this.applyCouponModel,
-      this.getCartOverviewModel,
       this.getOrdersByOrderGroupIDModel,
       this.getOrdersByCartGroupIDModel,
       this.checkAvailabilityProductCartModel,
@@ -285,7 +284,6 @@ class HomeState extends Equatable {
   final PlaceOrderStatus? placeOrderStatus;
   final ApplyCouponModel? applyCouponModel;
   final ApplyCouponStatus? applyCouponStatus;
-  final GetCartShippingItemsModel? getCartOverviewModel;
   final GetCartOverviewStatus? getCartOverviewStatus;
   final OrdersGroupModel? getOrdersByOrderGroupIDModel;
   final GetOrdersByOrderGroupIDStatus? getOrdersByOrderGroupIDStatus;
@@ -439,7 +437,6 @@ class HomeState extends Equatable {
         applyCouponStatus,
         applyCouponModel,
         getCartOverviewStatus,
-        getCartOverviewModel,
         getOrdersByOrderGroupIDStatus,
         getOrdersByOrderGroupIDModel,
         getOrdersByCartGroupIDStatus,
@@ -525,7 +522,6 @@ class HomeState extends Equatable {
       final PlaceOrderStatus? placeOrderStatus,
       final ApplyCouponModel? applyCouponModel,
       final ApplyCouponStatus? applyCouponStatus,
-      final GetCartShippingItemsModel? getCartOverviewModel,
       final GetCartOverviewStatus? getCartOverviewStatus,
       final CurrentSelectedColorForEveryProductStatus?
           currentSelectedColorForEveryProductStatus,
@@ -708,7 +704,6 @@ class HomeState extends Equatable {
       placeOrderStatus: placeOrderStatus ?? this.placeOrderStatus,
       applyCouponModel: applyCouponModel ?? this.applyCouponModel,
       applyCouponStatus: applyCouponStatus ?? this.applyCouponStatus,
-      getCartOverviewModel: getCartOverviewModel ?? this.getCartOverviewModel,
       getCartOverviewStatus:
           getCartOverviewStatus ?? this.getCartOverviewStatus,
       getOrdersByOrderGroupIDModel:

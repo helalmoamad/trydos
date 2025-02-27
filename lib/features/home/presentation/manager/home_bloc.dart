@@ -5839,11 +5839,33 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         isFailedTheFirstTime.remove('GetCartOverviewEvent');
 
         debugPrint('GetCartOverviewEvent success');
+
+        var response = r.data!;
+        var data = state.getCartShippingItemsModel;
+
+        data!.data!.copyWith(
+          availablePaymentMethod: response.availablePaymentMethod,
+          codCost: response.codCost,
+          couponDiscount: response.couponDiscount,
+          estimatedTax: response.estimatedTax,
+          hasCod: response.hasCod,
+          limitFree: response.limitFree,
+          productsDiscount: response.productsDiscount,
+          restForFreeShipping: response.restForFreeShipping,
+          showMessageResetForShippingFree:
+              response.showMessageResetForShippingFree,
+          subTotal: response.subTotal,
+          total: response.total,
+          totalCash: response.totalCash,
+          totalDiscount: response.totalDiscount,
+          totalShippingCost: response.totalShippingCost,
+          totalTax: response.totalTax,
+        );
         ////////////////////////////
         emit(
           state.copyWith(
             getCartOverviewStatus: GetCartOverviewStatus.success,
-            getCartOverviewModel: r,
+            getCartShippingItemsModel: data,
           ),
         );
       },

@@ -56,7 +56,7 @@ class ApplyCouponModel {
 
 class ApplyCouponDataModel {
   final int? status;
-  final String? discount;
+  final double? discount;
 
   ApplyCouponDataModel({
     required this.status,
@@ -65,7 +65,7 @@ class ApplyCouponDataModel {
 
   ApplyCouponDataModel copyWith({
     int? status,
-    String? discount,
+    double? discount,
   }) =>
       ApplyCouponDataModel(
         status: status ?? this.status,
@@ -75,7 +75,9 @@ class ApplyCouponDataModel {
   factory ApplyCouponDataModel.fromJson(Map<String, dynamic> json) =>
       ApplyCouponDataModel(
         status: json["status"] ?? 0,
-        discount: json["discount"] ?? '',
+        discount: json["discount"] == null
+            ? 0
+            : double.parse(json["discount"].toString()),
       );
 
   Map<String, dynamic> toJson() => {

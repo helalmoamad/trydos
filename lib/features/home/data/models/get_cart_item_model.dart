@@ -69,7 +69,7 @@ class CartShipping {
   final int? totalTax;
   final int? totalShippingCost;
   final double? productsDiscount;
-  final int? couponDiscount;
+  final double? couponDiscount;
   final double? totalDiscount;
   final int? codCost;
   final double? limitFree;
@@ -106,7 +106,7 @@ class CartShipping {
     int? totalTax,
     int? totalShippingCost,
     double? productsDiscount,
-    int? couponDiscount,
+    double? couponDiscount,
     double? totalDiscount,
     int? codCost,
     double? limitFree,
@@ -145,7 +145,7 @@ class CartShipping {
         totalTax: json["total_tax"],
         totalShippingCost: json["total_shipping_cost"],
         productsDiscount: json["products_discount"]?.toDouble(),
-        couponDiscount: json["coupon_discount"],
+        couponDiscount: json["coupon_discount"]?.toDouble(),
         totalDiscount: json["total_discount"]?.toDouble(),
         codCost: json["cod_cost"],
         limitFree: double.tryParse(json["limitFree"].toString()),

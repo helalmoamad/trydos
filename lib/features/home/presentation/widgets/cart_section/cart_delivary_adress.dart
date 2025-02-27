@@ -39,6 +39,7 @@ class CartDelivaryAddress extends StatefulWidget {
   final double totalCashed;
   final String currencySympole;
   final String cartGroupId;
+  final double couponDiscount;
   const CartDelivaryAddress({
     required this.cartImages,
     required this.currencySympole,
@@ -46,6 +47,7 @@ class CartDelivaryAddress extends StatefulWidget {
     required this.cartGroupId,
     required this.totalPrice,
     required this.totalCashed,
+    required this.couponDiscount,
   });
   @override
   State<CartDelivaryAddress> createState() => _CartDelivaryAddressState();
@@ -134,7 +136,14 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
             if (state.applyCouponStatus == ApplyCouponStatus.success) {
               var data = state.applyCouponModel;
               if (data!.data!.status == 1) {
-                isApplayCoupon.value = true;
+                if (widget.couponDiscount > 0) {
+                  isApplayCoupon.value = true;
+                }
+// TestCoupon10
+                /////////////////////////////////////////
+                BlocProvider.of<HomeBloc>(context).add(
+                  GetCartOverviewEvent(),
+                );
               }
             }
           },
@@ -150,13 +159,18 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                     current.removeAddressToOrderStatus ||
                 previous.getCustomerWalletStatus !=
                     current.getCustomerWalletStatus ||
-                previous.applyCouponStatus != current.applyCouponStatus,
+                previous.applyCouponStatus != current.applyCouponStatus ||
+                previous.getCartOverviewStatus != current.getCartOverviewStatus,
             builder: (context, state) {
               List<String> availablePaymentMethod = state
                       .getCartShippingItemsModel!
                       .data!
                       .availablePaymentMethod ??
                   [];
+
+              if (widget.couponDiscount > 0) {
+                isApplayCoupon.value = true;
+              }
 
               return ValueListenableBuilder<bool>(
                 valueListenable: showDeleteAddress,
@@ -433,7 +447,8 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
           } else {
             check = false;
           }
-          return (state.applyCouponStatus == ApplyCouponStatus.loading)
+          return (state.applyCouponStatus == ApplyCouponStatus.loading ||
+                  state.getCartOverviewStatus == GetCartOverviewStatus.loading)
               ? Shimmer.fromColors(
                   baseColor: Colors.grey[300]!,
                   highlightColor: Colors.grey[100]!,
@@ -701,7 +716,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                               borderRadius: BorderRadius.circular(15),
                               border: Border.all(color: Color(0xff388CFF))),
                           child: Text(
-                            "- 100 USD ",
+                            "- ${widget.couponDiscount} ${widget.currencySympole}",
                             textAlign: TextAlign.center,
                             style: context.textTheme.bodyMedium?.br.copyWith(
                               color: const Color(0xff1D1D1D),
