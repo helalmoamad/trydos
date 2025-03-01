@@ -392,7 +392,6 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                             widget.isShowPanelForVerified,
                                         controllerFormSearchPage:
                                             widget.controller,
-                                        searchText: text,
                                         boutiqueIcon: "",
                                         fromSearch: true,
                                         withSlidingImages: false,

@@ -174,9 +174,7 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                                           prices:
                                               prevChoosedOrAppliedFilterToAddToIt
                                                   .prices,
-                                          searchText:
-                                              prevChoosedOrAppliedFilterToAddToIt
-                                                  .searchText,
+                                          searchText: widget.searchText,
                                           colors:
                                               prevChoosedOrAppliedFilterToAddToIt
                                                       .colors.isNullOrEmpty
@@ -200,15 +198,14 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                                   prevChoosedOrAppliedFilterToAddToIt
                                       ?.copyWithSaveOtherField(
                                 colors: colors,
-                                searchText: prevChoosedOrAppliedFilterToAddToIt
-                                    .searchText,
+                                searchText: widget.searchText,
                                 prices:
                                     prevChoosedOrAppliedFilterToAddToIt.prices,
                               );
                             }
                             if (widget.hideTitle) {
                               print(
-                                  "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
+                                  "ddddddddddddddddd${widget.searchText}ddddddddddddddddddddddddddddddddddddddddd");
 
                               homeBloc.add(ChangeAppliedFiltersEvent(
                                 category: widget.category,
