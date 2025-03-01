@@ -35,19 +35,13 @@ import '../../../../../service/firebase_analytics_service/firebase_analytics_ser
 
 class CartDelivaryAddress extends StatefulWidget {
   final List<Map<String, String>> cartImages;
-  final double totalPrice;
-  final double totalCashed;
   final String currencySympole;
   final String cartGroupId;
-  final double couponDiscount;
   const CartDelivaryAddress({
     required this.cartImages,
     required this.currencySympole,
     Key? key,
     required this.cartGroupId,
-    required this.totalPrice,
-    required this.totalCashed,
-    required this.couponDiscount,
   });
   @override
   State<CartDelivaryAddress> createState() => _CartDelivaryAddressState();
@@ -66,12 +60,10 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
   int indexToDelete = 0;
 
   final ValueNotifier<bool> isExpandedCoupon = ValueNotifier(false);
-  final ValueNotifier<bool> isApplayCoupon = ValueNotifier(false);
 
   final GlobalKey<FormState> _formKey = GlobalKey();
   final TextEditingController couponKey = TextEditingController();
-  double totlalPrice = 0;
-  double totlalCash = 0;
+
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
@@ -115,10 +107,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
             Navigator.of(context).pop();
 
             return false;
-            // منع الإغلاق بعد تنفيذ pop
           }
-
-          // يسمح بالإغلاق إذا لم تنطبق أي من الشروط
         }
         return true;
       },
@@ -130,11 +119,8 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
               (current.applyCouponStatus == ApplyCouponStatus.success),
           listener: (context, state) {
             if (state.applyCouponStatus == ApplyCouponStatus.success) {
-              var data = state.applyCouponModel;
-              if (data!.data!.status == 1) {
-                if (widget.couponDiscount > 0) {
-                  isApplayCoupon.value = true;
-                }
+              var data = state.applyCouponModel!.data!;
+              if (data.status == 1) {
 // TestCoupon10
                 /////////////////////////////////////////
                 BlocProvider.of<HomeBloc>(context).add(
@@ -160,23 +146,35 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                 previous.applyCouponStatus != current.applyCouponStatus ||
                 previous.getCartOverviewStatus != current.getCartOverviewStatus,
             builder: (context, state) {
-              Future.delayed(Duration(milliseconds: 200), () {
-                if (state.setCustomerAddressDefaultStatus !=
-                        SetCustomerAddressDefaultStatus.loading &&
-                    state.getCustomerAddressStatus !=
-                        GetCustomerAddressesStatus.loading) {
-                  indexTap.value = state.currentAddressChoosed ?? 0;
-                }
-              });
+              double totalCashed =
+                  (state.getCartShippingItemsModel?.data?.totalCash ?? 0) *
+                      state.getCurrencyForCountryModel!.data!.currency!
+                          .exchangeRate!;
+
+              double totalPrice =
+                  (state.getCartShippingItemsModel?.data?.total ?? 0) *
+                      state.getCurrencyForCountryModel!.data!.currency!
+                          .exchangeRate!;
+
+              double couponDiscount =
+                  state.getCartShippingItemsModel?.data?.couponDiscount ?? 0;
+
+              Future.delayed(
+                Duration(milliseconds: 200),
+                () {
+                  if (state.setCustomerAddressDefaultStatus !=
+                          SetCustomerAddressDefaultStatus.loading &&
+                      state.getCustomerAddressStatus !=
+                          GetCustomerAddressesStatus.loading) {
+                    indexTap.value = state.currentAddressChoosed ?? 0;
+                  }
+                },
+              );
               List<String> availablePaymentMethod = state
                       .getCartShippingItemsModel!
                       .data!
                       .availablePaymentMethod ??
                   [];
-
-              if (widget.couponDiscount > 0) {
-                isApplayCoupon.value = true;
-              }
 
               return ValueListenableBuilder<bool>(
                 valueListenable: showDeleteAddress,
@@ -270,7 +268,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                                                           paymentMethods:
                                                               paymentMethods,
                                                           totalPrice:
-                                                              widget.totalPrice,
+                                                              totalPrice,
                                                           decimalPointSetting: state
                                                                   .startingSetting
                                                                   ?.decimalPointSetting ??
@@ -284,18 +282,11 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                                             valueListenable: isExpandedCoupon,
                                             builder:
                                                 (context, expandedCoupon, _) {
-                                              return ValueListenableBuilder<
-                                                  bool>(
-                                                valueListenable: isApplayCoupon,
-                                                builder:
-                                                    (context, applayCoupon, _) {
-                                                  return buildCouponWidget(
-                                                    expandedCoupon,
-                                                    context,
-                                                    applayCoupon,
-                                                    state,
-                                                  );
-                                                },
+                                              return buildCouponWidget(
+                                                expandedCoupon,
+                                                context,
+                                                state,
+                                                couponDiscount,
                                               );
                                             },
                                           ),
@@ -338,7 +329,8 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                                         state,
                                         _indexTap,
                                         walletBalance,
-                                        totlalPrice,
+                                        totalPrice,
+                                        totalCashed,
                                         availablePaymentMethod,
                                       ),
                               ],
@@ -417,7 +409,8 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
       HomeState state,
       int _indexTap,
       double walletBalance,
-      double total,
+      double totalPrice,
+      double totalCashed,
       List<String> availablePaymentMethods) {
     return Container(
       height: 80,
@@ -440,7 +433,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
         builder: (context, _paymentMethod, _) {
           bool check = false;
           if (_paymentMethod.isNotEmpty) {
-            if (total > walletBalance) {
+            if (totalPrice > walletBalance) {
               if (_paymentMethod.length == 1 &&
                   _paymentMethod.contains(PaymentMethods.trydosWallet)) {
                 check = false;
@@ -506,14 +499,19 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                               Text(
                                 paymentMethods.value
                                         .contains(PaymentMethods.cod)
-                                    ? widget.totalCashed.toStringAsFixed(state
-                                            .startingSetting
-                                            ?.decimalPointSetting ??
-                                        2)
-                                    : widget.totalPrice.toStringAsFixed(state
-                                            .startingSetting
-                                            ?.decimalPointSetting ??
-                                        2),
+                                    ? HelperFunctions.formatNumber(
+                                        number: totalCashed)
+                                    // totalCashed.toStringAsFixed(state
+                                    //         .startingSetting
+                                    //         ?.decimalPointSetting ??
+                                    //     2)
+                                    : HelperFunctions.formatNumber(
+                                        number: totalPrice)
+                                //  totalPrice.toStringAsFixed(state
+                                //         .startingSetting
+                                //         ?.decimalPointSetting ??
+                                //     2)
+                                ,
                                 style: context.textTheme.bodyMedium?.br
                                     .copyWith(
                                         color: const Color(0xffFEFEFE),
@@ -556,8 +554,8 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                           availablePaymentMethod: availablePaymentMethods,
                           cartImages: widget.cartImages,
                           currencySympole: widget.currencySympole,
-                          totalPrice: widget.totalPrice,
-                          totalCashed: widget.totalCashed,
+                          totalPrice: totalPrice,
+                          totalCashed: totalCashed,
                           currencySymbol: state.getCurrencyForCountryModel!
                                   .data!.currency!.symbol ??
                               "",
@@ -618,20 +616,28 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                               Text(
                                 paymentMethods.value
                                         .contains(PaymentMethods.cod)
-                                    ? widget.totalCashed.toStringAsFixed(state
-                                            .startingSetting
-                                            ?.decimalPointSetting ??
-                                        2)
-                                    : widget.totalPrice.toStringAsFixed(state
-                                            .startingSetting
-                                            ?.decimalPointSetting ??
-                                        2),
+                                    ? HelperFunctions.formatNumber(
+                                        number: totalCashed)
+                                    // totalCashed.toStringAsFixed(state
+                                    //         .startingSetting
+                                    //         ?.decimalPointSetting ??
+                                    //     2)
+                                    : HelperFunctions.formatNumber(
+                                        number: totalPrice)
+                                // totalPrice.toStringAsFixed(state
+                                //         .startingSetting
+                                //         ?.decimalPointSetting ??
+                                //     2)
+                                ,
                                 style: context.textTheme.bodyMedium?.br
                                     .copyWith(
                                         color: const Color(0xffFEFEFE),
                                         letterSpacing: 0.18,
                                         fontSize: 14,
                                         height: 0.8),
+                              ),
+                              SizedBox(
+                                width: 2,
                               ),
                               Text(
                                 "${widget.currencySympole}",
@@ -654,8 +660,12 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
     );
   }
 
-  Widget buildCouponWidget(bool expandedCoupon, BuildContext context,
-      bool applayCoupon, HomeState state) {
+  Widget buildCouponWidget(
+    bool expandedCoupon,
+    BuildContext context,
+    HomeState state,
+    double couponDiscount,
+  ) {
     return AnimatedContainer(
       duration: Duration(seconds: 2),
       curve: Curves.easeInOut,
@@ -700,7 +710,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                   : Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 27),
                       child: Text(
-                        applayCoupon
+                        couponDiscount > 0
                             ? "${LocaleKeys.applied_your_coupon.tr()} XXXSSSA "
                             : "${LocaleKeys.please_enter_coupon_information.tr()} ",
                         style: context.textTheme.bodyMedium?.rr.copyWith(
@@ -719,17 +729,16 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                     ),
               !expandedCoupon
                   ? SizedBox.shrink()
-                  : applayCoupon
+                  : couponDiscount > 0
                       ? Container(
                           alignment: Alignment.center,
-                          height: 40.h,
                           width: 1.sw,
                           padding: EdgeInsets.all(10.h),
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
                               border: Border.all(color: Color(0xff388CFF))),
                           child: Text(
-                            "- ${widget.couponDiscount} ${widget.currencySympole}",
+                            "- ${HelperFunctions.formatNumber(number: couponDiscount)} ${widget.currencySympole}",
                             textAlign: TextAlign.center,
                             style: context.textTheme.bodyMedium?.br.copyWith(
                               color: const Color(0xff1D1D1D),

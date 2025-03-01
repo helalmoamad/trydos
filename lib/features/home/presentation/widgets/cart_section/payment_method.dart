@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
+import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -437,7 +438,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
               height: 1.33),
         ),
         Text(
-          '${widget.amount.toStringAsFixed(widget.decimalPointSetting)} ${widget.currencySymbol}',
+          '${HelperFunctions.formatNumber(number: widget.amount)} ${widget.currencySymbol}',
           style: context.textTheme.bodyMedium?.sbt.copyWith(
             color: const Color(0xff1D1D1D),
             letterSpacing: 0.18,
@@ -509,8 +510,8 @@ class _PaymentMethodState extends State<PaymentMethod> {
         ),
         Text(
           widget.partialPaymentByWallet > 0
-              ? '${widget.partialPaymentByWallet.toStringAsFixed(widget.decimalPointSetting)} ${widget.currencySymbol}'
-              : '${widget.amount.toStringAsFixed(widget.decimalPointSetting)} ${widget.currencySymbol}',
+              ? '${HelperFunctions.formatNumber(number: widget.partialPaymentByWallet)} ${widget.currencySymbol}'
+              : '${HelperFunctions.formatNumber(number: widget.amount)} ${widget.currencySymbol}',
           style: context.textTheme.bodyMedium?.sbt.copyWith(
             color: const Color(0xff1D1D1D),
             letterSpacing: 0.18,

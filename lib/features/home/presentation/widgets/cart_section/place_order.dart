@@ -486,14 +486,10 @@ class _PlaceOrderState extends State<PlaceOrder> {
                             Text(
                               widget.paymentMethods.value
                                       .contains(PaymentMethods.cod)
-                                  ? widget.totalCashed.toStringAsFixed(state
-                                          .startingSetting
-                                          ?.decimalPointSetting ??
-                                      2)
-                                  : widget.totalPrice.toStringAsFixed(state
-                                          .startingSetting
-                                          ?.decimalPointSetting ??
-                                      2),
+                                  ? HelperFunctions.formatNumber(
+                                      number: widget.totalCashed)
+                                  : HelperFunctions.formatNumber(
+                                      number: widget.totalPrice),
                               style: context.textTheme.bodyMedium?.br.copyWith(
                                   color: const Color(0xffFEFEFE),
                                   letterSpacing: 0.18,
@@ -612,20 +608,19 @@ class _PlaceOrderState extends State<PlaceOrder> {
                               Text(
                                 widget.paymentMethods.value
                                         .contains(PaymentMethods.cod)
-                                    ? widget.totalCashed.toStringAsFixed(state
-                                            .startingSetting
-                                            ?.decimalPointSetting ??
-                                        2)
-                                    : widget.totalPrice.toStringAsFixed(state
-                                            .startingSetting
-                                            ?.decimalPointSetting ??
-                                        2),
+                                    ? HelperFunctions.formatNumber(
+                                        number: widget.totalCashed)
+                                    : HelperFunctions.formatNumber(
+                                        number: widget.totalPrice),
                                 style: context.textTheme.bodyMedium?.br
                                     .copyWith(
                                         color: const Color(0xffFEFEFE),
                                         letterSpacing: 0.18,
                                         fontSize: 14,
                                         height: 0.8),
+                              ),
+                              SizedBox(
+                                width: 2,
                               ),
                               Text(
                                 "${widget.currencySympole}",

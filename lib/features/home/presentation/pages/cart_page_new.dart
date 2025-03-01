@@ -106,18 +106,13 @@ class _CartPageState extends State<CartPage> {
         if (focusNode.hasFocus) {
           focusNode.previousFocus();
         }
-
-        // didCallOnWillPop = true;
         if (Navigator.canPop(context)) {
           if (Navigator.of(context).canPop()) {
             Navigator.of(context).pop();
 
             appBloc.add(ChangeBasePage(0));
             return false;
-            // منع الإغلاق بعد تنفيذ pop
           }
-
-          // يسمح بالإغلاق إذا لم تنطبق أي من الشروط
 
           appBloc.add(ChangeBasePage(0));
           homeBloc.add(ResetAllSelectedAppliedFilterEvent());
@@ -138,20 +133,8 @@ class _CartPageState extends State<CartPage> {
             listener: (context, state) {
               if (state.checkAvailabilityProductCartStatus ==
                   CheckAvailabilityProductCartStatus.success) {
-                print('CheckAvailabilityProductCart');
-                print(state.checkAvailabilityProductCartModel!.data!);
-
                 if (state
                     .checkAvailabilityProductCartModel!.data!.isNullOrEmpty) {
-                  double totlalcashed =
-                      (state.getCartShippingItemsModel?.data?.totalCash ?? 0) *
-                          state.getCurrencyForCountryModel!.data!.currency!
-                              .exchangeRate!;
-
-                  double totlalPrice =
-                      (state.getCartShippingItemsModel?.data?.total ?? 0) *
-                          state.getCurrencyForCountryModel!.data!.currency!
-                              .exchangeRate!;
                   String cartGroupId =
                       state.cartCollection?[0].cartGroupId ?? '';
 
@@ -162,14 +145,9 @@ class _CartPageState extends State<CartPage> {
                   HelperFunctions.slidingNavigation(
                     context,
                     CartDelivaryAddress(
-                      totalCashed: totlalcashed,
                       cartImages: cartImages,
-                      totalPrice: totlalPrice,
                       cartGroupId: cartGroupId,
                       currencySympole: priceSymbol,
-                      couponDiscount: state.getCartShippingItemsModel?.data
-                              ?.couponDiscount ??
-                          0,
                     ),
                   );
                 } else {
@@ -226,8 +204,8 @@ class _CartPageState extends State<CartPage> {
                         current.checkAvailabilityProductCartStatus;
               },
               builder: (context, state) {
-                print(
-                    "4444444440000000000000000000000000000000000004444444444444@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!${state.currentQuantityForCart}");
+                debugPrint(
+                    "444@@@@@@@@@@@@@@@@@@@@@@@@@@!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!${state.currentQuantityForCart}");
 
                 cartImages = [];
 
@@ -378,15 +356,27 @@ class _CartPageState extends State<CartPage> {
                         state.getCurrencyForCountryModel!.data!.currency!
                             .exchangeRate!;
 
+                String totlalPriceFormatted =
+                    HelperFunctions.formatNumber(number: totlalPrice);
+
                 totlalPriceWithoutShipping =
                     (state.getCartShippingItemsModel?.data?.subTotal ?? 0) *
                         state.getCurrencyForCountryModel!.data!.currency!
                             .exchangeRate!;
+
+                String totlalPriceWithoutFormatted =
+                    HelperFunctions.formatNumber(
+                        number: totlalPriceWithoutShipping);
+
                 totlalDiscount =
                     (state.getCartShippingItemsModel?.data?.productsDiscount ??
                             0) *
                         state.getCurrencyForCountryModel!.data!.currency!
                             .exchangeRate!;
+
+                String totlalDiscountormatted =
+                    HelperFunctions.formatNumber(number: totlalDiscount);
+
                 priceSymbol =
                     state.getCurrencyForCountryModel!.data!.currency!.symbol ??
                         "";
@@ -1092,7 +1082,8 @@ class _CartPageState extends State<CartPage> {
                                                                                     ),
                                                                                     Spacer(),
                                                                                     Text(
-                                                                                      " ${totlalPriceWithoutShipping.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
+                                                                                      totlalPriceWithoutFormatted,
+                                                                                      // " ${totlalPriceWithoutShipping.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
                                                                                       style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 13.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
                                                                                     ),
                                                                                     Text(
@@ -1162,14 +1153,15 @@ class _CartPageState extends State<CartPage> {
                                                                                         left: LanguageService.languageCode != "ar" ? 2 : 10.w,
                                                                                       ),
                                                                                       child: Text(
-                                                                                        "${LocaleKeys.total_discount.tr()} ${(totlalPrice == 0 ? 0 : ((totlalDiscount) / totlalPriceWithoutShipping) * 100).toStringAsFixed(1)}% ",
+                                                                                        "${LocaleKeys.total_discount.tr()} ${HelperFunctions.formatNumber(number: (totlalPrice == 0 ? 0 : ((totlalDiscount) / totlalPriceWithoutShipping) * 100))}% ",
                                                                                         strutStyle: LanguageService.languageCode != "ar" ? null : StrutStyle(height: 0.1, leading: 0.1),
                                                                                         style: context.textTheme.bodyMedium?.mr.copyWith(fontSize: 13.sp, color: const Color(0xffA28E5B), letterSpacing: 0.18, height: LanguageService.languageCode != "ar" ? 1.33 : 1),
                                                                                       ),
                                                                                     ),
                                                                                     Spacer(),
                                                                                     Text(
-                                                                                      "- ${(totlalDiscount).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
+                                                                                      '- $totlalDiscountormatted',
+                                                                                      // "- ${(totlalDiscount).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
                                                                                       style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 13.sp, color: const Color(0xffA28E5B), letterSpacing: 0.18, height: 1.33),
                                                                                     ),
                                                                                     Text(
@@ -1385,11 +1377,13 @@ class _CartPageState extends State<CartPage> {
                                                                                     ),
                                                                                     Spacer(),
                                                                                     Text(
-                                                                                      "${(totlalPrice + totlalDiscount).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
+                                                                                      HelperFunctions.formatNumber(number: (totlalPrice + totlalDiscount)),
+                                                                                      // "${(totlalPrice + totlalDiscount).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
                                                                                       style: context.textTheme.bodyMedium?.ra.copyWith(decoration: TextDecoration.lineThrough, fontSize: 16, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
                                                                                     ),
                                                                                     Text(
-                                                                                      "${totlalPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
+                                                                                      totlalPriceFormatted,
+                                                                                      // "${totlalPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
                                                                                       style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 16.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
                                                                                     ),
                                                                                     Text(
@@ -1614,7 +1608,8 @@ class _CartPageState extends State<CartPage> {
                                                                                                 ),
                                                                                               ),
                                                                                               Text(
-                                                                                                " ${totlalPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} ",
+                                                                                                totlalPriceFormatted,
+                                                                                                // " ${totlalPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} ",
                                                                                                 style: context.textTheme.bodyMedium?.ba.copyWith(
                                                                                                   fontSize: 14.sp,
                                                                                                   color: const Color(0xffFEFEFE),
@@ -1690,7 +1685,6 @@ class _CartPageState extends State<CartPage> {
                                                                                           );
                                                                                         }
                                                                                       }
-                                                                                      ;
                                                                                     },
                                                                                     child: Container(
                                                                                         alignment: Alignment.center,
@@ -1756,7 +1750,8 @@ class _CartPageState extends State<CartPage> {
                                                                                                         ),
                                                                                                       ),
                                                                                                       Text(
-                                                                                                        " ${totlalPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} ",
+                                                                                                        totlalPriceFormatted,
+                                                                                                        // " ${totlalPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} ",
                                                                                                         style: context.textTheme.bodyMedium?.ba.copyWith(
                                                                                                           fontSize: 14.sp,
                                                                                                           color: const Color(0xffFEFEFE),
