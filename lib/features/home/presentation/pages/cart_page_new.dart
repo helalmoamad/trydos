@@ -983,8 +983,9 @@ class _CartPageState extends State<CartPage> {
                                                                   : Container(
                                                                       height:
                                                                           27,
-                                                                      child:
-                                                                          CartDetailsSheetHeader(),
+                                                                      child: CartDetailsSheetHeader(
+                                                                          shippingCost:
+                                                                              (state.getCartShippingItemsModel?.data?.totalShippingCost ?? 0)),
                                                                     ),
                                                               !isMoreInfo
                                                                   ? SizedBox
@@ -1309,7 +1310,7 @@ class _CartPageState extends State<CartPage> {
                                                                                       style: context.textTheme.bodyMedium?.br.copyWith(decoration: TextDecoration.lineThrough, decorationColor: const Color(0xff2FA52F), color: const Color(0xff2FA52F), fontSize: 13, letterSpacing: 0.18, height: 1.33),
                                                                                     ),*/
                                                                                     Text(
-                                                                                      " ${((state.getCartShippingItemsModel?.data?.totalShippingCost ?? 0) * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
+                                                                                      " ${((state.getCartShippingItemsModel?.data?.totalShippingCost ?? 0) * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSettings ?? 2)}  ",
                                                                                       style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 13.sp, color: const Color(0xff2FA52F), letterSpacing: 0.18, height: 1.33),
                                                                                     ),
                                                                                     Text(

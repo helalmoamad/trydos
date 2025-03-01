@@ -476,21 +476,21 @@ class HelperFunctions {
       if (result.endsWith('.0')) {
         result = result.substring(0, result.length - 2);
       }
-      return '$result $bilion';
+      return '$result$bilion';
     } else if (number >= 1e6) {
       String milion = LanguageService.languageCode != "ar" ? 'M' : 'مليون';
       String result = (number / 1e6).toStringAsFixed(1);
       if (result.endsWith('.0')) {
         result = result.substring(0, result.length - 2);
       }
-      return '$result $milion';
+      return '$result$milion';
     } else if (number >= 1e3) {
       String thousand = LanguageService.languageCode != "ar" ? 'K' : 'ألف';
       String result = (number / 1e3).toStringAsFixed(1);
       if (result.endsWith('.0')) {
         result = result.substring(0, result.length - 2);
       }
-      return '$result $thousand';
+      return '$result$thousand';
     } else {
       return number.toString();
     }

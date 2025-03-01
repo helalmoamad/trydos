@@ -808,7 +808,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                                     .pricesProductListingFilterListKey),
                                                             decimalPoint: state
                                                                     .startingSetting
-                                                                    ?.decimalPointSetting ??
+                                                                    ?.decimalPointSettings ??
                                                                 2,
                                                             fromHomeSearch:
                                                                 widget
@@ -896,7 +896,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                       minPrice: minPrice!,
                       lowerAndUpperBound: lowerAndUpperPrices!,
                       decimalPoint:
-                          state.startingSetting?.decimalPointSetting ?? 2,
+                          state.startingSetting?.decimalPointSettings ?? 2,
                       boutiqueSlug: widget.boutiqueSlug,
                       category: widget.category,
                       pricrSymbol: currencySymbol,
@@ -2291,8 +2291,8 @@ Widget choosedOrAppliedFiltersWidget({
                       ),
                       MyTextWidget(
                         filters?.prices?.minPrice != null
-                            ? '${(filters!.prices!.minPrice! * exchangeRate).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2).toString()} / '
-                            : '${lowerAndUpperPrices!.value.item1.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} / ',
+                            ? '${(filters!.prices!.minPrice! * exchangeRate).toStringAsFixed(state.startingSetting?.decimalPointSettings ?? 2).toString()} / '
+                            : '${lowerAndUpperPrices!.value.item1.toStringAsFixed(state.startingSetting?.decimalPointSettings ?? 2)} / ',
                         maxLines: 1,
                         textAlign: TextAlign.center,
                         style: context.textTheme.titleMedium?.rq.copyWith(
@@ -2302,8 +2302,8 @@ Widget choosedOrAppliedFiltersWidget({
                       ),
                       MyTextWidget(
                         filters?.prices?.maxPrice != null
-                            ? '${(filters!.prices!.maxPrice! * exchangeRate).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2).toString()} '
-                            : '${lowerAndUpperPrices!.value.item2.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ',
+                            ? '${(filters!.prices!.maxPrice! * exchangeRate).toStringAsFixed(state.startingSetting?.decimalPointSettings ?? 2).toString()} '
+                            : '${lowerAndUpperPrices!.value.item2.toStringAsFixed(state.startingSetting?.decimalPointSettings ?? 2)}  ',
                         maxLines: 1,
                         textAlign: TextAlign.center,
                         style: context.textTheme.titleMedium?.rq.copyWith(

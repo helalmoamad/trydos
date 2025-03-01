@@ -25,7 +25,9 @@ import '../../../../authentication/presentation/manager/auth_bloc.dart';
 
 class ProductShippingAndDelivery extends StatelessWidget {
   final String shippingDay;
-  ProductShippingAndDelivery({super.key, required this.shippingDay});
+  final double shippingCost;
+  ProductShippingAndDelivery(
+      {super.key, required this.shippingDay, required this.shippingCost});
 
   final ValueNotifier<bool> isExpanded = ValueNotifier(false);
 
@@ -481,57 +483,59 @@ class ProductShippingAndDelivery extends StatelessWidget {
           SizedBox(
             height: 10,
           ),
-          Container(
-            padding: EdgeInsets.symmetric(vertical: 9),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                color: Color(0xffF8F8F8)),
-            child: Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    width: 10,
-                  ),
-                  SvgPicture.asset(AppAssets.freeShippingSvg),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      MyTextWidget(
-                        '${LocaleKeys.free_shipping.tr()}',
-                        style: context.textTheme.titleLarge?.rq.copyWith(
-                            height: 16 / 13, color: Color(0xff8d8d8d)),
-                      ),
-                      Flexible(
-                        child: RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text:
-                                    '${LocaleKeys.shipping_is_completely_free_without_any_extras.tr()}',
-                                style:
-                                    context.textTheme.titleMedium?.lq.copyWith(
-                                  color: const Color(0xff8d8d8d),
-                                  height: 14 / 11,
-                                ),
-                              ),
-                            ],
-                          ),
-                          textHeightBehavior: TextHeightBehavior(
-                              applyHeightToFirstAscent: false),
-                          textAlign: TextAlign.start,
+          shippingCost == 0
+              ? SizedBox.shrink()
+              : Container(
+                  padding: EdgeInsets.symmetric(vertical: 9),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      color: Color(0xffF8F8F8)),
+                  child: Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: 10,
                         ),
-                      ),
-                    ],
+                        SvgPicture.asset(AppAssets.freeShippingSvg),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            MyTextWidget(
+                              '${LocaleKeys.free_shipping.tr()}',
+                              style: context.textTheme.titleLarge?.rq.copyWith(
+                                  height: 16 / 13, color: Color(0xff8d8d8d)),
+                            ),
+                            Flexible(
+                              child: RichText(
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text:
+                                          '${LocaleKeys.shipping_is_completely_free_without_any_extras.tr()}',
+                                      style: context.textTheme.titleMedium?.lq
+                                          .copyWith(
+                                        color: const Color(0xff8d8d8d),
+                                        height: 14 / 11,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                textHeightBehavior: TextHeightBehavior(
+                                    applyHeightToFirstAscent: false),
+                                textAlign: TextAlign.start,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ],
-              ),
-            ),
-          ),
+                ),
           SizedBox(
             height: 10,
           ),

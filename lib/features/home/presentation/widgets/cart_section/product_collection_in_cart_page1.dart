@@ -14,6 +14,8 @@ import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_old_cart_model.dart';
+import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
+    as color;
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
@@ -193,7 +195,24 @@ class _ProductCollectionInCartPage1State
                                       ? -1
                                       : state.productITemForCart[cartCollection[index].productId.toString()]!.syncColorImages.isNullOrEmpty
                                           ? -1
-                                          : state.productITemForCart[cartCollection[index].productId.toString()]!.syncColorImages!.indexOf(state.productITemForCart[cartCollection[index].productId.toString()]!.syncColorImages!.firstWhere((element) => element.colorName == (!cartCollection![index].variations.isNullOrEmpty ? cartCollection[index].variations![0].color ?? "" : "")));
+                                          : state.productITemForCart[cartCollection[index].productId.toString()]!.syncColorImages!.indexOf(state.productITemForCart[cartCollection[index].productId.toString()]!.syncColorImages!.firstWhere(
+                                              (element) =>
+                                                  element.colorName ==
+                                                  (!cartCollection![index]
+                                                          .variations
+                                                          .isNullOrEmpty
+                                                      ? cartCollection[index]
+                                                              .variations![0]
+                                                              .color ??
+                                                          ""
+                                                      : ""),
+                                              orElse: () =>
+                                                  color.SyncColorImage(
+                                                      colorName: "null",
+                                                      images: [],
+                                                      colorTrend: false),
+                                            ));
+
                               if (indexess != -1) {
                                 BlocProvider.of<HomeBloc>(context).add(
                                     AddCurrentSelectedColorEvent(
@@ -743,7 +762,7 @@ class _ProductCollectionInCartPage1State
                                                                 .syncColorImages
                                                                 .isNullOrEmpty
                                                             ? -1
-                                                            : state.productITemForCart[cartCollection[index].productId.toString()]!.syncColorImages!.indexOf(state.productITemForCart[cartCollection[index].productId.toString()]!.syncColorImages!.firstWhere((element) => element.colorName == (!cartCollection![index].variations.isNullOrEmpty ? cartCollection[index].variations![0].color ?? "" : "")));
+                                                            : state.productITemForCart[cartCollection[index].productId.toString()]!.syncColorImages!.indexOf(state.productITemForCart[cartCollection[index].productId.toString()]!.syncColorImages!.firstWhere((element) => element.colorName == (!cartCollection![index].variations.isNullOrEmpty ? cartCollection[index].variations![0].color ?? "" : ""), orElse: () => color.SyncColorImage(colorName: "null", images: [], colorTrend: false)));
                                                     if (indexess != -1) {
                                                       BlocProvider.of<HomeBloc>(
                                                               context)
@@ -981,7 +1000,8 @@ class _ProductCollectionInCartPage1State
                                               children: [
                                                 Text(
                                                   isOldCart
-                                                      ? (oldCartCollection![
+                                                      ? HelperFunctions.formatNumber(
+                                                          number: (oldCartCollection![
                                                                       index]
                                                                   .priceOfVariant! *
                                                               state
@@ -991,25 +1011,29 @@ class _ProductCollectionInCartPage1State
                                                                   .exchangeRate! *
                                                               oldCartCollection[
                                                                       index]
-                                                                  .quantity!)
-                                                          .toStringAsFixed(state
+                                                                  .quantity!))
+                                                      /*  .toStringAsFixed(state
                                                                   .startingSetting
                                                                   ?.decimalPointSetting ??
-                                                              2)
-                                                      : (cartCollection![index]
-                                                                  .price! *
-                                                              state
-                                                                  .getCurrencyForCountryModel!
-                                                                  .data!
-                                                                  .currency!
-                                                                  .exchangeRate! *
-                                                              cartCollection[
-                                                                      index]
-                                                                  .quantity!)
-                                                          .toStringAsFixed(state
+                                                              2)*/
+                                                      : HelperFunctions.formatNumber(
+                                                          number:
+                                                              (cartCollection![
+                                                                          index]
+                                                                      .price! *
+                                                                  state
+                                                                      .getCurrencyForCountryModel!
+                                                                      .data!
+                                                                      .currency!
+                                                                      .exchangeRate! *
+                                                                  cartCollection[
+                                                                          index]
+                                                                      .quantity!))
+                                                  /* .toStringAsFixed(state
                                                                   .startingSetting
                                                                   ?.decimalPointSetting ??
-                                                              2),
+                                                              2)*/
+                                                  ,
                                                   style: context
                                                       .textTheme.bodyMedium?.ra
                                                       .copyWith(
@@ -1051,7 +1075,9 @@ class _ProductCollectionInCartPage1State
                                                                         index]
                                                                     .price
                                                             ? ""
-                                                            : "${(cartCollection[index].offerPrice! * cartCollection[index].quantity! * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} ",
+                                                            : "${HelperFunctions.formatNumber(number: (cartCollection[index].offerPrice! * cartCollection[index].quantity! * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!))
+                                                            //.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)
+                                                            } ",
                                                     style: context.textTheme
                                                         .bodyMedium?.br
                                                         .copyWith(
@@ -1218,7 +1244,7 @@ class _ProductCollectionInCartPage1State
                                                     : state
                                                         .productITemForCart[cartCollection[index].productId.toString()]!
                                                         .syncColorImages!
-                                                        .indexOf(state.productITemForCart[cartCollection[index].productId.toString()]!.syncColorImages!.firstWhere((element) => element.colorName == (!cartCollection![index].variations.isNullOrEmpty ? cartCollection[index].variations![0].color ?? "" : "")));
+                                                        .indexOf(state.productITemForCart[cartCollection[index].productId.toString()]!.syncColorImages!.firstWhere((element) => element.colorName == (!cartCollection![index].variations.isNullOrEmpty ? cartCollection[index].variations![0].color ?? "" : ""), orElse: () => color.SyncColorImage(colorName: "null", images: [], colorTrend: false)));
                                             if (indexess != -1) {
                                               BlocProvider.of<HomeBloc>(context)
                                                   .add(AddCurrentSelectedColorEvent(

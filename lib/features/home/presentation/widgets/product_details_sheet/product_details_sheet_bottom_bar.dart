@@ -334,10 +334,10 @@ class _ProductDetailsSheetBottomBarState
                                                                       0) {
                                                                     if (state.updateItemInCartStatus == UpdateItemInCartStatus.loading ||
                                                                         state.addItemInCartStatus ==
-                                                                            UpdateItemInCartStatus
+                                                                            AddItemInCartStatus
                                                                                 .loading ||
                                                                         state.deleteItemInCartStatus ==
-                                                                            UpdateItemInCartStatus.loading) {
+                                                                            DeleteItemInCartStatus.loading) {
                                                                       return;
                                                                     }
                                                                     /*  if (details
@@ -443,10 +443,10 @@ class _ProductDetailsSheetBottomBarState
                                                                   } else {
                                                                     if (state.updateItemInCartStatus == UpdateItemInCartStatus.loading ||
                                                                         state.addItemInCartStatus ==
-                                                                            UpdateItemInCartStatus
+                                                                            AddItemInCartStatus
                                                                                 .loading ||
                                                                         state.deleteItemInCartStatus ==
-                                                                            UpdateItemInCartStatus.loading) {
+                                                                            DeleteItemInCartStatus.loading) {
                                                                       return;
                                                                     }
                                                                     animationController

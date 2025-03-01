@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
@@ -23,8 +24,10 @@ class ProductDetailsSheetHeader extends StatefulWidget {
   final String offerPrice;
   final String priceSymbol;
   final int decimalPoint;
+  final double shippingCost;
   const ProductDetailsSheetHeader({
     super.key,
+    required this.shippingCost,
     required this.addToBagButtonShapeNotifier,
     required this.offerPrice,
     required this.decimalPoint,
@@ -40,17 +43,6 @@ class ProductDetailsSheetHeader extends StatefulWidget {
 }
 
 class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
-  List<String> svg = [
-    AppAssets.freeShippingSvg,
-    AppAssets.freeReturnSvg,
-    AppAssets.arrivalOfShippingSvg,
-  ];
-
-  List<String> texts = [
-    '${LocaleKeys.free_shipping.tr()}',
-    '${LocaleKeys.free_return.tr()}',
-    '${LocaleKeys.ship_to_you_accepted.tr()} 2 June',
-  ];
   ScrollController _scrollController = ScrollController();
   Timer? _timer;
   Timer? _recallForAutoScroll;
@@ -103,6 +95,21 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
 
   @override
   Widget build(BuildContext context) {
+    List<String> svg = [
+      AppAssets.freeShippingSvg,
+      AppAssets.freeReturnSvg,
+      AppAssets.arrivalOfShippingSvg,
+    ];
+
+    List<String> texts = [
+      '${LocaleKeys.free_shipping.tr()}',
+      '${LocaleKeys.free_return.tr()}',
+      '${LocaleKeys.ship_to_you_accepted.tr()} 2 June',
+    ];
+    if (widget.shippingCost == 0) {
+      texts.remove('${LocaleKeys.free_shipping.tr()}');
+      svg.remove(AppAssets.freeShippingSvg);
+    }
     FlutterError.onError = (FlutterErrorDetails error) {
       try {
         BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
@@ -131,8 +138,9 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       MyTextWidget(
-                        double.parse(widget.price)
-                            .toStringAsFixed(widget.decimalPoint),
+                        HelperFunctions.formatNumber(
+                            number: double.parse(widget.price)),
+                        //  .toStringAsFixed(widget.decimalPoint),
                         style: textTheme.headlineMedium?.rq.copyWith(
                           color: Color(0xffC4C2C2),
                           fontSize: 24.sp,
@@ -144,8 +152,9 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                         width: 5,
                       ),
                       MyTextWidget(
-                        double.parse(widget.offerPrice)
-                            .toStringAsFixed(widget.decimalPoint),
+                        HelperFunctions.formatNumber(
+                            number: double.parse(widget.offerPrice)),
+                        //      .toStringAsFixed(widget.decimalPoint),
                         style: textTheme.headlineMedium?.bq.copyWith(
                           fontSize: 24.sp,
                           color: Color(0xff505050),
@@ -251,7 +260,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                               );
                             },
                             scrollDirection: Axis.horizontal,
-                            itemCount: 3,
+                            itemCount: svg.length,
                           ),
                         ),
                       )
