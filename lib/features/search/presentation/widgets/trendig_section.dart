@@ -180,6 +180,7 @@ class _TrendingSectionState extends State<TrendingSection> {
                               alignment: Alignment.centerLeft,
                               child: InkWell(
                                 onTap: () {
+                                  changeViewMode.value = !changeViewMode.value;
                                   widget.controller.text =
                                       widget.popularSearchTerms[index].term ??
                                           "";

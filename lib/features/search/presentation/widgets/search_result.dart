@@ -78,8 +78,6 @@ class _SearchResultState extends ThemeState<SearchResult> {
           if (state.getProductListingWithFiltersPaginationModels['search']
                   ?.paginationStatus ==
               PaginationStatus.loading) {
-            print(
-                "3################${state.getProductListingWithFiltersPaginationModels['${key}']?.paginationStatus}");
             return Column(children: [
               SizedBox(
                 height: 10,

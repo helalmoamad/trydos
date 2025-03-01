@@ -279,8 +279,12 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                 0) {
               currentAppliedFilterSllug =
                   appliedFiltersByUser?.filters?.brands?[0].slug;
-            } else if ((appliedFiltersByUser
-                        ?.filters?.attributes?[0].options?.length ??
+            } else if ((((appliedFiltersByUser
+                                ?.filters?.attributes?.isNullOrEmpty ??
+                            false)
+                        ? 0
+                        : appliedFiltersByUser
+                            ?.filters?.attributes?[0].options?.length) ??
                     0) >
                 0) {
               currentAppliedFilterSllug =
@@ -303,7 +307,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                   0) +
                               (appliedFiltersByUser?.filters?.colors?.length ??
                                   0) +
-                              (appliedFiltersByUser?.filters?.attributes?[0].options?.length ??
+                              (((appliedFiltersByUser?.filters?.attributes?.isNullOrEmpty ?? false) ? 0 : appliedFiltersByUser?.filters?.attributes?[0].options?.length) ??
                                   0) ==
                           1 &&
                       !widget.fromSearch &&
@@ -315,8 +319,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                   0) +
                               (appliedFiltersByUser?.filters?.colors?.length ??
                                   0) +
-                              (appliedFiltersByUser?.filters?.attributes?[0]
-                                      .options?.length ??
+                              (((appliedFiltersByUser?.filters?.attributes?.isNullOrEmpty ?? false) ? 0 : appliedFiltersByUser?.filters?.attributes?[0].options?.length) ??
                                   0) ==
                           0 &&
                       !widget.fromSearch &&

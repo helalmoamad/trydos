@@ -163,7 +163,17 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                                 widget.hideTitle
                                     ? homeBloc.state.appliedFiltersByUser[key]
                                         ?.filters
-                                        ?.copyWithSaveOtherField()
+                                        ?.copyWithSaveOtherField(
+                                            prices: homeBloc
+                                                .state
+                                                .appliedFiltersByUser[key]
+                                                ?.filters
+                                                ?.prices,
+                                            searchText: homeBloc
+                                                .state
+                                                .appliedFiltersByUser[key]
+                                                ?.filters
+                                                ?.searchText)
                                     : homeBloc.state.choosedFiltersByUser[key]
                                         ?.filters;
                             List<Brand>? brands = List.of(

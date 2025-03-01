@@ -83,7 +83,6 @@ class ProductListingPage extends StatefulWidget {
   final bool fromBackground;
   final GetProductFiltersModel? getProductFiltersModel;
   final ValueNotifier<bool>? isShowPanelForVerified;
-  final String? searchText;
 
   const ProductListingPage({
     super.key,
@@ -93,7 +92,6 @@ class ProductListingPage extends StatefulWidget {
     this.boutiqueDescription,
     this.isShowPanelForVerified,
     this.controllerFormSearchPage,
-    this.searchText,
     this.fromNotificationCategory,
     this.withSlidingImages = false,
     this.banner,
@@ -216,8 +214,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
         '${(widget.category ?? '')}';
     fromSearch = widget.fromSearch;
     searchVisible.value = false;
-    if ((widget.searchText?.length ?? 0) > 2) {
-      controller.text = widget.searchText!;
+    if ((widget.controllerFormSearchPage?.text.length ?? 0) > 2) {
+      controller.text = widget.controllerFormSearchPage?.text ?? "";
       resetSearchAfterSearchingWhileRemoveSearch = true;
     }
     Timer.periodic(Duration(milliseconds: 100), postFrameCallback);
@@ -285,7 +283,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
           boutiqueSlug: widget.boutiqueSlug,
           fromSearch: widget.fromSearch,
           category: widget.category,
-          searchText: widget.fromSearch ? widget.searchText : null,
+          searchText: controller?.text,
           offset: 1));
     }
     scrollController.addListener(() {
@@ -323,7 +321,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
             getWithPagination: true,
             fromSearch: widget.fromSearch,
             category: widget.category,
-            searchText: widget.fromSearch ? widget.searchText : null,
+            searchText: controller.text,
             offset: 2));
       }
     });
@@ -1802,18 +1800,30 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                 widget.fromSearch) {
                                               currentAppliedFilterSllug =
                                                   "search";
-                                            } else if ((appliedFiltersByUser
-                                                        ?.filters
-                                                        ?.attributes?[0]
-                                                        .options
-                                                        ?.length ??
+                                            } else if ((((appliedFiltersByUser
+                                                                ?.filters
+                                                                ?.attributes
+                                                                ?.isNullOrEmpty ??
+                                                            false)
+                                                        ? 0
+                                                        : appliedFiltersByUser
+                                                            ?.filters
+                                                            ?.attributes?[0]
+                                                            .options
+                                                            ?.length) ??
                                                     0) >
                                                 0) {
                                               currentAppliedFilterSllug =
-                                                  appliedFiltersByUser
-                                                      ?.filters
-                                                      ?.attributes?[0]
-                                                      .options?[0];
+                                                  ((appliedFiltersByUser
+                                                              ?.filters
+                                                              ?.attributes
+                                                              ?.isNullOrEmpty ??
+                                                          false)
+                                                      ? "null"
+                                                      : appliedFiltersByUser
+                                                          ?.filters
+                                                          ?.attributes?[0]
+                                                          .options?[0]);
                                             } else if ((appliedFiltersByUser
                                                         ?.filters
                                                         ?.colors
@@ -1848,7 +1858,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                         ?.colors
                                                                         ?.length ??
                                                                     0) +
-                                                                (appliedFiltersByUser?.filters?.attributes?[0].options?.length ??
+                                                                (((appliedFiltersByUser?.filters?.attributes?.isNullOrEmpty ?? false) ? 0 : appliedFiltersByUser?.filters?.attributes?[0].options?.length) ??
                                                                     0) ==
                                                             1 &&
                                                         !widget.fromSearch &&
@@ -1863,12 +1873,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                     ?.brands
                                                                     ?.length ??
                                                                 0) +
-                                                            (appliedFiltersByUser
-                                                                    ?.filters
-                                                                    ?.colors
-                                                                    ?.length ??
-                                                                0) +
-                                                            (appliedFiltersByUser?.filters?.attributes?[0].options?.length ?? 0) ==
+                                                            (appliedFiltersByUser?.filters?.colors?.length ?? 0) +
+                                                            (((appliedFiltersByUser?.filters?.attributes?.isNullOrEmpty ?? false) ? 0 : appliedFiltersByUser?.filters?.attributes?[0].options?.length) ?? 0) ==
                                                         0 &&
                                                     !widget.fromSearch &&
                                                     (appliedFiltersByUser?.filters?.prices?.minPrice != null))) {
@@ -1918,7 +1924,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                             ? 145
                                                             : widget.fromSearch
                                                                 ? 145
-                                                                : 115,
+                                                                : controller.text.length >
+                                                                        2
+                                                                    ? 145
+                                                                    : 115,
                                                 flexibleSpace:
                                                     StackedFiltersList(
                                                         expandingFiltersStack:
@@ -1933,7 +1942,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                         fromSearch: fromSearch!,
                                                         searchText: controller.text.length > 2
                                                             ? controller.text
-                                                            : widget.searchText,
+                                                            : null,
                                                         filterPageExpanded:
                                                             state.isExpandedForListingPage ??
                                                                 false,
@@ -1947,8 +1956,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                         displayAppliedFiltersOnly:
                                                             (state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.items.length ?? 0) < 2 &&
                                                                 state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.paginationStatus ==
-                                                                    PaginationStatus
-                                                                        .success,
+                                                                    PaginationStatus.success,
                                                         category: widget.category,
                                                         boutiqueSlug: widget.boutiqueSlug,
                                                         controller: isExpanded ? scrollController : null,
@@ -2033,7 +2041,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                         .isGettingProductListingWithPaginationForAppearProduct &&
                                                     (appliedFiltersByUser?.filters?.searchText?.length ?? 0) <
                                                         3 &&
-                                                    ((appliedFiltersByUser?.filters?.categories?.length ?? 0) + (appliedFiltersByUser?.filters?.brands?.length ?? 0) + (appliedFiltersByUser?.filters?.colors?.length ?? 0) + (appliedFiltersByUser?.filters?.attributes?[0].options?.length ?? 0) == 1 &&
+                                                    ((appliedFiltersByUser?.filters?.categories?.length ?? 0) + (appliedFiltersByUser?.filters?.brands?.length ?? 0) + (appliedFiltersByUser?.filters?.colors?.length ?? 0) + (((appliedFiltersByUser?.filters?.attributes?.isNullOrEmpty ?? false) ? 0 : appliedFiltersByUser?.filters?.attributes?[0].options?.length) ?? 0) == 1 &&
                                                         !widget.fromSearch &&
                                                         (appliedFiltersByUser
                                                                 ?.filters
@@ -2051,15 +2059,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                     ?.colors
                                                                     ?.length ??
                                                                 0) +
-                                                            (appliedFiltersByUser?.filters?.attributes?[0].options?.length ??
+                                                            (((appliedFiltersByUser?.filters?.attributes?.isNullOrEmpty ?? false) ? 0 : appliedFiltersByUser?.filters?.attributes?[0].options?.length) ??
                                                                 0) ==
                                                         0 &&
                                                     !widget.fromSearch &&
                                                     !isExpanded &&
-                                                    (appliedFiltersByUser
-                                                            ?.filters
-                                                            ?.prices
-                                                            ?.minPrice !=
+                                                    (appliedFiltersByUser?.filters?.prices?.minPrice !=
                                                         null))) {
                                               if ((appliedFiltersByUser
                                                           ?.filters
@@ -2083,18 +2088,30 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                         ?.filters
                                                         ?.brands?[0]
                                                         .slug;
-                                              } else if ((appliedFiltersByUser
-                                                          ?.filters
-                                                          ?.attributes?[0]
-                                                          .options
-                                                          ?.length ??
+                                              } else if ((((appliedFiltersByUser
+                                                                  ?.filters
+                                                                  ?.attributes
+                                                                  ?.isNullOrEmpty ??
+                                                              false)
+                                                          ? 0
+                                                          : appliedFiltersByUser
+                                                              ?.filters
+                                                              ?.attributes?[0]
+                                                              .options
+                                                              ?.length) ??
                                                       0) >
                                                   0) {
                                                 currentAppliedFilterSllug =
-                                                    appliedFiltersByUser
-                                                        ?.filters
-                                                        ?.attributes?[0]
-                                                        .options?[0];
+                                                    ((appliedFiltersByUser
+                                                                ?.filters
+                                                                ?.attributes
+                                                                ?.isNullOrEmpty ??
+                                                            false)
+                                                        ? "null"
+                                                        : appliedFiltersByUser
+                                                            ?.filters
+                                                            ?.attributes?[0]
+                                                            .options?[0]);
                                               } else if ((appliedFiltersByUser
                                                           ?.filters
                                                           ?.colors
@@ -2118,7 +2135,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                 !state.isGettingProductListingWithPaginationForAppearProduct &&
                                                 (appliedFiltersByUser?.filters?.searchText?.length ?? 0) < 3 &&
                                                 controller.text.length < 3 &&
-                                                ((appliedFiltersByUser?.filters?.categories?.length ?? 0) + (appliedFiltersByUser?.filters?.brands?.length ?? 0) + (appliedFiltersByUser?.filters?.colors?.length ?? 0) + (appliedFiltersByUser?.filters?.attributes?[0].options?.length ?? 0) == 0 && (appliedFiltersByUser?.filters?.prices?.minPrice == null)))) {
+                                                ((appliedFiltersByUser?.filters?.categories?.length ?? 0) + (appliedFiltersByUser?.filters?.brands?.length ?? 0) + (appliedFiltersByUser?.filters?.colors?.length ?? 0) + (((appliedFiltersByUser?.filters?.attributes?.isNullOrEmpty ?? false) ? 0 : appliedFiltersByUser?.filters?.attributes?[0].options?.length) ?? 0) == 0 && (appliedFiltersByUser?.filters?.prices?.minPrice == null)))) {
                                               currentAppliedFilterSllug =
                                                   "Empty";
                                               homeBloc.add(

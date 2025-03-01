@@ -1791,7 +1791,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                 '${prevAppliedFiltersByUser[key]?.filters?.prices?.minPrice}-${prevAppliedFiltersByUser[key]?.filters?.prices?.maxPrice}'
               ]
             : null;
-    List<String>? optionsForAnalytics = filters.attributes?[0].options;
+    List<String>? optionsForAnalytics =
+        filters.attributes.isNullOrEmpty ? [] : filters.attributes?[0].options;
     String? searchTextForAnalytics = filters.searchText ??
         state.appliedFiltersByUser[key]?.filters?.searchText;
 
@@ -2495,10 +2496,19 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   @override
   Map<String, dynamic>? toJson(HomeState state) {
+    Map<String, PaginationModel<Products>?>
+        getProductListingWithFiltersPaginationModels =
+        Map.of(state.getProductListingWithFiltersPaginationModels);
+    getProductListingWithFiltersPaginationModels["search"] =
+        PaginationModel.init();
+    getProductListingWithFiltersPaginationModels["searchwithoutFilter"] =
+        PaginationModel.init();
     return state
         .copyWith(
           currentSelectedColorForEveryProduct: {},
           reRequestTheseProductListingInBoutiques: {},
+          getProductListingWithFiltersPaginationModels:
+              getProductListingWithFiltersPaginationModels,
           reRequestTheseBoutiques: {},
           reRequestProductWithFilters: {},
           productStatus: {},
