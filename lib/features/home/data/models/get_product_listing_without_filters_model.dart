@@ -128,10 +128,11 @@ class Products {
   final dynamic flashDealDetails;
   final dynamic flashDealMaxAllowedQuantity;
   final String? dateNow;
-  final dynamic? description;
-  final dynamic? model;
-  final dynamic? features;
-
+  final dynamic description;
+  final dynamic model;
+  final dynamic features;
+  final bool? shippingCostMultiplyWithQuantity;
+  final double? shippingCost;
   final List<Variation>? variation;
   final List<ChoiceOption>? choiceOptions;
 
@@ -195,6 +196,8 @@ class Products {
     this.variation,
     this.isLiked,
     this.slugEnTopic,
+    this.shippingCostMultiplyWithQuantity,
+    this.shippingCost,
     this.countOfLikes,
     this.choiceOptions,
     this.hasDiscount,
@@ -234,6 +237,8 @@ class Products {
     List<Color>? colors,
     List<SyncColorImage>? syncColorImages,
     double? price,
+    bool? shippingCostMultiplyWithQuantity,
+    double? shippingCost,
     String? priceFormatted,
     double? offerPrice,
     String? offerPriceFormatted,
@@ -313,6 +318,9 @@ class Products {
         deliveryAt: deliveryAt ?? this.deliveryAt,
         tax: tax ?? this.tax,
         unitPrice: unitPrice ?? this.unitPrice,
+        shippingCostMultiplyWithQuantity: shippingCostMultiplyWithQuantity ??
+            this.shippingCostMultiplyWithQuantity,
+        shippingCost: shippingCost ?? this.shippingCost,
         shippingDays: shippingDays ?? this.shippingDays,
         currentStock: currentStock ?? this.currentStock,
         leftStock: leftStock ?? this.leftStock,
@@ -344,6 +352,9 @@ class Products {
       slug: json["slug"],
       shareLink: json["share_link"],
       details: json["details"],
+      shippingCostMultiplyWithQuantity:
+          json["shipping_cost_multiply_with_quantity"],
+      shippingCost: double.tryParse(json["shipping_cost"].toString()),
       thumbnail: json["thumbnail"] == null
           ? null
           : Thumbnail.fromJson(json["thumbnail"]),
@@ -451,6 +462,9 @@ class Products {
         "is_favourite": isFavourite,
         "in_stock": inStock,
         "rating": rating?.toJson(),
+        "shipping_cost_multiply_with_quantity":
+            shippingCostMultiplyWithQuantity,
+        "shipping_cost": shippingCost?.toDouble(),
         "collected_after_ordering": collectedAfterOrdering,
         "flash_deal_details": flashDealDetails,
         "flash_deal_max_allowed_quantity": flashDealMaxAllowedQuantity,

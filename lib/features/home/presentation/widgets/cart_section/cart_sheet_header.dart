@@ -19,7 +19,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 
 class CartDetailsSheetHeader extends StatefulWidget {
+  final double shippingCost;
   const CartDetailsSheetHeader({
+    required this.shippingCost,
     super.key,
   });
 
@@ -103,6 +105,10 @@ class _CartDetailsSheetHeaderState extends State<CartDetailsSheetHeader> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.shippingCost == 0) {
+      texts.remove('${LocaleKeys.free_shipping.tr()}');
+      svg.remove(AppAssets.freeShippingSvg);
+    }
     FlutterError.onError = (FlutterErrorDetails error) {
       try {
         BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(

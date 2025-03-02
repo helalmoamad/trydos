@@ -271,7 +271,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                                                               totalPrice,
                                                           decimalPointSetting: state
                                                                   .startingSetting
-                                                                  ?.decimalPointSetting ??
+                                                                  ?.decimalPointSettings ??
                                                               2,
                                                         ),
                                           ////////////
@@ -560,7 +560,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                                   .data!.currency!.symbol ??
                               "",
                           decimalPointSetting:
-                              state.startingSetting?.decimalPointSetting ?? 2,
+                              state.startingSetting?.decimalPointSettings ?? 2,
                         ),
                       );
                     }

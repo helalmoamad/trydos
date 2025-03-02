@@ -10,6 +10,7 @@ import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:trydos/common/constant/constant.dart';
+import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
@@ -955,89 +956,103 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                 widget.productItem.price!;
                             double offerPrice = currentVariation?.offerPrice ??
                                 widget.productItem.offerPrice!;
-                            return Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                Row(
-                                  children: [
-                                    MyTextWidget(
-                                      (price *
-                                              state
-                                                  .getCurrencyForCountryModel!
-                                                  .data!
-                                                  .currency!
-                                                  .exchangeRate!)
-                                          .toStringAsFixed(state.startingSetting
-                                                  ?.decimalPointSetting ??
-                                              2)
-                                          .toString(),
-                                      style: textTheme.titleMedium?.lq.copyWith(
-                                        color: Color(0xff3c3c3c),
-                                        decoration: TextDecoration.lineThrough,
-                                        height: 0,
+                            return Directionality(
+                              textDirection:
+                                  LanguageService.currentLanguage == "ar"
+                                      ? TextDirection.rtl
+                                      : TextDirection.ltr,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  Row(
+                                    children: [
+                                      MyTextWidget(
+                                        HelperFunctions.formatNumber(
+                                            number: (price *
+                                                state
+                                                    .getCurrencyForCountryModel!
+                                                    .data!
+                                                    .currency!
+                                                    .exchangeRate!))
+                                        /* .toStringAsFixed(state.startingSetting
+                                                    ?.decimalPointSetting ??
+                                                2)
+                                            .toString()*/
+                                        ,
+                                        style:
+                                            textTheme.titleMedium?.lq.copyWith(
+                                          color: Color(0xff3c3c3c),
+                                          decoration:
+                                              TextDecoration.lineThrough,
+                                          height: 0,
+                                        ),
                                       ),
-                                    ),
-                                    SizedBox(
-                                      width: 2,
-                                    ),
-                                    MyTextWidget(
-                                      (offerPrice *
-                                              state
-                                                  .getCurrencyForCountryModel!
-                                                  .data!
-                                                  .currency!
-                                                  .exchangeRate!)
-                                          .toStringAsFixed(state.startingSetting
-                                                  ?.decimalPointSetting ??
-                                              2)
-                                          .toString(),
-                                      style: textTheme.titleMedium?.bq.copyWith(
-                                        color: Color(0xff3c3c3c),
-                                        height: 0,
+                                      SizedBox(
+                                        width: 2,
                                       ),
-                                    ),
-                                    SizedBox(
-                                      width: 2,
-                                    ),
-                                    MyTextWidget(
-                                      state.getCurrencyForCountryModel!.data!
-                                              .currency!.symbol ??
-                                          "",
-                                      style: TextStyle(fontSize: 10),
-                                    )
-                                  ].reversed.toList(),
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    widget.tapIndexToAddProductToCart.value =
-                                        widget.itemIndex;
-                                  },
-                                  child: Container(
-                                    height: 30.h,
-                                    color: Color(0x1D1D1D),
-                                    child: Row(
-                                      children: [
-                                        MyTextWidget(
-                                          '${LocaleKeys.buy.tr()}',
-                                          style:
-                                              textTheme.titleSmall?.lq.copyWith(
-                                            color: Color(0xff414141),
-                                            height: 1.4,
-                                          ),
+                                      MyTextWidget(
+                                        HelperFunctions.formatNumber(
+                                            number: (offerPrice *
+                                                state
+                                                    .getCurrencyForCountryModel!
+                                                    .data!
+                                                    .currency!
+                                                    .exchangeRate!))
+                                        /*.toStringAsFixed(state.startingSetting
+                                                    ?.decimalPointSetting ??
+                                                2)
+                                            .toString()*/
+                                        ,
+                                        style:
+                                            textTheme.titleMedium?.bq.copyWith(
+                                          color: Color(0xff3c3c3c),
+                                          height: 0,
                                         ),
-                                        const SizedBox(
-                                          width: 2,
-                                        ),
-                                        SvgPicture.asset(
-                                          AppAssets.bagSvg,
-                                          height: 15,
-                                          width: 15,
-                                        ),
-                                      ],
-                                    ),
+                                      ),
+                                      SizedBox(
+                                        width: 2,
+                                      ),
+                                      MyTextWidget(
+                                        state.getCurrencyForCountryModel!.data!
+                                                .currency!.symbol ??
+                                            "",
+                                        style: TextStyle(fontSize: 10),
+                                      )
+                                    ],
                                   ),
-                                )
-                              ],
+                                  InkWell(
+                                    onTap: () {
+                                      widget.tapIndexToAddProductToCart.value =
+                                          widget.itemIndex;
+                                    },
+                                    child: Container(
+                                      height: 30.h,
+                                      color: Color(0x1D1D1D),
+                                      child: Row(
+                                        children: [
+                                          MyTextWidget(
+                                            '${LocaleKeys.buy.tr()}',
+                                            style: textTheme.titleSmall?.lq
+                                                .copyWith(
+                                              color: Color(0xff414141),
+                                              height: 1.4,
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            width: 2,
+                                          ),
+                                          SvgPicture.asset(
+                                            AppAssets.bagSvg,
+                                            height: 15,
+                                            width: 15,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
                             );
                           }),
                     ),
@@ -1245,11 +1260,15 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                       height: 40,
                                       imageUrl: images[index],
                                       innerShadowYOffset: 4,
-                                      borderColor: index ==
-                                              prevIndexInFirstSlider
-                                          ? Color(int.parse(
-                                              '0xff${widget.productItem.colors![currentColorIndex.value % widget.productItem.colors!.length].color!.substring(1)}'))
-                                          : Colors.white,
+                                      borderColor: (widget.productItem.colors
+                                                      ?.length ??
+                                                  0) ==
+                                              0
+                                          ? Colors.white
+                                          : index == prevIndexInFirstSlider
+                                              ? Color(int.parse(
+                                                  '0xff${widget.productItem.colors![currentColorIndex.value % widget.productItem.colors!.length].color!.substring(1)}'))
+                                              : Colors.white,
                                       circleShape: true,
                                     ),
                                   ),

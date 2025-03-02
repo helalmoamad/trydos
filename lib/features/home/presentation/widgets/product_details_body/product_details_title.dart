@@ -156,48 +156,53 @@ class ProductDetailsTitle extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Row(
-                children: [
-                  MyTextWidget(
-                    productName,
-                    style: context.textTheme.bodyMedium?.mq.copyWith(
-                        color: Color(0xff5D5C5D),
-                        height: 1.26,
-                        fontSize: 15.sp),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                    child: MyCachedNetworkImage(
-                      ordinalHeight: orginalHeight,
-                      ordinalwidth: orginalWidth,
-                      imageFit: BoxFit.cover,
-                      imageUrl: thumbnail,
-                      height: 15,
-                      width: 15,
-                      circleDimensions: 7,
-                      logoTextHeight: 7,
-                      logoTextWidth: 12,
-                    ),
-                  ),
-                  Container(
-                    width: 1,
-                    height: 14,
-                    decoration: BoxDecoration(
-                      color: Color(0xff8D8D8D),
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5),
-                    child: MyTextWidget(
-                      colorName,
-                      style: context.textTheme.bodyMedium?.rq.copyWith(
-                          color: Color(0xff404E68),
+              child: Container(
+                width: 1.sw - 20,
+                height: 40.h,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    MyTextWidget(
+                      productName,
+                      style: context.textTheme.bodyMedium?.mq.copyWith(
+                          color: Color(0xff5D5C5D),
                           height: 1.26,
                           fontSize: 15.sp),
                     ),
-                  )
-                ],
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                      child: MyCachedNetworkImage(
+                        ordinalHeight: orginalHeight,
+                        ordinalwidth: orginalWidth,
+                        imageFit: BoxFit.cover,
+                        imageUrl: thumbnail,
+                        height: 15,
+                        width: 15,
+                        circleDimensions: 7,
+                        logoTextHeight: 7,
+                        logoTextWidth: 12,
+                      ),
+                    ),
+                    Container(
+                      width: 1,
+                      height: 14,
+                      decoration: BoxDecoration(
+                        color: Color(0xff8D8D8D),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                      child: MyTextWidget(
+                        colorName,
+                        style: context.textTheme.bodyMedium?.rq.copyWith(
+                            color: Color(0xff404E68),
+                            height: 1.26,
+                            fontSize: 15.sp),
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           ],

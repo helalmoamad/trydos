@@ -1187,7 +1187,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     emit(state.copyWith(
         currentSelectedColorForEveryProductStatus:
             CurrentSelectedColorForEveryProductStatus.loading));
-
     Map<String, int> currentSelectedColorForEveryProduct =
         Map.of(state.currentSelectedColorForEveryProduct);
     if (currentSelectedColorForEveryProduct[event.productId] == null) {
@@ -3447,16 +3446,20 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       List<Cart> carts;
       List<Cart> cartCollection = [];
       Map<String, Map<int, List<String>>> addImagesToProductIdForCart = {};
-
+      emit(state.copyWith(currentQuantityForCart: {}));
       List<String> cartIdIsFound = [];
       r.data?.cart?.forEach((element) {
         cartIdIsFound.add(element.id.toString());
         add(AddQuantityForCartEvent(
             quantity: element.quantity ?? 0,
             productId: element.productId.toString(),
-            currentSize: element.variations?[0].size ?? "",
+            currentSize: element.variations.isNullOrEmpty
+                ? ""
+                : element.variations?[0].size ?? "",
             cartId: element.id ?? 0,
-            colorName: element.variations?[0].color ?? ""));
+            colorName: element.variations.isNullOrEmpty
+                ? ""
+                : element.variations?[0].color ?? ""));
         if (addImagesToProductIdForCart[element.productId.toString()] == null) {
           addImagesToProductIdForCart[element.productId.toString()] = {};
         }

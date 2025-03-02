@@ -59,7 +59,8 @@ class Product {
   final int? currentStock;
   final int? leftStock;
   final int? reviewsCount;
-
+  final bool? shippingCostMultiplyWithQuantity;
+  final double? shippingCost;
   final BoutiqueForCart? boutique;
 
   final bool? isLiked;
@@ -82,6 +83,8 @@ class Product {
     this.variation,
     this.isLiked,
     this.slugEnTopic,
+    this.shippingCostMultiplyWithQuantity,
+    this.shippingCost,
     this.countOfLikes,
     this.choiceOptions,
     this.hasDiscount,
@@ -124,6 +127,8 @@ class Product {
     Seller? seller,
     Shop? shop,
     bool? isFavSeller,
+    bool? shippingCostMultiplyWithQuantity,
+    double? shippingCost,
     List<dynamic>? reviews,
     bool? hasWholeSale,
     dynamic wholeSaleLink,
@@ -147,6 +152,9 @@ class Product {
         currentStock: currentStock ?? this.currentStock,
         leftStock: leftStock ?? this.leftStock,
         isLiked: isLiked ?? this.isLiked,
+        shippingCostMultiplyWithQuantity: shippingCostMultiplyWithQuantity ??
+            this.shippingCostMultiplyWithQuantity,
+        shippingCost: shippingCost ?? this.shippingCost,
         collectedAfterOrdering:
             collectedAfterOrdering ?? this.collectedAfterOrdering,
         countOfLikes: countOfLikes ?? this.countOfLikes,
@@ -165,6 +173,9 @@ class Product {
       description: json["description"],
       countOfPieces: json["count_of_pieces"],
       slugEnTopic: json["slug_en_topic"],
+      shippingCostMultiplyWithQuantity:
+          json["shipping_cost_multiply_with_quantity"],
+      shippingCost: double.tryParse(json["shipping_cost"].toString()),
       boutique: json["boutique"] == null
           ? null
           : BoutiqueForCart.fromJson(json["boutique"]),
@@ -218,6 +229,9 @@ class Product {
         "current_stock": currentStock,
         "count_of_pieces": countOfPieces,
         "Left_stock": leftStock,
+        "shipping_cost_multiply_with_quantity":
+            shippingCostMultiplyWithQuantity,
+        "shipping_cost": shippingCost?.toDouble(),
         "max_allowed_qty": maxAllowedQty,
         // "views_count": viewsCount,
         "descriptors": descriptors == null

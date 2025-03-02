@@ -691,8 +691,11 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                         print(
                                             "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!${widget.productItem.price!}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!${state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!}");
                                         return ProductDetailsSheetHeader(
+                                          shippingCost:
+                                              widget.productItem.shippingCost ??
+                                                  0,
                                           decimalPoint: state.startingSetting
-                                                  ?.decimalPointSetting ??
+                                                  ?.decimalPointSettings ??
                                               2,
                                           priceSymbol: state
                                                   .getCurrencyForCountryModel!

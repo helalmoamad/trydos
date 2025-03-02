@@ -352,110 +352,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                   : 50,
                               child: InkWell(
                                   onTap: () {
-                                    //    panelControllerForCart.close();
-                                    homeBloc.add(
-                                      AddMultiItemsToCartEvent(
-                                        maxAllowed: state
-                                                .cachedProductWithoutRelatedProductsModel[
-                                                    productItem?.productId
-                                                        .toString()]
-                                                ?.product
-                                                ?.maxAllowedQty ??
-                                            "0",
-                                        boutiqueIcon: state.cachedProductWithoutRelatedProductsModel[
-                                                    productItem?.productId
-                                                        .toString()] !=
-                                                null
-                                            ? state
-                                                        .cachedProductWithoutRelatedProductsModel[
-                                                            productItem?.productId
-                                                                .toString()]!
-                                                        .product !=
-                                                    null
-                                                ? state
-                                                            .cachedProductWithoutRelatedProductsModel[
-                                                                productItem
-                                                                    ?.productId
-                                                                    .toString()]!
-                                                            .product!
-                                                            .boutique !=
-                                                        null
-                                                    ? state
-                                                                .cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]!
-                                                                .product!
-                                                                .boutique!
-                                                                .icon !=
-                                                            null
-                                                        ? state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]!.product!.boutique!.icon!.filePath ?? ""
-                                                        : ""
-                                                    : ""
-                                                : ""
-                                            : "",
-                                        productSlugForTopic: state
-                                                .cachedProductWithoutRelatedProductsModel[
-                                                    productItem?.productId
-                                                        .toString()]
-                                                ?.product
-                                                ?.slugEnTopic ??
-                                            "",
-                                        boutiqueId: state
-                                                        .cachedProductWithoutRelatedProductsModel[
-                                                    productItem?.productId
-                                                        .toString()] !=
-                                                null
-                                            ? state
-                                                        .cachedProductWithoutRelatedProductsModel[
-                                                            productItem
-                                                                ?.productId
-                                                                .toString()]!
-                                                        .product!
-                                                        .boutique !=
-                                                    null
-                                                ? state
-                                                    .cachedProductWithoutRelatedProductsModel[
-                                                        productItem?.productId
-                                                            .toString()]!
-                                                    .product!
-                                                    .boutique!
-                                                    .id!
-                                                : 0
-                                            : 0,
-                                        products: widget.productItem?.copyWith(
-                                                productId: state
-                                                    .cachedProductWithoutRelatedProductsModel[
-                                                        productItem?.productId
-                                                            .toString()]!
-                                                    .product!
-                                                    .id) ??
-                                            productItem!.copyWith(
-                                                productId: state
-                                                    .cachedProductWithoutRelatedProductsModel[
-                                                        productItem?.productId
-                                                            .toString()]!
-                                                    .product!
-                                                    .id),
-                                        id: state.cachedProductWithoutRelatedProductsModel[
-                                                    productItem?.productId
-                                                        .toString()] !=
-                                                null
-                                            ? state
-                                                        .cachedProductWithoutRelatedProductsModel[
-                                                            productItem
-                                                                ?.productId
-                                                                .toString()]!
-                                                        .product !=
-                                                    null
-                                                ? state
-                                                    .cachedProductWithoutRelatedProductsModel[
-                                                        productItem?.productId
-                                                            .toString()]!
-                                                    .product!
-                                                    .id
-                                                    .toString()
-                                                : ""
-                                            : "",
-                                      ),
-                                    );
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (context) => CartPage(
@@ -1018,6 +914,25 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             // ProductStoriesCard(),
                             ProductStoriesCard(),
                             ProductShippingAndDelivery(
+                              shippingCost: (state
+                                              .cachedProductWithoutRelatedProductsModel[
+                                          productItem!.productId.toString()] !=
+                                      null
+                                  ? state
+                                              .cachedProductWithoutRelatedProductsModel[
+                                                  productItem!.productId
+                                                      .toString()]!
+                                              .product !=
+                                          null
+                                      ? state
+                                              .cachedProductWithoutRelatedProductsModel[
+                                                  productItem!.productId
+                                                      .toString()]!
+                                              .product!
+                                              .shippingCost ??
+                                          0
+                                      : 0
+                                  : 0),
                               shippingDay:
                                   (state.cachedProductWithoutRelatedProductsModel[
                                                   productItem!.productId
@@ -1148,7 +1063,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             "${(state.currentColorSizeForCart?["size"] != null && state.currentColorSizeForCart?["size"] != "") ? "${state.currentColorSizeForCart?["size"]}" : ""}";
 
                     print(
-                        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@###${currentVariantType}##################################################");
+                        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@###${currentSelectedColor}##################################################");
 
                     Variation? currentVariation = state
                         .cachedProductWithoutRelatedProductsModel[

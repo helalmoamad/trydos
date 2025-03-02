@@ -972,8 +972,9 @@ class _CartPageState extends State<CartPage> {
                                                                   : Container(
                                                                       height:
                                                                           27,
-                                                                      child:
-                                                                          CartDetailsSheetHeader(),
+                                                                      child: CartDetailsSheetHeader(
+                                                                          shippingCost:
+                                                                              (state.getCartShippingItemsModel?.data?.totalShippingCost ?? 0)),
                                                                     ),
                                                               !isMoreInfo
                                                                   ? SizedBox
