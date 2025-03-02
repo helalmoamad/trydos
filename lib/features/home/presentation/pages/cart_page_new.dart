@@ -126,15 +126,16 @@ class _CartPageState extends State<CartPage> {
           resizeToAvoidBottomInset: true,
           body: BlocListener<HomeBloc, HomeState>(
             listenWhen: (previous, current) =>
-                previous.checkAvailabilityProductCartStatus !=
-                    current.checkAvailabilityProductCartStatus &&
-                current.checkAvailabilityProductCartStatus ==
-                    CheckAvailabilityProductCartStatus.success,
+                previous.checkWithGetCartStatus !=
+                    current.checkWithGetCartStatus &&
+                current.checkWithGetCartStatus ==
+                    CheckWithGetCartStatus.success,
             listener: (context, state) {
-              if (state.checkAvailabilityProductCartStatus ==
-                  CheckAvailabilityProductCartStatus.success) {
-                if (state
-                    .checkAvailabilityProductCartModel!.data!.isNullOrEmpty) {
+              if (state.checkWithGetCartStatus ==
+                  CheckWithGetCartStatus.success) {
+                if (!state.cartCollection!.any(
+                  (element) => element.checkAvailability == false,
+                )) {
                   String cartGroupId =
                       state.cartCollection?[0].cartGroupId ?? '';
 
@@ -151,18 +152,6 @@ class _CartPageState extends State<CartPage> {
                     ),
                   );
                 } else {
-                  var cartCollection = state.cartCollection!;
-
-                  for (var checkAvailabilityData
-                      in state.checkAvailabilityProductCartModel!.data!) {
-                    for (var cartData in cartCollection) {
-                      if (cartData.id == checkAvailabilityData.cartId) {
-                        cartData = cartData.copyWith(checkAvailability: false);
-                        break;
-                      }
-                    }
-                  }
-                  state.copyWith(cartCollection: cartCollection);
                   //////////////////////////
                   showMessage(
                     " ${LocaleKeys.you_have_to_delete_all_unavailable_products.tr()}",
@@ -200,8 +189,8 @@ class _CartPageState extends State<CartPage> {
                         current.oldcartCollection!.length ||
                     previous.getCartOverviewStatus !=
                         current.getCartOverviewStatus ||
-                    previous.checkAvailabilityProductCartStatus !=
-                        current.checkAvailabilityProductCartStatus;
+                    previous.checkWithGetCartStatus !=
+                        current.checkWithGetCartStatus;
               },
               builder: (context, state) {
                 debugPrint(
@@ -327,7 +316,7 @@ class _CartPageState extends State<CartPage> {
                       child: TryAgainWidget(
                         tryAgain: () {
                           BlocProvider.of<HomeBloc>(context)
-                              .add(GetCartItemEvent());
+                              .add(CheckWithGetCartEvent());
                         },
                       ),
                     ),
@@ -1086,6 +1075,9 @@ class _CartPageState extends State<CartPage> {
                                                                                       // " ${totlalPriceWithoutShipping.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
                                                                                       style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 13.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
                                                                                     ),
+                                                                                    SizedBox(
+                                                                                      width: 2,
+                                                                                    ),
                                                                                     Text(
                                                                                       "${priceSymbol ?? "\$"}",
                                                                                       style: context.textTheme.bodyMedium?.mr.copyWith(fontSize: 13.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
@@ -1164,6 +1156,9 @@ class _CartPageState extends State<CartPage> {
                                                                                       // "- ${(totlalDiscount).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
                                                                                       style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 13.sp, color: const Color(0xffA28E5B), letterSpacing: 0.18, height: 1.33),
                                                                                     ),
+                                                                                    SizedBox(
+                                                                                      width: 2,
+                                                                                    ),
                                                                                     Text(
                                                                                       "${priceSymbol ?? "\$"}",
                                                                                       style: context.textTheme.bodyMedium?.mr.copyWith(fontSize: 13.sp, color: const Color(0xffA28E5B), letterSpacing: 0.18, height: 1.33),
@@ -1237,6 +1232,9 @@ class _CartPageState extends State<CartPage> {
                                                                                       "- ${0}  ",
                                                                                       style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 13.sp, color: const Color(0xff5BA260), letterSpacing: 0.18, height: 1.33),
                                                                                     ),
+                                                                                    SizedBox(
+                                                                                      width: 2,
+                                                                                    ),
                                                                                     Text(
                                                                                       "${priceSymbol ?? "\$"}",
                                                                                       style: context.textTheme.bodyMedium?.mr.copyWith(fontSize: 13.sp, color: const Color(0xff5BA260), letterSpacing: 0.18, height: 1.33),
@@ -1309,8 +1307,12 @@ class _CartPageState extends State<CartPage> {
                                                                                       style: context.textTheme.bodyMedium?.br.copyWith(decoration: TextDecoration.lineThrough, decorationColor: const Color(0xff2FA52F), color: const Color(0xff2FA52F), fontSize: 13, letterSpacing: 0.18, height: 1.33),
                                                                                     ),*/
                                                                                     Text(
-                                                                                      " ${((state.getCartShippingItemsModel?.data?.totalShippingCost ?? 0) * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
+                                                                                      HelperFunctions.formatNumber(number: (state.getCartShippingItemsModel?.data?.totalShippingCost ?? 0) * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!),
+                                                                                      // " ${((state.getCartShippingItemsModel?.data?.totalShippingCost ?? 0) * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
                                                                                       style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 13.sp, color: const Color(0xff2FA52F), letterSpacing: 0.18, height: 1.33),
+                                                                                    ),
+                                                                                    SizedBox(
+                                                                                      width: 2,
                                                                                     ),
                                                                                     Text(
                                                                                       "${priceSymbol ?? "\$"}",
@@ -1385,6 +1387,9 @@ class _CartPageState extends State<CartPage> {
                                                                                       totlalPriceFormatted,
                                                                                       // "${totlalPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
                                                                                       style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 16.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
+                                                                                    ),
+                                                                                    SizedBox(
+                                                                                      width: 2,
                                                                                     ),
                                                                                     Text(
                                                                                       "${priceSymbol ?? "\$"}",
@@ -1550,7 +1555,7 @@ class _CartPageState extends State<CartPage> {
                                                                               p.verifyOtpSignUpStatus != c.verifyOtpSignUpStatus ||
                                                                               c.verifyGuestPhoneStatus != p.verifyGuestPhoneStatus,
                                                                           builder: (context, authState) {
-                                                                            return (authState.verifyGuestPhoneStatus == VerifyGuestPhoneStatus.loading || state.getCartOverviewStatus == GetCartOverviewStatus.loading || authState.verifyOtpSignInStatus == VerifyOtpSignInStatus.loading || authState.verifyOtpSignUpStatus == VerifyOtpSignUpStatus.loading || state.addItemInCartStatus == AddItemInCartStatus.loading || state.deleteItemInCartStatus == DeleteItemInCartStatus.loading || state.updateItemInCartStatus == UpdateItemInCartStatus.loading || (state.checkAvailabilityProductCartStatus == CheckAvailabilityProductCartStatus.loading))
+                                                                            return (authState.verifyGuestPhoneStatus == VerifyGuestPhoneStatus.loading || state.getCartOverviewStatus == GetCartOverviewStatus.loading || authState.verifyOtpSignInStatus == VerifyOtpSignInStatus.loading || authState.verifyOtpSignUpStatus == VerifyOtpSignUpStatus.loading || state.addItemInCartStatus == AddItemInCartStatus.loading || state.deleteItemInCartStatus == DeleteItemInCartStatus.loading || state.updateItemInCartStatus == UpdateItemInCartStatus.loading || (state.checkWithGetCartStatus == CheckWithGetCartStatus.loading))
                                                                                 ? Shimmer.fromColors(
                                                                                     baseColor: Colors.grey[200]!,
                                                                                     highlightColor: Colors.grey[100]!,
@@ -1616,8 +1621,11 @@ class _CartPageState extends State<CartPage> {
                                                                                                   letterSpacing: 0.18,
                                                                                                 ),
                                                                                               ),
+                                                                                              SizedBox(
+                                                                                                width: 2,
+                                                                                              ),
                                                                                               Text(
-                                                                                                priceSymbol ?? ' \$',
+                                                                                                priceSymbol ?? '\$',
                                                                                                 style: context.textTheme.bodyMedium?.ra.copyWith(
                                                                                                   decorationColor: Color(0xffFEFEFE),
                                                                                                   fontSize: 14.sp,
@@ -1658,8 +1666,8 @@ class _CartPageState extends State<CartPage> {
                                                                                       } else if (state.getCartOverviewStatus == GetCartOverviewStatus.failure) {
                                                                                         homeBloc.add(GetCartOverviewEvent());
                                                                                         return;
-                                                                                      } else if (state.checkAvailabilityProductCartStatus == CheckAvailabilityProductCartStatus.failure) {
-                                                                                        homeBloc.add(CheckAvailabilityProductCartEvent());
+                                                                                      } else if (state.checkWithGetCartStatus == CheckWithGetCartStatus.failure) {
+                                                                                        homeBloc.add(CheckWithGetCartEvent());
                                                                                         return;
                                                                                       } else if (state.cartCollection!.any(
                                                                                         (element) => element.checkAvailability == false,
@@ -1681,7 +1689,7 @@ class _CartPageState extends State<CartPage> {
                                                                                           isVerified.value = false;
                                                                                         } else {
                                                                                           BlocProvider.of<HomeBloc>(context).add(
-                                                                                            CheckAvailabilityProductCartEvent(),
+                                                                                            CheckWithGetCartEvent(),
                                                                                           );
                                                                                         }
                                                                                       }
@@ -1758,8 +1766,11 @@ class _CartPageState extends State<CartPage> {
                                                                                                           letterSpacing: 0.18,
                                                                                                         ),
                                                                                                       ),
+                                                                                                      SizedBox(
+                                                                                                        width: 2,
+                                                                                                      ),
                                                                                                       Text(
-                                                                                                        priceSymbol ?? ' \$',
+                                                                                                        priceSymbol ?? '\$',
                                                                                                         style: context.textTheme.bodyMedium?.ra.copyWith(
                                                                                                           decorationColor: Color(0xffFEFEFE),
                                                                                                           fontSize: 14.sp,

@@ -60,7 +60,9 @@ enum GetCommentForProductStatus { init, loading, success, failure }
 
 enum GetMainCategoriesStatus { init, loading, success, failure }
 
-enum GetCartItemsStatus { init, loading, success, failure }
+enum GetCartItemsStatus { init, loading, success, available, failure }
+
+enum CheckWithGetCartStatus { init, loading, success, available, failure }
 
 enum GetOLdCartItemsStatus { init, loading, success, failure }
 
@@ -237,6 +239,7 @@ class HomeState extends Equatable {
       this.getAddressByTextStatus,
       this.countOfProductExpectedByFiltering,
       this.getCartItemsStatus = GetCartItemsStatus.init,
+      this.checkWithGetCartStatus = CheckWithGetCartStatus.init,
       this.getProductDetailWithoutRelatedProductsModel,
       this.addOrRemoveLikeOfProductStatus = AddOrRemoveLikeOfProductStatus.init,
       this.getProductListingPaginationWithoutFiltersModel = const {},
@@ -358,6 +361,7 @@ class HomeState extends Equatable {
   final String? theReplyFromGemini;
 
   final GetCartItemsStatus getCartItemsStatus;
+  final CheckWithGetCartStatus checkWithGetCartStatus;
   final GetOLdCartItemsStatus getOldCartItemsStatus;
   final Products? productContentForStatusOfOpeningProductDetailsDirectly;
 
@@ -474,6 +478,7 @@ class HomeState extends Equatable {
         reRequestProductWithFilters,
         getProductDetailWithoutSimilarRelatedProductsStatus,
         getCartItemsStatus,
+        checkWithGetCartStatus,
         getProductListingStatus,
         getStoriesForProductStatus,
         getHomeBoutiquesPaginationObjectByMainCategory,
@@ -584,6 +589,7 @@ class HomeState extends Equatable {
       final AddOrRemoveLikeOfProductStatus? addOrRemoveLikeOfProductStatus,
       final bool? isGettingProductListingWithPagination,
       final GetCartItemsStatus? getCartItemsStatus,
+      final CheckWithGetCartStatus? checkWithGetCartStatus,
       final UpdateEmailappNotificationStatus? updateEmailappNotificationStatus,
       final UpdateWhatsappNotificationStatus? updateWhatsappNotificationStatus,
       final GetOLdCartItemsStatus? getOldCartItemsStatus,
@@ -820,6 +826,8 @@ class HomeState extends Equatable {
           currentSelectedColorForEveryProduct ??
               this.currentSelectedColorForEveryProduct,
       getCartItemsStatus: getCartItemsStatus ?? this.getCartItemsStatus,
+      checkWithGetCartStatus:
+          checkWithGetCartStatus ?? this.checkWithGetCartStatus,
       reRequestTheseBoutiques:
           reRequestTheseBoutiques ?? this.reRequestTheseBoutiques,
       reRequestTheseProductListingInBoutiques:

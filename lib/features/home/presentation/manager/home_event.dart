@@ -673,6 +673,13 @@ class GetCartItemEvent extends HomeEvent {
   List<Object?> get props => [];
 }
 
+class CheckWithGetCartEvent extends HomeEvent {
+  const CheckWithGetCartEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
 class RemoveItemsFromCartAfterOrderSuccessEvent extends HomeEvent {
   const RemoveItemsFromCartAfterOrderSuccessEvent();
 
