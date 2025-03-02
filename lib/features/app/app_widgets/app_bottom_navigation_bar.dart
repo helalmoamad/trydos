@@ -243,9 +243,11 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                       ? Key(WidgetsKeys.chatNavBarKey)
                       : null,
                   onTap: () async {
+                    print(
+                        "@@@@@@@@@@@@@@@@@@!!!!!!!!!!${prefsRepository.isVerifiedPhone}${prefsRepository.isLogInToChat}${prefsRepository.chatToken?.length ?? 0}");
                     if (prefsRepository.isVerifiedPhone != true ||
                         (prefsRepository.isLogInToChat ?? false) != true ||
-                        (prefsRepository.chatToken?.length ?? 0) > 10) {
+                        (prefsRepository.chatToken?.length ?? 0) < 7) {
                       widget.isShowPanelForVerified.value = true;
                     } else if ((prefsRepository.myMarketName?.length ?? 0) <
                         3) {

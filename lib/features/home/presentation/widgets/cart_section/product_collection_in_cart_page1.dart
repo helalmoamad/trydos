@@ -86,6 +86,8 @@ class _ProductCollectionInCartPage1State
           previous.checkAvailabilityProductCartStatus !=
               current.checkAvailabilityProductCartStatus,
       builder: (context, state) {
+        print(
+            "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##########################################${(state.updateItemInCartStatus == UpdateItemInCartStatus.loading)}");
         return Container(
           padding: EdgeInsets.all(1),
           child: ListView.builder(

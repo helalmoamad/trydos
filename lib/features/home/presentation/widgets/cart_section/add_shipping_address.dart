@@ -1875,9 +1875,9 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                               .text,
                                                                       location: address.Location(
                                                                           latitude: _currentLocation?.latitude.toString() ??
-                                                                              " ",
+                                                                              "",
                                                                           longitude:
-                                                                              _currentLocation?.longitude.toString() ?? " "),
+                                                                              _currentLocation?.longitude.toString() ?? ""),
                                                                       regionDetails:
                                                                           address
                                                                               .RegionDetails(

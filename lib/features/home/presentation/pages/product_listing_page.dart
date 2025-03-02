@@ -18,6 +18,7 @@ import 'package:mime/mime.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/base_page.dart';
 import 'package:trydos/common/constant/design/constant_design.dart';
+import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -2697,6 +2698,26 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                   previous.cartCollection !=
                                       current.cartCollection,
                               builder: (context, state) {
+                                if (state.getProductDetailWithoutSimilarRelatedProductsStatus ==
+                                        GetProductDetailWithoutSimilarRelatedProductsStatus
+                                            .success &&
+                                    state
+                                            .cachedProductWithoutRelatedProductsModel[
+                                                products[tapIndex]]
+                                            ?.product
+                                            ?.id ==
+                                        null) {
+                                  Future.delayed(Duration(seconds: 1), () {
+                                    tapIndexToAddProductToCart.value = -1;
+
+                                    return showMessage(
+                                      LocaleKeys
+                                          .product_is_not_available_in_your_country
+                                          .tr(),
+                                    );
+                                  });
+                                  return SizedBox.shrink();
+                                }
                                 String productId = state
                                                 .cachedProductWithoutRelatedProductsModel[
                                             products[tapIndex]

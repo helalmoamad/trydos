@@ -492,7 +492,7 @@ class HomeState extends Equatable {
         getCommentForProductModel,
         mainCategoriesResponseModel,
         getProductDetailWithoutRelatedProductsModel,
-        updateItemInCartStatus,
+
         addItemInCartStatus,
         appliedFiltersByUser,
         addImagesToProductIdForCart,

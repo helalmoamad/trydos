@@ -141,7 +141,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   FutureOr<void> _onLoginToChatEvent(
       LoginToChatEvent event, Emitter<AuthState> emit) async {
-    /*   emit(state.copyWith(loginToChatStatus: LoginToChatStatus.loading));
+    emit(state.copyWith(loginToChatStatus: LoginToChatStatus.loading));
 
     final response = await loginToChatUseCase(
       LoginToChatParams(
@@ -196,7 +196,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         apisMustNotToRequest.remove('GetChatsEvent');
         GetIt.I<ChatBloc>().add(GetChatsEvent(limit: 10));
       },
-    );*/
+    );
   }
 
   FutureOr<void> _onStoreFcmTokenEvent(
