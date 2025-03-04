@@ -2560,6 +2560,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           checkAvailabilityProductCartStatus:
               CheckAvailabilityProductCartStatus.init,
           applyCouponStatus: ApplyCouponStatus.init,
+          checkWithGetCartStatus: CheckWithGetCartStatus.init,
         )
         .toJson();
   }

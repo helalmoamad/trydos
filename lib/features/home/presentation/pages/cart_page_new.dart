@@ -316,7 +316,7 @@ class _CartPageState extends State<CartPage> {
                       child: TryAgainWidget(
                         tryAgain: () {
                           BlocProvider.of<HomeBloc>(context)
-                              .add(CheckWithGetCartEvent());
+                              .add(GetCartItemEvent());
                         },
                       ),
                     ),
@@ -345,26 +345,16 @@ class _CartPageState extends State<CartPage> {
                         state.getCurrencyForCountryModel!.data!.currency!
                             .exchangeRate!;
 
-                String totlalPriceFormatted =
-                    HelperFunctions.formatNumber(number: totlalPrice);
-
                 totlalPriceWithoutShipping =
                     (state.getCartShippingItemsModel?.data?.subTotal ?? 0) *
                         state.getCurrencyForCountryModel!.data!.currency!
                             .exchangeRate!;
-
-                String totlalPriceWithoutFormatted =
-                    HelperFunctions.formatNumber(
-                        number: totlalPriceWithoutShipping);
 
                 totlalDiscount =
                     (state.getCartShippingItemsModel?.data?.productsDiscount ??
                             0) *
                         state.getCurrencyForCountryModel!.data!.currency!
                             .exchangeRate!;
-
-                String totlalDiscountormatted =
-                    HelperFunctions.formatNumber(number: totlalDiscount);
 
                 priceSymbol =
                     state.getCurrencyForCountryModel!.data!.currency!.symbol ??
@@ -1072,8 +1062,7 @@ class _CartPageState extends State<CartPage> {
                                                                                     ),
                                                                                     Spacer(),
                                                                                     Text(
-                                                                                      totlalPriceWithoutFormatted,
-                                                                                      // " ${totlalPriceWithoutShipping.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
+                                                                                      " ${totlalPriceWithoutShipping.toStringAsFixed(state.startingSetting?.decimalPointSettings ?? 2)}  ",
                                                                                       style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 13.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
                                                                                     ),
                                                                                     SizedBox(
@@ -1146,15 +1135,14 @@ class _CartPageState extends State<CartPage> {
                                                                                         left: LanguageService.languageCode != "ar" ? 2 : 10.w,
                                                                                       ),
                                                                                       child: Text(
-                                                                                        "${LocaleKeys.total_discount.tr()} ${HelperFunctions.formatNumber(number: (totlalPrice == 0 ? 0 : ((totlalDiscount) / totlalPriceWithoutShipping) * 100))}% ",
+                                                                                        "${LocaleKeys.total_discount.tr()} ${(totlalPrice == 0 ? 0 : ((totlalDiscount) / totlalPriceWithoutShipping) * 100).toStringAsFixed(1)}% ",
                                                                                         strutStyle: LanguageService.languageCode != "ar" ? null : StrutStyle(height: 0.1, leading: 0.1),
                                                                                         style: context.textTheme.bodyMedium?.mr.copyWith(fontSize: 13.sp, color: const Color(0xffA28E5B), letterSpacing: 0.18, height: LanguageService.languageCode != "ar" ? 1.33 : 1),
                                                                                       ),
                                                                                     ),
                                                                                     Spacer(),
                                                                                     Text(
-                                                                                      '- $totlalDiscountormatted',
-                                                                                      // "- ${(totlalDiscount).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
+                                                                                      "- ${(totlalDiscount).toStringAsFixed(state.startingSetting?.decimalPointSettings ?? 2)}  ",
                                                                                       style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 13.sp, color: const Color(0xffA28E5B), letterSpacing: 0.18, height: 1.33),
                                                                                     ),
                                                                                     SizedBox(
@@ -1308,8 +1296,7 @@ class _CartPageState extends State<CartPage> {
                                                                                       style: context.textTheme.bodyMedium?.br.copyWith(decoration: TextDecoration.lineThrough, decorationColor: const Color(0xff2FA52F), color: const Color(0xff2FA52F), fontSize: 13, letterSpacing: 0.18, height: 1.33),
                                                                                     ),*/
                                                                                     Text(
-                                                                                      HelperFunctions.formatNumber(number: (state.getCartShippingItemsModel?.data?.totalShippingCost ?? 0) * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!),
-                                                                                      // " ${((state.getCartShippingItemsModel?.data?.totalShippingCost ?? 0) * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
+                                                                                      " ${((state.getCartShippingItemsModel?.data?.totalShippingCost ?? 0) * state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!).toStringAsFixed(state.startingSetting?.decimalPointSettings ?? 2)}  ",
                                                                                       style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 13.sp, color: const Color(0xff2FA52F), letterSpacing: 0.18, height: 1.33),
                                                                                     ),
                                                                                     SizedBox(
@@ -1380,13 +1367,11 @@ class _CartPageState extends State<CartPage> {
                                                                                     ),
                                                                                     Spacer(),
                                                                                     Text(
-                                                                                      HelperFunctions.formatNumber(number: (totlalPrice + totlalDiscount)),
-                                                                                      // "${(totlalPrice + totlalDiscount).toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
+                                                                                      "${(totlalPrice + totlalDiscount).toStringAsFixed(state.startingSetting?.decimalPointSettings ?? 2)}  ",
                                                                                       style: context.textTheme.bodyMedium?.ra.copyWith(decoration: TextDecoration.lineThrough, fontSize: 16, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
                                                                                     ),
                                                                                     Text(
-                                                                                      totlalPriceFormatted,
-                                                                                      // "${totlalPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)}  ",
+                                                                                      "${totlalPrice.toStringAsFixed(state.startingSetting?.decimalPointSettings ?? 2)}  ",
                                                                                       style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 16.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
                                                                                     ),
                                                                                     SizedBox(
@@ -1556,7 +1541,7 @@ class _CartPageState extends State<CartPage> {
                                                                               p.verifyOtpSignUpStatus != c.verifyOtpSignUpStatus ||
                                                                               c.verifyGuestPhoneStatus != p.verifyGuestPhoneStatus,
                                                                           builder: (context, authState) {
-                                                                            return (authState.verifyGuestPhoneStatus == VerifyGuestPhoneStatus.loading || state.getCartOverviewStatus == GetCartOverviewStatus.loading || authState.verifyOtpSignInStatus == VerifyOtpSignInStatus.loading || authState.verifyOtpSignUpStatus == VerifyOtpSignUpStatus.loading || state.addItemInCartStatus == AddItemInCartStatus.loading || state.deleteItemInCartStatus == DeleteItemInCartStatus.loading || state.updateItemInCartStatus == UpdateItemInCartStatus.loading || (state.checkWithGetCartStatus == CheckWithGetCartStatus.loading))
+                                                                            return (authState.verifyGuestPhoneStatus == VerifyGuestPhoneStatus.loading || state.getCartOverviewStatus == GetCartOverviewStatus.loading || authState.verifyOtpSignInStatus == VerifyOtpSignInStatus.loading || authState.verifyOtpSignUpStatus == VerifyOtpSignUpStatus.loading || state.addItemInCartStatus == AddItemInCartStatus.loading || state.deleteItemInCartStatus == DeleteItemInCartStatus.loading || state.updateItemInCartStatus == UpdateItemInCartStatus.loading || state.checkWithGetCartStatus == CheckWithGetCartStatus.loading)
                                                                                 ? Shimmer.fromColors(
                                                                                     baseColor: Colors.grey[200]!,
                                                                                     highlightColor: Colors.grey[100]!,
@@ -1614,8 +1599,7 @@ class _CartPageState extends State<CartPage> {
                                                                                                 ),
                                                                                               ),
                                                                                               Text(
-                                                                                                totlalPriceFormatted,
-                                                                                                // " ${totlalPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} ",
+                                                                                                " ${totlalPrice.toStringAsFixed(state.startingSetting?.decimalPointSettings ?? 2)} ",
                                                                                                 style: context.textTheme.bodyMedium?.ba.copyWith(
                                                                                                   fontSize: 14.sp,
                                                                                                   color: const Color(0xffFEFEFE),
@@ -1759,8 +1743,7 @@ class _CartPageState extends State<CartPage> {
                                                                                                         ),
                                                                                                       ),
                                                                                                       Text(
-                                                                                                        totlalPriceFormatted,
-                                                                                                        // " ${totlalPrice.toStringAsFixed(state.startingSetting?.decimalPointSetting ?? 2)} ",
+                                                                                                        " ${totlalPrice.toStringAsFixed(state.startingSetting?.decimalPointSettings ?? 2)} ",
                                                                                                         style: context.textTheme.bodyMedium?.ba.copyWith(
                                                                                                           fontSize: 14.sp,
                                                                                                           color: const Color(0xffFEFEFE),
