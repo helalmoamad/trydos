@@ -470,29 +470,61 @@ class HelperFunctions {
   }
 
   static String formatNumber({required double number}) {
-    if (number >= 1e9) {
-      String bilion = LanguageService.languageCode != "ar" ? 'B' : 'بليون';
-      String result = (number / 1e9).toStringAsFixed(1);
-      if (result.endsWith('.0')) {
-        result = result.substring(0, result.length - 2);
-      }
-      return '$result$bilion';
-    } else if (number >= 1e6) {
-      String milion = LanguageService.languageCode != "ar" ? 'M' : 'مليون';
-      String result = (number / 1e6).toStringAsFixed(1);
-      if (result.endsWith('.0')) {
-        result = result.substring(0, result.length - 2);
-      }
-      return '$result$milion';
-    } else if (number >= 1e3) {
+    String? iso = '';
+    // GetIt.I<PrefsRepository>().userCountryIsAvailable == 1
+    //     ? GetIt.I<PrefsRepository>().userChoosedCountryIso
+    //     : GetIt.I<PrefsRepository>().countryIso;
+
+    // if (number >= 1e9) {
+    //   String bilion = LanguageService.languageCode != "ar" ? 'B' : 'بليون';
+    //   String result = (number / 1e9).toStringAsFixed(1);
+    //   if (result.endsWith('.0')) {
+    //     result = result.substring(0, result.length - 2);
+    //   }
+    //   return '$result$bilion';
+    // } else if (number >= 1e6) {
+    //   String milion = LanguageService.languageCode != "ar" ? 'M' : 'مليون';
+    //   String result = (number / 1e6).toStringAsFixed(1);
+    //   if (result.endsWith('.0')) {
+    //     result = result.substring(0, result.length - 2);
+    //   }
+    //   return '$result$milion';
+    // } else
+    if (iso == 'SY' || iso == 'LB') {
       String thousand = LanguageService.languageCode != "ar" ? 'K' : 'ألف';
-      String result = (number / 1e3).toStringAsFixed(1);
+      if (iso == 'SY') {
+        if (number >= 1e3) {
+          String result = (((number + 999) ~/ 1000)).toString();
+          if (result.endsWith('.0')) {
+            result = result.substring(0, result.length - 2);
+          }
+          return '$result$thousand';
+        } else {
+          return '1$thousand';
+        }
+      } else if (iso == 'LB') {
+        if (number >= 1e4) {
+          String result = (((number + 9999) ~/ 10000) * 10).toString();
+          if (result.endsWith('.0')) {
+            result = result.substring(0, result.length - 2);
+          }
+          return '$result$thousand';
+        } else {
+          return '10$thousand';
+        }
+      } else {
+        String result = number.toString();
+        if (result.endsWith('.0')) {
+          result = result.substring(0, result.length - 2);
+        }
+        return result;
+      }
+    } else {
+      String result = number.toString();
       if (result.endsWith('.0')) {
         result = result.substring(0, result.length - 2);
       }
-      return '$result$thousand';
-    } else {
-      return number.toString();
+      return result;
     }
   }
 }

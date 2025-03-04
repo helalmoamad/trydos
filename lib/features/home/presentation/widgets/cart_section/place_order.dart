@@ -486,10 +486,14 @@ class _PlaceOrderState extends State<PlaceOrder> {
                             Text(
                               widget.paymentMethods.value
                                       .contains(PaymentMethods.cod)
-                                  ? HelperFunctions.formatNumber(
-                                      number: widget.totalCashed)
-                                  : HelperFunctions.formatNumber(
-                                      number: widget.totalPrice),
+                                  ? widget.totalCashed.toStringAsFixed(state
+                                          .startingSetting
+                                          ?.decimalPointSettings ??
+                                      2)
+                                  : widget.totalPrice.toStringAsFixed(state
+                                          .startingSetting
+                                          ?.decimalPointSettings ??
+                                      2),
                               style: context.textTheme.bodyMedium?.br.copyWith(
                                   color: const Color(0xffFEFEFE),
                                   letterSpacing: 0.18,
@@ -608,10 +612,14 @@ class _PlaceOrderState extends State<PlaceOrder> {
                               Text(
                                 widget.paymentMethods.value
                                         .contains(PaymentMethods.cod)
-                                    ? HelperFunctions.formatNumber(
-                                        number: widget.totalCashed)
-                                    : HelperFunctions.formatNumber(
-                                        number: widget.totalPrice),
+                                    ? widget.totalCashed.toStringAsFixed(state
+                                            .startingSetting
+                                            ?.decimalPointSettings ??
+                                        2)
+                                    : widget.totalPrice.toStringAsFixed(state
+                                            .startingSetting
+                                            ?.decimalPointSettings ??
+                                        2),
                                 style: context.textTheme.bodyMedium?.br
                                     .copyWith(
                                         color: const Color(0xffFEFEFE),

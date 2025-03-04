@@ -499,19 +499,14 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                               Text(
                                 paymentMethods.value
                                         .contains(PaymentMethods.cod)
-                                    ? HelperFunctions.formatNumber(
-                                        number: totalCashed)
-                                    // totalCashed.toStringAsFixed(state
-                                    //         .startingSetting
-                                    //         ?.decimalPointSetting ??
-                                    //     2)
-                                    : HelperFunctions.formatNumber(
-                                        number: totalPrice)
-                                //  totalPrice.toStringAsFixed(state
-                                //         .startingSetting
-                                //         ?.decimalPointSetting ??
-                                //     2)
-                                ,
+                                    ? totalCashed.toStringAsFixed(state
+                                            .startingSetting
+                                            ?.decimalPointSettings ??
+                                        2)
+                                    : totalPrice.toStringAsFixed(state
+                                            .startingSetting
+                                            ?.decimalPointSettings ??
+                                        2),
                                 style: context.textTheme.bodyMedium?.br
                                     .copyWith(
                                         color: const Color(0xffFEFEFE),
@@ -616,19 +611,14 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                               Text(
                                 paymentMethods.value
                                         .contains(PaymentMethods.cod)
-                                    ? HelperFunctions.formatNumber(
-                                        number: totalCashed)
-                                    // totalCashed.toStringAsFixed(state
-                                    //         .startingSetting
-                                    //         ?.decimalPointSetting ??
-                                    //     2)
-                                    : HelperFunctions.formatNumber(
-                                        number: totalPrice)
-                                // totalPrice.toStringAsFixed(state
-                                //         .startingSetting
-                                //         ?.decimalPointSetting ??
-                                //     2)
-                                ,
+                                    ? totalCashed.toStringAsFixed(state
+                                            .startingSetting
+                                            ?.decimalPointSettings ??
+                                        2)
+                                    : totalPrice.toStringAsFixed(state
+                                            .startingSetting
+                                            ?.decimalPointSettings ??
+                                        2),
                                 style: context.textTheme.bodyMedium?.br
                                     .copyWith(
                                         color: const Color(0xffFEFEFE),
@@ -738,7 +728,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                               borderRadius: BorderRadius.circular(15),
                               border: Border.all(color: Color(0xff388CFF))),
                           child: Text(
-                            "- ${HelperFunctions.formatNumber(number: couponDiscount)} ${widget.currencySympole}",
+                            "- ${couponDiscount} ${widget.currencySympole}",
                             textAlign: TextAlign.center,
                             style: context.textTheme.bodyMedium?.br.copyWith(
                               color: const Color(0xff1D1D1D),
