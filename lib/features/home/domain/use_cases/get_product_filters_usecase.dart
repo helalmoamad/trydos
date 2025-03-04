@@ -60,7 +60,7 @@ class GetProductsFiltersParams {
         "colors": colors.toString(),
         "search_text":
             searchText == "" || searchText == null ? null : '"${searchText}"',
-        "offset": " ",
+        "offset": "[]",
         // "scroll_id": scroll_id,
         "with_products": '${false}',
         //  "fromMarket": "$fromMarket",

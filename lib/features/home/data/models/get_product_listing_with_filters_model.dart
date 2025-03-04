@@ -53,7 +53,7 @@ class GetProductListingWithFiltersModel {
 class Data {
   final int? totalSize;
   final int? limit;
-  final String? offset;
+  final List<double>? offset;
   //final int? offset;
   final List<product_without_filters.Products>? products;
   final List<filters.Brand>? brands;
@@ -81,7 +81,7 @@ class Data {
   Data copyWith({
     int? totalSize,
     int? limit,
-    String? offset,
+    List<double>? offset,
     // int? offset,
     List<product_without_filters.Products>? products,
     List<filters.Brand>? brands,
@@ -109,7 +109,9 @@ class Data {
     return Data(
       totalSize: json["total_size"],
       limit: json["limit"],
-      offset: json["offset"].toString(),
+      offset: json["offset"] == null
+          ? []
+          : List<double>.from(json["offset"]!.map((x) => x?.toDouble())),
       products: json["products"] == null
           ? []
           : List<product_without_filters.Products>.from(json["products"]!
@@ -143,7 +145,8 @@ class Data {
   Map<String, dynamic> toJson() => {
         "total_size": totalSize,
         "limit": limit,
-        "offset": offset.toString(),
+        "offset":
+            offset == null ? [] : List<dynamic>.from(offset!.map((x) => x)),
         "products": products == null
             ? []
             : List<dynamic>.from(products!.map((x) => x.toJson())),

@@ -337,7 +337,7 @@ class HomeState extends Equatable {
   // String? idForRequest;
   final List<String>? searchHistory;
   final List<String> listOfErrorSendedToMobileErrorLog;
-  final Map<String, String>? searchWithFilterOffset;
+  final Map<String, List<double>>? searchWithFilterOffset;
   final Map<String, String>? searchWithOutFilterOffset;
   final Map<String, Map<int, List<String>>> addImagesToProductIdForCart;
   final Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>?
@@ -552,7 +552,7 @@ class HomeState extends Equatable {
       final List<ResultSearch>? resultSearch,
       final List<String>? listOfErrorSendedToMobileErrorLog,
       final NotificationTypeForProductModel? notificationTypeForProductModel,
-      final Map<String, String>? searchWithFilterOffset,
+      final Map<String, List<double>>? searchWithFilterOffset,
       final GetListOfProductsFoundedInCartStatus?
           getListOfProductsFoundedInCartStatus,
       final List<CustomerAddressesInfo>? listOfAdressInfoClassToSave,

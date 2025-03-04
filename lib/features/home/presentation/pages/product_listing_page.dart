@@ -2307,18 +2307,20 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                     state
                                                         .cashedOrginalBoutique) ||
                                                 (state.getProductListingWithFiltersPaginationModels[
-                                                            '${widget.boutiqueSlug}' +
-                                                                'withoutFilter' +
-                                                                '${(widget.category ?? '')}'] ==
-                                                        PaginationModel
-                                                            .init() &&
-                                                    state
-                                                        .getProductListingWithFiltersPaginationModels[
-                                                            '${widget.boutiqueSlug}' +
-                                                                'withoutFilter' +
-                                                                '${(widget.category ?? '')}']!
-                                                        .items
-                                                        .isNullOrEmpty)) {
+                                                                '${widget.boutiqueSlug}' +
+                                                                    'withoutFilter' +
+                                                                    '${(widget.category ?? '')}'] ==
+                                                            PaginationModel
+                                                                .init() &&
+                                                        state
+                                                            .getProductListingWithFiltersPaginationModels[
+                                                                '${widget.boutiqueSlug}' +
+                                                                    'withoutFilter' +
+                                                                    '${(widget.category ?? '')}']!
+                                                            .items
+                                                            .isNullOrEmpty) &&
+                                                    !state
+                                                        .isGettingProductListingWithPagination) {
                                               return ProductListingLoading();
                                             }
                                             if ((state
@@ -2412,14 +2414,16 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                         PaginationStatus
                                                             .success)) ||
                                                 (state
-                                                            .getProductListingWithFiltersPaginationModels[
-                                                                '${widget.boutiqueSlug}' +
-                                                                    '${(widget.category ?? '')}']
-                                                            ?.paginationStatus ==
-                                                        PaginationStatus
-                                                            .loading &&
+                                                                .getProductListingWithFiltersPaginationModels[
+                                                                    '${widget.boutiqueSlug}' +
+                                                                        '${(widget.category ?? '')}']
+                                                                ?.paginationStatus ==
+                                                            PaginationStatus
+                                                                .loading &&
+                                                        !state
+                                                            .cashedOrginalBoutique) &&
                                                     !state
-                                                        .cashedOrginalBoutique)) {
+                                                        .isGettingProductListingWithPagination) {
                                               return ProductListingLoading(
                                                 key: TestVariables.kTestMode
                                                     ? Key(WidgetsKeys
@@ -2435,6 +2439,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                         '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
                                                         '${(widget.category ?? '')}'] !=
                                                 null) {
+                                              print(
+                                                  "!!!!!!!!!!!!!!!!!!!@@@111111111111111@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#######################${state.cashedOrginalBoutique}");
+
                                               products = state
                                                   .getProductListingWithFiltersPaginationModels[
                                                       '${widget.boutiqueSlug}' +
@@ -2678,6 +2685,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                       homeBloc.add(GetProductDatailsWithoutRelatedProductsEvent(
                           productSlug: products[tapIndex].slug,
                           productId: products[tapIndex].productId.toString()));
+                    } else {
+                      return SizedBox.shrink();
                     }
                     return Positioned(
                         bottom: -20.h,
@@ -2698,26 +2707,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                   previous.cartCollection !=
                                       current.cartCollection,
                               builder: (context, state) {
-                                if (state.getProductDetailWithoutSimilarRelatedProductsStatus ==
-                                        GetProductDetailWithoutSimilarRelatedProductsStatus
-                                            .success &&
-                                    state
-                                            .cachedProductWithoutRelatedProductsModel[
-                                                products[tapIndex]]
-                                            ?.product
-                                            ?.id ==
-                                        null) {
-                                  Future.delayed(Duration(seconds: 1), () {
-                                    tapIndexToAddProductToCart.value = -1;
-
-                                    return showMessage(
-                                      LocaleKeys
-                                          .product_is_not_available_in_your_country
-                                          .tr(),
-                                    );
-                                  });
-                                  return SizedBox.shrink();
-                                }
                                 String productId = state
                                                 .cachedProductWithoutRelatedProductsModel[
                                             products[tapIndex]
@@ -2772,8 +2761,37 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                     },
                                   );
                                 }
+                                Future.delayed(Duration(milliseconds: 300), () {
+                                  if (state.getProductDetailWithoutSimilarRelatedProductsStatus ==
+                                          GetProductDetailWithoutSimilarRelatedProductsStatus
+                                              .success &&
+                                      tapIndex != -1 &&
+                                      state
+                                              .cachedProductWithoutRelatedProductsModel[
+                                                  products[tapIndex]
+                                                      .productId
+                                                      .toString()]
+                                              ?.product
+                                              ?.countryIsRestricted ==
+                                          true) {
+                                    Future.delayed(Duration(seconds: 1), () {
+                                      tapIndexToAddProductToCart.value = -1;
+
+                                      return showMessage(
+                                        LocaleKeys
+                                            .product_is_not_available_in_your_country
+                                            .tr(),
+                                      );
+                                    });
+                                    return SizedBox.shrink();
+                                  }
+                                });
+
                                 if (productId != "" &&
                                     tapIndex != -1 &&
+                                    state.getProductDetailWithoutSimilarRelatedProductsStatus ==
+                                        GetProductDetailWithoutSimilarRelatedProductsStatus
+                                            .success &&
                                     changeAppearSizeForProduct) {
                                   Future.delayed(
                                       Duration(milliseconds: 500),
@@ -2805,9 +2823,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                       .variation
                                                   : null
                                               : null)));
-                                  Future.delayed(Duration(milliseconds: 800),
+                                  Future.delayed(Duration(seconds: 1),
                                       () => panelControllerForCart.open());
                                   changeAppearSizeForProduct = false;
+                                  currentActiveTab.value = 3;
                                 }
                                 return ProductDetailsBottomSheet(
                                   currentActiveTab: currentActiveTab,

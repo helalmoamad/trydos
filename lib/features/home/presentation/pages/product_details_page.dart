@@ -443,15 +443,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                       );
                     }
                     if (state.getFullProductDetailsStatus ==
-                                GetFullProductDetailsStatus.success &&
-                            state.productContentForStatusOfOpeningProductDetailsDirectly
-                                    ?.productId ==
-                                null ||
-                        state.getFullProductDetailsStatus ==
-                                GetFullProductDetailsStatus.success &&
-                            state.productContentForStatusOfOpeningProductDetailsDirectly
-                                    ?.productId ==
-                                null) {
+                            GetFullProductDetailsStatus.success &&
+                        state.productContentForStatusOfOpeningProductDetailsDirectly
+                                ?.countryIsRestricted ==
+                            true) {
                       return Center(
                         child: MyTextWidget(
                             ' ${LocaleKeys.product_is_not_available_in_your_country.tr()}'),
@@ -481,8 +476,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                   .cachedProductWithoutRelatedProductsModel[
                                       widget.productItem?.productId.toString()]
                                   ?.product
-                                  ?.id ==
-                              null &&
+                                  ?.countryIsRestricted ==
+                              true &&
                           widget.productSlugForOpeningChatDirectly == null) {
                         return Center(
                           child: Column(
@@ -579,11 +574,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                       .success &&
                               state
                                       .cachedProductWithoutRelatedProductsModel[
-                                          widget.productItem?.productId
-                                              .toString()]
+                                          productItem?.productId.toString()]
                                       ?.product
-                                      ?.id ==
-                                  null &&
+                                      ?.countryIsRestricted ==
+                                  true &&
                               widget.productSlugForOpeningChatDirectly == null)
                           ? SizedBox.shrink()
                           : ScrollConfiguration(
@@ -1071,8 +1065,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   if (state.getFullProductDetailsStatus !=
                           GetFullProductDetailsStatus.success ||
                       (state.productContentForStatusOfOpeningProductDetailsDirectly
-                                  ?.productId ==
-                              null &&
+                                  ?.countryIsRestricted ==
+                              true &&
                           state.getFullProductDetailsStatus ==
                               GetFullProductDetailsStatus.success)) {
                     return SizedBox.shrink();
@@ -1104,10 +1098,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                 .success &&
                         state
                                 .cachedProductWithoutRelatedProductsModel[
-                                    widget.productItem?.productId.toString()]
+                                    productItem?.productId.toString()]
                                 ?.product
-                                ?.id ==
-                            null &&
+                                ?.countryIsRestricted ==
+                            true &&
                         widget.productSlugForOpeningChatDirectly == null) {
                       return SizedBox.shrink();
                     }

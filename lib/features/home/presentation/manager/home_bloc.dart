@@ -1670,7 +1670,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         Map.of(state.getProductListingWithFiltersPaginationModels);
 
     String keyWithoutFilter = '${event.boutiqueSlug}' +
-        '${(event.cashedOrginalBoutique) ? 'withoutFilter' : ""}' +
+        '${(event.getWithPagination) ? ((state.cashedOrginalBoutique) ? 'withoutFilter' : "") : ((event.cashedOrginalBoutique) ? 'withoutFilter' : "")}' +
         '${(event.category ?? '')}';
     String key = '${event.boutiqueSlug}' + '${(event.category ?? '')}';
     filters_model.Filter filter =
@@ -1854,9 +1854,22 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     } else {
       getProductFiltersStatus[key] = GetProductFiltersStatus.loading;
     }
+    print(
+        "1111111111111111!!!!!!!!!!!!!!!!!!!@@@111111111111111@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@###################00000000000####${keyWithoutFilter}");
+    print(
+        "222222222!!!!!!!!!!!!!!!!!!!@@@111111111111111@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@###################00000000000####${event.getWithPagination}");
+
+    print(
+        "3333333333333!!!!!!!!!!!!!!!!!!!@@@111111111111111@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@###################00000000000####${state.cashedOrginalBoutique}");
+
+    print(
+        "44444!!!!!!!!!!!!!!!!!!!@@@111111111111111@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@###################00000000000####${event.cashedOrginalBoutique}");
+
     emit(state.copyWith(
       getProductFiltersStatus: getProductFiltersStatus,
-      cashedOrginalBoutique: event.cashedOrginalBoutique,
+      cashedOrginalBoutique: (event.getWithPagination)
+          ? (state.cashedOrginalBoutique)
+          : (event.cashedOrginalBoutique),
       isGettingProductListingWithPaginationForAppearProduct:
           event.getWithPagination,
       isGettingProductListingWithPagination: event.getWithPagination,
@@ -1889,7 +1902,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             : ['"${event.boutiqueSlug}"'],
         offset: !event.getWithPagination
             ? null
-            : state.searchWithFilterOffset?[keyWithoutFilter] ?? "",
+            : state.searchWithFilterOffset?[keyWithoutFilter] ?? [],
         attributes: filters.attributes.isNullOrEmpty
             ? null
             : [
@@ -1947,13 +1960,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               Map.of(getProductListingWithFiltersPaginationModels),
           appliedFiltersByUser: Map.of(prevAppliedFiltersByUser)));
     }, (r) {
-      Map<String, String> searchWithFilterOffset =
+      Map<String, List<double>> searchWithFilterOffset =
           Map.of(state.searchWithFilterOffset ?? {});
 
       if (searchWithFilterOffset.containsKey(keyWithoutFilter)) {
-        searchWithFilterOffset[keyWithoutFilter] = r.data?.offset ?? "";
+        searchWithFilterOffset[keyWithoutFilter] = r.data?.offset ?? [];
       } else {
-        searchWithFilterOffset.addAll({keyWithoutFilter: r.data?.offset ?? ""});
+        searchWithFilterOffset.addAll({keyWithoutFilter: r.data?.offset ?? []});
       }
       Map<String, PaginationModel<product.Products>?>
           getProductListingWithFiltersPaginationModels =
@@ -2475,6 +2488,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       });
 
       productStatus = Map.from(state.productStatus ?? {});
+      productStatus.removeWhere((key, value) => key == event.productId!);
       productStatus.addAll({
         event.productId!:
             GetProductDetailWithoutSimilarRelatedProductsStatus.success
@@ -2484,12 +2498,17 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           .remove('GetProductDatailsWithoutRelatedProductsEvent');
       Map<String, GetProductDetailWithoutRelatedProductsModel> newCached =
           Map.of(state.cachedProductWithoutRelatedProductsModel);
+      newCached.removeWhere((key, value) => key == event.productId!);
       newCached.addAll({event.productId!: r});
+      print(
+          "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!${newCached[event.productId!]?.product?.id}");
       emit(state.copyWith(
           cachedProductWithoutRelatedProductsModel: Map.of(newCached),
           getProductDetailWithoutSimilarRelatedProductsStatus:
               GetProductDetailWithoutSimilarRelatedProductsStatus.success,
           productStatus: Map.of(productStatus)));
+      print(
+          "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!${state.cachedProductWithoutRelatedProductsModel[event.productId!]?.product?.id}");
     });
   }
 
@@ -2949,7 +2968,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     final response =
         await getProductsWithFiltersUseCase(GetProductsWithFiltersParams(
       scroll_id: null,
-      offset: "1",
+      offset: [],
       limit: 10,
       searchText: filters.searchText ?? event.searchText,
       brandSlugs: filters.brands?.map((e) => '"${e.slug.toString()}"').toList(),
@@ -2997,12 +3016,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       //       "${event.categorySlugs[event.indexOfCategory]}");
       // }
     }, (r) async {
-      Map<String, String> searchWithFilterOffset =
+      Map<String, List<double>> searchWithFilterOffset =
           Map.of(state.searchWithFilterOffset ?? {});
       if (searchWithFilterOffset.containsKey(keyWithoutFilter)) {
-        searchWithFilterOffset[keyWithoutFilter] = r.data?.offset ?? "";
+        searchWithFilterOffset[keyWithoutFilter] = r.data?.offset ?? [];
       } else {
-        searchWithFilterOffset.addAll({keyWithoutFilter: r.data?.offset ?? ""});
+        searchWithFilterOffset.addAll({keyWithoutFilter: r.data?.offset ?? []});
       }
 
       List<String> cachedLinksOfImages = [];
@@ -5249,7 +5268,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           : event.category != null
               ? ['"${event.category}"']
               : null,
-      offset: "1",
+      offset: [],
       limit: 10,
       boutiqueSlugs: ['"${event.boutiqueSlug}"'],
       attributes: event.filterType != "attribute"
@@ -5293,12 +5312,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             Map.of(getProductListingWithFiltersPaginationWithPrefetchModels),
       ));
     }, (r) {
-      Map<String, String> searchWithFilterOffset =
+      Map<String, List<double>> searchWithFilterOffset =
           Map.of(state.searchWithFilterOffset ?? {});
       if (searchWithFilterOffset.containsKey(key)) {
-        searchWithFilterOffset[key] = r.data?.offset ?? "";
+        searchWithFilterOffset[key] = r.data?.offset ?? [];
       } else {
-        searchWithFilterOffset.addAll({key: r.data?.offset ?? ""});
+        searchWithFilterOffset.addAll({key: r.data?.offset ?? []});
       }
 
       //  if (state.idForRequest == idForRequest || state.cashedOrginalBoutique) {

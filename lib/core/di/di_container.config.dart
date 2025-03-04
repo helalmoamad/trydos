@@ -343,6 +343,8 @@ Future<_i174.GetIt> $initGetIt(
   gh.factory<_i814.ChangeCountryLanguageFornotificationUseCase>(() =>
       _i814.ChangeCountryLanguageFornotificationUseCase(
           gh<_i0.HomeRepository>()));
+  gh.factory<_i812.CheckAvailabilityProductCartUsecase>(() =>
+      _i812.CheckAvailabilityProductCartUsecase(gh<_i0.HomeRepository>()));
   gh.factory<_i190.ConvertItemFromOldcartToCartUsecase>(() =>
       _i190.ConvertItemFromOldcartToCartUsecase(gh<_i0.HomeRepository>()));
   gh.factory<_i71.DeleteCustomerAddressUseCase>(
@@ -379,6 +381,8 @@ Future<_i174.GetIt> $initGetIt(
       () => _i929.GetNotificationTypeProductUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i318.GetOldCartItemUseCase>(
       () => _i318.GetOldCartItemUseCase(gh<_i0.HomeRepository>()));
+  gh.factory<_i59.GetOrdersByCartGroupIDUsecase>(
+      () => _i59.GetOrdersByCartGroupIDUsecase(gh<_i0.HomeRepository>()));
   gh.factory<_i1003.GetOrdersByOrderGroupIDUsecase>(
       () => _i1003.GetOrdersByOrderGroupIDUsecase(gh<_i0.HomeRepository>()));
   gh.factory<_i963.GetPopularSearchItemUseCase>(
@@ -409,6 +413,8 @@ Future<_i174.GetIt> $initGetIt(
           gh<_i0.HomeRepository>()));
   gh.factory<_i78.SendErrorToMobileErrorLogUseCase>(
       () => _i78.SendErrorToMobileErrorLogUseCase(gh<_i0.HomeRepository>()));
+  gh.factory<_i1064.SetCustomerAddressDefaultUseCase>(
+      () => _i1064.SetCustomerAddressDefaultUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i366.StoreFcmTokenOfMarketUseCase>(
       () => _i366.StoreFcmTokenOfMarketUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i687.SubscribeTopicFornotificationUseCase>(() =>
@@ -427,16 +433,10 @@ Future<_i174.GetIt> $initGetIt(
       () => _i432.UpdateNotificationFrequencyUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i744.UpdateWhatsappNotificationUseCase>(
       () => _i744.UpdateWhatsappNotificationUseCase(gh<_i0.HomeRepository>()));
-  gh.factory<_i59.GetOrdersByCartGroupIDUsecase>(
-      () => _i59.GetOrdersByCartGroupIDUsecase(gh<_i0.HomeRepository>()));
-  gh.factory<_i812.CheckAvailabilityProductCartUsecase>(() =>
-      _i812.CheckAvailabilityProductCartUsecase(gh<_i0.HomeRepository>()));
   gh.factory<_i493.ApplyCouponUsecase>(
       () => _i493.ApplyCouponUsecase(gh<_i0.HomeRepository>()));
   gh.factory<_i675.GetCartOverviewUseCase>(
       () => _i675.GetCartOverviewUseCase(gh<_i0.HomeRepository>()));
-  gh.factory<_i1064.SetCustomerAddressDefaultUseCase>(
-      () => _i1064.SetCustomerAddressDefaultUseCase(gh<_i0.HomeRepository>()));
   gh.lazySingleton<_i702.CommonUseRepository>(() =>
       _i77.CommonUseRepositoryImpl(gh<_i672.CommonUseRemoteDataSource>()));
   gh.lazySingleton<_i801.HomeBloc>(() => _i801.HomeBloc(

@@ -32,7 +32,7 @@ class GetProductsWithFiltersParams {
 
   // final bool fromMarket;
   //final int? offset;
-  final String? offset;
+  final List<double>? offset;
   final int? limit;
   final String? scroll_id;
   final String? boutiqueSlug;
@@ -66,7 +66,7 @@ class GetProductsWithFiltersParams {
         //    "fromMarket": "$fromMarket",
         "search_text":
             searchText == "" || searchText == null ? null : '"${searchText}"',
-        "offset": offset,
+        "offset": offset.toString(),
         "limit": "10",
         // "scroll_id": scroll_id,
         "boutique_slug": boutiqueSlug,

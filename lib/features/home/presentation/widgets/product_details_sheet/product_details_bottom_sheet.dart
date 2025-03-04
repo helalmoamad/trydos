@@ -379,17 +379,35 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                         },
                         onPanelOpened: () {
                           if (sizesForEachProduct.length == 0) {
-                            print(
-                                "9999999999999999999994${colorsQuantityForEachProduct}99999999999999999999999999999999999999999999999999999999999999999999999");
-                            if (colorsQuantityForEachProduct[
-                                        widget.currentColor] ==
-                                    0 &&
-                                !widget.collectedAfterOrdering) {
-                              Future.delayed(
-                                  Duration(milliseconds: 300),
-                                  () => colorIsNotAvailableNotifier.value =
-                                      colorsForEachProduct[
-                                          widget.currentColor]);
+                            if (!colorsQuantityForEachProduct.isNullOrEmpty) {
+                              if (colorsQuantityForEachProduct[
+                                          widget.currentColor] ==
+                                      0 &&
+                                  !widget.collectedAfterOrdering) {
+                                Future.delayed(
+                                    Duration(milliseconds: 300),
+                                    () => colorIsNotAvailableNotifier.value =
+                                        colorsForEachProduct[
+                                            widget.currentColor]);
+                              } else {
+                                colorIsNotAvailableNotifier.value = null;
+                              }
+                            } else {
+                              colorIsNotAvailableNotifier.value = null;
+                            }
+                            if (!colorsQuantityForEachProduct.isNullOrEmpty) {
+                              if (colorsQuantityForEachProduct[
+                                          widget.currentColor] ==
+                                      0 &&
+                                  !widget.collectedAfterOrdering) {
+                                Future.delayed(
+                                    Duration(milliseconds: 300),
+                                    () => colorIsNotAvailableNotifier.value =
+                                        colorsForEachProduct[
+                                            widget.currentColor]);
+                              } else {
+                                colorIsNotAvailableNotifier.value = null;
+                              }
                             } else {
                               colorIsNotAvailableNotifier.value = null;
                             }

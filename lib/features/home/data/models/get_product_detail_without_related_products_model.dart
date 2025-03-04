@@ -73,6 +73,7 @@ class Product {
   final List<Label>? labels;
   final int? shippingDays;
   final bool isProductNotifiedForUser;
+  final bool? countryIsRestricted;
   Product({
     this.id,
     this.description,
@@ -98,6 +99,7 @@ class Product {
     this.viewsCount,
     this.labels,
     required this.isProductNotifiedForUser,
+    this.countryIsRestricted,
   });
 
   Product copyWith({
@@ -137,6 +139,7 @@ class Product {
     List<DataDescriptor>? descriptors,
     List<Label>? labels,
     bool? isProductNotifiedForUser,
+    bool? countryIsRestricted,
   }) =>
       Product(
         id: id ?? this.id,
@@ -164,6 +167,7 @@ class Product {
         viewsCount: viewsCount ?? this.viewsCount,
         descriptors: descriptors ?? this.descriptors,
         labels: labels ?? this.labels,
+        countryIsRestricted: countryIsRestricted ?? this.countryIsRestricted,
         isProductNotifiedForUser:
             isProductNotifiedForUser ?? this.isProductNotifiedForUser,
       );
@@ -181,6 +185,7 @@ class Product {
           : BoutiqueForCart.fromJson(json["boutique"]),
       collectedAfterOrdering: json["collected_after_ordering"],
       maxAllowedQty: json["max_allowed_qty"].toString(),
+      countryIsRestricted: json["country_is_restricted"],
       inStock: json["in_stock"],
       variation: json["variation"] == null
           ? []
@@ -223,6 +228,7 @@ class Product {
         "collected_after_ordering": collectedAfterOrdering,
         "delivery_at": deliveryAt,
         "slug_en_topic": slugEnTopic,
+        "country_is_restricted": countryIsRestricted,
         "shipping_days": shippingDays,
         "is_liked": isLiked,
         "count_of_likes": countOfLikes,

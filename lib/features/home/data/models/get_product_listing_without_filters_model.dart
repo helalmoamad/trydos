@@ -135,6 +135,7 @@ class Products {
   final double? shippingCost;
   final List<Variation>? variation;
   final List<ChoiceOption>? choiceOptions;
+  final bool? countryIsRestricted;
 
   final bool? hasDiscount;
   final bool? hasTax;
@@ -209,6 +210,7 @@ class Products {
     this.currentStock,
     this.leftStock,
     this.shippingDays,
+    this.countryIsRestricted,
     this.reviewsCount,
     this.sellerId,
     this.seller,
@@ -280,6 +282,7 @@ class Products {
     List<DataDescriptor>? descriptors,
     List<Label>? labels,
     bool? isProductNotifiedForUser,
+    bool? countryIsRestricted,
   }) =>
       Products(
         productId: productId ?? this.productId,
@@ -318,6 +321,7 @@ class Products {
         deliveryAt: deliveryAt ?? this.deliveryAt,
         tax: tax ?? this.tax,
         unitPrice: unitPrice ?? this.unitPrice,
+        countryIsRestricted: countryIsRestricted ?? this.countryIsRestricted,
         shippingCostMultiplyWithQuantity: shippingCostMultiplyWithQuantity ??
             this.shippingCostMultiplyWithQuantity,
         shippingCost: shippingCost ?? this.shippingCost,
@@ -352,6 +356,7 @@ class Products {
       slug: json["slug"],
       shareLink: json["share_link"],
       details: json["details"],
+      countryIsRestricted: json["country_is_restricted"],
       shippingCostMultiplyWithQuantity:
           json["shipping_cost_multiply_with_quantity"],
       shippingCost: double.tryParse(json["shipping_cost"].toString()),
@@ -457,6 +462,7 @@ class Products {
         "price": price,
         "price_formatted": priceFormatted,
         "offer_price": offerPrice,
+        "country_is_restricted": countryIsRestricted,
         "max_allowed_qty": maxAllowedQty,
         "offer_price_formatted": offerPriceFormatted,
         "is_favourite": isFavourite,

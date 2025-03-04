@@ -43,7 +43,8 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       ),
       searchWithFilterOffset:
           (json['searchWithFilterOffset'] as Map<String, dynamic>?)?.map(
-        (k, e) => MapEntry(k, e as String),
+        (k, e) => MapEntry(
+            k, (e as List<dynamic>).map((e) => (e as num).toDouble()).toList()),
       ),
       getProductDetailWithoutSimilarRelatedProductsStatus: $enumDecodeNullable(
               _$GetProductDetailWithoutSimilarRelatedProductsStatusEnumMap,
@@ -378,6 +379,10 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       getCartItemsStatus: $enumDecodeNullable(
               _$GetCartItemsStatusEnumMap, json['getCartItemsStatus']) ??
           GetCartItemsStatus.init,
+      checkWithGetCartStatus: $enumDecodeNullable(
+              _$CheckWithGetCartStatusEnumMap,
+              json['checkWithGetCartStatus']) ??
+          CheckWithGetCartStatus.init,
       getProductDetailWithoutRelatedProductsModel:
           json['getProductDetailWithoutRelatedProductsModel'] == null
               ? null
@@ -663,6 +668,8 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'theReplyFromGemini': instance.theReplyFromGemini,
       'getCartItemsStatus':
           _$GetCartItemsStatusEnumMap[instance.getCartItemsStatus]!,
+      'checkWithGetCartStatus':
+          _$CheckWithGetCartStatusEnumMap[instance.checkWithGetCartStatus]!,
       'getOldCartItemsStatus':
           _$GetOLdCartItemsStatusEnumMap[instance.getOldCartItemsStatus]!,
       'productContentForStatusOfOpeningProductDetailsDirectly': instance
@@ -977,7 +984,16 @@ const _$GetCartItemsStatusEnumMap = {
   GetCartItemsStatus.init: 'init',
   GetCartItemsStatus.loading: 'loading',
   GetCartItemsStatus.success: 'success',
+  GetCartItemsStatus.available: 'available',
   GetCartItemsStatus.failure: 'failure',
+};
+
+const _$CheckWithGetCartStatusEnumMap = {
+  CheckWithGetCartStatus.init: 'init',
+  CheckWithGetCartStatus.loading: 'loading',
+  CheckWithGetCartStatus.success: 'success',
+  CheckWithGetCartStatus.available: 'available',
+  CheckWithGetCartStatus.failure: 'failure',
 };
 
 const _$AddOrRemoveLikeOfProductStatusEnumMap = {
