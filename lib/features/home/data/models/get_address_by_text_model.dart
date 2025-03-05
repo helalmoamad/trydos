@@ -50,6 +50,7 @@ class ResultSearch {
   final String? province;
   final String? city;
   final String? town;
+  final String? zip;
   final String? street;
   final String? building;
   final Coordinates? coordinates;
@@ -61,6 +62,7 @@ class ResultSearch {
     this.town,
     this.street,
     this.building,
+    this.zip,
     this.coordinates,
   });
 
@@ -71,12 +73,14 @@ class ResultSearch {
     String? town,
     String? street,
     String? building,
+    String? zip,
     Coordinates? coordinates,
   }) =>
       ResultSearch(
         country: country ?? this.country,
         province: province ?? this.province,
         city: city ?? this.city,
+        zip: zip ?? this.zip,
         town: town ?? this.town,
         street: street ?? this.street,
         building: building ?? this.building,
@@ -88,6 +92,7 @@ class ResultSearch {
         province: json["province"],
         city: json["city"],
         town: json["town"],
+        zip: json["zip"],
         street: json["street"],
         building: json["building"],
         coordinates: json["coordinates"] == null
@@ -101,6 +106,7 @@ class ResultSearch {
         "city": city,
         "town": town,
         "street": street,
+        "zip": zip,
         "building": building,
         "coordinates": coordinates?.toJson(),
       };

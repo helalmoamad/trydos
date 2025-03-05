@@ -1881,6 +1881,10 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                       regionDetails:
                                                                           address
                                                                               .RegionDetails(
+                                                                        zip: finishSelectedByUser.length >
+                                                                                0
+                                                                            ? finishSelectedByUser[0].zip
+                                                                            : "",
                                                                         building: finishSelectedByUser.length >
                                                                                 0
                                                                             ? finishSelectedByUser[0].building
@@ -1915,6 +1919,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                 address.CustomerAddressesInfo(
                                                                               regionDetails: address.RegionDetails(
                                                                                 building: finishSelectedByUser.length > 0 ? finishSelectedByUser[0].building : "",
+                                                                                zip: finishSelectedByUser.length > 0 ? finishSelectedByUser[0].zip : "",
                                                                                 city: finishSelectedByUser.length > 0 ? finishSelectedByUser[0].city : "",
                                                                                 country: "${country?.name}",
                                                                                 province: finishSelectedByUser[0].province,
@@ -2038,6 +2043,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                               (element) {
                                                 filterResultSearch.add(
                                                     address.RegionDetails(
+                                                        zip: element.zip ?? "",
                                                         building:
                                                             element.building,
                                                         city: element.city,
@@ -2104,37 +2110,45 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                           onPanelClosed: () {
                                                             finishSelectedByUser =
                                                                 [
-                                                              address.RegionDetails(
-                                                                  province:
-                                                                      addressTilteSeletedByUser.length >
-                                                                              0
-                                                                          ? addressTilteSeletedByUser[
-                                                                              0]
-                                                                          : "",
-                                                                  city: addressTilteSeletedByUser
-                                                                              .length >
-                                                                          1
-                                                                      ? addressTilteSeletedByUser[
-                                                                          1]
-                                                                      : "",
-                                                                  town: addressTilteSeletedByUser
-                                                                              .length >
-                                                                          2
-                                                                      ? addressTilteSeletedByUser[
-                                                                          2]
-                                                                      : "",
-                                                                  street: addressTilteSeletedByUser
-                                                                              .length >
-                                                                          3
-                                                                      ? addressTilteSeletedByUser[
-                                                                          3]
-                                                                      : "",
-                                                                  building:
-                                                                      addressTilteSeletedByUser.length >
-                                                                              4
-                                                                          ? addressTilteSeletedByUser[
-                                                                              4]
-                                                                          : "")
+                                                              address
+                                                                  .RegionDetails(
+                                                                province: addressTilteSeletedByUser
+                                                                            .length >
+                                                                        0
+                                                                    ? addressTilteSeletedByUser[
+                                                                        0]
+                                                                    : "",
+                                                                city: addressTilteSeletedByUser
+                                                                            .length >
+                                                                        1
+                                                                    ? addressTilteSeletedByUser[
+                                                                        1]
+                                                                    : "",
+                                                                town: addressTilteSeletedByUser
+                                                                            .length >
+                                                                        2
+                                                                    ? addressTilteSeletedByUser[
+                                                                        2]
+                                                                    : "",
+                                                                street: addressTilteSeletedByUser
+                                                                            .length >
+                                                                        3
+                                                                    ? addressTilteSeletedByUser[
+                                                                        3]
+                                                                    : "",
+                                                                building: addressTilteSeletedByUser
+                                                                            .length >
+                                                                        4
+                                                                    ? addressTilteSeletedByUser[
+                                                                        4]
+                                                                    : "",
+                                                                zip: addressTilteSeletedByUser
+                                                                            .length >
+                                                                        5
+                                                                    ? addressTilteSeletedByUser[
+                                                                        5]
+                                                                    : "",
+                                                              )
                                                             ];
 
                                                             searchController
@@ -2408,7 +2422,8 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                       filterSearchTadd.city ?? "",
                                                                                       filterSearchTadd.town ?? "",
                                                                                       filterSearchTadd.street ?? "",
-                                                                                      filterSearchTadd.building ?? ""
+                                                                                      filterSearchTadd.building ?? "",
+                                                                                      filterSearchTadd.zip ?? ""
                                                                                     ]
                                                                                   ];
                                                                                   panelController.close();

@@ -74,6 +74,7 @@ class Product {
   final int? shippingDays;
   final bool isProductNotifiedForUser;
   final bool? countryIsRestricted;
+  final bool? isAvailableInMarket;
   Product({
     this.id,
     this.description,
@@ -100,6 +101,7 @@ class Product {
     this.labels,
     required this.isProductNotifiedForUser,
     this.countryIsRestricted,
+    this.isAvailableInMarket,
   });
 
   Product copyWith({
@@ -140,6 +142,7 @@ class Product {
     List<Label>? labels,
     bool? isProductNotifiedForUser,
     bool? countryIsRestricted,
+    bool? isAvailableInMarket,
   }) =>
       Product(
         id: id ?? this.id,
@@ -170,6 +173,7 @@ class Product {
         countryIsRestricted: countryIsRestricted ?? this.countryIsRestricted,
         isProductNotifiedForUser:
             isProductNotifiedForUser ?? this.isProductNotifiedForUser,
+        isAvailableInMarket: isAvailableInMarket ?? this.isAvailableInMarket,
       );
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
@@ -185,7 +189,7 @@ class Product {
           : BoutiqueForCart.fromJson(json["boutique"]),
       collectedAfterOrdering: json["collected_after_ordering"],
       maxAllowedQty: json["max_allowed_qty"].toString(),
-      countryIsRestricted: json["country_is_restricted"],
+      countryIsRestricted: json["is_country_restricted"],
       inStock: json["in_stock"],
       variation: json["variation"] == null
           ? []
@@ -203,6 +207,7 @@ class Product {
       leftStock: json["Left_stock"],
       // reviewsCount: json["reviews_count"],
       shippingDays: json["shipping_days"],
+      isAvailableInMarket: json["is_available_in_market"],
       // viewsCount: json["views_count"],
       descriptors: json["descriptors"] == null
           ? []
@@ -228,7 +233,7 @@ class Product {
         "collected_after_ordering": collectedAfterOrdering,
         "delivery_at": deliveryAt,
         "slug_en_topic": slugEnTopic,
-        "country_is_restricted": countryIsRestricted,
+        "is_country_restricted": countryIsRestricted,
         "shipping_days": shippingDays,
         "is_liked": isLiked,
         "count_of_likes": countOfLikes,
@@ -239,6 +244,7 @@ class Product {
             shippingCostMultiplyWithQuantity,
         "shipping_cost": shippingCost?.toDouble(),
         "max_allowed_qty": maxAllowedQty,
+        "is_available_in_market": isAvailableInMarket,
         // "views_count": viewsCount,
         "descriptors": descriptors == null
             ? []

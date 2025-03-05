@@ -18,6 +18,7 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/app_elvated_button.dart';
+import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
@@ -470,10 +471,11 @@ class HelperFunctions {
   }
 
   static String formatNumber({required double number}) {
-    String? iso = '';
-    // GetIt.I<PrefsRepository>().userCountryIsAvailable == 1
-    //     ? GetIt.I<PrefsRepository>().userChoosedCountryIso
-    //     : GetIt.I<PrefsRepository>().countryIso;
+    String iso = (_prefsRepository.userCountryIsAvailable == 1
+            ? _prefsRepository.userChoosedCountryIso
+            : _prefsRepository.countryIso) ??
+        "";
+    iso = iso.toUpperCase();
 
     // if (number >= 1e9) {
     //   String bilion = LanguageService.languageCode != "ar" ? 'B' : 'بليون';
@@ -494,36 +496,37 @@ class HelperFunctions {
       String thousand = LanguageService.languageCode != "ar" ? 'K' : 'ألف';
       if (iso == 'SY') {
         if (number >= 1e3) {
-          String result = (((number + 999) ~/ 1000)).toString();
-          if (result.endsWith('.0')) {
-            result = result.substring(0, result.length - 2);
-          }
+          String result = (((number + 999) ~/ 1000)).toStringAsFixed(
+              GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ??
+                  2);
+          ;
+
           return '$result$thousand';
         } else {
           return '1$thousand';
         }
       } else if (iso == 'LB') {
         if (number >= 1e4) {
-          String result = (((number + 9999) ~/ 10000) * 10).toString();
-          if (result.endsWith('.0')) {
-            result = result.substring(0, result.length - 2);
-          }
+          String result = (((number + 9999) ~/ 10000) * 10).toStringAsFixed(
+              GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ??
+                  2);
+          ;
+
           return '$result$thousand';
         } else {
           return '10$thousand';
         }
       } else {
-        String result = number.toString();
-        if (result.endsWith('.0')) {
-          result = result.substring(0, result.length - 2);
-        }
+        String result = number.toStringAsFixed(
+            GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ??
+                2);
+
         return result;
       }
     } else {
-      String result = number.toString();
-      if (result.endsWith('.0')) {
-        result = result.substring(0, result.length - 2);
-      }
+      String result = number.toStringAsFixed(
+          GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 2);
+
       return result;
     }
   }

@@ -185,7 +185,7 @@ abstract class LocaleKeys {
   static const click_to_show_all_discount = 'click_to_show_all_discount';
   static const back_to_home = 'back_to_home';
   static const confirm = 'confirm';
-  static const continue_ = 'continue';
+
   static const you_must_wait_for_some_seconds_before_try_again =
       'you_must_wait_for_some_seconds_before_try_again';
   static const it_has_been_along_time_since_your_account =
@@ -203,11 +203,12 @@ abstract class LocaleKeys {
   static const you_can_add_only = 'you_can_add_only';
   static const your_request_add_successfuly = 'your_request_add_successfuly';
   static const item_was_hidden_successfuly = 'item_was_hidden_successfuly';
-  static const your_request_faild = 'your _request_faild';
-  static const do_you_want_to_notify_You_when_your_choose_available =
-      'do_you_want-to_notify_You_when_your_choose_available';
+
   static const not_now = 'not_now';
   static const notify_me = 'notify_me';
+  static const do_you_want_to_notify_You_when_your_choose_available =
+      'do_you_want_to_notify_You_when_your_choose_available';
+  static const your_request_faild = 'your_request_faild';
   static const continues = 'continues';
   static const more = 'more';
   static const product_story = 'product_story';
@@ -383,4 +384,9 @@ abstract class LocaleKeys {
   static const applied_your_coupon = 'applied_your_coupon';
   static const shipping_payment = 'shipping_payment';
   static const the_time_will_end = 'the_time_will_end';
+  static const country_code = 'country_code';
+  static const this_product_is_not_available_in_store =
+      'this_product_is_not_available_in_store';
+  static const notify_me_when_available = 'notify_me_when_available';
+  static const product_is_available = 'product_is_available';
 }

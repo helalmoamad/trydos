@@ -68,8 +68,6 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
 
-    print(
-        "######################################################################${homeBloc.state.currentAddressChoosed ?? 0}");
     ////////////////////
     homeBloc.add(GetCustomerAddressesEvent());
     homeBloc.add(GetCustomerWalletEvent(limit: 10, offset: 1));

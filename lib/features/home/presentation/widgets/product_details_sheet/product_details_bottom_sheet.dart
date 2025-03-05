@@ -65,7 +65,7 @@ class ProductDetailsBottomSheet extends StatefulWidget {
   final ValueNotifier<int> addToBagButtonShapeNotifier;
   final ValueNotifier<int>? tapIndexToAddProductToCart;
   final ValueNotifier<int> currentActiveTab;
-
+  final ValueNotifier<String?> productNotAvailableNotifier;
   const ProductDetailsBottomSheet(
       {super.key,
       required this.productItem,
@@ -76,6 +76,7 @@ class ProductDetailsBottomSheet extends StatefulWidget {
       required this.addToBagButtonShapeNotifier,
       required this.currentActiveTab,
       required this.boutiqueIcon,
+      required this.productNotAvailableNotifier,
       this.fromListingPage = false,
       required this.productSlugForTopic,
       required this.productDescription,
@@ -98,6 +99,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
   final ValueNotifier<double> workOnBlurNotifier = ValueNotifier(10);
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   final ValueNotifier<String?> sizeIsNotAvailableNotifier = ValueNotifier(null);
+
   final ValueNotifier<String?> colorIsNotAvailableNotifier =
       ValueNotifier(null);
   final PageController pageController = PageController();
@@ -929,6 +931,8 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                               c.currentColorSizeForCart?["size"],
                           builder: (context, state) {
                             return ProductDetailsSheetBottomBar(
+                                productNotAvailableNotifier:
+                                    widget.productNotAvailableNotifier,
                                 products: widget.productItem,
                                 collectedAfterOrder:
                                     widget.collectedAfterOrdering,

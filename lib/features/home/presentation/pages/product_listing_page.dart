@@ -35,6 +35,7 @@ import 'package:trydos/features/home/data/models/get_product_listing_without_fil
     as filter_products;
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
+import 'package:trydos/features/home/presentation/pages/cart_page_new.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_bottom_sheet.dart';
 import 'package:trydos/features/search/presentation/widgets/search_with_image_related_gemini.dart';
@@ -130,6 +131,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
   final ValueNotifier<bool> fromSearchListing = ValueNotifier(false);
   final ValueNotifier<int> currentActiveTab = ValueNotifier(-1);
   final PanelController panelControllerForCart = PanelController();
+  final ValueNotifier<String?> productNotAvailableNotifier =
+      ValueNotifier(null);
   bool isExpanded = false;
   final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   bool? fromSearch;
@@ -619,935 +622,596 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                     ? NeverScrollableScrollPhysics()
                                     : ClampingScrollPhysics(),
                                 slivers: [
-                                  SliverAppBar(
-                                      pinned: true,
-                                      backgroundColor: colorScheme.white,
-                                      automaticallyImplyLeading: false,
-                                      flexibleSpace:
-                                          ValueListenableBuilder<bool>(
-                                              valueListenable: searchVisible,
-                                              builder:
-                                                  (context, searchOpen, _) {
-                                                return Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          right: 5, left: 5),
-                                                  child: TrydosAppBar(
-                                                    appBarParams: AppBarParams(
-                                                        onBack: () {
-                                                          FocusScope.of(context)
-                                                              .unfocus();
-                                                          try {
-                                                            if (panelControllerForCart
-                                                                .isPanelOpen) {
-                                                              panelControllerForCart
-                                                                  .close();
-                                                              return;
-                                                            }
-                                                          } catch (e) {}
-                                                          if (widget
-                                                              .fromBackground) {
-                                                            context.go(GRouter
-                                                                .config
-                                                                .kRootRoute);
-                                                          }
-                                                          homeBloc.add(ReplyFromGeminiEvent(
-                                                              fromSearch: false,
-                                                              sendRequestToGeminiStatus:
-                                                                  SendRequestToGeminiStatus
-                                                                      .success,
-                                                              theReplyFromGemini:
-                                                                  ""));
-                                                          if (widget
-                                                              .fromSearch) {
-                                                            widget.controllerFormSearchPage
-                                                                    ?.text =
-                                                                controller.text;
-                                                            homeBloc.add(ChangeAppliedFiltersEvent(
-                                                                boutiqueSlug: widget
-                                                                    .boutiqueSlug,
-                                                                category: widget
-                                                                    .category,
-                                                                filtersAppliedByUser: GetProductFiltersModel(
-                                                                    filters: homeBloc
-                                                                        .state
-                                                                        .appliedFiltersByUser[
-                                                                            key]
-                                                                        ?.filters),
-                                                                resetAppliedFilters:
-                                                                    false));
-                                                            homeBloc.add(
-                                                                ChangeSelectedFiltersEvent(
-                                                              fromHomePageSearch:
-                                                                  widget
-                                                                      .fromSearch,
-                                                              boutiqueSlug: widget
-                                                                  .boutiqueSlug,
-                                                              category: widget
-                                                                  .category,
-                                                              filtersChoosedByUser:
-                                                                  GetProductFiltersModel(
-                                                                      filters: homeBloc
-                                                                          .state
-                                                                          .appliedFiltersByUser[
-                                                                              key]
-                                                                          ?.filters),
-                                                            ));
-                                                          }
-                                                          if (!widget
-                                                              .fromSearch) {
-                                                            homeBloc.add(
-                                                                ChangeSelectedFiltersEvent(
-                                                              fromHomePageSearch:
-                                                                  widget
-                                                                      .fromSearch,
-                                                              requestToUpdateFilters:
-                                                                  false,
-                                                              boutiqueSlug: widget
-                                                                  .boutiqueSlug,
-                                                              category: widget
-                                                                  .category,
-                                                              filtersChoosedByUser:
-                                                                  GetProductFiltersModel(
-                                                                      filters: homeBloc
-                                                                          .state
-                                                                          .appliedFiltersByUser[
-                                                                              key]
-                                                                          ?.filters),
-                                                            ));
-                                                            homeBloc.add(ChangeAppliedFiltersEvent(
-                                                                boutiqueSlug: widget
-                                                                    .boutiqueSlug,
-                                                                category: widget
-                                                                    .category,
-                                                                resetAppliedFilters:
-                                                                    true));
-                                                          }
-                                                        },
-                                                        backgroundColor:
-                                                            colorScheme.white,
-                                                        scrolledUnderElevation:
-                                                            0,
-                                                        backIconColor:
-                                                            Colors.black,
-                                                        hasLeading:
-                                                            !isExpanded &&
-                                                                !searchOpen,
-                                                        action: [
-                                                          Spacer(),
-                                                          ValueListenableBuilder<
-                                                                  bool>(
-                                                              valueListenable:
-                                                                  displayBoutiqueIconInAppBar,
-                                                              child: Padding(
-                                                                padding: EdgeInsetsDirectional
-                                                                    .only(
-                                                                        start: 30
-                                                                            .w),
-                                                                child: widget
-                                                                            .boutiqueIcon !=
-                                                                        null
-                                                                    ? SvgNetworkWidget(
-                                                                        svgUrl:
-                                                                            widget.boutiqueIcon ??
-                                                                                "",
-                                                                        height:
-                                                                            20,
-                                                                      )
-                                                                    : SizedBox
-                                                                        .shrink(),
-                                                              ),
-                                                              builder: (context,
-                                                                  display,
-                                                                  child) {
-                                                                return display
-                                                                    ? child!
-                                                                    : SizedBox
-                                                                        .shrink();
-                                                              }),
-                                                          Padding(
-                                                            padding: EdgeInsetsDirectional
+                                  ValueListenableBuilder<int>(
+                                      valueListenable:
+                                          tapIndexToAddProductToCart,
+                                      builder: (context, tapIndex, _) {
+                                        return SliverAppBar(
+                                            pinned: true,
+                                            backgroundColor: colorScheme.white,
+                                            automaticallyImplyLeading: false,
+                                            flexibleSpace:
+                                                ValueListenableBuilder<bool>(
+                                                    valueListenable:
+                                                        searchVisible,
+                                                    builder: (context,
+                                                        searchOpen, _) {
+                                                      return Padding(
+                                                        padding:
+                                                            const EdgeInsets
                                                                 .only(
-                                                                    end: searchOpen
-                                                                        ? 10
-                                                                        : 20.0),
-                                                            child:
-                                                                AnimatedSearchBar(
-                                                              key: TestVariables
-                                                                      .kTestMode
-                                                                  ? Key(WidgetsKeys
-                                                                      .productListingSearchInputKey)
-                                                                  : null,
-                                                              autoFocus: false,
-                                                              width: isExpanded
-                                                                  ? (1.sw - 90)
-                                                                  : (1.sw -
-                                                                      120),
-                                                              height: 40,
-                                                              onClickClose: () {
-                                                                if (!isExpanded &&
-                                                                    controller
-                                                                        .text
-                                                                        .isNotEmpty) {
-                                                                  Filter filters = homeBloc
-                                                                          .state
-                                                                          .appliedFiltersByUser[
-                                                                              key]
-                                                                          ?.filters ??
-                                                                      Filter();
-                                                                  homeBloc.add(ChangeAppliedFiltersEvent(
-                                                                      boutiqueSlug:
-                                                                          widget
-                                                                              .boutiqueSlug,
-                                                                      category:
-                                                                          widget
-                                                                              .category,
-                                                                      filtersAppliedByUser:
-                                                                          GetProductFiltersModel(
-                                                                              filters: filters.copyWithSaveOtherField(prices: filters.prices, searchText: null))));
-                                                                  homeBloc.add(
-                                                                      GetProductsWithFiltersEvent(
-                                                                    offset: 1,
-                                                                    searchText:
-                                                                        null,
-                                                                    fromSearch:
-                                                                        fromSearch,
-                                                                    category: widget
-                                                                        .category,
-                                                                    boutiqueSlug:
-                                                                        widget
-                                                                            .boutiqueSlug,
-                                                                  ));
-                                                                }
-                                                                if (isExpanded &&
-                                                                    controller
-                                                                        .text
-                                                                        .isNotEmpty) {
-                                                                  Filter filters = homeBloc
-                                                                          .state
-                                                                          .choosedFiltersByUser[
-                                                                              key]
-                                                                          ?.filters ??
-                                                                      Filter();
-                                                                  homeBloc.add(ChangeSelectedFiltersEvent(
-                                                                      fromHomePageSearch:
-                                                                          widget
-                                                                              .fromSearch,
-                                                                      boutiqueSlug:
-                                                                          widget
-                                                                              .boutiqueSlug,
-                                                                      filtersChoosedByUser:
-                                                                          GetProductFiltersModel(
-                                                                              filters: filters.copyWithSaveOtherField(prices: filters.prices, searchText: null))));
-                                                                }
+                                                                right: 5,
+                                                                left: 5),
+                                                        child: tapIndex != -1
+                                                            ? TrydosAppBar(
+                                                                appBarParams:
+                                                                    AppBarParams(
+                                                                        scrolledUnderElevation:
+                                                                            0,
+                                                                        backIconColor:
+                                                                            Colors
+                                                                                .black,
+                                                                        action: [
+                                                                          LanguageService.rtl
+                                                                              ? Spacer()
+                                                                              : SizedBox.shrink(),
+                                                                          Padding(
+                                                                            padding:
+                                                                                const EdgeInsetsDirectional.only(end: 10.0),
+                                                                            child:
+                                                                                BlocBuilder<HomeBloc, HomeState>(
+                                                                              buildWhen: (previous, current) => previous.getProductDetailWithoutSimilarRelatedProductsStatus != current.getProductDetailWithoutSimilarRelatedProductsStatus || previous.updateItemInCartStatus != current.updateItemInCartStatus || previous.addItemInCartStatus != current.addItemInCartStatus || previous.deleteItemInCartStatus != current.deleteItemInCartStatus || previous.getCartItemsStatus != current.getCartItemsStatus,
+                                                                              builder: (context, state) {
+                                                                                int qtyItemsInCart = 0;
+                                                                                state.cartCollection?.forEach(
+                                                                                  (element) {
+                                                                                    qtyItemsInCart = qtyItemsInCart + (element.quantity ?? 0);
+                                                                                  },
+                                                                                );
 
-                                                                resetSearchAfterSearchingWhileRemoveSearch =
-                                                                    false;
-                                                                FocusScope.of(
-                                                                        context)
-                                                                    .unfocus();
-
-                                                                searchVisible
-                                                                        .value =
-                                                                    false;
-
-                                                                controller
-                                                                    .clear();
-                                                                appBloc.add(
-                                                                    HideBottomNavigationBar(
-                                                                        false));
-                                                                ///////////////////////////
-                                                                FirebaseAnalyticsService
-                                                                    .logEventForSession(
-                                                                  eventName:
-                                                                      AnalyticsEventsConst
-                                                                          .buttonClicked,
-                                                                  executedEventName:
-                                                                      AnalyticsExecutedEventNameConst
-                                                                          .resetCloseIconButton,
-                                                                );
-                                                                return false;
-                                                              },
-                                                              textController:
-                                                                  controller,
-                                                              focusNode:
-                                                                  focusNode,
-                                                              onSuffixTap: () {
-                                                                WidgetsBinding
-                                                                    .instance
-                                                                    .addPostFrameCallback(
-                                                                        (timeStamp) {
-                                                                  searchVisible
-                                                                          .value =
-                                                                      true;
-                                                                });
-                                                              },
-                                                              suffixWidget:
-                                                                  Center(
-                                                                child:
-                                                                    SvgPicture
-                                                                        .asset(
-                                                                  AppAssets
-                                                                      .searchOutlinedSvg,
-                                                                  height: 20,
-                                                                  width: 20,
-                                                                  color: Color(
-                                                                      0xff388CFF),
-                                                                ),
-                                                              ),
-                                                              prefixWidget:
-                                                                  Padding(
-                                                                padding:
-                                                                    const EdgeInsets
-                                                                        .only(
-                                                                        right:
-                                                                            15,
-                                                                        top: 10,
-                                                                        bottom:
-                                                                            10),
-                                                                child: Row(
-                                                                  mainAxisSize:
-                                                                      MainAxisSize
-                                                                          .min,
-                                                                  children: [
-                                                                    InkWell(
-                                                                      onTap:
-                                                                          () async {
-                                                                        SearchWithImageRelatedGemini.SelecteImageForSearch(
-                                                                            fromSearch:
-                                                                                false,
-                                                                            context:
-                                                                                context);
-                                                                        /////////////////////////////
-                                                                        FirebaseAnalyticsService
-                                                                            .logEventForSession(
-                                                                          eventName:
-                                                                              AnalyticsEventsConst.buttonClicked,
-                                                                          executedEventName:
-                                                                              AnalyticsExecutedEventNameConst.searchWithImageButton,
-                                                                        );
-                                                                      },
-                                                                      child: state.sendRequestToGeminiStatus ==
-                                                                              SendRequestToGeminiStatus.loading
-                                                                          ? TrydosLoader(
-                                                                              size: 18,
-                                                                            )
-                                                                          : SvgPicture.asset(
-                                                                              AppAssets.realCameraSvg,
-                                                                              height: 20,
-                                                                              width: 20,
+                                                                                return Container(
+                                                                                  alignment: Alignment.center,
+                                                                                  height: 40,
+                                                                                  width: LanguageService.languageCode != "ar" ? 40 : 50,
+                                                                                  child: InkWell(
+                                                                                      onTap: () {
+                                                                                        Navigator.of(context).push(
+                                                                                          MaterialPageRoute(
+                                                                                            builder: (context) => CartPage(
+                                                                                              fromeFilters: true,
+                                                                                            ),
+                                                                                          ),
+                                                                                        );
+                                                                                        //////////////////////////////
+                                                                                        FirebaseAnalyticsService.logEventForSession(
+                                                                                          eventName: AnalyticsEventsConst.buttonClicked,
+                                                                                          executedEventName: AnalyticsExecutedEventNameConst.showShoppingBagButton,
+                                                                                        );
+                                                                                      },
+                                                                                      child: Stack(children: [
+                                                                                        Positioned(
+                                                                                          child: SvgPicture.asset(AppAssets.bagsSvg),
+                                                                                          right: LanguageService.languageCode != "ar" ? 0 : null,
+                                                                                          left: LanguageService.languageCode == "ar" ? 0 : null,
+                                                                                          bottom: 5,
+                                                                                        ),
+                                                                                        Positioned(
+                                                                                          child: Container(
+                                                                                            width: (qtyItemsInCart > 0) ? 15 : 0,
+                                                                                            alignment: Alignment.center,
+                                                                                            height: (qtyItemsInCart > 0) ? 15 : 0,
+                                                                                            decoration: BoxDecoration(color: Colors.green, borderRadius: BorderRadius.circular(20)),
+                                                                                            child: MyTextWidget(
+                                                                                              (qtyItemsInCart > 0) ? "${qtyItemsInCart}" : "",
+                                                                                              maxLines: 1,
+                                                                                              style: textTheme.titleSmall?.ra.copyWith(fontSize: 12, color: Colors.white, letterSpacing: 0.28),
+                                                                                            ),
+                                                                                          ),
+                                                                                          top: 0,
+                                                                                          left: LanguageService.languageCode != "ar" ? 5 : null,
+                                                                                          right: LanguageService.languageCode != "en"
+                                                                                              ? (qtyItemsInCart.toString().length > 1)
+                                                                                                  ? 0
+                                                                                                  : 10
+                                                                                              : null,
+                                                                                        )
+                                                                                      ])),
+                                                                                );
+                                                                              },
                                                                             ),
-                                                                    ),
-                                                                    ValueListenableBuilder<
-                                                                        bool>(
-                                                                      valueListenable:
-                                                                          isRecordeForSearchWithMic,
-                                                                      builder: (context,
-                                                                          recordeForSearchWithMic,
-                                                                          _) {
-                                                                        return InkWell(
-                                                                          onTap:
-                                                                              () async {
-                                                                            final status =
-                                                                                await Permission.microphone.request();
-                                                                            if (status !=
-                                                                                PermissionStatus.granted) {
+                                                                          ),
+                                                                        ],
+                                                                        withShadow:
+                                                                            false),
+                                                              )
+                                                            : TrydosAppBar(
+                                                                appBarParams:
+                                                                    AppBarParams(
+                                                                        onBack:
+                                                                            () {
+                                                                          FocusScope.of(context)
+                                                                              .unfocus();
+                                                                          try {
+                                                                            if (panelControllerForCart.isPanelOpen) {
+                                                                              panelControllerForCart.close();
                                                                               return;
                                                                             }
-                                                                            if (_speechToText.isNotListening) {
-                                                                              _startListening();
-                                                                              /////////////////////////////
-                                                                              FirebaseAnalyticsService.logEventForSession(
-                                                                                eventName: AnalyticsEventsConst.buttonClicked,
-                                                                                executedEventName: AnalyticsExecutedEventNameConst.searchWithVoiceButton,
-                                                                              );
-                                                                            } else {
-                                                                              _stopListening();
-                                                                            }
-                                                                          },
-                                                                          child:
-                                                                              Container(
-                                                                            width:
-                                                                                20,
-                                                                            child: Icon(_speechToText.isNotListening || !recordeForSearchWithMic
-                                                                                ? Icons.mic_off
-                                                                                : Icons.mic),
-                                                                          ),
-                                                                        );
-                                                                      },
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                              animationDurationInMilli:
-                                                                  400,
-                                                              searchDecoration:
-                                                                  InputDecoration(
-                                                                border:
-                                                                    OutlineInputBorder(
-                                                                  borderSide: BorderSide(
-                                                                      color: focusNode
-                                                                              .hasFocus
-                                                                          ? Color(
-                                                                              0xffE6E6E6)
-                                                                          : Color(
-                                                                              0xffF8F8F8),
-                                                                      width:
-                                                                          0.4),
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              kbrBorderTextField),
-                                                                ),
-                                                                focusedBorder:
-                                                                    OutlineInputBorder(
-                                                                  borderSide: BorderSide(
-                                                                      color: focusNode
-                                                                              .hasFocus
-                                                                          ? Color(
-                                                                              0xffE6E6E6)
-                                                                          : Color(
-                                                                              0xffF8F8F8),
-                                                                      width:
-                                                                          0.4),
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              kbrBorderTextField),
-                                                                ),
-                                                                enabledBorder:
-                                                                    OutlineInputBorder(
-                                                                  borderSide: BorderSide(
-                                                                      color: focusNode
-                                                                              .hasFocus
-                                                                          ? Color(
-                                                                              0xffE6E6E6)
-                                                                          : Color(
-                                                                              0xffF8F8F8),
-                                                                      width:
-                                                                          0.4),
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              kbrBorderTextField),
-                                                                ),
-                                                                disabledBorder:
-                                                                    OutlineInputBorder(
-                                                                  borderSide: BorderSide(
-                                                                      color: focusNode
-                                                                              .hasFocus
-                                                                          ? Color(
-                                                                              0xffE6E6E6)
-                                                                          : Color(
-                                                                              0xffF8F8F8),
-                                                                      width:
-                                                                          0.4),
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              kbrBorderTextField),
-                                                                ),
-                                                                errorBorder:
-                                                                    OutlineInputBorder(
-                                                                  borderSide: BorderSide(
-                                                                      color: context
-                                                                          .colorScheme
-                                                                          .error,
-                                                                      width:
-                                                                          0.4),
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              kbrBorderTextField),
-                                                                ),
-                                                                focusedErrorBorder:
-                                                                    OutlineInputBorder(
-                                                                  borderSide: BorderSide(
-                                                                      color: context
-                                                                          .colorScheme
-                                                                          .error,
-                                                                      width:
-                                                                          0.4),
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              kbrBorderTextField),
-                                                                ),
-                                                                filled: true,
-                                                                fillColor: focusNode
-                                                                        .hasFocus
-                                                                    ? colorScheme
-                                                                        .white
-                                                                    : Color(
-                                                                        0xffF8F8F8),
-                                                                prefixIcon:
-                                                                    Padding(
-                                                                  padding:
-                                                                      const EdgeInsets
-                                                                          .only(
-                                                                          top:
-                                                                              12,
-                                                                          bottom:
-                                                                              12),
-                                                                  child:
-                                                                      SvgPicture
-                                                                          .asset(
-                                                                    AppAssets
-                                                                        .searchOutlinedSvg,
-                                                                    height: 20,
-                                                                    width: 20,
-                                                                    color: Color(
-                                                                        0xff388CFF),
-                                                                  ),
-                                                                ),
-                                                                suffixIcon:
-                                                                    Padding(
-                                                                  padding: const EdgeInsets
-                                                                      .only(
-                                                                      right: 15,
-                                                                      top: 10,
-                                                                      bottom:
-                                                                          10),
-                                                                  child: Row(
-                                                                    mainAxisSize:
-                                                                        MainAxisSize
-                                                                            .min,
-                                                                    children: [
-                                                                      InkWell(
-                                                                        onTap:
-                                                                            () async {
-                                                                          SearchWithImageRelatedGemini.SelecteImageForSearch(
+                                                                          } catch (e) {}
+                                                                          if (widget
+                                                                              .fromBackground) {
+                                                                            context.go(GRouter.config.kRootRoute);
+                                                                          }
+                                                                          homeBloc.add(ReplyFromGeminiEvent(
                                                                               fromSearch: false,
-                                                                              context: context);
-                                                                          /////////////////////////////
-                                                                          FirebaseAnalyticsService
-                                                                              .logEventForSession(
-                                                                            eventName:
-                                                                                AnalyticsEventsConst.buttonClicked,
-                                                                            executedEventName:
-                                                                                AnalyticsExecutedEventNameConst.searchWithImageButton,
-                                                                          );
+                                                                              sendRequestToGeminiStatus: SendRequestToGeminiStatus.success,
+                                                                              theReplyFromGemini: ""));
+                                                                          if (widget
+                                                                              .fromSearch) {
+                                                                            widget.controllerFormSearchPage?.text =
+                                                                                controller.text;
+                                                                            homeBloc.add(ChangeAppliedFiltersEvent(
+                                                                                boutiqueSlug: widget.boutiqueSlug,
+                                                                                category: widget.category,
+                                                                                filtersAppliedByUser: GetProductFiltersModel(filters: homeBloc.state.appliedFiltersByUser[key]?.filters),
+                                                                                resetAppliedFilters: false));
+                                                                            homeBloc.add(ChangeSelectedFiltersEvent(
+                                                                              fromHomePageSearch: widget.fromSearch,
+                                                                              boutiqueSlug: widget.boutiqueSlug,
+                                                                              category: widget.category,
+                                                                              filtersChoosedByUser: GetProductFiltersModel(filters: homeBloc.state.appliedFiltersByUser[key]?.filters),
+                                                                            ));
+                                                                          }
+                                                                          if (!widget
+                                                                              .fromSearch) {
+                                                                            homeBloc.add(ChangeSelectedFiltersEvent(
+                                                                              fromHomePageSearch: widget.fromSearch,
+                                                                              requestToUpdateFilters: false,
+                                                                              boutiqueSlug: widget.boutiqueSlug,
+                                                                              category: widget.category,
+                                                                              filtersChoosedByUser: GetProductFiltersModel(filters: homeBloc.state.appliedFiltersByUser[key]?.filters),
+                                                                            ));
+                                                                            homeBloc.add(ChangeAppliedFiltersEvent(
+                                                                                boutiqueSlug: widget.boutiqueSlug,
+                                                                                category: widget.category,
+                                                                                resetAppliedFilters: true));
+                                                                          }
                                                                         },
-                                                                        child: state.sendRequestToGeminiStatus ==
-                                                                                SendRequestToGeminiStatus.loading
-                                                                            ? TrydosLoader(
-                                                                                size: 18,
-                                                                              )
-                                                                            : SvgPicture.asset(
-                                                                                AppAssets.realCameraSvg,
-                                                                                height: 20,
-                                                                                width: 20,
+                                                                        backgroundColor:
+                                                                            colorScheme
+                                                                                .white,
+                                                                        scrolledUnderElevation:
+                                                                            0,
+                                                                        backIconColor:
+                                                                            Colors
+                                                                                .black,
+                                                                        hasLeading:
+                                                                            !isExpanded &&
+                                                                                !searchOpen,
+                                                                        action: [
+                                                                          Spacer(),
+                                                                          ValueListenableBuilder<bool>(
+                                                                              valueListenable: displayBoutiqueIconInAppBar,
+                                                                              child: Padding(
+                                                                                padding: EdgeInsetsDirectional.only(start: 30.w),
+                                                                                child: widget.boutiqueIcon != null
+                                                                                    ? SvgNetworkWidget(
+                                                                                        svgUrl: widget.boutiqueIcon ?? "",
+                                                                                        height: 20,
+                                                                                      )
+                                                                                    : SizedBox.shrink(),
                                                                               ),
-                                                                      ),
-                                                                      SizedBox(
-                                                                        width:
-                                                                            20,
-                                                                      ),
-                                                                      ValueListenableBuilder<
-                                                                          bool>(
-                                                                        valueListenable:
-                                                                            isRecordeForSearchWithMic,
-                                                                        builder: (context,
-                                                                            recordeForSearchWithMic,
-                                                                            _) {
-                                                                          return InkWell(
-                                                                            onTap:
-                                                                                () async {
-                                                                              final status = await Permission.microphone.request();
-                                                                              if (status != PermissionStatus.granted) {
-                                                                                return;
-                                                                              }
-                                                                              if (_speechToText.isNotListening) {
-                                                                                _startListening();
-                                                                                /////////////////////////////
+                                                                              builder: (context, display, child) {
+                                                                                return display ? child! : SizedBox.shrink();
+                                                                              }),
+                                                                          Padding(
+                                                                            padding:
+                                                                                EdgeInsetsDirectional.only(end: searchOpen ? 10 : 20.0),
+                                                                            child:
+                                                                                AnimatedSearchBar(
+                                                                              key: TestVariables.kTestMode ? Key(WidgetsKeys.productListingSearchInputKey) : null,
+                                                                              autoFocus: false,
+                                                                              width: isExpanded ? (1.sw - 90) : (1.sw - 120),
+                                                                              height: 40,
+                                                                              onClickClose: () {
+                                                                                if (!isExpanded && controller.text.isNotEmpty) {
+                                                                                  Filter filters = homeBloc.state.appliedFiltersByUser[key]?.filters ?? Filter();
+                                                                                  homeBloc.add(ChangeAppliedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, filtersAppliedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices, searchText: null))));
+                                                                                  homeBloc.add(GetProductsWithFiltersEvent(
+                                                                                    offset: 1,
+                                                                                    searchText: null,
+                                                                                    fromSearch: fromSearch,
+                                                                                    category: widget.category,
+                                                                                    boutiqueSlug: widget.boutiqueSlug,
+                                                                                  ));
+                                                                                }
+                                                                                if (isExpanded && controller.text.isNotEmpty) {
+                                                                                  Filter filters = homeBloc.state.choosedFiltersByUser[key]?.filters ?? Filter();
+                                                                                  homeBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, filtersChoosedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices, searchText: null))));
+                                                                                }
+
+                                                                                resetSearchAfterSearchingWhileRemoveSearch = false;
+                                                                                FocusScope.of(context).unfocus();
+
+                                                                                searchVisible.value = false;
+
+                                                                                controller.clear();
+                                                                                appBloc.add(HideBottomNavigationBar(false));
+                                                                                ///////////////////////////
                                                                                 FirebaseAnalyticsService.logEventForSession(
                                                                                   eventName: AnalyticsEventsConst.buttonClicked,
-                                                                                  executedEventName: AnalyticsExecutedEventNameConst.searchWithVoiceButton,
+                                                                                  executedEventName: AnalyticsExecutedEventNameConst.resetCloseIconButton,
                                                                                 );
-                                                                              } else {
-                                                                                _stopListening();
-                                                                              }
-                                                                            },
-                                                                            child:
-                                                                                Container(
-                                                                              width: 20,
-                                                                              child: Icon(_speechToText.isNotListening || !recordeForSearchWithMic ? Icons.mic_off : Icons.mic),
-                                                                            ),
-                                                                          );
-                                                                        },
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                ),
-                                                                //context.colorScheme.white,
-                                                                contentPadding:
-                                                                    HWEdgeInsetsDirectional.only(
-                                                                        start:
-                                                                            20,
-                                                                        end: 10,
-                                                                        bottom:
-                                                                            12,
-                                                                        top:
-                                                                            12),
-                                                                hintText:
-                                                                    '${LocaleKeys.search.tr()}',
-                                                                hintStyle: context
-                                                                    .textTheme
-                                                                    .bodyMedium
-                                                                    ?.lq
-                                                                    .copyWith(
-                                                                        color: Color(
-                                                                            0xffC4C2C2)),
-                                                                labelStyle: context
-                                                                    .textTheme
-                                                                    .titleLarge
-                                                                    ?.copyWith(
-                                                                        color: context
-                                                                            .colorScheme
-                                                                            .hint),
-                                                              ),
-                                                              onChanged: (String
-                                                                  text) {
-                                                                if (isExpanded) {
-                                                                  Filter filters = homeBloc
-                                                                          .state
-                                                                          .choosedFiltersByUser[
-                                                                              key]
-                                                                          ?.filters ??
-                                                                      Filter();
-                                                                  if (text.length >
-                                                                      2) {
-                                                                    resetSearchAfterSearchingWhileRemoveSearch =
-                                                                        true;
-                                                                    homeBloc.add(ChangeSelectedFiltersEvent(
-                                                                        fromHomePageSearch:
-                                                                            widget
-                                                                                .fromSearch,
-                                                                        boutiqueSlug:
-                                                                            widget
-                                                                                .boutiqueSlug,
-                                                                        filtersChoosedByUser:
-                                                                            GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices, searchText: text))));
-                                                                  }
-                                                                  if (text.length <
-                                                                          3 &&
-                                                                      resetSearchAfterSearchingWhileRemoveSearch) {
-                                                                    resetSearchAfterSearchingWhileRemoveSearch =
-                                                                        false;
-                                                                    homeBloc.add(ChangeSelectedFiltersEvent(
-                                                                        fromHomePageSearch:
-                                                                            widget
-                                                                                .fromSearch,
-                                                                        boutiqueSlug:
-                                                                            widget
-                                                                                .boutiqueSlug,
-                                                                        filtersChoosedByUser:
-                                                                            GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices, searchText: null))));
-                                                                  }
-                                                                  return;
-                                                                }
-                                                                if (text.length >
-                                                                    2) {
-                                                                  resetSearchAfterSearchingWhileRemoveSearch =
-                                                                      true;
-                                                                  Filter filters = homeBloc
-                                                                          .state
-                                                                          .appliedFiltersByUser[
-                                                                              key]
-                                                                          ?.filters ??
-                                                                      Filter();
-                                                                  homeBloc.add(
-                                                                      ChangeAppliedFiltersEvent(
-                                                                    category: widget
-                                                                        .category,
-                                                                    boutiqueSlug:
-                                                                        widget
-                                                                            .boutiqueSlug,
-                                                                    filtersAppliedByUser:
-                                                                        GetProductFiltersModel(
-                                                                            filters:
-                                                                                filters.copyWithSaveOtherField(
-                                                                      prices: filters
-                                                                          .prices,
-                                                                      searchText:
-                                                                          text,
-                                                                    )),
-                                                                  ));
-                                                                  homeBloc.add(
-                                                                      GetProductsWithFiltersEvent(
-                                                                    offset: 1,
-                                                                    searchText:
-                                                                        text,
-                                                                    fromSearch:
-                                                                        fromSearch,
-                                                                    category: widget
-                                                                        .category,
-                                                                    boutiqueSlug:
-                                                                        widget
-                                                                            .boutiqueSlug,
-                                                                  ));
-                                                                }
-                                                                if (text.length <
-                                                                        3 &&
-                                                                    resetSearchAfterSearchingWhileRemoveSearch) {
-                                                                  resetSearchAfterSearchingWhileRemoveSearch =
-                                                                      false;
-                                                                  Filter filters = homeBloc
-                                                                          .state
-                                                                          .appliedFiltersByUser[
-                                                                              key]
-                                                                          ?.filters ??
-                                                                      Filter();
-
-                                                                  homeBloc.add(
-                                                                      ChangeAppliedFiltersEvent(
-                                                                    category: widget
-                                                                        .category,
-                                                                    boutiqueSlug:
-                                                                        widget
-                                                                            .boutiqueSlug,
-                                                                    filtersAppliedByUser:
-                                                                        GetProductFiltersModel(
-                                                                            filters:
-                                                                                filters.copyWithSaveOtherField(
-                                                                      prices: filters
-                                                                          .prices,
-                                                                      searchText:
-                                                                          null,
-                                                                    )),
-                                                                  ));
-                                                                  homeBloc.add(
-                                                                      GetProductFiltersEvent(
-                                                                    fromHomePageSearch:
-                                                                        widget
-                                                                            .fromSearch,
-                                                                    searchText:
-                                                                        null,
-                                                                    category: widget
-                                                                        .category,
-                                                                    boutiqueSlug:
-                                                                        widget
-                                                                            .boutiqueSlug,
-                                                                  ));
-                                                                  homeBloc.add(
-                                                                      GetProductsWithFiltersEvent(
-                                                                    offset: 1,
-                                                                    searchText:
-                                                                        null,
-                                                                    fromSearch:
-                                                                        fromSearch,
-                                                                    category: widget
-                                                                        .category,
-                                                                    boutiqueSlug:
-                                                                        widget
-                                                                            .boutiqueSlug,
-                                                                  ));
-                                                                }
-                                                              },
-                                                            ),
-                                                          ),
-                                                          AnimatedSize(
-                                                            curve:
-                                                                Curves.easeOut,
-                                                            duration: Duration(
-                                                                milliseconds:
-                                                                    400),
-                                                            reverseDuration:
-                                                                Duration(
-                                                                    milliseconds:
-                                                                        400),
-                                                            child: Row(
-                                                              children: [
-                                                                isExpanded
-                                                                    ? SizedBox
-                                                                        .shrink()
-                                                                    : Padding(
-                                                                        padding: EdgeInsetsDirectional.only(
-                                                                            end: searchOpen
-                                                                                ? 10
-                                                                                : 20.0),
-                                                                        child: SvgPicture.asset(
-                                                                            AppAssets
-                                                                                .sortingSvg,
-                                                                            width:
-                                                                                20,
-                                                                            height:
-                                                                                20),
-                                                                      ),
-                                                                BlocBuilder<
-                                                                    HomeBloc,
-                                                                    HomeState>(
-                                                                  buildWhen:
-                                                                      (p, c) {
-                                                                    return (p.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' +
-                                                                                '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
-                                                                                '${(widget.category ?? '')}'] !=
-                                                                            c.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' +
-                                                                                '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
-                                                                                '${(widget.category ?? '')}'] ||
-                                                                        p.getProductFiltersStatus[key] !=
-                                                                            c.getProductFiltersStatus[
-                                                                                key] ||
-                                                                        p.isExpandedForListingPage !=
-                                                                            c
-                                                                                .isExpandedForListingPage ||
-                                                                        p.cashedOrginalBoutique !=
-                                                                            c.cashedOrginalBoutique);
-                                                                  },
-                                                                  builder:
-                                                                      (context,
-                                                                          state) {
-                                                                    isExpanded =
-                                                                        state.isExpandedForListingPage ??
-                                                                            false;
-                                                                    if ((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.items.length ??
-                                                                            0) ==
-                                                                        1) {
-                                                                      return SizedBox
-                                                                          .shrink();
-                                                                    }
-                                                                    return Padding(
-                                                                        padding: EdgeInsetsDirectional.only(
-                                                                            end: searchOpen
-                                                                                ? 10
-                                                                                : 20.0),
-                                                                        child:
-                                                                            InkWell(
-                                                                          key: TestVariables.kTestMode
-                                                                              ? Key(WidgetsKeys.filterIconKey)
-                                                                              : null,
-                                                                          onTap:
-                                                                              () {
-                                                                            if (!isExpanded) {
-                                                                              prefAppliedFilters = homeBloc.state.appliedFiltersByUser[key]?.filters;
-                                                                              homeBloc.add(ChangeAppliedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, isExpandedForListing: true, resetAppliedFilters: true));
-                                                                              homeBloc.add(AddPrefAppliedFilterForExtendFilterEvent(prefAppliedFilter: prefAppliedFilters));
-
-                                                                              homeBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, category: widget.category, requestToUpdateFilters: true, isExpandedForListing: true, filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
-
-                                                                              resetSearchAfterSearchingWhileRemoveSearch = false;
-                                                                              // تم جعل الصفحة expanded باستخدام الأحداث السابقة لتجنب البناء المتكرر
-                                                                              // homeBloc
-                                                                              //     .add(
-                                                                              //     AddIsExpandedForLidtingPageEvent(
-                                                                              //         isExpandedForLidting: true));
-                                                                              /////////////////////////////////////////
-                                                                              FirebaseAnalyticsService.logEventForSession(
-                                                                                eventName: AnalyticsEventsConst.buttonClicked,
-                                                                                executedEventName: AnalyticsExecutedEventNameConst.productListingFilterIconButton,
-                                                                              );
-                                                                              /////////////////////////////////////////
-                                                                              FirebaseAnalyticsService.logScreen(
-                                                                                screen: AnalyticsScreensConst.productListingFilterScreen,
-                                                                              );
-                                                                            }
-                                                                          },
-                                                                          child:
-                                                                              SvgPicture.asset(
-                                                                            AppAssets.filtersSvg,
-                                                                            width:
-                                                                                20,
-                                                                            height:
-                                                                                20,
-                                                                            color: isExpanded
-                                                                                ? Color(0xffFF5F61)
-                                                                                : null,
-                                                                          ),
-                                                                        ));
-                                                                  },
-                                                                ),
-                                                                InkWell(
-                                                                    onTap: () {
-                                                                      if (isExpanded) {
-                                                                        prefAppliedFilters = homeBloc
-                                                                            .state
-                                                                            .prefAppliedFilterForExtendFilter;
-                                                                        controller
-                                                                            .text = prefAppliedFilters
-                                                                                ?.searchText ??
-                                                                            "";
-                                                                        print(homeBloc
-                                                                            .state
-                                                                            .prefAppliedFilterForExtendFilter
-                                                                            ?.brands);
-                                                                        // homeBloc.add(GetProductFiltersEvent(
-                                                                        //     fromHomePageSearch: widget
-                                                                        //         .fromSearch,
-                                                                        //     cashedOrginalBoutique:
-                                                                        //         false,
-                                                                        //     boutiqueSlug:
-                                                                        //         widget.boutiqueSlug,
-                                                                        //     category: widget.category,
-                                                                        //     searchText: widget.searchText,
-                                                                        //     filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
-                                                                        homeBloc
-                                                                            .add(
-                                                                          ChangeAppliedFiltersEvent(
-                                                                            boutiqueSlug:
-                                                                                widget.boutiqueSlug,
-                                                                            isExpandedForListing:
-                                                                                false,
-                                                                            category:
-                                                                                widget.category,
-                                                                            filtersAppliedByUser:
-                                                                                GetProductFiltersModel(filters: prefAppliedFilters),
-                                                                          ),
-                                                                        );
-                                                                        //////////////////////////////////
-                                                                        FirebaseAnalyticsService
-                                                                            .logEventForSession(
-                                                                          eventName:
-                                                                              AnalyticsEventsConst.buttonClicked,
-                                                                          executedEventName:
-                                                                              AnalyticsExecutedEventNameConst.filterCloseIconButton,
-                                                                        );
-                                                                      }
-                                                                      // تم جعل الصفحة not expanded باستخدام الأحداث السابقة لتجنب البناء المتكرر
-                                                                      // homeBloc.add(
-                                                                      //     AddIsExpandedForLidtingPageEvent(
-                                                                      //         isExpandedForLidting:
-                                                                      //         false));
-
-                                                                      resetSearchAfterSearchingWhileRemoveSearch =
-                                                                          false;
-                                                                    },
-                                                                    child:
-                                                                        SizedBox(
-                                                                      height:
-                                                                          30,
-                                                                      child: Row(
-                                                                          children: [
-                                                                            SizedBox(
-                                                                                width: searchOpen
-                                                                                    ? 0
-                                                                                    : !isExpanded
-                                                                                        ? 10.0
-                                                                                        : 12.5),
-                                                                            !isExpanded
-                                                                                ? SvgPicture.asset(
-                                                                                    AppAssets.shareSvg,
-                                                                                    width: 20,
+                                                                                return false;
+                                                                              },
+                                                                              textController: controller,
+                                                                              focusNode: focusNode,
+                                                                              onSuffixTap: () {
+                                                                                WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                                                                                  searchVisible.value = true;
+                                                                                });
+                                                                              },
+                                                                              suffixWidget: Center(
+                                                                                child: SvgPicture.asset(
+                                                                                  AppAssets.searchOutlinedSvg,
+                                                                                  height: 20,
+                                                                                  width: 20,
+                                                                                  color: Color(0xff388CFF),
+                                                                                ),
+                                                                              ),
+                                                                              prefixWidget: Padding(
+                                                                                padding: const EdgeInsets.only(right: 15, top: 10, bottom: 10),
+                                                                                child: Row(
+                                                                                  mainAxisSize: MainAxisSize.min,
+                                                                                  children: [
+                                                                                    InkWell(
+                                                                                      onTap: () async {
+                                                                                        SearchWithImageRelatedGemini.SelecteImageForSearch(fromSearch: false, context: context);
+                                                                                        /////////////////////////////
+                                                                                        FirebaseAnalyticsService.logEventForSession(
+                                                                                          eventName: AnalyticsEventsConst.buttonClicked,
+                                                                                          executedEventName: AnalyticsExecutedEventNameConst.searchWithImageButton,
+                                                                                        );
+                                                                                      },
+                                                                                      child: state.sendRequestToGeminiStatus == SendRequestToGeminiStatus.loading
+                                                                                          ? TrydosLoader(
+                                                                                              size: 18,
+                                                                                            )
+                                                                                          : SvgPicture.asset(
+                                                                                              AppAssets.realCameraSvg,
+                                                                                              height: 20,
+                                                                                              width: 20,
+                                                                                            ),
+                                                                                    ),
+                                                                                    ValueListenableBuilder<bool>(
+                                                                                      valueListenable: isRecordeForSearchWithMic,
+                                                                                      builder: (context, recordeForSearchWithMic, _) {
+                                                                                        return InkWell(
+                                                                                          onTap: () async {
+                                                                                            final status = await Permission.microphone.request();
+                                                                                            if (status != PermissionStatus.granted) {
+                                                                                              return;
+                                                                                            }
+                                                                                            if (_speechToText.isNotListening) {
+                                                                                              _startListening();
+                                                                                              /////////////////////////////
+                                                                                              FirebaseAnalyticsService.logEventForSession(
+                                                                                                eventName: AnalyticsEventsConst.buttonClicked,
+                                                                                                executedEventName: AnalyticsExecutedEventNameConst.searchWithVoiceButton,
+                                                                                              );
+                                                                                            } else {
+                                                                                              _stopListening();
+                                                                                            }
+                                                                                          },
+                                                                                          child: Container(
+                                                                                            width: 20,
+                                                                                            child: Icon(_speechToText.isNotListening || !recordeForSearchWithMic ? Icons.mic_off : Icons.mic),
+                                                                                          ),
+                                                                                        );
+                                                                                      },
+                                                                                    ),
+                                                                                  ],
+                                                                                ),
+                                                                              ),
+                                                                              animationDurationInMilli: 400,
+                                                                              searchDecoration: InputDecoration(
+                                                                                border: OutlineInputBorder(
+                                                                                  borderSide: BorderSide(color: focusNode.hasFocus ? Color(0xffE6E6E6) : Color(0xffF8F8F8), width: 0.4),
+                                                                                  borderRadius: BorderRadius.circular(kbrBorderTextField),
+                                                                                ),
+                                                                                focusedBorder: OutlineInputBorder(
+                                                                                  borderSide: BorderSide(color: focusNode.hasFocus ? Color(0xffE6E6E6) : Color(0xffF8F8F8), width: 0.4),
+                                                                                  borderRadius: BorderRadius.circular(kbrBorderTextField),
+                                                                                ),
+                                                                                enabledBorder: OutlineInputBorder(
+                                                                                  borderSide: BorderSide(color: focusNode.hasFocus ? Color(0xffE6E6E6) : Color(0xffF8F8F8), width: 0.4),
+                                                                                  borderRadius: BorderRadius.circular(kbrBorderTextField),
+                                                                                ),
+                                                                                disabledBorder: OutlineInputBorder(
+                                                                                  borderSide: BorderSide(color: focusNode.hasFocus ? Color(0xffE6E6E6) : Color(0xffF8F8F8), width: 0.4),
+                                                                                  borderRadius: BorderRadius.circular(kbrBorderTextField),
+                                                                                ),
+                                                                                errorBorder: OutlineInputBorder(
+                                                                                  borderSide: BorderSide(color: context.colorScheme.error, width: 0.4),
+                                                                                  borderRadius: BorderRadius.circular(kbrBorderTextField),
+                                                                                ),
+                                                                                focusedErrorBorder: OutlineInputBorder(
+                                                                                  borderSide: BorderSide(color: context.colorScheme.error, width: 0.4),
+                                                                                  borderRadius: BorderRadius.circular(kbrBorderTextField),
+                                                                                ),
+                                                                                filled: true,
+                                                                                fillColor: focusNode.hasFocus ? colorScheme.white : Color(0xffF8F8F8),
+                                                                                prefixIcon: Padding(
+                                                                                  padding: const EdgeInsets.only(top: 12, bottom: 12),
+                                                                                  child: SvgPicture.asset(
+                                                                                    AppAssets.searchOutlinedSvg,
                                                                                     height: 20,
-                                                                                    color: Color(0xff3C3C3C),
-                                                                                  )
-                                                                                : SvgPicture.asset(
-                                                                                    key: TestVariables.kTestMode ? Key(WidgetsKeys.closeFilterPageKey) : null,
-                                                                                    AppAssets.closeSvg,
-                                                                                    width: 15,
-                                                                                    height: 15,
-                                                                                    color: Color(0xffFF5F61),
+                                                                                    width: 20,
+                                                                                    color: Color(0xff388CFF),
                                                                                   ),
-                                                                            SizedBox(width: !isExpanded ? 10.0 : 12.5)
-                                                                          ]),
-                                                                    )),
-                                                              ],
-                                                            ),
-                                                          )
-                                                        ],
-                                                        withShadow: false),
-                                                  ),
-                                                );
-                                              })),
+                                                                                ),
+                                                                                suffixIcon: Padding(
+                                                                                  padding: const EdgeInsets.only(right: 15, top: 10, bottom: 10),
+                                                                                  child: Row(
+                                                                                    mainAxisSize: MainAxisSize.min,
+                                                                                    children: [
+                                                                                      InkWell(
+                                                                                        onTap: () async {
+                                                                                          SearchWithImageRelatedGemini.SelecteImageForSearch(fromSearch: false, context: context);
+                                                                                          /////////////////////////////
+                                                                                          FirebaseAnalyticsService.logEventForSession(
+                                                                                            eventName: AnalyticsEventsConst.buttonClicked,
+                                                                                            executedEventName: AnalyticsExecutedEventNameConst.searchWithImageButton,
+                                                                                          );
+                                                                                        },
+                                                                                        child: state.sendRequestToGeminiStatus == SendRequestToGeminiStatus.loading
+                                                                                            ? TrydosLoader(
+                                                                                                size: 18,
+                                                                                              )
+                                                                                            : SvgPicture.asset(
+                                                                                                AppAssets.realCameraSvg,
+                                                                                                height: 20,
+                                                                                                width: 20,
+                                                                                              ),
+                                                                                      ),
+                                                                                      SizedBox(
+                                                                                        width: 20,
+                                                                                      ),
+                                                                                      ValueListenableBuilder<bool>(
+                                                                                        valueListenable: isRecordeForSearchWithMic,
+                                                                                        builder: (context, recordeForSearchWithMic, _) {
+                                                                                          return InkWell(
+                                                                                            onTap: () async {
+                                                                                              final status = await Permission.microphone.request();
+                                                                                              if (status != PermissionStatus.granted) {
+                                                                                                return;
+                                                                                              }
+                                                                                              if (_speechToText.isNotListening) {
+                                                                                                _startListening();
+                                                                                                /////////////////////////////
+                                                                                                FirebaseAnalyticsService.logEventForSession(
+                                                                                                  eventName: AnalyticsEventsConst.buttonClicked,
+                                                                                                  executedEventName: AnalyticsExecutedEventNameConst.searchWithVoiceButton,
+                                                                                                );
+                                                                                              } else {
+                                                                                                _stopListening();
+                                                                                              }
+                                                                                            },
+                                                                                            child: Container(
+                                                                                              width: 20,
+                                                                                              child: Icon(_speechToText.isNotListening || !recordeForSearchWithMic ? Icons.mic_off : Icons.mic),
+                                                                                            ),
+                                                                                          );
+                                                                                        },
+                                                                                      ),
+                                                                                    ],
+                                                                                  ),
+                                                                                ),
+                                                                                //context.colorScheme.white,
+                                                                                contentPadding: HWEdgeInsetsDirectional.only(start: 20, end: 10, bottom: 12, top: 12),
+                                                                                hintText: '${LocaleKeys.search.tr()}',
+                                                                                hintStyle: context.textTheme.bodyMedium?.lq.copyWith(color: Color(0xffC4C2C2)),
+                                                                                labelStyle: context.textTheme.titleLarge?.copyWith(color: context.colorScheme.hint),
+                                                                              ),
+                                                                              onChanged: (String text) {
+                                                                                if (isExpanded) {
+                                                                                  Filter filters = homeBloc.state.choosedFiltersByUser[key]?.filters ?? Filter();
+                                                                                  if (text.length > 2) {
+                                                                                    resetSearchAfterSearchingWhileRemoveSearch = true;
+                                                                                    homeBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, filtersChoosedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices, searchText: text))));
+                                                                                  }
+                                                                                  if (text.length < 3 && resetSearchAfterSearchingWhileRemoveSearch) {
+                                                                                    resetSearchAfterSearchingWhileRemoveSearch = false;
+                                                                                    homeBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, filtersChoosedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices, searchText: null))));
+                                                                                  }
+                                                                                  return;
+                                                                                }
+                                                                                if (text.length > 2) {
+                                                                                  resetSearchAfterSearchingWhileRemoveSearch = true;
+                                                                                  Filter filters = homeBloc.state.appliedFiltersByUser[key]?.filters ?? Filter();
+                                                                                  homeBloc.add(ChangeAppliedFiltersEvent(
+                                                                                    category: widget.category,
+                                                                                    boutiqueSlug: widget.boutiqueSlug,
+                                                                                    filtersAppliedByUser: GetProductFiltersModel(
+                                                                                        filters: filters.copyWithSaveOtherField(
+                                                                                      prices: filters.prices,
+                                                                                      searchText: text,
+                                                                                    )),
+                                                                                  ));
+                                                                                  homeBloc.add(GetProductsWithFiltersEvent(
+                                                                                    offset: 1,
+                                                                                    searchText: text,
+                                                                                    fromSearch: fromSearch,
+                                                                                    category: widget.category,
+                                                                                    boutiqueSlug: widget.boutiqueSlug,
+                                                                                  ));
+                                                                                }
+                                                                                if (text.length < 3 && resetSearchAfterSearchingWhileRemoveSearch) {
+                                                                                  resetSearchAfterSearchingWhileRemoveSearch = false;
+                                                                                  Filter filters = homeBloc.state.appliedFiltersByUser[key]?.filters ?? Filter();
+
+                                                                                  homeBloc.add(ChangeAppliedFiltersEvent(
+                                                                                    category: widget.category,
+                                                                                    boutiqueSlug: widget.boutiqueSlug,
+                                                                                    filtersAppliedByUser: GetProductFiltersModel(
+                                                                                        filters: filters.copyWithSaveOtherField(
+                                                                                      prices: filters.prices,
+                                                                                      searchText: null,
+                                                                                    )),
+                                                                                  ));
+                                                                                  homeBloc.add(GetProductFiltersEvent(
+                                                                                    fromHomePageSearch: widget.fromSearch,
+                                                                                    searchText: null,
+                                                                                    category: widget.category,
+                                                                                    boutiqueSlug: widget.boutiqueSlug,
+                                                                                  ));
+                                                                                  homeBloc.add(GetProductsWithFiltersEvent(
+                                                                                    offset: 1,
+                                                                                    searchText: null,
+                                                                                    fromSearch: fromSearch,
+                                                                                    category: widget.category,
+                                                                                    boutiqueSlug: widget.boutiqueSlug,
+                                                                                  ));
+                                                                                }
+                                                                              },
+                                                                            ),
+                                                                          ),
+                                                                          AnimatedSize(
+                                                                            curve:
+                                                                                Curves.easeOut,
+                                                                            duration:
+                                                                                Duration(milliseconds: 400),
+                                                                            reverseDuration:
+                                                                                Duration(milliseconds: 400),
+                                                                            child:
+                                                                                Row(
+                                                                              children: [
+                                                                                isExpanded
+                                                                                    ? SizedBox.shrink()
+                                                                                    : Padding(
+                                                                                        padding: EdgeInsetsDirectional.only(end: searchOpen ? 10 : 20.0),
+                                                                                        child: SvgPicture.asset(AppAssets.sortingSvg, width: 20, height: 20),
+                                                                                      ),
+                                                                                BlocBuilder<HomeBloc, HomeState>(
+                                                                                  buildWhen: (p, c) {
+                                                                                    return (p.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}'] != c.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}'] || p.getProductFiltersStatus[key] != c.getProductFiltersStatus[key] || p.isExpandedForListingPage != c.isExpandedForListingPage || p.cashedOrginalBoutique != c.cashedOrginalBoutique);
+                                                                                  },
+                                                                                  builder: (context, state) {
+                                                                                    isExpanded = state.isExpandedForListingPage ?? false;
+                                                                                    if ((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']?.items.length ?? 0) == 1) {
+                                                                                      return SizedBox.shrink();
+                                                                                    }
+                                                                                    return Padding(
+                                                                                        padding: EdgeInsetsDirectional.only(end: searchOpen ? 10 : 20.0),
+                                                                                        child: InkWell(
+                                                                                          key: TestVariables.kTestMode ? Key(WidgetsKeys.filterIconKey) : null,
+                                                                                          onTap: () {
+                                                                                            if (!isExpanded) {
+                                                                                              prefAppliedFilters = homeBloc.state.appliedFiltersByUser[key]?.filters;
+                                                                                              homeBloc.add(ChangeAppliedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, isExpandedForListing: true, resetAppliedFilters: true));
+                                                                                              homeBloc.add(AddPrefAppliedFilterForExtendFilterEvent(prefAppliedFilter: prefAppliedFilters));
+
+                                                                                              homeBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, category: widget.category, requestToUpdateFilters: true, isExpandedForListing: true, filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
+
+                                                                                              resetSearchAfterSearchingWhileRemoveSearch = false;
+                                                                                              // تم جعل الصفحة expanded باستخدام الأحداث السابقة لتجنب البناء المتكرر
+                                                                                              // homeBloc
+                                                                                              //     .add(
+                                                                                              //     AddIsExpandedForLidtingPageEvent(
+                                                                                              //         isExpandedForLidting: true));
+                                                                                              /////////////////////////////////////////
+                                                                                              FirebaseAnalyticsService.logEventForSession(
+                                                                                                eventName: AnalyticsEventsConst.buttonClicked,
+                                                                                                executedEventName: AnalyticsExecutedEventNameConst.productListingFilterIconButton,
+                                                                                              );
+                                                                                              /////////////////////////////////////////
+                                                                                              FirebaseAnalyticsService.logScreen(
+                                                                                                screen: AnalyticsScreensConst.productListingFilterScreen,
+                                                                                              );
+                                                                                            }
+                                                                                          },
+                                                                                          child: SvgPicture.asset(
+                                                                                            AppAssets.filtersSvg,
+                                                                                            width: 20,
+                                                                                            height: 20,
+                                                                                            color: isExpanded ? Color(0xffFF5F61) : null,
+                                                                                          ),
+                                                                                        ));
+                                                                                  },
+                                                                                ),
+                                                                                InkWell(
+                                                                                    onTap: () {
+                                                                                      if (isExpanded) {
+                                                                                        prefAppliedFilters = homeBloc.state.prefAppliedFilterForExtendFilter;
+                                                                                        controller.text = prefAppliedFilters?.searchText ?? "";
+                                                                                        print(homeBloc.state.prefAppliedFilterForExtendFilter?.brands);
+                                                                                        // homeBloc.add(GetProductFiltersEvent(
+                                                                                        //     fromHomePageSearch: widget
+                                                                                        //         .fromSearch,
+                                                                                        //     cashedOrginalBoutique:
+                                                                                        //         false,
+                                                                                        //     boutiqueSlug:
+                                                                                        //         widget.boutiqueSlug,
+                                                                                        //     category: widget.category,
+                                                                                        //     searchText: widget.searchText,
+                                                                                        //     filtersChoosedByUser: GetProductFiltersModel(filters: prefAppliedFilters)));
+                                                                                        homeBloc.add(
+                                                                                          ChangeAppliedFiltersEvent(
+                                                                                            boutiqueSlug: widget.boutiqueSlug,
+                                                                                            isExpandedForListing: false,
+                                                                                            category: widget.category,
+                                                                                            filtersAppliedByUser: GetProductFiltersModel(filters: prefAppliedFilters),
+                                                                                          ),
+                                                                                        );
+                                                                                        //////////////////////////////////
+                                                                                        FirebaseAnalyticsService.logEventForSession(
+                                                                                          eventName: AnalyticsEventsConst.buttonClicked,
+                                                                                          executedEventName: AnalyticsExecutedEventNameConst.filterCloseIconButton,
+                                                                                        );
+                                                                                      }
+                                                                                      // تم جعل الصفحة not expanded باستخدام الأحداث السابقة لتجنب البناء المتكرر
+                                                                                      // homeBloc.add(
+                                                                                      //     AddIsExpandedForLidtingPageEvent(
+                                                                                      //         isExpandedForLidting:
+                                                                                      //         false));
+
+                                                                                      resetSearchAfterSearchingWhileRemoveSearch = false;
+                                                                                    },
+                                                                                    child: SizedBox(
+                                                                                      height: 30,
+                                                                                      child: Row(children: [
+                                                                                        SizedBox(
+                                                                                            width: searchOpen
+                                                                                                ? 0
+                                                                                                : !isExpanded
+                                                                                                    ? 10.0
+                                                                                                    : 12.5),
+                                                                                        !isExpanded
+                                                                                            ? SvgPicture.asset(
+                                                                                                AppAssets.shareSvg,
+                                                                                                width: 20,
+                                                                                                height: 20,
+                                                                                                color: Color(0xff3C3C3C),
+                                                                                              )
+                                                                                            : SvgPicture.asset(
+                                                                                                key: TestVariables.kTestMode ? Key(WidgetsKeys.closeFilterPageKey) : null,
+                                                                                                AppAssets.closeSvg,
+                                                                                                width: 15,
+                                                                                                height: 15,
+                                                                                                color: Color(0xffFF5F61),
+                                                                                              ),
+                                                                                        SizedBox(width: !isExpanded ? 10.0 : 12.5)
+                                                                                      ]),
+                                                                                    )),
+                                                                              ],
+                                                                            ),
+                                                                          )
+                                                                        ],
+                                                                        withShadow:
+                                                                            false),
+                                                              ),
+                                                      );
+                                                    }));
+                                      }),
                                   ValueListenableBuilder<bool>(
                                       valueListenable: searchVisible,
                                       builder: (context, searchOpen, _) {
@@ -2762,31 +2426,45 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                   );
                                 }
                                 Future.delayed(Duration(milliseconds: 300), () {
-                                  if (state.getProductDetailWithoutSimilarRelatedProductsStatus ==
+                                  if ((state.getProductDetailWithoutSimilarRelatedProductsStatus ==
                                           GetProductDetailWithoutSimilarRelatedProductsStatus
                                               .success &&
-                                      tapIndex != -1 &&
-                                      state
-                                              .cachedProductWithoutRelatedProductsModel[
-                                                  products[tapIndex]
-                                                      .productId
-                                                      .toString()]
-                                              ?.product
-                                              ?.countryIsRestricted ==
-                                          true) {
-                                    Future.delayed(Duration(seconds: 1), () {
-                                      tapIndexToAddProductToCart.value = -1;
-
-                                      return showMessage(
-                                        LocaleKeys
-                                            .product_is_not_available_in_your_country
-                                            .tr(),
-                                      );
-                                    });
-                                    return SizedBox.shrink();
+                                      tapIndex != -1)) {
+                                    if (state
+                                            .cachedProductWithoutRelatedProductsModel[
+                                                products[tapIndex]
+                                                    .productId
+                                                    .toString()]
+                                            ?.product
+                                            ?.countryIsRestricted ==
+                                        true) {
+                                      productNotAvailableNotifier.value = LocaleKeys
+                                          .product_is_not_available_in_your_country
+                                          .tr();
+                                    } else if (state
+                                            .cachedProductWithoutRelatedProductsModel[
+                                                products[tapIndex]
+                                                    .productId
+                                                    .toString()]
+                                            ?.product
+                                            ?.isAvailableInMarket ==
+                                        false) {
+                                      productNotAvailableNotifier.value = LocaleKeys
+                                          .this_product_is_not_available_in_store
+                                          .tr();
+                                    } else {
+                                      productNotAvailableNotifier.value = null;
+                                    }
                                   }
                                 });
-
+                                Future.delayed(Duration(milliseconds: 300), () {
+                                  if (state
+                                          .getProductDetailWithoutSimilarRelatedProductsStatus ==
+                                      GetProductDetailWithoutSimilarRelatedProductsStatus
+                                          .failure) {
+                                    tapIndexToAddProductToCart.value = -1;
+                                  }
+                                });
                                 if (productId != "" &&
                                     tapIndex != -1 &&
                                     state.getProductDetailWithoutSimilarRelatedProductsStatus ==
@@ -2829,6 +2507,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                   currentActiveTab.value = 3;
                                 }
                                 return ProductDetailsBottomSheet(
+                                  productNotAvailableNotifier:
+                                      productNotAvailableNotifier,
                                   currentActiveTab: currentActiveTab,
                                   qtyForproductWithoutVariant: state
                                       .cachedProductWithoutRelatedProductsModel[

@@ -35,7 +35,7 @@
   "tap": "Tap",
   "to_accept_trydos": "To Accept",
   "phone_number": " county code  +  Phone Number",
-  "country_code":"county code ",
+  "country_code": "county code ",
   "enter_your_phonenumber_registered_with_us": "Enter Your Phone  Number Registered With Us",
   "your_Privacy": "Your Privacy Is Completely Safe'\\n We Not Share Your Information With Anyone",
   "whatsApp": "WhatsApp",
@@ -160,7 +160,7 @@
   "shopping_bag": "Shopping Bag",
   "out_of_stock": "Out OF Stock",
   "you_have_to_delete_all_unavailable_products": "You have to delete all unavailable products",
-  "unavailable":"unAvailable",
+  "unavailable": "unAvailable",
   "saved": "Saved",
   "your_cart_empty": "Your Bag Is Empty",
   "normal_price": "Normal Price",
@@ -340,5 +340,8 @@
   "my_account_my_orders": "My Account / My Orders",
   "applied_your_coupon": "Applied Your Coupon",
   "shipping_payment": "Shipping & Payment",
-  "the_time_will_end": "Time will end"
+  "the_time_will_end": "Time will end",
+  "this_product_is_not_available_in_store": "This product is not available in store.",
+  "notify_me_when_available": "Notify me when available",
+  "product_is_available": "Product is available"
 }

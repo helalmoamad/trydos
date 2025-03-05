@@ -75,6 +75,7 @@ class ProductDetailsPage extends StatefulWidget {
   ProductDetailsPage({
     super.key,
     this.productItem,
+    this.fromCart,
     this.fromNotification = false,
     this.fromNotificationComment = false,
     this.productIdForOpeningChatDirectly,
@@ -85,6 +86,7 @@ class ProductDetailsPage extends StatefulWidget {
   final String? productIdForOpeningChatDirectly;
   final String? productSlugForOpeningChatDirectly;
   final bool fromNotification;
+  final bool? fromCart;
   bool fromNotificationComment;
 
   @override
@@ -105,6 +107,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   final PanelController panelControllerForReels = PanelController();
   final PanelController panelControllerForCart = PanelController();
   final ValueNotifier<int> currentActiveTab = ValueNotifier(-1);
+  final ValueNotifier<String?> productNotAvailableNotifier =
+      ValueNotifier(null);
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
 
   bool showDialogToResetSession = true;
@@ -158,6 +162,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     };
     return WillPopScope(
       onWillPop: () {
+        if (widget.fromCart ?? false) {
+          homeBloc.add(GetCartItemEvent());
+        }
         if (panelControllerForCart.isPanelOpen) {
           panelControllerForCart.close();
           return Future.value(false);
@@ -443,14 +450,24 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                       );
                     }
                     if (state.getFullProductDetailsStatus ==
-                            GetFullProductDetailsStatus.success &&
-                        state.productContentForStatusOfOpeningProductDetailsDirectly
-                                ?.countryIsRestricted ==
-                            true) {
-                      return Center(
-                        child: MyTextWidget(
-                            ' ${LocaleKeys.product_is_not_available_in_your_country.tr()}'),
-                      );
+                        GetFullProductDetailsStatus.success) {
+                      if (state
+                              .productContentForStatusOfOpeningProductDetailsDirectly
+                              ?.countryIsRestricted ==
+                          true) {
+                        productNotAvailableNotifier.value = LocaleKeys
+                            .product_is_not_available_in_your_country
+                            .tr();
+                      } else if (state
+                              .productContentForStatusOfOpeningProductDetailsDirectly
+                              ?.isAvailableInMarket ==
+                          false) {
+                        productNotAvailableNotifier.value = LocaleKeys
+                            .this_product_is_not_available_in_store
+                            .tr();
+                      } else {
+                        productNotAvailableNotifier.value = null;
+                      }
                     }
                     productItem = state
                         .productContentForStatusOfOpeningProductDetailsDirectly!;
@@ -469,27 +486,31 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         p.cachedProductWithoutRelatedProductsModel !=
                             c.cachedProductWithoutRelatedProductsModel,
                     builder: (context, state) {
-                      if (state.getProductDetailWithoutSimilarRelatedProductsStatus ==
+                      if ((state.getProductDetailWithoutSimilarRelatedProductsStatus ==
                               GetProductDetailWithoutSimilarRelatedProductsStatus
                                   .success &&
-                          state
-                                  .cachedProductWithoutRelatedProductsModel[
-                                      widget.productItem?.productId.toString()]
-                                  ?.product
-                                  ?.countryIsRestricted ==
-                              true &&
-                          widget.productSlugForOpeningChatDirectly == null) {
-                        return Center(
-                          child: Column(
-                            children: [
-                              SizedBox(
-                                height: 300.h,
-                              ),
-                              MyTextWidget(
-                                  ' ${LocaleKeys.product_is_not_available_in_your_country.tr()}'),
-                            ],
-                          ),
-                        );
+                          widget.productSlugForOpeningChatDirectly == null)) {
+                        if (state
+                                .cachedProductWithoutRelatedProductsModel[
+                                    widget.productItem?.productId.toString()]
+                                ?.product
+                                ?.countryIsRestricted ==
+                            true) {
+                          productNotAvailableNotifier.value = LocaleKeys
+                              .product_is_not_available_in_your_country
+                              .tr();
+                        } else if (state
+                                .cachedProductWithoutRelatedProductsModel[
+                                    widget.productItem?.productId.toString()]
+                                ?.product
+                                ?.isAvailableInMarket ==
+                            false) {
+                          productNotAvailableNotifier.value = LocaleKeys
+                              .this_product_is_not_available_in_store
+                              .tr();
+                        } else {
+                          productNotAvailableNotifier.value = null;
+                        }
                       }
                       state
                           .cachedProductWithoutRelatedProductsModel[
@@ -1150,6 +1171,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                       },
                     );
                     return ProductDetailsBottomSheet(
+                      productNotAvailableNotifier: productNotAvailableNotifier,
                       currentActiveTab: currentActiveTab,
                       qtyForproductWithoutVariant: widget.productItem == null
                           ? productItem?.currentStock
