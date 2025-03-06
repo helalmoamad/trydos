@@ -3575,12 +3575,19 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         state.copyWith(checkWithGetCartStatus: CheckWithGetCartStatus.loading));
     final response = await getCartItemUseCase(NoParams());
     response.fold((l) {
+      print(
+          "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!13");
+
       if (!isFailedTheFirstTime.contains('CheckWithGetCartEvent')) {
         add(CheckWithGetCartEvent());
         isFailedTheFirstTime.add('CheckWithGetCartEvent');
       }
+      print(
+          "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!13");
       emit(state.copyWith(
           checkWithGetCartStatus: CheckWithGetCartStatus.failure));
+      print(
+          "!!!!!!!!!!!!!!!!!!!!!!${state.checkWithGetCartStatus}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!13");
     }, (r) {
       List<Cart> carts;
       List<Cart> cartCollection = [];

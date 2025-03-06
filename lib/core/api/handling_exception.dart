@@ -70,8 +70,7 @@ abstract class HandlingExceptionRequest {
       // Fluttertoast.showToast(msg: 'aaaaaaaaaaaa',backgroundColor: Colors.yellow);
 
       prettyPrinterError("***|| DioError ||*** \n $s");
-      return Left(DioFailure(
-        message: e.response?.data['errors']?[0]['code'],
+      return const Left(DioFailure(
         statusCode: 400,
       ));
     } catch (e, stackTrace) {

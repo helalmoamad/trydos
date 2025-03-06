@@ -1798,6 +1798,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               }
                                             } else if ((!isExpanded &&
                                                 !state.isGettingProductListingWithPaginationForAppearProduct &&
+                                                (widget.fromSearch && ((appliedFiltersByUser?.filters?.boutiques?.length ?? 0) == 0)) &&
                                                 (appliedFiltersByUser?.filters?.searchText?.length ?? 0) < 3 &&
                                                 controller.text.length < 3 &&
                                                 ((appliedFiltersByUser?.filters?.categories?.length ?? 0) + (appliedFiltersByUser?.filters?.brands?.length ?? 0) + (appliedFiltersByUser?.filters?.colors?.length ?? 0) + (((appliedFiltersByUser?.filters?.attributes?.isNullOrEmpty ?? false) ? 0 : appliedFiltersByUser?.filters?.attributes?[0].options?.length) ?? 0) == 0 && (appliedFiltersByUser?.filters?.prices?.minPrice == null)))) {

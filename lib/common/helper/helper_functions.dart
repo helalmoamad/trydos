@@ -494,27 +494,54 @@ class HelperFunctions {
     // } else
     if (iso == 'SY' || iso == 'LB') {
       String thousand = LanguageService.languageCode != "ar" ? 'K' : 'ألف';
+      String million = LanguageService.languageCode != "ar" ? 'M' : 'مليون';
       if (iso == 'SY') {
-        if (number >= 1e3) {
+        if (number >= 1e3 && number < 1e6) {
           String result = (((number + 999) ~/ 1000)).toStringAsFixed(
               GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ??
                   2);
           ;
 
           return '$result$thousand';
-        } else {
+        } else if (number < 1e3) {
           return '1$thousand';
+        } else {
+          print(number);
+          String result = (((number + 999) ~/ 1000) / 1000).toStringAsFixed(
+              (GetIt.I<HomeBloc>()
+                          .state
+                          .startingSetting
+                          ?.decimalPointSettings ??
+                      2) +
+                  3);
+          print(result.lastIndexOf(RegExp(r'.000')) + 1);
+          if ((result.lastIndexOf(RegExp(r'.000'))) != -1) {
+            result = result.substring(0, (result.lastIndexOf(RegExp(r'.000'))));
+          }
+          return '$result$million';
         }
       } else if (iso == 'LB') {
-        if (number >= 1e4) {
+        if (number >= 1e4 && number < 1e6) {
           String result = (((number + 9999) ~/ 10000) * 10).toStringAsFixed(
               GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ??
                   2);
           ;
 
           return '$result$thousand';
-        } else {
+        } else if (number < 1e4) {
           return '10$thousand';
+        } else {
+          String result = (((((number + 9999) ~/ 10000) * 10)) / 1000)
+              .toStringAsFixed((GetIt.I<HomeBloc>()
+                          .state
+                          .startingSetting
+                          ?.decimalPointSettings ??
+                      2) +
+                  3);
+          if ((result.lastIndexOf(RegExp(r'.000'))) != -1) {
+            result = result.substring(0, (result.lastIndexOf(RegExp(r'.000'))));
+          }
+          return '$result$million';
         }
       } else {
         String result = number.toStringAsFixed(

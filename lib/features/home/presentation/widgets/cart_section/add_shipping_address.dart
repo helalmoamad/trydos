@@ -159,51 +159,92 @@ class _AddShippingAdressState extends State<AddShippingAdress>
     //    double.tryParse(country?.longitude ?? "0") ?? 0);
 
     if (widget.fromEdid ?? false) {
-      _currentLocation = LatLng(
-          double.tryParse(widget.addressInfoClassToEdid!.location!.latitude!)!,
-          double.tryParse(
-              widget.addressInfoClassToEdid!.location!.longitude!)!);
-      _kinitialPosition = CameraPosition(
-          bearing: 0, target: _currentLocation!, tilt: 0, zoom: 8);
-      _goToCurrentLocation(latlng: _currentLocation);
-      if (alternativePhoneController.text.length > 0) {
-        visiblePrefixOptional.value = true;
+      if (widget.addressInfoClassToEdid?.location?.latitude?.toString() !=
+              "null" &&
+          widget.addressInfoClassToEdid?.location?.latitude?.toString() != "") {
+        _currentLocation = LatLng(
+            double.tryParse(
+                widget.addressInfoClassToEdid!.location!.latitude!)!,
+            double.tryParse(
+                widget.addressInfoClassToEdid!.location!.longitude!)!);
+        _kinitialPosition = CameraPosition(
+            bearing: 0, target: _currentLocation!, tilt: 0, zoom: 8);
+        _goToCurrentLocation(latlng: _currentLocation);
+      } else {
+        _kinitialPosition = CameraPosition(
+            bearing: 0,
+            target: LatLng(double.tryParse(country?.latitude ?? "0") ?? 0,
+                double.tryParse(country?.longitude ?? "0") ?? 0),
+            tilt: 0,
+            zoom: 6);
       }
-      if (contactPhoneController.text.length > 0) {
-        visiblePrefix.value = true;
+
+      if ((widget.addressInfoClassToEdid?.location?.latitude?.toString() !=
+              "null" &&
+          widget.addressInfoClassToEdid?.location?.latitude?.toString() !=
+              "")) {
+        _locationFromSearch = LatLng(
+            double.tryParse(
+                widget.addressInfoClassToEdid!.location!.latitude!)!,
+            double.tryParse(
+                widget.addressInfoClassToEdid!.location!.longitude!)!);
       }
-      if (alternativePhoneController.text.length > 0) {
-        visiblePrefixOptional.value = true;
-      }
-      _locationFromSearch = LatLng(
-          double.tryParse(widget.addressInfoClassToEdid!.location!.latitude!)!,
-          double.tryParse(
-              widget.addressInfoClassToEdid!.location!.longitude!)!);
+
       contactPhoneController.text =
           widget.addressInfoClassToEdid?.contactInfo?.phone ?? "";
+
       detailsAddressController.text =
           widget.addressInfoClassToEdid?.addressDetail ?? "";
+
       addressTitleController.text =
           widget.addressInfoClassToEdid?.address ?? "";
-      alternativePhoneController.text =
-          widget.addressInfoClassToEdid?.contactInfo?.alternativePhone ?? "";
+      if (widget.addressInfoClassToEdid?.contactInfo?.alternativePhone
+                  .toString() !=
+              "null" &&
+          widget.addressInfoClassToEdid?.contactInfo?.alternativePhone != "") {
+        alternativePhoneController.text =
+            widget.addressInfoClassToEdid?.contactInfo?.alternativePhone ?? "";
+      }
+
       reciptionNameController.text =
           widget.addressInfoClassToEdid?.contactInfo?.name ?? "";
       finishSelectedByUser = [
         address.RegionDetails(
-            building:
-                widget.addressInfoClassToEdid?.regionDetails?.building ?? "",
-            city: widget.addressInfoClassToEdid?.regionDetails?.city ?? "",
+            building: widget.addressInfoClassToEdid?.regionDetails?.building
+                        .toString() ==
+                    "null"
+                ? ""
+                : widget.addressInfoClassToEdid?.regionDetails?.building ?? "",
+            city: widget.addressInfoClassToEdid?.regionDetails?.building.toString() ==
+                    "null"
+                ? ""
+                : widget.addressInfoClassToEdid?.regionDetails?.city ?? "",
             country: "",
-            province:
-                widget.addressInfoClassToEdid?.regionDetails?.province ?? "",
-            street: widget.addressInfoClassToEdid?.regionDetails?.street ?? "",
-            town: widget.addressInfoClassToEdid?.regionDetails?.town ?? "")
+            province: widget.addressInfoClassToEdid?.regionDetails?.province
+                        .toString() ==
+                    "null"
+                ? ""
+                : widget.addressInfoClassToEdid?.regionDetails?.province ?? "",
+            street: widget.addressInfoClassToEdid?.regionDetails?.street.toString() ==
+                    "null"
+                ? ""
+                : widget.addressInfoClassToEdid?.regionDetails?.street ?? "",
+            town:
+                widget.addressInfoClassToEdid?.regionDetails?.town.toString() ==
+                        "null"
+                    ? ""
+                    : widget.addressInfoClassToEdid?.regionDetails?.town ?? "",
+            zip: widget.addressInfoClassToEdid?.regionDetails?.zip.toString() ==
+                    "null"
+                ? ""
+                : widget.addressInfoClassToEdid?.regionDetails?.zip ?? "")
       ];
-      if (alternativePhoneController.text.length > 0) {
+      if (alternativePhoneController.text.length > 0 &&
+          alternativePhoneController.text.toString() != "null") {
         visiblePrefixOptional.value = true;
       }
-      if (contactPhoneController.text.length > 0) {
+      if (contactPhoneController.text.length > 0 &&
+          contactPhoneController.text.toString() != "null") {
         visiblePrefix.value = true;
       }
     } else {
@@ -1380,7 +1421,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                           width: 18,
                                                                                           height: 18,
                                                                                           child: CountryFlag.fromCountryCode(
-                                                                                            "${country?.iso}",
+                                                                                            "${(widget.fromEdid ?? false) ? country?.iso : country?.iso}",
                                                                                             height: 18.h,
                                                                                             width: 18.w,
                                                                                             borderRadius: 4.r,
