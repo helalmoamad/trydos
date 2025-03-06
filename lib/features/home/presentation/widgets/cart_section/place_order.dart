@@ -106,27 +106,48 @@ class _PlaceOrderState extends State<PlaceOrder> {
       child: Scaffold(
         resizeToAvoidBottomInset: true,
         body: BlocListener<HomeBloc, HomeState>(
-            listenWhen: (previous, current) =>
-                previous.placeOrderStatus != current.placeOrderStatus &&
-                (current.placeOrderStatus == PlaceOrderStatus.success ||
-                    current.placeOrderStatus == PlaceOrderStatus.unavailable),
-            listener: (context, state) {
-              debugPrint('placeOrderStatus:  ${state.placeOrderStatus}');
+          listenWhen: (previous, current) => (previous.checkWithGetCartStatus !=
+                  current.checkWithGetCartStatus &&
+              current.checkWithGetCartStatus ==
+                  CheckWithGetCartStatus.successForPlaceOrder),
+          listener: (context, state) {
+            if (state.checkWithGetCartStatus ==
+                CheckWithGetCartStatus.successForPlaceOrder) {
+              if (!state.cartCollection!.any(
+                (element) => (element.isAvailableInMarket == false ||
+                    element.isCountryRestricted == true ||
+                    element.checkAvailability == false),
+              )) {
+                String paymentMethod = '';
+                int payByWallet = 0;
 
-              if (state.placeOrderStatus == PlaceOrderStatus.unavailable) {
-                var cartCollection = state.cartCollection!;
-
-                for (var checkAvailabilityData
-                    in state.checkAvailabilityProductCartModel!.data!) {
-                  for (var cartData in cartCollection) {
-                    if (cartData.id == checkAvailabilityData.cartId) {
-                      cartData = cartData.copyWith(checkAvailability: false);
-                      break;
-                    }
+                if (widget.paymentMethods.value.length == 1) {
+                  paymentMethod = widget.paymentMethods.value[0];
+                  //////////////
+                  payByWallet = 0;
+                } else {
+                  if (widget.paymentMethods.value
+                          .contains(PaymentMethods.trydosWallet) &&
+                      widget.paymentMethods.value.length == 2) {
+                    paymentMethod = widget.paymentMethods.value.firstWhere(
+                      (element) => element != PaymentMethods.trydosWallet,
+                    );
+                    payByWallet = 1;
                   }
                 }
-                state.copyWith(cartCollection: cartCollection);
-                // //////////////////////////
+
+                PlaceOrderParams placeOrderParams = PlaceOrderParams(
+                  addressId: widget.customerAddressesInfo.id!,
+                  orderNote: 'orderNote',
+                  paymentMethod: paymentMethod,
+                  payByWallet: payByWallet,
+                );
+
+                BlocProvider.of<HomeBloc>(context).add(
+                  PlaceOrderEvent(placeOrderParams: placeOrderParams),
+                );
+              } else {
+                //////////////////////////
                 showMessage(
                   " ${LocaleKeys.you_have_to_delete_all_unavailable_products.tr()}",
                   foreGroundColor: Colors.white,
@@ -138,297 +159,335 @@ class _PlaceOrderState extends State<PlaceOrder> {
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
               }
-
-              if (state.placeOrderStatus == PlaceOrderStatus.success) {
-                List<OrdersGroupDataModel>? data = state.placeOrderModel!.data!;
-
-                debugPrint('The url is : ${data[0].url}');
-
-                if (data[0].url != null) {
-                  HelperFunctions.slidingNavigation(
-                    context,
-                    PaymentWebview(
-                      url: data[0].url!,
-                      cartGroupId: widget.cartGroupId,
-                    ),
-                  );
-                } else {
-                  List<Map<String, String>> cartImages = [];
-                  double orderAmount = 0;
-                  double partialPaymentByWallet = 0;
-                  /////////////////////////////////////////////////
-                  data.forEach(
-                    (e) {
-                      orderAmount = orderAmount + e.orderAmount!;
-                      partialPaymentByWallet =
-                          partialPaymentByWallet + e.partialPaymentByWallet!;
-                      e.details!.forEach(
-                        (element) {
-                          for (var i = 0; i < (element.qty ?? 0); i++) {
-                            cartImages.add(
-                              {
-                                "image": element.productDetails!.images![0],
-                                "size": element.variation == null
-                                    ? ""
-                                    : element.variation?.size ?? "",
-                                "color": element.variation == null
-                                    ? ""
-                                    : element.variation?.color ?? ""
-                              },
-                            );
-                          }
-                        },
-                      );
-                    },
-                  );
-                  /////////////////////////
-                  orderAmount = orderAmount *
-                      state.getCurrencyForCountryModel!.data!.currency!
-                          .exchangeRate!;
-                  ////////////////////////////////
-                  CustomerAddressesInfo customerAddressesInfo =
-                      CustomerAddressesInfo(
-                    id: data[0].shippingAddress,
-                    address: data[0].shippingAddressData!.address ?? '',
-                    addressDetail:
-                        data[0].shippingAddressData!.addressDetail ?? '',
-                    contactInfo: ContactInfo(
-                      name:
-                          data[0].shippingAddressData!.contactPersonName ?? '',
-                      alternativePhone:
-                          data[0].shippingAddressData!.alternativePhone ?? '',
-                      phone: data[0].shippingAddressData!.phone ?? '',
-                    ),
-                    location: Location(
-                      latitude: data[0].shippingAddressData!.latitude ?? '',
-                      longitude: data[0].shippingAddressData!.longitude ?? '',
-                    ),
-                    regionDetails: RegionDetails(
-                      country: data[0].shippingAddressData!.country ?? '',
-                      province: data[0].shippingAddressData!.province ?? '',
-                      city: data[0].shippingAddressData!.city ?? '',
-                      town: data[0].shippingAddressData!.town ?? '',
-                      street: data[0].shippingAddressData!.street ?? '',
-                      building: data[0].shippingAddressData!.building ?? '',
-                    ),
-                  );
-                  /////////////////////////
-                  widget.paymentMethods.value =
-                      List.from(widget.paymentMethods.value)..clear();
-
-                  String paymentMethod = '';
-
-                  if (data[0].paymentMethod == 'trydos_wallet') {
-                    paymentMethod = PaymentMethods.trydosWallet;
-                  } else if (data[0].paymentMethod == 'cash_on_delivery') {
-                    paymentMethod = PaymentMethods.cod;
-                  } else {
-                    paymentMethod = data[0].paymentMethod ?? '';
-                  }
-
-                  widget.paymentMethods.value =
-                      List.from(widget.paymentMethods.value)
-                        ..add(paymentMethod);
-
-                  if (partialPaymentByWallet > 0) {
-                    widget.paymentMethods.value =
-                        List.from(widget.paymentMethods.value)
-                          ..add(PaymentMethods.trydosWallet);
-                  }
-
-                  /////////////////////////
-                  HelperFunctions.slidingNavigation(
-                    context,
-                    SuccessfullOrder(
-                      cartImages: cartImages,
-                      currencySympole: widget.currencySympole,
-                      availablePaymentMethod: widget.availablePaymentMethod,
-                      customerAddressesInfo: customerAddressesInfo,
-                      paymentMethods: widget.paymentMethods,
-                      totalPrice: widget.totalPrice,
-                      decimalPointSetting: widget.decimalPointSetting,
-                      orderAmount: orderAmount,
-                      partialPaymentByWallet: partialPaymentByWallet,
-                      orderGroupId: data[0].orderGroupId ?? '',
-                      currencySymbol: widget.currencySymbol,
-                    ),
-                  );
-                }
-              }
-            },
-            child: BlocListener<HomeBloc, HomeState>(
+            }
+          },
+          child: BlocListener<HomeBloc, HomeState>(
               listenWhen: (previous, current) =>
-                  previous.getOrdersByCartGroupIDStatus !=
-                      current.getOrdersByCartGroupIDStatus &&
-                  current.getOrdersByCartGroupIDStatus ==
-                      GetOrdersByCartGroupIDStatus.success,
+                  previous.placeOrderStatus != current.placeOrderStatus &&
+                  (current.placeOrderStatus == PlaceOrderStatus.success ||
+                      current.placeOrderStatus == PlaceOrderStatus.unavailable),
               listener: (context, state) {
-                debugPrint(
-                    'getOrdersByCartGroupIDStatus:  ${state.getOrdersByCartGroupIDStatus}');
+                debugPrint('placeOrderStatus:  ${state.placeOrderStatus}');
 
-                if (state.getOrdersByCartGroupIDStatus ==
-                    GetOrdersByCartGroupIDStatus.success) {
+                if (state.placeOrderStatus == PlaceOrderStatus.unavailable) {
+                  BlocProvider.of<HomeBloc>(context).add(
+                    GetCartItemEvent(),
+                  );
+
+                  ////////////////////////////
+                  showMessage(
+                    " ${LocaleKeys.you_have_to_delete_all_unavailable_products.tr()}",
+                    foreGroundColor: Colors.white,
+                    backGroundColor: Colors.black,
+                    showInRelease: true,
+                    timeShowing: Toast.LENGTH_LONG,
+                  );
+                  ////////////////////////
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                }
+
+                if (state.placeOrderStatus == PlaceOrderStatus.success) {
                   List<OrdersGroupDataModel>? data =
-                      state.getOrdersByCartGroupIDModel!.data!;
+                      state.placeOrderModel!.data!;
 
-                  List<Map<String, String>> cartImages = [];
-                  double orderAmount = 0;
-                  double partialPaymentByWallet = 0;
-                  /////////////////////////////////////////////////
-                  data.forEach(
-                    (e) {
-                      orderAmount = orderAmount + e.orderAmount!;
-                      partialPaymentByWallet =
-                          partialPaymentByWallet + e.partialPaymentByWallet!;
-                      e.details!.forEach(
-                        (element) {
-                          for (var i = 0; i < (element.qty ?? 0); i++) {
-                            cartImages.add(
-                              {
-                                "image": element.productDetails!.images![0],
-                                "size": element.variation == null
-                                    ? ""
-                                    : element.variation?.size ?? "",
-                                "color": element.variation == null
-                                    ? ""
-                                    : element.variation?.color ?? ""
-                              },
-                            );
-                          }
-                        },
-                      );
-                    },
-                  );
-                  ////////////////////////////////
-                  orderAmount = orderAmount *
-                      state.getCurrencyForCountryModel!.data!.currency!
-                          .exchangeRate!;
-                  ////////////////////////////////
-                  CustomerAddressesInfo customerAddressesInfo =
-                      CustomerAddressesInfo(
-                    id: data[0].shippingAddress,
-                    address: data[0].shippingAddressData!.address ?? '',
-                    addressDetail:
-                        data[0].shippingAddressData!.addressDetail ?? '',
-                    contactInfo: ContactInfo(
-                      name:
-                          data[0].shippingAddressData!.contactPersonName ?? '',
-                      alternativePhone:
-                          data[0].shippingAddressData!.alternativePhone ?? '',
-                      phone: data[0].shippingAddressData!.phone ?? '',
-                    ),
-                    location: Location(
-                      latitude: data[0].shippingAddressData!.latitude ?? '',
-                      longitude: data[0].shippingAddressData!.longitude ?? '',
-                    ),
-                    regionDetails: RegionDetails(
-                      country: data[0].shippingAddressData!.country ?? '',
-                      province: data[0].shippingAddressData!.province ?? '',
-                      city: data[0].shippingAddressData!.city ?? '',
-                      town: data[0].shippingAddressData!.town ?? '',
-                      street: data[0].shippingAddressData!.street ?? '',
-                      building: data[0].shippingAddressData!.building ?? '',
-                    ),
-                  );
-                  /////////////////////////
-                  widget.paymentMethods.value =
-                      List.from(widget.paymentMethods.value)..clear();
+                  debugPrint('The url is : ${data[0].url}');
 
-                  String paymentMethod = '';
+                  if (data[0].url != null) {
+                    HelperFunctions.slidingNavigation(
+                      context,
+                      PaymentWebview(
+                        url: data[0].url!,
+                        cartGroupId: widget.cartGroupId,
+                      ),
+                    );
+                  } else {
+                    List<Map<String, String>> cartImages = [];
+                    double orderAmount = 0;
+                    double partialPaymentByWallet = 0;
+                    /////////////////////////////////////////////////
+                    data.forEach(
+                      (e) {
+                        orderAmount = orderAmount + e.orderAmount!;
+                        partialPaymentByWallet =
+                            partialPaymentByWallet + e.partialPaymentByWallet!;
+                        e.details!.forEach(
+                          (element) {
+                            for (var i = 0; i < (element.qty ?? 0); i++) {
+                              cartImages.add(
+                                {
+                                  "image": element.productDetails!.images![0],
+                                  "size": element.variation == null
+                                      ? ""
+                                      : element.variation?.size ?? "",
+                                  "color": element.variation == null
+                                      ? ""
+                                      : element.variation?.color ?? ""
+                                },
+                              );
+                            }
+                          },
+                        );
+                      },
+                    );
+                    /////////////////////////
+                    orderAmount = orderAmount *
+                        state.getCurrencyForCountryModel!.data!.currency!
+                            .exchangeRate!;
 
-                  if (data[0].paymentMethod == 'trydos_wallet') {
-                    paymentMethod = PaymentMethods.trydosWallet;
-                  } else if (data[0].paymentMethod == 'cash_on_delivery') {
-                    paymentMethod = PaymentMethods.cod;
-                  } else if (data[0].paymentMethod == 'crypto') {
-                    paymentMethod = PaymentMethods.crypto;
-                  }
+                    partialPaymentByWallet = partialPaymentByWallet *
+                        state.getCurrencyForCountryModel!.data!.currency!
+                            .exchangeRate!;
+                    ////////////////////////////////
+                    CustomerAddressesInfo customerAddressesInfo =
+                        CustomerAddressesInfo(
+                      id: data[0].shippingAddress,
+                      address: data[0].shippingAddressData!.address ?? '',
+                      addressDetail:
+                          data[0].shippingAddressData!.addressDetail ?? '',
+                      contactInfo: ContactInfo(
+                        name: data[0].shippingAddressData!.contactPersonName ??
+                            '',
+                        alternativePhone:
+                            data[0].shippingAddressData!.alternativePhone ?? '',
+                        phone: data[0].shippingAddressData!.phone ?? '',
+                      ),
+                      location: Location(
+                        latitude: data[0].shippingAddressData!.latitude ?? '',
+                        longitude: data[0].shippingAddressData!.longitude ?? '',
+                      ),
+                      regionDetails: RegionDetails(
+                        country: data[0].shippingAddressData!.country ?? '',
+                        province: data[0].shippingAddressData!.province ?? '',
+                        city: data[0].shippingAddressData!.city ?? '',
+                        town: data[0].shippingAddressData!.town ?? '',
+                        street: data[0].shippingAddressData!.street ?? '',
+                        building: data[0].shippingAddressData!.building ?? '',
+                      ),
+                    );
+                    /////////////////////////
+                    widget.paymentMethods.value =
+                        List.from(widget.paymentMethods.value)..clear();
 
-                  widget.paymentMethods.value =
-                      List.from(widget.paymentMethods.value)
-                        ..add(paymentMethod);
+                    String paymentMethod = '';
 
-                  if (partialPaymentByWallet > 0) {
+                    if (data[0].paymentMethod == 'trydos_wallet') {
+                      paymentMethod = PaymentMethods.trydosWallet;
+                    } else if (data[0].paymentMethod == 'cash_on_delivery') {
+                      paymentMethod = PaymentMethods.cod;
+                    } else {
+                      paymentMethod = data[0].paymentMethod ?? '';
+                    }
+
                     widget.paymentMethods.value =
                         List.from(widget.paymentMethods.value)
-                          ..add(PaymentMethods.trydosWallet);
+                          ..add(paymentMethod);
+
+                    if (partialPaymentByWallet > 0) {
+                      widget.paymentMethods.value =
+                          List.from(widget.paymentMethods.value)
+                            ..add(PaymentMethods.trydosWallet);
+                    }
+
+                    /////////////////////////
+                    HelperFunctions.slidingNavigation(
+                      context,
+                      SuccessfullOrder(
+                        cartImages: cartImages,
+                        currencySympole: widget.currencySympole,
+                        availablePaymentMethod: widget.availablePaymentMethod,
+                        customerAddressesInfo: customerAddressesInfo,
+                        paymentMethods: widget.paymentMethods,
+                        totalPrice: widget.totalPrice,
+                        decimalPointSetting: widget.decimalPointSetting,
+                        orderAmount: orderAmount,
+                        partialPaymentByWallet: partialPaymentByWallet,
+                        orderGroupId: data[0].orderGroupId ?? '',
+                        currencySymbol: widget.currencySymbol,
+                      ),
+                    );
                   }
-                  /////////////////////////
-                  HelperFunctions.slidingNavigation(
-                    context,
-                    SuccessfullOrder(
-                      cartImages: cartImages,
-                      currencySympole: widget.currencySympole,
-                      availablePaymentMethod: widget.availablePaymentMethod,
-                      customerAddressesInfo: customerAddressesInfo,
-                      paymentMethods: widget.paymentMethods,
-                      totalPrice: widget.totalPrice,
-                      partialPaymentByWallet: partialPaymentByWallet,
-                      decimalPointSetting: widget.decimalPointSetting,
-                      orderAmount: orderAmount,
-                      orderGroupId: data[0].orderGroupId ?? '',
-                      currencySymbol: widget.currencySymbol,
-                    ),
-                  );
                 }
               },
-              child: BlocBuilder<HomeBloc, HomeState>(
-                buildWhen: (previous, current) =>
-                    previous.placeOrderStatus != current.placeOrderStatus ||
+              child: BlocListener<HomeBloc, HomeState>(
+                listenWhen: (previous, current) =>
                     previous.getOrdersByCartGroupIDStatus !=
-                        current.getOrdersByCartGroupIDStatus,
-                builder: (context, state) {
-                  print('rebuilt');
-                  return Column(
-                    children: [
-                      buildPageHeader(context),
-                      /////////////////////
-                      Expanded(
-                        child: SingleChildScrollView(
-                          child: Container(
-                            margin: EdgeInsets.symmetric(horizontal: 10),
-                            alignment: Alignment.topCenter,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                buildBagItemsWidget(context),
-                                //////////////////////////////////
-                                SizedBox(
-                                  height: 12.h,
-                                ),
-                                //////////////////////////////////
-                                buildAddress(context),
-                                //////////////////////////////////
-                                PaymentMethod(
-                                  fromSuccessOrder: false,
-                                  amount: widget.walletBalance,
-                                  fromPalceOrder: true,
-                                  paymentMethods: widget.paymentMethods,
-                                  availablePaymentMethod:
-                                      widget.availablePaymentMethod,
-                                  totalPrice: widget.totalPrice,
-                                  decimalPointSetting:
-                                      widget.decimalPointSetting,
-                                  currencySymbol: widget.currencySymbol,
-                                ),
-                                /////////////////////////
-                                SizedBox(
-                                  height: 40.h,
-                                ),
-                                //////////////////////////////////
-                                buildAgreeToPoliciesWidget(),
-                              ],
+                        current.getOrdersByCartGroupIDStatus &&
+                    current.getOrdersByCartGroupIDStatus ==
+                        GetOrdersByCartGroupIDStatus.success,
+                listener: (context, state) {
+                  debugPrint(
+                      'getOrdersByCartGroupIDStatus:  ${state.getOrdersByCartGroupIDStatus}');
+
+                  if (state.getOrdersByCartGroupIDStatus ==
+                      GetOrdersByCartGroupIDStatus.success) {
+                    List<OrdersGroupDataModel>? data =
+                        state.getOrdersByCartGroupIDModel!.data!;
+
+                    List<Map<String, String>> cartImages = [];
+                    double orderAmount = 0;
+                    double partialPaymentByWallet = 0;
+                    /////////////////////////////////////////////////
+                    data.forEach(
+                      (e) {
+                        orderAmount = orderAmount + e.orderAmount!;
+                        partialPaymentByWallet =
+                            partialPaymentByWallet + e.partialPaymentByWallet!;
+                        e.details!.forEach(
+                          (element) {
+                            for (var i = 0; i < (element.qty ?? 0); i++) {
+                              cartImages.add(
+                                {
+                                  "image": element.productDetails!.images![0],
+                                  "size": element.variation == null
+                                      ? ""
+                                      : element.variation?.size ?? "",
+                                  "color": element.variation == null
+                                      ? ""
+                                      : element.variation?.color ?? ""
+                                },
+                              );
+                            }
+                          },
+                        );
+                      },
+                    );
+                    ////////////////////////////////
+                    orderAmount = orderAmount *
+                        state.getCurrencyForCountryModel!.data!.currency!
+                            .exchangeRate!;
+
+                    partialPaymentByWallet = partialPaymentByWallet *
+                        state.getCurrencyForCountryModel!.data!.currency!
+                            .exchangeRate!;
+                    ////////////////////////////////
+                    CustomerAddressesInfo customerAddressesInfo =
+                        CustomerAddressesInfo(
+                      id: data[0].shippingAddress,
+                      address: data[0].shippingAddressData!.address ?? '',
+                      addressDetail:
+                          data[0].shippingAddressData!.addressDetail ?? '',
+                      contactInfo: ContactInfo(
+                        name: data[0].shippingAddressData!.contactPersonName ??
+                            '',
+                        alternativePhone:
+                            data[0].shippingAddressData!.alternativePhone ?? '',
+                        phone: data[0].shippingAddressData!.phone ?? '',
+                      ),
+                      location: Location(
+                        latitude: data[0].shippingAddressData!.latitude ?? '',
+                        longitude: data[0].shippingAddressData!.longitude ?? '',
+                      ),
+                      regionDetails: RegionDetails(
+                        country: data[0].shippingAddressData!.country ?? '',
+                        province: data[0].shippingAddressData!.province ?? '',
+                        city: data[0].shippingAddressData!.city ?? '',
+                        town: data[0].shippingAddressData!.town ?? '',
+                        street: data[0].shippingAddressData!.street ?? '',
+                        building: data[0].shippingAddressData!.building ?? '',
+                      ),
+                    );
+                    /////////////////////////
+                    widget.paymentMethods.value =
+                        List.from(widget.paymentMethods.value)..clear();
+
+                    String paymentMethod = '';
+
+                    if (data[0].paymentMethod == 'trydos_wallet') {
+                      paymentMethod = PaymentMethods.trydosWallet;
+                    } else if (data[0].paymentMethod == 'cash_on_delivery') {
+                      paymentMethod = PaymentMethods.cod;
+                    } else if (data[0].paymentMethod == 'crypto') {
+                      paymentMethod = PaymentMethods.crypto;
+                    }
+
+                    widget.paymentMethods.value =
+                        List.from(widget.paymentMethods.value)
+                          ..add(paymentMethod);
+
+                    if (partialPaymentByWallet > 0) {
+                      widget.paymentMethods.value =
+                          List.from(widget.paymentMethods.value)
+                            ..add(PaymentMethods.trydosWallet);
+                    }
+                    /////////////////////////
+                    HelperFunctions.slidingNavigation(
+                      context,
+                      SuccessfullOrder(
+                        cartImages: cartImages,
+                        currencySympole: widget.currencySympole,
+                        availablePaymentMethod: widget.availablePaymentMethod,
+                        customerAddressesInfo: customerAddressesInfo,
+                        paymentMethods: widget.paymentMethods,
+                        totalPrice: widget.totalPrice,
+                        partialPaymentByWallet: partialPaymentByWallet,
+                        decimalPointSetting: widget.decimalPointSetting,
+                        orderAmount: orderAmount,
+                        orderGroupId: data[0].orderGroupId ?? '',
+                        currencySymbol: widget.currencySymbol,
+                      ),
+                    );
+                  }
+                },
+                child: BlocBuilder<HomeBloc, HomeState>(
+                  buildWhen: (previous, current) =>
+                      previous.placeOrderStatus != current.placeOrderStatus ||
+                      previous.getOrdersByCartGroupIDStatus !=
+                          current.getOrdersByCartGroupIDStatus ||
+                      previous.checkWithGetCartStatus !=
+                          current.checkWithGetCartStatus,
+                  builder: (context, state) {
+                    return Column(
+                      children: [
+                        buildPageHeader(context),
+                        /////////////////////
+                        Expanded(
+                          child: SingleChildScrollView(
+                            child: Container(
+                              margin: EdgeInsets.symmetric(horizontal: 10),
+                              alignment: Alignment.topCenter,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  buildBagItemsWidget(context),
+                                  //////////////////////////////////
+                                  SizedBox(
+                                    height: 12.h,
+                                  ),
+                                  //////////////////////////////////
+                                  buildAddress(context),
+                                  //////////////////////////////////
+                                  PaymentMethod(
+                                    fromSuccessOrder: false,
+                                    amount: widget.walletBalance,
+                                    fromPalceOrder: true,
+                                    paymentMethods: widget.paymentMethods,
+                                    availablePaymentMethod:
+                                        widget.availablePaymentMethod,
+                                    totalPrice: widget.totalPrice,
+                                    decimalPointSetting:
+                                        widget.decimalPointSetting,
+                                    currencySymbol: widget.currencySymbol,
+                                  ),
+                                  /////////////////////////
+                                  SizedBox(
+                                    height: 40.h,
+                                  ),
+                                  //////////////////////////////////
+                                  buildAgreeToPoliciesWidget(),
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      // //////////////////////////
-                      buildPlaceOrderButton(state)
-                    ],
-                  );
-                },
-              ),
-            )),
+                        // //////////////////////////
+                        buildPlaceOrderButton(state)
+                      ],
+                    );
+                  },
+                ),
+              )),
+        ),
       ),
     );
   }
@@ -437,7 +496,8 @@ class _PlaceOrderState extends State<PlaceOrder> {
     return ValueListenableBuilder<bool>(
       valueListenable: agreeToPolicies,
       builder: (context, _agreeToPolicies, _) {
-        return (state.placeOrderStatus == PlaceOrderStatus.loading)
+        return (state.placeOrderStatus == PlaceOrderStatus.loading ||
+                state.checkWithGetCartStatus == CheckWithGetCartStatus.loading)
             ? Shimmer.fromColors(
                 baseColor: Colors.grey[300]!,
                 highlightColor: Colors.grey[100]!,
@@ -534,34 +594,8 @@ class _PlaceOrderState extends State<PlaceOrder> {
                 child: InkWell(
                   onTap: () {
                     if (_agreeToPolicies) {
-                      String paymentMethod = '';
-                      int payByWallet = 0;
-
-                      if (widget.paymentMethods.value.length == 1) {
-                        paymentMethod = widget.paymentMethods.value[0];
-                        //////////////
-                        payByWallet = 0;
-                      } else {
-                        if (widget.paymentMethods.value
-                                .contains(PaymentMethods.trydosWallet) &&
-                            widget.paymentMethods.value.length == 2) {
-                          paymentMethod =
-                              widget.paymentMethods.value.firstWhere(
-                            (element) => element != PaymentMethods.trydosWallet,
-                          );
-                          payByWallet = 1;
-                        }
-                      }
-
-                      PlaceOrderParams placeOrderParams = PlaceOrderParams(
-                        addressId: widget.customerAddressesInfo.id!,
-                        orderNote: 'orderNote',
-                        paymentMethod: paymentMethod,
-                        payByWallet: payByWallet,
-                      );
-
                       BlocProvider.of<HomeBloc>(context).add(
-                        PlaceOrderEvent(placeOrderParams: placeOrderParams),
+                        CheckWithGetCartEvent(isForPlaceOrder: true),
                       );
                     }
                   },

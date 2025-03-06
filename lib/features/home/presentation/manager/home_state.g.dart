@@ -991,7 +991,8 @@ const _$GetCartItemsStatusEnumMap = {
 const _$CheckWithGetCartStatusEnumMap = {
   CheckWithGetCartStatus.init: 'init',
   CheckWithGetCartStatus.loading: 'loading',
-  CheckWithGetCartStatus.success: 'success',
+  CheckWithGetCartStatus.successForCart: 'successForCart',
+  CheckWithGetCartStatus.successForPlaceOrder: 'successForPlaceOrder',
   CheckWithGetCartStatus.available: 'available',
   CheckWithGetCartStatus.failure: 'failure',
 };

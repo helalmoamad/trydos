@@ -674,10 +674,11 @@ class GetCartItemEvent extends HomeEvent {
 }
 
 class CheckWithGetCartEvent extends HomeEvent {
-  const CheckWithGetCartEvent();
+  final bool isForPlaceOrder;
+  const CheckWithGetCartEvent({required this.isForPlaceOrder});
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [isForPlaceOrder];
 }
 
 class RemoveItemsFromCartAfterOrderSuccessEvent extends HomeEvent {

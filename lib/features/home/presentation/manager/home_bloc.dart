@@ -3555,6 +3555,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     });
   }
 
+  bool isInPlaceOrder = false;
+
   FutureOr<void> _onCheckWithGetCartEvent(
     CheckWithGetCartEvent event,
     Emitter<HomeState> emit,
@@ -3562,72 +3564,82 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     emit(
         state.copyWith(checkWithGetCartStatus: CheckWithGetCartStatus.loading));
     final response = await getCartItemUseCase(NoParams());
-    response.fold((l) {
-      if (!isFailedTheFirstTime.contains('CheckWithGetCartEvent')) {
-        add(CheckWithGetCartEvent());
-        isFailedTheFirstTime.add('CheckWithGetCartEvent');
-      }
-      emit(state.copyWith(
-          checkWithGetCartStatus: CheckWithGetCartStatus.failure));
-    }, (r) {
-      List<Cart> carts;
-      List<Cart> cartCollection = [];
-      Map<String, Map<int, List<String>>> addImagesToProductIdForCart = {};
-      emit(state.copyWith(currentQuantityForCart: {}));
-      List<String> cartIdIsFound = [];
-      r.data?.cart?.forEach((element) {
-        cartIdIsFound.add(element.id.toString());
-        add(AddQuantityForCartEvent(
-            quantity: element.quantity ?? 0,
-            productId: element.productId.toString(),
-            currentSize: element.variations.isNullOrEmpty
-                ? ""
-                : element.variations?[0].size ?? "",
-            cartId: element.id ?? 0,
-            colorName: element.variations.isNullOrEmpty
-                ? ""
-                : element.variations?[0].color ?? ""));
-        if (addImagesToProductIdForCart[element.productId.toString()] == null) {
-          addImagesToProductIdForCart[element.productId.toString()] = {};
+    response.fold(
+      (l) {
+        if (!isFailedTheFirstTime.contains('CheckWithGetCartEvent')) {
+          add(CheckWithGetCartEvent(isForPlaceOrder: event.isForPlaceOrder));
+          isFailedTheFirstTime.add('CheckWithGetCartEvent');
         }
-        if (!addImagesToProductIdForCart[element.productId.toString()]![
-                element.id]
-            .isNullOrEmpty) {
-          for (int i = 0; i < element.quantity!; i++) {
-            addImagesToProductIdForCart[element..productId.toString()]![
-                    element.id]!
-                .add(element.image ?? "");
+        emit(state.copyWith(
+            checkWithGetCartStatus: CheckWithGetCartStatus.failure));
+      },
+      (r) {
+        List<Cart> carts;
+        List<Cart> cartCollection = [];
+        Map<String, Map<int, List<String>>> addImagesToProductIdForCart = {};
+        emit(state.copyWith(currentQuantityForCart: {}));
+        List<String> cartIdIsFound = [];
+        r.data?.cart?.forEach((element) {
+          cartIdIsFound.add(element.id.toString());
+          add(AddQuantityForCartEvent(
+              quantity: element.quantity ?? 0,
+              productId: element.productId.toString(),
+              currentSize: element.variations.isNullOrEmpty
+                  ? ""
+                  : element.variations?[0].size ?? "",
+              cartId: element.id ?? 0,
+              colorName: element.variations.isNullOrEmpty
+                  ? ""
+                  : element.variations?[0].color ?? ""));
+          if (addImagesToProductIdForCart[element.productId.toString()] ==
+              null) {
+            addImagesToProductIdForCart[element.productId.toString()] = {};
           }
-          ;
-        } else {
-          addImagesToProductIdForCart[element.productId.toString()]!
-              .addAll({element.id!: []});
+          if (!addImagesToProductIdForCart[element.productId.toString()]![
+                  element.id]
+              .isNullOrEmpty) {
+            for (int i = 0; i < element.quantity!; i++) {
+              addImagesToProductIdForCart[element..productId.toString()]![
+                      element.id]!
+                  .add(element.image ?? "");
+            }
+            ;
+          } else {
+            addImagesToProductIdForCart[element.productId.toString()]!
+                .addAll({element.id!: []});
 
-          addImagesToProductIdForCart[element.productId.toString()]![
-              element.id!] = [];
-
-          for (int i = 0; i < element.quantity!; i++) {
             addImagesToProductIdForCart[element.productId.toString()]![
-                    element.id]!
-                .add(element.image ?? "");
+                element.id!] = [];
+
+            for (int i = 0; i < element.quantity!; i++) {
+              addImagesToProductIdForCart[element.productId.toString()]![
+                      element.id]!
+                  .add(element.image ?? "");
+            }
+            ;
           }
-          ;
-        }
-      });
+        });
 
-      carts = r.data!.cart!;
-      carts.forEach((element) {
-        cartCollection.add(element);
-      });
+        carts = r.data!.cart!;
+        carts.forEach((element) {
+          cartCollection.add(element);
+        });
 
-      isFailedTheFirstTime.remove('CheckWithGetCartEvent');
+        isFailedTheFirstTime.remove('CheckWithGetCartEvent');
 
-      emit(state.copyWith(
-          addImagesToProductIdForCart: addImagesToProductIdForCart,
-          getCartShippingItemsModel: r,
-          cartCollection: List.of(cartCollection),
-          checkWithGetCartStatus: CheckWithGetCartStatus.success));
-    });
+        emit(
+          state.copyWith(
+              addImagesToProductIdForCart: addImagesToProductIdForCart,
+              getCartShippingItemsModel: r,
+              cartCollection: List.of(cartCollection),
+              checkWithGetCartStatus: event.isForPlaceOrder
+                  ? CheckWithGetCartStatus.successForPlaceOrder
+                  : CheckWithGetCartStatus.successForCart),
+        );
+      },
+    );
+
+    add(GetOldCartItemEvent());
   }
 
   FutureOr<void> _onGetOldCartItemEvent(

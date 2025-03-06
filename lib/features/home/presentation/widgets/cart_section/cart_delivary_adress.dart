@@ -159,6 +159,9 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
               double couponDiscount =
                   state.getCartShippingItemsModel?.data?.couponDiscount ?? 0;
 
+              String couponCode =
+                  state.getCartShippingItemsModel?.data?.couponCode ?? '';
+
               Future.delayed(
                 Duration(milliseconds: 200),
                 () {
@@ -278,6 +281,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                                           SizedBox(
                                             height: 25.h,
                                           ),
+                                          ////////////
                                           ValueListenableBuilder<bool>(
                                             valueListenable: isExpandedCoupon,
                                             builder:
@@ -287,6 +291,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                                                 context,
                                                 state,
                                                 couponDiscount,
+                                                couponCode,
                                               );
                                             },
                                           ),
@@ -655,6 +660,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
     BuildContext context,
     HomeState state,
     double couponDiscount,
+    String couponCode,
   ) {
     return AnimatedContainer(
       duration: Duration(seconds: 2),
@@ -701,7 +707,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                       padding: const EdgeInsets.symmetric(horizontal: 27),
                       child: Text(
                         couponDiscount > 0
-                            ? "${LocaleKeys.applied_your_coupon.tr()} XXXSSSA "
+                            ? "${LocaleKeys.applied_your_coupon.tr()} $couponCode"
                             : "${LocaleKeys.please_enter_coupon_information.tr()} ",
                         style: context.textTheme.bodyMedium?.rr.copyWith(
                           color: const Color(0xff8D8D8D),

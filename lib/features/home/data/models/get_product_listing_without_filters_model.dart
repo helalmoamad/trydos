@@ -104,7 +104,7 @@ class Data {
 
 class Products {
   final int? productId;
-  final int? boutiqueId;
+  final String? boutiqueId;
   final String? name;
   final String? slug;
   final String? shareLink;
@@ -226,7 +226,7 @@ class Products {
 
   Products copyWith({
     int? productId,
-    int? boutiqueId,
+    String? boutiqueId,
     String? name,
     String? slug,
     String? shareLink,
@@ -351,7 +351,7 @@ class Products {
 
   factory Products.fromJson(Map<String, dynamic> json) => Products(
       productId: json["product_id"] != null ? json["product_id"] : json["id"],
-      boutiqueId: json["boutique_id"],
+      boutiqueId: json["boutique_id"].toString(),
       name: json["name"],
       slug: json["slug"],
       shareLink: json["share_link"],

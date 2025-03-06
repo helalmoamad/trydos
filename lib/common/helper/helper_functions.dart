@@ -469,11 +469,12 @@ class HelperFunctions {
     );
   }
 
-  static String formatNumber({required double number}) {
-    String? iso = '';
-    // GetIt.I<PrefsRepository>().userCountryIsAvailable == 1
-    //     ? GetIt.I<PrefsRepository>().userChoosedCountryIso
-    //     : GetIt.I<PrefsRepository>().countryIso;
+  static String formatNumber({
+    required double number,
+  }) {
+    String? iso = GetIt.I<PrefsRepository>().userCountryIsAvailable == 1
+        ? GetIt.I<PrefsRepository>().userChoosedCountryIso
+        : GetIt.I<PrefsRepository>().countryIso;
 
     // if (number >= 1e9) {
     //   String bilion = LanguageService.languageCode != "ar" ? 'B' : 'بليون';
@@ -490,6 +491,7 @@ class HelperFunctions {
     //   }
     //   return '$result$milion';
     // } else
+
     if (iso == 'SY' || iso == 'LB') {
       String thousand = LanguageService.languageCode != "ar" ? 'K' : 'ألف';
       if (iso == 'SY') {

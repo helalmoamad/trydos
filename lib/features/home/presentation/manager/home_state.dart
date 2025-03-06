@@ -62,7 +62,14 @@ enum GetMainCategoriesStatus { init, loading, success, failure }
 
 enum GetCartItemsStatus { init, loading, success, available, failure }
 
-enum CheckWithGetCartStatus { init, loading, success, available, failure }
+enum CheckWithGetCartStatus {
+  init,
+  loading,
+  successForCart,
+  successForPlaceOrder,
+  available,
+  failure
+}
 
 enum GetOLdCartItemsStatus { init, loading, success, failure }
 

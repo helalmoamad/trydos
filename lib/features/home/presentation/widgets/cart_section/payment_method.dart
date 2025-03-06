@@ -437,7 +437,9 @@ class _PaymentMethodState extends State<PaymentMethod> {
               height: 1.33),
         ),
         Text(
-          '${widget.amount} ${widget.currencySymbol}',
+          widget.partialPaymentByWallet > 0
+              ? '${widget.amount - widget.partialPaymentByWallet} ${widget.currencySymbol}'
+              : '${widget.amount} ${widget.currencySymbol}',
           style: context.textTheme.bodyMedium?.sbt.copyWith(
             color: const Color(0xff1D1D1D),
             letterSpacing: 0.18,

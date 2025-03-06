@@ -1,12 +1,6 @@
-// To parse this JSON data, do
-//
-//     final getProductListingWithoutFiltersModel = getProductListingWithoutFiltersModelFromJson(jsonString);
-
 import 'dart:convert';
 
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
-
-import 'get_category_model.dart';
 import 'get_product_filters_model.dart' as filters;
 import 'get_product_listing_without_filters_model.dart'
     as product_without_filters;

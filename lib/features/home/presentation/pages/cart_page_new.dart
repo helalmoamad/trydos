@@ -126,40 +126,44 @@ class _CartPageState extends State<CartPage> {
           resizeToAvoidBottomInset: true,
           body: BlocListener<HomeBloc, HomeState>(
             listenWhen: (previous, current) =>
-                previous.checkWithGetCartStatus !=
-                    current.checkWithGetCartStatus &&
-                current.checkWithGetCartStatus ==
-                    CheckWithGetCartStatus.success,
+                (previous.checkWithGetCartStatus !=
+                        current.checkWithGetCartStatus &&
+                    current.checkWithGetCartStatus ==
+                        CheckWithGetCartStatus.successForCart),
             listener: (context, state) {
               if (state.checkWithGetCartStatus ==
-                  CheckWithGetCartStatus.success) {
-                if (!state.cartCollection!.any(
-                  (element) => element.checkAvailability == false,
-                )) {
-                  String cartGroupId =
-                      state.cartCollection?[0].cartGroupId ?? '';
+                  CheckWithGetCartStatus.successForCart) {
+                if (!state.cartCollection.isNullOrEmpty) {
+                  if (!state.cartCollection!.any(
+                    (element) => (element.isAvailableInMarket == false ||
+                        element.isCountryRestricted == true ||
+                        element.checkAvailability == false),
+                  )) {
+                    String cartGroupId =
+                        state.cartCollection?[0].cartGroupId ?? '';
 
-                  String priceSymbol = state
-                          .getCurrencyForCountryModel!.data!.currency!.symbol ??
-                      "";
-                  ////////////////////////////////
-                  HelperFunctions.slidingNavigation(
-                    context,
-                    CartDelivaryAddress(
-                      cartImages: cartImages,
-                      cartGroupId: cartGroupId,
-                      currencySympole: priceSymbol,
-                    ),
-                  );
-                } else {
-                  //////////////////////////
-                  showMessage(
-                    " ${LocaleKeys.you_have_to_delete_all_unavailable_products.tr()}",
-                    foreGroundColor: Colors.white,
-                    backGroundColor: Colors.black,
-                    showInRelease: true,
-                    timeShowing: Toast.LENGTH_LONG,
-                  );
+                    String priceSymbol = state.getCurrencyForCountryModel!.data!
+                            .currency!.symbol ??
+                        "";
+                    ////////////////////////////////
+                    HelperFunctions.slidingNavigation(
+                      context,
+                      CartDelivaryAddress(
+                        cartImages: cartImages,
+                        cartGroupId: cartGroupId,
+                        currencySympole: priceSymbol,
+                      ),
+                    );
+                  } else {
+                    //////////////////////////
+                    showMessage(
+                      " ${LocaleKeys.you_have_to_delete_all_unavailable_products.tr()}",
+                      foreGroundColor: Colors.white,
+                      backGroundColor: Colors.black,
+                      showInRelease: true,
+                      timeShowing: Toast.LENGTH_LONG,
+                    );
+                  }
                 }
               }
             },
@@ -1652,10 +1656,10 @@ class _CartPageState extends State<CartPage> {
                                                                                         homeBloc.add(GetCartOverviewEvent());
                                                                                         return;
                                                                                       } else if (state.checkWithGetCartStatus == CheckWithGetCartStatus.failure) {
-                                                                                        homeBloc.add(CheckWithGetCartEvent());
+                                                                                        homeBloc.add(CheckWithGetCartEvent(isForPlaceOrder: false));
                                                                                         return;
                                                                                       } else if (state.cartCollection!.any(
-                                                                                        (element) => element.checkAvailability == false,
+                                                                                        (element) => (element.isAvailableInMarket == false || element.isCountryRestricted == true || element.checkAvailability == false),
                                                                                       )) {
                                                                                         showMessage(
                                                                                           " ${LocaleKeys.you_have_to_delete_all_unavailable_products.tr()}",
@@ -1669,12 +1673,11 @@ class _CartPageState extends State<CartPage> {
                                                                                         if (prefsRepository.isVerifiedPhone != true) {
                                                                                           if ((prefsRepository.isVerifiedPhonePeforeExpiredToken ?? false)) {
                                                                                             authBloc.add(SendOtpEvent(phone: prefsRepository.myPhoneNumber!, isViaWhatsApp: 1));
-                                                                                            ;
                                                                                           }
                                                                                           isVerified.value = false;
                                                                                         } else {
                                                                                           BlocProvider.of<HomeBloc>(context).add(
-                                                                                            CheckWithGetCartEvent(),
+                                                                                            CheckWithGetCartEvent(isForPlaceOrder: false),
                                                                                           );
                                                                                         }
                                                                                       }
