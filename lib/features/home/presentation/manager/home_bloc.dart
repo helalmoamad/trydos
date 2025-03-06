@@ -575,7 +575,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       district: event.addressInfoClassToSave?.regionDetails?.city ?? "",
       town: event.addressInfoClassToSave?.regionDetails?.town ?? "",
       street: event.addressInfoClassToSave?.regionDetails?.street ?? "",
-      zip: "",
+      zip: event.addressInfoClassToSave?.regionDetails?.zip ?? '',
       phone: event.addressInfoClassToSave?.contactInfo?.phone ?? "",
       alternativePhone:
           event.addressInfoClassToSave?.contactInfo?.alternativePhone ?? "",
@@ -1039,7 +1039,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       district: event.addressInfoClassToSave?.regionDetails?.city ?? "",
       town: event.addressInfoClassToSave?.regionDetails?.town ?? "",
       street: event.addressInfoClassToSave?.regionDetails?.street ?? "",
-      zip: "",
+      zip: event.addressInfoClassToSave?.regionDetails?.zip ?? '',
       phone: event.addressInfoClassToSave?.contactInfo?.phone ?? "",
       alternativePhone:
           event.addressInfoClassToSave?.contactInfo?.alternativePhone ?? "",
@@ -3454,6 +3454,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   FutureOr<void> _onGetCartItemEvent(
       GetCartItemEvent event, Emitter<HomeState> emit) async {
+    if (state.getCartOverviewStatus == GetCartOverviewStatus.loading) {
+      Future.delayed(Duration(seconds: 5), () {
+        add(GetCartItemEvent());
+      });
+      return;
+    }
     emit(state.copyWith(getCartItemsStatus: GetCartItemsStatus.loading));
     final response = await getCartItemUseCase(NoParams());
     response.fold((l) {
@@ -3463,6 +3469,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       }
       emit(state.copyWith(getCartItemsStatus: GetCartItemsStatus.failure));
     }, (r) {
+      if (state.getCartOverviewStatus == GetCartOverviewStatus.loading) {
+        Future.delayed(Duration(seconds: 5), () {
+          add(GetCartItemEvent());
+        });
+        return;
+      }
       List<Cart> carts;
       List<Cart> cartCollection = [];
       Map<String, Map<int, List<String>>> addImagesToProductIdForCart = {};
@@ -3852,10 +3864,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       (element) =>
           element.image == event.image &&
           (element.variations!.isNotEmpty
-              ? (element.variations?[0].color == variation.color)
+              ? ((element.variations?[0].color ?? '') ==
+                  (variation.color ?? ''))
               : true) &&
           (element.variations!.isNotEmpty
-              ? (element.variations?[0].size == variation.size)
+              ? ((element.variations?[0].size ?? '') == (variation.size ?? ''))
               : true),
       orElse: () => oldCart.OldCart(id: -1),
     );
@@ -3863,10 +3876,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       (element) =>
           element.image == event.image &&
           (element.variations!.isNotEmpty
-              ? (element.variations?[0].color == variation.color)
+              ? ((element.variations?[0].color ?? "") ==
+                  (variation.color ?? ""))
               : true) &&
           (element.variations!.isNotEmpty
-              ? (element.variations?[0].size == variation.size)
+              ? ((element.variations?[0].size ?? "") == (variation.size ?? ''))
               : true),
     );
     emit(state.copyWith(

@@ -377,14 +377,19 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                           GetProductFiltersModel(
                                               filters: filters
                                                   .copyWithSaveOtherField(
-                                                      searchText: text,
+                                                      searchText:
+                                                          (text.length) > 2
+                                                              ? text
+                                                              : null,
                                                       prices: filters.prices)),
                                     ));
                                     homeBloc.add(GetProductsWithFiltersEvent(
-                                        offset: 1,
-                                        boutiqueSlug: key,
-                                        fromSearch: true,
-                                        searchText: text));
+                                      offset: 1,
+                                      boutiqueSlug: key,
+                                      fromSearch: true,
+                                      searchText:
+                                          (text.length) > 2 ? text : null,
+                                    ));
                                     HelperFunctions.slidingNavigation(
                                       context,
                                       ProductListingPage(

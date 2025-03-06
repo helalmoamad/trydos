@@ -184,12 +184,14 @@ class RegionDetails {
   final String? town;
   final String? street;
   final String? building;
+  final String? zip;
 
   RegionDetails({
     this.country,
     this.province,
     this.city,
     this.town,
+    this.zip,
     this.street,
     this.building,
   });
@@ -201,21 +203,23 @@ class RegionDetails {
     String? town,
     String? street,
     String? building,
+    String? zip,
   }) =>
       RegionDetails(
-        country: country ?? this.country,
-        province: province ?? this.province,
-        city: city ?? this.city,
-        town: town ?? this.town,
-        street: street ?? this.street,
-        building: building ?? this.building,
-      );
+          country: country ?? this.country,
+          province: province ?? this.province,
+          city: city ?? this.city,
+          town: town ?? this.town,
+          street: street ?? this.street,
+          building: building ?? this.building,
+          zip: zip ?? this.zip);
 
   factory RegionDetails.fromJson(Map<String, dynamic> json) => RegionDetails(
         country: json["country"],
         province: json["province"],
         city: json["city"],
         town: json["town"],
+        zip: json["zip"],
         street: json["street"],
         building: json["building"],
       );
@@ -225,6 +229,7 @@ class RegionDetails {
         "province": province,
         "city": city,
         "town": town,
+        "zip": zip,
         "street": street,
         "building": building,
       };

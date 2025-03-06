@@ -66,12 +66,12 @@ class AddCustomerAddressParams {
         "town": town == "" ? "null" : town,
         "street": street == "" ? "null" : street,
         "phone": phone,
-        "alternative_phone": alternativePhone == "" ? "null" : alternativePhone,
-        "latitude": latitude == "" ? "null" : latitude,
-        "longitude": longitude == "" ? "null" : longitude,
+        "alternative_phone": alternativePhone == "" ? null : alternativePhone,
+        "latitude": latitude == "" ? null : latitude,
+        "longitude": longitude == "" ? null : longitude,
         "province": province == "" ? "null" : province,
         "building": building == "" ? "null" : building,
-        "zip": "null",
+        "zip": zip == "" ? "null" : zip,
         "iso": iso
       };
 }

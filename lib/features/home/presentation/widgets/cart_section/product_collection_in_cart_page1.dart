@@ -176,14 +176,9 @@ class _ProductCollectionInCartPage1State
                                           .syncColorImages
                                           .isNullOrEmpty
                                       ? -1
-                                      : state.productITemForCart[oldCartCollection[index].productId.toString()]!.syncColorImages!
-                                          .indexOf(state
-                                              .productITemForCart[
-                                                  oldCartCollection[index]
-                                                      .productId
-                                                      .toString()]!
-                                              .syncColorImages!
-                                              .firstWhere((element) =>
+                                      : state.productITemForCart[oldCartCollection[index].productId.toString()]!.syncColorImages!.indexOf(
+                                          state.productITemForCart[oldCartCollection[index].productId.toString()]!.syncColorImages!.firstWhere(
+                                              (element) =>
                                                   element.colorName ==
                                                   (!oldCartCollection![index]
                                                           .variations
@@ -192,7 +187,12 @@ class _ProductCollectionInCartPage1State
                                                               .variations![0]
                                                               .color ??
                                                           ""
-                                                      : "")))
+                                                      : ""),
+                                              orElse: () =>
+                                                  color.SyncColorImage(
+                                                      colorName: "null",
+                                                      images: [],
+                                                      colorTrend: false)))
                                   : state.productITemForCart[cartCollection![index].productId.toString()] == null
                                       ? -1
                                       : state.productITemForCart[cartCollection[index].productId.toString()]!.syncColorImages.isNullOrEmpty
@@ -230,6 +230,7 @@ class _ProductCollectionInCartPage1State
                               HelperFunctions.slidingNavigation(
                                   context,
                                   ProductDetailsPage(
+                                    fromCart: true,
                                     productItem: isOldCart
                                         ? state.productITemForCart[
                                             oldCartCollection![index]
@@ -785,6 +786,7 @@ class _ProductCollectionInCartPage1State
                                                         .slidingNavigation(
                                                             context,
                                                             ProductDetailsPage(
+                                                              fromCart: true,
                                                               productItem: isOldCart
                                                                   ? state
                                                                       .productITemForCart[oldCartCollection![
@@ -1265,6 +1267,7 @@ class _ProductCollectionInCartPage1State
                                             HelperFunctions.slidingNavigation(
                                                 context,
                                                 ProductDetailsPage(
+                                                  fromCart: true,
                                                   productItem: isOldCart
                                                       ? state.productITemForCart[
                                                           oldCartCollection![

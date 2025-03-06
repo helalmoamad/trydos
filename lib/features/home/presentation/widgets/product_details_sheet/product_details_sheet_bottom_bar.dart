@@ -35,6 +35,7 @@ import 'package:trydos/features/home/data/models/starting_settings_response_mode
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
+import 'package:trydos/features/home/presentation/widgets/product_details_sheet/notify_for_available_in_country.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/notify_for_quantity_available_button.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/routes/router.dart';
@@ -68,11 +69,13 @@ class ProductDetailsSheetBottomBar extends StatefulWidget {
       required this.collectedAfterOrder,
       required this.products,
       required this.sizeIsNotAvailableNotifier,
+      required this.productNotAvailableNotifier,
       required this.imageUrl});
 
   final ValueNotifier<int> addToBagButtonShapeNotifier;
 
   final ValueNotifier<String?> sizeIsNotAvailableNotifier;
+  final ValueNotifier<String?> productNotAvailableNotifier;
   final ValueNotifier<String?> colorIsNotAvailableNotifier;
   final PanelController panelController;
   final String imageUrl;
@@ -190,565 +193,460 @@ class _ProductDetailsSheetBottomBarState
                   child: ValueListenableBuilder<int>(
                       valueListenable: widget.currentActiveTab,
                       builder: (context, currentTab, _) {
+                        print(
+                            "!@@@@@@@@@@@@222222222222222222222222222222222222#########${widget.currentActiveTab.value}");
                         print(currentTab);
                         return Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             ValueListenableBuilder<String?>(
                                 valueListenable:
-                                    widget.colorIsNotAvailableNotifier,
-                                builder: (context, selectedcolorByUser, child) {
+                                    widget.productNotAvailableNotifier,
+                                builder: (context, _productNotAvailableNotifier,
+                                    child) {
                                   return ValueListenableBuilder<String?>(
                                       valueListenable:
-                                          widget.sizeIsNotAvailableNotifier,
-                                      builder:
-                                          (context, selectedSizeByUser, child) {
-                                        return ValueListenableBuilder<int>(
+                                          widget.colorIsNotAvailableNotifier,
+                                      builder: (context, selectedcolorByUser,
+                                          child) {
+                                        return ValueListenableBuilder<String?>(
                                             valueListenable: widget
-                                                .addToBagButtonShapeNotifier,
-                                            builder: (context, itemCount, _) {
-                                              ImageForAddToCart
-                                                  imageForAddToCart =
-                                                  ImageForAddToCart(
-                                                countOfPieces:
-                                                    widget.countOfPieces,
-                                                colorNum: widget.colorNum,
-                                                quantity: 1,
-                                                images: widget.imageUrl,
-                                                colorName: widget.colorName,
-                                              );
-                                              return AnimatedSwitcher(
-                                                  duration: Duration(
-                                                      milliseconds: 300),
-                                                  reverseDuration: Duration(
-                                                      milliseconds: 300),
-                                                  transitionBuilder:
-                                                      (child, animation) {
-                                                    return SlideTransition(
-                                                      position: Tween(
-                                                        begin:
-                                                            Offset(-1.0, 0.0),
-                                                        end: Offset(0.0, 0.0),
-                                                      ).animate(animation),
-                                                      child: child,
+                                                .sizeIsNotAvailableNotifier,
+                                            builder: (context,
+                                                selectedSizeByUser, child) {
+                                              return ValueListenableBuilder<
+                                                      int>(
+                                                  valueListenable: widget
+                                                      .addToBagButtonShapeNotifier,
+                                                  builder:
+                                                      (context, itemCount, _) {
+                                                    ImageForAddToCart
+                                                        imageForAddToCart =
+                                                        ImageForAddToCart(
+                                                      countOfPieces:
+                                                          widget.countOfPieces,
+                                                      colorNum: widget.colorNum,
+                                                      quantity: 1,
+                                                      images: widget.imageUrl,
+                                                      colorName:
+                                                          widget.colorName,
                                                     );
-                                                  },
-                                                  child: ((selectedSizeByUser == null &&
-                                                              selectedcolorByUser ==
-                                                                  null &&
-                                                              widget.qtyForproductWithoutVariant !=
-                                                                  0) ||
-                                                          currentTab != 3 ||
-                                                          widget
-                                                              .collectedAfterOrder)
-                                                      ? (state.productStatus?[widget
-                                                                      .productIdForCashproducts] !=
-                                                                  GetProductDetailWithoutSimilarRelatedProductsStatus
-                                                                      .success ||
-                                                              state.changeSizesForEveryProduct !=
-                                                                  ChangeSizesForEveryProduct
-                                                                      .success)
-                                                          ? Stack(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              children: [
-                                                                Shimmer
-                                                                    .fromColors(
-                                                                  baseColor: Colors
-                                                                      .grey
-                                                                      .shade300,
-                                                                  highlightColor:
-                                                                      Colors
-                                                                          .grey
-                                                                          .shade100,
-                                                                  child:
-                                                                      Container(
-                                                                    width: 97.w,
-                                                                    height: 60,
-                                                                    decoration:
-                                                                        BoxDecoration(
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              20),
-                                                                      color: Colors
-                                                                          .grey
-                                                                          .shade300,
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                                Shimmer
-                                                                    .fromColors(
-                                                                  baseColor: Colors
-                                                                      .grey
-                                                                      .shade400,
-                                                                  highlightColor:
-                                                                      Colors
-                                                                          .grey
-                                                                          .shade100,
-                                                                  child:
-                                                                      SvgPicture
-                                                                          .asset(
-                                                                    AppAssets
-                                                                        .bagSvg,
-                                                                    height:
-                                                                        30.h,
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            )
-                                                          : GestureDetector(
-                                                              onTapDown:
-                                                                  (details) {
-                                                                if (currentTab !=
-                                                                    3) {
-                                                                  print(
-                                                                      'open panel');
-
-                                                                  if (state.productStatus![
-                                                                          widget
-                                                                              .productIdForCashproducts] ==
-                                                                      GetProductDetailWithoutSimilarRelatedProductsStatus
-                                                                          .success) {
-                                                                    widget
-                                                                        .panelController
-                                                                        .open();
-                                                                    widget
-                                                                        .currentActiveTab
-                                                                        .value = 3;
-                                                                  }
-                                                                  //////////////////////////////
-                                                                  FirebaseAnalyticsService
-                                                                      .logEventForSession(
-                                                                    eventName:
-                                                                        AnalyticsEventsConst
-                                                                            .buttonClicked,
-                                                                    executedEventName:
-                                                                        AnalyticsExecutedEventNameConst
-                                                                            .addToBagButton,
-                                                                  );
-                                                                } else {
-                                                                  HapticFeedback
-                                                                      .lightImpact();
-                                                                  if (itemCount >
-                                                                      0) {
-                                                                    if (state.updateItemInCartStatus == UpdateItemInCartStatus.loading ||
-                                                                        state.addItemInCartStatus ==
-                                                                            AddItemInCartStatus
-                                                                                .loading ||
-                                                                        state.deleteItemInCartStatus ==
-                                                                            DeleteItemInCartStatus.loading) {
-                                                                      return;
-                                                                    }
-                                                                    /*  if (details
-                                                                            .localPosition
-                                                                            .dx >=
-                                                                        (1.sw - 90)
-                                                                            .w) {*/
-                                                                    animationController
-                                                                        .forward();
-                                                                    widget
-                                                                        .onFinishBuying
-                                                                        .call(itemCount
-                                                                            .toString());
-                                                                    widget
-                                                                        .addToBagButtonShapeNotifier
-                                                                        .value++;
-                                                                    homeBloc.add(UpdateListOfItemForAddToCartEvent(
-                                                                        productId:
-                                                                            widget
-                                                                                .productIdForRequestApi,
-                                                                        imageForAddToCart:
-                                                                            imageForAddToCart,
-                                                                        operation:
-                                                                            "+"));
-                                                                    homeBloc
-                                                                        .add(
-                                                                      AddMultiItemsToCartEvent(
-                                                                        maxAllowed:
-                                                                            state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]?.product?.maxAllowedQty ??
-                                                                                "0",
-                                                                        boutiqueIcon: state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi] !=
-                                                                                null
-                                                                            ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product != null
-                                                                                ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.boutique != null
-                                                                                    ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.boutique!.icon != null
-                                                                                        ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.boutique!.icon!.filePath ?? ""
-                                                                                        : ""
-                                                                                    : ""
-                                                                                : ""
-                                                                            : "",
-                                                                        productSlugForTopic:
-                                                                            state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]?.product?.slugEnTopic ??
-                                                                                "",
-                                                                        boutiqueId: state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi] !=
-                                                                                null
-                                                                            ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.boutique != null
-                                                                                ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.boutique!.id!
-                                                                                : 0
-                                                                            : 0,
-                                                                        products:
-                                                                            widget.products,
-                                                                        id: state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi] !=
-                                                                                null
-                                                                            ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product != null
-                                                                                ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.id.toString()
-                                                                                : ""
-                                                                            : "",
-                                                                      ),
-                                                                    );
-                                                                    print(
-                                                                        '22222222222222');
-                                                                    //////////////////////////////
-                                                                    FirebaseAnalyticsService
-                                                                        .logEventForSession(
-                                                                      eventName:
-                                                                          AnalyticsEventsConst
-                                                                              .buttonClicked,
-                                                                      executedEventName:
-                                                                          AnalyticsExecutedEventNameConst
-                                                                              .increaseQtyButton,
-                                                                    );
-                                                                    //  }
-                                                                    /*     else {
-                                                                      animationController
-                                                                          .forward();
-                                                                      widget
-                                                                          .onFinishBuying
-                                                                          .call(
-                                                                              itemCount.toString());
-                                                                      Future.delayed(
-                                                                          Duration(
-                                                                              milliseconds: 400),
-                                                                          () {
+                                                    return AnimatedSwitcher(
+                                                        duration: Duration(
+                                                            milliseconds: 300),
+                                                        reverseDuration: Duration(
+                                                            milliseconds: 300),
+                                                        transitionBuilder:
+                                                            (child, animation) {
+                                                          return SlideTransition(
+                                                            position: Tween(
+                                                              begin: Offset(
+                                                                  -1.0, 0.0),
+                                                              end: Offset(
+                                                                  0.0, 0.0),
+                                                            ).animate(
+                                                                animation),
+                                                            child: child,
+                                                          );
+                                                        },
+                                                        child:
+                                                            !(_productNotAvailableNotifier !=
+                                                                        null &&
+                                                                    widget.currentActiveTab.value ==
+                                                                        3)
+                                                                ? ((selectedSizeByUser == null &&
+                                                                            selectedcolorByUser ==
+                                                                                null &&
+                                                                            widget.qtyForproductWithoutVariant !=
+                                                                                0) ||
+                                                                        currentTab !=
+                                                                            3 ||
                                                                         widget
-                                                                            .panelController
-                                                                            .close();
-                                                                      });
-                                                                      widget
-                                                                          .addToBagButtonShapeNotifier
-                                                                          .value = 0;
+                                                                            .collectedAfterOrder)
+                                                                    ? (state.productStatus?[widget.productIdForCashproducts] != GetProductDetailWithoutSimilarRelatedProductsStatus.success ||
+                                                                            state.changeSizesForEveryProduct !=
+                                                                                ChangeSizesForEveryProduct
+                                                                                    .success)
+                                                                        ? Stack(
+                                                                            alignment:
+                                                                                Alignment.center,
+                                                                            children: [
+                                                                              Shimmer.fromColors(
+                                                                                baseColor: Colors.grey.shade300,
+                                                                                highlightColor: Colors.grey.shade100,
+                                                                                child: Container(
+                                                                                  width: 97.w,
+                                                                                  height: 60,
+                                                                                  decoration: BoxDecoration(
+                                                                                    borderRadius: BorderRadius.circular(20),
+                                                                                    color: Colors.grey.shade300,
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+                                                                              Shimmer.fromColors(
+                                                                                baseColor: Colors.grey.shade400,
+                                                                                highlightColor: Colors.grey.shade100,
+                                                                                child: SvgPicture.asset(
+                                                                                  AppAssets.bagSvg,
+                                                                                  height: 30.h,
+                                                                                ),
+                                                                              ),
+                                                                            ],
+                                                                          )
+                                                                        : GestureDetector(
+                                                                            onTapDown:
+                                                                                (details) {
+                                                                              if (currentTab != 3) {
+                                                                                print('open panel');
 
-                                                                      print(
-                                                                          '33333333333333');
-                                                                      //////////////////////////////
-                                                                      FirebaseAnalyticsService
-                                                                          .logEventForSession(
-                                                                        eventName:
-                                                                            AnalyticsEventsConst.buttonClicked,
-                                                                        executedEventName:
-                                                                            AnalyticsExecutedEventNameConst.addProductToBagButton,
-                                                                      );
-                                                                    }*/
-                                                                  } else {
-                                                                    if (state.updateItemInCartStatus == UpdateItemInCartStatus.loading ||
-                                                                        state.addItemInCartStatus ==
-                                                                            AddItemInCartStatus
-                                                                                .loading ||
-                                                                        state.deleteItemInCartStatus ==
-                                                                            DeleteItemInCartStatus.loading) {
-                                                                      return;
-                                                                    }
-                                                                    animationController
-                                                                        .forward();
-                                                                    widget
-                                                                        .onFinishBuying
-                                                                        .call(itemCount
-                                                                            .toString());
-                                                                    widget
-                                                                        .addToBagButtonShapeNotifier
-                                                                        .value++;
-                                                                    homeBloc.add(UpdateListOfItemForAddToCartEvent(
-                                                                        productId:
+                                                                                if (state.productStatus![widget.productIdForCashproducts] == GetProductDetailWithoutSimilarRelatedProductsStatus.success) {
+                                                                                  widget.panelController.open();
+                                                                                  widget.currentActiveTab.value = 3;
+                                                                                }
+                                                                                //////////////////////////////
+                                                                                FirebaseAnalyticsService.logEventForSession(
+                                                                                  eventName: AnalyticsEventsConst.buttonClicked,
+                                                                                  executedEventName: AnalyticsExecutedEventNameConst.addToBagButton,
+                                                                                );
+                                                                              } else {
+                                                                                HapticFeedback.lightImpact();
+                                                                                if (itemCount > 0) {
+                                                                                  if (state.updateItemInCartStatus == UpdateItemInCartStatus.loading || state.addItemInCartStatus == AddItemInCartStatus.loading || state.deleteItemInCartStatus == DeleteItemInCartStatus.loading) {
+                                                                                    return;
+                                                                                  }
+                                                                                  /*  if (details
+                                                                                .localPosition
+                                                                                .dx >=
+                                                                            (1.sw - 90)
+                                                                                .w) {*/
+                                                                                  animationController.forward();
+                                                                                  widget.onFinishBuying.call(itemCount.toString());
+                                                                                  widget.addToBagButtonShapeNotifier.value++;
+                                                                                  homeBloc.add(UpdateListOfItemForAddToCartEvent(productId: widget.productIdForRequestApi, imageForAddToCart: imageForAddToCart, operation: "+"));
+                                                                                  homeBloc.add(
+                                                                                    AddMultiItemsToCartEvent(
+                                                                                      maxAllowed: state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]?.product?.maxAllowedQty ?? "0",
+                                                                                      boutiqueIcon: state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi] != null
+                                                                                          ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product != null
+                                                                                              ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.boutique != null
+                                                                                                  ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.boutique!.icon != null
+                                                                                                      ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.boutique!.icon!.filePath ?? ""
+                                                                                                      : ""
+                                                                                                  : ""
+                                                                                              : ""
+                                                                                          : "",
+                                                                                      productSlugForTopic: state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]?.product?.slugEnTopic ?? "",
+                                                                                      boutiqueId: state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi] != null
+                                                                                          ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.boutique != null
+                                                                                              ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.boutique!.id!
+                                                                                              : 0
+                                                                                          : 0,
+                                                                                      products: widget.products,
+                                                                                      id: state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi] != null
+                                                                                          ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product != null
+                                                                                              ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.id.toString()
+                                                                                              : ""
+                                                                                          : "",
+                                                                                    ),
+                                                                                  );
+                                                                                  print('22222222222222');
+                                                                                  //////////////////////////////
+                                                                                  FirebaseAnalyticsService.logEventForSession(
+                                                                                    eventName: AnalyticsEventsConst.buttonClicked,
+                                                                                    executedEventName: AnalyticsExecutedEventNameConst.increaseQtyButton,
+                                                                                  );
+                                                                                  //  }
+                                                                                  /*     else {
+                                                                          animationController
+                                                                              .forward();
+                                                                          widget
+                                                                              .onFinishBuying
+                                                                              .call(
+                                                                                  itemCount.toString());
+                                                                          Future.delayed(
+                                                                              Duration(
+                                                                                  milliseconds: 400),
+                                                                              () {
                                                                             widget
-                                                                                .productIdForRequestApi,
-                                                                        imageForAddToCart:
-                                                                            imageForAddToCart,
-                                                                        operation:
-                                                                            "+"));
-                                                                    homeBloc
-                                                                        .add(
-                                                                      AddMultiItemsToCartEvent(
-                                                                        maxAllowed:
-                                                                            state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]?.product?.maxAllowedQty ??
-                                                                                "0",
-                                                                        boutiqueIcon: state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi] !=
-                                                                                null
-                                                                            ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product != null
-                                                                                ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.boutique != null
-                                                                                    ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.boutique!.icon != null
-                                                                                        ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.boutique!.icon!.filePath ?? ""
-                                                                                        : ""
-                                                                                    : ""
-                                                                                : ""
-                                                                            : "",
-                                                                        productSlugForTopic:
-                                                                            state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]?.product?.slugEnTopic ??
-                                                                                "",
-                                                                        boutiqueId: state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi] !=
-                                                                                null
-                                                                            ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.boutique != null
-                                                                                ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.boutique!.id!
-                                                                                : 0
-                                                                            : 0,
-                                                                        products:
-                                                                            widget.products,
-                                                                        id: state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi] !=
-                                                                                null
-                                                                            ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product != null
-                                                                                ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.id.toString()
-                                                                                : ""
-                                                                            : "",
-                                                                      ),
-                                                                    );
-                                                                    print(
-                                                                        '44444444444');
-                                                                    //////////////////////////////
-                                                                    FirebaseAnalyticsService
-                                                                        .logEventForSession(
-                                                                      eventName:
-                                                                          AnalyticsEventsConst
-                                                                              .buttonClicked,
-                                                                      executedEventName:
-                                                                          AnalyticsExecutedEventNameConst
-                                                                              .increaseQtyButton,
-                                                                    );
-                                                                  }
-                                                                }
-                                                              },
-                                                              child:
-                                                                  AnimatedBuilder(
-                                                                      animation:
-                                                                          animationController,
-                                                                      builder:
-                                                                          (context,
-                                                                              child) {
-                                                                        final sineValue = sin(3 *
-                                                                            2 *
-                                                                            pi *
-                                                                            animationController.value);
-                                                                        return Transform.translate(
-                                                                            offset: Offset(sineValue * 3, 0),
-                                                                            child: SizedBox(
-                                                                              width: currentTab == 3
-                                                                                  ? 1.sw - 60
-                                                                                  : itemCount > 0
-                                                                                      ? 197.w
-                                                                                      : 97.w,
-                                                                              child: Stack(
-                                                                                alignment: Alignment.topRight,
-                                                                                children: [
-                                                                                  AnimatedContainer(
-                                                                                    duration: const Duration(milliseconds: 300),
-                                                                                    curve: Curves.fastLinearToSlowEaseIn,
-                                                                                    decoration: BoxDecoration(
-                                                                                        border: Border.all(color: Colors.blue),
-                                                                                        borderRadius: BorderRadius.circular(20),
-                                                                                        color: state.updateItemInCartStatus == UpdateItemInCartStatus.loading || state.addItemInCartStatus == AddItemInCartStatus.loading || state.deleteItemInCartStatus == DeleteItemInCartStatus.loading
-                                                                                            ? const Color(0xffF8F8F8)
+                                                                                .panelController
+                                                                                .close();
+                                                                          });
+                                                                          widget
+                                                                              .addToBagButtonShapeNotifier
+                                                                              .value = 0;
+                                
+                                                                          print(
+                                                                              '33333333333333');
+                                                                          //////////////////////////////
+                                                                          FirebaseAnalyticsService
+                                                                              .logEventForSession(
+                                                                            eventName:
+                                                                                AnalyticsEventsConst.buttonClicked,
+                                                                            executedEventName:
+                                                                                AnalyticsExecutedEventNameConst.addProductToBagButton,
+                                                                          );
+                                                                        }*/
+                                                                                } else {
+                                                                                  if (state.updateItemInCartStatus == UpdateItemInCartStatus.loading || state.addItemInCartStatus == AddItemInCartStatus.loading || state.deleteItemInCartStatus == DeleteItemInCartStatus.loading) {
+                                                                                    return;
+                                                                                  }
+                                                                                  animationController.forward();
+                                                                                  widget.onFinishBuying.call(itemCount.toString());
+                                                                                  widget.addToBagButtonShapeNotifier.value++;
+                                                                                  homeBloc.add(UpdateListOfItemForAddToCartEvent(productId: widget.productIdForRequestApi, imageForAddToCart: imageForAddToCart, operation: "+"));
+                                                                                  homeBloc.add(
+                                                                                    AddMultiItemsToCartEvent(
+                                                                                      maxAllowed: state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]?.product?.maxAllowedQty ?? "0",
+                                                                                      boutiqueIcon: state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi] != null
+                                                                                          ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product != null
+                                                                                              ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.boutique != null
+                                                                                                  ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.boutique!.icon != null
+                                                                                                      ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.boutique!.icon!.filePath ?? ""
+                                                                                                      : ""
+                                                                                                  : ""
+                                                                                              : ""
+                                                                                          : "",
+                                                                                      productSlugForTopic: state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]?.product?.slugEnTopic ?? "",
+                                                                                      boutiqueId: state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi] != null
+                                                                                          ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.boutique != null
+                                                                                              ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.boutique!.id!
+                                                                                              : 0
+                                                                                          : 0,
+                                                                                      products: widget.products,
+                                                                                      id: state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi] != null
+                                                                                          ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product != null
+                                                                                              ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.id.toString()
+                                                                                              : ""
+                                                                                          : "",
+                                                                                    ),
+                                                                                  );
+                                                                                  print('44444444444');
+                                                                                  //////////////////////////////
+                                                                                  FirebaseAnalyticsService.logEventForSession(
+                                                                                    eventName: AnalyticsEventsConst.buttonClicked,
+                                                                                    executedEventName: AnalyticsExecutedEventNameConst.increaseQtyButton,
+                                                                                  );
+                                                                                }
+                                                                              }
+                                                                            },
+                                                                            child: AnimatedBuilder(
+                                                                                animation: animationController,
+                                                                                builder: (context, child) {
+                                                                                  final sineValue = sin(3 * 2 * pi * animationController.value);
+                                                                                  return Transform.translate(
+                                                                                      offset: Offset(sineValue * 3, 0),
+                                                                                      child: SizedBox(
+                                                                                        width: currentTab == 3
+                                                                                            ? 1.sw - 60
                                                                                             : itemCount > 0
-                                                                                                ? const Color(0xffCEFFE6)
-                                                                                                : const Color(0xffF8F8F8)),
-                                                                                    child: Center(
-                                                                                      child: Padding(
-                                                                                        padding: const EdgeInsets.symmetric(vertical: 10),
-                                                                                        child: Column(
+                                                                                                ? 197.w
+                                                                                                : 97.w,
+                                                                                        child: Stack(
+                                                                                          alignment: Alignment.topRight,
                                                                                           children: [
-                                                                                            Row(
-                                                                                              mainAxisAlignment: MainAxisAlignment.center,
-                                                                                              crossAxisAlignment: CrossAxisAlignment.end,
-                                                                                              children: [
-                                                                                                state.updateItemInCartStatus == UpdateItemInCartStatus.loading || state.addItemInCartStatus == AddItemInCartStatus.loading || state.deleteItemInCartStatus == DeleteItemInCartStatus.loading
-                                                                                                    ? TrydosLoader(size: 20.h)
-                                                                                                    : SvgPicture.asset(
-                                                                                                        AppAssets.bagSvg,
-                                                                                                        height: 30.h,
-                                                                                                      ),
-                                                                                                if (itemCount > 0) ...{
-                                                                                                  SizedBox(
-                                                                                                    height: 20,
-                                                                                                    child: ListView.builder(
-                                                                                                      itemBuilder: (context, index) {
-                                                                                                        return Align(widthFactor: 1 - (itemCount / 12 * 0.3), child: MyCachedNetworkImage(circleDimensions: 15, imageUrl: state.listitemForAddToCart != null ? state.listitemForAddToCart![index].images! : "", width: 15, imageWidth: 70, imageHeight: 70, imageFit: BoxFit.cover, height: 20)); /*Container(
-                                                                                              width: 15,
-                                                                                              height: 20,
+                                                                                            AnimatedContainer(
+                                                                                              duration: const Duration(milliseconds: 300),
+                                                                                              curve: Curves.fastLinearToSlowEaseIn,
                                                                                               decoration: BoxDecoration(
-                                                                                                image: DecorationImage(
-                                                                                                  image: NetworkImage(widget.imageUrl),
-                                                                                                  fit: ,
-                                                                                                ),
-                                                                                                borderRadius: BorderRadius.circular(5.0),
-                                                                                              ),
-                                                                                            ));*/
-                                                                                                      },
-                                                                                                      reverse: true,
-                                                                                                      shrinkWrap: true,
-                                                                                                      scrollDirection: Axis.horizontal,
-                                                                                                      itemCount: state.listitemForAddToCart != null ? state.listitemForAddToCart!.length : 0,
-                                                                                                    ),
-                                                                                                  ),
-                                                                                                },
-                                                                                                SizedBox(
+                                                                                                  border: Border.all(color: Colors.blue),
+                                                                                                  borderRadius: BorderRadius.circular(20),
+                                                                                                  color: state.updateItemInCartStatus == UpdateItemInCartStatus.loading || state.addItemInCartStatus == AddItemInCartStatus.loading || state.deleteItemInCartStatus == DeleteItemInCartStatus.loading
+                                                                                                      ? const Color(0xffF8F8F8)
+                                                                                                      : itemCount > 0
+                                                                                                          ? const Color(0xffCEFFE6)
+                                                                                                          : const Color(0xffF8F8F8)),
+                                                                                              child: Center(
+                                                                                                child: Padding(
+                                                                                                  padding: const EdgeInsets.symmetric(vertical: 10),
+                                                                                                  child: Column(
+                                                                                                    children: [
+                                                                                                      Row(
+                                                                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                                                                        crossAxisAlignment: CrossAxisAlignment.end,
+                                                                                                        children: [
+                                                                                                          state.updateItemInCartStatus == UpdateItemInCartStatus.loading || state.addItemInCartStatus == AddItemInCartStatus.loading || state.deleteItemInCartStatus == DeleteItemInCartStatus.loading
+                                                                                                              ? TrydosLoader(size: 20.h)
+                                                                                                              : SvgPicture.asset(
+                                                                                                                  AppAssets.bagSvg,
+                                                                                                                  height: 30.h,
+                                                                                                                ),
+                                                                                                          if (itemCount > 0) ...{
+                                                                                                            SizedBox(
+                                                                                                              height: 20,
+                                                                                                              child: ListView.builder(
+                                                                                                                itemBuilder: (context, index) {
+                                                                                                                  return Align(widthFactor: 1 - (itemCount / 12 * 0.3), child: MyCachedNetworkImage(circleDimensions: 15, imageUrl: state.listitemForAddToCart != null ? state.listitemForAddToCart![index].images! : "", width: 15, imageWidth: 70, imageHeight: 70, imageFit: BoxFit.cover, height: 20)); /*Container(
+                                                                                                  width: 15,
                                                                                                   height: 20,
-                                                                                                  child: ListView.builder(
-                                                                                                    itemBuilder: (context, index) {
-                                                                                                      return Align(
-                                                                                                        widthFactor: 1 - (itemCount / 12 * 0.3),
-                                                                                                        child: MyCachedNetworkImage(
-                                                                                                          circleDimensions: 15,
-                                                                                                          imageUrl: allimages[index],
-                                                                                                          width: 15,
-                                                                                                          imageWidth: 70,
-                                                                                                          imageHeight: 70,
-                                                                                                          imageFit: BoxFit.cover,
-                                                                                                          height: 20,
-                                                                                                        ),
-                                                                                                      ); /*Container(
-                                                                                              width: 15,
-                                                                                              height: 20,
-                                                                                              decoration: BoxDecoration(
-                                                                                                image: DecorationImage(
-                                                                                                  image: NetworkImage(widget.imageUrl),
-                                                                                                  fit: ,
-                                                                                                ),
-                                                                                                borderRadius: BorderRadius.circular(5.0),
-                                                                                              ),
-                                                                                            ));*/
-                                                                                                    },
-                                                                                                    reverse: true,
-                                                                                                    shrinkWrap: true,
-                                                                                                    scrollDirection: Axis.horizontal,
-                                                                                                    itemCount: allimages.length,
+                                                                                                  decoration: BoxDecoration(
+                                                                                                    image: DecorationImage(
+                                                                                                      image: NetworkImage(widget.imageUrl),
+                                                                                                      fit: ,
+                                                                                                    ),
+                                                                                                    borderRadius: BorderRadius.circular(5.0),
+                                                                                                  ),
+                                                                                                ));*/
+                                                                                                                },
+                                                                                                                reverse: true,
+                                                                                                                shrinkWrap: true,
+                                                                                                                scrollDirection: Axis.horizontal,
+                                                                                                                itemCount: state.listitemForAddToCart != null ? state.listitemForAddToCart!.length : 0,
+                                                                                                              ),
+                                                                                                            ),
+                                                                                                          },
+                                                                                                          SizedBox(
+                                                                                                            height: 20,
+                                                                                                            child: ListView.builder(
+                                                                                                              itemBuilder: (context, index) {
+                                                                                                                return Align(
+                                                                                                                  widthFactor: 1 - (itemCount / 12 * 0.3),
+                                                                                                                  child: MyCachedNetworkImage(
+                                                                                                                    circleDimensions: 15,
+                                                                                                                    imageUrl: allimages[index],
+                                                                                                                    width: 15,
+                                                                                                                    imageWidth: 70,
+                                                                                                                    imageHeight: 70,
+                                                                                                                    imageFit: BoxFit.cover,
+                                                                                                                    height: 20,
+                                                                                                                  ),
+                                                                                                                ); /*Container(
+                                                                                                  width: 15,
+                                                                                                  height: 20,
+                                                                                                  decoration: BoxDecoration(
+                                                                                                    image: DecorationImage(
+                                                                                                      image: NetworkImage(widget.imageUrl),
+                                                                                                      fit: ,
+                                                                                                    ),
+                                                                                                    borderRadius: BorderRadius.circular(5.0),
+                                                                                                  ),
+                                                                                                ));*/
+                                                                                                              },
+                                                                                                              reverse: true,
+                                                                                                              shrinkWrap: true,
+                                                                                                              scrollDirection: Axis.horizontal,
+                                                                                                              itemCount: allimages.length,
+                                                                                                            ),
+                                                                                                          ),
+                                                                                                        ],
+                                                                                                      ),
+                                                                                                      const SizedBox(
+                                                                                                        height: 5,
+                                                                                                      ),
+                                                                                                      if (currentTab != 3) ...{
+                                                                                                        MyTextWidget(
+                                                                                                          itemCount > 0 ? '$itemCount' : '${LocaleKeys.add.tr()} ${LocaleKeys.tto.tr()} ${LocaleKeys.bag.tr()}',
+                                                                                                          style: itemCount > 0 ? textTheme.titleMedium?.bq.copyWith(color: const Color(0xff505050)) : textTheme.titleMedium?.rq.copyWith(color: const Color(0xff505050)),
+                                                                                                        )
+                                                                                                      } else ...{
+                                                                                                        Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                                                                                          MyTextWidget(
+                                                                                                            '${LocaleKeys.add.tr()} ',
+                                                                                                            style: textTheme.titleMedium?.mq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
+                                                                                                          ),
+                                                                                                          MyTextWidget(
+                                                                                                            '${LocaleKeys.tto.tr()} ${LocaleKeys.bag.tr()} ',
+                                                                                                            style: textTheme.titleMedium?.rq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
+                                                                                                          ),
+                                                                                                          widget.colorNum == ""
+                                                                                                              ? SizedBox.shrink()
+                                                                                                              : MyTextWidget(
+                                                                                                                  '${LocaleKeys.color.tr()} ',
+                                                                                                                  style: textTheme.titleMedium?.rq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
+                                                                                                                ),
+                                                                                                          widget.colorNum == ""
+                                                                                                              ? SizedBox.shrink()
+                                                                                                              : MyTextWidget(
+                                                                                                                  '${widget.colorName} ',
+                                                                                                                  style: textTheme.titleMedium?.mq.copyWith(height: 15 / 12, color: Color(int.parse('0xff${widget.colorNum.substring(1)}'))),
+                                                                                                                ),
+                                                                                                          widget.size == ""
+                                                                                                              ? SizedBox.shrink()
+                                                                                                              : MyTextWidget(
+                                                                                                                  '${LocaleKeys.size.tr()} ',
+                                                                                                                  style: textTheme.titleMedium?.rq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
+                                                                                                                ),
+                                                                                                          widget.size == ""
+                                                                                                              ? SizedBox.shrink()
+                                                                                                              : MyTextWidget(
+                                                                                                                  '${widget.size} ',
+                                                                                                                  style: textTheme.titleMedium?.mq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
+                                                                                                                ),
+                                                                                                        ])
+                                                                                                      }
+                                                                                                    ],
                                                                                                   ),
                                                                                                 ),
-                                                                                              ],
+                                                                                              ),
                                                                                             ),
-                                                                                            const SizedBox(
-                                                                                              height: 5,
+                                                                                            if (itemCount > 0) ...{
+                                                                                              /*    Positioned(
+                                                                                          top: -35,
+                                                                                          left: -35,
+                                                                                          child: Container(
+                                                                                            width: 55,
+                                                                                            height: 55,
+                                                                                            decoration: BoxDecoration(border: Border.all(color: Colors.blue), borderRadius: BorderRadius.circular(20), color: colorScheme.white),
+                                                                                          ),
+                                                                                        ),*/
+                                                                                              /*  Positioned(
+                                                                                          left: 0,
+                                                                                          child: Padding(
+                                                                                            padding: EdgeInsets.only(top: itemCount == 1 ? 0 : 7.h),
+                                                                                            child: SvgPicture.asset(
+                                                                                              itemCount == 1 ? AppAssets.binSvg : AppAssets.minusMarkSvg,
+                                                                                              height: itemCount == 1 ? 15.h : 3.h,
                                                                                             ),
-                                                                                            if (currentTab != 3) ...{
-                                                                                              MyTextWidget(
-                                                                                                itemCount > 0 ? '$itemCount' : '${LocaleKeys.add.tr()} ${LocaleKeys.tto.tr()} ${LocaleKeys.bag.tr()}',
-                                                                                                style: itemCount > 0 ? textTheme.titleMedium?.bq.copyWith(color: const Color(0xff505050)) : textTheme.titleMedium?.rq.copyWith(color: const Color(0xff505050)),
-                                                                                              )
-                                                                                            } else ...{
-                                                                                              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                                                                                                MyTextWidget(
-                                                                                                  '${LocaleKeys.add.tr()} ',
-                                                                                                  style: textTheme.titleMedium?.mq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
-                                                                                                ),
-                                                                                                MyTextWidget(
-                                                                                                  '${LocaleKeys.tto.tr()} ${LocaleKeys.bag.tr()} ',
-                                                                                                  style: textTheme.titleMedium?.rq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
-                                                                                                ),
-                                                                                                widget.colorNum == ""
-                                                                                                    ? SizedBox.shrink()
-                                                                                                    : MyTextWidget(
-                                                                                                        '${LocaleKeys.color.tr()} ',
-                                                                                                        style: textTheme.titleMedium?.rq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
-                                                                                                      ),
-                                                                                                widget.colorNum == ""
-                                                                                                    ? SizedBox.shrink()
-                                                                                                    : MyTextWidget(
-                                                                                                        '${widget.colorName} ',
-                                                                                                        style: textTheme.titleMedium?.mq.copyWith(height: 15 / 12, color: Color(int.parse('0xff${widget.colorNum.substring(1)}'))),
-                                                                                                      ),
-                                                                                                widget.size == ""
-                                                                                                    ? SizedBox.shrink()
-                                                                                                    : MyTextWidget(
-                                                                                                        '${LocaleKeys.size.tr()} ',
-                                                                                                        style: textTheme.titleMedium?.rq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
-                                                                                                      ),
-                                                                                                widget.size == ""
-                                                                                                    ? SizedBox.shrink()
-                                                                                                    : MyTextWidget(
-                                                                                                        '${widget.size} ',
-                                                                                                        style: textTheme.titleMedium?.mq.copyWith(height: 15 / 12, color: const Color(0xff505050)),
-                                                                                                      ),
-                                                                                              ])
-                                                                                            }
+                                                                                          ),
+                                                                                        ),*/
+                                                                                            },
+                                                                                            Positioned(
+                                                                                              top: -35,
+                                                                                              right: -35,
+                                                                                              child: Container(
+                                                                                                width: 55,
+                                                                                                height: 55,
+                                                                                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), border: Border.all(color: Colors.blue), color: colorScheme.white),
+                                                                                              ),
+                                                                                            ),
+                                                                                            SvgPicture.asset(
+                                                                                              AppAssets.plusMarkSvg,
+                                                                                              height: 15.h,
+                                                                                            ),
                                                                                           ],
                                                                                         ),
-                                                                                      ),
-                                                                                    ),
-                                                                                  ),
-                                                                                  if (itemCount > 0) ...{
-                                                                                    /*    Positioned(
-                                                                                      top: -35,
-                                                                                      left: -35,
-                                                                                      child: Container(
-                                                                                        width: 55,
-                                                                                        height: 55,
-                                                                                        decoration: BoxDecoration(border: Border.all(color: Colors.blue), borderRadius: BorderRadius.circular(20), color: colorScheme.white),
-                                                                                      ),
-                                                                                    ),*/
-                                                                                    /*  Positioned(
-                                                                                      left: 0,
-                                                                                      child: Padding(
-                                                                                        padding: EdgeInsets.only(top: itemCount == 1 ? 0 : 7.h),
-                                                                                        child: SvgPicture.asset(
-                                                                                          itemCount == 1 ? AppAssets.binSvg : AppAssets.minusMarkSvg,
-                                                                                          height: itemCount == 1 ? 15.h : 3.h,
-                                                                                        ),
-                                                                                      ),
-                                                                                    ),*/
-                                                                                  },
-                                                                                  Positioned(
-                                                                                    top: -35,
-                                                                                    right: -35,
-                                                                                    child: Container(
-                                                                                      width: 55,
-                                                                                      height: 55,
-                                                                                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), border: Border.all(color: Colors.blue), color: colorScheme.white),
-                                                                                    ),
-                                                                                  ),
-                                                                                  SvgPicture.asset(
-                                                                                    AppAssets.plusMarkSvg,
-                                                                                    height: 15.h,
-                                                                                  ),
-                                                                                ],
-                                                                              ),
-                                                                            ));
-                                                                      }),
-                                                            )
-                                                      : BlocBuilder<HomeBloc,
-                                                          HomeState>(
-                                                          buildWhen: (p, c) =>
-                                                              p.getStartingSettingsStatus !=
-                                                              c.getStartingSettingsStatus,
-                                                          builder:
-                                                              (context, state) {
-                                                            int notificationTypeId = state
-                                                                    .startingSetting
-                                                                    ?.notificationTypes
-                                                                    ?.firstWhere(
-                                                                        (type) =>
-                                                                            type.name ==
-                                                                            'product availability',
-                                                                        orElse: () =>
-                                                                            NotificationType(id: -1))
-                                                                    .id ??
-                                                                -1;
+                                                                                      ));
+                                                                                }),
+                                                                          )
+                                                                    : BlocBuilder<
+                                                                        HomeBloc,
+                                                                        HomeState>(
+                                                                        buildWhen: (p,
+                                                                                c) =>
+                                                                            p.getStartingSettingsStatus !=
+                                                                            c.getStartingSettingsStatus,
+                                                                        builder:
+                                                                            (context,
+                                                                                state) {
+                                                                          int notificationTypeId =
+                                                                              state.startingSetting?.notificationTypes?.firstWhere((type) => type.name == 'product availability', orElse: () => NotificationType(id: -1)).id ?? -1;
 
-                                                            return notificationTypeId ==
-                                                                    -1
-                                                                ? SizedBox
-                                                                    .shrink()
-                                                                : NotifyWhenQuantityAvailableButton(
-                                                                    unAvailableSize:
-                                                                        selectedSizeByUser ??
-                                                                            "",
-                                                                    notificationTypeId:
-                                                                        notificationTypeId,
-                                                                    productId:
-                                                                        widget
-                                                                            .productIdForRequestApi,
-                                                                    selectedColorName:
-                                                                        selectedcolorByUser ??
-                                                                            "",
-                                                                  );
-                                                          },
-                                                        ));
+                                                                          return notificationTypeId == -1
+                                                                              ? SizedBox.shrink()
+                                                                              : NotifyWhenQuantityAvailableButton(
+                                                                                  unAvailableSize: selectedSizeByUser ?? "",
+                                                                                  notificationTypeId: notificationTypeId,
+                                                                                  productId: widget.productIdForRequestApi,
+                                                                                  selectedColorName: selectedcolorByUser ?? "",
+                                                                                );
+                                                                        },
+                                                                      )
+                                                                : NotifyWhenAvailableInCountryButton(
+                                                                    productId: widget
+                                                                        .productIdForRequestApi,
+                                                                    unAvailableType:
+                                                                        _productNotAvailableNotifier ??
+                                                                            ''));
+                                                  });
                                             });
                                       });
                                 }),

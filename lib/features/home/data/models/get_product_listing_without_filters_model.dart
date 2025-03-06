@@ -163,6 +163,7 @@ class Products {
   final List<Label>? labels;
   final int? shippingDays;
   final bool? isProductNotifiedForUser;
+  final bool? isAvailableInMarket;
   Products({
     this.productId,
     this.boutiqueId,
@@ -222,6 +223,7 @@ class Products {
     this.viewsCount,
     this.labels,
     required this.isProductNotifiedForUser,
+    this.isAvailableInMarket,
   });
 
   Products copyWith({
@@ -283,6 +285,7 @@ class Products {
     List<Label>? labels,
     bool? isProductNotifiedForUser,
     bool? countryIsRestricted,
+    bool? isAvailableInMarket,
   }) =>
       Products(
         productId: productId ?? this.productId,
@@ -347,6 +350,7 @@ class Products {
         labels: labels ?? this.labels,
         isProductNotifiedForUser:
             isProductNotifiedForUser ?? this.isProductNotifiedForUser,
+        isAvailableInMarket: isAvailableInMarket ?? this.isAvailableInMarket,
       );
 
   factory Products.fromJson(Map<String, dynamic> json) => Products(
@@ -356,7 +360,7 @@ class Products {
       slug: json["slug"],
       shareLink: json["share_link"],
       details: json["details"],
-      countryIsRestricted: json["country_is_restricted"],
+      countryIsRestricted: json["is_country_restricted"],
       shippingCostMultiplyWithQuantity:
           json["shipping_cost_multiply_with_quantity"],
       shippingCost: double.tryParse(json["shipping_cost"].toString()),
@@ -385,6 +389,7 @@ class Products {
       price: json["price"].toDouble(),
       priceFormatted: json["price_formatted"],
       offerPrice: json["offer_price"].toDouble(),
+      isAvailableInMarket: json["is_available_in_market"],
       maxAllowedQty: json["max_allowed_qty"],
       offerPriceFormatted: json["offer_price_formatted"],
       collectedAfterOrdering: json["collected_after_ordering"],
@@ -439,7 +444,7 @@ class Products {
 
   Map<String, dynamic> toJson() => {
         "product_id": productId,
-        "boutique_id": boutiqueId,
+        "boutique_id": boutiqueId.toString(),
         "name": name,
         "slug": slug,
         "share_link": shareLink,
@@ -462,7 +467,7 @@ class Products {
         "price": price,
         "price_formatted": priceFormatted,
         "offer_price": offerPrice,
-        "country_is_restricted": countryIsRestricted,
+        "is_country_restricted": countryIsRestricted,
         "max_allowed_qty": maxAllowedQty,
         "offer_price_formatted": offerPriceFormatted,
         "is_favourite": isFavourite,
@@ -477,6 +482,7 @@ class Products {
         "date_now": dateNow,
         "description": description,
         "model": model,
+        "is_available_in_market": isAvailableInMarket,
         "features": features,
 
         "boutique": boutique?.toJson(),
@@ -499,7 +505,7 @@ class Products {
         "current_stock": currentStock,
         "count_of_pieces": countOfPieces,
         "Left_stock": leftStock,
-        "max_allowed_qty": maxAllowedQty,
+
         // "reviews_count": reviewsCount,
         "seller_id": sellerId,
         "seller": seller?.toJson(),

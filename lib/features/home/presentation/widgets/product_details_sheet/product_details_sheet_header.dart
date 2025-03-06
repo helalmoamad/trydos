@@ -175,7 +175,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                       SizedBox(
                         width: 5,
                       ),
-                      ValueListenableBuilder<int>(
+                      /*    ValueListenableBuilder<int>(
                           valueListenable: widget.addToBagButtonShapeNotifier,
                           builder: (context, itemCount, _) {
                             return itemCount > 1
@@ -206,7 +206,7 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
                         AppAssets.registerInfoSvg,
                         height: 12,
                         color: Color(0xff8E8E8E),
-                      )
+                      )*/
                     ],
                   ),
                 ),

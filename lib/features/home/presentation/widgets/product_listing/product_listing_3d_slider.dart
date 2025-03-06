@@ -958,69 +958,64 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                 widget.productItem.offerPrice!;
                             return Directionality(
                               textDirection:
-                                  LanguageService.currentLanguage == "ar"
+                                  LanguageService.languageCode == "ar"
                                       ? TextDirection.rtl
                                       : TextDirection.ltr,
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
                                 children: [
-                                  Row(
-                                    children: [
-                                      MyTextWidget(
-                                        HelperFunctions.formatNumber(
-                                            number: (price *
-                                                state
-                                                    .getCurrencyForCountryModel!
-                                                    .data!
-                                                    .currency!
-                                                    .exchangeRate!))
-                                        /* .toStringAsFixed(state.startingSetting
+                                  Row(children: [
+                                    MyTextWidget(
+                                      HelperFunctions.formatNumber(
+                                          number: (price *
+                                              state
+                                                  .getCurrencyForCountryModel!
+                                                  .data!
+                                                  .currency!
+                                                  .exchangeRate!))
+                                      /* .toStringAsFixed(state.startingSetting
                                                     ?.decimalPointSetting ??
                                                 2)
                                             .toString()*/
-                                        ,
-                                        style:
-                                            textTheme.titleMedium?.lq.copyWith(
-                                          color: Color(0xff3c3c3c),
-                                          decoration:
-                                              TextDecoration.lineThrough,
-                                          height: 0,
-                                        ),
+                                      ,
+                                      style: textTheme.titleMedium?.lq.copyWith(
+                                        color: Color(0xff3c3c3c),
+                                        decoration: TextDecoration.lineThrough,
+                                        height: 0,
                                       ),
-                                      SizedBox(
-                                        width: 2,
-                                      ),
-                                      MyTextWidget(
-                                        HelperFunctions.formatNumber(
-                                            number: (offerPrice *
-                                                state
-                                                    .getCurrencyForCountryModel!
-                                                    .data!
-                                                    .currency!
-                                                    .exchangeRate!))
-                                        /*.toStringAsFixed(state.startingSetting
+                                    ),
+                                    SizedBox(
+                                      width: 2,
+                                    ),
+                                    MyTextWidget(
+                                      HelperFunctions.formatNumber(
+                                          number: (offerPrice *
+                                              state
+                                                  .getCurrencyForCountryModel!
+                                                  .data!
+                                                  .currency!
+                                                  .exchangeRate!))
+                                      /*.toStringAsFixed(state.startingSetting
                                                     ?.decimalPointSetting ??
                                                 2)
                                             .toString()*/
-                                        ,
-                                        style:
-                                            textTheme.titleMedium?.bq.copyWith(
-                                          color: Color(0xff3c3c3c),
-                                          height: 0,
-                                        ),
+                                      ,
+                                      style: textTheme.titleMedium?.bq.copyWith(
+                                        color: Color(0xff3c3c3c),
+                                        height: 0,
                                       ),
-                                      SizedBox(
-                                        width: 2,
-                                      ),
-                                      MyTextWidget(
-                                        state.getCurrencyForCountryModel!.data!
-                                                .currency!.symbol ??
-                                            "",
-                                        style: TextStyle(fontSize: 10),
-                                      )
-                                    ],
-                                  ),
+                                    ),
+                                    SizedBox(
+                                      width: 2,
+                                    ),
+                                    MyTextWidget(
+                                      state.getCurrencyForCountryModel!.data!
+                                              .currency!.symbol ??
+                                          "",
+                                      style: TextStyle(fontSize: 10),
+                                    )
+                                  ]),
                                   InkWell(
                                     onTap: () {
                                       widget.tapIndexToAddProductToCart.value =

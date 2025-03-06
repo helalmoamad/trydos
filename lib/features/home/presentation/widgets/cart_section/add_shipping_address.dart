@@ -159,51 +159,92 @@ class _AddShippingAdressState extends State<AddShippingAdress>
     //    double.tryParse(country?.longitude ?? "0") ?? 0);
 
     if (widget.fromEdid ?? false) {
-      _currentLocation = LatLng(
-          double.tryParse(widget.addressInfoClassToEdid!.location!.latitude!)!,
-          double.tryParse(
-              widget.addressInfoClassToEdid!.location!.longitude!)!);
-      _kinitialPosition = CameraPosition(
-          bearing: 0, target: _currentLocation!, tilt: 0, zoom: 8);
-      _goToCurrentLocation(latlng: _currentLocation);
-      if (alternativePhoneController.text.length > 0) {
-        visiblePrefixOptional.value = true;
+      if (widget.addressInfoClassToEdid?.location?.latitude?.toString() !=
+              "null" &&
+          widget.addressInfoClassToEdid?.location?.latitude?.toString() != "") {
+        _currentLocation = LatLng(
+            double.tryParse(
+                widget.addressInfoClassToEdid!.location!.latitude!)!,
+            double.tryParse(
+                widget.addressInfoClassToEdid!.location!.longitude!)!);
+        _kinitialPosition = CameraPosition(
+            bearing: 0, target: _currentLocation!, tilt: 0, zoom: 8);
+        _goToCurrentLocation(latlng: _currentLocation);
+      } else {
+        _kinitialPosition = CameraPosition(
+            bearing: 0,
+            target: LatLng(double.tryParse(country?.latitude ?? "0") ?? 0,
+                double.tryParse(country?.longitude ?? "0") ?? 0),
+            tilt: 0,
+            zoom: 6);
       }
-      if (contactPhoneController.text.length > 0) {
-        visiblePrefix.value = true;
+
+      if ((widget.addressInfoClassToEdid?.location?.latitude?.toString() !=
+              "null" &&
+          widget.addressInfoClassToEdid?.location?.latitude?.toString() !=
+              "")) {
+        _locationFromSearch = LatLng(
+            double.tryParse(
+                widget.addressInfoClassToEdid!.location!.latitude!)!,
+            double.tryParse(
+                widget.addressInfoClassToEdid!.location!.longitude!)!);
       }
-      if (alternativePhoneController.text.length > 0) {
-        visiblePrefixOptional.value = true;
-      }
-      _locationFromSearch = LatLng(
-          double.tryParse(widget.addressInfoClassToEdid!.location!.latitude!)!,
-          double.tryParse(
-              widget.addressInfoClassToEdid!.location!.longitude!)!);
+
       contactPhoneController.text =
           widget.addressInfoClassToEdid?.contactInfo?.phone ?? "";
+
       detailsAddressController.text =
           widget.addressInfoClassToEdid?.addressDetail ?? "";
+
       addressTitleController.text =
           widget.addressInfoClassToEdid?.address ?? "";
-      alternativePhoneController.text =
-          widget.addressInfoClassToEdid?.contactInfo?.alternativePhone ?? "";
+      if (widget.addressInfoClassToEdid?.contactInfo?.alternativePhone
+                  .toString() !=
+              "null" &&
+          widget.addressInfoClassToEdid?.contactInfo?.alternativePhone != "") {
+        alternativePhoneController.text =
+            widget.addressInfoClassToEdid?.contactInfo?.alternativePhone ?? "";
+      }
+
       reciptionNameController.text =
           widget.addressInfoClassToEdid?.contactInfo?.name ?? "";
       finishSelectedByUser = [
         address.RegionDetails(
-            building:
-                widget.addressInfoClassToEdid?.regionDetails?.building ?? "",
-            city: widget.addressInfoClassToEdid?.regionDetails?.city ?? "",
+            building: widget.addressInfoClassToEdid?.regionDetails?.building
+                        .toString() ==
+                    "null"
+                ? ""
+                : widget.addressInfoClassToEdid?.regionDetails?.building ?? "",
+            city: widget.addressInfoClassToEdid?.regionDetails?.building.toString() ==
+                    "null"
+                ? ""
+                : widget.addressInfoClassToEdid?.regionDetails?.city ?? "",
             country: "",
-            province:
-                widget.addressInfoClassToEdid?.regionDetails?.province ?? "",
-            street: widget.addressInfoClassToEdid?.regionDetails?.street ?? "",
-            town: widget.addressInfoClassToEdid?.regionDetails?.town ?? "")
+            province: widget.addressInfoClassToEdid?.regionDetails?.province
+                        .toString() ==
+                    "null"
+                ? ""
+                : widget.addressInfoClassToEdid?.regionDetails?.province ?? "",
+            street: widget.addressInfoClassToEdid?.regionDetails?.street.toString() ==
+                    "null"
+                ? ""
+                : widget.addressInfoClassToEdid?.regionDetails?.street ?? "",
+            town:
+                widget.addressInfoClassToEdid?.regionDetails?.town.toString() ==
+                        "null"
+                    ? ""
+                    : widget.addressInfoClassToEdid?.regionDetails?.town ?? "",
+            zip: widget.addressInfoClassToEdid?.regionDetails?.zip.toString() ==
+                    "null"
+                ? ""
+                : widget.addressInfoClassToEdid?.regionDetails?.zip ?? "")
       ];
-      if (alternativePhoneController.text.length > 0) {
+      if (alternativePhoneController.text.length > 0 &&
+          alternativePhoneController.text.toString() != "null") {
         visiblePrefixOptional.value = true;
       }
-      if (contactPhoneController.text.length > 0) {
+      if (contactPhoneController.text.length > 0 &&
+          contactPhoneController.text.toString() != "null") {
         visiblePrefix.value = true;
       }
     } else {
@@ -1380,7 +1421,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                           width: 18,
                                                                                           height: 18,
                                                                                           child: CountryFlag.fromCountryCode(
-                                                                                            "${country?.iso}",
+                                                                                            "${(widget.fromEdid ?? false) ? country?.iso : country?.iso}",
                                                                                             height: 18.h,
                                                                                             width: 18.w,
                                                                                             borderRadius: 4.r,
@@ -1881,6 +1922,10 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                       regionDetails:
                                                                           address
                                                                               .RegionDetails(
+                                                                        zip: finishSelectedByUser.length >
+                                                                                0
+                                                                            ? finishSelectedByUser[0].zip
+                                                                            : "",
                                                                         building: finishSelectedByUser.length >
                                                                                 0
                                                                             ? finishSelectedByUser[0].building
@@ -1915,6 +1960,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                 address.CustomerAddressesInfo(
                                                                               regionDetails: address.RegionDetails(
                                                                                 building: finishSelectedByUser.length > 0 ? finishSelectedByUser[0].building : "",
+                                                                                zip: finishSelectedByUser.length > 0 ? finishSelectedByUser[0].zip : "",
                                                                                 city: finishSelectedByUser.length > 0 ? finishSelectedByUser[0].city : "",
                                                                                 country: "${country?.name}",
                                                                                 province: finishSelectedByUser[0].province,
@@ -2038,6 +2084,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                               (element) {
                                                 filterResultSearch.add(
                                                     address.RegionDetails(
+                                                        zip: element.zip ?? "",
                                                         building:
                                                             element.building,
                                                         city: element.city,
@@ -2104,37 +2151,45 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                           onPanelClosed: () {
                                                             finishSelectedByUser =
                                                                 [
-                                                              address.RegionDetails(
-                                                                  province:
-                                                                      addressTilteSeletedByUser.length >
-                                                                              0
-                                                                          ? addressTilteSeletedByUser[
-                                                                              0]
-                                                                          : "",
-                                                                  city: addressTilteSeletedByUser
-                                                                              .length >
-                                                                          1
-                                                                      ? addressTilteSeletedByUser[
-                                                                          1]
-                                                                      : "",
-                                                                  town: addressTilteSeletedByUser
-                                                                              .length >
-                                                                          2
-                                                                      ? addressTilteSeletedByUser[
-                                                                          2]
-                                                                      : "",
-                                                                  street: addressTilteSeletedByUser
-                                                                              .length >
-                                                                          3
-                                                                      ? addressTilteSeletedByUser[
-                                                                          3]
-                                                                      : "",
-                                                                  building:
-                                                                      addressTilteSeletedByUser.length >
-                                                                              4
-                                                                          ? addressTilteSeletedByUser[
-                                                                              4]
-                                                                          : "")
+                                                              address
+                                                                  .RegionDetails(
+                                                                province: addressTilteSeletedByUser
+                                                                            .length >
+                                                                        0
+                                                                    ? addressTilteSeletedByUser[
+                                                                        0]
+                                                                    : "",
+                                                                city: addressTilteSeletedByUser
+                                                                            .length >
+                                                                        1
+                                                                    ? addressTilteSeletedByUser[
+                                                                        1]
+                                                                    : "",
+                                                                town: addressTilteSeletedByUser
+                                                                            .length >
+                                                                        2
+                                                                    ? addressTilteSeletedByUser[
+                                                                        2]
+                                                                    : "",
+                                                                street: addressTilteSeletedByUser
+                                                                            .length >
+                                                                        3
+                                                                    ? addressTilteSeletedByUser[
+                                                                        3]
+                                                                    : "",
+                                                                building: addressTilteSeletedByUser
+                                                                            .length >
+                                                                        4
+                                                                    ? addressTilteSeletedByUser[
+                                                                        4]
+                                                                    : "",
+                                                                zip: addressTilteSeletedByUser
+                                                                            .length >
+                                                                        5
+                                                                    ? addressTilteSeletedByUser[
+                                                                        5]
+                                                                    : "",
+                                                              )
                                                             ];
 
                                                             searchController
@@ -2408,7 +2463,8 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                       filterSearchTadd.city ?? "",
                                                                                       filterSearchTadd.town ?? "",
                                                                                       filterSearchTadd.street ?? "",
-                                                                                      filterSearchTadd.building ?? ""
+                                                                                      filterSearchTadd.building ?? "",
+                                                                                      filterSearchTadd.zip ?? ""
                                                                                     ]
                                                                                   ];
                                                                                   panelController.close();
