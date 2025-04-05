@@ -16,7 +16,6 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/features/app/app_widgets/update_user_name_widget.dart';
 import 'package:trydos/features/app/country_dropdown.dart';
 import 'package:trydos/features/app/language_dropdown.dart';
-import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/authentication/presentation/pages/first_registeration_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/feed_back_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/files_exist_page.dart';
@@ -25,8 +24,8 @@ import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/service/language_service.dart';
 import 'package:trydos/service/notification_service/setting_fitrbase_notification.dart';
+import '../../../common/helper/helper_functions.dart';
 import '../../../common/test_utils/test_var.dart';
 import '../../../core/domin/repositories/prefs_repository.dart';
 import '../../../core/utils/theme_state.dart';
@@ -35,6 +34,8 @@ import '../../../service/firebase_analytics_service/analytics_const/analytics_ev
 import '../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
 import '../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../feed_back/presentation/pages/edit_urls_page.dart';
+import '../../home/presentation/pages/notifications_page.dart';
+import '../../home/presentation/pages/orders_page.dart';
 import '../blocs/app_bloc/app_bloc.dart';
 import '../blocs/app_bloc/app_event.dart';
 import '../blocs/app_bloc/app_state.dart';
@@ -325,113 +326,154 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                 builder: (context, homestate) {
                                   return Container(
                                     width: 300,
-                                    height: 350,
+                                    height: 390,
                                     child: Stack(
                                       children: [
                                         Positioned(
-                                            left: 10,
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceAround,
-                                              children: [
-                                                TextButton(
-                                                  onPressed: () {
-                                                    Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                            builder: (_) =>
-                                                                FeedBackScreen(
-                                                                  showRequests:
-                                                                      true,
-                                                                )));
-                                                  },
-                                                  child:
-                                                      MyTextWidget('requests'),
-                                                ),
-                                                TextButton(
-                                                  onPressed: () {
-                                                    Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                            builder: (_) =>
-                                                                SharedPreferencePage()));
-                                                  },
-                                                  child: MyTextWidget(
-                                                      'shared preferences'),
-                                                ),
-                                                TextButton(
-                                                  onPressed: () {
-                                                    Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                            builder: (_) =>
-                                                                SwitchListForNotification()));
-                                                  },
-                                                  child: MyTextWidget(
-                                                      'Firebase Setting'),
-                                                ),
-                                                TextButton(
-                                                  onPressed: () {
-                                                    Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                            builder: (_) =>
-                                                                FeedBackScreen(
-                                                                  showRequests:
-                                                                      false,
-                                                                )));
-                                                  },
-                                                  child: MyTextWidget(
-                                                      'flutter errors'),
-                                                ),
-                                                TextButton(
-                                                  onPressed: () {
-                                                    Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                            builder: (_) =>
-                                                                FilesExistPage()));
-                                                  },
-                                                  child: MyTextWidget(
-                                                      'files exists'),
-                                                ),
-                                                TextButton(
-                                                  onPressed: () {
-                                                    Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                            builder: (_) =>
-                                                                EditUrlsPage()));
-                                                  },
-                                                  child:
-                                                      MyTextWidget('Edit Urls'),
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    LanguageDropdown(
-                                                        language: homestate
-                                                                .startingSetting
-                                                                ?.languages ??
-                                                            []),
-                                                    SizedBox(
-                                                      width: 10,
+                                          left: 10,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: [
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (_) =>
+                                                              FeedBackScreen(
+                                                                showRequests:
+                                                                    true,
+                                                              )));
+                                                },
+                                                child: MyTextWidget('requests'),
+                                              ),
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (_) =>
+                                                              SharedPreferencePage()));
+                                                },
+                                                child: MyTextWidget(
+                                                    'shared preferences'),
+                                              ),
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (_) =>
+                                                              SwitchListForNotification()));
+                                                },
+                                                child: MyTextWidget(
+                                                    'Firebase Setting'),
+                                              ),
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (_) =>
+                                                              FeedBackScreen(
+                                                                showRequests:
+                                                                    false,
+                                                              )));
+                                                },
+                                                child: MyTextWidget(
+                                                    'flutter errors'),
+                                              ),
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (_) =>
+                                                              FilesExistPage()));
+                                                },
+                                                child: MyTextWidget(
+                                                    'files exists'),
+                                              ),
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (_) =>
+                                                              EditUrlsPage()));
+                                                },
+                                                child:
+                                                    MyTextWidget('Edit Urls'),
+                                              ),
+                                              Row(
+                                                children: [
+                                                  LanguageDropdown(
+                                                      language: homestate
+                                                              .startingSetting
+                                                              ?.languages ??
+                                                          []),
+                                                  SizedBox(
+                                                    width: 10,
+                                                  ),
+                                                  CountryDropdown(
+                                                    fromHomepage: true,
+                                                    countries: homestate
+                                                                .getAllowedCountriesModel !=
+                                                            null
+                                                        ? homestate
+                                                                .getAllowedCountriesModel!
+                                                                .data!
+                                                                .countries ??
+                                                            []
+                                                        : [],
+                                                  ),
+                                                ],
+                                              ),
+                                              //////////////
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  SizedBox(
+                                                    width: 50,
+                                                    height: 50,
+                                                    child: IconButton(
+                                                      icon: Icon(
+                                                          Icons.notifications),
+                                                      color: Colors.red,
+                                                      onPressed: () {
+                                                        HelperFunctions
+                                                            .slidingNavigation(
+                                                          context,
+                                                          NotificationsPage(),
+                                                        );
+                                                      },
                                                     ),
-                                                    CountryDropdown(
-                                                      fromHomepage: true,
-                                                      countries: homestate
-                                                                  .getAllowedCountriesModel !=
-                                                              null
-                                                          ? homestate
-                                                                  .getAllowedCountriesModel!
-                                                                  .data!
-                                                                  .countries ??
-                                                              []
-                                                          : [],
-                                                    )
-                                                  ],
-                                                )
-                                              ],
-                                            )),
+                                                  ),
+                                                  //////////////
+                                                  SizedBox(
+                                                    width: 50,
+                                                    height: 50,
+                                                    child: IconButton(
+                                                      icon:
+                                                          Icon(Icons.all_inbox),
+                                                      color: Colors.black,
+                                                      onPressed: () {
+                                                        HelperFunctions
+                                                            .slidingNavigation(
+                                                          context,
+                                                          OrdersPage(),
+                                                        );
+                                                      },
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                       ],
                                     ),
                                   );

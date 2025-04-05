@@ -24,9 +24,11 @@ import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_
 
 import 'package:trydos/features/home/data/models/get_old_cart_model.dart';
 import 'package:trydos/features/home/data/models/get_only_message_from_api_model.dart';
+import 'package:trydos/features/home/data/models/get_orders_model.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
+import 'package:trydos/features/home/data/models/get_user_notifications_model.dart';
 
 import 'package:trydos/features/home/data/models/list_of_products_in_cart_model.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
@@ -436,6 +438,22 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   Future<Either<Failure, GetCartShippingItemsModel>> getCartOverview() {
     return handlingExceptionRequest(
       tryCall: () => dataSource.getCartOverview(),
+    );
+  }
+
+  @override
+  Future<Either<Failure, GetUserNotificationsModel>> getUserNotifications({
+    required int page,
+  }) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.getUserNotifications(page: page),
+    );
+  }
+
+  @override
+  Future<Either<Failure, OrderModel>> getOrders({required int offset}) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.getOrders(offset: offset),
     );
   }
 }

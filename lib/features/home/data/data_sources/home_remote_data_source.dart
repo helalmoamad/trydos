@@ -33,10 +33,12 @@ import '../../../../core/api/methods/post.dart';
 import '../models/apply_coupon_model.dart';
 import '../models/check_availability_product_cart_model.dart';
 import '../models/customer_wallet_model.dart';
+import '../models/get_orders_model.dart';
 import '../models/get_product_detail_without_related_products_model.dart';
 import '../models/get_product_filters_model.dart';
 import '../models/get_product_listing_with_filters_model.dart';
 import '../models/get_story_for_product_model.dart';
+import '../models/get_user_notifications_model.dart';
 import '../models/place_order_model.dart';
 
 @injectable
@@ -894,5 +896,43 @@ class HomeRemoteDatasource {
     );
 
     return getCartOverview();
+  }
+
+  Future<GetUserNotificationsModel> getUserNotifications({
+    required int page,
+  }) {
+    GetClient<GetUserNotificationsModel> getUserNotifications =
+        GetClient<GetUserNotificationsModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<GetUserNotificationsModel>(
+        endpoint: MarketEndPoints.getUserNotificationsEP,
+        queryParameters: {
+          "page": page.toString(),
+        },
+        response: ResponseValue<GetUserNotificationsModel>(
+            fromJson: (response) =>
+                GetUserNotificationsModel.fromJson(response)),
+      ),
+    );
+
+    return getUserNotifications();
+  }
+
+  Future<OrderModel> getOrders({
+    required int offset,
+  }) {
+    GetClient<OrderModel> getOrders = GetClient<OrderModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<OrderModel>(
+        endpoint: MarketEndPoints.getOrderListEP,
+        queryParameters: {
+          "offset": offset.toString(),
+        },
+        response: ResponseValue<OrderModel>(
+            fromJson: (response) => OrderModel.fromJson(response)),
+      ),
+    );
+
+    return getOrders();
   }
 }

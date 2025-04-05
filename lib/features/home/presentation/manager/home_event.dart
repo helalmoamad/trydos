@@ -1146,3 +1146,19 @@ class GetCartOverviewEvent extends HomeEvent {
   // TODO: implement props
   List<Object?> get props => [];
 }
+
+class GetUserNotificationEvent extends HomeEvent {
+  GetUserNotificationEvent();
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+}
+
+class GetOrdersEvent extends HomeEvent {
+  GetOrdersEvent();
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+}

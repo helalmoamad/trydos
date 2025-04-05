@@ -27,9 +27,11 @@ import '../../data/models/apply_coupon_model.dart';
 import '../../data/models/check_availability_product_cart_model.dart';
 import '../../data/models/customer_wallet_model.dart';
 import '../../data/models/get_full_product_details_model.dart';
+import '../../data/models/get_orders_model.dart';
 import '../../data/models/get_product_filters_model.dart';
 import '../../data/models/get_product_listing_with_filters_model.dart';
 import '../../data/models/get_story_for_product_model.dart';
+import '../../data/models/get_user_notifications_model.dart';
 import '../../data/models/place_order_model.dart';
 
 abstract class HomeRepository {
@@ -152,4 +154,12 @@ abstract class HomeRepository {
   });
 
   Future<Either<Failure, GetCartShippingItemsModel>> getCartOverview();
+
+  Future<Either<Failure, GetUserNotificationsModel>> getUserNotifications({
+    required int page,
+  });
+
+  Future<Either<Failure, OrderModel>> getOrders({
+    required int offset,
+  });
 }

@@ -169,6 +169,18 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           ? null
           : ApplyCouponModel.fromJson(
               json['applyCouponModel'] as Map<String, dynamic>),
+      getUserNotificationModel: json['getUserNotificationModel'] == null
+          ? null
+          : PaginationModel<NotificationItemModel>.fromJson(
+              json['getUserNotificationModel'] as Map<String, dynamic>,
+              (value) => NotificationItemModel.fromJson(
+                  value as Map<String, dynamic>)),
+      getOrdersModel: json['getOrdersModel'] == null
+          ? null
+          : PaginationModel<OrderListModel>.fromJson(
+              json['getOrdersModel'] as Map<String, dynamic>,
+              (value) =>
+                  OrderListModel.fromJson(value as Map<String, dynamic>)),
       getOrdersByOrderGroupIDModel: json['getOrdersByOrderGroupIDModel'] == null
           ? null
           : OrdersGroupModel.fromJson(
@@ -554,6 +566,12 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'applyCouponModel': instance.applyCouponModel?.toJson(),
       'applyCouponStatus':
           _$ApplyCouponStatusEnumMap[instance.applyCouponStatus],
+      'getUserNotificationModel': instance.getUserNotificationModel?.toJson(
+        (value) => value.toJson(),
+      ),
+      'getOrdersModel': instance.getOrdersModel?.toJson(
+        (value) => value.toJson(),
+      ),
       'getCartOverviewStatus':
           _$GetCartOverviewStatusEnumMap[instance.getCartOverviewStatus],
       'getOrdersByOrderGroupIDModel':

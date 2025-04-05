@@ -808,35 +808,24 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                                         baseColor: Colors.grey[300]!,
                                         highlightColor: Colors.grey[100]!,
                                         child: Container(
-                                          height: 60,
-                                          margin: EdgeInsets.symmetric(
-                                              horizontal: 10, vertical: 10),
+                                          padding: EdgeInsets.all(16.h),
+                                          alignment: Alignment.center,
                                           decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(20),
-                                            color: Color(0xffC4C2C2)
-                                                .withOpacity(0.5),
-                                          ),
-                                          child: Container(
-                                            padding: EdgeInsets.all(16.h),
-                                            alignment: Alignment.center,
-                                            decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(15),
-                                                border: Border.all(
-                                                    color: Color(0xff388CFF))),
-                                            child: Text(
-                                              "${LocaleKeys.apply.tr()} ",
-                                              textAlign: TextAlign.center,
-                                              style: context
-                                                  .textTheme.bodyMedium?.rr
-                                                  .copyWith(
-                                                      color: const Color(
-                                                          0xff1D1D1D),
-                                                      letterSpacing: 0.18,
-                                                      fontSize: 14,
-                                                      height: 1),
-                                            ),
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
+                                              border: Border.all(
+                                                  color: Color(0xff388CFF))),
+                                          child: Text(
+                                            "${LocaleKeys.apply.tr()} ",
+                                            textAlign: TextAlign.center,
+                                            style: context
+                                                .textTheme.bodyMedium?.rr
+                                                .copyWith(
+                                                    color:
+                                                        const Color(0xff1D1D1D),
+                                                    letterSpacing: 0.18,
+                                                    fontSize: 14,
+                                                    height: 1),
                                           ),
                                         ),
                                       )

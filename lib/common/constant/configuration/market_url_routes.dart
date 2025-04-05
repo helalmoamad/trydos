@@ -26,6 +26,8 @@ extension ScopeApi on String {
   String searchScope() => '$_api/${_currentVersion}/products/$this';
   String notificationScope() =>
       '$_api/${_currentVersion}/product_notification/$this';
+  String userNotificationScope() =>
+      '$_api/${_currentVersion}/user-notifications/$this';
   String couponScope() => '$_api/${_currentVersion}/coupon/$this';
   String firebaseTokensScope({bool current = false}) =>
       '$_api/${_currentVersion}/firebase_device_tokens${this != '' ? '/$this' : ''}';
@@ -44,10 +46,13 @@ abstract class MarketEndPoints {
   static final updateCustomerAddressEP = "address/update".customerScope();
   static final addCustomerAddressEP = "address/add".customerScope();
   static final getCustomerAddressesEP = "address/list".customerScope();
+  static final getOrderListEP = "order/list".customerScope();
 
   static final setCustomerAddressDefaultEP =
       "address/set-default".customerScope();
   static final getCustomerWalletEP = "wallet/list".customerScope();
+
+  static final getUserNotificationsEP = "get".userNotificationScope();
 
   static final getOrdersByOrderGroupEP =
       "order/getOrdersByOrderGroupID".customerScope();

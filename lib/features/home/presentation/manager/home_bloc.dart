@@ -97,6 +97,8 @@ import '../../../app/my_cached_network_image.dart';
 import '../../../chat/presentation/manager/chat_bloc.dart';
 import '../../../chat/presentation/manager/chat_event.dart';
 import '../../../story/presentation/bloc/story_bloc.dart';
+import '../../data/models/get_orders_model.dart';
+import '../../data/models/get_user_notifications_model.dart';
 import '../../domain/use_cases/add_item_to_cart_usecase.dart';
 import '../../domain/use_cases/apply_coupon_usecase.dart';
 import '../../domain/use_cases/check_availability_product_cart_usecase.dart';
@@ -104,7 +106,9 @@ import '../../domain/use_cases/get_cart_overview_usecase.dart';
 import '../../domain/use_cases/get_customer_wallet_usecase.dart';
 import '../../domain/use_cases/get_orders_by_cart_group_usecase.dart';
 import '../../domain/use_cases/get_orders_by_order_group_usecase.dart';
+import '../../domain/use_cases/get_orders_usecase.dart';
 import '../../domain/use_cases/get_stories_for_product_usecase.dart';
+import '../../domain/use_cases/get_user_notification_usecase.dart';
 import '../../domain/use_cases/place_order_usecase.dart';
 import 'home_event.dart';
 
@@ -177,6 +181,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.checkAvailabilityProductCartUsecase,
     this.applyCouponUsecase,
     this.getCartOverviewUseCase,
+    this.getUserNotificationUseCase,
+    this.getOrdersUseCase,
   ) : super(HomeState()) {
     on<HomeEvent>((event, emit) {});
 
@@ -421,8 +427,18 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<ApplyCouponEvent>(
       _onApplyCouponEvent,
     );
-    on<GetCartOverviewEvent>(_onGetCartOverviewEvent,
-        transformer: restartable());
+    on<GetCartOverviewEvent>(
+      _onGetCartOverviewEvent,
+      transformer: restartable(),
+    );
+
+    on<GetUserNotificationEvent>(
+      _onGetUserNotificationEvent,
+    );
+
+    on<GetOrdersEvent>(
+      _onGetOrdersEvent,
+    );
   }
 
   Map<String, bool> boutiquesThatEnablesToRequestItsProductsUsingFiveFilters =
@@ -493,6 +509,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final ChangeCountryLanguageFornotificationUseCase
       changeCountryLanguageFornotificationUseCase;
   final GetMyFirebaseSettingsUseCase getMyFirebaseSettingsUseCase;
+
+  final GetUserNotificationUseCase getUserNotificationUseCase;
+
+  final GetOrdersUseCase getOrdersUseCase;
 
   final Smartlook smartLook = Smartlook.instance;
 
@@ -1440,8 +1460,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       Map<String, PaginationModel<Boutique>>
           getHomeBoutiquesPaginationObjectByMainCategory =
           Map.of(state.getHomeBoutiquesPaginationObjectByMainCategory);
+
       Map<String, bool> boutiquesForEveryMainCategoryThatDidPrefetch =
           Map.of(state.boutiquesForEveryMainCategoryThatDidPrefetch);
+
       if (!event.getWithPrefetchForBoutiques) {
         boutiquesForEveryMainCategoryThatDidPrefetch[event.categorySlug] =
             false;
@@ -1449,14 +1471,19 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
       if (!isFailedTheFirstTime
           .contains('GetHomeBoutiqesEvent' + "${event.categorySlug}")) {
-        add(GetHomeBoutiqesEvent(
+        add(
+          GetHomeBoutiqesEvent(
             getWithPrefetchForBoutiques: event.getWithPrefetchForBoutiques,
             offset: event.offset,
             context: event.context,
             categorySlug: event.categorySlug,
-            getWithPagination: event.getWithPagination));
-        isFailedTheFirstTime
-            .add('GetHomeBoutiqesEvent' + "${event.categorySlug}");
+            getWithPagination: event.getWithPagination,
+          ),
+        );
+
+        isFailedTheFirstTime.add(
+          'GetHomeBoutiqesEvent' + "${event.categorySlug}",
+        );
       }
 
       emit(
@@ -1474,6 +1501,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           ),
         ),
       );
+
       print(
           "///////////////////----------${state.getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!.paginationStatus}-----------------------------wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
     }, (r) {
@@ -1508,11 +1536,13 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           prefetchImages(url, event.context);
         });
       });
+
       isFailedTheFirstTime
           .remove('GetHomeBoutiqesEvent' + "${event.categorySlug}");
 
       getHomeBoutiquesPaginationObjectByMainCategory =
           Map.of(state.getHomeBoutiquesPaginationObjectByMainCategory);
+
       List<Boutique> boutiques = List.of(
           getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!
               .items);
@@ -1521,21 +1551,23 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           getHomeBoutiquesPaginationObjectByMainCategory.map((key, value) {
         if (key == event.categorySlug) {
           return MapEntry(
-              key,
-              value.copyWith(
-                  hasReachedMax:
-                      (r.data!.boutiques?.length ?? kPageSize) < kPageSize,
-                  paginationStatus: PaginationStatus.success,
-                  page: event.getWithPagination
-                      ? getHomeBoutiquesPaginationObjectByMainCategory[
-                                  event.categorySlug]!
-                              .page +
-                          1
-                      : 2,
-                  offset: r.data?.offset,
-                  items: !event.getWithPagination
-                      ? [...r.data!.boutiques ?? []]
-                      : [...boutiques, ...r.data!.boutiques ?? []]));
+            key,
+            value.copyWith(
+              hasReachedMax:
+                  (r.data!.boutiques?.length ?? kPageSize) < kPageSize,
+              paginationStatus: PaginationStatus.success,
+              page: event.getWithPagination
+                  ? getHomeBoutiquesPaginationObjectByMainCategory[
+                              event.categorySlug]!
+                          .page +
+                      1
+                  : 2,
+              offset: r.data?.offset,
+              items: !event.getWithPagination
+                  ? [...r.data!.boutiques ?? []]
+                  : [...boutiques, ...r.data!.boutiques ?? []],
+            ),
+          );
         } else {
           return MapEntry(key, value);
         }
@@ -2561,6 +2593,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
               CheckAvailabilityProductCartStatus.init,
           applyCouponStatus: ApplyCouponStatus.init,
           checkWithGetCartStatus: CheckWithGetCartStatus.init,
+          getUserNotificationModel: PaginationModel.init(),
         )
         .toJson();
   }
@@ -5933,7 +5966,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       (l) {
         if (!isFailedTheFirstTime.contains('ApplyCouponEvent')) {
           add(
-            CheckAvailabilityProductCartEvent(),
+            ApplyCouponEvent(code: event.code),
           );
           isFailedTheFirstTime.add('ApplyCouponEvent');
         }
@@ -6026,6 +6059,145 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           state.copyWith(
               getCartOverviewStatus: GetCartOverviewStatus.success,
               getCartShippingItemsModel: getCartShippingItemsModel),
+        );
+      },
+    );
+  }
+
+  FutureOr<void> _onGetUserNotificationEvent(
+    GetUserNotificationEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    PaginationModel<NotificationItemModel>? getUserNotificationModel =
+        state.getUserNotificationModel;
+
+    if (getUserNotificationModel == null) {
+      (getUserNotificationModel =
+          const PaginationModel<NotificationItemModel>.init(page: 1));
+    }
+    ///////////////////////////////////////
+    if ((getUserNotificationModel.hasReachedMax ||
+        getUserNotificationModel.paginationStatus ==
+            PaginationStatus.loading)) {
+      return;
+    }
+    ///////////////////////////
+    emit(
+      state.copyWith(
+        getUserNotificationModel: getUserNotificationModel.copyWith(
+            paginationStatus: PaginationStatus.loading),
+      ),
+    );
+    ///////////////////////////////
+
+    final response =
+        await getUserNotificationUseCase(getUserNotificationModel.page);
+
+    response.fold(
+      (l) {
+        getUserNotificationModel = state.getUserNotificationModel;
+
+        if (!isFailedTheFirstTime.contains('GetUserNotificationEvent')) {
+          add(
+            GetUserNotificationEvent(),
+          );
+          isFailedTheFirstTime.add('GetUserNotificationEvent');
+        }
+
+        emit(
+          state.copyWith(
+            getUserNotificationModel: getUserNotificationModel!
+                .copyWith(paginationStatus: PaginationStatus.failure),
+          ),
+        );
+      },
+      (r) {
+        debugPrint('GetUserNotificationEvent success');
+
+        getUserNotificationModel = state.getUserNotificationModel;
+
+        isFailedTheFirstTime.remove('GetUserNotificationEvent');
+
+        List<NotificationItemModel> notifications =
+            getUserNotificationModel!.items;
+
+        ////////////////////////////
+        emit(
+          state.copyWith(
+            getUserNotificationModel: getUserNotificationModel!.copyWith(
+              hasReachedMax: (r.data!.notifications!.length) < kPageSize,
+              paginationStatus: PaginationStatus.success,
+              page: getUserNotificationModel!.page + 1,
+              items: [...notifications, ...r.data!.notifications ?? []],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  FutureOr<void> _onGetOrdersEvent(
+    GetOrdersEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    PaginationModel<OrderListModel>? getOrdersModel = state.getOrdersModel;
+
+    if (getOrdersModel == null) {
+      (getOrdersModel = const PaginationModel<OrderListModel>.init(page: 1));
+    }
+    ///////////////////////////////////////
+    if ((getOrdersModel.hasReachedMax ||
+        getOrdersModel.paginationStatus == PaginationStatus.loading)) {
+      return;
+    }
+    ///////////////////////////
+    emit(
+      state.copyWith(
+        getOrdersModel:
+            getOrdersModel.copyWith(paginationStatus: PaginationStatus.loading),
+      ),
+    );
+    ///////////////////////////////
+
+    final response = await getOrdersUseCase(getOrdersModel.page);
+
+    response.fold(
+      (l) {
+        getOrdersModel = state.getOrdersModel;
+
+        if (!isFailedTheFirstTime.contains('GetOrdersEvent')) {
+          add(
+            GetOrdersEvent(),
+          );
+          isFailedTheFirstTime.add('GetOrdersEvent');
+        }
+
+        emit(
+          state.copyWith(
+            getOrdersModel: getOrdersModel!
+                .copyWith(paginationStatus: PaginationStatus.failure),
+          ),
+        );
+      },
+      (r) {
+        debugPrint('GetOrdersEvent success');
+
+        getOrdersModel = state.getOrdersModel;
+
+        isFailedTheFirstTime.remove('GetOrdersEvent');
+
+        List<OrderListModel> orders = getOrdersModel!.items;
+
+        ////////////////////////////
+        emit(
+          state.copyWith(
+            getOrdersModel: getOrdersModel!.copyWith(
+              hasReachedMax: (r.data!.orders!.length) < kPageSize,
+              paginationStatus: PaginationStatus.success,
+              page: getOrdersModel!.page + 1,
+              items: [...orders, ...r.data!.orders ?? []],
+            ),
+          ),
         );
       },
     );

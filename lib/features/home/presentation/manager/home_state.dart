@@ -31,10 +31,12 @@ import '../../data/models/customer_wallet_model.dart';
 import '../../data/models/get_cart_item_model.dart';
 
 import '../../data/models/get_old_cart_model.dart';
+import '../../data/models/get_orders_model.dart';
 import '../../data/models/get_product_filters_model.dart' as get_filters;
 import '../../data/models/get_product_filters_model.dart';
 import '../../data/models/get_product_listing_without_filters_model.dart'
     as product;
+import '../../data/models/get_user_notifications_model.dart';
 import '../../data/models/main_categories_response_model.dart';
 import '../../data/models/place_order_model.dart';
 import '../../data/models/starting_settings_response_model.dart';
@@ -192,6 +194,8 @@ class HomeState extends Equatable {
       this.setCustomerAddressDefaultStatus,
       this.placeOrderModel,
       this.applyCouponModel,
+      this.getUserNotificationModel,
+      this.getOrdersModel,
       this.getOrdersByOrderGroupIDModel,
       this.getOrdersByCartGroupIDModel,
       this.checkAvailabilityProductCartModel,
@@ -294,6 +298,9 @@ class HomeState extends Equatable {
   final PlaceOrderStatus? placeOrderStatus;
   final ApplyCouponModel? applyCouponModel;
   final ApplyCouponStatus? applyCouponStatus;
+
+  final PaginationModel<NotificationItemModel>? getUserNotificationModel;
+  final PaginationModel<OrderListModel>? getOrdersModel;
 
   final GetCartOverviewStatus? getCartOverviewStatus;
   final OrdersGroupModel? getOrdersByOrderGroupIDModel;
@@ -448,8 +455,9 @@ class HomeState extends Equatable {
         placeOrderModel,
         applyCouponStatus,
         applyCouponModel,
+        getUserNotificationModel,
+        getOrdersModel,
         getCartOverviewStatus,
-
         getOrdersByOrderGroupIDStatus,
         getOrdersByOrderGroupIDModel,
         getOrdersByCartGroupIDStatus,
@@ -536,6 +544,8 @@ class HomeState extends Equatable {
       final PlaceOrderStatus? placeOrderStatus,
       final ApplyCouponModel? applyCouponModel,
       final ApplyCouponStatus? applyCouponStatus,
+      final PaginationModel<NotificationItemModel>? getUserNotificationModel,
+      final PaginationModel<OrderListModel>? getOrdersModel,
       final GetCartOverviewStatus? getCartOverviewStatus,
       final CurrentSelectedColorForEveryProductStatus?
           currentSelectedColorForEveryProductStatus,
@@ -719,6 +729,11 @@ class HomeState extends Equatable {
       placeOrderStatus: placeOrderStatus ?? this.placeOrderStatus,
       applyCouponModel: applyCouponModel ?? this.applyCouponModel,
       applyCouponStatus: applyCouponStatus ?? this.applyCouponStatus,
+
+      getUserNotificationModel:
+          getUserNotificationModel ?? this.getUserNotificationModel,
+
+      getOrdersModel: getOrdersModel ?? this.getOrdersModel,
       getCartOverviewStatus:
           getCartOverviewStatus ?? this.getCartOverviewStatus,
       getOrdersByOrderGroupIDModel:
