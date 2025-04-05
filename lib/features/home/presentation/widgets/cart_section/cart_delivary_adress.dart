@@ -144,6 +144,10 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                 previous.applyCouponStatus != current.applyCouponStatus ||
                 previous.getCartOverviewStatus != current.getCartOverviewStatus,
             builder: (context, state) {
+              if ((state.listOfAddressInfoClassToSave?.length ?? 0) <
+                  indexTap.value + 1) {
+                indexTap.value = 0;
+              }
               double totalCashed =
                   (state.getCartShippingItemsModel?.data?.totalCash ?? 0) *
                       state.getCurrencyForCountryModel!.data!.currency!
@@ -1083,7 +1087,11 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                         cartChoosed: true,
                         isDelete: false,
                         customerAddressesInfo:
-                            state.listOfAddressInfoClassToSave![_indexTap],
+                            (state.listOfAddressInfoClassToSave?.length ?? 0) <
+                                    _indexTap + 1
+                                ? state.listOfAddressInfoClassToSave![0]
+                                : state
+                                    .listOfAddressInfoClassToSave![_indexTap],
                         context: context,
                         index: -1,
                         indexTap: _indexTap,

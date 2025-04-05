@@ -15,6 +15,7 @@ import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:trydos/core/error/failures.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
@@ -37,6 +38,7 @@ import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/notify_for_available_in_country.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/notify_for_quantity_available_button.dart';
+import 'package:trydos/features/story/presentation/widget/try_again.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/routes/router.dart';
 
@@ -68,6 +70,7 @@ class ProductDetailsSheetBottomBar extends StatefulWidget {
       required this.qtyForproductWithoutVariant,
       required this.collectedAfterOrder,
       required this.products,
+      required this.isGetFullProductDetails,
       required this.sizeIsNotAvailableNotifier,
       required this.productNotAvailableNotifier,
       required this.imageUrl});
@@ -81,6 +84,7 @@ class ProductDetailsSheetBottomBar extends StatefulWidget {
   final String imageUrl;
   final int countOfPieces;
   final bool collectedAfterOrder;
+  final bool isGetFullProductDetails;
   final product.Products products;
   final int? qtyForproductWithoutVariant;
   final String productIdForCashproducts;
@@ -145,6 +149,12 @@ class _ProductDetailsSheetBottomBarState
           null, null, null, null, null, null, null,
           error: error.toString());
     };
+    bool isCloseToWhite(Color color, {int threshold = 50}) {
+      return (color.red > 255 - threshold &&
+          color.green > 255 - threshold &&
+          color.blue > 255 - threshold);
+    }
+
     return BlocBuilder<HomeBloc, HomeState>(
       buildWhen: (previous, current) =>
           previous.addImagesToProductIdForCart[widget.productIdForRequestApi]
@@ -161,6 +171,8 @@ class _ProductDetailsSheetBottomBarState
           previous.deleteItemInCartStatus != current.deleteItemInCartStatus ||
           previous.listitemForAddToCart?.length !=
               current.listitemForAddToCart?.length ||
+          previous.enableAddToCardAfterChangeVariantZero !=
+              current.enableAddToCardAfterChangeVariantZero ||
           previous.getCommentForProductStatus !=
               current.getCommentForProductStatus ||
           previous.changeSizesForEveryProduct !=
@@ -249,24 +261,37 @@ class _ProductDetailsSheetBottomBarState
                                                             child: child,
                                                           );
                                                         },
-                                                        child:
-                                                            !(_productNotAvailableNotifier !=
-                                                                        null &&
-                                                                    widget.currentActiveTab.value ==
-                                                                        3)
-                                                                ? ((selectedSizeByUser == null &&
-                                                                            selectedcolorByUser ==
-                                                                                null &&
-                                                                            widget.qtyForproductWithoutVariant !=
-                                                                                0) ||
-                                                                        currentTab !=
-                                                                            3 ||
-                                                                        widget
-                                                                            .collectedAfterOrder)
-                                                                    ? (state.productStatus?[widget.productIdForCashproducts] != GetProductDetailWithoutSimilarRelatedProductsStatus.success ||
-                                                                            state.changeSizesForEveryProduct !=
-                                                                                ChangeSizesForEveryProduct
-                                                                                    .success)
+                                                        child: !(_productNotAvailableNotifier !=
+                                                                null)
+                                                            ? ((selectedSizeByUser == null &&
+                                                                        selectedcolorByUser ==
+                                                                            null &&
+                                                                        widget.qtyForproductWithoutVariant !=
+                                                                            0) ||
+                                                                    widget
+                                                                        .collectedAfterOrder)
+                                                                ? (state.getProductDetailWithoutSimilarRelatedProductsStatus ==
+                                                                        GetProductDetailWithoutSimilarRelatedProductsStatus.failure)
+                                                                    ? Container(
+                                                                        width: 120,
+                                                                        height: 60,
+                                                                        decoration: BoxDecoration(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(15),
+                                                                        ),
+                                                                        child: TryAgainWidget(tryAgain: () {
+                                                                          if (!(widget
+                                                                              .isGetFullProductDetails)) {
+                                                                            homeBloc.add(GetProductDatailsWithoutRelatedProductsEvent(
+                                                                                productSlug: widget.productSlug,
+                                                                                productId: widget.products.productId.toString().toString()));
+                                                                          } else {
+                                                                            BlocProvider.of<HomeBloc>(context).add(GetFullProductDetailsEvent(
+                                                                                productSlug: widget.productSlug,
+                                                                                productId: widget.products.productId.toString()));
+                                                                          }
+                                                                        }))
+                                                                    : (state.getProductDetailWithoutSimilarRelatedProductsStatus != GetProductDetailWithoutSimilarRelatedProductsStatus.success || state.changeSizesForEveryProduct != ChangeSizesForEveryProduct.success || state.enableAddToCardAfterChangeVariantZero != EnableAddToCardAfterChangeVariantZero.success)
                                                                         ? Stack(
                                                                             alignment:
                                                                                 Alignment.center,
@@ -557,7 +582,7 @@ class _ProductDetailsSheetBottomBarState
                                                                                                               ? SizedBox.shrink()
                                                                                                               : MyTextWidget(
                                                                                                                   '${widget.colorName} ',
-                                                                                                                  style: textTheme.titleMedium?.mq.copyWith(height: 15 / 12, color: Color(int.parse('0xff${widget.colorNum.substring(1)}'))),
+                                                                                                                  style: textTheme.titleMedium?.mq.copyWith(height: 15 / 12, color: isCloseToWhite(Color(int.parse('0xff${widget.colorNum.substring(1)}'))) ? Color(0xff1D1D1D) : Color(int.parse('0xff${widget.colorNum.substring(1)}'))),
                                                                                                                 ),
                                                                                                           widget.size == ""
                                                                                                               ? SizedBox.shrink()
@@ -617,35 +642,35 @@ class _ProductDetailsSheetBottomBarState
                                                                                       ));
                                                                                 }),
                                                                           )
-                                                                    : BlocBuilder<
-                                                                        HomeBloc,
-                                                                        HomeState>(
-                                                                        buildWhen: (p,
-                                                                                c) =>
-                                                                            p.getStartingSettingsStatus !=
-                                                                            c.getStartingSettingsStatus,
-                                                                        builder:
-                                                                            (context,
-                                                                                state) {
-                                                                          int notificationTypeId =
-                                                                              state.startingSetting?.notificationTypes?.firstWhere((type) => type.name == 'product availability', orElse: () => NotificationType(id: -1)).id ?? -1;
+                                                                : BlocBuilder<HomeBloc, HomeState>(
+                                                                    buildWhen: (p,
+                                                                            c) =>
+                                                                        p.getStartingSettingsStatus !=
+                                                                        c.getStartingSettingsStatus,
+                                                                    builder:
+                                                                        (context,
+                                                                            state) {
+                                                                      int notificationTypeId = state
+                                                                              .startingSetting
+                                                                              ?.notificationTypes
+                                                                              ?.firstWhere((type) => type.name == 'product availability', orElse: () => NotificationType(id: -1))
+                                                                              .id ??
+                                                                          -1;
 
-                                                                          return notificationTypeId == -1
-                                                                              ? SizedBox.shrink()
-                                                                              : NotifyWhenQuantityAvailableButton(
-                                                                                  unAvailableSize: selectedSizeByUser ?? "",
-                                                                                  notificationTypeId: notificationTypeId,
-                                                                                  productId: widget.productIdForRequestApi,
-                                                                                  selectedColorName: selectedcolorByUser ?? "",
-                                                                                );
-                                                                        },
-                                                                      )
-                                                                : NotifyWhenAvailableInCountryButton(
-                                                                    productId: widget
-                                                                        .productIdForRequestApi,
-                                                                    unAvailableType:
-                                                                        _productNotAvailableNotifier ??
-                                                                            ''));
+                                                                      return notificationTypeId ==
+                                                                              -1
+                                                                          ? SizedBox
+                                                                              .shrink()
+                                                                          : NotifyWhenQuantityAvailableButton(
+                                                                              currentTap: currentTab,
+                                                                              unAvailableSize: selectedSizeByUser ?? "",
+                                                                              notificationTypeId: notificationTypeId,
+                                                                              productId: widget.productIdForRequestApi,
+                                                                              selectedColorName: selectedcolorByUser ?? "",
+                                                                            );
+                                                                    },
+                                                                  )
+                                                            : NotifyWhenAvailableInCountryButton(currentTap: currentTab, productId: widget.productIdForRequestApi, unAvailableType: _productNotAvailableNotifier ?? ''));
                                                   });
                                             });
                                       });
@@ -670,7 +695,6 @@ class _ProductDetailsSheetBottomBarState
                                               current
                                                   .getProductDetailWithoutSimilarRelatedProductsStatus,
                                       builder: (context, state) {
-                                        print("-------------");
                                         return state.getProductDetailWithoutSimilarRelatedProductsStatus ==
                                                 GetProductDetailWithoutSimilarRelatedProductsStatus
                                                     .loading

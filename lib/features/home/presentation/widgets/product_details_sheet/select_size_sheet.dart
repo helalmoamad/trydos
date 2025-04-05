@@ -8,6 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
@@ -30,14 +31,13 @@ class SelectSizeContent extends StatefulWidget {
     required this.scrollController,
     this.selectedColor,
     this.selectedColorName,
-    required this.sizes,
-    required this.sizesQuantities,
     required this.productId,
     required this.requestToNotifyMeFormFirstSize,
     required this.collectedAfterOrdering,
     required this.colorIsNotAvailableNotifier,
     required this.addToBagButtonShapeNotifier,
     required this.sizeIsNotAvailableNotifier,
+    required this.fromListingPage,
   });
 
   final ScrollController scrollController;
@@ -45,8 +45,8 @@ class SelectSizeContent extends StatefulWidget {
   final String? selectedColorName;
   final String productId;
   final bool collectedAfterOrdering;
-  final List<String> sizes;
-  final List<int> sizesQuantities;
+  final bool fromListingPage;
+
   bool requestToNotifyMeFormFirstSize;
   final ValueNotifier<int> addToBagButtonShapeNotifier;
   final ValueNotifier<String?> sizeIsNotAvailableNotifier;
@@ -68,20 +68,34 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
-    currentIndexInSizes = ValueNotifier(0);
 
-    if ((homeBloc.state.sizesForEachColor?.length ?? 0) > 0) {
-      int firstSizeSelected = max(
-          0,
-          (homeBloc.state.currentColorSizeForCart?['size'] ?? '') == ''
-              ? (homeBloc.state.sizesForEachColor?.length ?? 0) ~/ 2
-              : homeBloc.state.sizesForEachColor!.indexWhere((size) =>
-                  homeBloc.state.currentColorSizeForCart?['size'] == size));
-      homeBloc.add(AddCurrentColorSizeEvent(
-          choice_1: homeBloc.state.sizesForEachColor?[firstSizeSelected]));
-      currentIndexInSizes.value = firstSizeSelected;
-    } else {
-      homeBloc.add(AddCurrentColorSizeEvent(choice_1: ""));
+    if (!(homeBloc.state.sizesForEachColor.isNullOrEmpty) &&
+        !(widget.fromListingPage)) {
+      currentIndexInSizes = ValueNotifier(homeBloc.state.sizesForEachColor!
+          .indexWhere((element) =>
+              element == homeBloc.state.currentColorSizeForCart?["size"]));
+      if (currentIndexInSizes.value == -1) {
+        currentIndexInSizes = ValueNotifier(0);
+      }
+    }
+    if (widget.fromListingPage &&
+        (homeBloc
+                    .state
+                    .cachedProductWithoutRelatedProductsModel[widget.productId]
+                    ?.product
+                    ?.choiceOptions
+                    ?.length ??
+                0) >
+            0) {
+      currentIndexInSizes = ValueNotifier((homeBloc
+                  .state
+                  .cachedProductWithoutRelatedProductsModel[widget.productId]
+                  ?.product
+                  ?.choiceOptions?[0]
+                  .options
+                  ?.length ??
+              0) ~/
+          2);
     }
 
     super.initState();
@@ -102,18 +116,15 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
           error: error.toString());
     };
     return BlocBuilder<HomeBloc, HomeState>(
-      buildWhen: (p, c) =>
-          p.changeSizesForEveryProduct != c.changeSizesForEveryProduct,
+      buildWhen: (previous, current) =>
+          previous.changeSizesForEveryProduct !=
+              current.changeSizesForEveryProduct ||
+          previous.currentColorSizeForCart?["size"] !=
+              current.currentColorSizeForCart?["size"],
       builder: (context, state) {
         sizes = state.sizesForEachColor ?? [];
         sizesQuantities = state.sizesQuantitiesForEachColor ?? [];
 
-        if (sizes.length > 0) {
-          homeBloc.add(AddCurrentColorSizeEvent(
-              choice_1: sizes[currentIndexInSizes.value]));
-        } else {
-          homeBloc.add(AddCurrentColorSizeEvent(choice_1: ""));
-        }
         if (sizes.length == 0) {
           return Container(
             color: Colors.white,

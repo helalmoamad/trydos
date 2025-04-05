@@ -144,6 +144,9 @@ class _AddShippingAdressState extends State<AddShippingAdress>
     choosedCountry = GetIt.I<PrefsRepository>().userCountryIsAvailable == 1
         ? GetIt.I<PrefsRepository>().userChoosedCountryIso
         : GetIt.I<PrefsRepository>().countryIso;
+    if (widget.fromEdid ?? false) {
+      choosedCountry = widget.addressInfoClassToEdid?.iso;
+    }
     country = alowCountries?.firstWhere(
         (element) => '${choosedCountry?.toLowerCase()}'
             .startsWith(element.iso!.toLowerCase()),
@@ -159,9 +162,8 @@ class _AddShippingAdressState extends State<AddShippingAdress>
     //    double.tryParse(country?.longitude ?? "0") ?? 0);
 
     if (widget.fromEdid ?? false) {
-      if (widget.addressInfoClassToEdid?.location?.latitude?.toString() !=
-              "null" &&
-          widget.addressInfoClassToEdid?.location?.latitude?.toString() != "") {
+      if (widget.addressInfoClassToEdid?.location?.latitude != null &&
+          widget.addressInfoClassToEdid?.location?.latitude != "") {
         _currentLocation = LatLng(
             double.tryParse(
                 widget.addressInfoClassToEdid!.location!.latitude!)!,
@@ -179,10 +181,8 @@ class _AddShippingAdressState extends State<AddShippingAdress>
             zoom: 6);
       }
 
-      if ((widget.addressInfoClassToEdid?.location?.latitude?.toString() !=
-              "null" &&
-          widget.addressInfoClassToEdid?.location?.latitude?.toString() !=
-              "")) {
+      if ((widget.addressInfoClassToEdid?.location?.latitude != null &&
+          widget.addressInfoClassToEdid?.location?.latitude != "")) {
         _locationFromSearch = LatLng(
             double.tryParse(
                 widget.addressInfoClassToEdid!.location!.latitude!)!,
@@ -198,9 +198,8 @@ class _AddShippingAdressState extends State<AddShippingAdress>
 
       addressTitleController.text =
           widget.addressInfoClassToEdid?.address ?? "";
-      if (widget.addressInfoClassToEdid?.contactInfo?.alternativePhone
-                  .toString() !=
-              "null" &&
+      if (widget.addressInfoClassToEdid?.contactInfo?.alternativePhone !=
+              null &&
           widget.addressInfoClassToEdid?.contactInfo?.alternativePhone != "") {
         alternativePhoneController.text =
             widget.addressInfoClassToEdid?.contactInfo?.alternativePhone ?? "";
@@ -239,8 +238,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                 ? ""
                 : widget.addressInfoClassToEdid?.regionDetails?.zip ?? "")
       ];
-      if (alternativePhoneController.text.length > 0 &&
-          alternativePhoneController.text.toString() != "null") {
+      if (alternativePhoneController.text.length > 0) {
         visiblePrefixOptional.value = true;
       }
       if (contactPhoneController.text.length > 0 &&
@@ -1421,7 +1419,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                           width: 18,
                                                                                           height: 18,
                                                                                           child: CountryFlag.fromCountryCode(
-                                                                                            "${(widget.fromEdid ?? false) ? country?.iso : country?.iso}",
+                                                                                            "${country?.iso}",
                                                                                             height: 18.h,
                                                                                             width: 18.w,
                                                                                             borderRadius: 4.r,
@@ -2094,13 +2092,14 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                         street: element.street,
                                                         town: element.town));
                                                 filterLatLngSearch.add(LatLng(
-                                                    element.coordinates?.lat ??
+                                                    element.coordinates?[0]
+                                                            .lat ??
                                                         0,
-                                                    element.coordinates?.lon ??
+                                                    element.coordinates?[0]
+                                                            .lon ??
                                                         0));
                                               },
                                             );
-
                                             return ValueListenableBuilder<
                                                     List<String>>(
                                                 valueListenable:
@@ -2400,16 +2399,29 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                     bordersColor:
                                                                         Color(
                                                                             0xffF8F8F8),
-                                                                    icon: SvgPicture
-                                                                        .asset(
-                                                                      AppAssets
-                                                                          .searchOutlinedSvg,
-                                                                      height:
-                                                                          18,
-                                                                      width: 18,
-                                                                      color: Color(
-                                                                          0xff388CFF),
-                                                                    ),
+                                                                    icon: state.getAddressByTextStatus ==
+                                                                            GetAddressByTextStatus
+                                                                                .loading
+                                                                        ? Container(
+                                                                            width:
+                                                                                15,
+                                                                            height:
+                                                                                15,
+                                                                            child:
+                                                                                TrydosLoader(
+                                                                              size: 12,
+                                                                            ),
+                                                                          )
+                                                                        : SvgPicture
+                                                                            .asset(
+                                                                            AppAssets.searchOutlinedSvg,
+                                                                            height:
+                                                                                18,
+                                                                            width:
+                                                                                18,
+                                                                            color:
+                                                                                Color(0xff388CFF),
+                                                                          ),
                                                                     hintText:
                                                                         "${LocaleKeys.search.tr()} ${LocaleKeys.province_district_town_street.tr()}",
                                                                     hintTextStyle: context.textTheme.bodyMedium?.lr.copyWith(

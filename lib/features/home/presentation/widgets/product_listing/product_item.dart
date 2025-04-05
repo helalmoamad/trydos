@@ -25,6 +25,7 @@ class ProductItem extends StatefulWidget {
 
   final void Function(int, int) setThisEnabled;
   final ValueNotifier<int> tapIndexToAddProductToCart;
+
   final Tuple2<int, int> slidingModeItem;
   final productListingModel.Products productItem;
   final int itemIndex;
@@ -80,6 +81,47 @@ class _ProductItemState extends State<ProductItem> {
                 child: ValueListenableBuilder<int>(
                     valueListenable: currentChosenColor,
                     builder: (context, index, _) {
+                      if (widget.productItem.syncColorImages.isNullOrEmpty) {
+                        return Image.asset(
+                            'assets/product_listing_background_blur_image.png',
+                            fit: BoxFit.cover);
+                      }
+                      if (index >
+                          (widget.productItem.syncColorImages?.length ?? 0) -
+                              1) {
+                        currentChosenColor.value =
+                            (widget.productItem.syncColorImages?.length ?? 0) ~/
+                                2;
+                        return MyCachedNetworkImage(
+                          ordinalHeight: double.parse(widget
+                              .productItem
+                              .syncColorImages![
+                                  (widget.productItem.syncColorImages?.length ??
+                                          0) ~/
+                                      2]
+                              .images![0]
+                              .originalHeight!),
+                          ordinalwidth: double.parse(widget
+                              .productItem
+                              .syncColorImages![
+                                  (widget.productItem.syncColorImages?.length ??
+                                          0) ~/
+                                      2]
+                              .images![0]
+                              .originalWidth!),
+                          imageUrl: widget
+                              .productItem
+                              .syncColorImages![
+                                  (widget.productItem.syncColorImages?.length ??
+                                          0) ~/
+                                      2]
+                              .images![0]
+                              .filePath!,
+                          height: 350,
+                          width: 200.w,
+                          imageFit: BoxFit.cover,
+                        );
+                      }
                       return widget.productItem.syncColorImages.isNullOrEmpty ||
                               widget.productItem.syncColorImages![index].images
                                   .isNullOrEmpty

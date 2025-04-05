@@ -108,9 +108,12 @@ class _PinItemState extends State<PinItem> with TickerProviderStateMixin {
     return BlocConsumer<AuthBloc, AuthState>(
       buildWhen: (p, c) =>
           p.verifyOtpSignInStatus != c.verifyOtpSignInStatus ||
+          p.verifyOtpFromGuestStatus != c.verifyOtpFromGuestStatus ||
           p.verifyOtpSignUpStatus != c.verifyOtpSignUpStatus,
       listener: (context, state) {
         if (state.verifyOtpSignInStatus == VerifyOtpSignInStatus.loading ||
+            state.verifyOtpFromGuestStatus ==
+                VerifyOtpFromGuestStatus.loading ||
             state.verifyOtpSignUpStatus == VerifyOtpSignUpStatus.loading) {
           fadingController.repeat(reverse: true);
         } else {
@@ -149,7 +152,9 @@ class _PinItemState extends State<PinItem> with TickerProviderStateMixin {
                                   enabled: (state.verifyOtpSignInStatus !=
                                           VerifyOtpSignInStatus.loading &&
                                       state.verifyOtpSignUpStatus !=
-                                          VerifyOtpSignUpStatus.loading),
+                                          VerifyOtpSignUpStatus.loading &&
+                                      state.verifyOtpFromGuestStatus !=
+                                          VerifyOtpFromGuestStatus.loading),
                                   focusNode: focusNodes[widget.index],
                                   onTap: () {
                                     if (widget.index != currentToType) {

@@ -72,6 +72,8 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       removeAddressToOrderStatus: $enumDecodeNullable(
           _$RemoveAddressToOrderStatusEnumMap,
           json['removeAddressToOrderStatus']),
+      isChangedvariationWhenQtyZero:
+          json['isChangedvariationWhenQtyZero'] as bool? ?? false,
       getFullProductDetailsStatus: $enumDecodeNullable(
               _$GetFullProductDetailsStatusEnumMap,
               json['getFullProductDetailsStatus']) ??
@@ -111,6 +113,9 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       oldcartCollection: (json['oldcartCollection'] as List<dynamic>?)
           ?.map((e) => OldCart.fromJson(e as Map<String, dynamic>))
           .toList(),
+      enableAddToCardAfterChangeVariantZero: $enumDecodeNullable(
+          _$EnableAddToCardAfterChangeVariantZeroEnumMap,
+          json['enableAddToCardAfterChangeVariantZero']),
       getOldCartItemsStatus: $enumDecodeNullable(
               _$GetOLdCartItemsStatusEnumMap, json['getOldCartItemsStatus']) ??
           GetOLdCartItemsStatus.init,
@@ -535,6 +540,10 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'currentSelectedColorForEveryProductStatus':
           _$CurrentSelectedColorForEveryProductStatusEnumMap[
               instance.currentSelectedColorForEveryProductStatus],
+      'enableAddToCardAfterChangeVariantZero':
+          _$EnableAddToCardAfterChangeVariantZeroEnumMap[
+              instance.enableAddToCardAfterChangeVariantZero],
+      'isChangedvariationWhenQtyZero': instance.isChangedvariationWhenQtyZero,
       'convertItemFromOldcartToCartStatus':
           _$ConvertItemFromOldcartToCartStatusEnumMap[
               instance.convertItemFromOldcartToCartStatus],
@@ -869,6 +878,13 @@ const _$DeleteItemInCartStatusEnumMap = {
   DeleteItemInCartStatus.loading: 'loading',
   DeleteItemInCartStatus.success: 'success',
   DeleteItemInCartStatus.failure: 'failure',
+};
+
+const _$EnableAddToCardAfterChangeVariantZeroEnumMap = {
+  EnableAddToCardAfterChangeVariantZero.init: 'init',
+  EnableAddToCardAfterChangeVariantZero.loading: 'loading',
+  EnableAddToCardAfterChangeVariantZero.success: 'success',
+  EnableAddToCardAfterChangeVariantZero.failure: 'failure',
 };
 
 const _$GetOLdCartItemsStatusEnumMap = {

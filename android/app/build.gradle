@@ -52,7 +52,7 @@ flutter {
 dependencies {
     androidTestUtil "androidx.test:orchestrator:1.4.2"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.0.10"
-    implementation platform('com.google.firebase:firebase-bom:32.1.1')
+    implementation platform('com.google.firebase:firebase-bom:33.10.0')
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation("com.smartlook.android:smartlook-analytics:2.3.24")
 }

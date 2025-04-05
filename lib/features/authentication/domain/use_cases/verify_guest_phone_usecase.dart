@@ -6,24 +6,28 @@ import '../../data/models/verify_guest_phone_response_model.dart';
 import '../repositories/auth_repository.dart';
 
 @injectable
-class VerifyGuestPhoneUseCase
-    implements UseCase<VerifyGuestPhoneResponseModel, VerifyGuestPhoneParams> {
-  VerifyGuestPhoneUseCase(this.repository);
+class VerifyOtpFromGuestUseCase
+    implements
+        UseCase<VerifyOtpFromGuestResponseModel, VerifyOtpFromGuestParams> {
+  VerifyOtpFromGuestUseCase(this.repository);
 
   final AuthRepository repository;
 
   @override
-  Future<Either<Failure, VerifyGuestPhoneResponseModel>> call(
-      VerifyGuestPhoneParams params) async {
-    return repository.verifyGuestPhone(params.map);
+  Future<Either<Failure, VerifyOtpFromGuestResponseModel>> call(
+      VerifyOtpFromGuestParams params) async {
+    return repository.verifyOtpFromGuest(params.map);
   }
 }
 
-class VerifyGuestPhoneParams {
-  String idToken;
-
-  VerifyGuestPhoneParams({
-    required this.idToken,
+class VerifyOtpFromGuestParams {
+  String verificationId;
+  String otp;
+  VerifyOtpFromGuestParams({
+    required this.verificationId,
+    required this.otp,
   });
-  Map<String, dynamic> get map => {"id_token": idToken};
+
+  Map<String, dynamic> get map =>
+      {"verificationId": verificationId, "otp": otp};
 }

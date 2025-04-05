@@ -158,8 +158,11 @@ class _ProductCollectionInCartPage1State
                     height: isOldCart
                         ? 190
                         : (state.cartCollection?[index]
-                                    .haveHurryUpNotifyTimeLeft ??
-                                false)
+                                        .haveHurryUpNotifyTimeLeft ??
+                                    false) ||
+                                (state.cartCollection?[index]
+                                        .haveHurryUpNotifyQty ??
+                                    false)
                             ? 190
                             : 155,
                     child: Stack(
@@ -862,7 +865,7 @@ class _ProductCollectionInCartPage1State
                                                               image: cartCollection[index].image ?? "",
                                                               cartId: cartCollection[index].id.toString(),
                                                               boutiqueId: cartCollection[index].boutique!.id.toString()))
-                                                          : GetIt.I<HomeBloc>().add(RemoveItemFormCartEvent(countOfPieces: cartCollection[index].countOfPieces, image: cartCollection[index].image ?? '', currentSize: !cartCollection[index].variations.isNullOrEmpty ? cartCollection[index].variations![0].size ?? "" : "", ColoName: !cartCollection[index].variations.isNullOrEmpty ? cartCollection[index].variations![0].color ?? "" : "", productId: cartCollection[index].productId.toString(), itemId: cartCollection[index].id.toString(), boutiqueId: cartCollection[index].boutique!.id.toString()));
+                                                          : GetIt.I<HomeBloc>().add(RemoveItemFormCartEvent(countOfPieces: cartCollection[index].countOfPieces, image: cartCollection[index].image ?? '', currentSize: !cartCollection[index].variations.isNullOrEmpty ? cartCollection[index].variations![0].size ?? "" : "", colorName: !cartCollection[index].variations.isNullOrEmpty ? cartCollection[index].variations![0].color ?? "" : "", productId: cartCollection[index].productId.toString(), itemId: cartCollection[index].id.toString(), boutiqueId: cartCollection[index].boutique!.id.toString()));
                                                     },
                                                     child: (cartCollection![
                                                                         index]

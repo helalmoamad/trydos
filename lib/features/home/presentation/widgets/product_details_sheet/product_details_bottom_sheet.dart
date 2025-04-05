@@ -49,6 +49,7 @@ import '../product_listing/product_listing_image_widget.dart';
 class ProductDetailsBottomSheet extends StatefulWidget {
   final productListingModel.Products productItem;
   final int currentColor;
+
   final int boutiqueId;
   final int? qtyForproductWithoutVariant;
   final String boutiqueIcon;
@@ -58,19 +59,24 @@ class ProductDetailsBottomSheet extends StatefulWidget {
   final String currentColornum;
   final PanelController panelController;
   final String productIdForCashData;
+  final int? currentSelectedColorAfterChangeVariant;
   final int countOfPieces;
+  final bool? isGetFullProductDetails;
   final bool? fromListingPage;
   final bool collectedAfterOrdering;
+
   final String maxAllowedToAddCart;
   final ValueNotifier<int> addToBagButtonShapeNotifier;
   final ValueNotifier<int>? tapIndexToAddProductToCart;
   final ValueNotifier<int> currentActiveTab;
   final ValueNotifier<String?> productNotAvailableNotifier;
-  const ProductDetailsBottomSheet(
+  ProductDetailsBottomSheet(
       {super.key,
       required this.productItem,
+      this.currentSelectedColorAfterChangeVariant,
       this.tapIndexToAddProductToCart,
       required this.productIdForCashData,
+      required this.isGetFullProductDetails,
       required this.collectedAfterOrdering,
       required this.panelController,
       required this.addToBagButtonShapeNotifier,
@@ -121,10 +127,6 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
-
-    int currentColor = homeBloc.state.currentSelectedColorForEveryProduct[
-            widget.productItem.productId.toString()] ??
-        (widget.productItem.syncColorImages?.length ?? 0) ~/ 2;
     syncColorImageList = widget.productItem.syncColorImages ?? [];
     syncColorImageList.removeWhere((element) => element.images.isNullOrEmpty);
     syncColorImageList = [
@@ -139,26 +141,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
         .map((e) => double.parse(e.images![0].originalWidth!))
         .toList();
 
-    gallery3dControllerForCircles =
-        syncColorImageList.isNullOrEmpty || syncColorImageList.length < 3
-            ? null
-            : Gallery3DController(
-                itemCount: syncColorImageList.length,
-                autoLoop: false,
-                minScale: (syncColorImageList.length) == 4
-                    ? 0.7
-                    : (syncColorImageList.length) <= 8
-                        ? 0.55
-                        : 0.4,
-                initialIndex: currentColor,
-                primaryshiftingOffsetDivision: (syncColorImageList.length) == 4
-                    ? 4.5
-                    : (syncColorImageList.length) <= 8
-                        ? 1.6
-                        : 1.6,
-                scrollTime: 1);
     _focusNode.addListener(_onFocusChange);
-    currentIndexInSlider = widget.currentColor;
 
     /*if (syncColorImageList.length <= 8) {
       currentIndexInSlider = 0;
@@ -203,8 +186,71 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
     return BlocBuilder<HomeBloc, HomeState>(
       buildWhen: (previous, current) =>
           previous.changeSizesForEveryProduct !=
-          current.changeSizesForEveryProduct,
+              current.changeSizesForEveryProduct ||
+          previous.isChangedvariationWhenQtyZero !=
+              current.isChangedvariationWhenQtyZero ||
+          previous.currentSelectedColorForEveryProductStatus !=
+              current.currentSelectedColorForEveryProductStatus,
       builder: (context, state) {
+        if (state.isChangedvariationWhenQtyZero &&
+            (widget.fromListingPage ?? false)) {
+          homeBloc.add(IsChangedvariationWhenQtyZeroEvent(
+              isChangedvariationWhenQtyZero: false));
+
+          gallery3dControllerForCircles =
+              syncColorImageList.isNullOrEmpty || syncColorImageList.length < 3
+                  ? null
+                  : Gallery3DController(
+                      itemCount: syncColorImageList.length,
+                      autoLoop: false,
+                      minScale: (syncColorImageList.length) == 4
+                          ? 0.7
+                          : (syncColorImageList.length) <= 8
+                              ? 0.55
+                              : 0.4,
+                      initialIndex: state.currentSelectedColorForEveryProduct[
+                              widget.productItem.productId.toString()] ??
+                          0,
+                      primaryshiftingOffsetDivision:
+                          (syncColorImageList.length) == 4
+                              ? 4.5
+                              : (syncColorImageList.length) <= 8
+                                  ? 1.6
+                                  : 1.6,
+                      scrollTime: 1);
+          currentIndexInSlider = state.currentSelectedColorForEveryProduct[
+                  widget.productItem.productId.toString()] ??
+              0;
+        }
+        if (state.isChangedvariationWhenQtyZero &&
+            widget.currentSelectedColorAfterChangeVariant != -1 &&
+            !(widget.fromListingPage ?? false)) {
+          homeBloc.add(IsChangedvariationWhenQtyZeroEvent(
+              isChangedvariationWhenQtyZero: false));
+
+          gallery3dControllerForCircles =
+              syncColorImageList.isNullOrEmpty || syncColorImageList.length < 3
+                  ? null
+                  : Gallery3DController(
+                      itemCount: syncColorImageList.length,
+                      autoLoop: false,
+                      minScale: (syncColorImageList.length) == 4
+                          ? 0.7
+                          : (syncColorImageList.length) <= 8
+                              ? 0.55
+                              : 0.4,
+                      initialIndex:
+                          widget.currentSelectedColorAfterChangeVariant ?? 0,
+                      primaryshiftingOffsetDivision:
+                          (syncColorImageList.length) == 4
+                              ? 4.5
+                              : (syncColorImageList.length) <= 8
+                                  ? 1.6
+                                  : 1.6,
+                      scrollTime: 1);
+          currentIndexInSlider =
+              widget.currentSelectedColorAfterChangeVariant ?? 0;
+        }
         colorsQuantityForEachProduct =
             state.colorsQuantitiesForEachProduct ?? [];
         colorsForEachProduct = state.colorsForEachProduct ?? [];
@@ -617,6 +663,8 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                 );
 
                                                 currentIndexInSlider = index;
+                                                print(
+                                                    "666666666666666666666666666666666666666666666666666666666666666666666666666666666666${currentIndexInSlider}");
                                                 homeBloc.add(
                                                     AddCurrentSelectedColorEvent(
                                                         currentSelectedColor:
@@ -709,7 +757,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                   .getProductDetailWithoutSimilarRelatedProductsStatus,
                                       builder: (context, state) {
                                         print(
-                                            "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!${widget.productItem.price!}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!${state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!}");
+                                            "!!!!!!!!!!!!!${state.getCurrencyForCountryModel}!${state.currentColorSizeForCart}!!${state.currentSelectedColorForEveryProduct}!${state.getProductDetailWithoutSimilarRelatedProductsStatus}!!!!!!!!!!!!!!!!!!!!!!!${widget.productItem.price!}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!${state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!}");
                                         return ProductDetailsSheetHeader(
                                           shippingCost:
                                               widget.productItem.shippingCost ??
@@ -842,6 +890,9 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                       "size"],
                                           builder: (context, state) {
                                             return SelectSizeContent(
+                                              fromListingPage:
+                                                  widget.fromListingPage ??
+                                                      false,
                                               requestToNotifyMeFormFirstSize:
                                                   requestToNotifyMeFormFirstSize,
                                               collectedAfterOrdering:
@@ -851,11 +902,6 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                               productId: widget
                                                   .productItem.productId
                                                   .toString(),
-                                              sizes:
-                                                  state.sizesForEachColor ?? [],
-                                              sizesQuantities: state
-                                                      .sizesQuantitiesForEachColor ??
-                                                  [],
                                               scrollController: controller,
                                               selectedColorName: widget
                                                       .productItem
@@ -931,6 +977,8 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                               c.currentColorSizeForCart?["size"],
                           builder: (context, state) {
                             return ProductDetailsSheetBottomBar(
+                                isGetFullProductDetails:
+                                    widget.isGetFullProductDetails ?? false,
                                 productNotAvailableNotifier:
                                     widget.productNotAvailableNotifier,
                                 products: widget.productItem,

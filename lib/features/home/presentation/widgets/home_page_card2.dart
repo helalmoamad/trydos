@@ -116,6 +116,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
               Container(
                 height: 235,
                 decoration: BoxDecoration(
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(15.0),
                   boxShadow: [
                     BoxShadow(
@@ -125,7 +126,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                     ),
                   ],
                 ),
-                child: ClipRRect(
+                /*  child: ClipRRect(
                     borderRadius: BorderRadius.circular(15),
                     child: ValueListenableBuilder<int>(
                         valueListenable: changeBackgroundBlurImage,
@@ -142,9 +143,9 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                   height: 235,
                                 )
                               : cupertino.SizedBox.shrink();
-                        })),
+                        })),*/
               ),
-              Positioned.fill(
+              /* Positioned.fill(
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(15.0),
                   child: BackdropFilter(
@@ -155,8 +156,8 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                     ),
                   ),
                 ),
-              ),
-              Positioned.fill(
+              ),*/
+              /*      Positioned.fill(
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(15.0),
                   child: BackdropFilter(
@@ -170,7 +171,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                     ),
                   ),
                 ),
-              ),
+              ),*/
               Positioned.fill(
                   child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -290,7 +291,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                 },
                                 options: CarouselOptions(
                                   autoPlay: true,
-                                  autoPlayInterval: Duration(seconds: 6),
+                                  autoPlayInterval: Duration(seconds: 12),
                                   autoPlayAnimationDuration:
                                       Duration(seconds: 1),
                                   initialPage: 0,

@@ -30,6 +30,7 @@ class NotifyWhenQuantityAvailableButton extends StatefulWidget {
       required this.unAvailableSize,
       required this.productId,
       required this.selectedColorName,
+      required this.currentTap,
       required this.notificationTypeId});
 
   final String unAvailableSize;
@@ -37,7 +38,7 @@ class NotifyWhenQuantityAvailableButton extends StatefulWidget {
 
   final String selectedColorName;
   final int notificationTypeId;
-
+  final int currentTap;
   @override
   State<NotifyWhenQuantityAvailableButton> createState() =>
       _NotifyWhenQuantityAvailableButtonState();
@@ -114,7 +115,7 @@ class _NotifyWhenQuantityAvailableButtonState
                 return Transform.translate(
                     offset: Offset(sineValue * 3, 0),
                     child: SizedBox(
-                      width: 1.sw - 50.h,
+                      width: widget.currentTap != 3 ? 150 : 1.sw - 50.h,
                       child: Stack(
                         alignment: Alignment.topRight,
                         children: [
@@ -181,12 +182,13 @@ class _NotifyWhenQuantityAvailableButtonState
                                       ),
                                       if (!isVariantRequestNotification) ...{
                                         MyTextWidget(
-                                          '${LocaleKeys.notify_me_when_quantity_is_available.tr()}',
+                                          '${LocaleKeys.out_of_stock.tr()}\n${LocaleKeys.notify_me_when_quantity_is_available.tr()}',
                                           style: textTheme.titleMedium?.rq
                                               .copyWith(
                                                   height: 15 / 12,
                                                   color:
                                                       const Color(0xff505050)),
+                                          textAlign: TextAlign.center,
                                         )
                                       } else ...{
                                         Row(

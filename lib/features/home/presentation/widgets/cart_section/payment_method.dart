@@ -116,7 +116,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                       horizontal: 29.w,
                     ),
                     child: Text(
-                      widget.fromSuccessOrder
+                      widget.fromSuccessOrder || widget.fromPalceOrder
                           ? "${LocaleKeys.your_payment_method_about_your_bag.tr()} "
                           : "${LocaleKeys.please_choose_your_payment_method_about_your_bag.tr()} ",
                       style: context.textTheme.bodyMedium?.rr.copyWith(
@@ -438,8 +438,8 @@ class _PaymentMethodState extends State<PaymentMethod> {
         ),
         Text(
           widget.partialPaymentByWallet > 0
-              ? '${widget.amount - widget.partialPaymentByWallet} ${widget.currencySymbol}'
-              : '${widget.amount} ${widget.currencySymbol}',
+              ? '${(widget.amount - widget.partialPaymentByWallet).toStringAsFixed(GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 2)} ${widget.currencySymbol}'
+              : '${widget.amount.toStringAsFixed(GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 2)} ${widget.currencySymbol}',
           style: context.textTheme.bodyMedium?.sbt.copyWith(
             color: const Color(0xff1D1D1D),
             letterSpacing: 0.18,
@@ -511,8 +511,8 @@ class _PaymentMethodState extends State<PaymentMethod> {
         ),
         Text(
           widget.partialPaymentByWallet > 0
-              ? '${widget.partialPaymentByWallet} ${widget.currencySymbol}'
-              : '${widget.amount} ${widget.currencySymbol}',
+              ? '${widget.partialPaymentByWallet.toStringAsFixed(GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 2)} ${widget.currencySymbol}'
+              : '${widget.amount.toStringAsFixed(GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 2)} ${widget.currencySymbol}',
           style: context.textTheme.bodyMedium?.sbt.copyWith(
             color: const Color(0xff1D1D1D),
             letterSpacing: 0.18,

@@ -584,7 +584,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                   valueListenable: currentColorIndex,
                                   builder: (context, currentIndex, _) {
                                     Future.delayed(
-                                        Duration(seconds: 1),
+                                        Duration(milliseconds: 600),
                                         () => homeBloc.add(
                                             AddCurrentSelectedColorEvent(
                                                 currentSelectedColor:
@@ -919,43 +919,8 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                   current
                                       .currentSelectedColorForEveryProductStatus,
                           builder: (context, state) {
-                            print(
-                                "!0000000000000000000000000000000000000000000000000000000000000111111111111111111111111111");
-
-                            int currentSelectedColor = state
-                                        .currentSelectedColorForEveryProduct[
-                                    widget.productItem.productId.toString()] ??
-                                (widget.productItem.syncColorImages?.length ??
-                                        0) ~/
-                                    2;
-                            String currentSelectedColorName =
-                                ((widget.productItem.colors?.length ?? 0) > 0)
-                                    ? widget
-                                            .productItem
-                                            .colors![currentSelectedColor]
-                                            .name ??
-                                        ""
-                                    : "";
-                            String currentVariantType =
-                                "${currentSelectedColorName != "" ? currentSelectedColorName : ""}" +
-                                    "${(state.currentColorSizeForCart?["size"] != null && state.currentColorSizeForCart?["size"] != "") && (currentSelectedColorName != "") ? "-" : ""}" +
-                                    "${(state.currentColorSizeForCart?["size"] != null && state.currentColorSizeForCart?["size"] != "") ? "${state.currentColorSizeForCart?["size"]}" : ""}";
-
-                            Variation? currentVariation =
-                                widget.productItem.variation?.firstWhere(
-                              (element) {
-                                return element.type!
-                                    .contains(currentVariantType);
-                              },
-                              orElse: () {
-                                return Variation(variantNotifyForUser: false);
-                              },
-                            );
-
-                            double price = currentVariation?.price ??
-                                widget.productItem.price!;
-                            double offerPrice = currentVariation?.offerPrice ??
-                                widget.productItem.offerPrice!;
+                            double price = widget.productItem.price!;
+                            double offerPrice = widget.productItem.offerPrice!;
                             return Directionality(
                               textDirection:
                                   LanguageService.languageCode == "ar"
@@ -1018,8 +983,15 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                   ]),
                                   InkWell(
                                     onTap: () {
-                                      widget.tapIndexToAddProductToCart.value =
-                                          widget.itemIndex;
+                                      homeBloc.add(
+                                          ChangeStatusOFGetProductsDetailsToSuccessEvent(
+                                              isStatusInitaial: true));
+
+                                      Future.delayed(
+                                          Duration(milliseconds: 600),
+                                          () => widget
+                                              .tapIndexToAddProductToCart
+                                              .value = widget.itemIndex);
                                     },
                                     child: Container(
                                       height: 30.h,

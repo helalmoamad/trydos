@@ -2518,8 +2518,6 @@ class FilterImage extends StatelessWidget {
                       : MyCachedNetworkImage(
                           imageUrl: imageUrl,
                           width: width,
-                          ordinalwidth: originalWidth,
-                          ordinalHeight: originalHeight,
                           imageFit: BoxFit.cover,
                           height: height),
               //Image.asset(imageUrl , fit: BoxFit.cover, width: width, height: height,),

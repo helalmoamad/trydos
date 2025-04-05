@@ -53,7 +53,7 @@ class ResultSearch {
   final String? zip;
   final String? street;
   final String? building;
-  final Coordinates? coordinates;
+  final List<Coordinates>? coordinates;
 
   ResultSearch({
     this.country,
@@ -74,7 +74,7 @@ class ResultSearch {
     String? street,
     String? building,
     String? zip,
-    Coordinates? coordinates,
+    List<Coordinates>? coordinates,
   }) =>
       ResultSearch(
         country: country ?? this.country,
@@ -96,8 +96,9 @@ class ResultSearch {
         street: json["street"],
         building: json["building"],
         coordinates: json["coordinates"] == null
-            ? null
-            : Coordinates.fromJson(json["coordinates"]),
+            ? []
+            : List<Coordinates>.from(
+                json["coordinates"]!.map((x) => Coordinates.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -108,7 +109,9 @@ class ResultSearch {
         "street": street,
         "zip": zip,
         "building": building,
-        "coordinates": coordinates?.toJson(),
+        "coordinates": coordinates == null
+            ? []
+            : List<dynamic>.from(coordinates!.map((x) => x.toJson())),
       };
 }
 
