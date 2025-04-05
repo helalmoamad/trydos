@@ -615,8 +615,7 @@ class _HomePageState extends State<HomePage> {
                                     .getHomeBoutiquesPaginationObjectByMainCategory[
                                         currentSlug]
                                     ?.paginationStatus ==
-                                PaginationStatus.loading &&
-                            state.isGettingProductListingWithPagination) {
+                                PaginationStatus.loading) {
                           return SliverToBoxAdapter(
                             child: Center(
                               child: TrydosLoader(),

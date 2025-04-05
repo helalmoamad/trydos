@@ -326,8 +326,8 @@ Future<_i174.GetIt> $initGetIt(
       () => _i58.UpdateNameUseCase(gh<_i742.AuthRepository>()));
   gh.factory<_i434.UpdateStoriesUserUseCase>(
       () => _i434.UpdateStoriesUserUseCase(gh<_i742.AuthRepository>()));
-  gh.factory<_i236.VerifyGuestPhoneUseCase>(
-      () => _i236.VerifyGuestPhoneUseCase(gh<_i742.AuthRepository>()));
+  gh.factory<_i236.VerifyOtpFromGuestUseCase>(
+      () => _i236.VerifyOtpFromGuestUseCase(gh<_i742.AuthRepository>()));
   gh.factory<_i574.VerifyOtpSignInUseCase>(
       () => _i574.VerifyOtpSignInUseCase(gh<_i742.AuthRepository>()));
   gh.factory<_i282.VerifyOtpSignUpUseCase>(
@@ -340,6 +340,8 @@ Future<_i174.GetIt> $initGetIt(
       () => _i1035.AddItemToCartUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i33.AddLikeToProductUsecase>(
       () => _i33.AddLikeToProductUsecase(gh<_i0.HomeRepository>()));
+  gh.factory<_i493.ApplyCouponUsecase>(
+      () => _i493.ApplyCouponUsecase(gh<_i0.HomeRepository>()));
   gh.factory<_i814.ChangeCountryLanguageFornotificationUseCase>(() =>
       _i814.ChangeCountryLanguageFornotificationUseCase(
           gh<_i0.HomeRepository>()));
@@ -361,6 +363,8 @@ Future<_i174.GetIt> $initGetIt(
       () => _i318.GetAllowedCountryUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i307.GetCartItemUseCase>(
       () => _i307.GetCartItemUseCase(gh<_i0.HomeRepository>()));
+  gh.factory<_i675.GetCartOverviewUseCase>(
+      () => _i675.GetCartOverviewUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i922.GetAndAddCountViewOfProductUsecase>(
       () => _i922.GetAndAddCountViewOfProductUsecase(gh<_i0.HomeRepository>()));
   gh.factory<_i762.GetCurrencyForCountryUseCase>(
@@ -433,10 +437,6 @@ Future<_i174.GetIt> $initGetIt(
       () => _i432.UpdateNotificationFrequencyUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i744.UpdateWhatsappNotificationUseCase>(
       () => _i744.UpdateWhatsappNotificationUseCase(gh<_i0.HomeRepository>()));
-  gh.factory<_i493.ApplyCouponUsecase>(
-      () => _i493.ApplyCouponUsecase(gh<_i0.HomeRepository>()));
-  gh.factory<_i675.GetCartOverviewUseCase>(
-      () => _i675.GetCartOverviewUseCase(gh<_i0.HomeRepository>()));
   gh.lazySingleton<_i702.CommonUseRepository>(() =>
       _i77.CommonUseRepositoryImpl(gh<_i672.CommonUseRemoteDataSource>()));
   gh.lazySingleton<_i801.HomeBloc>(() => _i801.HomeBloc(
@@ -557,6 +557,22 @@ Future<_i174.GetIt> $initGetIt(
       () => _i711.RejectCallUseCase(gh<_i1032.CallsRepository>()));
   gh.factory<_i961.WatchMissedCallUseCase>(
       () => _i961.WatchMissedCallUseCase(gh<_i1032.CallsRepository>()));
+  gh.lazySingleton<_i561.AuthBloc>(() => _i561.AuthBloc(
+        gh<_i434.UpdateStoriesUserUseCase>(),
+        gh<_i730.UpdateChatUserNameUseCase>(),
+        gh<_i589.CreateUserUseCase>(),
+        gh<_i919.LoginToChatUseCase>(),
+        gh<_i656.LoginToStoriesUseCase>(),
+        gh<_i142.StoreFcmUseCase>(),
+        gh<_i58.UpdateNameUseCase>(),
+        gh<_i49.RegisterGuestUseCase>(),
+        gh<_i952.SendOtpUseCase>(),
+        gh<_i862.GetCustomerInfoUseCase>(),
+        gh<_i236.VerifyOtpFromGuestUseCase>(),
+        gh<_i574.VerifyOtpSignInUseCase>(),
+        gh<_i644.GetUserCountryUseCase>(),
+        gh<_i282.VerifyOtpSignUpUseCase>(),
+      ));
   gh.lazySingleton<_i536.StoryBloc>(() => _i536.StoryBloc(
         gh<_i1043.UploadFileCloudinaryUseCase>(),
         gh<_i804.GetStoryUseCase>(),
@@ -595,22 +611,6 @@ Future<_i174.GetIt> $initGetIt(
         gh<_i109.GetMediaCountUseCase>(),
         gh<_i668.GetDateTimeUseCase>(),
         gh<_i677.SendErrorToServerUseCase>(),
-      ));
-  gh.lazySingleton<_i561.AuthBloc>(() => _i561.AuthBloc(
-        gh<_i434.UpdateStoriesUserUseCase>(),
-        gh<_i730.UpdateChatUserNameUseCase>(),
-        gh<_i589.CreateUserUseCase>(),
-        gh<_i919.LoginToChatUseCase>(),
-        gh<_i656.LoginToStoriesUseCase>(),
-        gh<_i142.StoreFcmUseCase>(),
-        gh<_i58.UpdateNameUseCase>(),
-        gh<_i49.RegisterGuestUseCase>(),
-        gh<_i952.SendOtpUseCase>(),
-        gh<_i862.GetCustomerInfoUseCase>(),
-        gh<_i236.VerifyGuestPhoneUseCase>(),
-        gh<_i574.VerifyOtpSignInUseCase>(),
-        gh<_i644.GetUserCountryUseCase>(),
-        gh<_i282.VerifyOtpSignUpUseCase>(),
       ));
   return getIt;
 }

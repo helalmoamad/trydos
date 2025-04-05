@@ -375,11 +375,11 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     homeBloc = BlocProvider.of<HomeBloc>(context);
     appBloc = BlocProvider.of<AppBloc>(context);
     callsBloc = BlocProvider.of<CallsBloc>(context);
-
-    if (!(GetIt.I<PrefsRepository>().onMessageRun ?? false)) {
+    prefsRepository.setRequestNotificationPermission(false);
+    if (!(prefsRepository.onMessageRun ?? false)) {
       onMessage();
     }
-    GetIt.I<PrefsRepository>().setOnMessageRun(true);
+    prefsRepository.setOnMessageRun(true);
     if (homeBloc.state.startingSetting != null) {
       showUpgradeApp = false;
       debugPrint('version gets successfully');
@@ -653,7 +653,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                               c.getCustomerCountryStatus,
                           builder: (context, authstate) {
                             if (homestate.getAllowedCountriesModel == null ||
-                                _prefsRepository.countryIso == null ||
+                                //    _prefsRepository.countryIso == null ||
                                 homestate.getAllowedCountriesModel!.data!
                                     .countries.isNullOrEmpty) {
                               return Center(

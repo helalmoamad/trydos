@@ -12,7 +12,7 @@ enum VerifyOtpSignUpStatus { init, loading, success, failure }
 
 enum VerifyOtpSignInStatus { init, loading, success, failure }
 
-enum VerifyGuestPhoneStatus { init, loading, success, failure }
+enum VerifyOtpFromGuestStatus { init, loading, success, failure }
 
 enum RegisterGuestStatus { init, loading, success, failure }
 
@@ -39,7 +39,7 @@ class AuthState {
     this.registerGuestStatus = RegisterGuestStatus.init,
     this.verifyOtpSignUpStatus = VerifyOtpSignUpStatus.init,
     this.verifyOtpSignInStatus = VerifyOtpSignInStatus.init,
-    this.verifyGuestPhoneStatus = VerifyGuestPhoneStatus.init,
+    this.verifyOtpFromGuestStatus = VerifyOtpFromGuestStatus.init,
     this.loginToStoriesStatus = LoginToStoriesStatus.init,
     this.getCustomerInfoStatus = GetCustomerInfoStatus.init,
     this.updateNameStatus = UpdateNameStatus.init,
@@ -55,7 +55,7 @@ class AuthState {
 
   final VerifyOtpSignUpStatus verifyOtpSignUpStatus;
   final VerifyOtpSignInStatus verifyOtpSignInStatus;
-  final VerifyGuestPhoneStatus verifyGuestPhoneStatus;
+  final VerifyOtpFromGuestStatus verifyOtpFromGuestStatus;
   final RegisterGuestStatus registerGuestStatus;
   final UpdateNameStatus updateNameStatus;
   final UpdateStoriesUserStatus updateStoriesUserStatus;
@@ -85,7 +85,7 @@ class AuthState {
       final VerifyOtpSignUpStatus? verifyOtpSignUpStatus,
       final UpdateStoriesUserStatus? updateStoriesUserStatus,
       final VerifyOtpSignInStatus? verifyOtpSignInStatus,
-      final VerifyGuestPhoneStatus? verifyGuestPhoneStatus}) {
+      final VerifyOtpFromGuestStatus? verifyOtpFromGuestStatus}) {
     return AuthState(
       updateChatUserNameStatus:
           updateChatUserNameStatus ?? this.updateChatUserNameStatus,
@@ -110,8 +110,8 @@ class AuthState {
           verifyOtpSignUpStatus ?? this.verifyOtpSignUpStatus,
       verifyOtpSignInStatus:
           verifyOtpSignInStatus ?? this.verifyOtpSignInStatus,
-      verifyGuestPhoneStatus:
-          verifyGuestPhoneStatus ?? this.verifyGuestPhoneStatus,
+      verifyOtpFromGuestStatus:
+          verifyOtpFromGuestStatus ?? this.verifyOtpFromGuestStatus,
     );
   }
 }

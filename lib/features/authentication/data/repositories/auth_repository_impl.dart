@@ -55,10 +55,10 @@ class AuthRepositoryImpl extends AuthRepository with HandlingExceptionRequest {
   }
 
   @override
-  Future<Either<Failure, VerifyGuestPhoneResponseModel>> verifyGuestPhone(
+  Future<Either<Failure, VerifyOtpFromGuestResponseModel>> verifyOtpFromGuest(
       Map<String, dynamic> params) {
     return handlingExceptionRequest(
-        tryCall: () => dataSource.verifyGuestPhone(params));
+        tryCall: () => dataSource.verifyOtpFromGuest(params));
   }
 
   @override

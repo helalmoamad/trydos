@@ -87,11 +87,10 @@ class VerifyOtpSignInEvent extends AuthEvent {
   final String verificationId;
   final String otp;
   final String phone;
-  final bool fromCart;
+
   VerifyOtpSignInEvent({
     required this.verificationId,
     required this.otp,
-    required this.fromCart,
     required this.phone,
   });
   @override
@@ -103,27 +102,25 @@ class VerifyOtpSignUpEvent extends AuthEvent {
   final String verificationId;
   final String otp;
   final String? name;
-  final bool fromCart;
+
   VerifyOtpSignUpEvent(
-      {required this.verificationId,
-      required this.otp,
-      required this.fromCart,
-      this.name});
+      {required this.verificationId, required this.otp, this.name});
   @override
   // TODO: implement props
   List<Object?> get props => [otp, name, verificationId];
 }
 
-class VerifyGuestPhoneEvent extends AuthEvent {
-  final String idToken;
-
-  VerifyGuestPhoneEvent({
-    required this.idToken,
+class VerifyOtpFromGuestEvent extends AuthEvent {
+  final String verificationId;
+  final String otp;
+  VerifyOtpFromGuestEvent({
+    required this.verificationId,
+    required this.otp,
   });
 
   @override
   // TODO: implement props
-  List<Object?> get props => [idToken];
+  List<Object?> get props => [verificationId, otp];
 }
 
 class RegisterGuestEvent extends AuthEvent {

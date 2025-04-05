@@ -1,117 +1,66 @@
 // To parse this JSON data, do
 //
-//     final verifyGuestPhoneResponseModel = verifyGuestPhoneResponseModelFromJson(jsonString);
+//     final verifyOtpFromGuestResponseModel = verifyOtpFromGuestResponseModelFromJson(jsonString);
 
 import 'dart:convert';
 
-VerifyGuestPhoneResponseModel verifyGuestPhoneResponseModelFromJson(
+VerifyOtpFromGuestResponseModel verifyOtpFromGuestResponseModelFromJson(
         String str) =>
-    VerifyGuestPhoneResponseModel.fromJson(json.decode(str));
+    VerifyOtpFromGuestResponseModel.fromJson(json.decode(str));
 
-String verifyGuestPhoneResponseModelToJson(
-        VerifyGuestPhoneResponseModel data) =>
+String verifyOtpFromGuestResponseModelToJson(
+        VerifyOtpFromGuestResponseModel data) =>
     json.encode(data.toJson());
 
-class VerifyGuestPhoneResponseModel {
-  final bool? isSuccessful;
-  final bool? hasContent;
-  final int? code;
-  final String? message;
-  final dynamic detailedError;
-  final VerifyGuestPhoneResponseModelData? data;
-
-  VerifyGuestPhoneResponseModel({
-    this.isSuccessful,
-    this.hasContent,
-    this.code,
-    this.message,
-    this.detailedError,
-    this.data,
-  });
-
-  VerifyGuestPhoneResponseModel copyWith({
-    bool? isSuccessful,
-    bool? hasContent,
-    int? code,
-    String? message,
-    dynamic detailedError,
-    VerifyGuestPhoneResponseModelData? data,
-  }) =>
-      VerifyGuestPhoneResponseModel(
-        isSuccessful: isSuccessful ?? this.isSuccessful,
-        hasContent: hasContent ?? this.hasContent,
-        code: code ?? this.code,
-        message: message ?? this.message,
-        detailedError: detailedError ?? this.detailedError,
-        data: data ?? this.data,
-      );
-
-  factory VerifyGuestPhoneResponseModel.fromJson(Map<String, dynamic> json) =>
-      VerifyGuestPhoneResponseModel(
-        isSuccessful: json["isSuccessful"],
-        hasContent: json["hasContent"],
-        code: json["code"],
-        message: json["message"],
-        detailedError: json["detailed_error"],
-        data: json["data"] == null
-            ? null
-            : VerifyGuestPhoneResponseModelData.fromJson(json["data"]),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "isSuccessful": isSuccessful,
-        "hasContent": hasContent,
-        "code": code,
-        "message": message,
-        "detailed_error": detailedError,
-        "data": data?.toJson(),
-      };
-}
-
-class VerifyGuestPhoneResponseModelData {
+class VerifyOtpFromGuestResponseModel {
   final String? code;
-  final DataData? data;
+  final String? message;
+  final Data? data;
   final String? token;
   final String? expiresAt;
 
-  VerifyGuestPhoneResponseModelData({
+  VerifyOtpFromGuestResponseModel({
     this.code,
+    this.message,
     this.data,
     this.token,
     this.expiresAt,
   });
 
-  VerifyGuestPhoneResponseModelData copyWith({
+  VerifyOtpFromGuestResponseModel copyWith({
     String? code,
-    DataData? data,
+    String? message,
+    Data? data,
     String? token,
     String? expiresAt,
   }) =>
-      VerifyGuestPhoneResponseModelData(
+      VerifyOtpFromGuestResponseModel(
         code: code ?? this.code,
+        message: message ?? this.message,
         data: data ?? this.data,
         token: token ?? this.token,
         expiresAt: expiresAt ?? this.expiresAt,
       );
 
-  factory VerifyGuestPhoneResponseModelData.fromJson(
-          Map<String, dynamic> json) =>
-      VerifyGuestPhoneResponseModelData(
-        code: json["code"],
-        data: json["data"] == null ? null : DataData.fromJson(json["data"]),
+  factory VerifyOtpFromGuestResponseModel.fromJson(Map<String, dynamic> json) =>
+      VerifyOtpFromGuestResponseModel(
+        code: json["code"].toString(),
+        message: json["message"],
+        data: json["data"] == null ? null : Data.fromJson(json["data"]),
         token: json["token"],
         expiresAt: json["expires_at"],
       );
 
   Map<String, dynamic> toJson() => {
-        "code": code,
+        "code": code.toString(),
+        "message": message,
         "data": data?.toJson(),
         "token": token,
         "expires_at": expiresAt,
       };
 }
 
-class DataData {
+class Data {
   final int? id;
   final String? name;
   final dynamic fName;
@@ -122,7 +71,7 @@ class DataData {
   final dynamic emailVerifiedAt;
   final String? currentLanguageCodeAndCountry;
   final String? previousLanguageCodeAndCountry;
-  final dynamic firebaseSettings;
+  final String? firebaseSettings;
   final dynamic settings;
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -142,7 +91,7 @@ class DataData {
   final int? isPhoneVerified;
   final String? temporaryToken;
   final int? isEmailVerified;
-  final dynamic walletBalance;
+  final int? walletBalance;
   final dynamic loyaltyPoint;
   final int? hasTempOrder;
   final int? isGuest;
@@ -171,7 +120,7 @@ class DataData {
   final DateTime? verifiedAt;
   final int? isInvoicesEmployee;
 
-  DataData({
+  Data({
     this.id,
     this.name,
     this.fName,
@@ -232,7 +181,7 @@ class DataData {
     this.isInvoicesEmployee,
   });
 
-  DataData copyWith({
+  Data copyWith({
     int? id,
     String? name,
     dynamic fName,
@@ -243,7 +192,7 @@ class DataData {
     dynamic emailVerifiedAt,
     String? currentLanguageCodeAndCountry,
     String? previousLanguageCodeAndCountry,
-    dynamic firebaseSettings,
+    String? firebaseSettings,
     dynamic settings,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -263,7 +212,7 @@ class DataData {
     int? isPhoneVerified,
     String? temporaryToken,
     int? isEmailVerified,
-    dynamic walletBalance,
+    int? walletBalance,
     dynamic loyaltyPoint,
     int? hasTempOrder,
     int? isGuest,
@@ -292,7 +241,7 @@ class DataData {
     DateTime? verifiedAt,
     int? isInvoicesEmployee,
   }) =>
-      DataData(
+      Data(
         id: id ?? this.id,
         name: name ?? this.name,
         fName: fName ?? this.fName,
@@ -361,7 +310,7 @@ class DataData {
         isInvoicesEmployee: isInvoicesEmployee ?? this.isInvoicesEmployee,
       );
 
-  factory DataData.fromJson(Map<String, dynamic> json) => DataData(
+  factory Data.fromJson(Map<String, dynamic> json) => Data(
         id: json["id"],
         name: json["name"],
         fName: json["f_name"],

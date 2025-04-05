@@ -1544,9 +1544,9 @@ class _CartPageState extends State<CartPage> {
                                                                           buildWhen: (p, c) =>
                                                                               p.verifyOtpSignInStatus != c.verifyOtpSignInStatus ||
                                                                               p.verifyOtpSignUpStatus != c.verifyOtpSignUpStatus ||
-                                                                              c.verifyGuestPhoneStatus != p.verifyGuestPhoneStatus,
+                                                                              c.verifyOtpFromGuestStatus != p.verifyOtpFromGuestStatus,
                                                                           builder: (context, authState) {
-                                                                            return (authState.verifyGuestPhoneStatus == VerifyGuestPhoneStatus.loading || state.getCartOverviewStatus == GetCartOverviewStatus.loading || authState.verifyOtpSignInStatus == VerifyOtpSignInStatus.loading || authState.verifyOtpSignUpStatus == VerifyOtpSignUpStatus.loading || state.addItemInCartStatus == AddItemInCartStatus.loading || state.deleteItemInCartStatus == DeleteItemInCartStatus.loading || state.updateItemInCartStatus == UpdateItemInCartStatus.loading || state.checkWithGetCartStatus == CheckWithGetCartStatus.loading)
+                                                                            return (authState.verifyOtpFromGuestStatus == VerifyOtpFromGuestStatus.loading || state.getCartOverviewStatus == GetCartOverviewStatus.loading || state.addItemInCartStatus == AddItemInCartStatus.loading || state.deleteItemInCartStatus == DeleteItemInCartStatus.loading || state.updateItemInCartStatus == UpdateItemInCartStatus.loading || state.checkWithGetCartStatus == CheckWithGetCartStatus.loading)
                                                                                 ? Shimmer.fromColors(
                                                                                     baseColor: Colors.grey[200]!,
                                                                                     highlightColor: Colors.grey[100]!,

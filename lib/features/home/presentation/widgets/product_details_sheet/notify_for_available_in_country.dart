@@ -29,10 +29,12 @@ class NotifyWhenAvailableInCountryButton extends StatefulWidget {
     super.key,
     required this.unAvailableType,
     required this.productId,
+    required this.currentTap,
   });
 
   final String unAvailableType;
   final String productId;
+  final int currentTap;
 
   @override
   State<NotifyWhenAvailableInCountryButton> createState() =>
@@ -97,7 +99,7 @@ class _NotifyWhenAvailableInCountryButtonState
                 return Transform.translate(
                     offset: Offset(sineValue * 3, 0),
                     child: SizedBox(
-                      width: 1.sw - 50.h,
+                      width: widget.currentTap == 3 ? 1.sh - 50 : 150,
                       child: Stack(
                         alignment: Alignment.topRight,
                         children: [

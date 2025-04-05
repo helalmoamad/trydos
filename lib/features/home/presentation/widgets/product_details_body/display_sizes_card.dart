@@ -144,23 +144,24 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                     widget.productItem.colors?[widget.currentColorForProduct]
                         .name) &&
             element.qty != null) {
-          if (element.qty! > 0) {
-            sizes!.add(element.type!
-                .split("-")[widget.productItem.colors.isNullOrEmpty ? 0 : 1]);
-          }
+          sizes!.add(element.type!
+              .split("-")[widget.productItem.colors.isNullOrEmpty ? 0 : 1]);
         }
       });
     }
-
-    sizes = [
-      ...sizes ?? [],
-      ...sizes ?? [],
-    ];
     int currentIndexOfSelectedSize = sizes!.indexWhere((size) =>
         size ==
         BlocProvider.of<HomeBloc>(context)
             .state
             .currentColorSizeForCart?['size']);
+
+    sizes = [
+      ...sizes ?? [],
+      ...sizes ?? [],
+    ];
+
+    print(
+        "12-----------------------------${sizes}--------------4${BlocProvider.of<HomeBloc>(context).state.currentColorSizeForCart?['size']}");
     widget.scrollController.addListener(changingModeListener);
     gallery3dControllerForCircles = sizes.isNullOrEmpty || sizes!.length < 3
         ? null
@@ -235,6 +236,7 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
               ...sizes ?? [],
               ...sizes ?? [],
             ];
+
             return ValueListenableBuilder<int>(
                 valueListenable: displayMode,
                 builder: (context, mode, _) {
@@ -409,6 +411,8 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                                       builder: (context,
                                                                           currentSelectedSize,
                                                                           _) {
+                                                                        print(
+                                                                            "12-------------------------------------------${currentSelectedSize}");
                                                                         return Row(
                                                                           mainAxisSize:
                                                                               MainAxisSize.min,

@@ -72,6 +72,8 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       removeAddressToOrderStatus: $enumDecodeNullable(
           _$RemoveAddressToOrderStatusEnumMap,
           json['removeAddressToOrderStatus']),
+      isChangedvariationWhenQtyZero:
+          json['isChangedvariationWhenQtyZero'] as bool? ?? false,
       getFullProductDetailsStatus: $enumDecodeNullable(
               _$GetFullProductDetailsStatusEnumMap,
               json['getFullProductDetailsStatus']) ??
@@ -523,6 +525,7 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'currentSelectedColorForEveryProductStatus':
           _$CurrentSelectedColorForEveryProductStatusEnumMap[
               instance.currentSelectedColorForEveryProductStatus],
+      'isChangedvariationWhenQtyZero': instance.isChangedvariationWhenQtyZero,
       'convertItemFromOldcartToCartStatus':
           _$ConvertItemFromOldcartToCartStatusEnumMap[
               instance.convertItemFromOldcartToCartStatus],

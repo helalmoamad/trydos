@@ -300,8 +300,9 @@ class GetHomeBoutiqesEvent extends HomeEvent {
 class GetProductDatailsWithoutRelatedProductsEvent extends HomeEvent {
   final String? productId;
   final String? productSlug;
+  final bool? fromListingPage;
   const GetProductDatailsWithoutRelatedProductsEvent(
-      {this.productId, this.productSlug});
+      {this.productId, this.productSlug, this.fromListingPage});
 
   @override
   // TODO: implement props
@@ -681,6 +682,23 @@ class CheckWithGetCartEvent extends HomeEvent {
   List<Object?> get props => [isForPlaceOrder];
 }
 
+class IsChangedvariationWhenQtyZeroEvent extends HomeEvent {
+  final bool isChangedvariationWhenQtyZero;
+  const IsChangedvariationWhenQtyZeroEvent(
+      {required this.isChangedvariationWhenQtyZero});
+
+  @override
+  List<Object?> get props => [isChangedvariationWhenQtyZero];
+}
+
+class ChangeStatusOFGetProductsDetailsToSuccessEvent extends HomeEvent {
+  final bool? isStatusInitaial;
+  const ChangeStatusOFGetProductsDetailsToSuccessEvent({this.isStatusInitaial});
+
+  @override
+  List<Object?> get props => [];
+}
+
 class RemoveItemsFromCartAfterOrderSuccessEvent extends HomeEvent {
   const RemoveItemsFromCartAfterOrderSuccessEvent();
 
@@ -801,7 +819,7 @@ class RemoveItemFormCartEvent extends HomeEvent {
   final String productId;
   final String currentSize;
   final int? countOfPieces;
-  final String ColoName;
+  final String colorName;
   final String image;
   RemoveItemFormCartEvent({
     required this.itemId,
@@ -809,7 +827,7 @@ class RemoveItemFormCartEvent extends HomeEvent {
     required this.boutiqueId,
     required this.image,
     required this.currentSize,
-    required this.ColoName,
+    required this.colorName,
     required this.productId,
   });
 

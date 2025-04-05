@@ -507,7 +507,6 @@ class HelperFunctions {
         } else if (number < 1e3) {
           return '1$thousand';
         } else {
-          print(number);
           String result = (((number + 999) ~/ 1000) / 1000).toStringAsFixed(
               (GetIt.I<HomeBloc>()
                           .state
@@ -515,7 +514,7 @@ class HelperFunctions {
                           ?.decimalPointSettings ??
                       2) +
                   3);
-          print(result.lastIndexOf(RegExp(r'.000')) + 1);
+
           if ((result.lastIndexOf(RegExp(r'.000'))) != -1) {
             result = result.substring(0, (result.lastIndexOf(RegExp(r'.000'))));
           }

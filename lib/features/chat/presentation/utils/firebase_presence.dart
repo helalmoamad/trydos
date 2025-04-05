@@ -130,7 +130,7 @@ import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
-
+import 'package:firebase_core/firebase_core.dart';
 import '../../../../service/language_service.dart';
 import '../../data/models/my_chats_response_model.dart';
 
@@ -145,9 +145,10 @@ class FirebasePresence {
     "Recording...": "يسجل مقطع صوتي...",
     "Sending file...": "يرسل ملف...",
   };
-  static final FirebaseDatabase database = FirebaseDatabase.instance;
-  static final FirebaseDatabase databases = FirebaseDatabase.instance;
-
+  static final database = FirebaseDatabase.instanceFor(
+      app: Firebase.app(),
+      databaseURL:
+          "https://trydos-2e2b2-default-rtdb.europe-west1.firebasedatabase.app/");
   static Future<void> listeningToTyping({
     required int friendId,
     required int chatId,
@@ -185,7 +186,7 @@ class FirebasePresence {
   }) async {
     String description;
     final typingRef =
-        databases.ref().child('ConnectStatus').child(friendId.toString());
+        database.ref().child('ConnectStatus').child(friendId.toString());
 
     typingRef.onValue.listen((event) {
       if (event.snapshot.exists) {
@@ -202,21 +203,30 @@ class FirebasePresence {
   static Future<void> sendUserStatus(String? description) async {
     DatabaseReference con =
         database.ref().child('ConnectStatus').child(myChatId.toString());
+
     await database.goOnline();
-    con.push();
+    await con.push();
+
     con.set(description);
   }
 
   static Future<void> sendUserTransaction(
       {required String channelId, String? description}) async {
     print([...chatBloc.state.chats, ...chatBloc.state.pinnedChats]
-        .firstWhere((element) => element.id == channelId || element.localId == channelId).channelMembers.toString());
+        .firstWhere((element) =>
+            element.id == channelId || element.localId == channelId)
+        .channelMembers
+        .toString());
     [...chatBloc.state.chats, ...chatBloc.state.pinnedChats]
-        .firstWhere((element) => element.id == channelId || element.localId == channelId).channelMembers?.forEach((element) {
-          print(element.user.toString());
+        .firstWhere((element) =>
+            element.id == channelId || element.localId == channelId)
+        .channelMembers
+        ?.forEach((element) {
+      print(element.user.toString());
     });
     String friendId = [...chatBloc.state.chats, ...chatBloc.state.pinnedChats]
-        .firstWhere((element) => element.id == channelId || element.localId == channelId)
+        .firstWhere((element) =>
+            element.id == channelId || element.localId == channelId)
         .channelMembers!
         .firstWhere((element) => element.user!.id != myChatId)
         .user!
@@ -239,7 +249,8 @@ class FirebasePresence {
 
   static void deleteUserTransaction({required String channelId}) {
     String friendId = [...chatBloc.state.chats, ...chatBloc.state.pinnedChats]
-        .firstWhere((element) => element.id == channelId || element.localId == channelId)
+        .firstWhere((element) =>
+            element.id == channelId || element.localId == channelId)
         .channelMembers!
         .firstWhere((element) => element.userId != myChatId)
         .userId

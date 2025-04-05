@@ -189,20 +189,20 @@ class AuthRemoteDatasource {
     return verifyOtpSignIn();
   }
 
-  Future<VerifyGuestPhoneResponseModel> verifyGuestPhone(
+  Future<VerifyOtpFromGuestResponseModel> verifyOtpFromGuest(
       Map<String, dynamic> params) {
-    PostClient<VerifyGuestPhoneResponseModel> verifyGuestPhone =
-        PostClient<VerifyGuestPhoneResponseModel>(
+    GetClient<VerifyOtpFromGuestResponseModel> verifyOtpFromGuest =
+        GetClient<VerifyOtpFromGuestResponseModel>(
       serverName: ServerName.market,
-      requestPrams: RequestConfig<VerifyGuestPhoneResponseModel>(
-        endpoint: MarketEndPoints.verifyGuestPhoneEP,
-        data: params,
-        response: ResponseValue<VerifyGuestPhoneResponseModel>(
+      requestPrams: RequestConfig<VerifyOtpFromGuestResponseModel>(
+        endpoint: MarketEndPoints.verifyOtpFromGuestEP,
+        queryParameters: params,
+        response: ResponseValue<VerifyOtpFromGuestResponseModel>(
             fromJson: (response) =>
-                VerifyGuestPhoneResponseModel.fromJson(response)),
+                VerifyOtpFromGuestResponseModel.fromJson(response)),
       ),
     );
-    return verifyGuestPhone();
+    return verifyOtpFromGuest();
   }
 
   Future<VerifyOtpSignUpAndInResponseModel> loginToMarket(

@@ -56,6 +56,7 @@ class DefaultFirebaseOptions {
     apiKey: 'AIzaSyCHW9v3OeTVyxDG3nEIVuXj3FIvkMR7X7g',
     appId: '1:817506223106:android:b7b4ce2b70aeff3e82131b',
     messagingSenderId: '817506223106',
+    authDomain: "trydos-2e2b2.firebaseapp.com",
     projectId: 'trydos-2e2b2',
     storageBucket: 'trydos-2e2b2.firebasestorage.app',
   );

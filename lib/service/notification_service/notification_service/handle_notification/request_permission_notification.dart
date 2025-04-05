@@ -1,14 +1,17 @@
+import 'package:get_it/get_it.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 
 class PermissionServices {
   Future<void> requestNotificationPermission() async {
     final status = await Permission.notification.status;
-
+    PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
     if (status.isGranted) {
       print("Permission already granted");
     } else if (status.isDenied) {
       // إذا كان الإذن مرفوضًا، اطلب الإذن من المستخدم
       final result = await Permission.notification.request();
+
       if (result.isGranted) {
         print("Permission granted");
       } else if (result.isPermanentlyDenied) {

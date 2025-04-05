@@ -156,7 +156,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
                 GetIt.I<CallsBloc>().add(RejectVideoCallEvent(
                     duration: 0,
                     payload: {'Target': 'Application  From terminated'},
-                    messageId: data["id"].toString()));
+              messageId: data["id"].toString()));
               }*/
             }
             break;

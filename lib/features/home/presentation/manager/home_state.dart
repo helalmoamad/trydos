@@ -139,6 +139,8 @@ enum GetCartOverviewStatus { init, loading, success, failure }
 
 enum SetCustomerAddressDefaultStatus { init, loading, success, failure }
 
+enum EnableAddToCardAfterChangeVariantZero { init, loading, success, failure }
+
 enum CurrentSelectedColorForEveryProductStatus {
   init,
   loading,
@@ -170,6 +172,7 @@ class HomeState extends Equatable {
       this.currentSelectedColorForEveryProductStatus,
       this.addAddressToOrderStatus,
       this.removeAddressToOrderStatus,
+      this.isChangedvariationWhenQtyZero = false,
       this.getFullProductDetailsStatus = GetFullProductDetailsStatus.init,
       this.addCommentStatus = AddCommentStatus.init,
       this.startingSetting,
@@ -180,6 +183,7 @@ class HomeState extends Equatable {
       this.isVariantRequestNotification = const [],
       this.deleteItemInCartStatus,
       this.oldcartCollection,
+      this.enableAddToCardAfterChangeVariantZero,
       this.getOldCartItemsStatus = GetOLdCartItemsStatus.init,
       this.getOldCartModel,
       this.isGettingProductListingWithPagination = false,
@@ -277,6 +281,9 @@ class HomeState extends Equatable {
   final Map<String, product.Products> productITemForCart;
   final CurrentSelectedColorForEveryProductStatus?
       currentSelectedColorForEveryProductStatus;
+  final EnableAddToCardAfterChangeVariantZero?
+      enableAddToCardAfterChangeVariantZero;
+  final bool isChangedvariationWhenQtyZero;
   final ConvertItemFromOldcartToCartStatus? convertItemFromOldcartToCartStatus;
   final GetMainCategoriesStatus getMainCategoriesStatus;
   final GetNotificationTypeProductStatus? getNotificationTypeProductStatus;
@@ -431,6 +438,7 @@ class HomeState extends Equatable {
         getProductListingWithFiltersPaginationModels,
         getCurrencyForCountryModel,
         sendRequestToGeminiStatus,
+        enableAddToCardAfterChangeVariantZero,
         theReplyFromGemini,
         cartIdsHurryUPTimerStarted,
         addCommentStatus,
@@ -515,6 +523,7 @@ class HomeState extends Equatable {
         currentIndexForUpdateCart,
         currentColorSizeForCart,
         getAddressByCoordinatesModel,
+        isChangedvariationWhenQtyZero,
         getFirebaseSettingForNotificationStatus,
         customerWalletModel,
         currentQuantityForCart,
@@ -529,9 +538,12 @@ class HomeState extends Equatable {
           getFirebaseSettingForNotificationStatus,
       final FirebaseSettingForNotificationModel?
           firebaseSettingForNotificationModel,
+      final bool? isChangedvariationWhenQtyZero,
       final GetMainCategoriesStatus? getMainCategoriesStatus,
       final GetAddressByCoordinatesModel? getAddressByCoordinatesModel,
       final CustomerWalletModel? customerWalletModel,
+      final EnableAddToCardAfterChangeVariantZero?
+          enableAddToCardAfterChangeVariantZero,
       final OrdersGroupModel? placeOrderModel,
       final PlaceOrderStatus? placeOrderStatus,
       final ApplyCouponModel? applyCouponModel,
@@ -621,7 +633,7 @@ class HomeState extends Equatable {
       Map<String, List<int>>? currentQuantityForCart,
       List<cart.Cart>? cartCollection,
       List<oldCart.OldCart>? oldCartCollection,
-      Map<String, String>? CurrentColorSizeForCart,
+      Map<String, String>? currentColorSizeForCart,
       final Map<String, bool>? reRequestTheseBoutiques,
       final SendRequestToGeminiStatus? sendRequestToGeminiStatus,
       final Map<String, product.Products>? productITemForCart,
@@ -671,6 +683,9 @@ class HomeState extends Equatable {
       getAddressByCoordinatesModel:
           getAddressByCoordinatesModel ?? this.getAddressByCoordinatesModel,
       customerWalletModel: customerWalletModel ?? this.customerWalletModel,
+      enableAddToCardAfterChangeVariantZero:
+          enableAddToCardAfterChangeVariantZero ??
+              this.enableAddToCardAfterChangeVariantZero,
       hideItemInOldCartStatus:
           hideItemInOldCartStatus ?? this.hideItemInOldCartStatus,
       getCommentForProductModel:
@@ -698,6 +713,8 @@ class HomeState extends Equatable {
       firebaseSettingForNotificationModel:
           firebaseSettingForNotificationModel ??
               this.firebaseSettingForNotificationModel,
+      isChangedvariationWhenQtyZero:
+          isChangedvariationWhenQtyZero ?? this.isChangedvariationWhenQtyZero,
       changeSizesForEveryProduct:
           changeSizesForEveryProduct ?? this.changeSizesForEveryProduct,
       addAddressToOrderStatus:
@@ -815,7 +832,7 @@ class HomeState extends Equatable {
           currentIndexForMainCategory ?? this.currentIndexForMainCategoryEvent,
       productITemForCart: productITemForCart ?? this.productITemForCart,
       currentColorSizeForCart:
-          CurrentColorSizeForCart ?? this.currentColorSizeForCart,
+          currentColorSizeForCart ?? this.currentColorSizeForCart,
       choosedFiltersByUser: choosedFiltersByUser ?? this.choosedFiltersByUser,
       appliedFiltersByUser: appliedFiltersByUser ?? this.appliedFiltersByUser,
       getProductFiltersModel:

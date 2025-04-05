@@ -159,7 +159,6 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                       onTap: () {
                         BlocProvider.of<AuthBloc>(context)
                             .add(VerifyOtpSignInEvent(
-                          fromCart: false,
                           otp: prefsRepository.otpCode!,
                           verificationId: prefsRepository.verificationId!,
                           phone: widget.phoneNumber,

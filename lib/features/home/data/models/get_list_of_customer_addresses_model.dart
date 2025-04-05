@@ -56,11 +56,14 @@ class CustomerAddressesInfo {
   final String? addressDetail;
   final ContactInfo? contactInfo;
   final int? isDefault;
+
+  final String? iso;
   CustomerAddressesInfo({
     this.id,
     this.location,
     this.regionDetails,
     this.address,
+    this.iso,
     this.addressDetail,
     this.contactInfo,
     this.isDefault,
@@ -72,11 +75,13 @@ class CustomerAddressesInfo {
     RegionDetails? regionDetails,
     String? address,
     String? addressDetail,
+    String? iso,
     ContactInfo? contactInfo,
     int? isDefault,
   }) =>
       CustomerAddressesInfo(
         id: id ?? this.id,
+        iso: iso ?? this.iso,
         location: location ?? this.location,
         regionDetails: regionDetails ?? this.regionDetails,
         address: address ?? this.address,
@@ -88,6 +93,7 @@ class CustomerAddressesInfo {
   factory CustomerAddressesInfo.fromJson(Map<String, dynamic> json) =>
       CustomerAddressesInfo(
         id: json["id"],
+        iso: json["iso"],
         isDefault: json["is_default"],
         location: json["location"] == null
             ? null
@@ -104,6 +110,7 @@ class CustomerAddressesInfo {
 
   Map<String, dynamic> toJson() => {
         "id": id,
+        "iso": iso,
         "location": location?.toJson(),
         "region_details": regionDetails?.toJson(),
         "address": address,
