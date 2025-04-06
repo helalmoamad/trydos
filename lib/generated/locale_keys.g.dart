@@ -1,5 +1,3 @@
-// DO NOT EDIT. This is code generated via package:easy_localization/generate.dart
-
 abstract class LocaleKeys {
   static const typing = 'typing';
   static const recording = 'recording';
@@ -389,4 +387,6 @@ abstract class LocaleKeys {
       'this_product_is_not_available_in_store';
   static const notify_me_when_available = 'notify_me_when_available';
   static const product_is_available = 'product_is_available';
+  static const the_payment_is_allowed_throw_trydos_wallet_only =
+      'the_payment_is_allowed_throw_trydos_wallet_only';
 }

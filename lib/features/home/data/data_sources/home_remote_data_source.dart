@@ -927,6 +927,7 @@ class HomeRemoteDatasource {
         endpoint: MarketEndPoints.getOrderListEP,
         queryParameters: {
           "offset": offset.toString(),
+          "limit": '10',
         },
         response: ResponseValue<OrderModel>(
             fromJson: (response) => OrderModel.fromJson(response)),

@@ -2630,6 +2630,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           applyCouponStatus: ApplyCouponStatus.init,
           checkWithGetCartStatus: CheckWithGetCartStatus.init,
           getUserNotificationModel: PaginationModel.init(),
+          getOrdersModel: PaginationModel.init(),
         )
         .toJson();
   }

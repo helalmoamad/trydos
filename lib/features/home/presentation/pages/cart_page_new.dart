@@ -136,8 +136,7 @@ class _CartPageState extends State<CartPage> {
                   CheckWithGetCartStatus.successForCart) {
                 if (!state.cartCollection.isNullOrEmpty) {
                   if (!state.cartCollection!.any(
-                    (element) => (element.isAvailableInMarket == false ||
-                        element.isCountryRestricted == true ||
+                    (element) => (element.isCountryRestricted == true ||
                         element.checkAvailability == false),
                   )) {
                     String cartGroupId =
@@ -1660,7 +1659,7 @@ class _CartPageState extends State<CartPage> {
                                                                                         homeBloc.add(CheckWithGetCartEvent(isForPlaceOrder: false));
                                                                                         return;
                                                                                       } else if (state.cartCollection!.any(
-                                                                                        (element) => (element.isAvailableInMarket == false || element.isCountryRestricted == true || element.checkAvailability == false),
+                                                                                        (element) => (element.isCountryRestricted == true || element.checkAvailability == false),
                                                                                       )) {
                                                                                         showMessage(
                                                                                           " ${LocaleKeys.you_have_to_delete_all_unavailable_products.tr()}",

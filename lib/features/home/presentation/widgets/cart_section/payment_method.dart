@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
@@ -14,6 +15,7 @@ import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/language_service.dart';
 
 import '../../../../../common/constant/payment_methods.dart';
+import '../../../../../common/helper/show_message.dart';
 
 class PaymentMethod extends StatefulWidget {
   final ValueNotifier<List<String>> paymentMethods;
@@ -202,6 +204,17 @@ class _PaymentMethodState extends State<PaymentMethod> {
                             if (widget.fromPalceOrder ||
                                 widget.fromSuccessOrder ||
                                 widget.amount > widget.totalPrice) {
+                              if (widget.amount > widget.totalPrice &&
+                                  !(widget.fromPalceOrder ||
+                                      widget.fromSuccessOrder)) {
+                                showMessage(
+                                  " ${LocaleKeys.the_payment_is_allowed_throw_trydos_wallet_only.tr()}",
+                                  foreGroundColor: Colors.white,
+                                  backGroundColor: Colors.black,
+                                  showInRelease: true,
+                                  timeShowing: Toast.LENGTH_LONG,
+                                );
+                              }
                               return;
                             }
                             /////////////////////
@@ -279,6 +292,17 @@ class _PaymentMethodState extends State<PaymentMethod> {
                             if (widget.fromPalceOrder ||
                                 widget.fromSuccessOrder ||
                                 widget.amount > widget.totalPrice) {
+                              if (widget.amount > widget.totalPrice &&
+                                  !(widget.fromPalceOrder ||
+                                      widget.fromSuccessOrder)) {
+                                showMessage(
+                                  " ${LocaleKeys.the_payment_is_allowed_throw_trydos_wallet_only.tr()}",
+                                  foreGroundColor: Colors.white,
+                                  backGroundColor: Colors.black,
+                                  showInRelease: true,
+                                  timeShowing: Toast.LENGTH_LONG,
+                                );
+                              }
                               return;
                             }
                             //////////////////////////
@@ -358,6 +382,17 @@ class _PaymentMethodState extends State<PaymentMethod> {
                             if (widget.fromPalceOrder ||
                                 widget.fromSuccessOrder ||
                                 widget.amount > widget.totalPrice) {
+                              if (widget.amount > widget.totalPrice &&
+                                  !(widget.fromPalceOrder ||
+                                      widget.fromSuccessOrder)) {
+                                showMessage(
+                                  " ${LocaleKeys.the_payment_is_allowed_throw_trydos_wallet_only.tr()}",
+                                  foreGroundColor: Colors.white,
+                                  backGroundColor: Colors.black,
+                                  showInRelease: true,
+                                  timeShowing: Toast.LENGTH_LONG,
+                                );
+                              }
                               return;
                             }
                             if (_paymentMethods.contains(PaymentMethods.cod)) {

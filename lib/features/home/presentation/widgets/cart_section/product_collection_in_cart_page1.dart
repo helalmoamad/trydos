@@ -1457,8 +1457,10 @@ class _ProductCollectionInCartPage1State
 
                         ///////////////////////
                         !isOldCart &&
-                                cartCollection![index].checkAvailability ==
-                                    false
+                                (cartCollection![index].checkAvailability ==
+                                        false ||
+                                    cartCollection[index].isCountryRestricted ==
+                                        true)
                             ? Positioned(
                                 top: 0,
                                 right: LanguageService.languageCode != "ar"
