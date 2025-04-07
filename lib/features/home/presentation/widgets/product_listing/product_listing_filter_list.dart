@@ -131,8 +131,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
     };
     return BlocBuilder<HomeBloc, HomeState>(
         buildWhen: (previous, current) =>
-            previous.appliedFiltersByUser[key] !=
-                current.appliedFiltersByUser[key] ||
+            previous.appliedFiltersByUser[key] != current.appliedFiltersByUser[key] ||
             previous.choosedFiltersByUser[key] !=
                 current.choosedFiltersByUser[key] ||
             previous.isExpandedForListingPage !=
@@ -151,8 +150,15 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                             'withoutFilter' +
                             '${(widget.category ?? '')}']
                     ?.paginationStatus ||
-            previous.getProductListingStatus !=
-                current.getProductListingStatus ||
+            previous
+                    .getProductListingWithFiltersPaginationModels[
+                        '${widget.boutiqueSlug}' + '${(widget.category ?? '')}']
+                    ?.paginationStatus !=
+                current
+                    .getProductListingWithFiltersPaginationModels[
+                        '${widget.boutiqueSlug}' + '${(widget.category ?? '')}']
+                    ?.paginationStatus ||
+            previous.getProductListingStatus != current.getProductListingStatus ||
             previous.cashedOrginalBoutique != current.cashedOrginalBoutique,
         builder: (context, state) {
           isExpanded = state.isExpandedForListingPage ?? false;
@@ -378,9 +384,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                       1
                   ? filter_model.Filter()
                   : state
-                      .getProductFiltersWithPrefetchModel[
-                          '${widget.boutiqueSlug}' +
-                              '${(widget.category ?? '')}']
+                      .getProductFiltersModel['${widget.boutiqueSlug}' +
+                          '${(widget.category ?? '')}']
                       ?.filters;
             }
           } else {

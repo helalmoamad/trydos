@@ -257,12 +257,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         (l) => emit(state.copyWith(
             verifyOtpFromGuestStatus: VerifyOtpFromGuestStatus.failure)), (r) {
       try {
-        if ((r.data!.name?.replaceAll(' ', '') ?? '') != '') {
-          _prefsRepository.setMyMarketName(r.data!.name!);
+        if ((r.data!.user?.name?.replaceAll(' ', '') ?? '') != '') {
+          _prefsRepository.setMyMarketName(r.data!.user!.name!);
         }
 
-        _prefsRepository.setMyMarketId(r.data!.id.toString());
-        _prefsRepository.setMarketToken(r.token);
+        _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
+
+        print("qqqqqqqqqqqqqqqqqqqqq${r.data?.token}");
+        print("wwwwwwwwwwwwwwwwwwwwwwwwwwwwwww${_prefsRepository.marketToken}");
 
         Future.delayed(
           Duration(seconds: 30),
@@ -271,8 +273,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             _prefsRepository.setTokenExpired(false);
           },
         );
-        _prefsRepository.setVerifiedPhone(r.data?.isPhoneVerified == 1);
-        _prefsRepository.setPhoneNumber((r.data?.phone).toString());
+        _prefsRepository.setVerifiedPhone(r.data?.user?.isPhoneVerified == 1);
+        _prefsRepository.setPhoneNumber((r.data?.user?.phone).toString());
         GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
         GetIt.I<HomeBloc>().add(GetCartItemEvent());
         GetIt.I<HomeBloc>().add(GetOldCartItemEvent());
@@ -280,15 +282,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
         add(LoginToChatEvent(
             fcmToken: NotificationProcess.myFcmToken!,
-            mobilePhone: r.data?.phone,
-            name: r.data!.name,
-            originalUserId: r.data!.id.toString(),
-            otpIdToken: r.data!.lastOtpIdToken));
+            mobilePhone: r.data?.user?.phone,
+            name: r.data!.user?.name,
+            originalUserId: r.data!.user?.id.toString(),
+            otpIdToken: r.data!.user?.lastOtpIdToken));
         add(LoginToStoriesEvent(
-          name: r.data!.name,
-          originalUserId: r.data!.id.toString(),
-          otpIdToken: r.data?.lastOtpIdToken,
-          phone: r.data?.phone,
+          name: r.data!.user?.name,
+          originalUserId: r.data!.user?.id.toString(),
+          otpIdToken: r.data?.user?.lastOtpIdToken,
+          phone: r.data?.user?.phone,
         ));
       } catch (error) {
         showMessage(error.toString());

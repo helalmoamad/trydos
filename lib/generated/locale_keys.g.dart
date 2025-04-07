@@ -185,7 +185,6 @@ abstract class LocaleKeys {
   static const click_to_show_all_discount = 'click_to_show_all_discount';
   static const back_to_home = 'back_to_home';
   static const confirm = 'confirm';
-
   static const you_must_wait_for_some_seconds_before_try_again =
       'you_must_wait_for_some_seconds_before_try_again';
   static const it_has_been_along_time_since_your_account =
@@ -203,7 +202,6 @@ abstract class LocaleKeys {
   static const you_can_add_only = 'you_can_add_only';
   static const your_request_add_successfuly = 'your_request_add_successfuly';
   static const item_was_hidden_successfuly = 'item_was_hidden_successfuly';
-
   static const not_now = 'not_now';
   static const notify_me = 'notify_me';
   static const do_you_want_to_notify_You_when_your_choose_available =
@@ -389,4 +387,22 @@ abstract class LocaleKeys {
       'this_product_is_not_available_in_store';
   static const notify_me_when_available = 'notify_me_when_available';
   static const product_is_available = 'product_is_available';
+  static const verified_now = 'verified_now';
+  static const trys = 'try';
+  static const action = 'action';
+  static const settings = 'settings';
+  static const terms_conditions = 'terms_conditions';
+  static const legal_information = 'legal_information';
+  static const about_us = 'about_us';
+  static const share_app = 'share_app';
+  static const profile = 'profile';
+  static const personal_info = 'personal_info';
+  static const address = 'address';
+  static const bank_cards = 'bank_cards';
+  static const add_profile_photo = 'add_profile_photo';
+  static const uploading_profile_photo = 'uploading_profile_photo';
+  static const remove_photo = 'remove_photo';
+  static const take_photo = 'take_photo';
+  static const choose_from_library = 'choose_from_library';
+  static const change_photo = 'change_photo';
 }

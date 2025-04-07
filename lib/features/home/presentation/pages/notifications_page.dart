@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:trydos/service/notification_service/notification_service/handle_notification/handling_market_notifications.dart';
 import '../../../../core/data/model/pagination_model.dart';
 import '../../../app/my_cached_network_image.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -73,7 +76,14 @@ class _NotificationsPageState extends State<NotificationsPage> {
                         return ListTile(
                           contentPadding:
                               EdgeInsets.symmetric(vertical: 15, horizontal: 5),
-                          onTap: () {},
+                          onTap: () {
+                            HandlingMarketNotifications
+                                .dealWithNotificationFromMarket(
+                                    jsonDecode(items[index]
+                                            .descriptionToHandleNotification ??
+                                        ""),
+                                    false);
+                          },
                           leading: MyCachedNetworkImage(
                             ordinalHeight: null,
                             ordinalwidth: null,

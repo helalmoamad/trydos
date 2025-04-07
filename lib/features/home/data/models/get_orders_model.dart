@@ -413,13 +413,15 @@ class OrderListDetailModel {
         productDetails: json["product_details"] == null
             ? null
             : OrderProductDetailsModel.fromJson(json["product_details"]),
-        price: json["price"] ? 0 : double.parse(json["price"].toString()),
-        discount:
-            json["discount"] ? 0 : double.parse(json["discount"].toString()),
-        priceAfterDiscount: json["price_after_discount"]
+        price:
+            json["price"] == null ? 0 : double.parse(json["price"].toString()),
+        discount: json["discount"] == null
+            ? 0
+            : double.parse(json["discount"].toString()),
+        priceAfterDiscount: json["price_after_discount"] == null
             ? 0
             : double.parse(json["price_after_discount"].toString()),
-        tax: json["tax"] ? 0 : double.parse(json["tax"].toString()),
+        tax: json["tax"] == null ? 0 : double.parse(json["tax"].toString()),
         deliveryStatus: json["delivery_status"],
         paymentStatus: json["payment_status"],
         shippingMethodId: json["shipping_method_id"],
@@ -532,8 +534,9 @@ class OrderProductDetailsModel {
         images: json["images"] == null
             ? []
             : List<String>.from(json["images"]!.map((x) => x)),
-        price: json["price"] ? 0 : double.parse(json["price"].toString()),
-        offerPrice: json["offer_price"]
+        price:
+            json["price"] == null ? 0 : double.parse(json["price"].toString()),
+        offerPrice: json["offer_price"] == null
             ? 0
             : double.parse(json["offer_price"].toString()),
         isFavourite: json["is_favourite"],
@@ -552,8 +555,8 @@ class OrderProductDetailsModel {
         "thumbnail": thumbnail,
         "images":
             images == null ? [] : List<dynamic>.from(images!.map((x) => x)),
-        "price": price,
-        "offer_price": offerPrice,
+        "price": price?.toDouble(),
+        "offer_price": offerPrice?.toDouble(),
         "is_favourite": isFavourite,
         "in_stock": inStock,
         "rating": rating?.toJson(),

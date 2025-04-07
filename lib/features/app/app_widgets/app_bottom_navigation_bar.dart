@@ -484,7 +484,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                         });
                   },
                   onTap: () {
-                    // if (prefsRepository.chatToken != null) return;
+                    /*      // if (prefsRepository.chatToken != null) return;
                     //appBloc.add(ChangeBasePage(0));
                     if (Navigator.canPop(context)) {
                       Navigator.of(context).pop();
@@ -498,38 +498,41 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                       eventName: AnalyticsEventsConst.buttonClicked,
                       executedEventName:
                           AnalyticsExecutedEventNameConst.meNavBarButton,
-                    );
+                    );*/
+                    appBloc.add(ChangeBasePage(3));
                   },
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      state.currentIndex == 3
-                          ? Container(
-                              height: 30.h,
-                              width: 30.h,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: AssetImage(AppAssets.profileJpg),
-                                  fit: BoxFit.cover,
-                                ),
-                                borderRadius: BorderRadius.circular(15.0),
-                                border: Border.all(
-                                    width: 1.0, color: const Color(0xfff53c3c)),
-                              ),
-                            )
-                          // Container(
-                          //     height: 30.h,
-                          //     width: 30.h,
-                          //     decoration: BoxDecoration(
-                          //         borderRadius: BorderRadius.circular(15.r),
-                          //         border: Border.all(
-                          //             color: colorScheme.error, width: 1)),
-                          //     child: Image.asset(
-                          //       AppAssets.profilePng,
-                          //       fit: BoxFit.fitHeight,
-                          //     ),
-                          //       )
-                          : SizedBox(
+                      Container(
+                          height: 30.h,
+                          width: 30.h,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage(AppAssets.profileJpg),
+                              fit: BoxFit.cover,
+                            ),
+                            borderRadius: BorderRadius.circular(15.0),
+                            border: Border.all(
+                              width: 1.0,
+                              color: (state.currentIndex == 3)
+                                  ? const Color(0xfff53c3c)
+                                  : Color(0xfffff),
+                            ),
+                          )),
+                      // Container(
+                      //     height: 30.h,
+                      //     width: 30.h,
+                      //     decoration: BoxDecoration(
+                      //         borderRadius: BorderRadius.circular(15.r),
+                      //         border: Border.all(
+                      //             color: colorScheme.error, width: 1)),
+                      //     child: Image.asset(
+                      //       AppAssets.profilePng,
+                      //       fit: BoxFit.fitHeight,
+                      //     ),
+                      //       )
+                      /*  : SizedBox(
                               height: 30.h,
                               width: 30.h,
                               child: Stack(
@@ -570,7 +573,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                   // ),
                                 ],
                               ),
-                            ),
+                            ),*/
                       10.verticalSpace,
                       MyTextWidget(
                         LocaleKeys.me.tr(),

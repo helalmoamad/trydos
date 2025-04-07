@@ -439,7 +439,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       _onGetCartOverviewEvent,
       transformer: restartable(),
     );
-
+    on<AddSizeAndColorFilterinTextToSearchEvent>(
+      _onAddSizeAndColorFilterinTextToSearchEvent,
+    );
     on<GetUserNotificationEvent>(
       _onGetUserNotificationEvent,
     );
@@ -1894,16 +1896,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     } else {
       getProductFiltersStatus[key] = GetProductFiltersStatus.loading;
     }
-    print(
-        "1111111111111111!!!!!!!!!!!!!!!!!!!@@@111111111111111@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@###################00000000000####${keyWithoutFilter}");
-    print(
-        "222222222!!!!!!!!!!!!!!!!!!!@@@111111111111111@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@###################00000000000####${event.getWithPagination}");
-
-    print(
-        "3333333333333!!!!!!!!!!!!!!!!!!!@@@111111111111111@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@###################00000000000####${state.cashedOrginalBoutique}");
-
-    print(
-        "44444!!!!!!!!!!!!!!!!!!!@@@111111111111111@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@###################00000000000####${event.cashedOrginalBoutique}");
 
     emit(state.copyWith(
       getProductFiltersStatus: getProductFiltersStatus,
@@ -1949,14 +1941,28 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
                 {
                   '"id"': '"${filters.attributes![0].id}"',
                   '"name"': '"${filters.attributes![0].name}"',
-                  '"options"': filters.attributes![0].options
-                      ?.map(
+                  '"options"': [
+                    ...(filters.attributes![0].options) ?? [],
+                    ...(state.sizeAndColorFilterinTextToSearch!["size"]
+                                .isNullOrEmpty
+                            ? []
+                            : state
+                                .sizeAndColorFilterinTextToSearch!["size"]) ??
+                        []
+                  ]
+                      .map(
                         (e) => '"${e}"',
                       )
                       .toList(),
                 }
               ],
-        colors: filters.colors?.map((e) => '"${e.toString()}"').toList(),
+        colors: ([
+          ...filters.colors ?? [],
+          ...(state.sizeAndColorFilterinTextToSearch!["color"].isNullOrEmpty
+                  ? []
+                  : state.sizeAndColorFilterinTextToSearch!["color"]) ??
+              []
+        ]).map((e) => '"${e.toString()}"').toList(),
         limit: event.limit ?? 10,
         prices:
             (prevAppliedFiltersByUser[key]?.filters?.prices?.maxPrice != null &&
@@ -2019,21 +2025,23 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           Map.of(state.getProductFiltersModel);
       List<filters_model.PriceRange> ranges = r.data!.prices?.priceRanges ?? [];
       ranges.removeWhere((element) => element.count == 0);
+      if (data[key] == null) {
+        data.addAll({key: filters_model.GetProductFiltersModel()});
+      }
+
       if (event.fromNotification ?? false) {
-        data.addAll({
-          key: filters_model.GetProductFiltersModel(
-              filters: filters_model.Filter(
-            totalSize: r.data?.totalSize,
-            //   boutiqueSlug: r.data?.boutiqueSlug,
-            brands: r.data!.brands,
-            attributes: r.data!.attributes,
-            prices: r.data!.prices?.copyWith(priceRanges: ranges),
-            boutiques: r.data!.boutiques,
-            colors: r.data!.colors,
-            searchText: filters.searchText,
-            categories: r.data!.categories,
-          ))
-        });
+        data[key] = filters_model.GetProductFiltersModel(
+            filters: filters_model.Filter(
+          totalSize: r.data?.totalSize,
+          //   boutiqueSlug: r.data?.boutiqueSlug,
+          brands: r.data!.brands,
+          attributes: r.data!.attributes,
+          prices: r.data!.prices?.copyWith(priceRanges: ranges),
+          boutiques: r.data!.boutiques,
+          colors: r.data!.colors,
+          searchText: filters.searchText,
+          categories: r.data!.categories,
+        ));
       } else {
         data[key] = filters_model.GetProductFiltersModel(
             filters: filters_model.Filter(
@@ -2048,7 +2056,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           categories: r.data!.categories,
         ));
       }
-
       if (event.cashedOrginalBoutique &&
           !(event.fromSearch ?? false) &&
           !event.getWithPagination) {
@@ -2834,7 +2841,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       print(e);
       print(st);
     }
-
+    print(
+        "2222222222222222222222222222222222222222222223333333333333333333333333${filters.searchText ?? event.searchText}");
     final response = await getProductFiltersUseCase(GetProductsFiltersParams(
       limit: 10,
       scroll_id: null,
@@ -4028,6 +4036,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         backGroundColor: Colors.black,
       );
     }, (r) {
+      add(AddProductItemForCartEvent(
+          productId: event.products.productId.toString(),
+          product: event.products));
       add(GetCartOverviewEvent());
       Variation? variation;
       List<Variation> listVariation =
@@ -4232,9 +4243,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   FutureOr<void> _onAddProductItemForCartEvent(
       AddProductItemForCartEvent event, Emitter<HomeState> emit) async {
+    print(
+        '11111111111111111111111222222222222222222222222222222222222222222333333333333333333333');
     emit(state.copyWith(addItemInCartStatus: AddItemInCartStatus.init));
     Map<String, Products> productsForCart = Map.of(state.productITemForCart);
     if (productsForCart.containsKey(event.productId)) {
+      print(
+          '.................${event.product?.productId}11111111111111111111111222222222222222222222222222222222222222222333333333333333333333');
+
       productsForCart[event.productId] = event.product!;
     } else {
       productsForCart.addAll({event.productId: event.product!});
@@ -4945,6 +4961,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     }
     searchHistory.add(event.searchTitle);
     emit(state.copyWith(searchHistory: searchHistory));
+  }
+
+  FutureOr<void> _onAddSizeAndColorFilterinTextToSearchEvent(
+      AddSizeAndColorFilterinTextToSearchEvent event,
+      Emitter<HomeState> emit) async {
+    emit(state.copyWith(
+        sizeAndColorFilterinTextToSearch:
+            event.sizeAndColorFilterinTextToSearch));
   }
 
   FutureOr<void> _onRemoveSearchTextToHistoryEvent(

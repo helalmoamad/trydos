@@ -219,7 +219,7 @@ class Cart {
   final Shop? shop;
   final bool? checkAvailability;
   final bool? isCountryRestricted;
-  final bool? isAvailableInMarket;
+  final bool? inStock;
   final CartBrand? brand;
   final BoutiquesCart? boutique;
   final String? thumbnail;
@@ -255,7 +255,7 @@ class Cart {
     this.countOfPieces,
     this.shop,
     this.checkAvailability,
-    this.isAvailableInMarket,
+    this.inStock,
     this.isCountryRestricted,
     this.brand,
     this.boutique,
@@ -282,7 +282,7 @@ class Cart {
     String? variant,
     int? availableQuantity,
     bool? isCountryRestricted,
-    bool? isAvailableInMarket,
+    bool? inStock,
     String? maxAllowedQty,
     String? vendorName,
     int? quantity,
@@ -318,7 +318,7 @@ class Cart {
         variations: variations ?? this.variations,
         variant: variant ?? this.variant,
         availableQuantity: availableQuantity ?? this.availableQuantity,
-        isAvailableInMarket: isAvailableInMarket ?? this.isAvailableInMarket,
+        inStock: inStock ?? this.inStock,
         isCountryRestricted: isCountryRestricted ?? this.isCountryRestricted,
         maxAllowedQty: maxAllowedQty ?? this.maxAllowedQty,
         vendorName: vendorName ?? this.vendorName,
@@ -376,7 +376,7 @@ class Cart {
         countOfPieces: json["count_of_pieces"],
         shop: json["shop"] == null ? null : Shop.fromJson(json["shop"]),
         checkAvailability: json["check_availability"] ?? false,
-        isAvailableInMarket: json["is_available_in_market"] ?? false,
+        inStock: json["in_stock"] ?? false,
         isCountryRestricted: json["is_country_restricted"] ?? false,
         brand: json["brand"] == null ? null : CartBrand.fromJson(json["brand"]),
         boutique: json["boutique"] == null
@@ -423,7 +423,7 @@ class Cart {
         "shop": shop?.toJson(),
         "check_availability": checkAvailability,
         "is_country_restricted": isCountryRestricted,
-        "is_available_in_market": isAvailableInMarket,
+        "in_stock": inStock,
         "brand": brand?.toJson(),
         "boutique": boutique?.toJson(),
         "thumbnail": thumbnail,

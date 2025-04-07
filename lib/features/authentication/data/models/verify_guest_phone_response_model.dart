@@ -13,433 +13,162 @@ String verifyOtpFromGuestResponseModelToJson(
     json.encode(data.toJson());
 
 class VerifyOtpFromGuestResponseModel {
-  final String? code;
+  final bool? isSuccessful;
+  final bool? hasContent;
+  final int? code;
   final String? message;
+  final dynamic detailedError;
   final Data? data;
-  final String? token;
-  final String? expiresAt;
 
   VerifyOtpFromGuestResponseModel({
+    this.isSuccessful,
+    this.hasContent,
     this.code,
     this.message,
+    this.detailedError,
     this.data,
-    this.token,
-    this.expiresAt,
   });
 
   VerifyOtpFromGuestResponseModel copyWith({
-    String? code,
+    bool? isSuccessful,
+    bool? hasContent,
+    int? code,
     String? message,
+    dynamic detailedError,
     Data? data,
-    String? token,
-    String? expiresAt,
   }) =>
       VerifyOtpFromGuestResponseModel(
+        isSuccessful: isSuccessful ?? this.isSuccessful,
+        hasContent: hasContent ?? this.hasContent,
         code: code ?? this.code,
         message: message ?? this.message,
+        detailedError: detailedError ?? this.detailedError,
         data: data ?? this.data,
-        token: token ?? this.token,
-        expiresAt: expiresAt ?? this.expiresAt,
       );
 
   factory VerifyOtpFromGuestResponseModel.fromJson(Map<String, dynamic> json) =>
       VerifyOtpFromGuestResponseModel(
-        code: json["code"].toString(),
+        isSuccessful: json["isSuccessful"],
+        hasContent: json["hasContent"],
+        code: json["code"],
         message: json["message"],
+        detailedError: json["detailed_error"],
         data: json["data"] == null ? null : Data.fromJson(json["data"]),
-        token: json["token"],
-        expiresAt: json["expires_at"],
       );
 
   Map<String, dynamic> toJson() => {
-        "code": code.toString(),
+        "isSuccessful": isSuccessful,
+        "hasContent": hasContent,
+        "code": code,
         "message": message,
+        "detailed_error": detailedError,
         "data": data?.toJson(),
-        "token": token,
-        "expires_at": expiresAt,
       };
 }
 
 class Data {
-  final int? id;
-  final String? name;
-  final dynamic fName;
-  final dynamic lName;
-  final String? phone;
-  final String? image;
-  final String? email;
-  final dynamic emailVerifiedAt;
-  final String? currentLanguageCodeAndCountry;
-  final String? previousLanguageCodeAndCountry;
-  final String? firebaseSettings;
-  final dynamic settings;
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
-  final dynamic streetAddress;
-  final dynamic country;
-  final dynamic city;
-  final dynamic zip;
-  final dynamic houseNo;
-  final dynamic apartmentNo;
-  final dynamic cmFirebaseToken;
-  final int? isActive;
-  final dynamic paymentCardLastFour;
-  final dynamic paymentCardBrand;
-  final dynamic paymentCardFawryToken;
-  final dynamic loginMedium;
-  final dynamic socialId;
-  final int? isPhoneVerified;
-  final String? temporaryToken;
-  final int? isEmailVerified;
-  final int? walletBalance;
-  final dynamic loyaltyPoint;
-  final int? hasTempOrder;
-  final int? isGuest;
-  final dynamic countryDialCode;
-  final dynamic categories;
-  final DateTime? updatedAtCategories;
-  final int? isTester;
-  final dynamic addedByAdminId;
-  final int? isValidWhatsappNumber;
-  final dynamic applicationRecommendedCategory;
-  final dynamic webRecommendedCategory;
-  final String? isStopWhatsappMessages;
-  final int? isUseWhatsappForOtp;
-  final dynamic lastActivityDatetime;
-  final dynamic lastActivityType;
-  final dynamic invitedContacts;
-  final dynamic deviceId;
-  final String? lastOtpIdToken;
-  final int? isPricingEmployee;
-  final int? canEditingProducts;
-  final int? canCollectProducts;
-  final int? canEditingInvoices;
-  final int? isPosEmployee;
-  final String? addedByType;
-  final String? accessByPosEmployeeId;
-  final DateTime? verifiedAt;
-  final int? isInvoicesEmployee;
+  final bool? alreadyExists;
+  final bool? loggedInFromAnotherDevice;
+  final String? idToken;
+  final int? userType;
+  final String? token;
+  final String? expiresAt;
+  final DataUser? user;
 
   Data({
-    this.id,
-    this.name,
-    this.fName,
-    this.lName,
-    this.phone,
-    this.image,
-    this.email,
-    this.emailVerifiedAt,
-    this.currentLanguageCodeAndCountry,
-    this.previousLanguageCodeAndCountry,
-    this.firebaseSettings,
-    this.settings,
-    this.createdAt,
-    this.updatedAt,
-    this.streetAddress,
-    this.country,
-    this.city,
-    this.zip,
-    this.houseNo,
-    this.apartmentNo,
-    this.cmFirebaseToken,
-    this.isActive,
-    this.paymentCardLastFour,
-    this.paymentCardBrand,
-    this.paymentCardFawryToken,
-    this.loginMedium,
-    this.socialId,
-    this.isPhoneVerified,
-    this.temporaryToken,
-    this.isEmailVerified,
-    this.walletBalance,
-    this.loyaltyPoint,
-    this.hasTempOrder,
-    this.isGuest,
-    this.countryDialCode,
-    this.categories,
-    this.updatedAtCategories,
-    this.isTester,
-    this.addedByAdminId,
-    this.isValidWhatsappNumber,
-    this.applicationRecommendedCategory,
-    this.webRecommendedCategory,
-    this.isStopWhatsappMessages,
-    this.isUseWhatsappForOtp,
-    this.lastActivityDatetime,
-    this.lastActivityType,
-    this.invitedContacts,
-    this.deviceId,
-    this.lastOtpIdToken,
-    this.isPricingEmployee,
-    this.canEditingProducts,
-    this.canCollectProducts,
-    this.canEditingInvoices,
-    this.isPosEmployee,
-    this.addedByType,
-    this.accessByPosEmployeeId,
-    this.verifiedAt,
-    this.isInvoicesEmployee,
+    this.alreadyExists,
+    this.loggedInFromAnotherDevice,
+    this.idToken,
+    this.userType,
+    this.token,
+    this.expiresAt,
+    this.user,
   });
 
   Data copyWith({
-    int? id,
-    String? name,
-    dynamic fName,
-    dynamic lName,
-    String? phone,
-    String? image,
-    String? email,
-    dynamic emailVerifiedAt,
-    String? currentLanguageCodeAndCountry,
-    String? previousLanguageCodeAndCountry,
-    String? firebaseSettings,
-    dynamic settings,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-    dynamic streetAddress,
-    dynamic country,
-    dynamic city,
-    dynamic zip,
-    dynamic houseNo,
-    dynamic apartmentNo,
-    dynamic cmFirebaseToken,
-    int? isActive,
-    dynamic paymentCardLastFour,
-    dynamic paymentCardBrand,
-    dynamic paymentCardFawryToken,
-    dynamic loginMedium,
-    dynamic socialId,
-    int? isPhoneVerified,
-    String? temporaryToken,
-    int? isEmailVerified,
-    int? walletBalance,
-    dynamic loyaltyPoint,
-    int? hasTempOrder,
-    int? isGuest,
-    dynamic countryDialCode,
-    dynamic categories,
-    DateTime? updatedAtCategories,
-    int? isTester,
-    dynamic addedByAdminId,
-    int? isValidWhatsappNumber,
-    dynamic applicationRecommendedCategory,
-    dynamic webRecommendedCategory,
-    String? isStopWhatsappMessages,
-    int? isUseWhatsappForOtp,
-    dynamic lastActivityDatetime,
-    dynamic lastActivityType,
-    dynamic invitedContacts,
-    dynamic deviceId,
-    String? lastOtpIdToken,
-    int? isPricingEmployee,
-    int? canEditingProducts,
-    int? canCollectProducts,
-    int? canEditingInvoices,
-    int? isPosEmployee,
-    String? addedByType,
-    String? accessByPosEmployeeId,
-    DateTime? verifiedAt,
-    int? isInvoicesEmployee,
+    bool? alreadyExists,
+    bool? loggedInFromAnotherDevice,
+    String? idToken,
+    int? userType,
+    String? token,
+    String? expiresAt,
+    DataUser? user,
   }) =>
       Data(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        fName: fName ?? this.fName,
-        lName: lName ?? this.lName,
-        phone: phone ?? this.phone,
-        image: image ?? this.image,
-        email: email ?? this.email,
-        emailVerifiedAt: emailVerifiedAt ?? this.emailVerifiedAt,
-        currentLanguageCodeAndCountry:
-            currentLanguageCodeAndCountry ?? this.currentLanguageCodeAndCountry,
-        previousLanguageCodeAndCountry: previousLanguageCodeAndCountry ??
-            this.previousLanguageCodeAndCountry,
-        firebaseSettings: firebaseSettings ?? this.firebaseSettings,
-        settings: settings ?? this.settings,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt,
-        streetAddress: streetAddress ?? this.streetAddress,
-        country: country ?? this.country,
-        city: city ?? this.city,
-        zip: zip ?? this.zip,
-        houseNo: houseNo ?? this.houseNo,
-        apartmentNo: apartmentNo ?? this.apartmentNo,
-        cmFirebaseToken: cmFirebaseToken ?? this.cmFirebaseToken,
-        isActive: isActive ?? this.isActive,
-        paymentCardLastFour: paymentCardLastFour ?? this.paymentCardLastFour,
-        paymentCardBrand: paymentCardBrand ?? this.paymentCardBrand,
-        paymentCardFawryToken:
-            paymentCardFawryToken ?? this.paymentCardFawryToken,
-        loginMedium: loginMedium ?? this.loginMedium,
-        socialId: socialId ?? this.socialId,
-        isPhoneVerified: isPhoneVerified ?? this.isPhoneVerified,
-        temporaryToken: temporaryToken ?? this.temporaryToken,
-        isEmailVerified: isEmailVerified ?? this.isEmailVerified,
-        walletBalance: walletBalance ?? this.walletBalance,
-        loyaltyPoint: loyaltyPoint ?? this.loyaltyPoint,
-        hasTempOrder: hasTempOrder ?? this.hasTempOrder,
-        isGuest: isGuest ?? this.isGuest,
-        countryDialCode: countryDialCode ?? this.countryDialCode,
-        categories: categories ?? this.categories,
-        updatedAtCategories: updatedAtCategories ?? this.updatedAtCategories,
-        isTester: isTester ?? this.isTester,
-        addedByAdminId: addedByAdminId ?? this.addedByAdminId,
-        isValidWhatsappNumber:
-            isValidWhatsappNumber ?? this.isValidWhatsappNumber,
-        applicationRecommendedCategory: applicationRecommendedCategory ??
-            this.applicationRecommendedCategory,
-        webRecommendedCategory:
-            webRecommendedCategory ?? this.webRecommendedCategory,
-        isStopWhatsappMessages:
-            isStopWhatsappMessages ?? this.isStopWhatsappMessages,
-        isUseWhatsappForOtp: isUseWhatsappForOtp ?? this.isUseWhatsappForOtp,
-        lastActivityDatetime: lastActivityDatetime ?? this.lastActivityDatetime,
-        lastActivityType: lastActivityType ?? this.lastActivityType,
-        invitedContacts: invitedContacts ?? this.invitedContacts,
-        deviceId: deviceId ?? this.deviceId,
-        lastOtpIdToken: lastOtpIdToken ?? this.lastOtpIdToken,
-        isPricingEmployee: isPricingEmployee ?? this.isPricingEmployee,
-        canEditingProducts: canEditingProducts ?? this.canEditingProducts,
-        canCollectProducts: canCollectProducts ?? this.canCollectProducts,
-        canEditingInvoices: canEditingInvoices ?? this.canEditingInvoices,
-        isPosEmployee: isPosEmployee ?? this.isPosEmployee,
-        addedByType: addedByType ?? this.addedByType,
-        accessByPosEmployeeId:
-            accessByPosEmployeeId ?? this.accessByPosEmployeeId,
-        verifiedAt: verifiedAt ?? this.verifiedAt,
-        isInvoicesEmployee: isInvoicesEmployee ?? this.isInvoicesEmployee,
+        alreadyExists: alreadyExists ?? this.alreadyExists,
+        loggedInFromAnotherDevice:
+            loggedInFromAnotherDevice ?? this.loggedInFromAnotherDevice,
+        idToken: idToken ?? this.idToken,
+        userType: userType ?? this.userType,
+        token: token ?? this.token,
+        expiresAt: expiresAt ?? this.expiresAt,
+        user: user ?? this.user,
       );
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
+        alreadyExists: json["already_exists"],
+        loggedInFromAnotherDevice: json["Logged_in_from_another_device"],
+        idToken: json["id_token"],
+        userType: json["user_type"],
+        token: json["token"],
+        expiresAt: json["expires_at"],
+        user: json["user"] == null ? null : DataUser.fromJson(json["user"]),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "already_exists": alreadyExists,
+        "Logged_in_from_another_device": loggedInFromAnotherDevice,
+        "id_token": idToken,
+        "user_type": userType,
+        "token": token,
+        "expires_at": expiresAt,
+        "user": user?.toJson(),
+      };
+}
+
+class DataUser {
+  final int? id;
+  final String? name;
+  final String? phone;
+  final int? isPhoneVerified;
+  final String? lastOtpIdToken;
+
+  DataUser({
+    this.id,
+    this.name,
+    this.phone,
+    this.isPhoneVerified,
+    this.lastOtpIdToken,
+  });
+
+  DataUser copyWith({
+    int? id,
+    String? name,
+    String? phone,
+    int? isPhoneVerified,
+    String? lastOtpIdToken,
+  }) =>
+      DataUser(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        phone: phone ?? this.phone,
+        isPhoneVerified: isPhoneVerified ?? this.isPhoneVerified,
+        lastOtpIdToken: lastOtpIdToken ?? this.lastOtpIdToken,
+      );
+
+  factory DataUser.fromJson(Map<String, dynamic> json) => DataUser(
         id: json["id"],
         name: json["name"],
-        fName: json["f_name"],
-        lName: json["l_name"],
         phone: json["phone"],
-        image: json["image"],
-        email: json["email"],
-        emailVerifiedAt: json["email_verified_at"],
-        currentLanguageCodeAndCountry:
-            json["current_language_code_and_country"],
-        previousLanguageCodeAndCountry:
-            json["previous_language_code_and_country"],
-        firebaseSettings: json["firebase_settings"],
-        settings: json["settings"],
-        createdAt: json["created_at"] == null
-            ? null
-            : DateTime.parse(json["created_at"]),
-        updatedAt: json["updated_at"] == null
-            ? null
-            : DateTime.parse(json["updated_at"]),
-        streetAddress: json["street_address"],
-        country: json["country"],
-        city: json["city"],
-        zip: json["zip"],
-        houseNo: json["house_no"],
-        apartmentNo: json["apartment_no"],
-        cmFirebaseToken: json["cm_firebase_token"],
-        isActive: json["is_active"],
-        paymentCardLastFour: json["payment_card_last_four"],
-        paymentCardBrand: json["payment_card_brand"],
-        paymentCardFawryToken: json["payment_card_fawry_token"],
-        loginMedium: json["login_medium"],
-        socialId: json["social_id"],
         isPhoneVerified: json["is_phone_verified"],
-        temporaryToken: json["temporary_token"],
-        isEmailVerified: json["is_email_verified"],
-        walletBalance: json["wallet_balance"],
-        loyaltyPoint: json["loyalty_point"],
-        hasTempOrder: json["has_temp_order"],
-        isGuest: json["is_guest"],
-        countryDialCode: json["country_dial_code"],
-        categories: json["categories"],
-        updatedAtCategories: json["updated_at_categories"] == null
-            ? null
-            : DateTime.parse(json["updated_at_categories"]),
-        isTester: json["is_tester"],
-        addedByAdminId: json["added_by_admin_id"],
-        isValidWhatsappNumber: json["is_valid_whatsapp_number"],
-        applicationRecommendedCategory:
-            json["application_recommended_category"],
-        webRecommendedCategory: json["web_recommended_category"],
-        isStopWhatsappMessages: json["is_stop_whatsapp_messages"],
-        isUseWhatsappForOtp: json["is_use_whatsapp_for_otp"],
-        lastActivityDatetime: json["last_activity_datetime"],
-        lastActivityType: json["last_activity_type"],
-        invitedContacts: json["invited_contacts"],
-        deviceId: json["device_id"],
         lastOtpIdToken: json["last_otp_id_token"],
-        isPricingEmployee: json["is_pricing_employee"],
-        canEditingProducts: json["can_editing_products"],
-        canCollectProducts: json["can_collect_products"],
-        canEditingInvoices: json["can_editing_invoices"],
-        isPosEmployee: json["is_pos_employee"],
-        addedByType: json["added_by_type"],
-        accessByPosEmployeeId: json["access_by_pos_employee_id"],
-        verifiedAt: json["verified_at"] == null
-            ? null
-            : DateTime.parse(json["verified_at"]),
-        isInvoicesEmployee: json["is_invoices_employee"],
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "name": name,
-        "f_name": fName,
-        "l_name": lName,
         "phone": phone,
-        "image": image,
-        "email": email,
-        "email_verified_at": emailVerifiedAt,
-        "current_language_code_and_country": currentLanguageCodeAndCountry,
-        "previous_language_code_and_country": previousLanguageCodeAndCountry,
-        "firebase_settings": firebaseSettings,
-        "settings": settings,
-        "created_at": createdAt?.toIso8601String(),
-        "updated_at": updatedAt?.toIso8601String(),
-        "street_address": streetAddress,
-        "country": country,
-        "city": city,
-        "zip": zip,
-        "house_no": houseNo,
-        "apartment_no": apartmentNo,
-        "cm_firebase_token": cmFirebaseToken,
-        "is_active": isActive,
-        "payment_card_last_four": paymentCardLastFour,
-        "payment_card_brand": paymentCardBrand,
-        "payment_card_fawry_token": paymentCardFawryToken,
-        "login_medium": loginMedium,
-        "social_id": socialId,
         "is_phone_verified": isPhoneVerified,
-        "temporary_token": temporaryToken,
-        "is_email_verified": isEmailVerified,
-        "wallet_balance": walletBalance,
-        "loyalty_point": loyaltyPoint,
-        "has_temp_order": hasTempOrder,
-        "is_guest": isGuest,
-        "country_dial_code": countryDialCode,
-        "categories": categories,
-        "updated_at_categories": updatedAtCategories?.toIso8601String(),
-        "is_tester": isTester,
-        "added_by_admin_id": addedByAdminId,
-        "is_valid_whatsapp_number": isValidWhatsappNumber,
-        "application_recommended_category": applicationRecommendedCategory,
-        "web_recommended_category": webRecommendedCategory,
-        "is_stop_whatsapp_messages": isStopWhatsappMessages,
-        "is_use_whatsapp_for_otp": isUseWhatsappForOtp,
-        "last_activity_datetime": lastActivityDatetime,
-        "last_activity_type": lastActivityType,
-        "invited_contacts": invitedContacts,
-        "device_id": deviceId,
         "last_otp_id_token": lastOtpIdToken,
-        "is_pricing_employee": isPricingEmployee,
-        "can_editing_products": canEditingProducts,
-        "can_collect_products": canCollectProducts,
-        "can_editing_invoices": canEditingInvoices,
-        "is_pos_employee": isPosEmployee,
-        "added_by_type": addedByType,
-        "access_by_pos_employee_id": accessByPosEmployeeId,
-        "verified_at": verifiedAt?.toIso8601String(),
-        "is_invoices_employee": isInvoicesEmployee,
       };
 }

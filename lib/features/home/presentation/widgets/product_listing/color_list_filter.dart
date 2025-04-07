@@ -205,7 +205,7 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                             }
                             if (widget.hideTitle) {
                               print(
-                                  "ddddddddddddddddd${widget.searchText}ddddddddddddddddddddddddddddddddddddddddd");
+                                  "........................................ddddddddddddddddd${widget.colors[index]}ddddddddddddddddddddddddddddddddddddddddd");
 
                               homeBloc.add(ChangeAppliedFiltersEvent(
                                 category: widget.category,

@@ -136,7 +136,7 @@ class _CartPageState extends State<CartPage> {
                   CheckWithGetCartStatus.successForCart) {
                 if (!state.cartCollection.isNullOrEmpty) {
                   if (!state.cartCollection!.any(
-                    (element) => (element.isAvailableInMarket == false ||
+                    (element) => (element.inStock == false ||
                         element.isCountryRestricted == true ||
                         element.checkAvailability == false),
                   )) {
@@ -1338,82 +1338,86 @@ class _CartPageState extends State<CartPage> {
                                                                                 .cartCollection!.isEmpty))
                                                                         ? SizedBox
                                                                             .shrink()
-                                                                        : Container(
-                                                                            width:
-                                                                                400.w,
-                                                                            height:
-                                                                                50.h,
-                                                                            decoration:
-                                                                                BoxDecoration(color: Color(0xffF8F8F8), borderRadius: BorderRadius.all(Radius.circular(12))),
-                                                                            padding:
-                                                                                EdgeInsets.only(
-                                                                              right: LanguageService.languageCode != "ar" ? 10.w : 2,
-                                                                              left: LanguageService.languageCode != "ar" ? 2 : 10.w,
+                                                                        : InkWell(
+                                                                            onTap: () =>
+                                                                                Future.delayed(
+                                                                              Duration(microseconds: 500),
+                                                                              () {
+                                                                                panelController.open();
+                                                                              },
                                                                             ),
-                                                                            margin:
-                                                                                EdgeInsets.symmetric(horizontal: 10.w),
                                                                             child:
-                                                                                Column(
-                                                                              mainAxisAlignment: MainAxisAlignment.start,
-                                                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                                                              children: [
-                                                                                Row(
-                                                                                  children: [
-                                                                                    Container(
-                                                                                      height: 17.h,
-                                                                                      margin: EdgeInsets.only(
-                                                                                        right: LanguageService.languageCode != "ar" ? 10.w : 25,
-                                                                                        left: LanguageService.languageCode != "ar" ? 25 : 10.w,
-                                                                                      ),
-                                                                                      child: Text(
-                                                                                        "${LocaleKeys.total.tr()}",
-                                                                                        style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 13.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
-                                                                                      ),
-                                                                                    ),
-                                                                                    Spacer(),
-                                                                                    Text(
-                                                                                      "${(totlalPrice + totlalDiscount).toStringAsFixed(state.startingSetting?.decimalPointSettings ?? 2)}  ",
-                                                                                      style: context.textTheme.bodyMedium?.ra.copyWith(decoration: TextDecoration.lineThrough, fontSize: 16, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
-                                                                                    ),
-                                                                                    Text(
-                                                                                      "${totlalPrice.toStringAsFixed(state.startingSetting?.decimalPointSettings ?? 2)}  ",
-                                                                                      style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 16.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
-                                                                                    ),
-                                                                                    SizedBox(
-                                                                                      width: 2,
-                                                                                    ),
-                                                                                    Text(
-                                                                                      "${priceSymbol ?? "\$"}",
-                                                                                      style: context.textTheme.bodyMedium?.mr.copyWith(fontSize: 16.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
-                                                                                    ),
-                                                                                    SizedBox(
-                                                                                      width: 5.w,
-                                                                                    ),
-                                                                                    Container(
-                                                                                        width: 20,
-                                                                                        height: 20,
-                                                                                        child: Container(
-                                                                                            alignment: Alignment.centerRight,
-                                                                                            height: 14,
-                                                                                            child: SvgPicture.asset(
-                                                                                              AppAssets.chatWithQuestionSvg,
-                                                                                              color: Color(0xff8E8E8E),
-                                                                                              height: 14,
-                                                                                            ))),
-                                                                                  ],
-                                                                                ),
                                                                                 Container(
-                                                                                  height: 17.h,
-                                                                                  margin: EdgeInsets.only(
-                                                                                    right: LanguageService.languageCode != "ar" ? 10.w : 25,
-                                                                                    left: LanguageService.languageCode != "ar" ? 25 : 10.w,
+                                                                              width: 400.w,
+                                                                              height: 50.h,
+                                                                              decoration: BoxDecoration(color: Color(0xffF8F8F8), borderRadius: BorderRadius.all(Radius.circular(12))),
+                                                                              padding: EdgeInsets.only(
+                                                                                right: LanguageService.languageCode != "ar" ? 10.w : 2,
+                                                                                left: LanguageService.languageCode != "ar" ? 2 : 10.w,
+                                                                              ),
+                                                                              margin: EdgeInsets.symmetric(horizontal: 10.w),
+                                                                              child: Column(
+                                                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                children: [
+                                                                                  Row(
+                                                                                    children: [
+                                                                                      Container(
+                                                                                        height: 17.h,
+                                                                                        margin: EdgeInsets.only(
+                                                                                          right: LanguageService.languageCode != "ar" ? 10.w : 25,
+                                                                                          left: LanguageService.languageCode != "ar" ? 25 : 10.w,
+                                                                                        ),
+                                                                                        child: Text(
+                                                                                          "${LocaleKeys.total.tr()}",
+                                                                                          style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 13.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
+                                                                                        ),
+                                                                                      ),
+                                                                                      Spacer(),
+                                                                                      Text(
+                                                                                        "${(totlalPrice + totlalDiscount).toStringAsFixed(state.startingSetting?.decimalPointSettings ?? 2)}  ",
+                                                                                        style: context.textTheme.bodyMedium?.ra.copyWith(decoration: TextDecoration.lineThrough, fontSize: 16, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
+                                                                                      ),
+                                                                                      Text(
+                                                                                        "${totlalPrice.toStringAsFixed(state.startingSetting?.decimalPointSettings ?? 2)}  ",
+                                                                                        style: context.textTheme.bodyMedium?.br.copyWith(fontSize: 16.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
+                                                                                      ),
+                                                                                      SizedBox(
+                                                                                        width: 2,
+                                                                                      ),
+                                                                                      Text(
+                                                                                        "${priceSymbol ?? "\$"}",
+                                                                                        style: context.textTheme.bodyMedium?.mr.copyWith(fontSize: 16.sp, color: const Color(0xff1D1D1D), letterSpacing: 0.18, height: 1.33),
+                                                                                      ),
+                                                                                      SizedBox(
+                                                                                        width: 5.w,
+                                                                                      ),
+                                                                                      Container(
+                                                                                          width: 20,
+                                                                                          height: 20,
+                                                                                          child: Container(
+                                                                                              alignment: Alignment.centerRight,
+                                                                                              height: 14,
+                                                                                              child: SvgPicture.asset(
+                                                                                                AppAssets.chatWithQuestionSvg,
+                                                                                                color: Color(0xff8E8E8E),
+                                                                                                height: 14,
+                                                                                              ))),
+                                                                                    ],
                                                                                   ),
-                                                                                  child: Text(
-                                                                                    "${LocaleKeys.click_to_show_all_discount.tr()} ",
-                                                                                    style: context.textTheme.bodyMedium?.ra.copyWith(fontSize: 11.sp, color: const Color(0xff8D8D8D), letterSpacing: 0.18, height: 1.33),
+                                                                                  Container(
+                                                                                    height: 17.h,
+                                                                                    margin: EdgeInsets.only(
+                                                                                      right: LanguageService.languageCode != "ar" ? 10.w : 25,
+                                                                                      left: LanguageService.languageCode != "ar" ? 25 : 10.w,
+                                                                                    ),
+                                                                                    child: Text(
+                                                                                      "${LocaleKeys.click_to_show_all_discount.tr()} ",
+                                                                                      style: context.textTheme.bodyMedium?.ra.copyWith(fontSize: 11.sp, color: const Color(0xff8D8D8D), letterSpacing: 0.18, height: 1.33),
+                                                                                    ),
                                                                                   ),
-                                                                                ),
-                                                                              ],
+                                                                                ],
+                                                                              ),
                                                                             ),
                                                                           ),
                                                                   ],
@@ -1660,7 +1664,7 @@ class _CartPageState extends State<CartPage> {
                                                                                         homeBloc.add(CheckWithGetCartEvent(isForPlaceOrder: false));
                                                                                         return;
                                                                                       } else if (state.cartCollection!.any(
-                                                                                        (element) => (element.isAvailableInMarket == false || element.isCountryRestricted == true || element.checkAvailability == false),
+                                                                                        (element) => (element.inStock == false || element.isCountryRestricted == true || element.checkAvailability == false),
                                                                                       )) {
                                                                                         showMessage(
                                                                                           " ${LocaleKeys.you_have_to_delete_all_unavailable_products.tr()}",

@@ -10,8 +10,10 @@ import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.
 import 'package:trydos/features/app/country_dropdown.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
+
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/pages/cart_page_new.dart';
+import 'package:trydos/features/home/presentation/pages/profile_page.dart';
 import 'package:trydos/features/search/presentation/pages/search_page.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
@@ -39,11 +41,11 @@ import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/pages/home_page.dart';
 import 'package:trydos/main.dart';
 import 'package:trydos/routes/router.dart';
-import 'package:trydos/service/notification_service/notification_service/handle_notification/request_permission_notification.dart';
+
 import 'common/constant/design/assets_provider.dart';
 import 'common/test_utils/widgets_keys.dart';
 import 'features/app/app_widgets/tabs_bar.dart';
-import 'features/authentication/presentation/pages/first_registeration_page.dart';
+
 import 'features/calls/presentation/pages/in_app_view.dart';
 import 'features/calls/presentation/utils/bg_terminated_call_utils.dart';
 import 'features/chat/data/models/my_chats_response_model.dart';
@@ -52,7 +54,7 @@ import 'features/chat/presentation/manager/chat_event.dart';
 import 'features/chat/presentation/manager/chat_state.dart';
 import 'features/chat/presentation/utils/firebase_presence.dart';
 import 'features/home/presentation/manager/home_state.dart';
-import 'features/home/presentation/pages/cart_page.dart';
+
 import 'service/firebase_analytics_service/firebase_analytics_service.dart';
 
 Widget get logo {
@@ -359,7 +361,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
       HomePage(isShowPanelForVerified: isShowPanelForVerified),
       const CartPage(),
       const ChatPages(description: ''),
-      const RegistrationPage(),
+      const ProfileHomePage(),
     ];
     pages!.add(
       SearchPage(
