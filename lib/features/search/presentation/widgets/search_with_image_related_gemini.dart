@@ -60,86 +60,81 @@ class SearchWithImageRelatedGemini {
                   sendRequestToGeminiStatus: SendRequestToGeminiStatus.loading,
                   theReplyFromGemini: ""));
 
-              await gemini
-                  .textAndImage(
-                      text: LanguageService.languageCode == "ar"
-                          ? " حدد ماذا يوجد في هذه الصورة بكلمة واحدة فقط بصيغة المفرد الغائب الاجابة بالعربي"
-                          : "Identify what's in this picture with just one word in the singular absent answer in English",
-                      images: [
-                        imageBytes
-                      ])
-                  .then((value) {
+              await gemini.textAndImage(
+                  text: LanguageService.languageCode == "ar"
+                      ? " حدد ماذا يوجد في هذه الصورة بكلمة واحدة فقط بصيغة المفرد الغائب الاجابة بالعربي"
+                      : "Identify what's in this picture with just one word in the singular absent answer in English",
+                  images: [imageBytes]).then((value) {
+                GetIt.I<HomeBloc>().add(ReplyFromGeminiEvent(
+                    fromSearch: fromSearch,
+                    sendRequestToGeminiStatus:
+                        SendRequestToGeminiStatus.success,
+                    theReplyFromGemini:
+                        value?.content?.parts?[0].text?.split(".").first ??
+                            value?.content?.parts?[0].text ??
+                            ""));
 
-            GetIt.I<HomeBloc>().add(ReplyFromGeminiEvent(
-            fromSearch: fromSearch,
-            sendRequestToGeminiStatus:
-            SendRequestToGeminiStatus.success,
-            theReplyFromGemini:
-            value?.content?.parts?[0].text?.split(".").first ??
-            value?.content?.parts?[0].text ??
-            ""));
+                FirebaseAnalyticsService.logEventForSession(
+                  eventName: AnalyticsEventsConst.programmingEvent,
+                  executedEventName:
+                      AnalyticsExecutedEventNameConst.uploadSearchImageSuccess,
+                );
+              }).onError(
+                (error, stackTrace) {
+                  GetIt.I<HomeBloc>().add(ReplyFromGeminiEvent(
+                      fromSearch: fromSearch,
+                      sendRequestToGeminiStatus:
+                          SendRequestToGeminiStatus.failure,
+                      theReplyFromGemini: ""));
 
-            FirebaseAnalyticsService.logEventForSession(
-            eventName: AnalyticsEventsConst.programmingEvent,
-            executedEventName: AnalyticsExecutedEventNameConst
-                .uploadSearchImageSuccess,
-            );
-            })
-                  .onError(
-                    (error, stackTrace) {
-                      GetIt.I<HomeBloc>().add(ReplyFromGeminiEvent(
-                          fromSearch: fromSearch,
-                          sendRequestToGeminiStatus:
-                              SendRequestToGeminiStatus.failure,
-                          theReplyFromGemini: ""));
+                  if (error.toString().contains("Failed host")) {
+                    Fluttertoast.showToast(
+                        fontSize: 18,
+                        timeInSecForIosWeb: 3,
+                        msg: "the internet is not available ",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.TOP,
+                        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                        textColor: Colors.white);
+                    return;
+                  }
+                  if (error
+                      .toString()
+                      .contains("The request was manually cancelled")) {
+                    Fluttertoast.showToast(
+                        fontSize: 18,
+                        timeInSecForIosWeb: 3,
+                        msg: "time out ",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.TOP,
+                        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                        textColor: Colors.white);
+                    return;
+                  }
+                  print("3333333333333333333333############${error}");
+                  Fluttertoast.showToast(
+                      msg: "this service is not available in your Country ",
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.TOP,
+                      backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                      textColor: Colors.white,
+                      fontSize: 18,
+                      timeInSecForIosWeb: 3);
 
-                      if (error.toString().contains("Failed host")) {
-                        Fluttertoast.showToast(
-                            fontSize: 18,
-                            timeInSecForIosWeb: 3,
-                            msg: "the internet is not available ",
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.TOP,
-                            backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                            textColor: Colors.white);
-                        return;
-                      }
-                      if (error
-                          .toString()
-                          .contains("The request was manually cancelled")) {
-                        Fluttertoast.showToast(
-                            fontSize: 18,
-                            timeInSecForIosWeb: 3,
-                            msg: "time out ",
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.TOP,
-                            backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                            textColor: Colors.white);
-                        return;
-                      }
-                      print("3333333333333333333333############${error}");
-                      Fluttertoast.showToast(
-                          msg: "this service is not available in your Country ",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.TOP,
-                          backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                          textColor: Colors.white,
-                          fontSize: 18,
-                          timeInSecForIosWeb: 3);
-
-            FirebaseAnalyticsService.logEventForSession(
-            eventName: AnalyticsEventsConst.programmingEvent,
-            executedEventName:
-            AnalyticsExecutedEventNameConst.uploadSearchImageFailed,
-            );
-                    },
-                  )
-                  .timeout(
-                      Duration(
-                        seconds: 20,
-                      ), onTimeout: () {
-                    gemini.cancelRequest();
-                     GetIt.I<HomeBloc>().add(ReplyFromGeminiEvent(
+                  FirebaseAnalyticsService.logEventForSession(
+                    eventName: AnalyticsEventsConst.programmingEvent,
+                    executedEventName:
+                        AnalyticsExecutedEventNameConst.uploadSearchImageFailed,
+                  );
+                },
+              ).timeout(
+                Duration(
+                  seconds: 20,
+                ),
+                onTimeout: () {
+                  gemini.cancelRequest();
+                  GetIt.I<HomeBloc>().add(
+                    ReplyFromGeminiEvent(
                         fromSearch: fromSearch,
                         sendRequestToGeminiStatus:
                             SendRequestToGeminiStatus.failure,
@@ -188,15 +183,16 @@ class SearchWithImageRelatedGemini {
                   fromSearch: fromSearch,
                   sendRequestToGeminiStatus: SendRequestToGeminiStatus.loading,
                   theReplyFromGemini: ""));
-              await gemini
-                  .textAndImage(
-                      text: LanguageService.languageCode == "ar"
-                          ? "اعطني كلمة واحد ماذا يوجد هذه الصورة"
-                          : "give me only word about what do you see in this image ",
-                      images: [
-                        imageBytes
-                      ])
-                  .then((value) { GetIt.I<HomeBloc>().add(ReplyFromGeminiEvent(
+              await gemini.textAndImage(
+                  text: LanguageService.languageCode == "ar"
+                      ? "اعطني جواب مختصر بكلمتين الاولى ماذا تجد في الصوره والثانية لونه"
+                      : "Give me a short answer in two words. The first is what you find in the picture, and the second is its color.",
+                  images: [imageBytes]).then((value) {
+                print(
+                    "111111111111111111111111111111111111111111111111111111#333333333333333333${value?.content?.parts?[0].text}");
+
+                GetIt.I<HomeBloc>().add(
+                  ReplyFromGeminiEvent(
                       fromSearch: fromSearch,
                       sendRequestToGeminiStatus:
                           SendRequestToGeminiStatus.success,
@@ -216,11 +212,11 @@ class SearchWithImageRelatedGemini {
                   print(
                       "*******************************&%^&**(*&^%${error}#******************************TTTTTTTTTTTTTTTTTTTTTTtoo");
 
-                    GetIt.I<HomeBloc>().add(ReplyFromGeminiEvent(
-                        fromSearch: fromSearch,
-                        sendRequestToGeminiStatus:
-                            SendRequestToGeminiStatus.failure,
-                        theReplyFromGemini: ""));
+                  GetIt.I<HomeBloc>().add(ReplyFromGeminiEvent(
+                      fromSearch: fromSearch,
+                      sendRequestToGeminiStatus:
+                          SendRequestToGeminiStatus.failure,
+                      theReplyFromGemini: ""));
 
                   if (error.toString().contains("Failed host")) {
                     Fluttertoast.showToast(
@@ -269,7 +265,7 @@ class SearchWithImageRelatedGemini {
                   gemini.cancelRequest();
                   GetIt.I<HomeBloc>().add(
                     ReplyFromGeminiEvent(
-                      fromSearch: fromSearch,
+                        fromSearch: fromSearch,
                         sendRequestToGeminiStatus:
                             SendRequestToGeminiStatus.failure,
                         theReplyFromGemini: ""),

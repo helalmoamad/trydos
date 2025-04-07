@@ -122,6 +122,7 @@ class NotificationItemModel {
   int? id;
   int? userId;
   String? title;
+  String? descriptionToHandleNotification;
   int? notificationTypeId;
   String? body;
   NotificationDescriptionModel? description;
@@ -132,6 +133,7 @@ class NotificationItemModel {
     this.id,
     this.userId,
     this.title,
+    this.descriptionToHandleNotification,
     this.notificationTypeId,
     this.body,
     this.description,
@@ -146,6 +148,7 @@ class NotificationItemModel {
       title: json['title'] ?? '',
       notificationTypeId: json['notification_type_id'] ?? 0,
       body: json['body'] ?? '',
+      descriptionToHandleNotification: json['description'].toString(),
       description: json['description'] == null
           ? null
           : NotificationDescriptionModel.fromJson(
@@ -160,6 +163,7 @@ class NotificationItemModel {
     int? userId,
     String? title,
     int? notificationTypeId,
+    String? descriptionToHandleNotification,
     String? body,
     NotificationDescriptionModel? description,
     int? isWatched,
@@ -170,6 +174,8 @@ class NotificationItemModel {
     return NotificationItemModel(
       id: id ?? this.id,
       userId: userId ?? this.userId,
+      descriptionToHandleNotification: descriptionToHandleNotification ??
+          this.descriptionToHandleNotification,
       title: title ?? this.title,
       notificationTypeId: notificationTypeId ?? this.notificationTypeId,
       body: body ?? this.body,
@@ -187,6 +193,7 @@ class NotificationItemModel {
         'body': body,
         'description': jsonEncode(description?.toJson()),
         'is_watched': isWatched,
+        "descriptionToHandleNotification": descriptionToHandleNotification,
         'is_public': isPublic,
       };
 }

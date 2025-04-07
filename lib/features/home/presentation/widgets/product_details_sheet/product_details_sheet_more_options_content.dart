@@ -72,16 +72,6 @@ class _ProductDetailsSheetMoreOptionsContentState
           previous.getNotificationTypeProductStatus !=
           current.getNotificationTypeProductStatus,
       builder: (context, state) {
-        String countryISo =
-            ((GetIt.I<PrefsRepository>().userCountryIsAvailable == 1
-                        ? GetIt.I<PrefsRepository>().userChoosedCountryIso
-                        : GetIt.I<PrefsRepository>().countryIso) ??
-                    "")
-                .toLowerCase();
-
-        List<String> notifucationThatSubsecribe = [];
-        notifucationThatSubsecribe =
-            prefsRepository.topicThatAlreadySubsecribed();
         return SingleChildScrollView(
           child: ListView(
             controller: widget.scrollController,
@@ -96,7 +86,7 @@ class _ProductDetailsSheetMoreOptionsContentState
                     color: Color(0xff505050),
                   )),
               10.verticalSpace,
-              (state.notificationTypeForProductModel?.notificationTypes
+              (state.notificationTypeForProductModel?.data?.notificationTypes
                               ?.length ??
                           0) ==
                       0
@@ -170,6 +160,7 @@ class _ProductDetailsSheetMoreOptionsContentState
                                             if (notificationISSubsecribe
                                                 .contains((state
                                                             .notificationTypeForProductModel
+                                                            ?.data
                                                             ?.notificationTypes?[
                                                                 index]
                                                             .topic ??
@@ -177,12 +168,12 @@ class _ProductDetailsSheetMoreOptionsContentState
                                                     "_${widget.productId}")) {
                                               SubsecribeOrUnSubsecribeToTopic()
                                                   .unSubsecribeToOtherTopic(
-                                                      ("${state.notificationTypeForProductModel?.notificationTypes?[index].topic ?? ""}" +
+                                                      ("${state.notificationTypeForProductModel?.data?.notificationTypes?[index].topic ?? ""}" +
                                                           "_${widget.productId}"));
                                             } else {
                                               SubsecribeOrUnSubsecribeToTopic()
                                                   .subsecribeToOtherTopic(
-                                                      ("${state.notificationTypeForProductModel?.notificationTypes?[index].topic ?? ""}" +
+                                                      ("${state.notificationTypeForProductModel?.data?.notificationTypes?[index].topic ?? ""}" +
                                                           "_${widget.productId}"));
                                             }
                                           },
@@ -194,6 +185,7 @@ class _ProductDetailsSheetMoreOptionsContentState
                                                       border: Border.all(
                                                           color: notificationISSubsecribe.contains((state
                                                                           .notificationTypeForProductModel
+                                                                          ?.data
                                                                           ?.notificationTypes?[
                                                                               index]
                                                                           .topic ??
@@ -212,9 +204,10 @@ class _ProductDetailsSheetMoreOptionsContentState
                                                     child: Text(
                                                       (state
                                                               .notificationTypeForProductModel
+                                                              ?.data
                                                               ?.notificationTypes?[
                                                                   index]
-                                                              .name ??
+                                                              .showedName ??
                                                           ""),
                                                       style: context.textTheme
                                                           .bodyMedium?.rr
@@ -243,7 +236,7 @@ class _ProductDetailsSheetMoreOptionsContentState
                                                                   0xffEFEFEF),
                                                               border: Border.all(
                                                                   color: notificationISSubsecribe.contains(
-                                                                          (state.notificationTypeForProductModel?.notificationTypes?[index].topic ?? "") +
+                                                                          (state.notificationTypeForProductModel?.data?.notificationTypes?[index].topic ?? "") +
                                                                               "_${widget.productId}")
                                                                       ? Colors
                                                                           .red
@@ -259,6 +252,7 @@ class _ProductDetailsSheetMoreOptionsContentState
                                                             child: Text(
                                                               (state
                                                                       .notificationTypeForProductModel
+                                                                      ?.data
                                                                       ?.notificationTypes?[
                                                                           index]
                                                                       .name ??
@@ -288,6 +282,7 @@ class _ProductDetailsSheetMoreOptionsContentState
                                         ),
                                     itemCount: (state
                                             .notificationTypeForProductModel
+                                            ?.data
                                             ?.notificationTypes
                                             ?.length ??
                                         0)),

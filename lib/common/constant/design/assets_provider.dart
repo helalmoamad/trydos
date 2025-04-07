@@ -24,9 +24,25 @@ abstract class AppAssets {
   /// region SVG Section
   static String get logoSvg => 'logo'.svg;
   static String get infoSvg => 'info'.svg;
+  static String get aboutUsSvg => 'about_us'.svg;
+  static String get addPhotoSvg => 'add_photo'.svg;
+  static String get addressSvg => 'address'.svg;
+  static String get bankCardSvg => 'bank_card'.svg;
+  static String get galarySvg => 'galary'.svg;
+  static String get languageSvg => 'language'.svg;
+  static String get legalInfoSvg => 'legal_info'.svg;
+  static String get parcodeSvg => 'parcode'.svg;
+  static String get personalInfoSvg => 'personal_info'.svg;
+  static String get settingSvg => 'setting'.svg;
+  static String get shareAppSvg => 'share_app'.svg;
+  static String get sizeLineSvg => 'size_line'.svg;
+  static String get takphotoSvg => 'take_photo'.svg;
+  static String get termSvg => 'term'.svg;
   static String get orderInvoiceSvg => 'order_invoice'.svg;
   static String get success1Svg => 'success_1'.svg;
   static String get success2Svg => 'success_2'.svg;
+  static String get succuessProfileSvg => 'succuess_profile'.svg;
+  static String get trySvg => 'try'.svg;
   static String get americanExpressSvg => 'american_express'.svg;
   static String get applePaySvg => 'apple_pay'.svg;
   static String get creditCards => 'credit_cards'.svg;

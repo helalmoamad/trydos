@@ -157,6 +157,50 @@ class _ProductListingPageState extends State<ProductListingPage> {
   bool _speechEnabled = false;
 
   List<filter_products.Products> products = [];
+  List<String> sizesForSearch = [
+    "2xl",
+    "34 eu",
+    "38eu",
+    "39.5eu",
+    "3xl",
+    "41eu",
+    "42eu",
+    "44eu",
+    "45eu",
+    "46eu",
+    "4xl",
+    "5xl",
+    "l",
+    "m",
+    "s",
+    "s/m",
+    "xl",
+    "xs",
+    "xxl"
+  ];
+  List<String> colorsCodeForSearch = [
+    "#000000",
+    "#0000ff",
+    "#ffff00",
+    "#228b22",
+    "#a52a2a",
+    "#ffffff"
+  ];
+  List<String> colorsNameForSearch = [
+    "أسود",
+    "ازرق",
+    "اصفر",
+    "اخضر",
+    "احمر",
+    "ابيض"
+  ];
+  List<String> constWordToRemoveItFromSearch = [
+    "قياس",
+    "حجم",
+    "لون",
+    "اللون",
+    "الالوان"
+  ];
   void _startListening() async {
     if (!_speechEnabled) {
       _speechEnabled = await _speechToText.initialize();
@@ -165,6 +209,35 @@ class _ProductListingPageState extends State<ProductListingPage> {
       listenFor: Duration(seconds: 7),
       onResult: (result) {
         if (result.recognizedWords.replaceAll(" ", "").length > 2) {
+          resetSearchAfterSearchingWhileRemoveSearch = true;
+
+          List<String>? colorsFilter = [];
+          List<String> listSearchTextWithoutConstWord =
+              result.recognizedWords.split(" ").toList();
+          String searchText = "";
+          List<String>? sizesFilter = [];
+
+          List<String> listOfSearchText =
+              result.recognizedWords.split(" ").toList();
+          for (var i = 0; i < colorsNameForSearch.length; i++) {
+            if (listOfSearchText.contains(colorsNameForSearch[i])) {
+              colorsFilter.add(colorsCodeForSearch[i]);
+              listSearchTextWithoutConstWord.remove(colorsNameForSearch[i]);
+            }
+          }
+
+          for (var i = 0; i < sizesForSearch.length; i++) {
+            if (listOfSearchText.contains(sizesForSearch[i])) {
+              sizesFilter.add(sizesForSearch[i]);
+              listSearchTextWithoutConstWord.remove(sizesForSearch[i]);
+            }
+          }
+          for (var i = 0; i < constWordToRemoveItFromSearch.length; i++) {
+            listSearchTextWithoutConstWord
+                .remove(constWordToRemoveItFromSearch[i]);
+          }
+          listSearchTextWithoutConstWord
+              .forEach((element) => searchText = searchText + " " + element);
           controller.text = result.recognizedWords;
           Filter filters = BlocProvider.of<HomeBloc>(context)
                   .state
@@ -175,11 +248,11 @@ class _ProductListingPageState extends State<ProductListingPage> {
           BlocProvider.of<HomeBloc>(context).add(ChangeSelectedFiltersEvent(
               boutiqueSlug: widget.boutiqueSlug,
               category: widget.category,
-              fromHomePageSearch: true,
+              fromHomePageSearch: widget.fromSearch,
               filtersChoosedByUser: GetProductFiltersModel(
                   filters: filters.copyWithSaveOtherField(
                 prices: filters.prices,
-                searchText: result.recognizedWords,
+                searchText: searchText,
               ))));
           BlocProvider.of<HomeBloc>(context).add(ChangeAppliedFiltersEvent(
             boutiqueSlug: widget.boutiqueSlug,
@@ -187,16 +260,22 @@ class _ProductListingPageState extends State<ProductListingPage> {
             filtersAppliedByUser: GetProductFiltersModel(
                 filters: filters.copyWithSaveOtherField(
               prices: filters.prices,
-              searchText: result.recognizedWords,
+              searchText: searchText,
             )),
           ));
+          homeBloc.add(AddSizeAndColorFilterinTextToSearchEvent(
+              sizeAndColorFilterinTextToSearch: {
+                "size": sizesFilter,
+                "color": colorsFilter
+              }));
+
           BlocProvider.of<HomeBloc>(context).add(GetProductsWithFiltersEvent(
               offset: 1,
               boutiqueSlug: widget.boutiqueSlug,
               category: widget.category,
               resetChoosedFilters: false,
-              fromSearch: true,
-              searchText: result.recognizedWords));
+              fromSearch: widget.fromSearch,
+              searchText: searchText));
           _stopListening();
           return;
         }
@@ -204,7 +283,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
     );
     isRecordeForSearchWithMic.value = true;
     Future.delayed(
-      Duration(seconds: 5),
+      Duration(seconds: 9),
       () => isRecordeForSearchWithMic.value = false,
     );
   }
@@ -238,6 +317,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
         isChangedvariationWhenQtyZero: false));
     homeBloc.add(IsChangedvariationWhenQtyZeroEvent(
         isChangedvariationWhenQtyZero: false));
+    homeBloc.add(AddSizeAndColorFilterinTextToSearchEvent(
+        sizeAndColorFilterinTextToSearch: {}));
     appBloc.add(HideBottomNavigationBar(false));
     appBloc.add(ShowOrHideBars(true));
     appBloc.add(ChangeIndexForSearch(1));
@@ -564,8 +645,44 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                           c.theReplyFromGemini) &&
                                   c.fromSearchForSearchWithGemini == false),
                           builder: (context, state) {
-                            if (state.theReplyFromGemini != "" &&
+                            if ((state.theReplyFromGemini ?? "") != "" &&
                                 state.fromSearchForSearchWithGemini == false) {
+                              List<String>? colorsFilter = [];
+                              List<String> listSearchTextWithoutConstWord =
+                                  state.theReplyFromGemini!.split(" ").toList();
+                              String searchText = "";
+                              List<String>? sizesFilter = [];
+                              List<String> listOfSearchText =
+                                  state.theReplyFromGemini!.split(" ").toList();
+                              for (var i = 0;
+                                  i < colorsNameForSearch.length;
+                                  i++) {
+                                if (listOfSearchText
+                                    .contains(colorsNameForSearch[i])) {
+                                  colorsFilter.add(colorsCodeForSearch[i]);
+                                  listSearchTextWithoutConstWord
+                                      .remove(colorsNameForSearch[i]);
+                                }
+                              }
+
+                              for (var i = 0; i < sizesForSearch.length; i++) {
+                                if (listOfSearchText
+                                    .contains(sizesForSearch[i])) {
+                                  sizesFilter.add(sizesForSearch[i]);
+                                  listSearchTextWithoutConstWord
+                                      .remove(sizesForSearch[i]);
+                                }
+                              }
+                              for (var i = 0;
+                                  i < constWordToRemoveItFromSearch.length;
+                                  i++) {
+                                listSearchTextWithoutConstWord
+                                    .remove(constWordToRemoveItFromSearch[i]);
+                              }
+                              listSearchTextWithoutConstWord.forEach(
+                                  (element) =>
+                                      searchText = searchText + " " + element);
+
                               controller.text = state.theReplyFromGemini ?? "";
                               Filter filters =
                                   BlocProvider.of<HomeBloc>(context)
@@ -584,7 +701,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               filters: filters
                                                   .copyWithSaveOtherField(
                                         prices: filters.prices,
-                                        searchText: state.theReplyFromGemini,
+                                        searchText: searchText,
                                       ))));
                               BlocProvider.of<HomeBloc>(context)
                                   .add(ChangeAppliedFiltersEvent(
@@ -593,9 +710,15 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                 filtersAppliedByUser: GetProductFiltersModel(
                                     filters: filters.copyWithSaveOtherField(
                                   prices: filters.prices,
-                                  searchText: state.theReplyFromGemini,
+                                  searchText: searchText,
                                 )),
                               ));
+                              homeBloc.add(
+                                  AddSizeAndColorFilterinTextToSearchEvent(
+                                      sizeAndColorFilterinTextToSearch: {
+                                    "size": sizesFilter,
+                                    "color": colorsFilter
+                                  }));
 
                               BlocProvider.of<HomeBloc>(context).add(
                                   GetProductsWithFiltersEvent(
@@ -604,7 +727,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                       category: widget.category,
                                       resetChoosedFilters: false,
                                       fromSearch: widget.fromSearch,
-                                      searchText: state.theReplyFromGemini));
+                                      searchText: searchText));
                             }
                             if (!(state.isExpandedForListingPage ?? false) &&
                                 !itExpendForFirst) {
@@ -824,6 +947,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                               width: isExpanded ? (1.sw - 90) : (1.sw - 120),
                                                                               height: 40,
                                                                               onClickClose: () {
+                                                                                homeBloc.add(AddSizeAndColorFilterinTextToSearchEvent(sizeAndColorFilterinTextToSearch: {}));
+
                                                                                 if (!isExpanded && controller.text.isNotEmpty) {
                                                                                   Filter filters = homeBloc.state.appliedFiltersByUser[key]?.filters ?? Filter();
                                                                                   homeBloc.add(ChangeAppliedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, filtersAppliedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices, searchText: null))));
@@ -1024,11 +1149,34 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                 labelStyle: context.textTheme.titleLarge?.copyWith(color: context.colorScheme.hint),
                                                                               ),
                                                                               onChanged: (String text) {
+                                                                                List<String>? colorsFilter = [];
+                                                                                List<String> listSearchTextWithoutConstWord = text.split(" ").toList();
+                                                                                String searchText = "";
+                                                                                List<String>? sizesFilter = [];
+
                                                                                 if (isExpanded) {
                                                                                   Filter filters = homeBloc.state.choosedFiltersByUser[key]?.filters ?? Filter();
                                                                                   if (text.length > 2) {
+                                                                                    List<String> listOfSearchText = text.split(" ").toList();
+                                                                                    for (var i = 0; i < colorsNameForSearch.length; i++) {
+                                                                                      if (listOfSearchText.contains(colorsNameForSearch[i])) {
+                                                                                        colorsFilter.add(colorsCodeForSearch[i]);
+                                                                                        listSearchTextWithoutConstWord.remove(colorsNameForSearch[i]);
+                                                                                      }
+                                                                                    }
+
+                                                                                    for (var i = 0; i < sizesForSearch.length; i++) {
+                                                                                      if (listOfSearchText.contains(sizesForSearch[i])) {
+                                                                                        sizesFilter.add(sizesForSearch[i]);
+                                                                                        listSearchTextWithoutConstWord.remove(sizesForSearch[i]);
+                                                                                      }
+                                                                                    }
+                                                                                    for (var i = 0; i < constWordToRemoveItFromSearch.length; i++) {
+                                                                                      listSearchTextWithoutConstWord.remove(constWordToRemoveItFromSearch[i]);
+                                                                                    }
+                                                                                    listSearchTextWithoutConstWord.forEach((element) => searchText = searchText + " " + element);
                                                                                     resetSearchAfterSearchingWhileRemoveSearch = true;
-                                                                                    homeBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, filtersChoosedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices, searchText: text))));
+                                                                                    homeBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, filtersChoosedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices, searchText: searchText))));
                                                                                   }
                                                                                   if (text.length < 3 && resetSearchAfterSearchingWhileRemoveSearch) {
                                                                                     resetSearchAfterSearchingWhileRemoveSearch = false;
@@ -1037,20 +1185,45 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                   return;
                                                                                 }
                                                                                 if (text.length > 2) {
+                                                                                  homeBloc.add(AddSizeAndColorFilterinTextToSearchEvent(sizeAndColorFilterinTextToSearch: {}));
+
+                                                                                  List<String> listOfSearchText = text.split(" ").toList();
+                                                                                  for (var i = 0; i < colorsNameForSearch.length; i++) {
+                                                                                    if (listOfSearchText.contains(colorsNameForSearch[i])) {
+                                                                                      colorsFilter.add(colorsCodeForSearch[i]);
+                                                                                      listSearchTextWithoutConstWord.remove(colorsNameForSearch[i]);
+                                                                                    }
+                                                                                  }
+
+                                                                                  for (var i = 0; i < sizesForSearch.length; i++) {
+                                                                                    if (listOfSearchText.contains(sizesForSearch[i])) {
+                                                                                      sizesFilter.add(sizesForSearch[i]);
+                                                                                      listSearchTextWithoutConstWord.remove(sizesForSearch[i]);
+                                                                                    }
+                                                                                  }
+                                                                                  for (var i = 0; i < constWordToRemoveItFromSearch.length; i++) {
+                                                                                    listSearchTextWithoutConstWord.remove(constWordToRemoveItFromSearch[i]);
+                                                                                  }
+                                                                                  listSearchTextWithoutConstWord.forEach((element) => searchText = searchText + " " + element);
                                                                                   resetSearchAfterSearchingWhileRemoveSearch = true;
                                                                                   Filter filters = homeBloc.state.appliedFiltersByUser[key]?.filters ?? Filter();
+
                                                                                   homeBloc.add(ChangeAppliedFiltersEvent(
                                                                                     category: widget.category,
                                                                                     boutiqueSlug: widget.boutiqueSlug,
                                                                                     filtersAppliedByUser: GetProductFiltersModel(
                                                                                         filters: filters.copyWithSaveOtherField(
                                                                                       prices: filters.prices,
-                                                                                      searchText: text,
+                                                                                      searchText: searchText,
                                                                                     )),
                                                                                   ));
+                                                                                  homeBloc.add(AddSizeAndColorFilterinTextToSearchEvent(sizeAndColorFilterinTextToSearch: {
+                                                                                    "size": sizesFilter,
+                                                                                    "color": colorsFilter
+                                                                                  }));
                                                                                   homeBloc.add(GetProductsWithFiltersEvent(
                                                                                     offset: 1,
-                                                                                    searchText: text,
+                                                                                    searchText: searchText,
                                                                                     fromSearch: fromSearch,
                                                                                     category: widget.category,
                                                                                     boutiqueSlug: widget.boutiqueSlug,
@@ -1567,6 +1740,13 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                           .getProductListingWithFiltersPaginationWithPrefetchModels[
                                                               '${widget.boutiqueSlug}' +
                                                                   '${currentAppliedFilterSllug}' +
+                                                                  '${(widget.category ?? '')}']
+                                                          ?.paginationStatus ==
+                                                      PaginationStatus
+                                                          .success &&
+                                                  state
+                                                          .getProductListingWithFiltersPaginationWithPrefetchModels[
+                                                              '${widget.boutiqueSlug}' +
                                                                   '${(widget.category ?? '')}']
                                                           ?.paginationStatus ==
                                                       PaginationStatus

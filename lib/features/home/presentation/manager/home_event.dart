@@ -580,6 +580,16 @@ class GetStoryForProductEvent extends HomeEvent {
   List<Object?> get props => [productId];
 }
 
+class AddSizeAndColorFilterinTextToSearchEvent extends HomeEvent {
+  final Map<String, List<String>> sizeAndColorFilterinTextToSearch;
+  AddSizeAndColorFilterinTextToSearchEvent(
+      {required this.sizeAndColorFilterinTextToSearch});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [sizeAndColorFilterinTextToSearch];
+}
+
 class GetAddressByCoordinatesEvent extends HomeEvent {
   final double latitude;
   final double longitude;

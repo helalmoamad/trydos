@@ -263,6 +263,7 @@ class HomeState extends Equatable {
       this.currentSelectedColorForEveryProduct = const {},
       this.boutiquesThatDidPrefetch = const {},
       this.notificationTypeForProductModel,
+      this.sizeAndColorFilterinTextToSearch = const {},
       this.getNotificationTypeProductStatus,
       this.currentIndexForUpdateCart,
       this.listOfAddressInfoClassToSave = const [],
@@ -288,6 +289,7 @@ class HomeState extends Equatable {
   final EnableAddToCardAfterChangeVariantZero?
       enableAddToCardAfterChangeVariantZero;
   final bool isChangedvariationWhenQtyZero;
+  final Map<String, List<String>> sizeAndColorFilterinTextToSearch;
   final ConvertItemFromOldcartToCartStatus? convertItemFromOldcartToCartStatus;
   final GetMainCategoriesStatus getMainCategoriesStatus;
   final GetNotificationTypeProductStatus? getNotificationTypeProductStatus;
@@ -453,6 +455,7 @@ class HomeState extends Equatable {
         hideItemInOldCartStatus,
         // moveUrlFromElasticToMarketServer,
         cashedOrginalBoutique,
+        sizeAndColorFilterinTextToSearch,
         listOfAddressInfoClassToSave,
         getAddressByCoordinatesStatus,
         updateEmailappNotificationStatus,
@@ -546,6 +549,7 @@ class HomeState extends Equatable {
           getFirebaseSettingForNotificationStatus,
       final FirebaseSettingForNotificationModel?
           firebaseSettingForNotificationModel,
+      final Map<String, List<String>>? sizeAndColorFilterinTextToSearch,
       final bool? isChangedvariationWhenQtyZero,
       final GetMainCategoriesStatus? getMainCategoriesStatus,
       final GetAddressByCoordinatesModel? getAddressByCoordinatesModel,
@@ -725,6 +729,8 @@ class HomeState extends Equatable {
               this.firebaseSettingForNotificationModel,
       isChangedvariationWhenQtyZero:
           isChangedvariationWhenQtyZero ?? this.isChangedvariationWhenQtyZero,
+      sizeAndColorFilterinTextToSearch: sizeAndColorFilterinTextToSearch ??
+          this.sizeAndColorFilterinTextToSearch,
       changeSizesForEveryProduct:
           changeSizesForEveryProduct ?? this.changeSizesForEveryProduct,
       addAddressToOrderStatus:

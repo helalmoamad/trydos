@@ -428,7 +428,7 @@ class PlaceOrderDetailsModel {
   final bool? collectProductAfterOrdering;
   final String? discountType;
   final int? isStockDecreased;
-  final int? refundRequest;
+  final String? refundRequest;
   final dynamic refundRequestStatus;
   final int? isOdooProduct;
   final int? odooId;
@@ -477,7 +477,7 @@ class PlaceOrderDetailsModel {
     bool? collectProductAfterOrdering,
     String? discountType,
     int? isStockDecreased,
-    int? refundRequest,
+    String? refundRequest,
     dynamic refundRequestStatus,
     int? isOdooProduct,
     int? odooId,
@@ -532,7 +532,7 @@ class PlaceOrderDetailsModel {
         collectProductAfterOrdering: json["collect_product_after_ordering"],
         discountType: json["discount_type"],
         isStockDecreased: json["is_stock_decreased"],
-        refundRequest: json["refund_request"],
+        refundRequest: json["refund_request"].toString(),
         refundRequestStatus: json["refund_request_status"],
         isOdooProduct: json["is_odoo_product"],
         odooId: json["odoo_id"],
@@ -559,7 +559,7 @@ class PlaceOrderDetailsModel {
         "collect_product_after_ordering": collectProductAfterOrdering,
         "discount_type": discountType,
         "is_stock_decreased": isStockDecreased,
-        "refund_request": refundRequest,
+        "refund_request": refundRequest.toString(),
         "refund_request_status": refundRequestStatus,
         "is_odoo_product": isOdooProduct,
         "odoo_id": odooId,

@@ -555,8 +555,8 @@ class OrderProductDetailsModel {
         "thumbnail": thumbnail,
         "images":
             images == null ? [] : List<dynamic>.from(images!.map((x) => x)),
-        "price": price,
-        "offer_price": offerPrice,
+        "price": price?.toDouble(),
+        "offer_price": offerPrice?.toDouble(),
         "is_favourite": isFavourite,
         "in_stock": inStock,
         "rating": rating?.toJson(),
