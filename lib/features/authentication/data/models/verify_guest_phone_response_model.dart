@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:trydos/features/authentication/data/models/verify_otp_sign_up_and_in_response_model.dart';
+
 VerifyOtpFromGuestResponseModel verifyOtpFromGuestResponseModelFromJson(
         String str) =>
     VerifyOtpFromGuestResponseModel.fromJson(json.decode(str));
@@ -73,7 +75,7 @@ class Data {
   final int? userType;
   final String? token;
   final String? expiresAt;
-  final DataUser? user;
+  final User? user;
 
   Data({
     this.alreadyExists,
@@ -92,7 +94,7 @@ class Data {
     int? userType,
     String? token,
     String? expiresAt,
-    DataUser? user,
+    User? user,
   }) =>
       Data(
         alreadyExists: alreadyExists ?? this.alreadyExists,
@@ -112,7 +114,7 @@ class Data {
         userType: json["user_type"],
         token: json["token"],
         expiresAt: json["expires_at"],
-        user: json["user"] == null ? null : DataUser.fromJson(json["user"]),
+        user: json["user"] == null ? null : User.fromJson(json["user"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -123,52 +125,5 @@ class Data {
         "token": token,
         "expires_at": expiresAt,
         "user": user?.toJson(),
-      };
-}
-
-class DataUser {
-  final int? id;
-  final String? name;
-  final String? phone;
-  final int? isPhoneVerified;
-  final String? lastOtpIdToken;
-
-  DataUser({
-    this.id,
-    this.name,
-    this.phone,
-    this.isPhoneVerified,
-    this.lastOtpIdToken,
-  });
-
-  DataUser copyWith({
-    int? id,
-    String? name,
-    String? phone,
-    int? isPhoneVerified,
-    String? lastOtpIdToken,
-  }) =>
-      DataUser(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        phone: phone ?? this.phone,
-        isPhoneVerified: isPhoneVerified ?? this.isPhoneVerified,
-        lastOtpIdToken: lastOtpIdToken ?? this.lastOtpIdToken,
-      );
-
-  factory DataUser.fromJson(Map<String, dynamic> json) => DataUser(
-        id: json["id"],
-        name: json["name"],
-        phone: json["phone"],
-        isPhoneVerified: json["is_phone_verified"],
-        lastOtpIdToken: json["last_otp_id_token"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "name": name,
-        "phone": phone,
-        "is_phone_verified": isPhoneVerified,
-        "last_otp_id_token": lastOtpIdToken,
       };
 }

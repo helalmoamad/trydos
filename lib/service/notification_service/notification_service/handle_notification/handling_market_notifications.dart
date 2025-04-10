@@ -24,12 +24,15 @@ enum TypeOfNotificationForMarketEnum {
   product_hurry_up_quantity,
   product_hurry_up_time_left,
   product_when_change_in_price,
+  remember_abandon_cart,
   product_before_stock_out,
   order_placed
 }
 
 Map<TypeOfNotificationForMarketEnum, String> typeOfNotificationForMarket = {
   TypeOfNotificationForMarketEnum.boutique_created: "boutique created",
+  TypeOfNotificationForMarketEnum.remember_abandon_cart:
+      "remember abandon cart",
   TypeOfNotificationForMarketEnum.category_created: "category created",
   TypeOfNotificationForMarketEnum.product_availability: "product availability",
   TypeOfNotificationForMarketEnum.product_cart_expiration:
@@ -63,6 +66,9 @@ class HandlingMarketNotifications {
                   TypeOfNotificationForMarketEnum.product_cart_expiration] ||
           data?["type"] ==
               typeOfNotificationForMarket[
+                  TypeOfNotificationForMarketEnum.remember_abandon_cart] ||
+          data?["type"] ==
+              typeOfNotificationForMarket[
                   TypeOfNotificationForMarketEnum.product_hurry_up_time_left] ||
           data?["type"] ==
               typeOfNotificationForMarket[
@@ -90,6 +96,9 @@ class HandlingMarketNotifications {
     if (data["type"] ==
             typeOfNotificationForMarket[
                 TypeOfNotificationForMarketEnum.product_cart_expiration] ||
+        data["type"] ==
+            typeOfNotificationForMarket[
+                TypeOfNotificationForMarketEnum.remember_abandon_cart] ||
         data["type"] ==
             typeOfNotificationForMarket[
                 TypeOfNotificationForMarketEnum.product_hurry_up_time_left] ||

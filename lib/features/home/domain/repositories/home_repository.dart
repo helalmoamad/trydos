@@ -22,6 +22,8 @@ import 'package:trydos/features/home/data/models/popular_search_terms_model.dart
 import 'package:trydos/features/home/data/models/response_only_message_model.dart';
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
 import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
+import 'package:trydos/features/home/data/models/update_profile_model.dart';
+import 'package:trydos/features/home/data/models/upload_user_photo_model.dart';
 import '../../../../core/error/failures.dart';
 import '../../data/models/apply_coupon_model.dart';
 import '../../data/models/check_availability_product_cart_model.dart';
@@ -59,6 +61,8 @@ abstract class HomeRepository {
 
   Future<Either<Failure, FirebaseSettingForNotificationModel>>
       updateWhatsappNotification(Map<String, dynamic> params);
+  Future<Either<Failure, UpdateProfileModel>> updateProfile(
+      Map<String, dynamic> params);
   Future<Either<Failure, FirebaseSettingForNotificationModel>>
       updateFirebaseNotification(Map<String, dynamic> params);
   Future<Either<Failure, FirebaseSettingForNotificationModel>>
@@ -89,6 +93,8 @@ abstract class HomeRepository {
   Future<Either<Failure, GetStoryForProductModel>> getStories(String productId);
   Future<Either<Failure, GetProductListingWithoutFiltersModel>>
       getProductsWithoutFilters(Map<String, dynamic> params);
+  Future<Either<Failure, UploadUserPhotoModel>> uploadUserPhoto(
+      Map<String, dynamic> params);
   Future<Either<Failure, GetProductListingWithFiltersModel>>
       getProductsWithFilters(Map<String, dynamic> params);
   Future<Either<Failure, ResponseOnlyMessageModel>> addCustomerAddress(

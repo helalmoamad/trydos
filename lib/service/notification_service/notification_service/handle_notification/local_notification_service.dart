@@ -100,6 +100,9 @@ class LocalNotificationService {
                   TypeOfNotificationForMarketEnum.product_cart_expiration] ||
           data?["type"] ==
               typeOfNotificationForMarket[
+                  TypeOfNotificationForMarketEnum.remember_abandon_cart] ||
+          data?["type"] ==
+              typeOfNotificationForMarket[
                   TypeOfNotificationForMarketEnum.product_hurry_up_quantity] ||
           data?["type"] ==
               typeOfNotificationForMarket[

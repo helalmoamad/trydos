@@ -99,7 +99,7 @@ class _NotifyWhenAvailableInCountryButtonState
                 return Transform.translate(
                     offset: Offset(sineValue * 3, 0),
                     child: SizedBox(
-                      width: widget.currentTap == 3 ? 1.sh - 50 : 150,
+                      width: widget.currentTap == 3 ? 1.sw - 50 : 150,
                       child: Stack(
                         alignment: Alignment.topRight,
                         children: [

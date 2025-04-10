@@ -263,8 +263,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
               searchText: searchText,
             )),
           ));
-          homeBloc.add(AddSizeAndColorFilterinTextToSearchEvent(
-              sizeAndColorFilterinTextToSearch: {
+          BlocProvider.of<HomeBloc>(context).add(
+              AddSizeAndColorFilterinTextToSearchEvent(
+                  sizeAndColorFilterinTextToSearch: {
                 "size": sizesFilter,
                 "color": colorsFilter
               }));

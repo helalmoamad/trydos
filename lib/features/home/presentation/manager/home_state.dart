@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:trydos/features/authentication/data/models/verify_otp_sign_up_and_in_response_model.dart';
 import 'package:trydos/features/home/data/models/firebase_setting_for_notification_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_coordinates_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_text_model.dart';
@@ -95,6 +98,8 @@ enum DeleteItemInCartStatus { init, loading, success, failure }
 
 enum AddCommentStatus { init, loading, success, failure }
 
+enum UploadUserPhotoCloudinaryStatus { init, loading, success, failure }
+
 enum GetNotificationTypeProductStatus { init, loading, success, failure }
 
 enum AddAddressToOrderStatus { init, loading, success, failure }
@@ -139,6 +144,8 @@ enum ApplyCouponStatus { init, loading, success, failure }
 
 enum GetCartOverviewStatus { init, loading, success, failure }
 
+enum UpdateProfileStatus { init, loading, success, failure }
+
 enum SetCustomerAddressDefaultStatus { init, loading, success, failure }
 
 enum EnableAddToCardAfterChangeVariantZero { init, loading, success, failure }
@@ -163,7 +170,9 @@ class HomeState extends Equatable {
       this.updateEmailappNotificationStatus,
       this.updateWhatsappNotificationStatus,
       this.changeSizesForEveryProduct,
+      this.uploadUserPhotoCloudinaryStatus,
       this.searchWithOutFilterOffset,
+      this.updateProfileStatus,
       this.searchWithFilterOffset,
       this.getProductDetailWithoutSimilarRelatedProductsStatus =
           GetProductDetailWithoutSimilarRelatedProductsStatus.init,
@@ -267,6 +276,7 @@ class HomeState extends Equatable {
       this.getNotificationTypeProductStatus,
       this.currentIndexForUpdateCart,
       this.listOfAddressInfoClassToSave = const [],
+      this.userInfo,
       this.listOfErrorSendedToMobileErrorLog = const [],
       this.boutiquesForEveryMainCategoryThatDidPrefetch = const {},
       this.cachedProductWithoutRelatedProductsModel = const {},
@@ -279,13 +289,17 @@ class HomeState extends Equatable {
       getFirebaseSettingForNotificationStatus;
   final FirebaseSettingForNotificationModel?
       firebaseSettingForNotificationModel;
+  final UpdateProfileStatus? updateProfileStatus;
   final Map<String, bool> boutiquesForEveryMainCategoryThatDidPrefetch;
   final GetStartingSettingsStatus getStartingSettingsStatus;
   final Map<String, int> currentSelectedColorForEveryProduct;
   final GetCommentForProductStatus getCommentForProductStatus;
   final Map<String, product.Products> productITemForCart;
+  final User? userInfo;
   final CurrentSelectedColorForEveryProductStatus?
       currentSelectedColorForEveryProductStatus;
+  final UploadUserPhotoCloudinaryStatus? uploadUserPhotoCloudinaryStatus;
+
   final EnableAddToCardAfterChangeVariantZero?
       enableAddToCardAfterChangeVariantZero;
   final bool isChangedvariationWhenQtyZero;
@@ -439,10 +453,12 @@ class HomeState extends Equatable {
         notificationTypeForProductModel,
         removeAddressToOrderStatus,
         getCustomerAddressStatus,
+        updateProfileStatus,
         currentSelectedColorForEveryProductStatus,
         listitemForAddToCart,
         getAllowedCountriesModel,
         getProductFiltersStatus,
+        userInfo,
         popularSearchTerm,
         getProductListingWithFiltersPaginationModels,
         getCurrencyForCountryModel,
@@ -479,6 +495,8 @@ class HomeState extends Equatable {
 
         getAddressByTextStatus,
         listOfErrorSendedToMobileErrorLog,
+        uploadUserPhotoCloudinaryStatus,
+
         productContentForStatusOfOpeningProductDetailsDirectly,
         getProductListingWithFiltersPaginationWithPrefetchModels,
         getProductFiltersModel,
@@ -557,9 +575,12 @@ class HomeState extends Equatable {
       final EnableAddToCardAfterChangeVariantZero?
           enableAddToCardAfterChangeVariantZero,
       final OrdersGroupModel? placeOrderModel,
+      final UpdateProfileStatus? updateProfileStatus,
+      final User? userInfo,
       final PlaceOrderStatus? placeOrderStatus,
       final ApplyCouponModel? applyCouponModel,
       final ApplyCouponStatus? applyCouponStatus,
+      final UploadUserPhotoCloudinaryStatus? uploadUserPhotoCloudinaryStatus,
       final PaginationModel<NotificationItemModel>? getUserNotificationModel,
       final PaginationModel<OrderListModel>? getOrdersModel,
       final GetCartOverviewStatus? getCartOverviewStatus,
@@ -700,6 +721,11 @@ class HomeState extends Equatable {
       enableAddToCardAfterChangeVariantZero:
           enableAddToCardAfterChangeVariantZero ??
               this.enableAddToCardAfterChangeVariantZero,
+      updateProfileStatus: updateProfileStatus ?? this.updateProfileStatus,
+      uploadUserPhotoCloudinaryStatus: uploadUserPhotoCloudinaryStatus ??
+          this.uploadUserPhotoCloudinaryStatus,
+      userInfo: userInfo ?? this.userInfo,
+
       hideItemInOldCartStatus:
           hideItemInOldCartStatus ?? this.hideItemInOldCartStatus,
       getCommentForProductModel:

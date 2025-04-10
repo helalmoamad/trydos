@@ -3,7 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 extension ScopeApi on String {
   String get _api => 'api';
 
-  String get _currentVersion => 'new_v1';
+  String get _currentVersion => 'v1';
   String get _Version10 => 'v10';
 
   String phoneScope() => '$_api/${_currentVersion}/auth/phone/$this';
@@ -12,6 +12,7 @@ extension ScopeApi on String {
 
   String authScope() => '$_api/${_currentVersion}/auth/$this';
   String webScope() => '$_api/${_currentVersion}/web/$this';
+  String storageScope() => '$_api/${_currentVersion}/storage/$this';
   String errorScope() => '$_api/${_currentVersion}/mobile_error_log/$this';
   String countryScope() => '$_api/${_currentVersion}/$this';
   String customerScope() => '$_api/${_currentVersion}/customer/$this';
@@ -47,7 +48,8 @@ abstract class MarketEndPoints {
   static final addCustomerAddressEP = "address/add".customerScope();
   static final getCustomerAddressesEP = "address/list".customerScope();
   static final getOrderListEP = "order/list".customerScope();
-
+  static final uploadUserPhotoModelEP = "storage-upload".storageScope();
+  static final updateProfileEP = "update-profile".customerScope();
   static final setCustomerAddressDefaultEP =
       "address/set-default".customerScope();
   static final getCustomerWalletEP = "wallet/list".customerScope();

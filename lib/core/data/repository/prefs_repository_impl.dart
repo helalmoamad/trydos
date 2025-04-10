@@ -98,9 +98,11 @@ class PrefsRepositoryImpl extends PrefsRepository {
     if (previousRequests.length == 80) {
       previousRequests.removeAt(0);
     }
-    previousRequests.add(requestAndResponse);
-    _preferences.setString('requests_json',
-        convert.jsonEncode({'requests_data': previousRequests}));
+    try {
+      previousRequests.add(requestAndResponse);
+      _preferences.setString('requests_json',
+          convert.jsonEncode({'requests_data': previousRequests}));
+    } catch (e) {}
   }
 
   @override

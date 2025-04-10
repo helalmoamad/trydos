@@ -1,3 +1,5 @@
+// DO NOT EDIT. This is code generated via package:easy_localization/generate.dart
+
 abstract class LocaleKeys {
   static const typing = 'typing';
   static const recording = 'recording';
@@ -169,6 +171,8 @@ abstract class LocaleKeys {
   static const out_of_stock = 'out_of_stock';
   static const you_have_to_delete_all_unavailable_products =
       'you_have_to_delete_all_unavailable_products';
+  static const the_payment_is_allowed_throw_trydos_wallet_only =
+      'the_payment_is_allowed_throw_trydos_wallet_only';
   static const unavailable = 'unavailable';
   static const saved = 'saved';
   static const your_cart_empty = 'your_cart_empty';
@@ -385,10 +389,8 @@ abstract class LocaleKeys {
       'this_product_is_not_available_in_store';
   static const notify_me_when_available = 'notify_me_when_available';
   static const product_is_available = 'product_is_available';
-  static const the_payment_is_allowed_throw_trydos_wallet_only =
-      'the_payment_is_allowed_throw_trydos_wallet_only';
   static const verified_now = 'verified_now';
-  static const trys = 'try';
+  static const trys = 'trys';
   static const action = 'action';
   static const settings = 'settings';
   static const terms_conditions = 'terms_conditions';
@@ -405,4 +407,33 @@ abstract class LocaleKeys {
   static const take_photo = 'take_photo';
   static const choose_from_library = 'choose_from_library';
   static const change_photo = 'change_photo';
+  static const profile_ddress = 'profile_ddress';
+  static const entering_your_information_correctly =
+      'entering_your_information_correctly';
+  static const your_address_info = 'your_address_info';
+  static const profile_bank_cards = 'profile_bank_cards';
+  static const your_bank_cards_info = 'your_bank_cards_info';
+  static const profile_personal_info = 'profile_personal_info';
+  static const full_name = 'full_name';
+  static const enter_full_name = 'enter_full_name';
+  static const phone = 'phone';
+  static const enter_phone = 'enter_phone';
+  static const enter_alternative_phone = 'enter_alternative_phone';
+  static const email = 'email';
+  static const enter_email_address = 'enter_email_address';
+  static const gender = 'gender';
+  static const man = 'man';
+  static const women = 'women';
+  static const profile_size_info = 'profile_size_info';
+  static const your_size_info = 'your_size_info';
+  static const what_is_your_weight = 'what_is_your_weight';
+  static const how_tall_are_you = 'how_tall_are_you';
+  static const kg = 'kg';
+  static const cm = 'cm';
+  static const other = 'other';
+  static const profile_country = 'profile_country';
+  static const we_operate_in_the_countries = 'we_operate_in_the_countries';
+  static const available_country = 'available_country';
+  static const coming_soon_country = 'coming_soon_country';
+  static const select_the_part_of_the_image = 'select_the_part_of_the_image';
 }

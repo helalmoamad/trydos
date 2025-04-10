@@ -37,10 +37,15 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       changeSizesForEveryProduct: $enumDecodeNullable(
           _$ChangeSizesForEveryProductEnumMap,
           json['changeSizesForEveryProduct']),
+      uploadUserPhotoCloudinaryStatus: $enumDecodeNullable(
+          _$UploadUserPhotoCloudinaryStatusEnumMap,
+          json['uploadUserPhotoCloudinaryStatus']),
       searchWithOutFilterOffset:
           (json['searchWithOutFilterOffset'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
       ),
+      updateProfileStatus: $enumDecodeNullable(
+          _$UpdateProfileStatusEnumMap, json['updateProfileStatus']),
       searchWithFilterOffset:
           (json['searchWithFilterOffset'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(
@@ -464,6 +469,13 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               : NotificationTypeForProductModel.fromJson(
                   json['notificationTypeForProductModel']
                       as Map<String, dynamic>),
+      sizeAndColorFilterinTextToSearch:
+          (json['sizeAndColorFilterinTextToSearch'] as Map<String, dynamic>?)
+                  ?.map(
+                (k, e) => MapEntry(
+                    k, (e as List<dynamic>).map((e) => e as String).toList()),
+              ) ??
+              const {},
       getNotificationTypeProductStatus: $enumDecodeNullable(
           _$GetNotificationTypeProductStatusEnumMap,
           json['getNotificationTypeProductStatus']),
@@ -475,6 +487,9 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
                       CustomerAddressesInfo.fromJson(e as Map<String, dynamic>))
                   .toList() ??
               const [],
+      userInfo: json['userInfo'] == null
+          ? null
+          : User.fromJson(json['userInfo'] as Map<String, dynamic>),
       listOfErrorSendedToMobileErrorLog:
           (json['listOfErrorSendedToMobileErrorLog'] as List<dynamic>?)
                   ?.map((e) => e as String)
@@ -527,6 +542,8 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
               instance.getFirebaseSettingForNotificationStatus],
       'firebaseSettingForNotificationModel':
           instance.firebaseSettingForNotificationModel?.toJson(),
+      'updateProfileStatus':
+          _$UpdateProfileStatusEnumMap[instance.updateProfileStatus],
       'boutiquesForEveryMainCategoryThatDidPrefetch':
           instance.boutiquesForEveryMainCategoryThatDidPrefetch,
       'getStartingSettingsStatus': _$GetStartingSettingsStatusEnumMap[
@@ -537,13 +554,19 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           instance.getCommentForProductStatus]!,
       'productITemForCart':
           instance.productITemForCart.map((k, e) => MapEntry(k, e.toJson())),
+      'userInfo': instance.userInfo?.toJson(),
       'currentSelectedColorForEveryProductStatus':
           _$CurrentSelectedColorForEveryProductStatusEnumMap[
               instance.currentSelectedColorForEveryProductStatus],
+      'uploadUserPhotoCloudinaryStatus':
+          _$UploadUserPhotoCloudinaryStatusEnumMap[
+              instance.uploadUserPhotoCloudinaryStatus],
       'enableAddToCardAfterChangeVariantZero':
           _$EnableAddToCardAfterChangeVariantZeroEnumMap[
               instance.enableAddToCardAfterChangeVariantZero],
       'isChangedvariationWhenQtyZero': instance.isChangedvariationWhenQtyZero,
+      'sizeAndColorFilterinTextToSearch':
+          instance.sizeAndColorFilterinTextToSearch,
       'convertItemFromOldcartToCartStatus':
           _$ConvertItemFromOldcartToCartStatusEnumMap[
               instance.convertItemFromOldcartToCartStatus],
@@ -801,6 +824,20 @@ const _$ChangeSizesForEveryProductEnumMap = {
   ChangeSizesForEveryProduct.loading: 'loading',
   ChangeSizesForEveryProduct.success: 'success',
   ChangeSizesForEveryProduct.failure: 'failure',
+};
+
+const _$UploadUserPhotoCloudinaryStatusEnumMap = {
+  UploadUserPhotoCloudinaryStatus.init: 'init',
+  UploadUserPhotoCloudinaryStatus.loading: 'loading',
+  UploadUserPhotoCloudinaryStatus.success: 'success',
+  UploadUserPhotoCloudinaryStatus.failure: 'failure',
+};
+
+const _$UpdateProfileStatusEnumMap = {
+  UpdateProfileStatus.init: 'init',
+  UpdateProfileStatus.loading: 'loading',
+  UpdateProfileStatus.success: 'success',
+  UpdateProfileStatus.failure: 'failure',
 };
 
 const _$GetProductDetailWithoutSimilarRelatedProductsStatusEnumMap = {

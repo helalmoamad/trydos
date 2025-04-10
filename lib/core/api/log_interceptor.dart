@@ -108,9 +108,16 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
       //       showInRelease: true,
       //       timeShowing: Toast.LENGTH_LONG);
       // }
-      if (jsonDecode(err.response.toString())["message"]
-              .toString()
-              .contains("Unauth") &&
+
+      if (err.requestOptions.path.contains("storage/storage-upload")) {
+        GetIt.I<HomeBloc>()
+            .add(UploadUserPhotoCloudinaryEvent(File("path"), true));
+      }
+      if ((jsonDecode(err.response.toString())["message"]
+                  .toString()
+                  .contains("Unauth") ||
+              jsonDecode(err.response.toString())["code"].toString() ==
+                  "401") &&
           !(_prefsRepository.isTokenExpired ?? false)) {
         _prefsRepository.setVerifiedPhonePeforeExpiredToken(
             _prefsRepository.isVerifiedPhone ?? false);

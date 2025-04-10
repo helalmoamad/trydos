@@ -24,6 +24,8 @@ import 'package:trydos/features/home/data/models/popular_search_terms_model.dart
 import 'package:trydos/features/home/data/models/response_only_message_model.dart';
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
 import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
+import 'package:trydos/features/home/data/models/update_profile_model.dart';
+import 'package:trydos/features/home/data/models/upload_user_photo_model.dart';
 import '../../../../common/constant/configuration/market_url_routes.dart';
 import 'package:trydos/features/home/data/models/get_currency_for_country_model.dart';
 import '../../../../common/constant/configuration/stories_url_routes.dart';
@@ -393,6 +395,34 @@ class HomeRemoteDatasource {
       ),
     );
     return getCurrencyForCountry();
+  }
+
+  Future<UpdateProfileModel> updateProfile(Map<String, dynamic> params) {
+    PostClient<UpdateProfileModel> updateProfile =
+        PostClient<UpdateProfileModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<UpdateProfileModel>(
+        endpoint: MarketEndPoints.updateProfileEP,
+        data: params,
+        response: ResponseValue<UpdateProfileModel>(
+            fromJson: (response) => UpdateProfileModel.fromJson(response)),
+      ),
+    );
+    return updateProfile();
+  }
+
+  Future<UploadUserPhotoModel> uploadUserPhoto(Map<String, dynamic> params) {
+    PostClient<UploadUserPhotoModel> uploadUserPhoto =
+        PostClient<UploadUserPhotoModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<UploadUserPhotoModel>(
+        endpoint: MarketEndPoints.uploadUserPhotoModelEP,
+        data: params['data'],
+        response: ResponseValue<UploadUserPhotoModel>(
+            fromJson: (response) => UploadUserPhotoModel.fromJson(response)),
+      ),
+    );
+    return uploadUserPhoto();
   }
 
   Future<GetListOfCustomerAddressesInfoModel> getCustomerAddresses() {

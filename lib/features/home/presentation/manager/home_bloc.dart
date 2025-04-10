@@ -14,6 +14,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/common/helper/show_message.dart';
+import 'package:trydos/core/domin/usecases/upload_file_cloudinary_usecase.dart';
 import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
@@ -80,7 +81,9 @@ import 'package:trydos/features/home/domain/use_cases/update_email_notification_
 import 'package:trydos/features/home/domain/use_cases/update_firebase_notification_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/update_item_from_cart_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/update_notification_frequency_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/update_profile_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/update_whatsapp_notification_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/upload_user_photo_usecase.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
 import 'package:trydos/features/story/domain/useCases/get_width_and_height_usecase.dart';
 import 'package:trydos/features/story/presentation/bloc/story_state.dart';
@@ -146,6 +149,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.addCustomerAddressUseCase,
     this.updateCustomerAddressUseCase,
     this.getProductsListInCartUseCase,
+    this.updateProfileUseCase,
     this.getProductFiltersUseCase,
     this.getAllowedCountryUseCase,
     this.getNotificationTypeProductUseCase,
@@ -164,6 +168,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.getAddressByCoordinatesUsecase,
     this.getAddressByTextUsecase,
     this.getCustomerAddressesUseCase,
+    this.uploadFileCloudinaryUseCase,
     this.getCurrencyForCountryUseCase,
     this.hideItemsInOldCartUseCase,
     this.getFullProductDetailsUseCase,
@@ -200,9 +205,17 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       _onIsChangedvariationWhenQtyZeroEvent,
     );
 
+    on<SaveUserInfoFromAuthEvent>(
+      _onSaveUserInfoEvent,
+    );
+
+    on<UpdateProfileEvent>(
+      _onUpdateProfileEvent,
+    );
     on<SetCurrentAddressChoosedEvent>(
       _onSetCurrentAddressChoosedEvent,
     );
+    on<UploadUserPhotoCloudinaryEvent>(_onUploadUserPhptoCloudinaryEvent);
     on<ChangeStatusOFGetProductsDetailsToSuccessEvent>(
       _onChangeStatusOFGetProductsDetailsToSuccessEvent,
     );
@@ -457,6 +470,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final GetStartingSettingsUseCase getStartingSettingsUseCase;
 
   final GetWidthAndHeightUseCase getWidthAndHeightUseCase;
+  final UpdateUserPhotoUseCase uploadFileCloudinaryUseCase;
   final GetHomeBoutiqesUseCase getHomeBoutiqesUseCase;
   final GetCartItemUseCase getCartItemUseCase;
   final GetCartOverviewUseCase getCartOverviewUseCase;
@@ -470,6 +484,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final StoreFcmTokenOfMarketUseCase storeFcmTokenOfMarketUseCase;
   final GetCommentForProductUseCase getCommentForProductUseCase;
   final GetStoryForProductUseCase getStoryUseCase;
+  final UpdateProfileUseCase updateProfileUseCase;
   final GetCustomerAddressesUseCase getCustomerAddressesUseCase;
   final GetCustomerInfoUseCase getCustomerInfoUseCase;
   final SetCustomerAddressDefaultUseCase setCustomerAddressDefaultUseCase;
@@ -2624,6 +2639,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           getMainCategoriesStatus: GetMainCategoriesStatus.init,
           getAndAddCountViewOfProductStatus: {},
           addItemInCartStatus: AddItemInCartStatus.init,
+          uploadUserPhotoCloudinaryStatus: UploadUserPhotoCloudinaryStatus.init,
           updateItemInCartStatus: UpdateItemInCartStatus.init,
           deleteItemInCartStatus: DeleteItemInCartStatus.init,
           getCartItemsStatus: GetCartItemsStatus.init,
@@ -3810,6 +3826,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         productITemForCart: productITemForCart,
       ));
     });
+  }
+
+  FutureOr<void> _onSaveUserInfoEvent(
+      SaveUserInfoFromAuthEvent event, Emitter<HomeState> emit) async {
+    emit(state.copyWith(userInfo: event.userInfo));
   }
 
   FutureOr<void> _onSendErrorToMobileErrorLogEvent(
@@ -6203,6 +6224,70 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     );
   }
 
+  FutureOr<void> _onUpdateProfileEvent(
+    UpdateProfileEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    if (event.changeStatusToInit ?? false) {
+      emit(
+        state.copyWith(updateProfileStatus: UpdateProfileStatus.init),
+      );
+      return;
+    }
+    ///////////////////////////
+    emit(
+      state.copyWith(updateProfileStatus: UpdateProfileStatus.loading),
+    );
+    ///////////////////////////////
+
+    final response = await updateProfileUseCase(UpdateProfileParams(
+        gender:
+            event.gender ?? (state.userInfo?.gender?.value ?? "").toString(),
+        name: event.name ?? state.userInfo?.name ?? "",
+        email: event.email ?? state.userInfo?.email ?? "",
+        image: event.image ?? state.userInfo?.image ?? "",
+        tall: event.tall ?? (state.userInfo?.tall ?? "").toString(),
+        weight: event.weight ?? (state.userInfo?.weight ?? "").toString(),
+        alternative_phone:
+            event.alternative_phone ?? state.userInfo?.alternativePhone ?? "",
+        phone: event.phone ?? state.userInfo?.phone ?? ""));
+
+    response.fold(
+      (l) {
+        showMessage('${LocaleKeys.your_request_faild.tr()}',
+            foreGroundColor: Colors.white,
+            backGroundColor: Colors.black,
+            showInRelease: true,
+            timeShowing: Toast.LENGTH_LONG);
+        if (!isFailedTheFirstTime.contains('UpdateProfileEvent')) {
+          add(
+            UpdateProfileEvent(),
+          );
+          isFailedTheFirstTime.add('UpdateProfileEvent');
+        }
+
+        emit(
+          state.copyWith(updateProfileStatus: UpdateProfileStatus.failure),
+        );
+      },
+      (r) {
+        showMessage(r.message ?? "",
+            foreGroundColor: Colors.white,
+            backGroundColor: Colors.black,
+            showInRelease: true,
+            timeShowing: Toast.LENGTH_LONG);
+        isFailedTheFirstTime.remove('UpdateProfileEvent');
+
+        ////////////////////////////
+        emit(
+          state.copyWith(
+              userInfo: r.data,
+              updateProfileStatus: UpdateProfileStatus.success),
+        );
+      },
+    );
+  }
+
   FutureOr<void> _onGetOrdersEvent(
     GetOrdersEvent event,
     Emitter<HomeState> emit,
@@ -6266,6 +6351,59 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             ),
           ),
         );
+      },
+    );
+  }
+
+  _onUploadUserPhptoCloudinaryEvent(
+      UploadUserPhotoCloudinaryEvent event, Emitter emit) async {
+    if (event.changeStatusToFailure ?? false) {
+      emit(state.copyWith(
+          uploadUserPhotoCloudinaryStatus:
+              UploadUserPhotoCloudinaryStatus.failure));
+
+      showMessage('${LocaleKeys.your_request_faild.tr()}',
+          foreGroundColor: Colors.white,
+          backGroundColor: Colors.black,
+          showInRelease: true,
+          timeShowing: Toast.LENGTH_LONG);
+      return;
+    }
+    emit(state.copyWith(
+        uploadUserPhotoCloudinaryStatus:
+            UploadUserPhotoCloudinaryStatus.loading));
+    final response = await uploadFileCloudinaryUseCase(
+            UpdatePhotoParams(path: "customers/profile", image: event.file))
+        .catchError((e) {
+      showMessage('${LocaleKeys.your_request_faild.tr()}',
+          foreGroundColor: Colors.white,
+          backGroundColor: Colors.black,
+          showInRelease: true,
+          timeShowing: Toast.LENGTH_LONG);
+      emit(state.copyWith(
+          uploadUserPhotoCloudinaryStatus:
+              UploadUserPhotoCloudinaryStatus.failure));
+    });
+    // Fluttertoast.showToast(msg: 'tosss');
+    response.fold(
+      (l) {
+        if (isFailedTheFirstTime.contains('UploadUserPhptoCloudinaryEvent')) {
+          isFailedTheFirstTime.remove('UploadUserPhptoCloudinaryEvent');
+
+          return;
+        } else {
+          isFailedTheFirstTime.insert(
+              isFailedTheFirstTime.length, 'UploadUserPhptoCloudinaryEvent');
+          add(UploadUserPhotoCloudinaryEvent(
+              event.file, event.changeStatusToFailure));
+        }
+      },
+      (r) {
+        add(UpdateProfileEvent(image: r.data?.subPath));
+        emit(state.copyWith(
+            uploadUserPhotoCloudinaryStatus:
+                UploadUserPhotoCloudinaryStatus.success));
+        isFailedTheFirstTime.remove('UploadUserPhptoCloudinaryEvent');
       },
     );
   }
