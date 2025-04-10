@@ -2,6 +2,8 @@ extension AssetsUtils on String {
   /// assets/svg/$this.svg
   String get svg => 'assets/svg/$this.svg';
 
+  String get order_svg => 'assets/svg/order_svg/$this.svg';
+
   String get flagSvg => 'assets/flags/$this.svg';
 
   /// assets/images/$this.png
@@ -262,6 +264,18 @@ abstract class AppAssets {
   static String get shareSvg => 'share'.svg;
   static String get moreOptionSvg => 'more_option'.svg;
   static String getFlagPath(String name) => name.flagSvg;
+
+  static String get orderAddressSvg => 'order_address'.order_svg;
+  static String get orderBag1Svg => 'order_bag1'.order_svg;
+  static String get orderBag2Svg => 'order_bag2'.order_svg;
+  static String get orderBag3Svg => 'order_bag3'.order_svg;
+  static String get orderClockSvg => 'order_clock'.order_svg;
+  static String get orderDeliveryDateSvg => 'order_delivery_date'.order_svg;
+  static String get orderInvoice2Svg => 'order_invoice'.order_svg;
+  static String get orderMenuSvg => 'order_menu'.order_svg;
+  static String get orderPreparingSvg => 'order_preparing'.order_svg;
+  static String get orderStatusFilterSvg => 'order_status_filter'.order_svg;
+  static String get orderWalletSvg => 'order_wallet'.order_svg;
 
   ///endregion
 

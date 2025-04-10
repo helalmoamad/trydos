@@ -35,7 +35,7 @@ import '../../../service/firebase_analytics_service/analytics_const/analytics_ex
 import '../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../feed_back/presentation/pages/edit_urls_page.dart';
 import '../../home/presentation/pages/notifications_page.dart';
-import '../../home/presentation/pages/orders_page.dart';
+import '../../home/presentation/pages/Order/orders_page.dart';
 import '../blocs/app_bloc/app_bloc.dart';
 import '../blocs/app_bloc/app_event.dart';
 import '../blocs/app_bloc/app_state.dart';
@@ -431,45 +431,21 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                 ],
                                               ),
                                               //////////////
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  SizedBox(
-                                                    width: 50,
-                                                    height: 50,
-                                                    child: IconButton(
-                                                      icon: Icon(
-                                                          Icons.notifications),
-                                                      color: Colors.red,
-                                                      onPressed: () {
-                                                        HelperFunctions
-                                                            .slidingNavigation(
-                                                          context,
-                                                          NotificationsPage(),
-                                                        );
-                                                      },
-                                                    ),
-                                                  ),
-                                                  //////////////
-                                                  SizedBox(
-                                                    width: 50,
-                                                    height: 50,
-                                                    child: IconButton(
-                                                      icon:
-                                                          Icon(Icons.all_inbox),
-                                                      color: Colors.black,
-                                                      onPressed: () {
-                                                        HelperFunctions
-                                                            .slidingNavigation(
-                                                          context,
-                                                          OrdersPage(),
-                                                        );
-                                                      },
-                                                    ),
-                                                  ),
-                                                ],
+                                              SizedBox(
+                                                width: 50,
+                                                height: 50,
+                                                child: IconButton(
+                                                  icon:
+                                                      Icon(Icons.notifications),
+                                                  color: Colors.red,
+                                                  onPressed: () {
+                                                    HelperFunctions
+                                                        .slidingNavigation(
+                                                      context,
+                                                      NotificationsPage(),
+                                                    );
+                                                  },
+                                                ),
                                               ),
                                             ],
                                           ),

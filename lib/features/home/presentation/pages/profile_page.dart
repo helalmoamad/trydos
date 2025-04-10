@@ -17,6 +17,9 @@ import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 
+import '../../../../common/helper/helper_functions.dart';
+import 'Order/orders_page.dart';
+
 class ProfileHomePage extends StatefulWidget {
   const ProfileHomePage({super.key});
 
@@ -62,7 +65,10 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                 height: 94,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [_ordersWidget(), _trydosWalletWidget()],
+                  children: [
+                    _ordersWidget(),
+                    _trydosWalletWidget(),
+                  ],
                 ),
               ),
               SizedBox(
@@ -200,36 +206,45 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
   }
 
   Widget _ordersWidget() {
-    return Container(
-      padding: EdgeInsets.all(10),
-      width: 195.w,
-      decoration: BoxDecoration(
-          color: Color(0xffF8F8F8), borderRadius: BorderRadius.circular(15.r)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          SvgPicture.asset(
-            AppAssets.bagsSvg,
-            width: 25,
-          ),
-          Text(
-            LocaleKeys.order_invoice.tr(),
-            style: context.textTheme.bodyMedium?.mr.copyWith(
-                color: const Color(0xff1D1D1D),
-                letterSpacing: 0.18,
-                fontSize: 14,
-                height: 1.3),
-          ),
-          Text(
-            '1 ${LocaleKeys.action.tr()}',
-            style: context.textTheme.bodyMedium?.rr.copyWith(
-                color: const Color(0xff8D8D8D),
-                letterSpacing: 0.18,
-                fontSize: 12,
-                height: 1.3),
-          ),
-        ],
+    return InkWell(
+      onTap: () {
+        HelperFunctions.slidingNavigation(
+          context,
+          OrdersPage(),
+        );
+      },
+      child: Container(
+        padding: EdgeInsets.all(10),
+        width: 195.w,
+        decoration: BoxDecoration(
+            color: Color(0xffF8F8F8),
+            borderRadius: BorderRadius.circular(15.r)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            SvgPicture.asset(
+              AppAssets.bagsSvg,
+              width: 25,
+            ),
+            Text(
+              LocaleKeys.order_invoice.tr(),
+              style: context.textTheme.bodyMedium?.mr.copyWith(
+                  color: const Color(0xff1D1D1D),
+                  letterSpacing: 0.18,
+                  fontSize: 14,
+                  height: 1.3),
+            ),
+            Text(
+              '1 ${LocaleKeys.action.tr()}',
+              style: context.textTheme.bodyMedium?.rr.copyWith(
+                  color: const Color(0xff8D8D8D),
+                  letterSpacing: 0.18,
+                  fontSize: 12,
+                  height: 1.3),
+            ),
+          ],
+        ),
       ),
     );
   }

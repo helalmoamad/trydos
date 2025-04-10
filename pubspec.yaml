@@ -187,6 +187,7 @@ flutter:
     - assets/fonts/SF_Pro_Rounded/
     - assets/fonts/adobe_clean/
     - assets/fonts/Quicksand/
+    - assets/svg/order_svg/
     - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
