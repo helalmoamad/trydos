@@ -37,6 +37,8 @@ import 'package:trydos/features/home/data/models/place_order_model.dart';
 import 'package:trydos/features/home/data/models/popular_search_terms_model.dart';
 import 'package:trydos/features/home/data/models/response_only_message_model.dart';
 import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
+import 'package:trydos/features/home/data/models/update_profile_model.dart';
+import 'package:trydos/features/home/data/models/upload_user_photo_model.dart';
 
 import '../../../../core/api/handling_exception.dart';
 import '../../domain/repositories/home_repository.dart';
@@ -88,6 +90,20 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
       changeCountryLanguageFornotification(Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.changeCountryLanguageFornotification(params));
+  }
+
+  @override
+  Future<Either<Failure, UpdateProfileModel>> updateProfile(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.updateProfile(params));
+  }
+
+  @override
+  Future<Either<Failure, UploadUserPhotoModel>> uploadUserPhoto(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.uploadUserPhoto(params));
   }
 
   @override

@@ -29,6 +29,7 @@ abstract class AppAssets {
   static String get aboutUsSvg => 'about_us'.svg;
   static String get addPhotoSvg => 'add_photo'.svg;
   static String get addressSvg => 'address'.svg;
+  static String get availableCountrySvg => 'available_country'.svg;
   static String get bankCardSvg => 'bank_card'.svg;
   static String get galarySvg => 'galary'.svg;
   static String get languageSvg => 'language'.svg;

@@ -171,11 +171,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       },
       (r) {
         _prefsRepository.setLogInToChat(true);
-        print(
-            "#######################ccccccccccccccccc######@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@${r.data?.refreshToken}");
-
-        print(
-            "LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL${r.data!.accessToken}");
         isFailedTheFirstTime.remove('LoginToChatEvent');
         final id = r.data!.id;
         final token = r.data!.accessToken;
@@ -244,15 +239,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       VerifyOtpFromGuestEvent event, Emitter<AuthState> emit) async {
     emit(state.copyWith(
         verifyOtpFromGuestStatus: VerifyOtpFromGuestStatus.loading));
-    print(
-        "@@@@@@@@@@@@@@@@@@@!!!!!!!!!!!!!!!!!!55555555555555555555555555!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-
     final response = await verifyOtpFromGuestUseCase(
       VerifyOtpFromGuestParams(
           otp: event.otp, verificationId: event.verificationId),
     );
-    print(
-        "@@@@@@@@@@@@@@@@@@@!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     response.fold(
         (l) => emit(state.copyWith(
             verifyOtpFromGuestStatus: VerifyOtpFromGuestStatus.failure)), (r) {
@@ -262,9 +252,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         }
 
         _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
-
-        print("qqqqqqqqqqqqqqqqqqqqq${r.data?.token}");
-        print("wwwwwwwwwwwwwwwwwwwwwwwwwwwwwww${_prefsRepository.marketToken}");
+        _prefsRepository.setMarketToken(r.data?.token.toString());
 
         Future.delayed(
           Duration(seconds: 30),
@@ -273,6 +261,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             _prefsRepository.setTokenExpired(false);
           },
         );
+        GetIt.I<HomeBloc>()
+            .add(SaveUserInfoFromAuthEvent(userInfo: r.data!.user!));
         _prefsRepository.setVerifiedPhone(r.data?.user?.isPhoneVerified == 1);
         _prefsRepository.setPhoneNumber((r.data?.user?.phone).toString());
         GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
@@ -372,6 +362,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         _prefsRepository.setMarketToken(r.data!.token!);
         _prefsRepository.setTokenExpired(false);
         NotificationProcess().fcmToken();
+        GetIt.I<HomeBloc>()
+            .add(SaveUserInfoFromAuthEvent(userInfo: r.data!.user!));
         GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
         GetIt.I<HomeBloc>().add(GetCartItemEvent());
         GetIt.I<HomeBloc>().add(GetOldCartItemEvent());
@@ -436,6 +428,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if ((r.data!.user!.name?.replaceAll(' ', '') ?? '') != '') {
         _prefsRepository.setMyMarketName(r.data!.user!.name!);
       }
+      GetIt.I<HomeBloc>()
+          .add(SaveUserInfoFromAuthEvent(userInfo: r.data!.user!));
       _prefsRepository.setOtpCode(event.otp);
       _prefsRepository.setMarketToken(r.data!.token!);
       _prefsRepository.setTokenExpired(false);
@@ -503,7 +497,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       Future.delayed(
         Duration(minutes: 2),
         () {
-          print("#########33333333332");
           _prefsRepository.setTokenExpired(false);
         },
       );
@@ -513,6 +506,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
       GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
       GetIt.I<HomeBloc>().add(GetCartItemEvent());
+      GetIt.I<HomeBloc>()
+          .add(SaveUserInfoFromAuthEvent(userInfo: r.data!.user!));
       GetIt.I<HomeBloc>().add(GetOldCartItemEvent());
       GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
       NotificationProcess().fcmToken();

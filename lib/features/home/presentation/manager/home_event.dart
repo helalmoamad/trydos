@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:trydos/features/authentication/data/models/verify_otp_sign_up_and_in_response_model.dart';
 import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
@@ -540,6 +543,15 @@ class GetProductsWithFiltersEvent extends HomeEvent {
       [category, searchText, offset, limit, getWithPagination, boutiqueSlug];
 }
 
+class UploadUserPhotoCloudinaryEvent extends HomeEvent {
+  final File file;
+  final bool? changeStatusToFailure;
+  const UploadUserPhotoCloudinaryEvent(this.file, this.changeStatusToFailure);
+
+  @override
+  List<Object?> get props => [];
+}
+
 class GetProductsWithFiltersUsingPaginationEvent extends HomeEvent {
   final String? category;
   final String? searchText;
@@ -609,6 +621,42 @@ class GetCustomerWalletEvent extends HomeEvent {
   @override
   // TODO: implement props
   List<Object?> get props => [limit, offset];
+}
+
+class SaveUserInfoFromAuthEvent extends HomeEvent {
+  final User userInfo;
+
+  SaveUserInfoFromAuthEvent({required this.userInfo});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [userInfo];
+}
+
+class UpdateProfileEvent extends HomeEvent {
+  final bool? changeStatusToInit;
+  final String? name;
+  final String? phone;
+  final String? email;
+  final String? image;
+  final String? tall;
+  final String? weight;
+  final String? alternative_phone;
+  final String? gender;
+
+  UpdateProfileEvent(
+      {this.name,
+      this.email,
+      this.gender,
+      this.changeStatusToInit,
+      this.image,
+      this.tall,
+      this.weight,
+      this.alternative_phone,
+      this.phone});
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
 }
 
 class GetAddressByTextEvent extends HomeEvent {
