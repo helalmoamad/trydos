@@ -447,18 +447,39 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                   left: LanguageService.languageCode == "ar"
                       ? null
                       : max(
-                          _calculateTextWidth(state.userInfo?.name ?? '',
-                              TextStyle(fontSize: 15)),
-                          _calculateTextWidth(state.userInfo?.phone ?? '',
-                              TextStyle(fontSize: 15))),
+                          _calculateTextWidth(
+                              state.userInfo?.name ?? '',
+                              context.textTheme.bodyMedium!.mr.copyWith(
+                                  color: const Color(0xff1D1D1D),
+                                  letterSpacing: 0.18,
+                                  fontSize: 14,
+                                  height: 1.3)),
+                          _calculateTextWidth(
+                              state.userInfo?.phone ?? '',
+                              context.textTheme.bodyMedium!.rr.copyWith(
+                                  color: const Color(0xff8D8D8D),
+                                  letterSpacing: 0.18,
+                                  fontSize: 12,
+                                  height: 1.3))),
                   right: LanguageService.languageCode != "ar"
                       ? null
                       : max(
-                          _calculateTextWidth(state.userInfo?.name ?? '',
-                              TextStyle(fontSize: 15)),
-                          _calculateTextWidth(state.userInfo?.phone ?? '',
-                              TextStyle(fontSize: 15))),
+                          _calculateTextWidth(
+                              state.userInfo?.name ?? '',
+                              context.textTheme.bodyMedium!.mr.copyWith(
+                                  color: const Color(0xff1D1D1D),
+                                  letterSpacing: 0.18,
+                                  fontSize: 14,
+                                  height: 1.3)),
+                          _calculateTextWidth(
+                              state.userInfo?.phone ?? '',
+                              context.textTheme.bodyMedium!.rr.copyWith(
+                                  color: const Color(0xff8D8D8D),
+                                  letterSpacing: 0.18,
+                                  fontSize: 12,
+                                  height: 1.3))),
                   child: Container(
+                    margin: EdgeInsets.symmetric(horizontal: 10),
                     height: 35,
                     width: 60,
                     child: Column(
