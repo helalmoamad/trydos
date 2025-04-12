@@ -1,61 +1,146 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import '../../../../../common/constant/constant.dart';
 import '../../../../../common/helper/helper_functions.dart';
+import '../../../../../core/data/model/pagination_model.dart';
+import '../../../../../generated/locale_keys.g.dart';
 import '../../../../app/my_cached_network_image.dart';
+import '../../../data/models/get_orders_model.dart';
+import '../../manager/home_bloc.dart';
+import '../../manager/home_event.dart';
 import 'order_details1_page.dart';
 
-class OrdersPage extends StatelessWidget {
-  const OrdersPage({super.key});
+class OrdersPage extends StatefulWidget {
+  OrdersPage({super.key});
+
+  @override
+  State<OrdersPage> createState() => _OrdersPageState();
+}
+
+class _OrdersPageState extends State<OrdersPage> {
+  late HomeBloc homeBloc;
+
+  final ScrollController ordersScrollController = ScrollController();
+
+  final List<String> orderStatus = [
+    'pending',
+    'processing',
+    'ready_to_shipping',
+    'shipped',
+    'out_for_delivery',
+    'delivered',
+    'partial_return',
+    'returned',
+    'failed',
+    'canceled',
+    'canceled_archived'
+  ];
+
+  @override
+  void initState() {
+    homeBloc = BlocProvider.of<HomeBloc>(context);
+    homeBloc.add(GetOrdersEvent(status: 'pending'));
+
+    ordersScrollController.addListener(() async {
+      if (ordersScrollController.position.maxScrollExtent ==
+          ordersScrollController.offset) {
+        debugPrint('scrollController');
+        homeBloc.add(GetOrdersEvent(status: 'pending'));
+      }
+    });
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Column(
-          children: [
-            buildHeader(context),
-            ///////////////////
-            SizedBox(
-              height: 11.h,
-            ),
-            ///////////////////
-            buildStatusBar(),
-            ///////////////////
-            SizedBox(
-              height: 50.h,
-            ),
-            ///////////////////
-            Expanded(
-              child: ListView.separated(
-                itemCount: 10,
-                itemBuilder: (context, index) {
-                  return InkWell(
-                    onTap: () {
-                      HelperFunctions.slidingNavigation(
-                        context,
-                        OrderDetails1(),
-                      );
-                    },
-                    child: buildOrderItemWidget(context),
+        resizeToAvoidBottomInset: true,
+        body: BlocBuilder<HomeBloc, HomeState>(
+          buildWhen: (p, c) =>
+              p.getOrdersModel?.paginationStatus !=
+              c.getOrdersModel?.paginationStatus,
+          builder: (context, state) {
+            int itemsCount = state.getOrdersModel == null
+                ? 0
+                : state.getOrdersModel!.items.length;
+            List<OrderListModel> items = state.getOrdersModel?.items ?? [];
+            return (state.getOrdersModel == null ||
+                    state.getOrdersModel?.paginationStatus ==
+                        PaginationStatus.failure ||
+                    ((state.getOrdersModel?.paginationStatus ==
+                                PaginationStatus.loading ||
+                            state.getOrdersModel?.paginationStatus ==
+                                PaginationStatus.initial) &&
+                        state.getOrdersModel?.items.length == 0))
+                ? Center(child: CircularProgressIndicator())
+                : Column(
+                    children: [
+                      buildHeader(context),
+                      ///////////////////
+                      SizedBox(
+                        height: 11.h,
+                      ),
+                      ///////////////////
+                      buildStatusBar(),
+                      ///////////////////
+                      SizedBox(
+                        height: 50.h,
+                      ),
+                      ///////////////////
+                      Expanded(
+                        child: ListView.separated(
+                          controller: ordersScrollController,
+                          itemCount: itemsCount + 1,
+                          itemBuilder: (context, index) {
+                            if (index < itemsCount) {
+                              return InkWell(
+                                onTap: () {
+                                  HelperFunctions.slidingNavigation(
+                                    context,
+                                    OrderDetails1(),
+                                  );
+                                },
+                                child: buildOrderItemWidget(context),
+                              );
+                            } else {
+                              if (itemsCount > 4) {
+                                return Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 10),
+                                  child: Center(
+                                    child: state.getOrdersModel!.hasReachedMax
+                                        ? Text('No More Items')
+                                        : const CircularProgressIndicator(),
+                                  ),
+                                );
+                              } else {
+                                return Container();
+                              }
+                            }
+                          },
+                          separatorBuilder: (context, index) {
+                            return SizedBox(
+                              height: 10.h,
+                            );
+                          },
+                        ),
+                      ),
+                      ///////////////////
+                      SizedBox(
+                        height: 10.h,
+                      ),
+                      ///////////////////
+                    ],
                   );
-                },
-                separatorBuilder: (context, index) {
-                  return SizedBox(
-                    height: 10.h,
-                  );
-                },
-              ),
-            ),
-            ///////////////////
-            SizedBox(
-              height: 10.h,
-            ),
-            ///////////////////
-          ],
+          },
         ),
       ),
     );
@@ -176,7 +261,6 @@ class OrdersPage extends StatelessWidget {
                   fit: FlexFit.loose,
                   child: Text(
                     text1,
-                    // LocaleKeys.order_invoice.tr(),
                     overflow: TextOverflow.ellipsis,
                     style: context.textTheme.bodyMedium?.rq.copyWith(
                       color: const Color(0xff1D1D1D),
@@ -239,7 +323,7 @@ class OrdersPage extends StatelessWidget {
                                   height: 1.3,
                                 ),
                               ),
-                              const TextSpan(text: ' Item . '),
+                              TextSpan(text: ' ${LocaleKeys.item.tr()} . '),
                               TextSpan(
                                 text: amount,
                                 style:
@@ -259,7 +343,6 @@ class OrdersPage extends StatelessWidget {
                         fit: FlexFit.loose,
                         child: Text(
                           text2,
-                          // LocaleKeys.order_invoice.tr(),
                           overflow: TextOverflow.ellipsis,
                           style: context.textTheme.bodyMedium?.rq.copyWith(
                             color: const Color(0xff1D1D1D),
@@ -300,8 +383,7 @@ class OrdersPage extends StatelessWidget {
                         ),
                         child: Center(
                           child: Text(
-                            'All',
-                            // LocaleKeys.order_invoice.tr(),
+                            LocaleKeys.all.tr(),
                             style: context.textTheme.bodyMedium?.rq.copyWith(
                               color: const Color(0xff8D8D8D),
                               letterSpacing: 0.18,
@@ -320,8 +402,9 @@ class OrdersPage extends StatelessWidget {
                         ),
                         child: Center(
                           child: Text(
-                            'Status',
-                            // LocaleKeys.order_invoice.tr(),
+                            HelperFunctions.orderStatusText(
+                              inputText: orderStatus[index],
+                            ),
                             overflow: TextOverflow.ellipsis,
                             style: context.textTheme.bodyMedium?.rq.copyWith(
                               color: const Color(0xff8D8D8D),
@@ -353,7 +436,15 @@ class OrdersPage extends StatelessWidget {
         child: Row(
           children: [
             InkWell(
-              onTap: () {},
+              onTap: () {
+                if (Navigator.canPop(context)) {
+                  if (Navigator.of(context).canPop()) {
+                    Navigator.of(context).pop();
+                    return;
+                  }
+                  return;
+                }
+              },
               child: SvgPicture.asset(
                 AppAssets.backIconArrowSvg,
                 width: 11,
@@ -374,8 +465,7 @@ class OrdersPage extends StatelessWidget {
                   ),
                   ///////////////////////////
                   Text(
-                    'Orders',
-                    // LocaleKeys.order_invoice.tr(),
+                    LocaleKeys.orders.tr(),
                     style: context.textTheme.bodyMedium?.mq.copyWith(
                       color: const Color(0xff1D1D1D),
                       letterSpacing: 0.18,

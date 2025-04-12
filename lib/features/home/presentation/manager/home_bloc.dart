@@ -461,6 +461,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
     on<GetOrdersEvent>(
       _onGetOrdersEvent,
+      transformer: restartable(),
     );
   }
 
@@ -6295,7 +6296,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     PaginationModel<OrderListModel>? getOrdersModel = state.getOrdersModel;
 
     if (getOrdersModel == null) {
-      (getOrdersModel = const PaginationModel<OrderListModel>.init(page: 1));
+      getOrdersModel = const PaginationModel<OrderListModel>.init(page: 1);
     }
     ///////////////////////////////////////
     if ((getOrdersModel.hasReachedMax ||
@@ -6310,8 +6311,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       ),
     );
     ///////////////////////////////
+    GetOrdersParams params =
+        GetOrdersParams(offset: getOrdersModel.page, status: event.status);
 
-    final response = await getOrdersUseCase(getOrdersModel.page);
+    final response = await getOrdersUseCase(params);
 
     response.fold(
       (l) {
@@ -6319,7 +6322,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
         if (!isFailedTheFirstTime.contains('GetOrdersEvent')) {
           add(
-            GetOrdersEvent(),
+            GetOrdersEvent(status: event.status),
           );
           isFailedTheFirstTime.add('GetOrdersEvent');
         }

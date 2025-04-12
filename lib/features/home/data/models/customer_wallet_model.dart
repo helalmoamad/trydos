@@ -56,6 +56,8 @@ class CustomerWalletDataModel {
   final int? limit;
   final int? offset;
   final double? totalWalletBalance;
+  final String? currencySymbol;
+  final String? currencyCode;
   final int? totalWalletTransaction;
   final List<WalletTransactionList> walletTransactionList;
 
@@ -63,6 +65,8 @@ class CustomerWalletDataModel {
     required this.limit,
     required this.offset,
     required this.totalWalletBalance,
+    required this.currencySymbol,
+    required this.currencyCode,
     required this.totalWalletTransaction,
     required this.walletTransactionList,
   });
@@ -72,6 +76,8 @@ class CustomerWalletDataModel {
     int? offset,
     double? totalWalletBalance,
     String? totalWalletBalanceFormatted,
+    String? currencySymbol,
+    String? currencyCode,
     int? totalWalletTransaction,
     List<WalletTransactionList>? walletTransactionList,
   }) =>
@@ -79,6 +85,8 @@ class CustomerWalletDataModel {
         limit: limit ?? this.limit,
         offset: offset ?? this.offset,
         totalWalletBalance: totalWalletBalance ?? this.totalWalletBalance,
+        currencyCode: currencyCode ?? this.currencyCode,
+        currencySymbol: currencySymbol ?? this.currencySymbol,
         totalWalletTransaction:
             totalWalletTransaction ?? this.totalWalletTransaction,
         walletTransactionList:
@@ -92,18 +100,23 @@ class CustomerWalletDataModel {
         totalWalletBalance: json["total_wallet_balance"] == null
             ? 0
             : double.parse(
-                json["total_wallet_balance"].toString(),
+                json["wallet_balance"].toString(),
               ),
         totalWalletTransaction: json["total_wallet_transaction"] ?? 0,
-        walletTransactionList: List<WalletTransactionList>.from(
-            json["wallet_transaction_list"]
-                .map((x) => WalletTransactionList.fromJson(x))),
+        currencyCode: json["currency_code"] ?? '',
+        currencySymbol: json["currency_symbol"] ?? '',
+        walletTransactionList: [],
+        // List<WalletTransactionList>.from(
+        //     json["wallet_transaction_list"]
+        //         .map((x) => WalletTransactionList.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
         "limit": limit,
         "offset": offset,
         "total_wallet_balance": totalWalletBalance,
+        "currency_code": currencyCode,
+        "currency_symbol": currencySymbol,
         "total_wallet_transaction": totalWalletTransaction,
         "wallet_transaction_list":
             List<dynamic>.from(walletTransactionList.map((x) => x.toJson())),

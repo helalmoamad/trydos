@@ -436,4 +436,28 @@ abstract class LocaleKeys {
   static const available_country = 'available_country';
   static const coming_soon_country = 'coming_soon_country';
   static const select_the_part_of_the_image = 'select_the_part_of_the_image';
+  static const orders = 'orders';
+  static const all = 'all';
+
+  static const pending = 'pending';
+  static const processing = 'processing';
+  static const ready_to_shipping = 'ready_to_shipping';
+  static const shipped = 'shipped';
+  static const out_for_delivery = 'out_for_delivery';
+  static const delivered = 'delivered';
+  static const partial_return = 'partial_return';
+  static const returned = 'returned';
+  static const failed = 'failed';
+  static const canceled = 'canceled';
+  static const canceled_archived = 'canceled_archived';
+  static const order_details = 'order_details';
+  static const my_home = 'my_home';
+  static const recipient = 'recipient';
+  static const recipient_contact = 'recipient_contact';
+  static const expected_delivery_date = 'expected_delivery_date';
+  static const order_status = 'order_status';
+  static const order_number = 'order_number';
+  static const order_date = 'order_date';
+  static const buying = 'buying';
+  static const item_status = 'item_status';
 }

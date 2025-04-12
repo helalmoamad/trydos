@@ -1,9 +1,11 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../../common/helper/helper_functions.dart';
+import '../../../../../generated/locale_keys.g.dart';
 import '../../../../app/my_cached_network_image.dart';
 import 'order_details2_page.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -27,7 +29,13 @@ class OrderDetails1 extends StatelessWidget {
               ///////////////////
               SizedBox(
                 height: 74,
-                child: buildFirstSection(context),
+                child: buildFirstSection(
+                  context: context,
+                  orderNumber: 'TX44VBV',
+                  orderDate: '1/1/2025',
+                  orderAmount: '400',
+                  orderCurrency: 'USD',
+                ),
               ),
               ///////////////////
               SizedBox(
@@ -36,14 +44,23 @@ class OrderDetails1 extends StatelessWidget {
               ///////////////////
               SizedBox(
                 height: 74,
-                child: buildSecondSection(context),
+                child: buildSecondSection(
+                  context: context,
+                  expectedDeliveryDate: '1/1/2025',
+                  orderStatus: 'pending',
+                ),
               ),
               ///////////////////
               SizedBox(
                 height: 8.h,
               ),
               ///////////////////
-              buildThirdSection(context),
+              buildThirdSection(
+                context: context,
+                contactInfo: 'contactInfo',
+                recipientName: 'recipientName',
+                shippingDeliveryAddress: 'shippingDeliveryAddress',
+              ),
               ///////////////////
               SizedBox(
                 height: 8.h,
@@ -63,7 +80,7 @@ class OrderDetails1 extends StatelessWidget {
                 height: 8.h,
               ),
               ///////////////////
-              buildFifthSection(),
+              buildFifthSection(size: 'size', color: 'color'),
               ///////////////////
               SizedBox(
                 height: 8.h,
@@ -76,7 +93,10 @@ class OrderDetails1 extends StatelessWidget {
     );
   }
 
-  Widget buildFifthSection() {
+  Widget buildFifthSection({
+    required String size,
+    required String color,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: SizedBox(
@@ -131,8 +151,7 @@ class OrderDetails1 extends StatelessWidget {
                 ),
                 ///////////////////
                 Text(
-                  'Medium',
-                  // LocaleKeys.order_invoice.tr(),
+                  size,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                   style: context.textTheme.bodyMedium?.rq.copyWith(
@@ -148,8 +167,7 @@ class OrderDetails1 extends StatelessWidget {
                 ),
                 ///////////////////
                 Text(
-                  'Blue',
-                  // LocaleKeys.order_invoice.tr(),
+                  color,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                   style: context.textTheme.bodyMedium?.rq.copyWith(
@@ -200,8 +218,7 @@ class OrderDetails1 extends StatelessWidget {
             ),
             ///////////////////
             Text(
-              'Order Details',
-              // LocaleKeys.order_invoice.tr(),
+              LocaleKeys.order_details.tr(),
               style: context.textTheme.bodyMedium?.rq.copyWith(
                 color: const Color(0xff8D8D8D),
                 letterSpacing: 0.18,
@@ -233,7 +250,7 @@ class OrderDetails1 extends StatelessWidget {
                       height: 1.3,
                     ),
                   ),
-                  const TextSpan(text: ' Item'),
+                  TextSpan(text: ' ${LocaleKeys.item.tr()}'),
                 ],
               ),
             ),
@@ -244,11 +261,17 @@ class OrderDetails1 extends StatelessWidget {
     );
   }
 
-  Widget buildThirdSection(BuildContext context) {
+  Widget buildThirdSection({
+    required BuildContext context,
+    required String shippingDeliveryAddress,
+    required String recipientName,
+    required String contactInfo,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Container(
         height: 160,
+        width: double.infinity,
         decoration: BoxDecoration(
           color: Color(0xffF4F4F4),
           borderRadius: BorderRadius.circular(15),
@@ -259,8 +282,7 @@ class OrderDetails1 extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Shipping & Delivery Address',
-              // LocaleKeys.order_invoice.tr(),
+              LocaleKeys.shipping_delivery_address.tr(),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: context.textTheme.bodyMedium?.rq.copyWith(
@@ -276,8 +298,7 @@ class OrderDetails1 extends StatelessWidget {
             ),
             ///////////////////
             Text(
-              'My Home',
-              // LocaleKeys.order_invoice.tr(),
+              LocaleKeys.my_home.tr(),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: context.textTheme.bodyMedium?.mq.copyWith(
@@ -293,10 +314,9 @@ class OrderDetails1 extends StatelessWidget {
             ),
             ///////////////////
             Text(
-              'Cendere | Ayazağa | Sariyer | İstanbul | Turkiye Vadistanbul, Ofisler, 2A Block, Kat 4, 28 No',
+              shippingDeliveryAddress,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              // LocaleKeys.order_invoice.tr(),
               style: context.textTheme.bodyMedium?.mq.copyWith(
                 color: const Color(0xff8D8D8D),
                 letterSpacing: 0.18,
@@ -310,8 +330,7 @@ class OrderDetails1 extends StatelessWidget {
             ),
             ///////////////////
             Text(
-              'Recipient',
-              // LocaleKeys.order_invoice.tr(),
+              LocaleKeys.recipient.tr(),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: context.textTheme.bodyMedium?.rq.copyWith(
@@ -327,8 +346,7 @@ class OrderDetails1 extends StatelessWidget {
             ),
             ///////////////////
             Text(
-              'Mohamad Katmawi',
-              // LocaleKeys.order_invoice.tr(),
+              recipientName,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: context.textTheme.bodyMedium?.rq.copyWith(
@@ -344,8 +362,7 @@ class OrderDetails1 extends StatelessWidget {
             ),
             ///////////////////
             Text(
-              'Recipient Contact',
-              // LocaleKeys.order_invoice.tr(),
+              LocaleKeys.recipient_contact.tr(),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: context.textTheme.bodyMedium?.rq.copyWith(
@@ -361,8 +378,7 @@ class OrderDetails1 extends StatelessWidget {
             ),
             ///////////////////
             Text(
-              '+90 552 800 2000',
-              // LocaleKeys.order_invoice.tr(),
+              contactInfo,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: context.textTheme.bodyMedium?.rq.copyWith(
@@ -379,7 +395,11 @@ class OrderDetails1 extends StatelessWidget {
     );
   }
 
-  Widget buildSecondSection(BuildContext context) {
+  Widget buildSecondSection({
+    required BuildContext context,
+    required String expectedDeliveryDate,
+    required String orderStatus,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
@@ -401,8 +421,8 @@ class OrderDetails1 extends StatelessWidget {
                   ),
                 ],
               ),
-              title: 'Expected Delivery Date',
-              value: 'Monday 2.Jun | 3 Work Days',
+              title: LocaleKeys.expected_delivery_date.tr(),
+              value: expectedDeliveryDate,
               amount: '',
               isTextSpan: false,
               currency: '',
@@ -444,8 +464,8 @@ class OrderDetails1 extends StatelessWidget {
                   ),
                 ],
               ),
-              title: 'Order Status',
-              value: 'Preparing',
+              title: LocaleKeys.order_status.tr(),
+              value: orderStatus,
               amount: '',
               isTextSpan: false,
               currency: '',
@@ -456,7 +476,13 @@ class OrderDetails1 extends StatelessWidget {
     );
   }
 
-  Widget buildFirstSection(BuildContext context) {
+  Widget buildFirstSection({
+    required BuildContext context,
+    required String orderNumber,
+    required String orderDate,
+    required String orderAmount,
+    required String orderCurrency,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
@@ -468,8 +494,8 @@ class OrderDetails1 extends StatelessWidget {
                 AppAssets.orderBag1Svg,
                 width: 20,
               ),
-              title: 'Order Number',
-              value: 'TTISA10012',
+              title: LocaleKeys.order_number.tr(),
+              value: orderNumber,
               amount: '',
               isTextSpan: false,
               currency: '',
@@ -487,8 +513,8 @@ class OrderDetails1 extends StatelessWidget {
                 AppAssets.orderClockSvg,
                 width: 20,
               ),
-              title: 'Order Date',
-              value: 'Today | 13:59:00',
+              title: LocaleKeys.order_date.tr(),
+              value: orderDate,
               amount: '',
               isTextSpan: false,
               currency: '',
@@ -515,10 +541,10 @@ class OrderDetails1 extends StatelessWidget {
                   ),
                 ],
               ),
-              title: 'Order Invoice',
-              amount: '360',
+              title: LocaleKeys.order_invoice.tr(),
+              amount: orderAmount,
               isTextSpan: true,
-              currency: 'USD',
+              currency: orderCurrency,
               value: '',
             ),
           ),
@@ -553,7 +579,6 @@ class OrderDetails1 extends StatelessWidget {
             fit: FlexFit.loose,
             child: Text(
               title,
-              // LocaleKeys.order_invoice.tr(),
               overflow: TextOverflow.ellipsis,
               style: context.textTheme.bodyMedium?.rq.copyWith(
                 color: const Color(0xff8D8D8D),
@@ -640,8 +665,7 @@ class OrderDetails1 extends StatelessWidget {
                 ),
                 ///////////////////////////
                 Text(
-                  'Orders Details',
-                  // LocaleKeys.order_invoice.tr(),
+                  LocaleKeys.order_details.tr(),
                   style: context.textTheme.bodyMedium?.mq.copyWith(
                     color: const Color(0xff1D1D1D),
                     letterSpacing: 0.18,

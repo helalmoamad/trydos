@@ -186,9 +186,10 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                 builder: (context, _showDeleteAddress, _) {
                   double walletBalance = state.customerWalletModel == null
                       ? 0
-                      : state.customerWalletModel!.data.totalWalletBalance! *
-                          state.getCurrencyForCountryModel!.data!.currency!
-                              .exchangeRate!;
+                      : state.customerWalletModel!.data.totalWalletBalance ?? 0;
+                  // *
+                  //     state.getCurrencyForCountryModel!.data!.currency!
+                  //         .exchangeRate!;
                   return ValueListenableBuilder<int>(
                       valueListenable: indexTap,
                       builder: (context, _indexTap, _) {
@@ -265,10 +266,9 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                                                           availablePaymentMethod:
                                                               availablePaymentMethod,
                                                           currencySymbol: state
-                                                                  .getCurrencyForCountryModel!
-                                                                  .data!
-                                                                  .currency!
-                                                                  .symbol ??
+                                                                  .customerWalletModel!
+                                                                  .data
+                                                                  .currencySymbol ??
                                                               '',
                                                           paymentMethods:
                                                               paymentMethods,
@@ -558,9 +558,9 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                           currencySympole: widget.currencySympole,
                           totalPrice: totalPrice,
                           totalCashed: totalCashed,
-                          currencySymbol: state.getCurrencyForCountryModel!
-                                  .data!.currency!.symbol ??
-                              "",
+                          currencySymbol:
+                              state.customerWalletModel!.data.currencySymbol ??
+                                  "",
                           decimalPointSetting:
                               state.startingSetting?.decimalPointSettings ?? 2,
                         ),

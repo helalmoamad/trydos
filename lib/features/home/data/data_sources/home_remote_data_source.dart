@@ -949,16 +949,13 @@ class HomeRemoteDatasource {
   }
 
   Future<OrderModel> getOrders({
-    required int offset,
+    required Map<String, dynamic> params,
   }) {
     GetClient<OrderModel> getOrders = GetClient<OrderModel>(
       serverName: ServerName.market,
       requestPrams: RequestConfig<OrderModel>(
         endpoint: MarketEndPoints.getOrderListEP,
-        queryParameters: {
-          "offset": offset.toString(),
-          "limit": '10',
-        },
+        queryParameters: params,
         response: ResponseValue<OrderModel>(
             fromJson: (response) => OrderModel.fromJson(response)),
       ),

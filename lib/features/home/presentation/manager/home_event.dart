@@ -1232,9 +1232,10 @@ class GetUserNotificationEvent extends HomeEvent {
 }
 
 class GetOrdersEvent extends HomeEvent {
-  GetOrdersEvent();
+  final String? status;
+  GetOrdersEvent({required this.status});
 
   @override
   // TODO: implement props
-  List<Object?> get props => [];
+  List<Object?> get props => [status];
 }

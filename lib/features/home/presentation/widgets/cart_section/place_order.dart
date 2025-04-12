@@ -276,7 +276,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                     } else if (data[0].paymentMethod == 'cash_on_delivery') {
                       paymentMethod = PaymentMethods.cod;
                     } else {
-                      paymentMethod = data[0].paymentMethod ?? '';
+                      paymentMethod = data[0].paymentMethod?.value ?? '';
                     }
 
                     widget.paymentMethods.value =

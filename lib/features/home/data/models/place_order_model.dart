@@ -58,8 +58,8 @@ class OrdersGroupDataModel {
   final int? customerId;
   final String? url;
   final String? paymentStatus;
-  final String? orderStatus;
-  final String? paymentMethod;
+  final ValueLableModel? orderStatus;
+  final ValueLableModel? paymentMethod;
   final String? transactionRef;
   final double? orderAmount;
   final double? discountAmount;
@@ -121,8 +121,8 @@ class OrdersGroupDataModel {
     int? customerId,
     String? url,
     String? paymentStatus,
-    String? orderStatus,
-    String? paymentMethod,
+    ValueLableModel? orderStatus,
+    ValueLableModel? paymentMethod,
     String? transactionRef,
     double? orderAmount,
     double? discountAmount,
@@ -187,8 +187,12 @@ class OrdersGroupDataModel {
         customerId: json["customer_id"] ?? 0,
         url: json["url"],
         paymentStatus: json["payment_status"] ?? '',
-        orderStatus: json["order_status"] ?? '',
-        paymentMethod: json["payment_method"] ?? '',
+        orderStatus: json["order_status"] == null
+            ? null
+            : ValueLableModel.fromJson(json["order_status"]),
+        paymentMethod: json["payment_method"] == null
+            ? null
+            : ValueLableModel.fromJson(json["payment_method"]),
         transactionRef: json["transaction_ref"] ?? '',
         orderAmount: json["order_amount"] == null
             ? 0
@@ -231,8 +235,8 @@ class OrdersGroupDataModel {
         "id": id,
         "customer_id": customerId,
         "payment_status": paymentStatus,
-        "order_status": orderStatus,
-        "payment_method": paymentMethod,
+        "order_status": orderStatus?.toJson(),
+        "payment_method": paymentMethod?.toJson(),
         "transaction_ref": transactionRef,
         "order_amount": orderAmount,
         "discount_amount": discountAmount,
@@ -257,6 +261,36 @@ class OrdersGroupDataModel {
         "details": details == null
             ? null
             : List<dynamic>.from(details!.map((x) => x.toJson())),
+      };
+}
+
+class ValueLableModel {
+  final String? value;
+  final String? label;
+
+  ValueLableModel({
+    this.value,
+    this.label,
+  });
+
+  ValueLableModel copyWith({
+    String? value,
+    String? label,
+  }) =>
+      ValueLableModel(
+        value: value ?? this.value,
+        label: label ?? this.label,
+      );
+
+  factory ValueLableModel.fromJson(Map<String, dynamic> json) =>
+      ValueLableModel(
+        value: json["value"],
+        label: json["label"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "value": value,
+        "label": label,
       };
 }
 

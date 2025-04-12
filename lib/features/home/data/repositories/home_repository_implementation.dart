@@ -467,9 +467,11 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   }
 
   @override
-  Future<Either<Failure, OrderModel>> getOrders({required int offset}) {
+  Future<Either<Failure, OrderModel>> getOrders({
+    required Map<String, dynamic> params,
+  }) {
     return handlingExceptionRequest(
-      tryCall: () => dataSource.getOrders(offset: offset),
+      tryCall: () => dataSource.getOrders(params: params),
     );
   }
 }

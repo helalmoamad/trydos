@@ -23,6 +23,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../features/app/my_text_widget.dart';
+import '../../generated/locale_keys.g.dart';
 import '../../service/language_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:ui' as ui;
@@ -556,5 +557,85 @@ class HelperFunctions {
 
       return result;
     }
+  }
+
+  static String orderStatusText({required String inputText}) {
+    String text = '';
+
+    switch (inputText) {
+      case 'pending':
+        {
+          text = LocaleKeys.pending.tr();
+          break;
+        }
+
+      case 'processing':
+        {
+          text = LocaleKeys.processing.tr();
+          break;
+        }
+
+      case 'ready_to_shipping':
+        {
+          text = LocaleKeys.ready_to_shipping.tr();
+          break;
+        }
+
+      case 'shipped':
+        {
+          text = LocaleKeys.shipped.tr();
+          break;
+        }
+
+      case 'out_for_delivery':
+        {
+          text = LocaleKeys.out_for_delivery.tr();
+          break;
+        }
+
+      case 'delivered':
+        {
+          text = LocaleKeys.delivered.tr();
+          break;
+        }
+
+      case 'partial_return':
+        {
+          text = LocaleKeys.partial_return.tr();
+          break;
+        }
+
+      case 'returned':
+        {
+          text = LocaleKeys.returned.tr();
+          break;
+        }
+
+      case 'failed':
+        {
+          text = LocaleKeys.failed.tr();
+          break;
+        }
+
+      case 'canceled':
+        {
+          text = LocaleKeys.canceled.tr();
+          break;
+        }
+
+      case 'canceled_archived':
+        {
+          text = LocaleKeys.canceled_archived.tr();
+          break;
+        }
+
+      default:
+        {
+          text = 'New Status';
+          break;
+        }
+    }
+
+    return text;
   }
 }

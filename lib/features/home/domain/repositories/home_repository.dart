@@ -165,7 +165,6 @@ abstract class HomeRepository {
     required int page,
   });
 
-  Future<Either<Failure, OrderModel>> getOrders({
-    required int offset,
-  });
+  Future<Either<Failure, OrderModel>> getOrders(
+      {required Map<String, dynamic> params});
 }

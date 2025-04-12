@@ -1,9 +1,11 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/config/theme/typography.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
+import '../../../../../generated/locale_keys.g.dart';
 import '../../../../app/my_cached_network_image.dart';
 
 class OrderDetails2 extends StatelessWidget {
@@ -64,7 +66,7 @@ class OrderDetails2 extends StatelessWidget {
                               height: 1.3,
                             ),
                             children: [
-                              TextSpan(text: 'Buying '),
+                              TextSpan(text: '${LocaleKeys.buying.tr()} '),
                               /////////////////////////
                               TextSpan(
                                 text: '6',
@@ -77,7 +79,7 @@ class OrderDetails2 extends StatelessWidget {
                                 ),
                               ),
                               /////////////////////////
-                              TextSpan(text: ' Item . '),
+                              TextSpan(text: ' ${LocaleKeys.item.tr()} . '),
                               /////////////////////////
                               TextSpan(
                                 text: '200',
@@ -116,8 +118,7 @@ class OrderDetails2 extends StatelessWidget {
                                   ),
                                   ///////////////////
                                   Text(
-                                    'Expected Delivery Date',
-                                    // LocaleKeys.order_invoice.tr(),
+                                    LocaleKeys.expected_delivery_date.tr(),
                                     overflow: TextOverflow.ellipsis,
                                     style: context.textTheme.bodyMedium?.rq
                                         .copyWith(
@@ -134,7 +135,6 @@ class OrderDetails2 extends StatelessWidget {
                                   ///////////////////
                                   Text(
                                     'Monday 2.Jun | 3 Work Days',
-                                    // LocaleKeys.order_invoice.tr(),
                                     overflow: TextOverflow.ellipsis,
                                     style: context.textTheme.bodyMedium?.rq
                                         .copyWith(
@@ -190,8 +190,7 @@ class OrderDetails2 extends StatelessWidget {
                                     ),
                                     ///////////////////
                                     Text(
-                                      'Order Status',
-                                      // LocaleKeys.order_invoice.tr(),
+                                      LocaleKeys.order_status.tr(),
                                       overflow: TextOverflow.ellipsis,
                                       style: context.textTheme.bodyMedium?.rq
                                           .copyWith(
@@ -210,8 +209,7 @@ class OrderDetails2 extends StatelessWidget {
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
                                         Text(
-                                          'Preparing',
-                                          // LocaleKeys.order_invoice.tr(),
+                                          'pending',
                                           overflow: TextOverflow.ellipsis,
                                           style: context
                                               .textTheme.bodyMedium?.rq
@@ -341,7 +339,8 @@ class OrderDetails2 extends StatelessWidget {
                                                       ),
                                                       children: [
                                                         TextSpan(
-                                                          text: 'Color:',
+                                                          text:
+                                                              '${LocaleKeys.color.tr()}:',
                                                         ),
                                                         ////////////////////////////
                                                         TextSpan(
@@ -384,7 +383,8 @@ class OrderDetails2 extends StatelessWidget {
                                                         ),
                                                         children: [
                                                           TextSpan(
-                                                            text: 'Size:',
+                                                            text:
+                                                                '${LocaleKeys.size.tr()}:',
                                                           ),
                                                           ////////////////////////////
                                                           TextSpan(
@@ -431,7 +431,8 @@ class OrderDetails2 extends StatelessWidget {
                                                       ),
                                                       children: [
                                                         TextSpan(
-                                                          text: 'Composed Of:',
+                                                          text:
+                                                              '${LocaleKeys.composed_of.tr()}:',
                                                         ),
                                                         ////////////////////////////
                                                         TextSpan(
@@ -473,7 +474,8 @@ class OrderDetails2 extends StatelessWidget {
                                                         ),
                                                         children: [
                                                           TextSpan(
-                                                            text: 'Item:',
+                                                            text:
+                                                                '${LocaleKeys.item.tr()}:',
                                                           ),
                                                           ////////////////////////////
                                                           TextSpan(
@@ -522,11 +524,11 @@ class OrderDetails2 extends StatelessWidget {
                                                         children: [
                                                           TextSpan(
                                                             text:
-                                                                'Item Status:',
+                                                                '${LocaleKeys.item_status.tr()}:',
                                                           ),
                                                           ////////////////////////////
                                                           TextSpan(
-                                                            text: ' Preparing',
+                                                            text: 'pendeing',
                                                             style: context
                                                                 .textTheme
                                                                 .bodyMedium
@@ -633,7 +635,6 @@ class OrderDetails2 extends StatelessWidget {
                                             child: Center(
                                               child: Text(
                                                 '$index',
-                                                // LocaleKeys.order_invoice.tr(),
                                                 overflow: TextOverflow.ellipsis,
                                                 style: context
                                                     .textTheme.bodyMedium?.mq
@@ -705,8 +706,7 @@ class OrderDetails2 extends StatelessWidget {
             ),
             ///////////////////
             Text(
-              'Order Details',
-              // LocaleKeys.order_invoice.tr(),
+              LocaleKeys.order_details.tr(),
               overflow: TextOverflow.ellipsis,
               style: context.textTheme.bodyMedium?.rq.copyWith(
                 color: const Color(0xff8D8D8D),
@@ -739,7 +739,7 @@ class OrderDetails2 extends StatelessWidget {
                       height: 1.3,
                     ),
                   ),
-                  const TextSpan(text: ' Item'),
+                  TextSpan(text: ' ${LocaleKeys.item.tr()}'),
                 ],
               ),
             ),
@@ -780,8 +780,7 @@ class OrderDetails2 extends StatelessWidget {
                 ///////////////////////////
 
                 Text(
-                  'Orders Details',
-                  // LocaleKeys.order_invoice.tr(),
+                  LocaleKeys.order_details.tr(),
                   style: context.textTheme.bodyMedium?.mq.copyWith(
                     color: const Color(0xff1D1D1D),
                     letterSpacing: 0.18,
