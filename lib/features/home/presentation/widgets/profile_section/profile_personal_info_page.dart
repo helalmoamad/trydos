@@ -221,15 +221,15 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 SizedBox(
-                                  width: 10,
+                                  width: 10.w,
                                 ),
                                 SvgPicture.asset(
                                   AppAssets.infoSvg,
                                   color: Color(0xff402CDD),
-                                  width: 25,
+                                  width: 25.w,
                                 ),
                                 SizedBox(
-                                  width: 10,
+                                  width: 10.w,
                                 ),
                                 Text(
                                   LocaleKeys.entering_your_information_correctly
