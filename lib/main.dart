@@ -23,6 +23,8 @@ import 'package:eraser/eraser.dart';
 import 'package:trydos/common/constant/configuration/chat_url_routes.dart';
 import 'package:trydos/common/constant/configuration/market_url_routes.dart';
 import 'package:trydos/common/constant/configuration/stories_url_routes.dart';
+import 'package:trydos/features/app/blocs/pre_caching_image_bloc/pre_caching_image_bloc.dart';
+import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/service/language_service.dart';
 import 'package:trydos/service/local_notification_service.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/handling_market_notifications.dart';
@@ -290,7 +292,12 @@ void main() async {
     NotificationProcess().init(),
   ]);
   isLoadDotenvFile = true;
+
   await GetIt.I<PrefsRepository>().setOnMessageRun(false);
+  //GetIt.I<PrefsRepository>().removeMainCategoryHasPerfechedWhenOpenApp(false);
+  // GetIt.I<PrefsRepository>().removeBoutiqueHasPerfechedWhenOpenApp(false);
+  // GetIt.I<PrefsRepository>().removeFiveFilterHasPerfechedWhenOpenApp();
+
   //await Eraser.clearAllAppNotifications();
   await GetIt.I<PrefsRepository>().removeMessageFromBackground();
   await NotificationProcess().setupInteractedMessage();

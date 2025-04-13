@@ -4,6 +4,7 @@ import 'package:country_flags/country_flags.dart';
 import 'package:easy_localization/easy_localization.dart' as transform;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -14,6 +15,7 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
+import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 
 import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
@@ -169,6 +171,17 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
   }
 
   Widget _countryWidget() {
+    String choosedCountryIso =
+        (GetIt.I<PrefsRepository>().userCountryIsAvailable == 1
+                ? GetIt.I<PrefsRepository>().userChoosedCountryIso
+                : GetIt.I<PrefsRepository>().countryIso) ??
+            "";
+    List<Country>? alowCountries =
+        homeBloc.state.getAllowedCountriesModel?.data?.countries;
+    Country? country = alowCountries?.firstWhere(
+        (element) => '${choosedCountryIso.toLowerCase()}'
+            .startsWith(element.iso!.toLowerCase()),
+        orElse: () => alowCountries[0]);
     return InkWell(
       onTap: () => Navigator.of(context)
           .push(MaterialPageRoute(builder: (context) => ProfileCountryPage())),
@@ -187,7 +200,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                   width: 25,
                   height: 25,
                   child: CountryFlag.fromCountryCode(
-                    "TR",
+                    country!.iso!.toUpperCase(),
                     height: 25,
                     width: 25,
                     borderRadius: 4.r,
@@ -196,7 +209,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                 width: 10,
               ),
               Text(
-                "Turkiye",
+                country.name ?? "",
                 style: context.textTheme.bodyMedium?.rr.copyWith(
                     color: const Color(0xff1D1D1D),
                     letterSpacing: 0.18,
@@ -418,28 +431,30 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                   top: 0,
                   right: LanguageService.languageCode == "ar" ? null : 0,
                   left: LanguageService.languageCode != "ar" ? null : 0,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12.r),
-                    child: Container(
-                      height: 70,
-                      width: 70,
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                              color: state.userInfo?.image != null
-                                  ? Colors.white
-                                  : Color(0xff1D1D1D))),
-                      child: state.userInfo?.image != null
-                          ? MyCachedNetworkImage(
-                              imageUrl: state.userInfo?.image ?? "",
-                              width: 70,
-                              imageFit: BoxFit.cover,
-                              height: 70)
-                          : Center(
-                              child: SvgPicture.asset(
-                                AppAssets.trySvg,
-                              ),
+                  child: Container(
+                    height: 70,
+                    width: 70,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(15.r)),
+                        border: Border.all(
+                            color: state.userInfo?.image != null
+                                ? Colors.white
+                                : Color(0xff1D1D1D))),
+                    child: state.userInfo?.image != null
+                        ? ClipRRect(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(15.r)),
+                            child: MyCachedNetworkImage(
+                                imageUrl: state.userInfo?.image ?? "",
+                                width: 70,
+                                imageFit: BoxFit.cover,
+                                height: 70),
+                          )
+                        : Center(
+                            child: SvgPicture.asset(
+                              AppAssets.trySvg,
                             ),
-                    ),
+                          ),
                   ),
                 ),
                 Positioned(
@@ -479,7 +494,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                                   fontSize: 12,
                                   height: 1.3))),
                   child: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 10),
+                    margin: EdgeInsets.symmetric(horizontal: 15),
                     height: 35,
                     width: 60,
                     child: Column(

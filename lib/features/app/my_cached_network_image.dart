@@ -134,7 +134,8 @@ class MyCachedNetworkImage extends StatelessWidget {
                         },
                         imageBuilder: imageBuilder ??
                             (ctx, image) {
-                              callWhenDisplayImage?.call();
+                              Future.delayed(Duration(milliseconds: 600),
+                                  () => callWhenDisplayImage?.call());
                               return ClipRRect(
                                   child: Align(
                                       alignment: Alignment.center,
@@ -223,9 +224,13 @@ class CustomCacheManager extends CacheManager {
   CustomCacheManager._()
       : super(Config(
           key,
-          maxNrOfCacheObjects: 600,
-          stalePeriod: const Duration(days: 30),
+          maxNrOfCacheObjects: 200,
+          stalePeriod: const Duration(days: 3),
         ));
+}
+
+void clearCustomCashe() async {
+  await CustomCacheManager().emptyCache();
 }
 
 String addSuitableWidthAndHeightToImage(

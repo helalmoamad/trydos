@@ -138,7 +138,7 @@ class _HomePageState extends State<HomePage> {
       }
 
       if (selectedCategorySlug == '') return;
-      if (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
+      /*  if (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
               selectedCategorySlug] ==
           null) {
         lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
@@ -150,11 +150,12 @@ class _HomePageState extends State<HomePage> {
         // prefetchBoutiques(selectedCategorySlug);
         lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
             selectedCategorySlug] = lastIndexSeenByUser;
-      }
-      if (scrollController.offset >=
+      }*/
+      /*   if (scrollController.offset >=
           (scrollController.position.maxScrollExtent * 0.6)) {
         homeBloc.add(GetHomeBoutiqesEvent(
-            getWithPrefetchForBoutiques: false,
+            getWithPrefetchToStoreInMemory: false,
+            getWithPrefetchForEachBoutiques: false,
             categorySlug: selectedCategorySlug,
             offset: homeBloc
                     .state
@@ -164,7 +165,7 @@ class _HomePageState extends State<HomePage> {
                 "",
             context: context,
             getWithPagination: true));
-      }
+      }*/
       if (scrollController.position.pixels <= 80) {
         debugPrint(scrollController.position.pixels.toString());
         appBloc.add(ShowOrHideBars(true));
@@ -279,17 +280,18 @@ class _HomePageState extends State<HomePage> {
         getWithPrefech: false,
         context: context,
       ));
-      homeBloc.add(
+      /* homeBloc.add(
         GetHomeBoutiqesEvent(
+          getWithPrefetchToStoreInMemory: false,
           getWithPagination: false,
           forRefresh: true,
-          getWithPrefetchForBoutiques: false,
+          getWithPrefetchForEachBoutiques: false,
           offset: "1",
           categorySlug: selectedCategorySlug,
           context: context,
         ),
       );
-
+*/
       // محاكاة عملية تحميل البيانات
       await Future.delayed(Duration(seconds: 4));
 
@@ -427,6 +429,9 @@ class _HomePageState extends State<HomePage> {
                                       .slug ??
                                   "Empty")
                               : "Empty";
+                          print(
+                              "..............${homeState.getHomeBoutiquesPaginationObjectByMainCategory.keys.toList()}.................${(homeState.getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]?.items.length ?? 0)}");
+
                           if (homeState.boutiquesForEveryMainCategoryThatDidPrefetch[
                                       currentSlug] !=
                                   true &&

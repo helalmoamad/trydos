@@ -260,7 +260,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                       if (state.storiesCollections[widget.collectionIndex]
                               .selectedStoriesStatusForCollection ==
                           SelectedStoriesStatus.loading) {
-                        //   widget.animatedController.stop();
+                        widget.animatedController.stop();
                         return TrydosShimmerLoading(
                           width: 60,
                           height: 60,
@@ -273,8 +273,10 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                           SelectedStoriesStatus.success) {
                         widget.animatedController.forward();
                         if (widget.stopAnimationAndVideo) {
+                          print("111111111111111111111111");
                           widget.animatedController.stop();
                         } else {
+                          print("112222222222222211111111111");
                           widget.animatedController.forward();
                         }
                         return MyCachedNetworkImage(
@@ -305,7 +307,8 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                             }
                           },
                           callWhenLoadingImage: () {
-                            //   widget.animatedController.stop();
+                            print("1111111113333333333333333333333333333");
+                            widget.animatedController.stop();
                           },
                           width: state
                               .storiesCollections[widget.collectionIndex]

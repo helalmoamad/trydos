@@ -52,7 +52,9 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
       this.deleteMessageUseCase)
       : super(CallsState()) {
     on<CallsEvent>((event, emit) {});
-    on<UpdateCurrentActiveCallIdEvent>(_onUpdateCurrentActiveCallIdEvent);
+    on<UpdateCurrentActiveCallIdEvent>(
+      _onUpdateCurrentActiveCallIdEvent,
+    );
     on<IcreaseMissedCallEvent>(_onIcreaseMissedCallEvent);
     on<GetMissedCallCountEvent>(_onGetMissedCallCountEvent);
     on<ResetMissedCallEvent>(_onResetMissedCallEvent);

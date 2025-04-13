@@ -16,6 +16,7 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/features/app/app_widgets/update_user_name_widget.dart';
 import 'package:trydos/features/app/country_dropdown.dart';
 import 'package:trydos/features/app/language_dropdown.dart';
+import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/authentication/presentation/pages/first_registeration_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/feed_back_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/files_exist_page.dart';
@@ -98,7 +99,8 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                     if (state.currentIndex != 0) {
                       homeBloc.add(
                         GetHomeBoutiqesEvent(
-                          getWithPrefetchForBoutiques: false,
+                          getWithPrefetchToStoreInMemory: false,
+                          getWithPrefetchForEachBoutiques: false,
                           context: context,
                           offset: '1',
                           categorySlug: 'Empty',
@@ -494,22 +496,42 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                          height: 30.h,
-                          width: 30.h,
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: AssetImage(AppAssets.profileJpg),
-                              fit: BoxFit.cover,
-                            ),
-                            borderRadius: BorderRadius.circular(15.0),
-                            border: Border.all(
-                              width: 1.0,
-                              color: (state.currentIndex == 3)
-                                  ? const Color(0xfff53c3c)
-                                  : Color(0xfffff),
-                            ),
-                          )),
+                      (!(prefsRepository.isVerifiedPhone ?? false)) ||
+                              homeBloc.state.userInfo?.image == null
+                          ? Container(
+                              height: 30.h,
+                              width: 30.h,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage(AppAssets.profileJpg),
+                                  fit: BoxFit.cover,
+                                ),
+                                borderRadius: BorderRadius.circular(15.0),
+                                border: Border.all(
+                                  width: 1.0,
+                                  color: (state.currentIndex == 3)
+                                      ? const Color(0xfff53c3c)
+                                      : Color(0xfffff),
+                                ),
+                              ))
+                          : Container(
+                              height: 30.h,
+                              width: 30.h,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15.0),
+                                border: Border.all(
+                                  width: 1.0,
+                                  color: (state.currentIndex == 3)
+                                      ? const Color(0xfff53c3c)
+                                      : Color(0xfffff),
+                                ),
+                              ),
+                              child: MyCachedNetworkImage(
+                                  imageUrl:
+                                      homeBloc.state.userInfo?.image ?? "",
+                                  height: 30.h,
+                                  width: 30.h,
+                                  imageFit: BoxFit.cover)),
                       // Container(
                       //     height: 30.h,
                       //     width: 30.h,

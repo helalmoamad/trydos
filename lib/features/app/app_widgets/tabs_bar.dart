@@ -236,7 +236,8 @@ class _TabsBarState extends State<TabsBar> {
                 categorySlugs[i]] !=
             true) {
           homeBloc.add(GetHomeBoutiqesEvent(
-            getWithPrefetchForBoutiques: false,
+            getWithPrefetchToStoreInMemory: true,
+            getWithPrefetchForEachBoutiques: false,
             context: context,
             categorySlug: categorySlugs[i],
             offset: "1",
@@ -931,7 +932,9 @@ class _TabsBarState extends State<TabsBar> {
                                                   ///////////////////////
                                                   homeBloc.add(
                                                     GetHomeBoutiqesEvent(
-                                                      getWithPrefetchForBoutiques:
+                                                      getWithPrefetchToStoreInMemory:
+                                                          false,
+                                                      getWithPrefetchForEachBoutiques:
                                                           true,
                                                       getWithPagination: false,
                                                       offset: "1",
@@ -964,7 +967,9 @@ class _TabsBarState extends State<TabsBar> {
                                                   appBloc.add(ChangeTab(-1));
                                                   homeBloc.add(
                                                     GetHomeBoutiqesEvent(
-                                                      getWithPrefetchForBoutiques:
+                                                      getWithPrefetchToStoreInMemory:
+                                                          false,
+                                                      getWithPrefetchForEachBoutiques:
                                                           true,
                                                       context: context,
                                                       categorySlug: "Empty",

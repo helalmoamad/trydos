@@ -48,6 +48,7 @@ abstract class PrefsRepository {
   String? get getChatUrl;
 
   String? get myPhoneNumber;
+
   String? get currentEvent;
   String? get language;
 
@@ -55,6 +56,23 @@ abstract class PrefsRepository {
   String? get sessionId;
   String? get otpCode;
   int? get getdurtion;
+  String? getPrefechOfBoutiquesForEachMainCategoryInHomePage(String key);
+  Future<bool> setPrefechOfBoutiquesForEachMainCategoryInHomePage(
+      String key, String value);
+  Future<bool> removeMainCategoryHasPerfechedWhenOpenApp(bool allCategory);
+  Future<bool> setMainCategoryHasPerfechedToRemoveItWhenOpenApp(String key);
+  String? getPrefechOfProductsForEachBoutiqueInHomePage(String key);
+  Future<bool> setPrefechOfProductsForEachBoutiqueInHomePage(
+      String key, String value);
+  Future<bool> setBoutiqueHasPerfechedToRemoveItWhenOpenApp(String key);
+  Future<bool> removeBoutiqueHasPerfechedWhenOpenApp(bool allBoutique);
+  List<String>? getFiveFilterForEachBoutiqueHasPrefechInHomePage();
+  String? getPrefechForFiveFilterForEachBoutiqueInHomePage(String key);
+  Future<bool> setPrefechForFiveFilterForEachBoutiqueInHomePage(
+      String key, String value);
+  Future<bool> setFiveFilterHasPerfechedToRemoveItWhenOpenApp(String key);
+  Future<bool> removeFiveFilterHasPerfechedWhenOpenApp();
+
   Future<bool> setVerifiedPhone(bool verifiedPhone);
   Future<bool> setRequestNotificationPermission(
       bool requestNotificationPermission);
@@ -79,8 +97,11 @@ abstract class PrefsRepository {
   Future<bool> setMarketToken(String? token);
 
   Future<bool> setStoriesToken(String token);
+
   Future<bool> setLogInToChat(bool isLogInToChat);
+
   Future<bool> setOnMessageRun(bool onMessageRun);
+
   Future<bool> setIsSmartlookStarted(bool isSmartlookStarted);
 
   Future<bool> setServerTime(DateTime serverTime);
@@ -118,6 +139,7 @@ abstract class PrefsRepository {
   Future<bool> removeCurrentEvent();
 
   Future<bool> setViewedProducts(String productId);
+  Future<bool> clear();
   List<String> getviewedProductsProducts();
   Future<bool> removeViewedProducts();
   List<String> topicThatAlreadySubsecribed();

@@ -46,6 +46,7 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
             ? GetIt.I<PrefsRepository>().userChoosedCountryIso
             : GetIt.I<PrefsRepository>().countryIso) ??
         "";
+
     homeBloc = BlocProvider.of<HomeBloc>(context);
     if ((homeBloc.state.getAllowedCountriesModel?.data?.countries?.length ??
             0) !=
@@ -106,19 +107,17 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
                           : InkWell(
                               onTap: () {
                                 GetIt.I<PrefsRepository>()
+                                    .setUserChoosedCountryIso(homeBloc
+                                            .state
+                                            .getAllowedCountriesModel
+                                            ?.data
+                                            ?.countries?[changeCountry.value]
+                                            .iso ??
+                                        "".toLowerCase());
+                                GetIt.I<PrefsRepository>()
                                     .setUserCountryIsAvailable(1);
                                 BlocProvider.of<HomeBloc>(context)
                                     .add(ClearAllAppCashEvent());
-                                /* List<String> topicTOUnSubsecribe =
-                  _prefsRepository.topicThatAlreadySubsecribed();
-              topicTOUnSubsecribe.forEach(
-                (element) {
-                  SubsecribeOrUnSubsecribeToTopic()
-                      .UnSubsecribeToOtherTopic(element);
-                  print(
-                      "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${element}");
-                },
-              );*/
                                 BlocProvider.of<HomeBloc>(context).add(
                                     ChangeCountryLanguageForNotificationEvent(
                                         country: homeBloc

@@ -15,7 +15,7 @@ String getProductListingWithFiltersModelToJson(
 
 class GetProductListingWithFiltersModel {
   final String? message;
-  final Data? data;
+  final DataGetProductListingWithFiltersModel? data;
 
   GetProductListingWithFiltersModel({
     this.message,
@@ -24,7 +24,7 @@ class GetProductListingWithFiltersModel {
 
   GetProductListingWithFiltersModel copyWith({
     String? message,
-    Data? data,
+    DataGetProductListingWithFiltersModel? data,
   }) =>
       GetProductListingWithFiltersModel(
         message: message ?? this.message,
@@ -35,7 +35,9 @@ class GetProductListingWithFiltersModel {
           Map<String, dynamic> json) =>
       GetProductListingWithFiltersModel(
         message: json["message"],
-        data: json["data"] == null ? null : Data.fromJson(json["data"]),
+        data: json["data"] == null
+            ? null
+            : DataGetProductListingWithFiltersModel.fromJson(json["data"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -44,7 +46,7 @@ class GetProductListingWithFiltersModel {
       };
 }
 
-class Data {
+class DataGetProductListingWithFiltersModel {
   final int? totalSize;
   final int? limit;
   final List<double>? offset;
@@ -58,7 +60,7 @@ class Data {
   final List<Boutique>? boutiques;
   final String? boutiqueSlug;
 
-  Data({
+  DataGetProductListingWithFiltersModel({
     this.totalSize,
     this.limit,
     this.offset,
@@ -72,7 +74,7 @@ class Data {
     this.boutiqueSlug,
   });
 
-  Data copyWith({
+  DataGetProductListingWithFiltersModel copyWith({
     int? totalSize,
     int? limit,
     List<double>? offset,
@@ -86,7 +88,7 @@ class Data {
     List<Boutique>? boutiques,
     String? boutiqueSlug,
   }) =>
-      Data(
+      DataGetProductListingWithFiltersModel(
         totalSize: totalSize ?? this.totalSize,
         limit: limit ?? this.limit,
         offset: offset ?? this.offset,
@@ -99,8 +101,9 @@ class Data {
         boutiqueSlug: boutiqueSlug ?? this.boutiqueSlug,
       );
 
-  factory Data.fromJson(Map<String, dynamic> json) {
-    return Data(
+  factory DataGetProductListingWithFiltersModel.fromJson(
+      Map<String, dynamic> json) {
+    return DataGetProductListingWithFiltersModel(
       totalSize: json["total_size"],
       limit: json["limit"],
       offset: json["offset"] == null
