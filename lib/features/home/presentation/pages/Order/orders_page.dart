@@ -5,6 +5,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
+import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import '../../../../../common/constant/constant.dart';
 import '../../../../../common/helper/helper_functions.dart';
@@ -60,87 +62,128 @@ class _OrdersPageState extends State<OrdersPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        resizeToAvoidBottomInset: true,
-        body: BlocBuilder<HomeBloc, HomeState>(
-          buildWhen: (p, c) =>
-              p.getOrdersModel?.paginationStatus !=
-              c.getOrdersModel?.paginationStatus,
-          builder: (context, state) {
-            int itemsCount = state.getOrdersModel == null
-                ? 0
-                : state.getOrdersModel!.items.length;
-            List<OrderListModel> items = state.getOrdersModel?.items ?? [];
-            return (state.getOrdersModel == null ||
-                    state.getOrdersModel?.paginationStatus ==
-                        PaginationStatus.failure ||
-                    ((state.getOrdersModel?.paginationStatus ==
-                                PaginationStatus.loading ||
-                            state.getOrdersModel?.paginationStatus ==
-                                PaginationStatus.initial) &&
-                        state.getOrdersModel?.items.length == 0))
-                ? Center(child: CircularProgressIndicator())
-                : Column(
-                    children: [
-                      buildHeader(context),
-                      ///////////////////
-                      SizedBox(
-                        height: 11.h,
+    return Container(
+      color: const Color(0xffFFFFFF),
+      child: SafeArea(
+        child: Scaffold(
+          resizeToAvoidBottomInset: true,
+          appBar: TrydosAppBar(
+            appBarParams: AppBarParams(
+              backgroundColor: const Color(0xffFFFFFF),
+              scrolledUnderElevation: 0,
+              backIconColor: Colors.black,
+              withShadow: false,
+              action: [
+                Spacer(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SvgPicture.asset(
+                      AppAssets.bagsSvg,
+                      width: 23,
+                    ),
+                    ///////////////////////////
+                    SizedBox(
+                      width: 4,
+                    ),
+                    ///////////////////////////
+                    Text(
+                      LocaleKeys.orders.tr(),
+                      style: context.textTheme.bodyMedium?.mq.copyWith(
+                        color: const Color(0xff1D1D1D),
+                        letterSpacing: 0.18,
+                        fontSize: 14,
+                        height: 1.3,
                       ),
-                      ///////////////////
-                      buildStatusBar(),
-                      ///////////////////
-                      SizedBox(
-                        height: 50.h,
-                      ),
-                      ///////////////////
-                      Expanded(
-                        child: ListView.separated(
-                          controller: ordersScrollController,
-                          itemCount: itemsCount + 1,
-                          itemBuilder: (context, index) {
-                            if (index < itemsCount) {
-                              return InkWell(
-                                onTap: () {
-                                  HelperFunctions.slidingNavigation(
-                                    context,
-                                    OrderDetails1(),
-                                  );
-                                },
-                                child: buildOrderItemWidget(context),
-                              );
-                            } else {
-                              if (itemsCount > 4) {
-                                return Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 10),
-                                  child: Center(
-                                    child: state.getOrdersModel!.hasReachedMax
-                                        ? Text('No More Items')
-                                        : const CircularProgressIndicator(),
-                                  ),
+                    ),
+                    ///////////////////////////
+                    SizedBox(
+                      width: 15,
+                    ),
+                    ///////////////////////////
+                  ],
+                ),
+                Spacer(),
+              ],
+            ),
+          ),
+          body: BlocBuilder<HomeBloc, HomeState>(
+            buildWhen: (p, c) =>
+                p.getOrdersModel?.paginationStatus !=
+                c.getOrdersModel?.paginationStatus,
+            builder: (context, state) {
+              int itemsCount = state.getOrdersModel == null
+                  ? 0
+                  : state.getOrdersModel!.items.length;
+              List<OrderListModel> items = state.getOrdersModel?.items ?? [];
+              return (state.getOrdersModel == null ||
+                      state.getOrdersModel?.paginationStatus ==
+                          PaginationStatus.failure ||
+                      ((state.getOrdersModel?.paginationStatus ==
+                                  PaginationStatus.loading ||
+                              state.getOrdersModel?.paginationStatus ==
+                                  PaginationStatus.initial) &&
+                          state.getOrdersModel?.items.length == 0))
+                  ? Center(child: CircularProgressIndicator())
+                  : Column(
+                      children: [
+                        SizedBox(
+                          height: 11.h,
+                        ),
+                        ///////////////////
+                        buildStatusBar(),
+                        ///////////////////
+                        SizedBox(
+                          height: 50.h,
+                        ),
+                        ///////////////////
+                        Expanded(
+                          child: ListView.separated(
+                            controller: ordersScrollController,
+                            itemCount: itemsCount + 1,
+                            itemBuilder: (context, index) {
+                              if (index < itemsCount) {
+                                return InkWell(
+                                  onTap: () {
+                                    HelperFunctions.slidingNavigation(
+                                      context,
+                                      OrderDetails1(),
+                                    );
+                                  },
+                                  child: buildOrderItemWidget(context),
                                 );
                               } else {
-                                return Container();
+                                if (itemsCount > 4) {
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 10),
+                                    child: Center(
+                                      child: state.getOrdersModel!.hasReachedMax
+                                          ? Text('No More Items')
+                                          : const CircularProgressIndicator(),
+                                    ),
+                                  );
+                                } else {
+                                  return Container();
+                                }
                               }
-                            }
-                          },
-                          separatorBuilder: (context, index) {
-                            return SizedBox(
-                              height: 10.h,
-                            );
-                          },
+                            },
+                            separatorBuilder: (context, index) {
+                              return SizedBox(
+                                height: 10.h,
+                              );
+                            },
+                          ),
                         ),
-                      ),
-                      ///////////////////
-                      SizedBox(
-                        height: 10.h,
-                      ),
-                      ///////////////////
-                    ],
-                  );
-          },
+                        ///////////////////
+                        SizedBox(
+                          height: 10.h,
+                        ),
+                        ///////////////////
+                      ],
+                    );
+            },
+          ),
         ),
       ),
     );
@@ -422,67 +465,6 @@ class _OrdersPageState extends State<OrdersPage> {
             );
           },
           itemCount: 10,
-        ),
-      ),
-    );
-  }
-
-  Widget buildHeader(BuildContext context) {
-    return Container(
-      color: const Color(0xffFFFFFF),
-      height: 50,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 15),
-        child: Row(
-          children: [
-            InkWell(
-              onTap: () {
-                if (Navigator.canPop(context)) {
-                  if (Navigator.of(context).canPop()) {
-                    Navigator.of(context).pop();
-                    return;
-                  }
-                  return;
-                }
-              },
-              child: SvgPicture.asset(
-                AppAssets.backIconArrowSvg,
-                width: 11,
-              ),
-            ),
-            ///////////////////////////////////
-            Expanded(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SvgPicture.asset(
-                    AppAssets.bagsSvg,
-                    width: 23,
-                  ),
-                  ///////////////////////////
-                  SizedBox(
-                    width: 4,
-                  ),
-                  ///////////////////////////
-                  Text(
-                    LocaleKeys.orders.tr(),
-                    style: context.textTheme.bodyMedium?.mq.copyWith(
-                      color: const Color(0xff1D1D1D),
-                      letterSpacing: 0.18,
-                      fontSize: 14,
-                      height: 1.3,
-                    ),
-                  ),
-                  ///////////////////////////
-                  SizedBox(
-                    width: 15,
-                  ),
-                  ///////////////////////////
-                ],
-              ),
-            ),
-            ////////////
-          ],
         ),
       ),
     );

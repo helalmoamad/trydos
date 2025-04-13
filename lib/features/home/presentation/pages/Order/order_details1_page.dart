@@ -6,6 +6,8 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../../common/helper/helper_functions.dart';
 import '../../../../../generated/locale_keys.g.dart';
+import '../../../../app/app_widgets/trydos_app_bar/app_bar_params.dart';
+import '../../../../app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import '../../../../app/my_cached_network_image.dart';
 import 'order_details2_page.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -15,78 +17,132 @@ class OrderDetails1 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: const Color(0xffF8F8F8),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              buildHeader(context),
-              ///////////////////
-              SizedBox(
-                height: 11.h,
-              ),
-              ///////////////////
-              SizedBox(
-                height: 74,
-                child: buildFirstSection(
-                  context: context,
-                  orderNumber: 'TX44VBV',
-                  orderDate: '1/1/2025',
-                  orderAmount: '400',
-                  orderCurrency: 'USD',
+    return Container(
+      color: const Color(0xffFFFFFF),
+      child: SafeArea(
+        child: Scaffold(
+          resizeToAvoidBottomInset: true,
+          backgroundColor: const Color(0xffF8F8F8),
+          appBar: TrydosAppBar(
+            appBarParams: AppBarParams(
+              backgroundColor: const Color(0xffFFFFFF),
+              scrolledUnderElevation: 0,
+              backIconColor: Colors.black,
+              withShadow: false,
+              action: [
+                Spacer(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 12,
+                    ),
+                    SvgPicture.asset(
+                      AppAssets.bagsSvg,
+                      width: 23,
+                    ),
+                    ///////////////////////////
+                    SizedBox(
+                      width: 4,
+                    ),
+                    ///////////////////////////
+                    Text(
+                      LocaleKeys.order_details.tr(),
+                      style: context.textTheme.bodyMedium?.mq.copyWith(
+                        color: const Color(0xff1D1D1D),
+                        letterSpacing: 0.18,
+                        fontSize: 14,
+                        height: 1.3,
+                      ),
+                    ),
+                    ///////////////////////////
+                    SizedBox(
+                      width: 15,
+                    ),
+                    ///////////////////////////
+                  ],
                 ),
-              ),
-              ///////////////////
-              SizedBox(
-                height: 8.h,
-              ),
-              ///////////////////
-              SizedBox(
-                height: 74,
-                child: buildSecondSection(
-                  context: context,
-                  expectedDeliveryDate: '1/1/2025',
-                  orderStatus: 'pending',
+                Spacer(),
+                ////////////
+                SvgPicture.asset(
+                  AppAssets.orderMenuSvg,
+                  width: 20,
                 ),
-              ),
-              ///////////////////
-              SizedBox(
-                height: 8.h,
-              ),
-              ///////////////////
-              buildThirdSection(
-                context: context,
-                contactInfo: 'contactInfo',
-                recipientName: 'recipientName',
-                shippingDeliveryAddress: 'shippingDeliveryAddress',
-              ),
-              ///////////////////
-              SizedBox(
-                height: 8.h,
-              ),
-              ///////////////////
-              InkWell(
-                onTap: () {
-                  HelperFunctions.slidingNavigation(
-                    context,
-                    OrderDetails2(),
-                  );
-                },
-                child: buildFourthSection(context: context, itemsCount: '5'),
-              ),
-              ///////////////////
-              SizedBox(
-                height: 8.h,
-              ),
-              ///////////////////
-              buildFifthSection(size: 'size', color: 'color'),
-              ///////////////////
-              SizedBox(
-                height: 8.h,
-              ),
-              ///////////////////
-            ],
+                ///////////////////////////
+                SizedBox(
+                  width: 12,
+                ),
+              ],
+            ),
+          ),
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 11.h,
+                ),
+                ///////////////////
+                SizedBox(
+                  height: 74,
+                  child: buildFirstSection(
+                    context: context,
+                    orderNumber: 'TX44VBV',
+                    orderDate: '1/1/2025',
+                    orderAmount: '400',
+                    orderCurrency: 'USD',
+                  ),
+                ),
+                ///////////////////
+                SizedBox(
+                  height: 8.h,
+                ),
+                ///////////////////
+                SizedBox(
+                  height: 74,
+                  child: buildSecondSection(
+                    context: context,
+                    expectedDeliveryDate: '1/1/2025',
+                    orderStatus: 'pending',
+                  ),
+                ),
+                ///////////////////
+                SizedBox(
+                  height: 8.h,
+                ),
+                ///////////////////
+                buildThirdSection(
+                  context: context,
+                  contactInfo: 'contactInfo',
+                  recipientName: 'recipientName',
+                  shippingDeliveryAddress: 'shippingDeliveryAddress',
+                ),
+                ///////////////////
+                SizedBox(
+                  height: 8.h,
+                ),
+                ///////////////////
+                InkWell(
+                  onTap: () {
+                    HelperFunctions.slidingNavigation(
+                      context,
+                      OrderDetails2(),
+                    );
+                  },
+                  child: buildFourthSection(context: context, itemsCount: '5'),
+                ),
+                ///////////////////
+                SizedBox(
+                  height: 8.h,
+                ),
+                ///////////////////
+                buildFifthSection(size: 'size', color: 'color'),
+                ///////////////////
+                SizedBox(
+                  height: 8.h,
+                ),
+                ///////////////////
+              ],
+            ),
           ),
         ),
       ),
@@ -631,57 +687,6 @@ class OrderDetails1 extends StatelessWidget {
                   ),
                 ),
         ],
-      ),
-    );
-  }
-
-  Widget buildHeader(BuildContext context) {
-    return Container(
-      color: const Color(0xffFFFFFF),
-      height: 50,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 15),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            InkWell(
-              onTap: () {},
-              child: SvgPicture.asset(
-                AppAssets.backIconArrowSvg,
-                width: 11,
-              ),
-            ),
-            ///////////////////////////////////
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SvgPicture.asset(
-                  AppAssets.bagsSvg,
-                  width: 23,
-                ),
-                ///////////////////////////
-                SizedBox(
-                  width: 4,
-                ),
-                ///////////////////////////
-                Text(
-                  LocaleKeys.order_details.tr(),
-                  style: context.textTheme.bodyMedium?.mq.copyWith(
-                    color: const Color(0xff1D1D1D),
-                    letterSpacing: 0.18,
-                    fontSize: 14,
-                    height: 1.3,
-                  ),
-                ),
-              ],
-            ),
-            ////////////
-            SvgPicture.asset(
-              AppAssets.orderMenuSvg,
-              width: 20,
-            ),
-          ],
-        ),
       ),
     );
   }
