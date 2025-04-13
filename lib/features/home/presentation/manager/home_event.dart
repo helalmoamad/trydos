@@ -280,15 +280,18 @@ class GetHomeBoutiqesEvent extends HomeEvent {
   final String offset;
   final bool getWithPagination;
   final bool forRefresh;
-  final bool getWithPrefetchForBoutiques;
+  final bool getWithPrefetchForEachBoutiques;
+
+  final bool getWithPrefetchToStoreInMemory;
   final String categorySlug;
   final BuildContext context;
 
   const GetHomeBoutiqesEvent({
     required this.offset,
     required this.context,
+    required this.getWithPrefetchToStoreInMemory,
     this.forRefresh = false,
-    this.getWithPrefetchForBoutiques = false,
+    this.getWithPrefetchForEachBoutiques = false,
     this.getWithPagination = false,
     required this.categorySlug,
   }

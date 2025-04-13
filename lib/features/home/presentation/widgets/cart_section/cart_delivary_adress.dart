@@ -386,12 +386,15 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                                   },
                                   minHeight: 0,
                                   maxHeight: 510,
-                                  panelBuilder: (sc) =>
-                                      buildSlidingUpPanelWidgets(
-                                    context,
-                                    state,
-                                    _indexTap,
-                                    sc,
+                                  panelBuilder: (sc) => Container(
+                                    height: 93,
+                                    width: 1.sw,
+                                    child: buildSlidingUpPanelWidgets(
+                                      context,
+                                      state,
+                                      _indexTap,
+                                      sc,
+                                    ),
                                   ),
                                 ),
                               ),

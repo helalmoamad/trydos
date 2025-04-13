@@ -1581,7 +1581,7 @@ class ShippingAddressData {
         isBilling: json["is_billing"],
         isDefault: json["is_default"],
         email: json["email"],
-        cost: json["cost"],
+        cost: json["cost"].toString(),
         duration: json["duration"],
       );
 
@@ -1609,7 +1609,7 @@ class ShippingAddressData {
         "is_billing": isBilling,
         "is_default": isDefault,
         "email": email,
-        "cost": cost,
+        "cost": cost.toString(),
         "duration": duration,
       };
 }

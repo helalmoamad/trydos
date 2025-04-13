@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg_image/flutter_svg_image.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:meta/meta.dart';
@@ -18,6 +19,7 @@ class PreCachingImageBloc
   PreCachingImageBloc() : super(PreCachingImageState()) {
     on<PreCachingImageEvent>((event, emit) {});
     on<CacheImageEvent>(_onCacheImageEvent);
+    on<CacheSvgEvent>(_onCacheSvgEvent);
     on<SetImageCacheStatusEvent>(_onSetImageCacheStatusEvent);
   }
 
@@ -31,16 +33,37 @@ class PreCachingImageBloc
     return state.toJson();
   }
 
+  FutureOr<void> _onCacheSvgEvent(
+      CacheSvgEvent event, Emitter<PreCachingImageState> emit) async {
+    if (await CustomCacheManager().getFileFromCache(event.svgUrl) != null) {
+      return;
+    }
+    if (state.cachehSvgs[event.svgUrl] == true) return;
+    print(
+        "222222222222222222222222##########################!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
+    Map<String, bool> cachehSvgs = Map.of(state.cachehSvgs);
+    cachehSvgs[event.svgUrl] = false;
+    emit(PreCachingImageState(cachehSvgs: cachehSvgs));
+    await precacheImage(
+        SvgImage.cachedNetwork(
+          event.svgUrl,
+          width: event.width,
+          height: event.height,
+          cacheManager: CustomCacheManager(),
+        ),
+        event.context);
+    cachehSvgs = Map.of(state.cachehSvgs);
+    cachehSvgs[event.svgUrl] = true;
+    emit(PreCachingImageState(cachehSvgs: cachehSvgs));
+  }
+
   FutureOr<void> _onCacheImageEvent(
       CacheImageEvent event, Emitter<PreCachingImageState> emit) async {
-    print(
-        "##########################!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     if (await CustomCacheManager().getFileFromCache(event.imageUrl) != null) {
       return;
     }
     if (state.cachedImages[event.imageUrl] == true) return;
-    print(
-        "222222222222222222222222##########################!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
     Map<String, bool> cachedImages = Map.of(state.cachedImages);
     cachedImages[event.imageUrl] = false;

@@ -16,6 +16,7 @@ import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/home_state.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/service/language_service.dart';
 import 'package:tuple/tuple.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../../core/utils/theme_state.dart';
@@ -161,11 +162,13 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
                     style: textTheme.titleLarge?.rq
                         .copyWith(height: 0.86, color: const Color(0xff505050)),
                   ),
-                  MyTextWidget(
-                    '${LocaleKeys.size.tr()}',
-                    style: textTheme.titleLarge?.mq
-                        .copyWith(height: 0.86, color: const Color(0xff505050)),
-                  )
+                  LanguageService.languageCode == "ar"
+                      ? SizedBox.shrink()
+                      : MyTextWidget(
+                          '${LocaleKeys.size.tr()}',
+                          style: textTheme.titleLarge?.mq.copyWith(
+                              height: 0.86, color: const Color(0xff505050)),
+                        )
                 ],
               ),
               const SizedBox(height: 5),

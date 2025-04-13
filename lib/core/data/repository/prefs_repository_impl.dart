@@ -657,6 +657,135 @@ class PrefsRepositoryImpl extends PrefsRepository {
       _preferences.setBool(PrefsKey.requestNotificationPermission,
           requestNotificationPermission);
 
+  @override
+  String? getPrefechOfBoutiquesForEachMainCategoryInHomePage(String key) =>
+      _preferences.getString(key);
+
+  @override
+  Future<bool> setPrefechOfBoutiquesForEachMainCategoryInHomePage(
+      String key, String value) {
+    setMainCategoryHasPerfechedToRemoveItWhenOpenApp(key);
+    return _preferences.setString(key, value);
+  }
+
+  @override
+  Future<bool> setMainCategoryHasPerfechedToRemoveItWhenOpenApp(
+      String key) async {
+    List<String> list =
+        _preferences.getStringList(PrefsKey.mainCatogryPrefech) ?? [];
+    list.add(key);
+    return await _preferences.setStringList(PrefsKey.mainCatogryPrefech, list);
+  }
+
+  @override
+  Future<bool> removeMainCategoryHasPerfechedWhenOpenApp(bool allCategory) {
+    List<String> list =
+        _preferences.getStringList(PrefsKey.mainCatogryPrefech) ?? [];
+    List<String> newList =
+        _preferences.getStringList(PrefsKey.mainCatogryPrefech) ?? [];
+    _preferences.remove(PrefsKey.mainCatogryPrefech);
+    if (allCategory) {
+      list.forEach((element) => _preferences.remove(element));
+      return Future.value(true);
+    } else {
+      if (list.length > 6) {
+        for (var i = 5; i < list.length; i++) {
+          if (list[i] != "Empty") {
+            _preferences.remove(list[i]);
+            newList.remove(list[i]);
+          }
+        }
+      }
+
+      _preferences.setStringList(PrefsKey.mainCatogryPrefech, newList);
+      return Future.value(true);
+    }
+  }
+
+  @override
+  String? getPrefechOfProductsForEachBoutiqueInHomePage(String key) =>
+      _preferences.getString(key);
+
+  @override
+  Future<bool> setBoutiqueHasPerfechedToRemoveItWhenOpenApp(String key) async {
+    List<String> list =
+        _preferences.getStringList(PrefsKey.productPrefech) ?? [];
+    list.add(key);
+    return await _preferences.setStringList(PrefsKey.productPrefech, list);
+  }
+
+  @override
+  Future<bool> setPrefechOfProductsForEachBoutiqueInHomePage(
+      String key, String value) {
+    setBoutiqueHasPerfechedToRemoveItWhenOpenApp(key);
+    return _preferences.setString(key, value);
+  }
+
+  @override
+  Future<bool> removeBoutiqueHasPerfechedWhenOpenApp(bool allBoutique) {
+    List<String> list =
+        _preferences.getStringList(PrefsKey.productPrefech) ?? [];
+    List<String> newList =
+        _preferences.getStringList(PrefsKey.productPrefech) ?? [];
+    _preferences.remove(PrefsKey.productPrefech);
+    if (allBoutique) {
+      list.forEach((element) => _preferences.remove(element));
+      return Future.value(true);
+    } else {
+      if (list.length > 6) {
+        for (var i = 5; i < list.length; i++) {
+          _preferences.remove(list[i]);
+          newList.remove(list[i]);
+        }
+      }
+      _preferences.setStringList(PrefsKey.productPrefech, newList);
+      return Future.value(true);
+    }
+  }
+
+  @override
+  Future<bool> clear() {
+    return _preferences.clear();
+  }
+
+  @override
+  String? getPrefechForFiveFilterForEachBoutiqueInHomePage(String key) =>
+      _preferences.getString(key);
+
+  @override
+  Future<bool> removeFiveFilterHasPerfechedWhenOpenApp() async {
+    List<String> list =
+        await _preferences.getStringList(PrefsKey.fiveFilterPrefech) ?? [];
+    list.forEach(
+      (element) {
+        _preferences.remove(element);
+      },
+    );
+    return _preferences.remove(PrefsKey.fiveFilterPrefech);
+  }
+
+  @override
+  Future<bool> setFiveFilterHasPerfechedToRemoveItWhenOpenApp(
+      String key) async {
+    List<String> list =
+        _preferences.getStringList(PrefsKey.fiveFilterPrefech) ?? [];
+    list.add(key);
+    return await _preferences.setStringList(PrefsKey.fiveFilterPrefech, list);
+  }
+
+  @override
+  Future<bool> setPrefechForFiveFilterForEachBoutiqueInHomePage(
+      String key, String value) {
+    setFiveFilterHasPerfechedToRemoveItWhenOpenApp(key);
+    return _preferences.setString(key, value);
+  }
+
+  @override
+  List<String>? getFiveFilterForEachBoutiqueHasPrefechInHomePage() {
+    List<String> list =
+        _preferences.getStringList(PrefsKey.fiveFilterPrefech) ?? [];
+    return list;
+  }
 // @override
 
 // List<Map<String,dynamic>> get localMessages {

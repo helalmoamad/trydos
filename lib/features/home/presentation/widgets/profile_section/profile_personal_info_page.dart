@@ -73,7 +73,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
         homeBloc.state.userInfo?.alternativePhone ?? "";
     emailController.text = homeBloc.state.userInfo?.email ?? "";
     changeGender.value =
-        (homeBloc.state.userInfo?.gender?.name.toString()) ?? null;
+        (homeBloc.state.userInfo?.gender?.name.toString()) ?? "null";
     animationController =
         AnimationController(duration: Duration(seconds: 1), vsync: this);
     if (PhoneController.text.length > 0) {
@@ -152,13 +152,14 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                     if (!formKey.currentState!.validate()) {
                                       return;
                                     }
-                                    String genderIndex = "3";
+                                    String? genderIndex;
                                     if (changeGender.value == "Man") {
                                       genderIndex = "1";
                                     } else if (changeGender.value!
                                         .startsWith("Wom")) {
                                       genderIndex = "2";
-                                    } else {
+                                    } else if (changeGender.value!
+                                        .startsWith("Other")) {
                                       genderIndex = "3";
                                     }
                                     homeBloc.add(UpdateProfileEvent(
