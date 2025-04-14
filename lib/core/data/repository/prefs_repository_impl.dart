@@ -671,19 +671,23 @@ class PrefsRepositoryImpl extends PrefsRepository {
   @override
   Future<bool> setMainCategoryHasPerfechedToRemoveItWhenOpenApp(
       String key) async {
-    List<String> list =
-        _preferences.getStringList(PrefsKey.mainCatogryPrefech) ?? [];
+    List<String> list = _preferences
+            .getStringList(PrefsKey.mainCatogryForEachBoutiquePrefech) ??
+        [];
     list.add(key);
-    return await _preferences.setStringList(PrefsKey.mainCatogryPrefech, list);
+    return await _preferences.setStringList(
+        PrefsKey.mainCatogryForEachBoutiquePrefech, list);
   }
 
   @override
   Future<bool> removeMainCategoryHasPerfechedWhenOpenApp(bool allCategory) {
-    List<String> list =
-        _preferences.getStringList(PrefsKey.mainCatogryPrefech) ?? [];
-    List<String> newList =
-        _preferences.getStringList(PrefsKey.mainCatogryPrefech) ?? [];
-    _preferences.remove(PrefsKey.mainCatogryPrefech);
+    List<String> list = _preferences
+            .getStringList(PrefsKey.mainCatogryForEachBoutiquePrefech) ??
+        [];
+    List<String> newList = _preferences
+            .getStringList(PrefsKey.mainCatogryForEachBoutiquePrefech) ??
+        [];
+    _preferences.remove(PrefsKey.mainCatogryForEachBoutiquePrefech);
     if (allCategory) {
       list.forEach((element) => _preferences.remove(element));
       return Future.value(true);
@@ -697,7 +701,8 @@ class PrefsRepositoryImpl extends PrefsRepository {
         }
       }
 
-      _preferences.setStringList(PrefsKey.mainCatogryPrefech, newList);
+      _preferences.setStringList(
+          PrefsKey.mainCatogryForEachBoutiquePrefech, newList);
       return Future.value(true);
     }
   }
@@ -785,6 +790,20 @@ class PrefsRepositoryImpl extends PrefsRepository {
     List<String> list =
         _preferences.getStringList(PrefsKey.fiveFilterPrefech) ?? [];
     return list;
+  }
+
+  @override
+  String? getPrefechOfMainCategoryInHomePage() =>
+      _preferences.getString(PrefsKey.mainCatogryPrefech);
+
+  @override
+  Future<bool> removeMainCategoryWhenOpenApp() {
+    return _preferences.remove(PrefsKey.mainCatogryPrefech);
+  }
+
+  @override
+  Future<bool> setPrefechOfMainCategoryInHomePage(String value) {
+    return _preferences.setString(PrefsKey.mainCatogryPrefech, value);
   }
 // @override
 

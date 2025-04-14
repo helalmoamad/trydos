@@ -10,13 +10,15 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/search/presentation/widgets/search_history_chip.dart';
 
 import '../../../../common/constant/design/assets_provider.dart';
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -166,12 +168,12 @@ class _SearchHistoryState extends State<SearchHistory> {
                                 widget.appearTrendingAndHistory.value = true;
 
                                 Filter filters =
-                                    BlocProvider.of<HomeBloc>(context)
+                                    BlocProvider.of<BoutiqueBloc>(context)
                                             .state
                                             .choosedFiltersByUser['search']
                                             ?.filters ??
                                         Filter();
-                                BlocProvider.of<HomeBloc>(context)
+                                BlocProvider.of<BoutiqueBloc>(context)
                                     .add(ChangeAppliedFiltersEvent(
                                   boutiqueSlug: 'search',
                                   filtersAppliedByUser: GetProductFiltersModel(
@@ -180,7 +182,7 @@ class _SearchHistoryState extends State<SearchHistory> {
                                     searchText: _items[index],
                                   )),
                                 ));
-                                BlocProvider.of<HomeBloc>(context).add(
+                                BlocProvider.of<BoutiqueBloc>(context).add(
                                     GetProductsWithFiltersEvent(
                                         offset: 1,
                                         boutiqueSlug: 'search',
@@ -188,7 +190,7 @@ class _SearchHistoryState extends State<SearchHistory> {
                                         fromSearch: true,
                                         searchText: _items[index]));
 
-                                BlocProvider.of<HomeBloc>(context).add(
+                                BlocProvider.of<BoutiqueBloc>(context).add(
                                     GetProductFiltersEvent(
                                         fromHomePageSearch: true,
                                         boutiqueSlug: 'search',

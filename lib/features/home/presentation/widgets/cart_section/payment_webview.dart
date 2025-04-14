@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import '../../../../app/trydos_shimmer_loading.dart';
-import '../../manager/home_bloc.dart';
+import '../../manager/homeBloc/home_bloc.dart';
 
 class PaymentWebview extends StatefulWidget {
   final String url;

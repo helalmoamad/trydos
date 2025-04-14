@@ -5,15 +5,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/config/theme/typography.dart';
-import 'package:trydos/features/home/presentation/manager/home_state.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import '../../../../../common/constant/constant.dart';
 import '../../../../../common/helper/helper_functions.dart';
 import '../../../../../core/data/model/pagination_model.dart';
 import '../../../../../generated/locale_keys.g.dart';
 import '../../../../app/my_cached_network_image.dart';
 import '../../../data/models/get_orders_model.dart';
-import '../../manager/home_bloc.dart';
-import '../../manager/home_event.dart';
+import '../../manager/homeBloc/home_bloc.dart';
+import '../../manager/homeBloc/home_event.dart';
 import 'order_details1_page.dart';
 
 class OrdersPage extends StatefulWidget {

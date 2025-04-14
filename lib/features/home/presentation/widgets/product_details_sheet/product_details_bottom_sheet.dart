@@ -22,8 +22,8 @@ import 'package:trydos/features/authentication/presentation/manager/auth_bloc.da
 import 'package:trydos/features/authentication/presentation/pages/first_registeration_page.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
-import 'package:trydos/features/home/presentation/manager/home_event.dart';
-import 'package:trydos/features/home/presentation/manager/home_state.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_comments_content.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_header.dart';
@@ -40,7 +40,7 @@ import '../../../../../service/firebase_analytics_service/analytics_const/analyt
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../../trydos_application.dart';
-import '../../manager/home_bloc.dart';
+import '../../manager/homeBloc/home_bloc.dart';
 import '../product_details_body/product_details_image_widget.dart';
 import '../../../data/models/get_product_listing_without_filters_model.dart'
     as productListingModel;

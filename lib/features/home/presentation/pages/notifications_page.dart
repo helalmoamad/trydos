@@ -9,9 +9,9 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/config/theme/typography.dart';
 
 import '../../data/models/get_user_notifications_model.dart';
-import '../manager/home_bloc.dart';
-import '../manager/home_event.dart';
-import '../manager/home_state.dart';
+import '../manager/homeBloc/home_bloc.dart';
+import '../manager/homeBloc/home_event.dart';
+import '../manager/homeBloc/home_state.dart';
 
 class NotificationsPage extends StatefulWidget {
   const NotificationsPage({super.key});

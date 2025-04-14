@@ -56,6 +56,11 @@ abstract class PrefsRepository {
   String? get sessionId;
   String? get otpCode;
   int? get getdurtion;
+
+  String? getPrefechOfMainCategoryInHomePage();
+  Future<bool> setPrefechOfMainCategoryInHomePage(String value);
+  Future<bool> removeMainCategoryWhenOpenApp();
+
   String? getPrefechOfBoutiquesForEachMainCategoryInHomePage(String key);
   Future<bool> setPrefechOfBoutiquesForEachMainCategoryInHomePage(
       String key, String value);

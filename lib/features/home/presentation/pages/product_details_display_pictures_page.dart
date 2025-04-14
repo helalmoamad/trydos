@@ -9,8 +9,8 @@ import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.da
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as listing;
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';

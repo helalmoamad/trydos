@@ -64,7 +64,9 @@ abstract class PrefsKey {
 
   static const viewedProducts = r'__$__viewedProducts__$__';
   static const viewedBoutiques = r'__$__Boutiques__$__';
-  static const mainCatogryPrefech = r'__$__MainCatogryPrefech__$__';
+  static const mainCatogryForEachBoutiquePrefech =
+      r'__$__mainCatogryForEachBoutiquePrefech__$__';
   static const productPrefech = r'__$__ProductPrefech__$__';
   static const fiveFilterPrefech = r'__$__ProductPrefech__$__';
+  static const mainCatogryPrefech = r'__$__MainCatogryPrefech__$__';
 }

@@ -7,8 +7,10 @@ import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/common/test_utils/widgets_keys.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_state.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/categories_filter_list.dart';
 import 'package:trydos/features/search/presentation/pages/search_page.dart';
 import 'package:trydos/main.dart' as app;
@@ -117,12 +119,12 @@ void main() {
       expect(isFound, isTrue);
 
       ////////////// Get Boutique Id  /////////////////////////
-      HomeBloc homeBloc = GetIt.I<HomeBloc>();
-      HomeState homeState = homeBloc.state;
+      BoutiqueBloc boutiqueBloc = GetIt.I<BoutiqueBloc>();
+      BoutiqueState boutiqueState = BoutiqueState();
 
       String key1 = 'search';
       Filter filters =
-          homeState.getProductFiltersModel[key1]?.filters ?? Filter();
+          boutiqueState.getProductFiltersModel[key1]?.filters ?? Filter();
 
       String boutiqueId = filters.boutiques![index].id.toString();
 
@@ -189,11 +191,12 @@ void main() {
 
       print('key2 : $key2');
 
-      homeState = homeBloc.state;
+      boutiqueState = BoutiqueState();
 
-      Filter? filters2 = homeState.getProductFiltersModel[key2]?.filters != null
-          ? homeState.getProductFiltersModel[key2]?.filters ?? Filter()
-          : Filter();
+      Filter? filters2 =
+          boutiqueState.getProductFiltersModel[key2]?.filters != null
+              ? boutiqueState.getProductFiltersModel[key2]?.filters ?? Filter()
+              : Filter();
 
       print(
           'categories length : ${filters2.categories == null ? null : filters2.categories!.length}');

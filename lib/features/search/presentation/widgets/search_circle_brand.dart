@@ -9,12 +9,15 @@ import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_event.dart';
-import 'package:trydos/features/home/presentation/manager/home_state.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -39,13 +42,13 @@ class SearchChipBrand extends StatefulWidget {
 
 class _SearchChipBrandState extends State<SearchChipBrand> {
   final ScrollController scrollController = ScrollController();
-  late HomeBloc homeBloc;
+  late BoutiqueBloc boutiqueBloc;
 
   List<String> selectedBrandSlugs = [];
 
   @override
   void initState() {
-    homeBloc = BlocProvider.of<HomeBloc>(context);
+    boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
 
     super.initState();
   }
@@ -64,7 +67,7 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
           null, null, null, null, null, null, null,
           error: error.toString());
     };
-    return BlocBuilder<HomeBloc, HomeState>(
+    return BlocBuilder<BoutiqueBloc, BoutiqueState>(
       builder: (context, state) {
         String key = 'search';
         Filter filters = state.getProductFiltersModel[key]?.filters ?? Filter();
@@ -129,19 +132,16 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
                                 const EdgeInsets.symmetric(horizontal: 10.0),
                             scrollDirection: Axis.horizontal,
                             itemBuilder: (context, index) {
-                              bool isSelected = homeBloc
-                                      .state
-                                      .choosedFiltersByUser[key]
-                                      ?.filters
-                                      ?.brands
+                              bool isSelected = state.choosedFiltersByUser[key]
+                                      ?.filters?.brands
                                       ?.any((element) =>
                                           element.id ==
                                           filters.brands?[index].id) ??
                                   false;
                               return InkWell(
                                 onTap: () {
-                                  Filter? prevChoosedFilterToAddToIt = homeBloc
-                                      .state.choosedFiltersByUser[key]?.filters;
+                                  Filter? prevChoosedFilterToAddToIt =
+                                      state.choosedFiltersByUser[key]?.filters;
                                   if (prevChoosedFilterToAddToIt == null) {
                                     prevChoosedFilterToAddToIt = Filter();
                                   }
@@ -176,7 +176,7 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
                                           filters.brands![index]
                                         ]);
                                   }
-                                  homeBloc.add(ChangeSelectedFiltersEvent(
+                                  boutiqueBloc.add(ChangeSelectedFiltersEvent(
                                       fromHomePageSearch: true,
                                       requestToUpdateFilters:
                                           (widget.controller.text.length > 2)
@@ -188,13 +188,15 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
                                               filters:
                                                   prevChoosedFilterToAddToIt)));
                                   if (widget.controller.text.length > 2) {
-                                    homeBloc.add(GetProductsWithFiltersEvent(
-                                        fromChoosed: true,
-                                        offset: 1,
-                                        boutiqueSlug: 'search',
-                                        resetChoosedFilters: false,
-                                        fromSearch: true,
-                                        searchText: widget.controller.text));
+                                    boutiqueBloc.add(
+                                        GetProductsWithFiltersEvent(
+                                            fromChoosed: true,
+                                            offset: 1,
+                                            boutiqueSlug: 'search',
+                                            resetChoosedFilters: false,
+                                            fromSearch: true,
+                                            searchText:
+                                                widget.controller.text));
                                   }
                                 },
                                 child: Stack(

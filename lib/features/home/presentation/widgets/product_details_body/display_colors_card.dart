@@ -17,7 +17,7 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
-import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/language_service.dart';
 
@@ -27,7 +27,7 @@ import '../../../../../service/firebase_analytics_service/analytics_const/analyt
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../data/models/get_product_listing_without_filters_model.dart'
     as productListingModel;
-import '../../manager/home_bloc.dart';
+import '../../manager/homeBloc/home_bloc.dart';
 import '../product_listing/product_listing_image_widget.dart';
 
 class DisplayColorsCard extends StatefulWidget {

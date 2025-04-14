@@ -38,8 +38,8 @@ import 'package:trydos/features/chat/presentation/widgets/chat_widgets/reply_mes
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/reply_on_me_message.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/shared_product_message.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/video_message.dart';
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../common/test_utils/widgets_keys.dart';

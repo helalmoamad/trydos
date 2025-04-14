@@ -23,9 +23,11 @@ import 'package:trydos/features/authentication/presentation/manager/auth_bloc.da
 import 'package:trydos/features/authentication/presentation/widgets/insert_phone_tab.dart';
 import 'package:trydos/features/authentication/presentation/widgets/verification_methods.dart';
 import 'package:trydos/features/authentication/presentation/widgets/verify_otp.dart';
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_event.dart';
-import 'package:trydos/features/home/presentation/manager/home_state.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/cart_delivary_adress.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/cart_sheet_header.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/product_collection_in_cart_page1.dart';
@@ -50,6 +52,7 @@ class _CartPageState extends State<CartPage> {
   late HomeBloc homeBloc;
 
   late AppBloc appBloc;
+  late BoutiqueBloc boutiqueBloc;
   String phoneNumber = '';
   int isVisWhatsApp = 0;
   late AuthBloc authBloc;
@@ -70,7 +73,7 @@ class _CartPageState extends State<CartPage> {
     appBloc = BlocProvider.of<AppBloc>(context);
     authBloc = BlocProvider.of<AuthBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
-
+    boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
     homeBloc.add(GetCustomerAddressesEvent());
     homeBloc.add(GetCartItemEvent());
     fromForGroundNotification =
@@ -116,7 +119,7 @@ class _CartPageState extends State<CartPage> {
           }
 
           appBloc.add(ChangeBasePage(0));
-          homeBloc.add(ResetAllSelectedAppliedFilterEvent());
+          boutiqueBloc.add(ResetAllSelectedAppliedFilterEvent());
           return false;
         } else {
           appBloc.add(ChangeBasePage(0));
@@ -416,7 +419,7 @@ class _CartPageState extends State<CartPage> {
                                         // يسمح بالإغلاق إذا لم تنطبق أي من الشروط
 
                                         appBloc.add(ChangeBasePage(0));
-                                        homeBloc.add(
+                                        boutiqueBloc.add(
                                             ResetAllSelectedAppliedFilterEvent());
                                         return;
                                       } else {
@@ -1651,7 +1654,7 @@ class _CartPageState extends State<CartPage> {
                                                                                           // يسمح بالإغلاق إذا لم تنطبق أي من الشروط
 
                                                                                           appBloc.add(ChangeBasePage(0));
-                                                                                          homeBloc.add(ResetAllSelectedAppliedFilterEvent());
+                                                                                          boutiqueBloc.add(ResetAllSelectedAppliedFilterEvent());
                                                                                           return;
                                                                                         } else {
                                                                                           appBloc.add(ChangeBasePage(0));

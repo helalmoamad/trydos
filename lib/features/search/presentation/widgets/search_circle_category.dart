@@ -139,10 +139,13 @@ import 'package:trydos/core/utils/extensions/string.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/svg_network_widget.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
 
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_event.dart';
-import 'package:trydos/features/home/presentation/manager/home_state.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../app/my_text_widget.dart';
@@ -168,18 +171,18 @@ class SearchChipCategory extends StatefulWidget {
 
 class _SearchChipCategoryState extends State<SearchChipCategory> {
   final ScrollController scrollController = ScrollController();
-  late HomeBloc homeBloc;
+  late BoutiqueBloc boutiqueBloc;
 
   List<String> selectedCaregorySlugs = [];
   @override
   void initState() {
-    homeBloc = BlocProvider.of<HomeBloc>(context);
+    boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<HomeBloc, HomeState>(
+    return BlocBuilder<BoutiqueBloc, BoutiqueState>(
       builder: (context, state) {
         String key = 'search';
         Filter filters = state.getProductFiltersModel[key]?.filters ?? Filter();
@@ -248,8 +251,8 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                               bool isChildCategorySlug = false;
                               filters.categories?[index]?.subCategories
                                   ?.forEach((elements) {
-                                if (homeBloc.state.choosedFiltersByUser[key]
-                                        ?.filters?.categories
+                                if (state.choosedFiltersByUser[key]?.filters
+                                        ?.categories
                                         ?.any((element) =>
                                             (element.slug == elements.slug)) ??
                                     false) {
@@ -257,11 +260,8 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                                 }
                                 ;
                               });
-                              bool isSelected = homeBloc
-                                      .state
-                                      .choosedFiltersByUser[key]
-                                      ?.filters
-                                      ?.categories
+                              bool isSelected = state.choosedFiltersByUser[key]
+                                      ?.filters?.categories
                                       ?.any((element) => (element.id ==
                                           filters.categories?[index].id)) ??
                                   false;
@@ -269,11 +269,8 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                                 children: [
                                   InkWell(
                                     onTap: () {
-                                      Filter? prevChoosedFilterToAddToIt =
-                                          homeBloc
-                                              .state
-                                              .choosedFiltersByUser[key]
-                                              ?.filters;
+                                      Filter? prevChoosedFilterToAddToIt = state
+                                          .choosedFiltersByUser[key]?.filters;
                                       if (prevChoosedFilterToAddToIt == null) {
                                         prevChoosedFilterToAddToIt = Filter();
                                       }
@@ -337,7 +334,7 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                                               filters.categories![index]
                                             ]);
                                       }
-                                      homeBloc.add(ChangeSelectedFiltersEvent(
+                                      boutiqueBloc.add(ChangeSelectedFiltersEvent(
                                           fromHomePageSearch: true,
                                           boutiqueSlug: key,
                                           requestToUpdateFilters:
@@ -350,7 +347,7 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                                                   filters:
                                                       prevChoosedFilterToAddToIt)));
                                       if (widget.controller.text.length > 2) {
-                                        homeBloc.add(
+                                        boutiqueBloc.add(
                                             GetProductsWithFiltersEvent(
                                                 fromChoosed: true,
                                                 offset: 1,
@@ -430,8 +427,7 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                                                 horizontal: 10.0),
                                             scrollDirection: Axis.horizontal,
                                             itemBuilder: (context, indexs) {
-                                              bool isSubSelected = homeBloc
-                                                      .state
+                                              bool isSubSelected = state
                                                       .choosedFiltersByUser[key]
                                                       ?.filters
                                                       ?.categories
@@ -448,8 +444,7 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                                                 onTap: () {
                                                   Filter?
                                                       prevChoosedFilterToAddToIt =
-                                                      homeBloc
-                                                          .state
+                                                      state
                                                           .choosedFiltersByUser[
                                                               key]
                                                           ?.filters;
@@ -541,7 +536,7 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                                                                   .slug)
                                                         ]);
                                                   }
-                                                  homeBloc.add(ChangeSelectedFiltersEvent(
+                                                  boutiqueBloc.add(ChangeSelectedFiltersEvent(
                                                       fromHomePageSearch: true,
                                                       boutiqueSlug: key,
                                                       requestToUpdateFilters:
@@ -557,7 +552,7 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                                                   if (widget.controller.text
                                                           .length >
                                                       2) {
-                                                    homeBloc.add(
+                                                    boutiqueBloc.add(
                                                         GetProductsWithFiltersEvent(
                                                             fromChoosed: true,
                                                             offset: 1,

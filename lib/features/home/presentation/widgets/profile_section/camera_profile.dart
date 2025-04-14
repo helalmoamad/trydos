@@ -9,8 +9,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/widgets/profile_section/crope_image.dart';
 
 class CameraProfile extends StatefulWidget {

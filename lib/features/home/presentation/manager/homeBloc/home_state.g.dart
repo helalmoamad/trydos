@@ -46,11 +46,6 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       ),
       updateProfileStatus: $enumDecodeNullable(
           _$UpdateProfileStatusEnumMap, json['updateProfileStatus']),
-      searchWithFilterOffset:
-          (json['searchWithFilterOffset'] as Map<String, dynamic>?)?.map(
-        (k, e) => MapEntry(
-            k, (e as List<dynamic>).map((e) => (e as num).toDouble()).toList()),
-      ),
       getProductDetailWithoutSimilarRelatedProductsStatus: $enumDecodeNullable(
               _$GetProductDetailWithoutSimilarRelatedProductsStatusEnumMap,
               json['getProductDetailWithoutSimilarRelatedProductsStatus']) ??
@@ -59,10 +54,6 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               _$GetStartingSettingsStatusEnumMap,
               json['getStartingSettingsStatus']) ??
           GetStartingSettingsStatus.init,
-      getMainCategoriesStatus: $enumDecodeNullable(
-              _$GetMainCategoriesStatusEnumMap,
-              json['getMainCategoriesStatus']) ??
-          GetMainCategoriesStatus.init,
       getCommentForProductStatus: $enumDecodeNullable(
               _$GetCommentForProductStatusEnumMap,
               json['getCommentForProductStatus']) ??
@@ -128,38 +119,6 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           ? null
           : GetOldCartModel.fromJson(
               json['getOldCartModel'] as Map<String, dynamic>),
-      isGettingProductListingWithPagination:
-          json['isGettingProductListingWithPagination'] as bool? ?? false,
-      isGettingProductListingWithPaginationForAppearProduct:
-          json['isGettingProductListingWithPaginationForAppearProduct']
-                  as bool? ??
-              false,
-      getProductFiltersStatus:
-          (json['getProductFiltersStatus'] as Map<String, dynamic>?)?.map(
-                (k, e) => MapEntry(
-                    k, $enumDecode(_$GetProductFiltersStatusEnumMap, e)),
-              ) ??
-              const {},
-      getProductFiltersModel:
-          (json['getProductFiltersModel'] as Map<String, dynamic>?)?.map(
-                (k, e) => MapEntry(
-                    k,
-                    e == null
-                        ? null
-                        : GetProductFiltersModel.fromJson(
-                            e as Map<String, dynamic>)),
-              ) ??
-              const {},
-      choosedFiltersByUser:
-          (json['choosedFiltersByUser'] as Map<String, dynamic>?)?.map(
-                (k, e) => MapEntry(
-                    k,
-                    e == null
-                        ? null
-                        : GetProductFiltersModel.fromJson(
-                            e as Map<String, dynamic>)),
-              ) ??
-              const {},
       getAddressByCoordinatesModel: json['getAddressByCoordinatesModel'] == null
           ? null
           : GetAddressByCoordinatesModel.fromJson(
@@ -205,16 +164,6 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               : CheckAvailabilityProductCartModel.fromJson(
                   json['checkAvailabilityProductCartModel']
                       as Map<String, dynamic>),
-      appliedFiltersByUser:
-          (json['appliedFiltersByUser'] as Map<String, dynamic>?)?.map(
-                (k, e) => MapEntry(
-                    k,
-                    e == null
-                        ? null
-                        : GetProductFiltersModel.fromJson(
-                            e as Map<String, dynamic>)),
-              ) ??
-              const {},
       currentPage: (json['currentPage'] as num?)?.toInt() ?? 0,
       productStatus: (json['productStatus'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(
@@ -228,7 +177,6 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       getCustomerAddressStatus: $enumDecodeNullable(
           _$GetCustomerAddressesStatusEnumMap,
           json['getCustomerAddressStatus']),
-      theReplyFromGemini: json['theReplyFromGemini'] as String?,
       productITemForCart:
           (json['productITemForCart'] as Map<String, dynamic>?)?.map(
                 (k, e) =>
@@ -239,11 +187,6 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           ? null
           : GetCartShippingItemsModel.fromJson(
               json['getCartShippingItemsModel'] as Map<String, dynamic>),
-      reRequestTheseBoutiques:
-          (json['reRequestTheseBoutiques'] as Map<String, dynamic>?)?.map(
-                (k, e) => MapEntry(k, e as bool),
-              ) ??
-              const {},
       getCommentForProductModel: (json['getCommentForProductModel']
                   as Map<String, dynamic>?)
               ?.map(
@@ -278,32 +221,10 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               ?.map((e) => Cart.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
-      getProductListingWithFiltersPaginationModels: (json[
-                      'getProductListingWithFiltersPaginationModels']
-                  as Map<String, dynamic>?)
-              ?.map(
-            (k, e) => MapEntry(
-                k,
-                e == null
-                    ? null
-                    : PaginationModel<Products>.fromJson(
-                        e as Map<String, dynamic>,
-                        (value) =>
-                            Products.fromJson(value as Map<String, dynamic>))),
-          ) ??
-          const {},
       getStoriesForProductStatus: $enumDecodeNullable(
               _$GetStoriesForProductStatusEnumMap,
               json['getStoriesForProductStatus']) ??
           GetStoriesForProductStatus.init,
-      mainCategoriesResponseModel: json['mainCategoriesResponseModel'] == null
-          ? null
-          : MainCategoriesResponseModel.fromJson(
-              json['mainCategoriesResponseModel'] as Map<String, dynamic>),
-      sendRequestToGeminiStatus: $enumDecodeNullable(
-              _$SendRequestToGeminiStatusEnumMap,
-              json['sendRequestToGeminiStatus']) ??
-          SendRequestToGeminiStatus.init,
       currentColorSizeForCart:
           (json['currentColorSizeForCart'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
@@ -329,26 +250,16 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       searchHistory: (json['searchHistory'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
-      cashedOrginalBoutique: json['cashedOrginalBoutique'] as bool? ?? false,
       currentAddressChoosed: (json['currentAddressChoosed'] as num?)?.toInt(),
       getAllowedCountriesModel: json['getAllowedCountriesModel'] == null
           ? null
           : GetAllowedCountriesModel.fromJson(
               json['getAllowedCountriesModel'] as Map<String, dynamic>),
-      currentIndexForMainCategoryEvent:
-          (json['currentIndexForMainCategoryEvent'] as num?)?.toInt() ?? -1,
-      prefAppliedFilterForExtendFilter:
-          json['prefAppliedFilterForExtendFilter'] == null
-              ? null
-              : Filter.fromJson(json['prefAppliedFilterForExtendFilter']
-                  as Map<String, dynamic>),
       cartIdsHurryUPTimerStarted:
           (json['cartIdsHurryUPTimerStarted'] as Map<String, dynamic>?)?.map(
                 (k, e) => MapEntry(k, (e as num).toInt()),
               ) ??
               const {},
-      fromSearchForSearchWithGemini:
-          json['fromSearchForSearchWithGemini'] as bool? ?? false,
       listitemForAddToCart: (json['listitemForAddToCart'] as List<dynamic>?)
           ?.map((e) => ImageForAddToCart.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -360,8 +271,6 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           ? null
           : GetCurrencyForCountryModel.fromJson(
               json['getCurrencyForCountryModel'] as Map<String, dynamic>),
-      isExpandedForListingPage:
-          json['isExpandedForListingPage'] as bool? ?? false,
       popularSearchTerm: (json['popularSearchTerm'] as List<dynamic>?)
           ?.map((e) => PopularSearchTerm.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -393,11 +302,6 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           CheckAvailabilityProductCartStatus.init,
       getAddressByTextStatus: $enumDecodeNullable(
           _$GetAddressByTextStatusEnumMap, json['getAddressByTextStatus']),
-      countOfProductExpectedByFiltering:
-          (json['countOfProductExpectedByFiltering'] as Map<String, dynamic>?)
-              ?.map(
-        (k, e) => MapEntry(k, (e as num).toInt()),
-      ),
       getCartItemsStatus: $enumDecodeNullable(
               _$GetCartItemsStatusEnumMap, json['getCartItemsStatus']) ??
           GetCartItemsStatus.init,
@@ -427,40 +331,10 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
                             Products.fromJson(value as Map<String, dynamic>))),
               ) ??
               const {},
-      getProductListingWithFiltersPaginationWithPrefetchModels:
-          (json['getProductListingWithFiltersPaginationWithPrefetchModels']
-                      as Map<String, dynamic>?)
-                  ?.map(
-                (k, e) => MapEntry(
-                    k,
-                    e == null
-                        ? null
-                        : PaginationModel<Products>.fromJson(
-                            e as Map<String, dynamic>,
-                            (value) => Products.fromJson(
-                                value as Map<String, dynamic>))),
-              ) ??
-              const {},
-      getProductFiltersWithPrefetchModel:
-          (json['getProductFiltersWithPrefetchModel'] as Map<String, dynamic>?)
-                  ?.map(
-                (k, e) => MapEntry(
-                    k,
-                    e == null
-                        ? null
-                        : GetProductFiltersModel.fromJson(
-                            e as Map<String, dynamic>)),
-              ) ??
-              const {},
       currentSelectedColorForEveryProduct:
           (json['currentSelectedColorForEveryProduct'] as Map<String, dynamic>?)
                   ?.map(
                 (k, e) => MapEntry(k, (e as num).toInt()),
-              ) ??
-              const {},
-      boutiquesThatDidPrefetch:
-          (json['boutiquesThatDidPrefetch'] as Map<String, dynamic>?)?.map(
-                (k, e) => MapEntry(k, e as bool),
               ) ??
               const {},
       notificationTypeForProductModel:
@@ -469,13 +343,6 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               : NotificationTypeForProductModel.fromJson(
                   json['notificationTypeForProductModel']
                       as Map<String, dynamic>),
-      sizeAndColorFilterinTextToSearch:
-          (json['sizeAndColorFilterinTextToSearch'] as Map<String, dynamic>?)
-                  ?.map(
-                (k, e) => MapEntry(
-                    k, (e as List<dynamic>).map((e) => e as String).toList()),
-              ) ??
-              const {},
       getNotificationTypeProductStatus: $enumDecodeNullable(
           _$GetNotificationTypeProductStatusEnumMap,
           json['getNotificationTypeProductStatus']),
@@ -495,13 +362,6 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
                   ?.map((e) => e as String)
                   .toList() ??
               const [],
-      boutiquesForEveryMainCategoryThatDidPrefetch:
-          (json['boutiquesForEveryMainCategoryThatDidPrefetch']
-                      as Map<String, dynamic>?)
-                  ?.map(
-                (k, e) => MapEntry(k, e as bool),
-              ) ??
-              const {},
       cachedProductWithoutRelatedProductsModel:
           (json['cachedProductWithoutRelatedProductsModel']
                       as Map<String, dynamic>?)
@@ -510,18 +370,6 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
                     k,
                     GetProductDetailWithoutRelatedProductsModel.fromJson(
                         e as Map<String, dynamic>)),
-              ) ??
-              const {},
-      getHomeBoutiquesPaginationObjectByMainCategory:
-          (json['getHomeBoutiquesPaginationObjectByMainCategory']
-                      as Map<String, dynamic>?)
-                  ?.map(
-                (k, e) => MapEntry(
-                    k,
-                    PaginationModel<boutiques_model.Boutique>.fromJson(
-                        e as Map<String, dynamic>,
-                        (value) => boutiques_model.Boutique.fromJson(
-                            value as Map<String, dynamic>))),
               ) ??
               const {},
       getFirebaseSettingForNotificationStatus: $enumDecodeNullable(
@@ -536,7 +384,6 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
     );
 
 Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
-      'boutiquesThatDidPrefetch': instance.boutiquesThatDidPrefetch,
       'getFirebaseSettingForNotificationStatus':
           _$GetFirebaseSettingForNotificationStatusEnumMap[
               instance.getFirebaseSettingForNotificationStatus],
@@ -544,8 +391,6 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           instance.firebaseSettingForNotificationModel?.toJson(),
       'updateProfileStatus':
           _$UpdateProfileStatusEnumMap[instance.updateProfileStatus],
-      'boutiquesForEveryMainCategoryThatDidPrefetch':
-          instance.boutiquesForEveryMainCategoryThatDidPrefetch,
       'getStartingSettingsStatus': _$GetStartingSettingsStatusEnumMap[
           instance.getStartingSettingsStatus]!,
       'currentSelectedColorForEveryProduct':
@@ -565,13 +410,9 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           _$EnableAddToCardAfterChangeVariantZeroEnumMap[
               instance.enableAddToCardAfterChangeVariantZero],
       'isChangedvariationWhenQtyZero': instance.isChangedvariationWhenQtyZero,
-      'sizeAndColorFilterinTextToSearch':
-          instance.sizeAndColorFilterinTextToSearch,
       'convertItemFromOldcartToCartStatus':
           _$ConvertItemFromOldcartToCartStatusEnumMap[
               instance.convertItemFromOldcartToCartStatus],
-      'getMainCategoriesStatus':
-          _$GetMainCategoriesStatusEnumMap[instance.getMainCategoriesStatus]!,
       'getNotificationTypeProductStatus':
           _$GetNotificationTypeProductStatusEnumMap[
               instance.getNotificationTypeProductStatus],
@@ -634,29 +475,11 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           _$EditAddressToOrderStatusEnumMap[instance.editAddressToOrderStatus],
       'addAddressToOrderStatus':
           _$AddAddressToOrderStatusEnumMap[instance.addAddressToOrderStatus],
-      'getProductFiltersStatus': instance.getProductFiltersStatus
-          .map((k, e) => MapEntry(k, _$GetProductFiltersStatusEnumMap[e]!)),
-      'getProductListingWithFiltersPaginationModels': instance
-          .getProductListingWithFiltersPaginationModels
-          .map((k, e) => MapEntry(
-              k,
-              e?.toJson(
-                (value) => value.toJson(),
-              ))),
       'listOfAddressInfoClassToSave': instance.listOfAddressInfoClassToSave
           ?.map((e) => e.toJson())
           .toList(),
       'getCurrencyForCountryModel':
           instance.getCurrencyForCountryModel?.toJson(),
-      'getProductListingWithFiltersPaginationWithPrefetchModels': instance
-          .getProductListingWithFiltersPaginationWithPrefetchModels
-          .map((k, e) => MapEntry(
-              k,
-              e?.toJson(
-                (value) => value.toJson(),
-              ))),
-      'sendRequestToGeminiStatus': _$SendRequestToGeminiStatusEnumMap[
-          instance.sendRequestToGeminiStatus]!,
       'addItemInCartStatus':
           _$AddItemInCartStatusEnumMap[instance.addItemInCartStatus],
       'updateItemInCartStatus':
@@ -664,29 +487,14 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'deleteItemInCartStatus':
           _$DeleteItemInCartStatusEnumMap[instance.deleteItemInCartStatus],
       'addCommentStatus': _$AddCommentStatusEnumMap[instance.addCommentStatus]!,
-      'getProductFiltersModel': instance.getProductFiltersModel
-          .map((k, e) => MapEntry(k, e?.toJson())),
-      'getProductFiltersWithPrefetchModel': instance
-          .getProductFiltersWithPrefetchModel
-          .map((k, e) => MapEntry(k, e?.toJson())),
       'addOrRemoveLikeOfProductStatus': _$AddOrRemoveLikeOfProductStatusEnumMap[
           instance.addOrRemoveLikeOfProductStatus]!,
-      'appliedFiltersByUser':
-          instance.appliedFiltersByUser.map((k, e) => MapEntry(k, e?.toJson())),
-      'choosedFiltersByUser':
-          instance.choosedFiltersByUser.map((k, e) => MapEntry(k, e?.toJson())),
       'selectedCollection': instance.selectedCollection,
       'currentPage': instance.currentPage,
       'currentAddressChoosed': instance.currentAddressChoosed,
-      'isExpandedForListingPage': instance.isExpandedForListingPage,
-      'isGettingProductListingWithPagination':
-          instance.isGettingProductListingWithPagination,
-      'isGettingProductListingWithPaginationForAppearProduct':
-          instance.isGettingProductListingWithPaginationForAppearProduct,
       'searchHistory': instance.searchHistory,
       'listOfErrorSendedToMobileErrorLog':
           instance.listOfErrorSendedToMobileErrorLog,
-      'searchWithFilterOffset': instance.searchWithFilterOffset,
       'searchWithOutFilterOffset': instance.searchWithOutFilterOffset,
       'addImagesToProductIdForCart': instance.addImagesToProductIdForCart.map(
           (k, e) => MapEntry(k, e.map((k, e) => MapEntry(k.toString(), e)))),
@@ -706,7 +514,6 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
               instance.updateWhatsappNotificationStatus],
       'oldcartCollection':
           instance.oldcartCollection?.map((e) => e.toJson()).toList(),
-      'reRequestTheseBoutiques': instance.reRequestTheseBoutiques,
       'reRequestTheseProductListingInBoutiques':
           instance.reRequestTheseProductListingInBoutiques,
       'reRequestProductWithFilters': instance.reRequestProductWithFilters,
@@ -715,7 +522,6 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
               instance.getProductDetailWithoutSimilarRelatedProductsStatus]!,
       'getFullProductDetailsStatus': _$GetFullProductDetailsStatusEnumMap[
           instance.getFullProductDetailsStatus]!,
-      'theReplyFromGemini': instance.theReplyFromGemini,
       'getCartItemsStatus':
           _$GetCartItemsStatusEnumMap[instance.getCartItemsStatus]!,
       'checkWithGetCartStatus':
@@ -729,13 +535,6 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           _$GetProductListingStatusEnumMap[instance.getProductListingStatus]!,
       'getStoriesForProductStatus': _$GetStoriesForProductStatusEnumMap[
           instance.getStoriesForProductStatus]!,
-      'getHomeBoutiquesPaginationObjectByMainCategory': instance
-          .getHomeBoutiquesPaginationObjectByMainCategory
-          .map((k, e) => MapEntry(
-              k,
-              e.toJson(
-                (value) => value.toJson(),
-              ))),
       'storiesForProduct':
           instance.storiesForProduct?.map((e) => e.toJson()).toList(),
       'sizesForEachColor': instance.sizesForEachColor,
@@ -743,10 +542,6 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'sizesQuantitiesForEachColor': instance.sizesQuantitiesForEachColor,
       'colorsQuantitiesForEachProduct': instance.colorsQuantitiesForEachProduct,
       'isVariantRequestNotification': instance.isVariantRequestNotification,
-      'countOfProductExpectedByFiltering':
-          instance.countOfProductExpectedByFiltering,
-      'prefAppliedFilterForExtendFilter':
-          instance.prefAppliedFilterForExtendFilter?.toJson(),
       'getProductListingPaginationWithoutFiltersModel': instance
           .getProductListingPaginationWithoutFiltersModel
           .map((k, e) => MapEntry(
@@ -758,19 +553,13 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'getOldCartModel': instance.getOldCartModel?.toJson(),
       'getCommentForProductModel': instance.getCommentForProductModel
           .map((k, e) => MapEntry(k, e.toJson())),
-      'mainCategoriesResponseModel':
-          instance.mainCategoriesResponseModel?.toJson(),
       'getProductDetailWithoutRelatedProductsModel':
           instance.getProductDetailWithoutRelatedProductsModel?.toJson(),
       'changeSizesForEveryProduct': _$ChangeSizesForEveryProductEnumMap[
           instance.changeSizesForEveryProduct],
-      'cashedOrginalBoutique': instance.cashedOrginalBoutique,
-      'currentIndexForMainCategoryEvent':
-          instance.currentIndexForMainCategoryEvent,
       'currentIndexForUpdateCart': instance.currentIndexForUpdateCart,
       'startingSetting': instance.startingSetting?.toJson(),
       'currentColorSizeForCart': instance.currentColorSizeForCart,
-      'fromSearchForSearchWithGemini': instance.fromSearchForSearchWithGemini,
       'currentQuantityForCart': instance.currentQuantityForCart,
       'cachedProductWithoutRelatedProductsModel': instance
           .cachedProductWithoutRelatedProductsModel
@@ -854,13 +643,6 @@ const _$GetStartingSettingsStatusEnumMap = {
   GetStartingSettingsStatus.failure: 'failure',
 };
 
-const _$GetMainCategoriesStatusEnumMap = {
-  GetMainCategoriesStatus.init: 'init',
-  GetMainCategoriesStatus.loading: 'loading',
-  GetMainCategoriesStatus.success: 'success',
-  GetMainCategoriesStatus.failure: 'failure',
-};
-
 const _$GetCommentForProductStatusEnumMap = {
   GetCommentForProductStatus.init: 'init',
   GetCommentForProductStatus.loading: 'loading',
@@ -931,13 +713,6 @@ const _$GetOLdCartItemsStatusEnumMap = {
   GetOLdCartItemsStatus.failure: 'failure',
 };
 
-const _$GetProductFiltersStatusEnumMap = {
-  GetProductFiltersStatus.init: 'init',
-  GetProductFiltersStatus.loading: 'loading',
-  GetProductFiltersStatus.success: 'success',
-  GetProductFiltersStatus.failure: 'failure',
-};
-
 const _$SetCustomerAddressDefaultStatusEnumMap = {
   SetCustomerAddressDefaultStatus.init: 'init',
   SetCustomerAddressDefaultStatus.loading: 'loading',
@@ -971,13 +746,6 @@ const _$GetStoriesForProductStatusEnumMap = {
   GetStoriesForProductStatus.loading: 'loading',
   GetStoriesForProductStatus.success: 'success',
   GetStoriesForProductStatus.failure: 'failure',
-};
-
-const _$SendRequestToGeminiStatusEnumMap = {
-  SendRequestToGeminiStatus.init: 'init',
-  SendRequestToGeminiStatus.loading: 'loading',
-  SendRequestToGeminiStatus.success: 'success',
-  SendRequestToGeminiStatus.failure: 'failure',
 };
 
 const _$GetListOfProductsFoundedInCartStatusEnumMap = {

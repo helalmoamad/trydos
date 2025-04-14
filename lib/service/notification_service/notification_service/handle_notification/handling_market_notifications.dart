@@ -7,8 +7,10 @@ import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart';
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/pages/cart_page_new.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
@@ -263,10 +265,10 @@ class HandlingMarketNotifications {
           typeOfNotificationForMarket[
               TypeOfNotificationForMarketEnum.category_created]) {
         try {
-          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
+          BlocProvider.of<BoutiqueBloc>(navigatorKey.currentState!.context).add(
               ChangeAppliedFiltersEvent(
                   boutiqueSlug: "search", resetAppliedFilters: true));
-          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
+          BlocProvider.of<BoutiqueBloc>(navigatorKey.currentState!.context).add(
               ChangeSelectedFiltersEvent(
                   boutiqueSlug: "search",
                   fromHomePageSearch: true,

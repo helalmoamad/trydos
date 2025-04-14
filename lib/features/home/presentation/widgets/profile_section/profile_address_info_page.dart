@@ -29,9 +29,9 @@ import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.da
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
 
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_event.dart';
-import 'package:trydos/features/home/presentation/manager/home_state.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/add_shipping_address.dart';
 
 import 'package:trydos/generated/locale_keys.g.dart';

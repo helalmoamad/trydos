@@ -9,7 +9,10 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/app/svg_network_widget.dart';
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 
 import '../../../../../common/test_utils/test_var.dart';
@@ -19,10 +22,10 @@ import '../../../../../service/firebase_analytics_service/analytics_const/analyt
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../data/models/get_product_filters_model.dart';
-import '../../manager/home_event.dart';
-import '../../manager/home_state.dart';
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import '../../manager/homeBloc/home_event.dart';
+import '../../manager/homeBloc/home_state.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -105,7 +108,8 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                   AppAssets.registerInfoSvg,
                   color: Color(0xffD3D3D3),
                 ),
-                BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
+                BlocBuilder<BoutiqueBloc, BoutiqueState>(
+                    builder: (context, state) {
                   if (state.getProductFiltersStatus[key] ==
                       GetProductFiltersStatus.loading) {
                     return Row(
@@ -136,19 +140,20 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                   shrinkWrap: true,
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (ctx, index) {
-                    HomeBloc homeBloc = BlocProvider.of<HomeBloc>(context);
+                    BoutiqueBloc boutiqueBloc =
+                        BlocProvider.of<BoutiqueBloc>(context);
                     bool isSelected = widget.hideTitle
                         ? widget.isBrandFilter
-                            ? (homeBloc.state.appliedFiltersByUser[key]?.filters
-                                    ?.brands
+                            ? (boutiqueBloc.state.appliedFiltersByUser[key]
+                                    ?.filters?.brands
                                     ?.any((element) =>
                                         element.id ==
                                         widget.filters[index].id) ??
                                 false)
                             : false
                         : widget.isBrandFilter
-                            ? (homeBloc.state.choosedFiltersByUser[key]?.filters
-                                    ?.brands
+                            ? (boutiqueBloc.state.choosedFiltersByUser[key]
+                                    ?.filters?.brands
                                     ?.any((element) =>
                                         element.id ==
                                         widget.filters[index].id) ??
@@ -161,21 +166,21 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                           onTap: () {
                             Filter? prevChoosedOrAppliedFilterToAddToIt =
                                 widget.hideTitle
-                                    ? homeBloc.state.appliedFiltersByUser[key]
-                                        ?.filters
+                                    ? boutiqueBloc.state
+                                        .appliedFiltersByUser[key]?.filters
                                         ?.copyWithSaveOtherField(
-                                            prices: homeBloc
+                                            prices: boutiqueBloc
                                                 .state
                                                 .appliedFiltersByUser[key]
                                                 ?.filters
                                                 ?.prices,
-                                            searchText: homeBloc
+                                            searchText: boutiqueBloc
                                                 .state
                                                 .appliedFiltersByUser[key]
                                                 ?.filters
                                                 ?.searchText)
-                                    : homeBloc.state.choosedFiltersByUser[key]
-                                        ?.filters;
+                                    : boutiqueBloc.state
+                                        .choosedFiltersByUser[key]?.filters;
                             List<Brand>? brands = List.of(
                                 prevChoosedOrAppliedFilterToAddToIt?.brands ??
                                     []);
@@ -234,14 +239,14 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                               );
                             }
                             if (widget.hideTitle) {
-                              homeBloc.add(ChangeAppliedFiltersEvent(
+                              boutiqueBloc.add(ChangeAppliedFiltersEvent(
                                 category: widget.category,
                                 boutiqueSlug: widget.boutiqueSlug,
                                 filtersAppliedByUser: GetProductFiltersModel(
                                     filters:
                                         prevChoosedOrAppliedFilterToAddToIt),
                               ));
-                              homeBloc.add(GetProductsWithFiltersEvent(
+                              boutiqueBloc.add(GetProductsWithFiltersEvent(
                                   fromSearch: widget.fromHomeSearch,
                                   searchText: widget.searchText,
                                   boutiqueSlug: widget.boutiqueSlug,
@@ -249,8 +254,8 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                                   offset: 1));
                             } else {
                               print(
-                                  'dwwdwdwqe32e23e ${homeBloc.state.prefAppliedFilterForExtendFilter?.brands}');
-                              homeBloc.add(ChangeSelectedFiltersEvent(
+                                  'dwwdwdwqe32e23e ${boutiqueBloc.state.prefAppliedFilterForExtendFilter?.brands}');
+                              boutiqueBloc.add(ChangeSelectedFiltersEvent(
                                 fromHomePageSearch: widget.fromHomeSearch,
                                 category: widget.category,
                                 boutiqueSlug: widget.boutiqueSlug,

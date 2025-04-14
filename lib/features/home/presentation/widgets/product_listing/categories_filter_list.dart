@@ -4,8 +4,11 @@ import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/object.dart';
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_state.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 
 import '../../../../../common/test_utils/test_var.dart';
@@ -15,9 +18,9 @@ import '../../../../../service/firebase_analytics_service/analytics_const/analyt
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../data/models/get_product_filters_model.dart';
 import '../../../data/models/get_product_listing_with_filters_model.dart';
-import '../../manager/home_event.dart';
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import '../../manager/homeBloc/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -58,7 +61,7 @@ class CategoriesFilterList extends StatelessWidget {
           null, null, null, null, null, null, null,
           error: error.toString());
     };
-    HomeBloc homeBloc = BlocProvider.of<HomeBloc>(context);
+    BoutiqueBloc boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
 
     String key = boutiqueSlug + (category ?? '');
     print(
@@ -66,7 +69,7 @@ class CategoriesFilterList extends StatelessWidget {
     if (fromSearch) {
       key = boutiqueSlug;
     }
-    return BlocBuilder<HomeBloc, HomeState>(
+    return BlocBuilder<BoutiqueBloc, BoutiqueState>(
       buildWhen: (previous, current) =>
           previous.appliedFiltersByUser[key] !=
               current.appliedFiltersByUser[key] ||
@@ -134,7 +137,7 @@ class CategoriesFilterList extends StatelessWidget {
               if (!(filters.categories?[index].isSubCategory ?? false)) {
                 subCategories?.forEach((elements) {
                   if (!(workWithChoosedFilter)) {
-                    if (homeBloc.state.appliedFiltersByUser[key]?.filters
+                    if (boutiqueBloc.state.appliedFiltersByUser[key]?.filters
                             ?.categories
                             ?.any(
                                 (element) => (element.slug == elements.slug)) ??
@@ -142,7 +145,7 @@ class CategoriesFilterList extends StatelessWidget {
                       isChildCategorySlug = true;
                     }
                   } else {
-                    if (homeBloc.state.choosedFiltersByUser[key]?.filters
+                    if (boutiqueBloc.state.choosedFiltersByUser[key]?.filters
                             ?.categories
                             ?.any(
                                 (element) => (element.slug == elements.slug)) ??
@@ -367,7 +370,7 @@ class CategoriesFilterList extends StatelessWidget {
                                             );
                                           }
                                           if (!workWithChoosedFilter) {
-                                            homeBloc
+                                            boutiqueBloc
                                                 .add(ChangeAppliedFiltersEvent(
                                               category: category,
                                               boutiqueSlug: boutiqueSlug,
@@ -376,7 +379,7 @@ class CategoriesFilterList extends StatelessWidget {
                                                       filters:
                                                           prevChoosedOrAppliedFilterToAddToIt),
                                             ));
-                                            homeBloc.add(
+                                            boutiqueBloc.add(
                                                 GetProductsWithFiltersEvent(
                                                     searchText:
                                                         controller?.text,
@@ -385,7 +388,7 @@ class CategoriesFilterList extends StatelessWidget {
                                                     category: category,
                                                     offset: 1));
                                           } else {
-                                            homeBloc
+                                            boutiqueBloc
                                                 .add(ChangeSelectedFiltersEvent(
                                               fromHomePageSearch: fromSearch,
                                               category: category,
@@ -572,7 +575,7 @@ class CategoriesFilterList extends StatelessWidget {
                                             print(
                                                 "dddeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
 
-                                            homeBloc
+                                            boutiqueBloc
                                                 .add(ChangeAppliedFiltersEvent(
                                               category: category,
                                               boutiqueSlug: boutiqueSlug,
@@ -582,7 +585,7 @@ class CategoriesFilterList extends StatelessWidget {
                                                           prevChoosedOrAppliedFilterToAddToIt),
                                             ));
 
-                                            homeBloc.add(
+                                            boutiqueBloc.add(
                                                 GetProductsWithFiltersEvent(
                                                     searchText:
                                                         controller?.text,
@@ -591,7 +594,7 @@ class CategoriesFilterList extends StatelessWidget {
                                                     category: category,
                                                     offset: 1));
                                           } else {
-                                            homeBloc
+                                            boutiqueBloc
                                                 .add(ChangeSelectedFiltersEvent(
                                               fromHomePageSearch: fromSearch,
                                               category: category,
@@ -700,7 +703,7 @@ class CategoriesFilterList extends StatelessWidget {
                           );
                         }
                         if (!workWithChoosedFilter) {
-                          homeBloc.add(
+                          boutiqueBloc.add(
                             ChangeAppliedFiltersEvent(
                               category: category,
                               boutiqueSlug: boutiqueSlug,
@@ -708,7 +711,7 @@ class CategoriesFilterList extends StatelessWidget {
                                   filters: prevChoosedOrAppliedFilterToAddToIt),
                             ),
                           );
-                          homeBloc.add(
+                          boutiqueBloc.add(
                             GetProductsWithFiltersEvent(
                               searchText: controller?.text,
                               fromSearch: fromSearch,
@@ -718,7 +721,7 @@ class CategoriesFilterList extends StatelessWidget {
                             ),
                           );
                         } else {
-                          homeBloc.add(ChangeSelectedFiltersEvent(
+                          boutiqueBloc.add(ChangeSelectedFiltersEvent(
                             fromHomePageSearch: fromSearch,
                             category: category,
                             boutiqueSlug: boutiqueSlug,

@@ -5,7 +5,9 @@ import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/categoryBloc/category_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import '../features/app/blocs/pre_caching_image_bloc/pre_caching_image_bloc.dart';
 import '../features/app/blocs/sensitive_connectivity/sensitive_connectivity_bloc.dart';
 import '../features/story/presentation/bloc/story_bloc.dart';
@@ -25,8 +27,11 @@ class ServiceProvider extends StatelessWidget {
             create: (BuildContext context) => SensitiveConnectivityBloc()),
         BlocProvider(create: (BuildContext context) => GetIt.I<AuthBloc>()),
         BlocProvider(create: (BuildContext context) => GetIt.I<ChatBloc>()),
+        BlocProvider(create: (BuildContext context) => GetIt.I<CategoryBloc>()),
         BlocProvider(create: (BuildContext context) => GetIt.I<HomeBloc>()),
-        BlocProvider(create: (BuildContext context) => GetIt.I<PreCachingImageBloc>()),
+        BlocProvider(create: (BuildContext context) => GetIt.I<BoutiqueBloc>()),
+        BlocProvider(
+            create: (BuildContext context) => GetIt.I<PreCachingImageBloc>()),
       ],
       child: child,
     );

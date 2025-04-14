@@ -7,9 +7,12 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_event.dart';
-import 'package:trydos/features/home/presentation/manager/home_state.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 
 import '../../../../common/constant/design/assets_provider.dart';
@@ -17,8 +20,8 @@ import '../../../../common/test_utils/test_var.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../app/my_text_widget.dart';
 import '../../../home/data/models/get_product_filters_model.dart';
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -40,12 +43,12 @@ class SearchChipBoutique extends StatefulWidget {
 
 class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
   final ScrollController scrollController = ScrollController();
-  late HomeBloc homeBloc;
+  late BoutiqueBloc boutiqueBloc;
 
   List<String> selectedBoutiqueSlugs = [];
   @override
   void initState() {
-    homeBloc = BlocProvider.of<HomeBloc>(context);
+    boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
     super.initState();
   }
 
@@ -63,7 +66,7 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
           null, null, null, null, null, null, null,
           error: error.toString());
     };
-    return BlocBuilder<HomeBloc, HomeState>(
+    return BlocBuilder<BoutiqueBloc, BoutiqueState>(
       builder: (context, state) {
         String key = 'search';
         Filter filters = state.getProductFiltersModel[key]?.filters ?? Filter();
@@ -132,11 +135,8 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                                 const EdgeInsets.symmetric(horizontal: 10.0),
                             scrollDirection: Axis.horizontal,
                             itemBuilder: (context, index) {
-                              bool isSelected = homeBloc
-                                      .state
-                                      .choosedFiltersByUser[key]
-                                      ?.filters
-                                      ?.boutiques
+                              bool isSelected = state.choosedFiltersByUser[key]
+                                      ?.filters?.boutiques
                                       ?.any((element) =>
                                           element.id ==
                                           filters.boutiques?[index].id) ??
@@ -146,9 +146,7 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                                   : InkWell(
                                       onTap: () {
                                         Filter? prevChoosedFilterToAddToIt =
-                                            homeBloc
-                                                .state
-                                                .choosedFiltersByUser[key]
+                                            state.choosedFiltersByUser[key]
                                                 ?.filters;
                                         if (prevChoosedFilterToAddToIt ==
                                             null) {
@@ -191,7 +189,7 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                                                 filters.boutiques![index]
                                               ]);
                                         }
-                                        homeBloc.add(ChangeSelectedFiltersEvent(
+                                        boutiqueBloc.add(ChangeSelectedFiltersEvent(
                                             fromHomePageSearch: true,
                                             boutiqueSlug: key,
                                             requestToUpdateFilters:
@@ -204,7 +202,7 @@ class _SearchChipBoutiqueState extends State<SearchChipBoutique> {
                                                     filters:
                                                         prevChoosedFilterToAddToIt)));
                                         if (widget.controller.text.length > 2) {
-                                          homeBloc.add(
+                                          boutiqueBloc.add(
                                               GetProductsWithFiltersEvent(
                                                   fromChoosed: true,
                                                   offset: 1,
