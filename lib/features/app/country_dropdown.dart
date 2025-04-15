@@ -61,6 +61,11 @@ class _CountryDropdownState extends State<CountryDropdown> {
               print(
                   "@@@@@@@@@!!!!!!!!!!!!!!!!!!!!!!!!!!${newValue}!!!!!!111111111111111");
               BlocProvider.of<HomeBloc>(context).add(ClearAllAppCashEvent());
+              _prefsRepository.removeBoutiqueHasPerfechedWhenOpenApp(true);
+              _prefsRepository.removeMainCategoryHasPerfechedWhenOpenApp(true);
+
+              _prefsRepository.removeFiveFilterHasPerfechedWhenOpenApp();
+
               /* List<String> topicTOUnSubsecribe =
                   _prefsRepository.topicThatAlreadySubsecribed();
               topicTOUnSubsecribe.forEach(

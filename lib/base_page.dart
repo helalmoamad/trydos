@@ -685,15 +685,15 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                     //     context: context,
                                     //     getWithPagination: false));
                                     categoryBloc.add(GetMainCategoriesEvent(
-                                        getWithPrefech: false,
+                                        getWithPrefech: true,
                                         context: context));
-                                    if (prefsRepository.marketToken != null) {
+                                    /* if (prefsRepository.marketToken != null) {
                                       homeBloc
                                           .add(GetCurrencyForCountryEvent());
                                       homeBloc.add(GetCartItemEvent());
                                       homeBloc
                                           .add(GetProductsListInCartEvent());
-                                    }
+                                    }*/
                                   }
 
                                   visible

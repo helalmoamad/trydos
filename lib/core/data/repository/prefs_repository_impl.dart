@@ -658,8 +658,10 @@ class PrefsRepositoryImpl extends PrefsRepository {
           requestNotificationPermission);
 
   @override
-  String? getPrefechOfBoutiquesForEachMainCategoryInHomePage(String key) =>
-      _preferences.getString(key);
+  String? getPrefechOfBoutiquesForEachMainCategoryInHomePage(String key) {
+    _preferences.reload();
+    return _preferences.getString(key);
+  }
 
   @override
   Future<bool> setPrefechOfBoutiquesForEachMainCategoryInHomePage(
@@ -669,13 +671,15 @@ class PrefsRepositoryImpl extends PrefsRepository {
   }
 
   @override
-  Future<bool> setMainCategoryHasPerfechedToRemoveItWhenOpenApp(
-      String key) async {
+  Future<bool> setMainCategoryHasPerfechedToRemoveItWhenOpenApp(String key) {
     List<String> list = _preferences
             .getStringList(PrefsKey.mainCatogryForEachBoutiquePrefech) ??
         [];
-    list.add(key);
-    return await _preferences.setStringList(
+    if (!list.contains(key)) {
+      list.add(key);
+    }
+
+    return _preferences.setStringList(
         PrefsKey.mainCatogryForEachBoutiquePrefech, list);
   }
 
@@ -689,7 +693,9 @@ class PrefsRepositoryImpl extends PrefsRepository {
         [];
     _preferences.remove(PrefsKey.mainCatogryForEachBoutiquePrefech);
     if (allCategory) {
-      list.forEach((element) => _preferences.remove(element));
+      list.forEach((element) {
+        _preferences.remove(element);
+      });
       return Future.value(true);
     } else {
       if (list.length > 6) {
@@ -701,21 +707,25 @@ class PrefsRepositoryImpl extends PrefsRepository {
         }
       }
 
-      _preferences.setStringList(
+      return _preferences.setStringList(
           PrefsKey.mainCatogryForEachBoutiquePrefech, newList);
-      return Future.value(true);
     }
   }
 
   @override
-  String? getPrefechOfProductsForEachBoutiqueInHomePage(String key) =>
-      _preferences.getString(key);
+  String? getPrefechOfProductsForEachBoutiqueInHomePage(String key) {
+    _preferences.reload();
+    return _preferences.getString(key);
+  }
 
   @override
   Future<bool> setBoutiqueHasPerfechedToRemoveItWhenOpenApp(String key) async {
     List<String> list =
-        _preferences.getStringList(PrefsKey.productPrefech) ?? [];
-    list.add(key);
+        await _preferences.getStringList(PrefsKey.productPrefech) ?? [];
+
+    if (!list.contains(key)) {
+      list.add(key);
+    }
     return await _preferences.setStringList(PrefsKey.productPrefech, list);
   }
 
@@ -734,17 +744,18 @@ class PrefsRepositoryImpl extends PrefsRepository {
         _preferences.getStringList(PrefsKey.productPrefech) ?? [];
     _preferences.remove(PrefsKey.productPrefech);
     if (allBoutique) {
-      list.forEach((element) => _preferences.remove(element));
+      list.forEach((element) {
+        _preferences.remove(element);
+      });
       return Future.value(true);
     } else {
-      if (list.length > 6) {
-        for (var i = 5; i < list.length; i++) {
+      if (list.length > 10) {
+        for (var i = 10; i < list.length; i++) {
           _preferences.remove(list[i]);
           newList.remove(list[i]);
         }
       }
-      _preferences.setStringList(PrefsKey.productPrefech, newList);
-      return Future.value(true);
+      return _preferences.setStringList(PrefsKey.productPrefech, newList);
     }
   }
 
@@ -754,28 +765,34 @@ class PrefsRepositoryImpl extends PrefsRepository {
   }
 
   @override
-  String? getPrefechForFiveFilterForEachBoutiqueInHomePage(String key) =>
-      _preferences.getString(key);
+  String? getPrefechForFiveFilterForEachBoutiqueInHomePage(String key) {
+    print(
+        "get-+-+-+-+-*******************----${_preferences.getString(key)}---###########################..${key}.............11111111111111111111111111111111111111++++++++++");
+
+    _preferences.reload();
+    return _preferences.getString(key);
+  }
 
   @override
-  Future<bool> removeFiveFilterHasPerfechedWhenOpenApp() async {
+  Future<bool> removeFiveFilterHasPerfechedWhenOpenApp() {
     List<String> list =
-        await _preferences.getStringList(PrefsKey.fiveFilterPrefech) ?? [];
+        _preferences.getStringList(PrefsKey.fiveFilterPrefech) ?? [];
     list.forEach(
       (element) {
         _preferences.remove(element);
       },
     );
+
     return _preferences.remove(PrefsKey.fiveFilterPrefech);
   }
 
   @override
-  Future<bool> setFiveFilterHasPerfechedToRemoveItWhenOpenApp(
-      String key) async {
+  Future<bool> setFiveFilterHasPerfechedToRemoveItWhenOpenApp(String key) {
     List<String> list =
         _preferences.getStringList(PrefsKey.fiveFilterPrefech) ?? [];
+
     list.add(key);
-    return await _preferences.setStringList(PrefsKey.fiveFilterPrefech, list);
+    return _preferences.setStringList(PrefsKey.fiveFilterPrefech, list);
   }
 
   @override
@@ -787,14 +804,17 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   List<String>? getFiveFilterForEachBoutiqueHasPrefechInHomePage() {
+    _preferences.reload();
     List<String> list =
         _preferences.getStringList(PrefsKey.fiveFilterPrefech) ?? [];
     return list;
   }
 
   @override
-  String? getPrefechOfMainCategoryInHomePage() =>
-      _preferences.getString(PrefsKey.mainCatogryPrefech);
+  String? getPrefechOfMainCategoryInHomePage() {
+    _preferences.reload();
+    return _preferences.getString(PrefsKey.mainCatogryPrefech);
+  }
 
   @override
   Future<bool> removeMainCategoryWhenOpenApp() {

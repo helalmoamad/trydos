@@ -118,6 +118,15 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
                                     .setUserCountryIsAvailable(1);
                                 BlocProvider.of<HomeBloc>(context)
                                     .add(ClearAllAppCashEvent());
+                                GetIt.I<PrefsRepository>()
+                                    .removeBoutiqueHasPerfechedWhenOpenApp(
+                                        true);
+                                GetIt.I<PrefsRepository>()
+                                    .removeMainCategoryHasPerfechedWhenOpenApp(
+                                        true);
+
+                                GetIt.I<PrefsRepository>()
+                                    .removeFiveFilterHasPerfechedWhenOpenApp();
                                 BlocProvider.of<HomeBloc>(context).add(
                                     ChangeCountryLanguageForNotificationEvent(
                                         country: homeBloc

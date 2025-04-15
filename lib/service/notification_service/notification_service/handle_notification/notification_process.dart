@@ -53,6 +53,7 @@ class NotificationProcess {
 
   Future fcmToken() async {
     await FirebaseMessaging.instance.deleteToken();
+
     myFcmToken = await FirebaseMessaging.instance.getToken();
     print("myFcmToken : ${myFcmToken}");
     if (myFcmToken != null) {

@@ -72,11 +72,12 @@ class _SelectSizeContentState extends ThemeState<SelectSizeContent> {
 
     if (!(homeBloc.state.sizesForEachColor.isNullOrEmpty) &&
         !(widget.fromListingPage)) {
-      currentIndexInSizes = ValueNotifier(homeBloc.state.sizesForEachColor!
-          .indexWhere((element) =>
-              element == homeBloc.state.currentColorSizeForCart?["size"]));
+      currentIndexInSizes =
+          ValueNotifier(homeBloc.state.sizesForEachColor!.indexWhere(
+        (element) => element == homeBloc.state.currentColorSizeForCart?["size"],
+      ));
       if (currentIndexInSizes.value == -1) {
-        currentIndexInSizes = ValueNotifier(0);
+        currentIndexInSizes.value = 0;
       }
     }
     if (widget.fromListingPage &&

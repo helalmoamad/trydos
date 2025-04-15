@@ -101,15 +101,20 @@ class _HomePageState extends State<HomePage> {
       PermissionServices().requestNotificationPermission();
       prefsRepository.setRequestNotificationPermission(true);
     }
+
     categoryBloc = BlocProvider.of<CategoryBloc>(context);
     appBloc = BlocProvider.of<AppBloc>(context);
     authBloc = BlocProvider.of<AuthBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
     boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
-    homeBloc.add(GetNotificationTypeProductEvent());
-    homeBloc.add(GetFirebaseSettingForNotificationEvent());
+    GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
+    Future.delayed(Duration(seconds: 20), () {
+      homeBloc.add(GetNotificationTypeProductEvent());
+      homeBloc.add(GetFirebaseSettingForNotificationEvent());
+      homeBloc.add(GetPopularSearchItemEvent());
+    });
     appBloc.add(ChangeIndexForSearch(0));
-    homeBloc.add(GetPopularSearchItemEvent());
+
     Future.delayed(Duration(seconds: 7), () {});
     boutiqueBloc.add(GetProductsWithFiltersEvent(
         boutiqueSlug: "search",
@@ -159,13 +164,13 @@ class _HomePageState extends State<HomePage> {
         lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
             selectedCategorySlug] = lastIndexSeenByUser;
       }*/
-      /*   if (scrollController.offset >=
+      if (scrollController.offset >=
           (scrollController.position.maxScrollExtent * 0.6)) {
-        homeBloc.add(GetHomeBoutiqesEvent(
+        categoryBloc.add(GetHomeBoutiqesEvent(
             getWithPrefetchToStoreInMemory: false,
             getWithPrefetchForEachBoutiques: false,
             categorySlug: selectedCategorySlug,
-            offset: homeBloc
+            offset: categoryBloc
                     .state
                     .getHomeBoutiquesPaginationObjectByMainCategory[
                         selectedCategorySlug]!
@@ -173,7 +178,7 @@ class _HomePageState extends State<HomePage> {
                 "",
             context: context,
             getWithPagination: true));
-      }*/
+      }
       if (scrollController.position.pixels <= 80) {
         debugPrint(scrollController.position.pixels.toString());
         appBloc.add(ShowOrHideBars(true));
@@ -436,30 +441,23 @@ class _HomePageState extends State<HomePage> {
                           print(
                               "..............${categoryState.getHomeBoutiquesPaginationObjectByMainCategory.keys.toList()}.................${(categoryState.getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]?.items.length ?? 0)}");
 
-                          if (categoryState
-                                          .boutiquesForEveryMainCategoryThatDidPrefetch[
-                                      currentSlug] !=
-                                  true &&
-                              (categoryState.getHomeBoutiquesPaginationObjectByMainCategory[
-                                          currentSlug] ==
-                                      null ||
-                                  ((categoryState
-                                                  .getHomeBoutiquesPaginationObjectByMainCategory[
-                                                      currentSlug]
-                                                  ?.paginationStatus ==
-                                              PaginationStatus.loading ||
-                                          categoryState
-                                                  .getHomeBoutiquesPaginationObjectByMainCategory[
-                                                      currentSlug]
-                                                  ?.paginationStatus ==
-                                              PaginationStatus.initial) &&
-                                      (categoryState
-                                                  .getHomeBoutiquesPaginationObjectByMainCategory[
-                                                      currentSlug]
-                                                  ?.items
-                                                  .length ??
-                                              0) ==
-                                          0))) {
+                          if ((categoryState
+                                          .getHomeBoutiquesPaginationObjectByMainCategory[
+                                              currentSlug]
+                                          ?.paginationStatus ==
+                                      PaginationStatus.loading ||
+                                  categoryState
+                                          .getHomeBoutiquesPaginationObjectByMainCategory[
+                                              currentSlug]
+                                          ?.paginationStatus ==
+                                      PaginationStatus.initial) &&
+                              (categoryState
+                                          .getHomeBoutiquesPaginationObjectByMainCategory[
+                                              currentSlug]
+                                          ?.items
+                                          .length ??
+                                      0) ==
+                                  0) {
                             print(
                                 "111111111111111111111111999999999999999999999999999999999999999999999..${(categoryState.getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]?.items.length ?? 0)}");
                             return sliverListSeparated(
@@ -617,8 +615,8 @@ class _HomePageState extends State<HomePage> {
                                             currentSlug]
                                         ?.items
                                         .length ??
-                                    0) !=
-                                0) &&
+                                    0) >
+                                9) &&
                             state
                                     .getHomeBoutiquesPaginationObjectByMainCategory[
                                         currentSlug]

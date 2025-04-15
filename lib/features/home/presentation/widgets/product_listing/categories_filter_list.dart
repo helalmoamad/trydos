@@ -623,8 +623,8 @@ class CategoriesFilterList extends StatelessWidget {
                           : Key(
                               '${WidgetsKeys.categoryCircleWithOutSubProductListingFilterKey}$index'),
                       isSvg: false,
-                      width: 65,
-                      height: 65,
+                      width: 70,
+                      height: 70,
                       imageUrl: filters.categories![index]
                           .mostViewedProductThumbnail!.filePath
                           .toString(),

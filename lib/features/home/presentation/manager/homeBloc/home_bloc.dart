@@ -1478,7 +1478,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         if (event.currentColorName != "") {
           color = element.type!.split("-")[0];
           colors.add(color);
-          colorsQuantities.add(element.qty ?? 0);
+          colorsQuantities.add((element.qty ?? 0).round());
         }
 
         if (element.type!.split("-")[0] == event.currentColorName ||
@@ -1487,7 +1487,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             size =
                 element.type!.split("-")[event.currentColorName == '' ? 0 : 1];
             sizes.add(size);
-            sizesQuantities.add(element.qty ?? 0);
+            sizesQuantities.add((element.qty ?? 0).round());
             if (element.variantNotifyForUser) {}
           } catch (e) {}
         }

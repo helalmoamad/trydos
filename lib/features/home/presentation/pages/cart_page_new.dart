@@ -139,7 +139,7 @@ class _CartPageState extends State<CartPage> {
                   CheckWithGetCartStatus.successForCart) {
                 if (!state.cartCollection.isNullOrEmpty) {
                   if (!state.cartCollection!.any(
-                    (element) => (element.inStock == false ||
+                    (element) => (element.isActive == false ||
                         element.isCountryRestricted == true ||
                         element.checkAvailability == false),
                   )) {
@@ -1667,7 +1667,7 @@ class _CartPageState extends State<CartPage> {
                                                                                         homeBloc.add(CheckWithGetCartEvent(isForPlaceOrder: false));
                                                                                         return;
                                                                                       } else if (state.cartCollection!.any(
-                                                                                        (element) => (element.inStock == false || element.isCountryRestricted == true || element.checkAvailability == false),
+                                                                                        (element) => (element.isActive == false || element.isCountryRestricted == true || element.checkAvailability == false),
                                                                                       )) {
                                                                                         showMessage(
                                                                                           " ${LocaleKeys.you_have_to_delete_all_unavailable_products.tr()}",

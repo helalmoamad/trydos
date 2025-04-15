@@ -123,7 +123,7 @@ class Products {
   final double? offerPrice;
   final String? offerPriceFormatted;
   final bool? isFavourite;
-  final bool? inStock;
+  final bool? isActive;
   final Rating? rating;
   final dynamic flashDealDetails;
   final dynamic flashDealMaxAllowedQuantity;
@@ -143,7 +143,7 @@ class Products {
   final String? tax;
   final String? unitPrice;
   final String? slugEnTopic;
-  final int? currentStock;
+  final int? availableQuantity;
   final int? leftStock;
   final int? reviewsCount;
   final dynamic sellerId;
@@ -163,7 +163,7 @@ class Products {
   final List<Label>? labels;
   final int? shippingDays;
   final bool? isProductNotifiedForUser;
-  final bool? isAvailableInMarket;
+
   Products({
     this.productId,
     this.boutiqueId,
@@ -185,7 +185,7 @@ class Products {
     this.offerPrice,
     this.offerPriceFormatted,
     this.isFavourite,
-    this.inStock,
+    this.isActive,
     this.rating,
     this.flashDealDetails,
     this.flashDealMaxAllowedQuantity,
@@ -208,7 +208,7 @@ class Products {
     this.tax,
     this.boutique,
     this.unitPrice,
-    this.currentStock,
+    this.availableQuantity,
     this.leftStock,
     this.shippingDays,
     this.countryIsRestricted,
@@ -223,7 +223,6 @@ class Products {
     this.viewsCount,
     this.labels,
     required this.isProductNotifiedForUser,
-    this.isAvailableInMarket,
   });
 
   Products copyWith({
@@ -248,7 +247,7 @@ class Products {
     String? offerPriceFormatted,
     bool? isFavourite,
     String? maxAllowedQty,
-    bool? inStock,
+    bool? isActive,
     int? collectedAfterOrdering,
     Rating? rating,
     dynamic flashDealDetails,
@@ -266,7 +265,7 @@ class Products {
     String? tax,
     int? countOfPieces,
     String? unitPrice,
-    int? currentStock,
+    int? availableQuantity,
     int? leftStock,
     int? reviewsCount,
     dynamic sellerId,
@@ -285,7 +284,6 @@ class Products {
     List<Label>? labels,
     bool? isProductNotifiedForUser,
     bool? countryIsRestricted,
-    bool? isAvailableInMarket,
   }) =>
       Products(
         productId: productId ?? this.productId,
@@ -307,7 +305,7 @@ class Products {
         offerPrice: offerPrice ?? this.offerPrice,
         offerPriceFormatted: offerPriceFormatted ?? this.offerPriceFormatted,
         isFavourite: isFavourite ?? this.isFavourite,
-        inStock: inStock ?? this.inStock,
+        isActive: isActive ?? this.isActive,
         rating: rating ?? this.rating,
         flashDealDetails: flashDealDetails ?? this.flashDealDetails,
         flashDealMaxAllowedQuantity:
@@ -329,7 +327,7 @@ class Products {
             this.shippingCostMultiplyWithQuantity,
         shippingCost: shippingCost ?? this.shippingCost,
         shippingDays: shippingDays ?? this.shippingDays,
-        currentStock: currentStock ?? this.currentStock,
+        availableQuantity: availableQuantity ?? this.availableQuantity,
         leftStock: leftStock ?? this.leftStock,
         isLiked: isLiked ?? this.isLiked,
         collectedAfterOrdering:
@@ -350,7 +348,6 @@ class Products {
         labels: labels ?? this.labels,
         isProductNotifiedForUser:
             isProductNotifiedForUser ?? this.isProductNotifiedForUser,
-        isAvailableInMarket: isAvailableInMarket ?? this.isAvailableInMarket,
       );
 
   factory Products.fromJson(Map<String, dynamic> json) => Products(
@@ -389,12 +386,11 @@ class Products {
       price: json["price"].toDouble(),
       priceFormatted: json["price_formatted"],
       offerPrice: json["offer_price"].toDouble(),
-      isAvailableInMarket: json["is_available_in_market"],
       maxAllowedQty: json["max_allowed_qty"],
       offerPriceFormatted: json["offer_price_formatted"],
       collectedAfterOrdering: json["collected_after_ordering"],
       isFavourite: json["is_favourite"],
-      inStock: json["in_stock"],
+      isActive: json["is_active"],
       rating: json["rating"] == null ? null : Rating.fromJson(json["rating"]),
       flashDealDetails: json["flash_deal_details"],
       flashDealMaxAllowedQuantity: json["flash_deal_max_allowed_quantity"],
@@ -422,7 +418,7 @@ class Products {
       countOfLikes: json["count_of_likes"],
       tax: json["tax"].toString(),
       unitPrice: json["unit_price"].toString(),
-      currentStock: json["current_stock"]?.toInt(),
+      availableQuantity: json["available_quantity"]?.toInt(),
       leftStock: json["Left_stock"],
       // reviewsCount: json["reviews_count"],
       sellerId: json["seller_id"],
@@ -471,7 +467,7 @@ class Products {
         "max_allowed_qty": maxAllowedQty,
         "offer_price_formatted": offerPriceFormatted,
         "is_favourite": isFavourite,
-        "in_stock": inStock,
+        "is_active": isActive,
         "rating": rating?.toJson(),
         "shipping_cost_multiply_with_quantity":
             shippingCostMultiplyWithQuantity,
@@ -482,7 +478,7 @@ class Products {
         "date_now": dateNow,
         "description": description,
         "model": model,
-        "is_available_in_market": isAvailableInMarket,
+
         "features": features,
 
         "boutique": boutique?.toJson(),
@@ -502,7 +498,7 @@ class Products {
         "count_of_likes": countOfLikes,
         "tax": tax,
         "unit_price": unitPrice,
-        "current_stock": currentStock,
+        "available_quantity": availableQuantity,
         "count_of_pieces": countOfPieces,
         "Left_stock": leftStock,
 

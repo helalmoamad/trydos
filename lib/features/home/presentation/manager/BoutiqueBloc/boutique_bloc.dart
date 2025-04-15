@@ -90,31 +90,31 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
   PrefetchProductsForFirstFiveFilter(
       {filters_model.Filter? filter,
       String? boutiqueSlug,
-      String? categorySlug}) {
-    add(GetProductsWithFiltersWithPrefetchForFiveFiltersEvent(
-        filterType: "Empty",
-        boutiqueSlug: boutiqueSlug!,
-        category: categorySlug,
-        attribute: null,
-        filterSlug: "Empty"));
-
+      String? categorySlug}) async {
     int countOfPreFetchForFiveFilters = 0;
     if ((filter?.categories?.length ?? 0) > 0) {
+      countOfPreFetchForFiveFilters = countOfPreFetchForFiveFilters + 1;
       for (var i = 0; i < (filter?.categories?.length ?? 0); i++) {
+        await Future.delayed(Duration(seconds: 1));
         add(GetProductsWithFiltersWithPrefetchForFiveFiltersEvent(
             filterType: "category",
-            boutiqueSlug: boutiqueSlug,
+            boutiqueSlug: boutiqueSlug!,
             category: categorySlug,
             attribute: null,
             filterSlug: filter?.categories![i].slug ?? ""));
+        if (countOfPreFetchForFiveFilters == 6) {
+          break;
+        }
       }
     }
-    if ((filter?.brands?.length ?? 0) > 0) {
+    if ((filter?.brands?.length ?? 0) > 0 &&
+        countOfPreFetchForFiveFilters < 6) {
       for (var i = 0; i < (filter?.brands?.length ?? 0); i++) {
         countOfPreFetchForFiveFilters = countOfPreFetchForFiveFilters + 1;
+        await Future.delayed(Duration(seconds: 1));
         add(GetProductsWithFiltersWithPrefetchForFiveFiltersEvent(
             filterType: "brand",
-            boutiqueSlug: boutiqueSlug,
+            boutiqueSlug: boutiqueSlug!,
             category: categorySlug,
             attribute: null,
             filterSlug: filter?.brands![i].slug ?? ""));
@@ -127,10 +127,11 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     if ((filter?.attributes?.length ?? 0) > 0 &&
         countOfPreFetchForFiveFilters < 6) {
       for (var i = 0; i < (filter?.attributes![0].options?.length ?? 0); i++) {
+        await Future.delayed(Duration(seconds: 1));
         countOfPreFetchForFiveFilters = countOfPreFetchForFiveFilters + 1;
         add(GetProductsWithFiltersWithPrefetchForFiveFiltersEvent(
             filterType: "attribute",
-            boutiqueSlug: boutiqueSlug,
+            boutiqueSlug: boutiqueSlug!,
             category: categorySlug,
             attribute: filter?.attributes![0]
                 .copyWith(options: [filter.attributes![0].options![i]]),
@@ -144,10 +145,11 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     if ((filter?.colors?.length ?? 0) > 0 &&
         countOfPreFetchForFiveFilters < 6) {
       for (var i = 0; i < (filter?.colors?.length ?? 0); i++) {
+        await Future.delayed(Duration(seconds: 1));
         countOfPreFetchForFiveFilters = countOfPreFetchForFiveFilters + 1;
         add(GetProductsWithFiltersWithPrefetchForFiveFiltersEvent(
             filterType: "color",
-            boutiqueSlug: boutiqueSlug,
+            boutiqueSlug: boutiqueSlug!,
             category: categorySlug,
             attribute: null,
             filterSlug: filter?.colors![i] ?? ""));
@@ -160,10 +162,11 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     ranges.removeWhere((element) => element.count == 0);
     if ((ranges.length) > 0 && countOfPreFetchForFiveFilters < 6) {
       for (var i = 0; i < (ranges.length); i++) {
+        await Future.delayed(Duration(seconds: 1));
         countOfPreFetchForFiveFilters = countOfPreFetchForFiveFilters + 1;
         add(GetProductsWithFiltersWithPrefetchForFiveFiltersEvent(
             filterType: "price",
-            boutiqueSlug: boutiqueSlug,
+            boutiqueSlug: boutiqueSlug!,
             category: categorySlug,
             attribute: null,
             filterSlug: "${ranges[i].minPrice}-${ranges[i].maxPrice}"));
@@ -188,29 +191,11 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     String key = '${event.boutiqueSlug}' +
         '${event.filterSlug}' +
         '${(event.category ?? '')}';
-    List<String> keyForFirstFiveFilterList =
-        prefsRepository.getFiveFilterForEachBoutiqueHasPrefechInHomePage() ??
-            [];
-    if (keyForFirstFiveFilterList.contains(key)) {
-      return;
-    }
+    List<String> keyForFirstFiveFilterList = GetIt.I<PrefsRepository>()
+            .getFiveFilterForEachBoutiqueHasPrefechInHomePage() ??
+        [];
 
-    Map<String, PaginationModel<product.Products>?>?
-        getProductListingWithFiltersPaginationWithPrefetchModels =
-        Map.of(state.getProductListingWithFiltersPaginationWithPrefetchModels);
-
-    if (getProductListingWithFiltersPaginationWithPrefetchModels[key] == null) {
-      getProductListingWithFiltersPaginationWithPrefetchModels[key] =
-          PaginationModel.init();
-    }
-
-    emit(state.copyWith(
-        getProductListingWithFiltersPaginationWithPrefetchModels:
-            getProductListingWithFiltersPaginationWithPrefetchModels));
-
-    if (getProductListingWithFiltersPaginationWithPrefetchModels[key]
-            ?.paginationStatus ==
-        PaginationStatus.success) {
+    if (keyForFirstFiveFilterList.contains(key) || key == event.boutiqueSlug) {
       return;
     }
 
@@ -269,9 +254,6 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             Map.of(getProductListingWithFiltersPaginationWithPrefetchModels),
       ));
     }, (r) {
-      print(
-          "###########################...............11111111111111111111111111111111111111111${key}111111111111111111111111111111111${jsonEncode(r.data)}+++++++++++");
-
       prefsRepository.setPrefechForFiveFilterForEachBoutiqueInHomePage(
           key, jsonEncode(r.data));
       Map<String, List<double>> searchWithFilterOffset =
@@ -501,8 +483,6 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       print(e);
       print(st);
     }
-    print(
-        "2222222222222222222222222222222222222222222223333333333333333333333333${filters.searchText ?? event.searchText}");
     final response = await getProductFiltersUseCase(GetProductsFiltersParams(
       limit: 10,
       scroll_id: null,
@@ -638,7 +618,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       List<String> cachedLinksOfImages = [];
       String url, url2;
       r.data?.products?.forEach((product) {
-        product.syncColorImages?.forEach((image) {
+        /* product.syncColorImages?.forEach((image) {
           if (!image.images.isNullOrEmpty) {
             image.images?.forEach((image) {
               url = addSuitableWidthAndHeightToImage(
@@ -666,7 +646,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             });
           }
         });
-
+*/
         product.syncColorImages?.forEach((image) {
           if (!image.images.isNullOrEmpty) {
             url = addSuitableWidthAndHeightToImage(
@@ -697,16 +677,18 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               ordinalHeight: double.tryParse(image.originalHeight.toString()));
           url2 = addSuitableWidthAndHeightToImage(
             imageUrl: image.filePath!,
-            width: 320,
+            width: 200.w,
             // the width of the image in the ui
-            height: 464,
+            height: 350,
           );
           if (!cachedLinksOfImages.contains(url)) {
             prefetchImages(url, event.context);
           }
-          if (!cachedLinksOfImages.contains(url2)) {
-            prefetchImages(url2, event.context);
-          }
+          Future.delayed(Duration(seconds: 5), () {
+            if (!cachedLinksOfImages.contains(url2)) {
+              prefetchImages(url2, event.context);
+            }
+          });
         });
       });
       r.data?.categories?.forEach((category) {
@@ -870,21 +852,22 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         getProductListingWithFiltersPaginationWithPrefetchModels:
             Map.of(getProductListingWithFiltersForFirstFiveFilter),
       ));
+
       if (!data.containsValue(key)) {
         data.addAll({key: filters_model.GetProductFiltersModel()});
       }
-      if (!getProductListingWithFiltersPaginationModels.containsValue(key)) {
+      if (!getProductListingWithFiltersPaginationModels
+          .containsValue(event.boutiqueSlug)) {
         getProductListingWithFiltersPaginationModels
-            .addAll({key: PaginationModel.init()});
+            .addAll({keyWithoutFilter: PaginationModel.init()});
       }
       data.removeWhere((key, value) =>
           !(key.contains(event.boutiqueSlug)) && !(key.contains("search")));
       getProductListingWithFiltersPaginationModels.removeWhere((key, value) =>
           !(key.contains(event.boutiqueSlug)) && !(key.contains("search")));
-      final responseFromSharedPrefrence = jsonDecode(
+      Map<String, dynamic> responseFromSharedPrefrence = jsonDecode(
           prefsRepository.getPrefechOfProductsForEachBoutiqueInHomePage(key) ??
               "{}");
-
       DataGetProductListingWithFiltersModel getProductListingWithFiltersModel =
           responseFromSharedPrefrence == {}
               ? DataGetProductListingWithFiltersModel()
@@ -926,12 +909,6 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
           filter: filter);
     }*/
 
-    if (getProductListingWithFiltersPaginationModels[keyWithoutFilter] ==
-        null) {
-      getProductListingWithFiltersPaginationModels[keyWithoutFilter] =
-          PaginationModel.init();
-    }
-
     /*Map<String, bool> reRequestProductWithFilters =
         Map.of(state.reRequestProductWithFilters);
     if (!reRequestProductWithFilters.containsKey(keyWithoutFilter)) {
@@ -956,7 +933,11 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         : state.appliedFiltersByUser[key]?.filters?.copyWithSaveOtherField(
                 searchText: event.searchText, prices: prePrice) ??
             filters_model.Filter();
-
+    if (getProductListingWithFiltersPaginationModels[keyWithoutFilter] ==
+        null) {
+      getProductListingWithFiltersPaginationModels
+          .addAll({keyWithoutFilter: PaginationModel.init()});
+    }
     if (!((event.cashedOrginalBoutique && !(event.fromSearch ?? false)) &&
         getProductListingWithFiltersPaginationModels[keyWithoutFilter]
                 ?.paginationStatus ==
@@ -1058,6 +1039,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     } else {
       getProductFiltersStatus[key] = GetProductFiltersStatus.loading;
     }
+    print(
+        "Sssssssssssssssssssssssssssssss${keyWithoutFilter}ssssssss${getProductListingWithFiltersPaginationModels[keyWithoutFilter]?.items.length}ssssssssssssssssssssssssssssss7777777777777777777777777711111111");
 
     emit(state.copyWith(
       getProductFiltersModel: Map.of(data),
@@ -1169,6 +1152,41 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               Map.of(getProductListingWithFiltersPaginationModels),
           appliedFiltersByUser: Map.of(prevAppliedFiltersByUser)));
     }, (r) {
+      if (event.context != null) {
+        List<String> cachedLinksOfImages = [];
+        String url, url2;
+        r.data?.products?.forEach((product) {
+          product.syncColorImages?.forEach((image) {
+            if (!image.images.isNullOrEmpty) {
+              image.images?.forEach((image) {
+                url = addSuitableWidthAndHeightToImage(
+                    imageUrl: image.filePath!,
+                    width: 200,
+                    // the width of the image in the ui
+                    height: 290,
+                    // the height of the image in the ui
+                    ordinalWidth:
+                        double.tryParse(image.originalWidth.toString()),
+                    ordinalHeight:
+                        double.tryParse(image.originalHeight.toString()));
+                url2 = addSuitableWidthAndHeightToImage(
+                  imageUrl: image.filePath!,
+                  width: 320,
+                  // the width of the image in the ui
+                  height: 464,
+                );
+                cachedLinksOfImages.add(url);
+                cachedLinksOfImages.add(url2);
+                prefetchImages(url, event.context!);
+                prefetchImages(
+                  url2,
+                  event.context!,
+                );
+              });
+            }
+          });
+        });
+      }
       if (event.cashedOrginalBoutique &&
           !(event.fromSearch ?? false) &&
           !(event.getWithPagination)) {

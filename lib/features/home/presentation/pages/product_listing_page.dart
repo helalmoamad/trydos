@@ -390,6 +390,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
           boutiqueSlug: widget.boutiqueSlug,
           fromSearch: widget.fromSearch,
           category: widget.category,
+          context: context,
           searchText: controller?.text,
           offset: 1));
     }
@@ -421,6 +422,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
           return;
         }
         boutiqueBloc.add(GetProductsWithFiltersEvent(
+            context: context,
             fromNotification: widget.fromNotificationCategory,
             limit: 10,
             cashedOrginalBoutique: !widget.fromSearch,
@@ -2715,7 +2717,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                 .productId
                                                                 .toString()]
                                                         ?.product
-                                                        ?.inStock ==
+                                                        ?.availableQuantity ==
                                                     false) {
                                                   productNotAvailableNotifier
                                                           .value =
@@ -2935,7 +2937,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                     .productId
                                                                     .toString()]
                                                             ?.product
-                                                            ?.currentStock,
+                                                            ?.availableQuantity,
                                                     collectedAfterOrdering: state
                                                             .cachedProductWithoutRelatedProductsModel[
                                                                 products[
