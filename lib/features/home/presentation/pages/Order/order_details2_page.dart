@@ -9,9 +9,12 @@ import '../../../../../generated/locale_keys.g.dart';
 import '../../../../app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import '../../../../app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import '../../../../app/my_cached_network_image.dart';
+import '../../../data/models/get_orders_model.dart';
 
 class OrderDetails2 extends StatelessWidget {
-  const OrderDetails2({super.key});
+  OrderDetails2({super.key, required this.order});
+
+  final OrderListModel order;
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +82,7 @@ class OrderDetails2 extends StatelessWidget {
                 height: 11.h,
               ),
               ///////////////////
-              buildFirstSection(context, '6'),
+              buildFirstSection(context, order.details!.length.toString()),
               ///////////////////
               SizedBox(
                 height: 10.h,
@@ -124,7 +127,7 @@ class OrderDetails2 extends StatelessWidget {
                                 TextSpan(text: '${LocaleKeys.buying.tr()} '),
                                 /////////////////////////
                                 TextSpan(
-                                  text: '6',
+                                  text: '${order.details?.length ?? 0}',
                                   style:
                                       context.textTheme.bodyMedium?.bq.copyWith(
                                     color: const Color(0xff1D1D1D),
@@ -137,7 +140,7 @@ class OrderDetails2 extends StatelessWidget {
                                 TextSpan(text: ' ${LocaleKeys.item.tr()} . '),
                                 /////////////////////////
                                 TextSpan(
-                                  text: '200',
+                                  text: '${order.orderAmount}',
                                   style:
                                       context.textTheme.bodyMedium?.bq.copyWith(
                                     color: const Color(0xff1D1D1D),
@@ -147,7 +150,7 @@ class OrderDetails2 extends StatelessWidget {
                                   ),
                                 ),
                                 /////////////////////////
-                                TextSpan(text: ' USD'),
+                                TextSpan(text: ' currency'),
                                 /////////////////////////
                               ],
                             ),
@@ -266,7 +269,7 @@ class OrderDetails2 extends StatelessWidget {
                                             MainAxisAlignment.end,
                                         children: [
                                           Text(
-                                            'pending',
+                                            order.orderStatus?.label ?? '',
                                             overflow: TextOverflow.ellipsis,
                                             style: context
                                                 .textTheme.bodyMedium?.rq
@@ -310,12 +313,12 @@ class OrderDetails2 extends StatelessWidget {
                           ),
                           ///////////////////
                           ListView.separated(
-                            itemCount: 5,
+                            itemCount: order.details?.length ?? 0,
                             shrinkWrap: true,
                             physics: NeverScrollableScrollPhysics(),
                             itemBuilder: (context, index) {
                               return Container(
-                                height: 150,
+                                height: 170,
                                 child: Row(
                                   children: [
                                     ClipRRect(
@@ -323,8 +326,9 @@ class OrderDetails2 extends StatelessWidget {
                                       child: Container(
                                         color: Colors.white,
                                         child: MyCachedNetworkImage(
-                                          imageUrl:
-                                              'https://res.cloudinary.com/dtcmozf4d/image/upload/v1/product/2025-02-24-67bc4c4a5eb5f.png',
+                                          imageUrl: order.details?[index]
+                                                  .productDetails?.images?[0] ??
+                                              '',
                                           imageFit: BoxFit.contain,
                                           width: 100,
                                           height: 150,
@@ -356,15 +360,18 @@ class OrderDetails2 extends StatelessWidget {
                                                 ),
                                                 ///////////////////
                                                 const SizedBox(
-                                                  height: 5,
+                                                  height: 15,
                                                 ),
                                                 ///////////////////
                                                 Text(
-                                                  'Women Short Dress',
-                                                  // LocaleKeys.order_invoice.tr(),
+                                                  order
+                                                          .details?[index]
+                                                          .productDetails
+                                                          ?.name ??
+                                                      '',
                                                   overflow:
                                                       TextOverflow.ellipsis,
-                                                  maxLines: 1,
+                                                  maxLines: 2,
                                                   style: context
                                                       .textTheme.bodyMedium?.rq
                                                       .copyWith(
@@ -399,11 +406,22 @@ class OrderDetails2 extends StatelessWidget {
                                                         children: [
                                                           TextSpan(
                                                             text:
-                                                                '${LocaleKeys.color.tr()}:',
+                                                                '${LocaleKeys.color.tr()} : ',
                                                           ),
                                                           ////////////////////////////
                                                           TextSpan(
-                                                            text: ' Denim Blue',
+                                                            text: order
+                                                                        .details?[
+                                                                            index]
+                                                                        .variation ==
+                                                                    null
+                                                                ? ''
+                                                                : order
+                                                                        .details?[
+                                                                            index]
+                                                                        .variation
+                                                                        ?.color ??
+                                                                    '',
                                                             style: context
                                                                 .textTheme
                                                                 .bodyMedium
@@ -446,12 +464,22 @@ class OrderDetails2 extends StatelessWidget {
                                                           children: [
                                                             TextSpan(
                                                               text:
-                                                                  '${LocaleKeys.size.tr()}:',
+                                                                  '${LocaleKeys.size.tr()} : ',
                                                             ),
                                                             ////////////////////////////
                                                             TextSpan(
-                                                              text:
-                                                                  ' Medium 38',
+                                                              text: order
+                                                                          .details?[
+                                                                              index]
+                                                                          .variation ==
+                                                                      null
+                                                                  ? ''
+                                                                  : order
+                                                                          .details?[
+                                                                              index]
+                                                                          .variation
+                                                                          ?.size ??
+                                                                      '',
                                                               style: context
                                                                   .textTheme
                                                                   .bodyMedium
@@ -541,11 +569,14 @@ class OrderDetails2 extends StatelessWidget {
                                                           children: [
                                                             TextSpan(
                                                               text:
-                                                                  '${LocaleKeys.item.tr()}:',
+                                                                  '${LocaleKeys.item.tr()}: ',
                                                             ),
                                                             ////////////////////////////
                                                             TextSpan(
-                                                              text: ' 1',
+                                                              text: order
+                                                                  .details
+                                                                  ?.length
+                                                                  .toString(),
                                                               style: context
                                                                   .textTheme
                                                                   .bodyMedium
@@ -592,11 +623,14 @@ class OrderDetails2 extends StatelessWidget {
                                                           children: [
                                                             TextSpan(
                                                               text:
-                                                                  '${LocaleKeys.item_status.tr()}:',
+                                                                  '${LocaleKeys.item_status.tr()}: ',
                                                             ),
                                                             ////////////////////////////
                                                             TextSpan(
-                                                              text: 'pendeing',
+                                                              text: order
+                                                                      .orderStatus
+                                                                      ?.label ??
+                                                                  '',
                                                               style: context
                                                                   .textTheme
                                                                   .bodyMedium
@@ -645,7 +679,8 @@ class OrderDetails2 extends StatelessWidget {
                                                     ),
                                                     children: [
                                                       TextSpan(
-                                                        text: '200',
+                                                        text:
+                                                            '${order.details?[index].price}',
                                                         style: context.textTheme
                                                             .bodyMedium?.rq
                                                             .copyWith(
@@ -661,7 +696,8 @@ class OrderDetails2 extends StatelessWidget {
                                                       ),
                                                       ////////////////////////////
                                                       TextSpan(
-                                                        text: ' 140',
+                                                        text:
+                                                            ' ${order.details?[index].priceAfterDiscount}',
                                                         style: context.textTheme
                                                             .bodyMedium?.bq
                                                             .copyWith(
@@ -674,7 +710,7 @@ class OrderDetails2 extends StatelessWidget {
                                                       ),
                                                       /////////////
                                                       TextSpan(
-                                                        text: ' USD',
+                                                        text: ' currency',
                                                         style: context.textTheme
                                                             .bodyMedium?.lq
                                                             .copyWith(

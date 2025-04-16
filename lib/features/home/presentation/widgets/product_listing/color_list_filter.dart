@@ -9,6 +9,9 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 
@@ -18,11 +21,11 @@ import '../../../../../service/firebase_analytics_service/analytics_const/analyt
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../data/models/get_product_filters_model.dart';
-import '../../manager/home_bloc.dart';
-import '../../manager/home_event.dart';
-import '../../manager/home_state.dart';
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import '../../manager/homeBloc/home_bloc.dart';
+import '../../manager/homeBloc/home_event.dart';
+import '../../manager/homeBloc/home_state.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -98,7 +101,8 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                   AppAssets.registerInfoSvg,
                   color: Color(0xffD3D3D3),
                 ),
-                BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
+                BlocBuilder<BoutiqueBloc, BoutiqueState>(
+                    builder: (context, state) {
                   if (state.getProductFiltersStatus[key] ==
                       GetProductFiltersStatus.loading) {
                     return Row(
@@ -126,14 +130,15 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                   shrinkWrap: true,
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (ctx, index) {
-                    HomeBloc homeBloc = BlocProvider.of<HomeBloc>(context);
+                    BoutiqueBloc boutiqueBloc =
+                        BlocProvider.of<BoutiqueBloc>(context);
                     bool isSelected = widget.hideTitle
-                        ? (homeBloc.state.appliedFiltersByUser[key]?.filters
+                        ? (boutiqueBloc.state.appliedFiltersByUser[key]?.filters
                                 ?.colors
                                 ?.any((element) =>
                                     element == widget.colors[index]) ??
                             false)
-                        : (homeBloc.state.choosedFiltersByUser[key]?.filters
+                        : (boutiqueBloc.state.choosedFiltersByUser[key]?.filters
                                 ?.colors
                                 ?.any((element) =>
                                     element == widget.colors[index]) ??
@@ -150,10 +155,10 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                             String color = widget.colors[index];
                             Filter? prevChoosedOrAppliedFilterToAddToIt =
                                 widget.hideTitle
-                                    ? homeBloc.state.appliedFiltersByUser[key]
-                                        ?.filters
-                                    : homeBloc.state.choosedFiltersByUser[key]
-                                        ?.filters;
+                                    ? boutiqueBloc.state
+                                        .appliedFiltersByUser[key]?.filters
+                                    : boutiqueBloc.state
+                                        .choosedFiltersByUser[key]?.filters;
                             List<String>? colors = List.of(
                                 prevChoosedOrAppliedFilterToAddToIt?.colors ??
                                     []);
@@ -207,21 +212,21 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                               print(
                                   "........................................ddddddddddddddddd${widget.colors[index]}ddddddddddddddddddddddddddddddddddddddddd");
 
-                              homeBloc.add(ChangeAppliedFiltersEvent(
+                              boutiqueBloc.add(ChangeAppliedFiltersEvent(
                                 category: widget.category,
                                 boutiqueSlug: widget.boutiqueSlug,
                                 filtersAppliedByUser: GetProductFiltersModel(
                                     filters:
                                         prevChoosedOrAppliedFilterToAddToIt),
                               ));
-                              homeBloc.add(GetProductsWithFiltersEvent(
+                              boutiqueBloc.add(GetProductsWithFiltersEvent(
                                   fromSearch: widget.fromHomeSearch,
                                   searchText: widget.searchText,
                                   boutiqueSlug: widget.boutiqueSlug,
                                   category: widget.category,
                                   offset: 1));
                             } else {
-                              homeBloc.add(ChangeSelectedFiltersEvent(
+                              boutiqueBloc.add(ChangeSelectedFiltersEvent(
                                 fromHomePageSearch: widget.fromHomeSearch,
                                 requestToUpdateFilters: true,
                                 category: widget.category,

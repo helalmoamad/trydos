@@ -4,8 +4,10 @@ import 'package:get_it/get_it.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/common/test_utils/widgets_keys.dart';
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_state.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/home_page_card2.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_item.dart';
 import 'package:trydos/main.dart' as app;
@@ -18,7 +20,7 @@ void main() {
 
   Future<void> noLoadingTest({
     required WidgetTester tester,
-    required HomeState homeState,
+    required BoutiqueState boutiqueState,
   }) async {
     // ///////////  no loading  /////////
     Finder boutiqueProductListingLoadingWidget =
@@ -32,14 +34,15 @@ void main() {
       failedMessage: 'Find No boutique Product Listing Loading Widget failed',
     );
     // ///////////  test the data in state for filters and products  /////////
-    expect(homeState.getProductListingWithFiltersPaginationModels, isNotNull);
+    expect(
+        boutiqueState.getProductListingWithFiltersPaginationModels, isNotNull);
 
-    expect(homeState.getProductListingWithFiltersPaginationModels,
+    expect(boutiqueState.getProductListingWithFiltersPaginationModels,
         isNot(equals({})));
 
-    expect(homeState.getProductFiltersModel, isNotNull);
+    expect(boutiqueState.getProductFiltersModel, isNotNull);
 
-    expect(homeState.getProductFiltersModel, isNot(equals({})));
+    expect(boutiqueState.getProductFiltersModel, isNot(equals({})));
     // ///////////  Find product List and filters  /////////
     Finder productListFilterWidget =
         find.byKey(Key(WidgetsKeys.productListFilterKey));
@@ -97,10 +100,10 @@ void main() {
       await tester.pump();
       await Future.delayed(const Duration(seconds: 1));
       ///////////// no Loading for products because of prefetch and cache  /////////////
-      HomeBloc homeBloc = GetIt.I<HomeBloc>();
-      HomeState homeState = homeBloc.state;
+      BoutiqueBloc boutiqueBloc = GetIt.I<BoutiqueBloc>();
+      BoutiqueState boutiqueState = boutiqueBloc.state;
       //////////////////////////////////////////////////////////
-      await noLoadingTest(tester: tester, homeState: homeState);
+      await noLoadingTest(tester: tester, boutiqueState: boutiqueState);
       await tester.pumpAndSettle();
 
       ///////////  Test if products belong to the  Boutique  ///////////////
@@ -189,7 +192,7 @@ void main() {
       await tester.pump();
       await Future.delayed(const Duration(seconds: 1));
       //////////////////////////
-      await noLoadingTest(tester: tester, homeState: homeState);
+      await noLoadingTest(tester: tester, boutiqueState: boutiqueState);
       await tester.pumpAndSettle();
       ////////////////////////////////
       //////////// Test products in the second Boutique belong to it  //////////////
@@ -259,7 +262,7 @@ void main() {
       await Future.delayed(const Duration(seconds: 1));
       //////////////////////////
       ///////////////  test the products come from cache and old date is before new date////////////////
-      await noLoadingTest(tester: tester, homeState: homeState);
+      await noLoadingTest(tester: tester, boutiqueState: boutiqueState);
       await tester.pumpAndSettle();
       await Future.delayed(const Duration(seconds: 2));
       //////////////////////////

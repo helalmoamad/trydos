@@ -24,8 +24,10 @@ import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
 import 'package:trydos/features/chat/presentation/pages/calls_page_content.dart';
 import 'package:trydos/features/chat/presentation/pages/chat_page_content.dart';
 import 'package:trydos/features/chat/presentation/pages/stories_page_content.dart';
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../common/helper/show_message.dart';
@@ -116,7 +118,7 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
     return WillPopScope(
       onWillPop: () async {
         BlocProvider.of<AppBloc>(context).add(ChangeBasePage(0));
-        BlocProvider.of<HomeBloc>(context)
+        BlocProvider.of<BoutiqueBloc>(context)
             .add(ResetAllSelectedAppliedFilterEvent());
         return false;
       },

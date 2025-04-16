@@ -7,12 +7,17 @@ import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart';
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/pages/cart_page_new.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/main.dart';
+
+import '../../../../features/home/presentation/manager/orderBloc/order_bloc.dart';
+import '../../../../features/home/presentation/manager/orderBloc/order_event.dart';
 
 enum TypeOfNotificationForMarketEnum {
   product_cart_expiration,
@@ -90,7 +95,7 @@ class HandlingMarketNotifications {
     if (data["type"] ==
         typeOfNotificationForMarket[
             TypeOfNotificationForMarketEnum.order_placed]) {
-      GetIt.I<HomeBloc>().add(
+      GetIt.I<OrderBloc>().add(
           GetOrdersByOrderGroupIDEvent(orderGroupId: data["order_group_id"]));
     }
     if (data["type"] ==
@@ -263,10 +268,10 @@ class HandlingMarketNotifications {
           typeOfNotificationForMarket[
               TypeOfNotificationForMarketEnum.category_created]) {
         try {
-          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
+          BlocProvider.of<BoutiqueBloc>(navigatorKey.currentState!.context).add(
               ChangeAppliedFiltersEvent(
                   boutiqueSlug: "search", resetAppliedFilters: true));
-          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
+          BlocProvider.of<BoutiqueBloc>(navigatorKey.currentState!.context).add(
               ChangeSelectedFiltersEvent(
                   boutiqueSlug: "search",
                   fromHomePageSearch: true,

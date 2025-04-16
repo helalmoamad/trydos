@@ -22,7 +22,7 @@ import 'package:trydos/features/authentication/domain/use_cases/verify_guest_pho
 import 'package:trydos/features/authentication/domain/use_cases/verify_otp_signin_usecase.dart';
 import 'package:trydos/features/calls/data/models/agora_token_remote_response_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import '../../../../common/constant/countries.dart';
 import '../../../../common/helper/show_message.dart';
@@ -31,7 +31,7 @@ import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../main.dart';
 import '../../../../service/notification_service/notification_service/handle_notification/notification_process.dart';
 import '../../../chat/presentation/manager/chat_event.dart';
-import '../../../home/presentation/manager/home_event.dart';
+import '../../../home/presentation/manager/homeBloc/home_event.dart';
 import '../../data/models/verify_otp_sign_up_and_in_response_model.dart';
 import '../../domain/use_cases/create_user_usecase.dart';
 import '../../domain/use_cases/get_customer_info_usecase.dart';

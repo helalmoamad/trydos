@@ -8,13 +8,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 import '../../../../../common/test_utils/test_var.dart';
 import '../../../../../common/test_utils/widgets_keys.dart';
 import '../../../data/models/get_product_filters_model.dart';
-import '../../manager/home_bloc.dart';
-import '../../manager/home_event.dart';
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import '../../manager/homeBloc/home_bloc.dart';
+import '../../manager/homeBloc/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -81,11 +83,11 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
             width: 10,
           ),
           itemBuilder: (ctx, index) {
-            HomeBloc homeBloc = BlocProvider.of<HomeBloc>(context);
-            bool isSelected = (homeBloc.state.appliedFiltersByUser[key]?.filters
-                        ?.prices?.minPrice ==
+            BoutiqueBloc boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
+            bool isSelected = (boutiqueBloc.state.appliedFiltersByUser[key]
+                        ?.filters?.prices?.minPrice ==
                     widget.priceRanges[index].maxPrice) &&
-                (homeBloc.state.appliedFiltersByUser[key]?.filters?.prices
+                (boutiqueBloc.state.appliedFiltersByUser[key]?.filters?.prices
                         ?.maxPrice ==
                     widget.priceRanges[index].minPrice);
             return Stack(
@@ -97,9 +99,9 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
                           '${WidgetsKeys.priceCircleProductListingFilterKey}$index'),
                   onTap: () {
                     print('tab on price');
-                    HomeBloc homeBloc = BlocProvider.of<HomeBloc>(context);
+
                     Filter? prevChoosedOrAppliedFilterToAddToIt =
-                        homeBloc.state.appliedFiltersByUser[key]?.filters;
+                        boutiqueBloc.state.appliedFiltersByUser[key]?.filters;
                     if (prevChoosedOrAppliedFilterToAddToIt == null) {
                       prevChoosedOrAppliedFilterToAddToIt = Filter();
                     }
@@ -146,13 +148,13 @@ class _PriceFiltersRangesListState extends State<PriceFiltersRangesList> {
                                       prevChoosedOrAppliedFilterToAddToIt
                                           .searchText);
                     }
-                    homeBloc.add(ChangeAppliedFiltersEvent(
+                    boutiqueBloc.add(ChangeAppliedFiltersEvent(
                       category: widget.category,
                       boutiqueSlug: widget.boutiqueSlug,
                       filtersAppliedByUser: GetProductFiltersModel(
                           filters: prevChoosedOrAppliedFilterToAddToIt),
                     ));
-                    homeBloc.add(GetProductsWithFiltersEvent(
+                    boutiqueBloc.add(GetProductsWithFiltersEvent(
                         fromSearch: widget.fromHomeSearch,
                         searchText: widget.searchText,
                         boutiqueSlug: widget.boutiqueSlug,

@@ -18,19 +18,22 @@ import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
-import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:tuple/tuple.dart';
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../search/presentation/widgets/close_circle.dart';
-import '../../manager/home_bloc.dart';
-import '../../manager/home_state.dart';
+import '../../manager/homeBloc/home_bloc.dart';
+import '../../manager/homeBloc/home_state.dart';
 
 class PriceFilter extends StatefulWidget {
   const PriceFilter({
@@ -69,12 +72,12 @@ class PriceFilter extends StatefulWidget {
 }
 
 class _PriceFilterState extends State<PriceFilter> {
-  late final HomeBloc homeBloc;
+  late final BoutiqueBloc boutiqueBloc;
   String key = '';
   @override
   void initState() {
     key = widget.boutiqueSlug! + (widget.category ?? '');
-    homeBloc = BlocProvider.of<HomeBloc>(context);
+    boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
     super.initState();
   }
 
@@ -226,10 +229,10 @@ class _PriceFilterState extends State<PriceFilter> {
                             Tuple2(lowerValue, upperValue);
                       },
                       onDragCompleted: (handlerIndex, lowerValue, upperValue) {
-                        Filter filter =
-                            homeBloc.state.choosedFiltersByUser[key]?.filters ??
-                                Filter();
-                        homeBloc.add(ChangeSelectedFiltersEvent(
+                        Filter filter = boutiqueBloc
+                                .state.choosedFiltersByUser[key]?.filters ??
+                            Filter();
+                        boutiqueBloc.add(ChangeSelectedFiltersEvent(
                           boutiqueSlug: widget.boutiqueSlug!,
                           requestToUpdateFilters: true,
                           fromHomePageSearch: widget.fromHomeSearch,
@@ -335,7 +338,7 @@ class _PriceFilterState extends State<PriceFilter> {
                               AppAssets.registerInfoSvg,
                               color: Color(0xffD3D3D3),
                             ),
-                            BlocBuilder<HomeBloc, HomeState>(
+                            BlocBuilder<BoutiqueBloc, BoutiqueState>(
                                 builder: (context, state) {
                               if (state.getProductFiltersStatus[key] ==
                                   GetProductFiltersStatus.loading) {

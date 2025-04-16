@@ -13,8 +13,8 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/cart_delivary_adress.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/payment_method.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/successful_order.dart';
@@ -27,7 +27,9 @@ import '../../../../../service/firebase_analytics_service/analytics_const/analyt
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../data/models/place_order_model.dart';
 import '../../../domain/use_cases/place_order_usecase.dart';
-import '../../manager/home_state.dart';
+import '../../manager/homeBloc/home_state.dart';
+import '../../manager/orderBloc/order_bloc.dart';
+import '../../manager/orderBloc/order_state.dart';
 import 'payment_webview.dart';
 
 class PlaceOrder extends StatefulWidget {
@@ -42,19 +44,21 @@ class PlaceOrder extends StatefulWidget {
   final CustomerAddressesInfo customerAddressesInfo;
   final int decimalPointSetting;
   final String currencySymbol;
+  final double exchangeRate;
   const PlaceOrder({
     required this.totalPrice,
     required this.customerAddressesInfo,
     required this.cartImages,
     required this.paymentMethods,
     required this.currencySympole,
+    required this.exchangeRate,
     Key? key,
     required this.availablePaymentMethod,
-    required this.walletBalance,
     required this.decimalPointSetting,
     required this.cartGroupId,
     required this.currencySymbol,
     required this.totalCashed,
+    required this.walletBalance,
   });
   @override
   State<PlaceOrder> createState() => _PlaceOrderState();
@@ -161,15 +165,16 @@ class _PlaceOrderState extends State<PlaceOrder> {
               }
             }
           },
-          child: BlocListener<HomeBloc, HomeState>(
+          child: BlocListener<OrderBloc, OrderState>(
               listenWhen: (previous, current) =>
                   previous.placeOrderStatus != current.placeOrderStatus &&
                   (current.placeOrderStatus == PlaceOrderStatus.success ||
                       current.placeOrderStatus == PlaceOrderStatus.unavailable),
-              listener: (context, state) {
-                debugPrint('placeOrderStatus:  ${state.placeOrderStatus}');
+              listener: (context, orderState) {
+                debugPrint('placeOrderStatus:  ${orderState.placeOrderStatus}');
 
-                if (state.placeOrderStatus == PlaceOrderStatus.unavailable) {
+                if (orderState.placeOrderStatus ==
+                    PlaceOrderStatus.unavailable) {
                   BlocProvider.of<HomeBloc>(context).add(
                     GetCartItemEvent(),
                   );
@@ -187,9 +192,9 @@ class _PlaceOrderState extends State<PlaceOrder> {
                   Navigator.of(context).pop();
                 }
 
-                if (state.placeOrderStatus == PlaceOrderStatus.success) {
+                if (orderState.placeOrderStatus == PlaceOrderStatus.success) {
                   List<OrdersGroupDataModel>? data =
-                      state.placeOrderModel!.data!;
+                      orderState.placeOrderModel!.data!;
 
                   debugPrint('The url is : ${data[0].url}');
 
@@ -231,13 +236,10 @@ class _PlaceOrderState extends State<PlaceOrder> {
                       },
                     );
                     /////////////////////////
-                    orderAmount = orderAmount *
-                        state.getCurrencyForCountryModel!.data!.currency!
-                            .exchangeRate!;
+                    orderAmount = orderAmount * widget.exchangeRate;
 
-                    partialPaymentByWallet = partialPaymentByWallet *
-                        state.getCurrencyForCountryModel!.data!.currency!
-                            .exchangeRate!;
+                    partialPaymentByWallet =
+                        partialPaymentByWallet * widget.exchangeRate;
                     ////////////////////////////////
                     CustomerAddressesInfo customerAddressesInfo =
                         CustomerAddressesInfo(
@@ -309,7 +311,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                   }
                 }
               },
-              child: BlocListener<HomeBloc, HomeState>(
+              child: BlocListener<OrderBloc, OrderState>(
                 listenWhen: (previous, current) =>
                     previous.getOrdersByCartGroupIDStatus !=
                         current.getOrdersByCartGroupIDStatus &&
@@ -353,13 +355,10 @@ class _PlaceOrderState extends State<PlaceOrder> {
                       },
                     );
                     ////////////////////////////////
-                    orderAmount = orderAmount *
-                        state.getCurrencyForCountryModel!.data!.currency!
-                            .exchangeRate!;
+                    orderAmount = orderAmount * widget.exchangeRate;
 
-                    partialPaymentByWallet = partialPaymentByWallet *
-                        state.getCurrencyForCountryModel!.data!.currency!
-                            .exchangeRate!;
+                    partialPaymentByWallet =
+                        partialPaymentByWallet * widget.exchangeRate;
                     ////////////////////////////////
                     CustomerAddressesInfo customerAddressesInfo =
                         CustomerAddressesInfo(
@@ -429,60 +428,65 @@ class _PlaceOrderState extends State<PlaceOrder> {
                     );
                   }
                 },
-                child: BlocBuilder<HomeBloc, HomeState>(
+                child: BlocBuilder<OrderBloc, OrderState>(
                   buildWhen: (previous, current) =>
                       previous.placeOrderStatus != current.placeOrderStatus ||
                       previous.getOrdersByCartGroupIDStatus !=
-                          current.getOrdersByCartGroupIDStatus ||
-                      previous.checkWithGetCartStatus !=
+                          current.getOrdersByCartGroupIDStatus,
+                  builder: (context, orderState) {
+                    return BlocBuilder<HomeBloc, HomeState>(
+                      buildWhen: (previous, current) =>
+                          previous.checkWithGetCartStatus !=
                           current.checkWithGetCartStatus,
-                  builder: (context, state) {
-                    return Column(
-                      children: [
-                        buildPageHeader(context),
-                        /////////////////////
-                        Expanded(
-                          child: SingleChildScrollView(
-                            child: Container(
-                              margin: EdgeInsets.symmetric(horizontal: 10),
-                              alignment: Alignment.topCenter,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  buildBagItemsWidget(context),
-                                  //////////////////////////////////
-                                  SizedBox(
-                                    height: 12.h,
+                      builder: (context, homeState) {
+                        return Column(
+                          children: [
+                            buildPageHeader(context),
+                            /////////////////////
+                            Expanded(
+                              child: SingleChildScrollView(
+                                child: Container(
+                                  margin: EdgeInsets.symmetric(horizontal: 10),
+                                  alignment: Alignment.topCenter,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      buildBagItemsWidget(context),
+                                      //////////////////////////////////
+                                      SizedBox(
+                                        height: 12.h,
+                                      ),
+                                      //////////////////////////////////
+                                      buildAddress(context),
+                                      //////////////////////////////////
+                                      PaymentMethod(
+                                        fromSuccessOrder: false,
+                                        amount: widget.walletBalance,
+                                        fromPalceOrder: true,
+                                        paymentMethods: widget.paymentMethods,
+                                        availablePaymentMethod:
+                                            widget.availablePaymentMethod,
+                                        totalPrice: widget.totalPrice,
+                                        decimalPointSetting:
+                                            widget.decimalPointSetting,
+                                        currencySymbol: widget.currencySymbol,
+                                      ),
+                                      /////////////////////////
+                                      SizedBox(
+                                        height: 40.h,
+                                      ),
+                                      //////////////////////////////////
+                                      buildAgreeToPoliciesWidget(),
+                                    ],
                                   ),
-                                  //////////////////////////////////
-                                  buildAddress(context),
-                                  //////////////////////////////////
-                                  PaymentMethod(
-                                    fromSuccessOrder: false,
-                                    amount: widget.walletBalance,
-                                    fromPalceOrder: true,
-                                    paymentMethods: widget.paymentMethods,
-                                    availablePaymentMethod:
-                                        widget.availablePaymentMethod,
-                                    totalPrice: widget.totalPrice,
-                                    decimalPointSetting:
-                                        widget.decimalPointSetting,
-                                    currencySymbol: widget.currencySymbol,
-                                  ),
-                                  /////////////////////////
-                                  SizedBox(
-                                    height: 40.h,
-                                  ),
-                                  //////////////////////////////////
-                                  buildAgreeToPoliciesWidget(),
-                                ],
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                        // //////////////////////////
-                        buildPlaceOrderButton(state)
-                      ],
+                            // //////////////////////////
+                            buildPlaceOrderButton(orderState, homeState)
+                          ],
+                        );
+                      },
                     );
                   },
                 ),
@@ -492,12 +496,16 @@ class _PlaceOrderState extends State<PlaceOrder> {
     );
   }
 
-  Widget buildPlaceOrderButton(HomeState state) {
+  Widget buildPlaceOrderButton(
+    OrderState orderState,
+    HomeState homeState,
+  ) {
     return ValueListenableBuilder<bool>(
       valueListenable: agreeToPolicies,
       builder: (context, _agreeToPolicies, _) {
-        return (state.placeOrderStatus == PlaceOrderStatus.loading ||
-                state.checkWithGetCartStatus == CheckWithGetCartStatus.loading)
+        return (orderState.placeOrderStatus == PlaceOrderStatus.loading ||
+                homeState.checkWithGetCartStatus ==
+                    CheckWithGetCartStatus.loading)
             ? Shimmer.fromColors(
                 baseColor: Colors.grey[300]!,
                 highlightColor: Colors.grey[100]!,
@@ -546,11 +554,11 @@ class _PlaceOrderState extends State<PlaceOrder> {
                             Text(
                               widget.paymentMethods.value
                                       .contains(PaymentMethods.cod)
-                                  ? widget.totalCashed.toStringAsFixed(state
+                                  ? widget.totalCashed.toStringAsFixed(homeState
                                           .startingSetting
                                           ?.decimalPointSettings ??
                                       2)
-                                  : widget.totalPrice.toStringAsFixed(state
+                                  : widget.totalPrice.toStringAsFixed(homeState
                                           .startingSetting
                                           ?.decimalPointSettings ??
                                       2),
@@ -646,14 +654,14 @@ class _PlaceOrderState extends State<PlaceOrder> {
                               Text(
                                 widget.paymentMethods.value
                                         .contains(PaymentMethods.cod)
-                                    ? widget.totalCashed.toStringAsFixed(state
-                                            .startingSetting
-                                            ?.decimalPointSettings ??
-                                        2)
-                                    : widget.totalPrice.toStringAsFixed(state
-                                            .startingSetting
-                                            ?.decimalPointSettings ??
-                                        2),
+                                    ? widget.totalCashed.toStringAsFixed(
+                                        homeState.startingSetting
+                                                ?.decimalPointSettings ??
+                                            2)
+                                    : widget.totalPrice.toStringAsFixed(
+                                        homeState.startingSetting
+                                                ?.decimalPointSettings ??
+                                            2),
                                 style: context.textTheme.bodyMedium?.br
                                     .copyWith(
                                         color: const Color(0xffFEFEFE),

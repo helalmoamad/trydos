@@ -1,41 +1,26 @@
-import 'dart:io';
-import 'dart:math';
-
-import 'package:camera/camera.dart';
-import 'package:country_flags/country_flags.dart';
 import 'package:easy_localization/easy_localization.dart' as transform;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-
 import 'package:get_it/get_it.dart';
-import 'package:mime_type/mime_type.dart';
-import 'package:trydos/common/constant/countries.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
-import 'package:trydos/common/helper/camera_screen.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
-import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/typography.dart';
-
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
-import 'package:trydos/core/utils/extensions/string.dart';
-import 'package:trydos/core/utils/responsive_padding.dart';
-import 'package:trydos/features/app/app_widgets/app_text_field.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
-
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_event.dart';
-import 'package:trydos/features/home/presentation/manager/home_state.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/add_shipping_address.dart';
-
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/language_service.dart';
+import '../../manager/orderBloc/order_bloc.dart';
+import '../../manager/orderBloc/order_event.dart';
+import '../../manager/orderBloc/order_state.dart';
 
 class ProfileAddressInfoPage extends StatefulWidget {
   const ProfileAddressInfoPage({super.key});
@@ -50,6 +35,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
   late AnimationController animationController;
   final ValueNotifier<int> indexTap = ValueNotifier(0);
   late HomeBloc homeBloc;
+  late OrderBloc orderBloc;
   final ValueNotifier<bool> visibleSave = ValueNotifier(false);
   final ValueNotifier<bool> showDeleteAddress = ValueNotifier(false);
   int indexToDelete = 0;
@@ -58,6 +44,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
+    orderBloc = BlocProvider.of<OrderBloc>(context);
     super.initState();
   }
 
@@ -109,8 +96,8 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
                           : InkWell(
                               onTap: () {
                                 try {
-                                  homeBloc.add(SetCustomerAddressDefaultEvent(
-                                      adressId: homeBloc
+                                  orderBloc.add(SetCustomerAddressDefaultEvent(
+                                      adressId: orderBloc
                                           .state
                                           .listOfAddressInfoClassToSave![
                                               indexTap.value]
@@ -145,7 +132,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
               ),
               body: SafeArea(
                   child: SingleChildScrollView(
-                child: BlocBuilder<HomeBloc, HomeState>(
+                child: BlocBuilder<OrderBloc, OrderState>(
                     buildWhen: (previous, current) =>
                         previous.getCustomerAddressStatus !=
                             current.getCustomerAddressStatus ||
@@ -292,7 +279,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
         });
   }
 
-  Widget buildDeleteAddressWidget(BuildContext context, HomeState state) {
+  Widget buildDeleteAddressWidget(BuildContext context, OrderState state) {
     return Container(
       width: 1.sw,
       height: 1.sh - 100.h,
@@ -340,7 +327,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
           InkWell(
             onTap: () {
               showDeleteAddress.value = false;
-              homeBloc.add(DeleteAdressInfoClassEvent(
+              orderBloc.add(DeleteAdressInfoClassEvent(
                   adressInfoClassId:
                       state.listOfAddressInfoClassToSave?[indexToDelete].id));
             },
@@ -503,7 +490,7 @@ class _ProfileAddressInfoPageState extends State<ProfileAddressInfoPage>
   }
 
   Widget buildListOfAddressInfoWidgets(
-      BuildContext context, HomeState state, int _indexTap) {
+      BuildContext context, OrderState state, int _indexTap) {
     return Container(
         width: 1.sw,
         child: Column(

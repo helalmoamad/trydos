@@ -1395,25 +1395,31 @@ class GetOrderRatingModel {
 
 class GetOrderVariationModel {
   final String? color;
+  final String? size;
 
   GetOrderVariationModel({
     this.color,
+    this.size,
   });
 
   GetOrderVariationModel copyWith({
     String? color,
+    String? size,
   }) =>
       GetOrderVariationModel(
         color: color ?? this.color,
+        size: size ?? this.size,
       );
 
   factory GetOrderVariationModel.fromJson(Map<String, dynamic> json) =>
       GetOrderVariationModel(
-        color: json["color"],
+        color: json["color"] ?? '',
+        size: json["Size"] ?? '',
       );
 
   Map<String, dynamic> toJson() => {
         "color": color,
+        "Size": size,
       };
 }
 

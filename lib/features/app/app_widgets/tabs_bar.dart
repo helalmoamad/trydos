@@ -18,7 +18,12 @@ import 'package:trydos/features/app/app_widgets/gallery_and_camera_dialog_widget
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
-import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
+import 'package:trydos/features/home/presentation/manager/categoryBloc/category_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/categoryBloc/category_event.dart';
+import 'package:trydos/features/home/presentation/manager/categoryBloc/category_state.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 import 'package:trydos/features/search/presentation/widgets/search_with_image_related_gemini.dart';
 import 'package:trydos/service/language_service.dart';
@@ -31,8 +36,8 @@ import '../../../service/firebase_analytics_service/analytics_const/analytics_ev
 import '../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
 import '../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../home/data/models/get_product_filters_model.dart';
-import '../../home/presentation/manager/home_bloc.dart';
-import '../../home/presentation/manager/home_state.dart';
+import '../../home/presentation/manager/homeBloc/home_bloc.dart';
+import '../../home/presentation/manager/homeBloc/home_state.dart';
 import '../animated_search_bar/animated_search_bar.dart';
 import '../blocs/app_bloc/app_bloc.dart';
 import '../blocs/app_bloc/app_event.dart';
@@ -57,8 +62,9 @@ class TabsBar extends StatefulWidget {
 
 class _TabsBarState extends State<TabsBar> {
   late AppBloc appBloc;
-  late HomeBloc homeBloc;
+  late BoutiqueBloc boutiqueBloc;
 
+  late CategoryBloc categoryBloc;
   late final geminis.Gemini gemini;
   SpeechToText _speechToText = SpeechToText();
   final ValueNotifier<bool> isRecordeForSearchWithMic = ValueNotifier(false);
@@ -145,12 +151,12 @@ class _TabsBarState extends State<TabsBar> {
           }
           listSearchTextWithoutConstWord
               .forEach((element) => searchText = searchText + " " + element);
-          Filter filters = BlocProvider.of<HomeBloc>(context)
+          Filter filters = BlocProvider.of<BoutiqueBloc>(context)
                   .state
                   .choosedFiltersByUser['search']
                   ?.filters ??
               Filter();
-          BlocProvider.of<HomeBloc>(context).add(
+          BlocProvider.of<BoutiqueBloc>(context).add(
             ChangeSelectedFiltersEvent(
                 boutiqueSlug: 'search',
                 fromHomePageSearch: true,
@@ -165,7 +171,7 @@ class _TabsBarState extends State<TabsBar> {
                   ),
                 )),
           );
-          BlocProvider.of<HomeBloc>(context).add(ChangeAppliedFiltersEvent(
+          BlocProvider.of<BoutiqueBloc>(context).add(ChangeAppliedFiltersEvent(
             boutiqueSlug: 'search',
             filtersAppliedByUser: GetProductFiltersModel(
                 filters: filters.copyWithSaveOtherField(
@@ -177,12 +183,13 @@ class _TabsBarState extends State<TabsBar> {
               searchText: searchText,
             )),
           ));
-          BlocProvider.of<HomeBloc>(context).add(GetProductsWithFiltersEvent(
-              offset: 1,
-              boutiqueSlug: 'search',
-              resetChoosedFilters: false,
-              fromSearch: true,
-              searchText: searchText));
+          BlocProvider.of<BoutiqueBloc>(context).add(
+              GetProductsWithFiltersEvent(
+                  offset: 1,
+                  boutiqueSlug: 'search',
+                  resetChoosedFilters: false,
+                  fromSearch: true,
+                  searchText: searchText));
         }
       },
     );
@@ -204,19 +211,21 @@ class _TabsBarState extends State<TabsBar> {
 
   @override
   void initState() {
-    homeBloc = BlocProvider.of<HomeBloc>(context);
+    categoryBloc = BlocProvider.of<CategoryBloc>(context);
+    boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
     gemini = geminis.Gemini.instance;
 
     widget.controller.clear();
     List<String>? categorySlugs = [];
-    homeBloc.state.mainCategoriesResponseModel?.data?.mainCategories?.forEach(
+    categoryBloc.state.mainCategoriesResponseModel?.data?.mainCategories
+        ?.forEach(
       (element) {
         categorySlugs.add(element.slug!);
       },
     );
     scrollController.addListener(() {
       if (categorySlugs.isEmpty) {
-        homeBloc.state.mainCategoriesResponseModel?.data?.mainCategories
+        categoryBloc.state.mainCategoriesResponseModel?.data?.mainCategories
             ?.forEach(
           (element) {
             categorySlugs.add(element.slug!);
@@ -232,10 +241,10 @@ class _TabsBarState extends State<TabsBar> {
               40);
       lastIndexSeenByUser = min(categorySlugs.length - 1, lastIndexSeenByUser);
       for (int i = 0; i <= lastIndexSeenByUser; i++) {
-        if (homeBloc.state.boutiquesForEveryMainCategoryThatDidPrefetch[
+        if (categoryBloc.state.boutiquesForEveryMainCategoryThatDidPrefetch[
                 categorySlugs[i]] !=
             true) {
-          homeBloc.add(GetHomeBoutiqesEvent(
+          categoryBloc.add(GetHomeBoutiqesEvent(
             getWithPrefetchToStoreInMemory: true,
             getWithPrefetchForEachBoutiques: false,
             context: context,
@@ -263,7 +272,7 @@ class _TabsBarState extends State<TabsBar> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-        child: BlocBuilder<HomeBloc, HomeState>(
+        child: BlocBuilder<CategoryBloc, CategoryState>(
             buildWhen: (oldState, newState) =>
                 (oldState.getMainCategoriesStatus ==
                         GetMainCategoriesStatus.loading &&
@@ -307,12 +316,12 @@ class _TabsBarState extends State<TabsBar> {
                 listSearchTextWithoutConstWord.forEach(
                     (element) => searchText = searchText + " " + element);
                 widget.controller.text = homeState.theReplyFromGemini ?? "";
-                Filter filters = BlocProvider.of<HomeBloc>(context)
+                Filter filters = BlocProvider.of<BoutiqueBloc>(context)
                         .state
                         .choosedFiltersByUser['search']
                         ?.filters ??
                     Filter();
-                BlocProvider.of<HomeBloc>(context)
+                BlocProvider.of<BoutiqueBloc>(context)
                     .add(ChangeSelectedFiltersEvent(
                         boutiqueSlug: 'search',
                         fromHomePageSearch: true,
@@ -325,7 +334,7 @@ class _TabsBarState extends State<TabsBar> {
                           prices: filters.prices,
                           searchText: searchText,
                         ))));
-                BlocProvider.of<HomeBloc>(context)
+                BlocProvider.of<BoutiqueBloc>(context)
                     .add(ChangeAppliedFiltersEvent(
                   boutiqueSlug: 'search',
                   filtersAppliedByUser: GetProductFiltersModel(
@@ -338,7 +347,7 @@ class _TabsBarState extends State<TabsBar> {
                     searchText: searchText,
                   )),
                 ));
-                BlocProvider.of<HomeBloc>(context).add(
+                BlocProvider.of<BoutiqueBloc>(context).add(
                     GetProductsWithFiltersEvent(
                         offset: 1,
                         boutiqueSlug: 'search',
@@ -399,29 +408,30 @@ class _TabsBarState extends State<TabsBar> {
                                   widget.buildSearchResult.value = text.length;
                                   widget.appearTrendingAndHistory.value = true;
 
-                                  homeBloc.add(AddSearchTextToHistoryEvent(
-                                      searchTitle: text));
+                                  BlocProvider.of<HomeBloc>(context).add(
+                                      AddSearchTextToHistoryEvent(
+                                          searchTitle: text));
                                 }
                               },
                               width: 1.sw,
                               height: 50,
                               onClickClose: () {
                                 if (widget.controller.text.length > 0) {
-                                  homeBloc.add(ReplyFromGeminiEvent(
+                                  categoryBloc.add(ReplyFromGeminiEvent(
                                       fromSearch: true,
                                       resetTheReply: true,
                                       theReplyFromGemini: ""));
-                                  Filter filters = homeBloc
+                                  Filter filters = boutiqueBloc
                                           .state
                                           .choosedFiltersByUser['search']
                                           ?.filters ??
                                       Filter();
-                                  Filter appliedFilters = homeBloc
+                                  Filter appliedFilters = boutiqueBloc
                                           .state
                                           .appliedFiltersByUser['search']
                                           ?.filters ??
                                       Filter();
-                                  homeBloc.add(ChangeAppliedFiltersEvent(
+                                  boutiqueBloc.add(ChangeAppliedFiltersEvent(
                                     boutiqueSlug: 'search',
                                     filtersAppliedByUser:
                                         GetProductFiltersModel(
@@ -433,7 +443,7 @@ class _TabsBarState extends State<TabsBar> {
                                       searchText: null,
                                     )),
                                   ));
-                                  homeBloc.add(ChangeSelectedFiltersEvent(
+                                  boutiqueBloc.add(ChangeSelectedFiltersEvent(
                                     boutiqueSlug: 'search',
                                     fromHomePageSearch: true,
                                     filtersChoosedByUser:
@@ -461,7 +471,7 @@ class _TabsBarState extends State<TabsBar> {
                                   return true;
                                 } else {
                                   appBloc.add(ChangeBasePage(0));
-                                  homeBloc.add(
+                                  boutiqueBloc.add(
                                       ResetAllSelectedAppliedFilterEvent());
                                   appBloc.add(HideBottomNavigationBar(false));
 
@@ -768,13 +778,13 @@ class _TabsBarState extends State<TabsBar> {
 
                                   resetSearchAfterSearchingWhileRemoveSearch =
                                       true;
-                                  Filter filters = homeBloc
+                                  Filter filters = boutiqueBloc
                                           .state
                                           .choosedFiltersByUser['search']
                                           ?.filters ??
                                       Filter();
                                   print(sizesFilter.isEmpty);
-                                  homeBloc.add(ChangeSelectedFiltersEvent(
+                                  boutiqueBloc.add(ChangeSelectedFiltersEvent(
                                     boutiqueSlug: 'search',
                                     requestToUpdateFilters: true,
                                     fromHomePageSearch: true,
@@ -794,7 +804,7 @@ class _TabsBarState extends State<TabsBar> {
                                       searchText: searchText,
                                     )),
                                   ));
-                                  homeBloc.add(GetProductsWithFiltersEvent(
+                                  boutiqueBloc.add(GetProductsWithFiltersEvent(
                                       fromChoosed: true,
                                       offset: 1,
                                       boutiqueSlug: 'search',
@@ -807,17 +817,17 @@ class _TabsBarState extends State<TabsBar> {
                                   widget.buildSearchResult.value = text.length;
                                 }
                                 if (text.length < 3) {
-                                  homeBloc.add(ReplyFromGeminiEvent(
+                                  categoryBloc.add(ReplyFromGeminiEvent(
                                       fromSearch: true,
                                       resetTheReply: true,
                                       theReplyFromGemini: ""));
-                                  Filter filters = homeBloc
+                                  Filter filters = boutiqueBloc
                                           .state
                                           .choosedFiltersByUser['search']
                                           ?.filters ??
                                       Filter();
 
-                                  homeBloc.add(ChangeSelectedFiltersEvent(
+                                  boutiqueBloc.add(ChangeSelectedFiltersEvent(
                                     boutiqueSlug: 'search',
                                     requestToUpdateFilters: false,
                                     fromHomePageSearch: true,
@@ -834,17 +844,17 @@ class _TabsBarState extends State<TabsBar> {
                                     resetSearchAfterSearchingWhileRemoveSearch) {
                                   resetSearchAfterSearchingWhileRemoveSearch =
                                       false;
-                                  Filter filters = homeBloc
+                                  Filter filters = boutiqueBloc
                                           .state
                                           .choosedFiltersByUser['search']
                                           ?.filters ??
                                       Filter();
-                                  Filter appliedFilters = homeBloc
+                                  Filter appliedFilters = boutiqueBloc
                                           .state
                                           .appliedFiltersByUser['search']
                                           ?.filters ??
                                       Filter();
-                                  homeBloc.add(ChangeAppliedFiltersEvent(
+                                  boutiqueBloc.add(ChangeAppliedFiltersEvent(
                                     boutiqueSlug: 'search',
                                     filtersAppliedByUser:
                                         GetProductFiltersModel(
@@ -856,7 +866,7 @@ class _TabsBarState extends State<TabsBar> {
                                       searchText: null,
                                     )),
                                   ));
-                                  homeBloc.add(ChangeSelectedFiltersEvent(
+                                  boutiqueBloc.add(ChangeSelectedFiltersEvent(
                                     boutiqueSlug: 'search',
                                     requestToUpdateFilters: true,
                                     fromHomePageSearch: true,
@@ -930,7 +940,7 @@ class _TabsBarState extends State<TabsBar> {
                                                     index) {
                                                   appBloc.add(ChangeTab(index));
                                                   ///////////////////////
-                                                  homeBloc.add(
+                                                  categoryBloc.add(
                                                     GetHomeBoutiqesEvent(
                                                       getWithPrefetchToStoreInMemory:
                                                           false,
@@ -948,7 +958,7 @@ class _TabsBarState extends State<TabsBar> {
                                                     ),
                                                   );
                                                   ////////////////////////////
-                                                  homeBloc.add(
+                                                  categoryBloc.add(
                                                     ChangeCurrentIndexForMainCategoryEvent(
                                                       index: index,
                                                     ),
@@ -965,7 +975,7 @@ class _TabsBarState extends State<TabsBar> {
                                                   );
                                                 } else {
                                                   appBloc.add(ChangeTab(-1));
-                                                  homeBloc.add(
+                                                  categoryBloc.add(
                                                     GetHomeBoutiqesEvent(
                                                       getWithPrefetchToStoreInMemory:
                                                           false,
@@ -977,7 +987,7 @@ class _TabsBarState extends State<TabsBar> {
                                                       getWithPagination: false,
                                                     ),
                                                   );
-                                                  homeBloc.add(
+                                                  categoryBloc.add(
                                                     ChangeCurrentIndexForMainCategoryEvent(
                                                         index: -1),
                                                   );

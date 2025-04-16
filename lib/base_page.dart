@@ -10,8 +10,10 @@ import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.
 import 'package:trydos/features/app/country_dropdown.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/categoryBloc/category_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/categoryBloc/category_event.dart';
 
-import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/pages/cart_page_new.dart';
 import 'package:trydos/features/home/presentation/pages/profile_page.dart';
 import 'package:trydos/features/search/presentation/pages/search_page.dart';
@@ -37,7 +39,7 @@ import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
 import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
 import 'package:trydos/features/chat/presentation/pages/chat_pages.dart';
 import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/pages/home_page.dart';
 import 'package:trydos/main.dart';
 import 'package:trydos/routes/router.dart';
@@ -53,7 +55,7 @@ import 'features/chat/presentation/manager/chat_bloc.dart';
 import 'features/chat/presentation/manager/chat_event.dart';
 import 'features/chat/presentation/manager/chat_state.dart';
 import 'features/chat/presentation/utils/firebase_presence.dart';
-import 'features/home/presentation/manager/home_state.dart';
+import 'features/home/presentation/manager/homeBloc/home_state.dart';
 
 import 'service/firebase_analytics_service/firebase_analytics_service.dart';
 
@@ -309,6 +311,7 @@ void DealWithMessageReceivedStatusStoredFromBackground() async {
 class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   late ChatBloc chatBloc;
   late HomeBloc homeBloc;
+  late CategoryBloc categoryBloc;
   late AppBloc appBloc;
   final ValueNotifier<bool> isShowPanelForVerified = ValueNotifier(false);
   late CallsBloc callsBloc;
@@ -376,6 +379,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     chatBloc = BlocProvider.of<ChatBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
     appBloc = BlocProvider.of<AppBloc>(context);
+    categoryBloc = BlocProvider.of<CategoryBloc>(context);
     callsBloc = BlocProvider.of<CallsBloc>(context);
     prefsRepository.setRequestNotificationPermission(false);
     if (!(prefsRepository.onMessageRun ?? false)) {
@@ -680,7 +684,8 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                     //     offset: "1",
                                     //     context: context,
                                     //     getWithPagination: false));
-                                    homeBloc.add(GetMainCategoriesEvent(
+                                    categoryBloc.add(GetMainCategoriesEvent(
+                                        getWithPrefech: false,
                                         context: context));
                                     if (prefsRepository.marketToken != null) {
                                       homeBloc

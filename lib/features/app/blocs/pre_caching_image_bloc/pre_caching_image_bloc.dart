@@ -35,13 +35,16 @@ class PreCachingImageBloc
 
   FutureOr<void> _onCacheSvgEvent(
       CacheSvgEvent event, Emitter<PreCachingImageState> emit) async {
-    if (await CustomCacheManager().getFileFromCache(event.svgUrl) != null) {
-      return;
-    }
-    if (state.cachehSvgs[event.svgUrl] == true) return;
     print(
         "222222222222222222222222##########################!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
+    if (await CustomCacheManager().getFileFromCache(event.svgUrl) != null) {
+      print(
+          "222222222222222222222222##########################!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
+      return;
+    }
+    if (state.cachehSvgs[event.svgUrl] == true) return;
     Map<String, bool> cachehSvgs = Map.of(state.cachehSvgs);
     cachehSvgs[event.svgUrl] = false;
     emit(PreCachingImageState(cachehSvgs: cachehSvgs));
@@ -66,6 +69,7 @@ class PreCachingImageBloc
     if (state.cachedImages[event.imageUrl] == true) return;
 
     Map<String, bool> cachedImages = Map.of(state.cachedImages);
+
     cachedImages[event.imageUrl] = false;
     emit(PreCachingImageState(cachedImages: cachedImages));
     await precacheImage(
@@ -74,6 +78,13 @@ class PreCachingImageBloc
         event.context);
     cachedImages = Map.of(state.cachedImages);
     cachedImages[event.imageUrl] = true;
+    List<String> keys = cachedImages.keys.toList();
+    for (var i = 0; i < keys.length; i++) {
+      if (await CustomCacheManager().getFileFromCache(keys[i]) == null) {
+        cachedImages.removeWhere((key, value) => key == key[i]);
+      }
+    }
+
     emit(PreCachingImageState(cachedImages: cachedImages));
   }
 

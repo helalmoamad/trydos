@@ -6,8 +6,10 @@ import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/common/test_utils/widgets_keys.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_state.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/home_page_card2.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/categories_filter_list.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_item.dart';
@@ -153,10 +155,11 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      HomeBloc homeBloc = GetIt.I<HomeBloc>();
-      HomeState homeState = homeBloc.state;
-      expect(homeState.getProductListingWithFiltersPaginationModels, isNotNull);
-      expect(homeState.getProductListingWithFiltersPaginationModels,
+      BoutiqueBloc boutiqueBloc = GetIt.I<BoutiqueBloc>();
+      BoutiqueState boutiqueState = boutiqueBloc.state;
+      expect(boutiqueState.getProductListingWithFiltersPaginationModels,
+          isNotNull);
+      expect(boutiqueState.getProductListingWithFiltersPaginationModels,
           isNot(equals({})));
       //////////// get the category of the filtered products /////////////////////////////
       int productIndex1 = 0;
@@ -264,8 +267,9 @@ void main() {
       await tester.pumpAndSettle();
       await Future.delayed(const Duration(seconds: 1));
 
-      expect(homeState.getProductListingWithFiltersPaginationModels, isNotNull);
-      expect(homeState.getProductListingWithFiltersPaginationModels,
+      expect(boutiqueState.getProductListingWithFiltersPaginationModels,
+          isNotNull);
+      expect(boutiqueState.getProductListingWithFiltersPaginationModels,
           isNot(equals({})));
       ////////////// get the Brand of the filtered products /////////////////////////////
       int productIndex2 = 0;
@@ -727,11 +731,12 @@ void main() {
 
       String key2 = boutiqueSlug + (category);
 
-      homeState = homeBloc.state;
+      boutiqueState = boutiqueBloc.state;
 
-      Filter? filters2 = homeState.getProductFiltersModel[key2]?.filters != null
-          ? homeState.getProductFiltersModel[key2]?.filters ?? Filter()
-          : Filter();
+      Filter? filters2 =
+          boutiqueState.getProductFiltersModel[key2]?.filters != null
+              ? boutiqueState.getProductFiltersModel[key2]?.filters ?? Filter()
+              : Filter();
 
       print(
           'categories length : ${filters2.categories == null ? null : filters2.categories!.length}');

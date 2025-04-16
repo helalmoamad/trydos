@@ -22,16 +22,22 @@ class GetOrdersUseCase implements UseCase<OrderModel, GetOrdersParams> {
 
 class GetOrdersParams {
   final int offset;
-  final String? status;
+  final String status;
 
   GetOrdersParams({
     required this.offset,
     required this.status,
   });
+  Map<String, dynamic> get map {
+    final result = {
+      "offset": offset.toString(),
+      "limit": '10',
+    };
 
-  Map<String, dynamic> get map => {
-        "offset": offset.toString(),
-        "limit": '10',
-        "order_status": status,
-      };
+    if (status != '') {
+      result["order_status"] = status;
+    }
+
+    return result;
+  }
 }

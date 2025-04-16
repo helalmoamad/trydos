@@ -8,13 +8,13 @@ import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
-import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/routes/router.dart';
 import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 import 'core/domin/repositories/prefs_repository.dart';
 import 'features/app/blocs/app_bloc/app_event.dart';
 import 'features/calls/presentation/utils/bg_terminated_call_utils.dart';
-import 'features/home/presentation/manager/home_bloc.dart';
+import 'features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'features/story/presentation/bloc/story_bloc.dart';
 import 'service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 

@@ -29,9 +29,9 @@ import '../../../../../service/firebase_analytics_service/firebase_analytics_ser
 import '../../../data/models/get_product_listing_without_filters_model.dart'
     as product;
 import '../../../../../core/utils/theme_state.dart';
-import '../../manager/home_bloc.dart';
-import '../../manager/home_event.dart';
-import '../../manager/home_state.dart';
+import '../../manager/homeBloc/home_bloc.dart';
+import '../../manager/homeBloc/home_event.dart';
+import '../../manager/homeBloc/home_state.dart';
 import 'dart:ui' as ui;
 
 class DisplaySizesCard extends StatefulWidget {

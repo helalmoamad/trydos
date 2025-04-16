@@ -18,7 +18,7 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/app_elvated_button.dart';
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
@@ -637,5 +637,16 @@ class HelperFunctions {
     }
 
     return text;
+  }
+
+  static String orderFormatDate(DateTime dateTime) {
+    final now = DateTime.now();
+    final isToday = dateTime.year == now.year &&
+        dateTime.month == now.month &&
+        dateTime.day == now.day;
+
+    final timeFormatted = DateFormat('HH:mm:ss').format(dateTime);
+
+    return '${isToday ? '${LocaleKeys.today.tr()}' : DateFormat('yyyy-MM-dd').format(dateTime)} | $timeFormatted';
   }
 }

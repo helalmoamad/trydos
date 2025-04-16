@@ -9,11 +9,14 @@ import '../../../../../generated/locale_keys.g.dart';
 import '../../../../app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import '../../../../app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import '../../../../app/my_cached_network_image.dart';
+import '../../../data/models/get_orders_model.dart';
 import 'order_details2_page.dart';
 import 'package:trydos/config/theme/typography.dart';
 
 class OrderDetails1 extends StatelessWidget {
-  const OrderDetails1({super.key});
+  OrderDetails1({super.key, required this.order});
+
+  final OrderListModel order;
 
   @override
   Widget build(BuildContext context) {
@@ -83,13 +86,15 @@ class OrderDetails1 extends StatelessWidget {
                 ),
                 ///////////////////
                 SizedBox(
-                  height: 74,
+                  height: 95,
                   child: buildFirstSection(
                     context: context,
-                    orderNumber: 'TX44VBV',
-                    orderDate: '1/1/2025',
-                    orderAmount: '400',
-                    orderCurrency: 'USD',
+                    orderNumber: order.orderGroupId ?? '',
+                    orderDate: HelperFunctions.orderFormatDate(
+                      DateTime.parse(order.createdAt ?? ''),
+                    ),
+                    orderAmount: order.orderAmount.toString(),
+                    orderCurrency: 'currency',
                   ),
                 ),
                 ///////////////////
@@ -101,8 +106,8 @@ class OrderDetails1 extends StatelessWidget {
                   height: 74,
                   child: buildSecondSection(
                     context: context,
-                    expectedDeliveryDate: '1/1/2025',
-                    orderStatus: 'pending',
+                    expectedDeliveryDate: 'Monday 2.Jun | 3 Work Days',
+                    orderStatus: order.orderStatus?.label ?? '',
                   ),
                 ),
                 ///////////////////
@@ -112,9 +117,11 @@ class OrderDetails1 extends StatelessWidget {
                 ///////////////////
                 buildThirdSection(
                   context: context,
-                  contactInfo: 'contactInfo',
-                  recipientName: 'recipientName',
-                  shippingDeliveryAddress: 'shippingDeliveryAddress',
+                  contactInfo: order.shippingAddressData?.phone ?? '',
+                  recipientName:
+                      order.shippingAddressData?.contactPersonName ?? '',
+                  shippingDeliveryAddress:
+                      '${order.shippingAddressData?.country ?? ''} | ${order.shippingAddressData?.province ?? ''} | ${order.shippingAddressData?.city ?? ''} | ${order.shippingAddressData?.town ?? ''} | ${order.shippingAddressData?.street ?? ''} | ${order.shippingAddressData?.building ?? ''}',
                 ),
                 ///////////////////
                 SizedBox(
@@ -125,17 +132,23 @@ class OrderDetails1 extends StatelessWidget {
                   onTap: () {
                     HelperFunctions.slidingNavigation(
                       context,
-                      OrderDetails2(),
+                      OrderDetails2(
+                        order: order,
+                      ),
                     );
                   },
-                  child: buildFourthSection(context: context, itemsCount: '5'),
+                  child: buildFourthSection(
+                      context: context,
+                      itemsCount: order.details!.length.toString()),
                 ),
                 ///////////////////
                 SizedBox(
                   height: 8.h,
                 ),
                 ///////////////////
-                buildFifthSection(size: 'size', color: 'color'),
+                buildFifthSection(
+                  details: order.details,
+                ),
                 ///////////////////
                 SizedBox(
                   height: 8.h,
@@ -150,15 +163,14 @@ class OrderDetails1 extends StatelessWidget {
   }
 
   Widget buildFifthSection({
-    required String size,
-    required String color,
+    required List<OrderListDetailModel>? details,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: SizedBox(
         height: 180,
         child: ListView.separated(
-          itemCount: 10,
+          itemCount: details?.length ?? 0,
           scrollDirection: Axis.horizontal,
           itemBuilder: (context, index) {
             return Column(
@@ -171,7 +183,7 @@ class OrderDetails1 extends StatelessWidget {
                     color: Colors.white,
                     child: MyCachedNetworkImage(
                       imageUrl:
-                          'https://res.cloudinary.com/dtcmozf4d/image/upload/v1/product/2025-02-24-67bc4c4a5eb5f.png',
+                          details?[index].productDetails?.images?[0] ?? '',
                       imageFit: BoxFit.contain,
                       width: 91,
                       height: 125,
@@ -207,7 +219,9 @@ class OrderDetails1 extends StatelessWidget {
                 ),
                 ///////////////////
                 Text(
-                  size,
+                  details?[index].variation == null
+                      ? ''
+                      : details?[index].variation?.size ?? '',
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                   style: context.textTheme.bodyMedium?.rq.copyWith(
@@ -223,7 +237,9 @@ class OrderDetails1 extends StatelessWidget {
                 ),
                 ///////////////////
                 Text(
-                  color,
+                  details?[index].variation == null
+                      ? ''
+                      : details?[index].variation?.color ?? '',
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                   style: context.textTheme.bodyMedium?.rq.copyWith(
@@ -326,7 +342,6 @@ class OrderDetails1 extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Container(
-        height: 160,
         width: double.infinity,
         decoration: BoxDecoration(
           color: Color(0xffF4F4F4),
@@ -676,7 +691,7 @@ class OrderDetails1 extends StatelessWidget {
                   fit: FlexFit.loose,
                   child: Text(
                     value,
-                    // LocaleKeys.order_invoice.tr(),
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: context.textTheme.bodyMedium?.bq.copyWith(
                       color: const Color(0xff1D1D1D),

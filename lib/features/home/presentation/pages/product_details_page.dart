@@ -33,8 +33,8 @@ import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/pages/cart_page_new.dart';
 import 'package:trydos/features/home/presentation/pages/home_page.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_display_pictures_page.dart';
@@ -59,7 +59,7 @@ import '../../../chat/presentation/manager/chat_event.dart';
 import '../../data/models/get_product_listing_without_filters_model.dart'
     as productListingModel;
 
-import '../manager/home_state.dart';
+import '../manager/homeBloc/home_state.dart';
 import '../widgets/product_details_body/badges_list.dart';
 import '../widgets/product_details_body/display_colors_card.dart';
 import '../widgets/product_details_body/product_details_chip_widget.dart';

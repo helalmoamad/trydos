@@ -3,8 +3,10 @@ import 'package:get_it/get_it.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_state.dart';
+import 'package:trydos/features/home/presentation/manager/categoryBloc/category_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/categoryBloc/category_state.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import 'package:trydos/features/story/presentation/bloc/story_state.dart';
 import 'package:trydos/main.dart' as app;
@@ -69,16 +71,17 @@ void main() {
       ///////////////// test the state of getting apis  /////////////////////////////
 
       HomeBloc homeBloc = GetIt.I<HomeBloc>();
+      CategoryBloc categoryBloc = GetIt.I<CategoryBloc>();
       final homeState = homeBloc.state;
-
+      final categoryState = categoryBloc.state;
       StoryBloc storyBloc = GetIt.I<StoryBloc>();
       final storyState = storyBloc.state;
 
       AuthBloc authBloc = GetIt.I<AuthBloc>();
       final authState = authBloc.state;
 
-      expect(
-          homeState.getMainCategoriesStatus, GetMainCategoriesStatus.success);
+      expect(categoryState.getMainCategoriesStatus,
+          GetMainCategoriesStatus.success);
       /////////////////////
       expect(storyState.getStoriesStatus, GetStoriesStatus.success);
       /////////////////////

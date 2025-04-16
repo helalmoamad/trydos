@@ -5,8 +5,12 @@ import 'package:integration_test/integration_test.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/common/test_utils/widgets_keys.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_state.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
+import 'package:trydos/features/home/presentation/manager/categoryBloc/category_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/categoryBloc/category_state.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/home_page_card2.dart';
 import 'package:trydos/main.dart' as app;
 import '../shared/shared_scenarios.dart';
@@ -57,7 +61,7 @@ void main() {
   Future<void> enterBoutiqueAndCheckIfProductsPreFetched({
     required WidgetTester tester,
     required int boutiqueIndex,
-    required HomeState homeState,
+    required BoutiqueState boutiqueBloc,
   }) async {
     Finder boutiqueCardWidget =
         find.byKey(Key('${WidgetsKeys.boutiqueCardKey}$boutiqueIndex'));
@@ -80,14 +84,15 @@ void main() {
       failedMessage: 'Find No boutique Product Listing Loading Widget failed',
     );
     // ///////////  test the data in state for filters and products  /////////
-    expect(homeState.getProductListingWithFiltersPaginationModels, isNotNull);
+    expect(
+        boutiqueBloc.getProductListingWithFiltersPaginationModels, isNotNull);
 
-    expect(homeState.getProductListingWithFiltersPaginationModels,
+    expect(boutiqueBloc.getProductListingWithFiltersPaginationModels,
         isNot(equals({})));
 
-    expect(homeState.getProductFiltersModel, isNotNull);
+    expect(boutiqueBloc.getProductFiltersModel, isNotNull);
 
-    expect(homeState.getProductFiltersModel, isNot(equals({})));
+    expect(boutiqueBloc.getProductFiltersModel, isNot(equals({})));
     // ///////////  Find product List and filters  /////////
     Finder productListFilterWidget =
         find.byKey(Key(WidgetsKeys.productListFilterKey));
@@ -246,9 +251,11 @@ void main() {
           // add empty slug //
           List<String> categoriesSlugs = [];
 
-          HomeBloc homeBloc = GetIt.I<HomeBloc>();
-          HomeState homeState = homeBloc.state;
+          BoutiqueBloc homeBloc = GetIt.I<BoutiqueBloc>();
+          BoutiqueState boutiqueBloc = homeBloc.state;
 
+          CategoryBloc categoryBloc = GetIt.I<CategoryBloc>();
+          CategoryState categoryState = categoryBloc.state;
           while (true) {
             Finder mainCategoriesItemWidget =
                 find.byKey(Key('${WidgetsKeys.mainCategoriesItemKey}$index1'));
@@ -256,7 +263,7 @@ void main() {
             try {
               expect(mainCategoriesItemWidget, findsOneWidget);
 
-              MainCategory mainCategory = homeState
+              MainCategory mainCategory = categoryState
                   .mainCategoriesResponseModel!.data!.mainCategories![index1];
               ///////////////////
               categoriesSlugs.add(mainCategory.slug ?? '');
@@ -273,15 +280,16 @@ void main() {
           print(
               '////////// categoriesSlugs length : ${categoriesSlugs.length} /////////');
           await Future.delayed(const Duration(seconds: 2));
-          homeState = homeBloc.state;
+          boutiqueBloc = homeBloc.state;
           print(
-              '/// ${homeState.boutiquesForEveryMainCategoryThatDidPrefetch}');
+              '/// ${categoryState.boutiquesForEveryMainCategoryThatDidPrefetch}');
           ///////////////// check if visible categories are pre-fetched and enter each category  ////////////////
           for (int i = 0; i < categoriesSlugs.length; i++) {
             print('categoriesSlugs :  ${categoriesSlugs[i]}');
-            bool check = homeState.boutiquesForEveryMainCategoryThatDidPrefetch[
-                    categoriesSlugs[i]] ==
-                true;
+            bool check =
+                categoryState.boutiquesForEveryMainCategoryThatDidPrefetch[
+                        categoriesSlugs[i]] ==
+                    true;
             print('categoriesSlugs isTrue :  $check');
             expect(check, isTrue);
             /////////////////////////////////////////////////
@@ -318,13 +326,13 @@ void main() {
                 print(
                     '////////// boutiquesSlugs length : ${boutiqueSlugs.length} /////////');
                 await Future.delayed(const Duration(microseconds: 500));
-                homeBloc = GetIt.I<HomeBloc>();
-                homeState = homeBloc.state;
+                homeBloc = GetIt.I<BoutiqueBloc>();
+                boutiqueBloc = homeBloc.state;
                 ///////////////// check if visible boutiques are pre-fetched and enter each boutique  ////////////////
                 for (int i = 0; i < boutiqueSlugs.length; i++) {
                   print('boutiqueSlugs :  ${boutiqueSlugs[i]}');
                   bool check =
-                      homeState.boutiquesThatDidPrefetch[boutiqueSlugs[i]] ==
+                      boutiqueBloc.boutiquesThatDidPrefetch[boutiqueSlugs[i]] ==
                           true;
                   print('boutiqueSlugs isTrue :  $check');
                   expect(check, isTrue);
@@ -332,7 +340,7 @@ void main() {
                   await enterBoutiqueAndCheckIfProductsPreFetched(
                     tester: tester,
                     boutiqueIndex: i,
-                    homeState: homeState,
+                    boutiqueBloc: boutiqueBloc,
                   );
                 }
               },
@@ -365,10 +373,10 @@ void main() {
           String slug = '';
           Finder homeScroll = find.byKey(Key(WidgetsKeys.homepageScrollKey));
 
-          HomeBloc homeBloc = GetIt.I<HomeBloc>();
-          HomeState homeState = homeBloc.state;
+          BoutiqueBloc homeBloc = GetIt.I<BoutiqueBloc>();
+          BoutiqueState boutiqueBloc = homeBloc.state;
           //////////////////// get all  preFetched Slugs //////////////////////////
-          List<String> preFetchedSlugs = homeState
+          List<String> preFetchedSlugs = boutiqueBloc
               .boutiquesThatDidPrefetch.entries
               .where((entry) => entry.value == true)
               .map((entry) => entry.key)
@@ -395,9 +403,9 @@ void main() {
                       .slug ??
                   '';
               //////////////// check if  prefetched ///////////////////////////
-              homeState = homeBloc.state;
+              boutiqueBloc = homeBloc.state;
 
-              bool check = homeState.boutiquesThatDidPrefetch[slug] == true;
+              bool check = boutiqueBloc.boutiquesThatDidPrefetch[slug] == true;
 
               expect(check, isTrue);
 
@@ -406,7 +414,7 @@ void main() {
               await enterBoutiqueAndCheckIfProductsPreFetched(
                 tester: tester,
                 boutiqueIndex: index,
-                homeState: homeState,
+                boutiqueBloc: boutiqueBloc,
               );
               await Future.delayed(const Duration(seconds: 2));
 

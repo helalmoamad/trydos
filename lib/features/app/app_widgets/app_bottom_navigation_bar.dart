@@ -21,9 +21,13 @@ import 'package:trydos/features/authentication/presentation/pages/first_register
 import 'package:trydos/features/feed_back/presentation/pages/feed_back_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/files_exist_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/shared_preference_page.dart';
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_event.dart';
-import 'package:trydos/features/home/presentation/manager/home_state.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
+import 'package:trydos/features/home/presentation/manager/categoryBloc/category_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/categoryBloc/category_event.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/notification_service/setting_fitrbase_notification.dart';
 import '../../../common/helper/helper_functions.dart';
@@ -54,12 +58,16 @@ class AppBottomNavBar extends StatefulWidget {
 class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
   late AppBloc appBloc;
   late HomeBloc homeBloc;
+  late BoutiqueBloc boutiqueBloc;
+  late CategoryBloc categoryBloc;
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
 
   @override
   void initState() {
+    categoryBloc = BlocProvider.of<CategoryBloc>(context);
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
+    boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
     super.initState();
   }
 
@@ -87,7 +95,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                 child: InkWell(
                   onTap: () {
                     appBloc.add(ChangeTab(-1));
-                    homeBloc.add(
+                    categoryBloc.add(
                       ChangeCurrentIndexForMainCategoryEvent(index: -1),
                     );
 
@@ -97,7 +105,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                       } catch (e) {}
                     }
                     if (state.currentIndex != 0) {
-                      homeBloc.add(
+                      categoryBloc.add(
                         GetHomeBoutiqesEvent(
                           getWithPrefetchToStoreInMemory: false,
                           getWithPrefetchForEachBoutiques: false,
@@ -108,7 +116,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                       );
                     }
                     appBloc.add(ChangeBasePage(0));
-                    homeBloc.add(ResetAllSelectedAppliedFilterEvent());
+                    boutiqueBloc.add(ResetAllSelectedAppliedFilterEvent());
                     /////////////////////////
                     FirebaseAnalyticsService.logEventForSession(
                       eventName: AnalyticsEventsConst.buttonClicked,

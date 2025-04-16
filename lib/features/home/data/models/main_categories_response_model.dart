@@ -4,13 +4,15 @@
 
 import 'dart:convert';
 
-MainCategoriesResponseModel mainCategoriesResponseModelFromJson(String str) => MainCategoriesResponseModel.fromJson(json.decode(str));
+MainCategoriesResponseModel mainCategoriesResponseModelFromJson(String str) =>
+    MainCategoriesResponseModel.fromJson(json.decode(str));
 
-String mainCategoriesResponseModelToJson(MainCategoriesResponseModel data) => json.encode(data.toJson());
+String mainCategoriesResponseModelToJson(MainCategoriesResponseModel data) =>
+    json.encode(data.toJson());
 
 class MainCategoriesResponseModel {
   final String? message;
-  final Data? data;
+  final MainCategoryData? data;
 
   MainCategoriesResponseModel({
     this.message,
@@ -19,45 +21,54 @@ class MainCategoriesResponseModel {
 
   MainCategoriesResponseModel copyWith({
     String? message,
-    Data? data,
+    MainCategoryData? data,
   }) =>
       MainCategoriesResponseModel(
         message: message ?? this.message,
         data: data ?? this.data,
       );
 
-  factory MainCategoriesResponseModel.fromJson(Map<String, dynamic> json) => MainCategoriesResponseModel(
-    message: json["message"],
-    data: json["data"] == null ? null : Data.fromJson(json["data"]),
-  );
+  factory MainCategoriesResponseModel.fromJson(Map<String, dynamic> json) =>
+      MainCategoriesResponseModel(
+        message: json["message"],
+        data: json["data"] == null
+            ? null
+            : MainCategoryData.fromJson(json["data"]),
+      );
 
   Map<String, dynamic> toJson() => {
-    "message": message,
-    "data": data?.toJson(),
-  };
+        "message": message,
+        "data": data?.toJson(),
+      };
 }
 
-class Data {
+class MainCategoryData {
   final List<MainCategory>? mainCategories;
 
-  Data({
+  MainCategoryData({
     this.mainCategories,
   });
 
-  Data copyWith({
+  MainCategoryData copyWith({
     List<MainCategory>? mainCategories,
   }) =>
-      Data(
+      MainCategoryData(
         mainCategories: mainCategories ?? this.mainCategories,
       );
 
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
-    mainCategories: json["mainCategories"] == null ? [] : List<MainCategory>.from(json["mainCategories"]!.map((x) => MainCategory.fromJson(x))),
-  );
+  factory MainCategoryData.fromJson(Map<String, dynamic> json) =>
+      MainCategoryData(
+        mainCategories: json["mainCategories"] == null
+            ? []
+            : List<MainCategory>.from(
+                json["mainCategories"]!.map((x) => MainCategory.fromJson(x))),
+      );
 
   Map<String, dynamic> toJson() => {
-    "mainCategories": mainCategories == null ? [] : List<dynamic>.from(mainCategories!.map((x) => x.toJson())),
-  };
+        "mainCategories": mainCategories == null
+            ? []
+            : List<dynamic>.from(mainCategories!.map((x) => x.toJson())),
+      };
 }
 
 class FlatPhotoPath {
@@ -82,18 +93,17 @@ class FlatPhotoPath {
         filePath: filePath ?? this.filePath,
       );
 
-  factory FlatPhotoPath.fromJson(Map<String, dynamic> json) =>
-      FlatPhotoPath(
+  factory FlatPhotoPath.fromJson(Map<String, dynamic> json) => FlatPhotoPath(
         filePath: json["file_path"],
         originalHeight: json["original_height"],
         originalWidth: json["original_width"],
       );
 
   Map<String, dynamic> toJson() => {
-    "file_path": filePath,
-    "original_width": originalWidth,
-    "original_height": originalHeight,
-  };
+        "file_path": filePath,
+        "original_width": originalWidth,
+        "original_height": originalHeight,
+      };
 }
 
 class MainCategory {
@@ -103,7 +113,7 @@ class MainCategory {
   final String? name;
   final String? slug;
   final int? totalProduct;
-  final FlatPhotoPath? flatPhotoPath ;
+  final FlatPhotoPath? flatPhotoPath;
 
   MainCategory({
     this.id,
@@ -136,22 +146,24 @@ class MainCategory {
       );
 
   factory MainCategory.fromJson(Map<String, dynamic> json) => MainCategory(
-    id: json["id"],
-    categoryFrontColor: json["category_front_color"],
-    categoryBackColor: json["category_back_color"],
-    name: json["name"],
-    slug: json["slug"],
-    flatPhotoPath: json["flat_photo_path"] == null ? null : FlatPhotoPath.fromJson(json["flat_photo_path"]),
-    totalProduct: json["total_product"],
-  );
+        id: json["id"],
+        categoryFrontColor: json["category_front_color"],
+        categoryBackColor: json["category_back_color"],
+        name: json["name"],
+        slug: json["slug"],
+        flatPhotoPath: json["flat_photo_path"] == null
+            ? null
+            : FlatPhotoPath.fromJson(json["flat_photo_path"]),
+        totalProduct: json["total_product"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "category_front_color": categoryFrontColor,
-    "category_back_color": categoryBackColor,
-    "name": name,
-    "slug": slug,
-    "flat_photo_path": flatPhotoPath?.toJson(),
-    "total_product": totalProduct,
-  };
+        "id": id,
+        "category_front_color": categoryFrontColor,
+        "category_back_color": categoryBackColor,
+        "name": name,
+        "slug": slug,
+        "flat_photo_path": flatPhotoPath?.toJson(),
+        "total_product": totalProduct,
+      };
 }

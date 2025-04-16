@@ -7,9 +7,12 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mime/mime.dart';
 import 'package:trydos/features/app/app_widgets/gallery_and_camera_dialog_widget.dart';
-import 'package:trydos/features/home/presentation/manager/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/home_event.dart';
-import 'package:trydos/features/home/presentation/manager/home_state.dart';
+import 'package:trydos/features/home/presentation/manager/categoryBloc/category_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/categoryBloc/category_event.dart';
+import 'package:trydos/features/home/presentation/manager/categoryBloc/category_state.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/service/language_service.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
@@ -55,7 +58,7 @@ class SearchWithImageRelatedGemini {
               }
               final Uint8List imageBytes = file.readAsBytesSync();
               final geminis.Gemini gemini = geminis.Gemini.instance;
-              GetIt.I<HomeBloc>().add(ReplyFromGeminiEvent(
+              GetIt.I<CategoryBloc>().add(ReplyFromGeminiEvent(
                   fromSearch: fromSearch,
                   sendRequestToGeminiStatus: SendRequestToGeminiStatus.loading,
                   theReplyFromGemini: ""));
@@ -65,7 +68,7 @@ class SearchWithImageRelatedGemini {
                       ? " حدد ماذا يوجد في هذه الصورة بكلمة واحدة فقط بصيغة المفرد الغائب الاجابة بالعربي"
                       : "Identify what's in this picture with just one word in the singular absent answer in English",
                   images: [imageBytes]).then((value) {
-                GetIt.I<HomeBloc>().add(ReplyFromGeminiEvent(
+                GetIt.I<CategoryBloc>().add(ReplyFromGeminiEvent(
                     fromSearch: fromSearch,
                     sendRequestToGeminiStatus:
                         SendRequestToGeminiStatus.success,
@@ -81,7 +84,7 @@ class SearchWithImageRelatedGemini {
                 );
               }).onError(
                 (error, stackTrace) {
-                  GetIt.I<HomeBloc>().add(ReplyFromGeminiEvent(
+                  GetIt.I<CategoryBloc>().add(ReplyFromGeminiEvent(
                       fromSearch: fromSearch,
                       sendRequestToGeminiStatus:
                           SendRequestToGeminiStatus.failure,
@@ -133,7 +136,7 @@ class SearchWithImageRelatedGemini {
                 ),
                 onTimeout: () {
                   gemini.cancelRequest();
-                  GetIt.I<HomeBloc>().add(
+                  GetIt.I<CategoryBloc>().add(
                     ReplyFromGeminiEvent(
                         fromSearch: fromSearch,
                         sendRequestToGeminiStatus:
@@ -179,7 +182,7 @@ class SearchWithImageRelatedGemini {
               }
               final Uint8List imageBytes = file.readAsBytesSync();
               final geminis.Gemini gemini = geminis.Gemini.instance;
-              GetIt.I<HomeBloc>().add(ReplyFromGeminiEvent(
+              GetIt.I<CategoryBloc>().add(ReplyFromGeminiEvent(
                   fromSearch: fromSearch,
                   sendRequestToGeminiStatus: SendRequestToGeminiStatus.loading,
                   theReplyFromGemini: ""));
@@ -191,7 +194,7 @@ class SearchWithImageRelatedGemini {
                 print(
                     "111111111111111111111111111111111111111111111111111111#333333333333333333${value?.content?.parts?[0].text}");
 
-                GetIt.I<HomeBloc>().add(
+                GetIt.I<CategoryBloc>().add(
                   ReplyFromGeminiEvent(
                       fromSearch: fromSearch,
                       sendRequestToGeminiStatus:
@@ -212,7 +215,7 @@ class SearchWithImageRelatedGemini {
                   print(
                       "*******************************&%^&**(*&^%${error}#******************************TTTTTTTTTTTTTTTTTTTTTTtoo");
 
-                  GetIt.I<HomeBloc>().add(ReplyFromGeminiEvent(
+                  GetIt.I<CategoryBloc>().add(ReplyFromGeminiEvent(
                       fromSearch: fromSearch,
                       sendRequestToGeminiStatus:
                           SendRequestToGeminiStatus.failure,
@@ -263,7 +266,7 @@ class SearchWithImageRelatedGemini {
                 ),
                 onTimeout: () {
                   gemini.cancelRequest();
-                  GetIt.I<HomeBloc>().add(
+                  GetIt.I<CategoryBloc>().add(
                     ReplyFromGeminiEvent(
                         fromSearch: fromSearch,
                         sendRequestToGeminiStatus:

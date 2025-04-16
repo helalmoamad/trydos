@@ -13,10 +13,15 @@ PreCachingImageState _$PreCachingImageStateFromJson(
             (k, e) => MapEntry(k, e as bool),
           ) ??
           const {},
+      cachehSvgs: (json['cachehSvgs'] as Map<String, dynamic>?)?.map(
+            (k, e) => MapEntry(k, e as bool),
+          ) ??
+          const {},
     );
 
 Map<String, dynamic> _$PreCachingImageStateToJson(
         PreCachingImageState instance) =>
     <String, dynamic>{
       'cachedImages': instance.cachedImages,
+      'cachehSvgs': instance.cachehSvgs,
     };
