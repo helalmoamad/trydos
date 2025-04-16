@@ -9,6 +9,7 @@ import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/core/use_case/use_case.dart';
+import 'package:trydos/features/authentication/domain/use_cases/verify_otp_in_profile_usecase.dart';
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 import 'package:trydos/features/home/domain/use_cases/get_allowed_country_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/get_user_country_usecase.dart';
@@ -61,6 +62,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     this.loginToChatUseCase,
     this.loginToStoriesUseCase,
     this.storeFcmUseCase,
+    this.verifyOtpInProfileUseCase,
     this.updateNameUseCase,
     this.registerGuestUseCase,
     this.sendOtpUseCase,
@@ -85,6 +87,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         transformer: throttleDroppable(throttleDuration));
     on<SendOtpEvent>(_onSendOtpEvent);
     on<VerifyOtpSignInEvent>(_onVerifyOtpSignInEvent);
+    on<VerifyOtpInProfileEvent>(_onVerifyOtpInProfileEvent);
     on<VerifyOtpSignUpEvent>(_onVerifyOtpSignUpEvent);
     on<VerifyOtpFromGuestEvent>(
       _onVerifyGuestPhoneEvent,
@@ -115,6 +118,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final UpdateNameUseCase updateNameUseCase;
   final GetCustomerInfoUseCase getCustomerInfoUseCase;
   final GetUserCountryUseCase getUserCountryUseCase;
+  final VerifyOtpInProfileUseCase verifyOtpInProfileUseCase;
   final UpdateStoriesUserUseCase updateStoriesUserUseCase;
   final UpdateChatUserNameUseCase updateChatUserNameUseCase;
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
@@ -245,7 +249,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
     response.fold(
         (l) => emit(state.copyWith(
-            verifyOtpFromGuestStatus: VerifyOtpFromGuestStatus.failure)), (r) {
+            verifyOtpFromGuestStatus: VerifyOtpFromGuestStatus.failure)),
+        (r) async {
       try {
         if ((r.data!.user?.name?.replaceAll(' ', '') ?? '') != '') {
           _prefsRepository.setMyMarketName(r.data!.user!.name!);
@@ -270,12 +275,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         GetIt.I<HomeBloc>().add(GetOldCartItemEvent());
         GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
 
-        add(LoginToChatEvent(
-            fcmToken: NotificationProcess.myFcmToken!,
-            mobilePhone: r.data?.user?.phone,
-            name: r.data!.user?.name,
-            originalUserId: r.data!.user?.id.toString(),
-            otpIdToken: r.data!.user?.lastOtpIdToken));
         add(LoginToStoriesEvent(
           name: r.data!.user?.name,
           originalUserId: r.data!.user?.id.toString(),
@@ -294,6 +293,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       emit(state.copyWith(
           verifyOtpFromGuestStatus: VerifyOtpFromGuestStatus.success));
+      await NotificationProcess().fcmToken();
+
+      add(LoginToChatEvent(
+          fcmToken: NotificationProcess.myFcmToken!,
+          mobilePhone: r.data?.user?.phone,
+          name: r.data!.user?.name,
+          originalUserId: r.data!.user?.id.toString(),
+          otpIdToken: r.data!.user?.lastOtpIdToken));
     });
   }
 
@@ -340,6 +347,28 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
   }
 
+  FutureOr<void> _onVerifyOtpInProfileEvent(
+      VerifyOtpInProfileEvent event, Emitter<AuthState> emit) async {
+    emit(state.copyWith(
+        verifyOtpInProfileStatus: VerifyOtpInProfileStatus.loading));
+
+    final response = await verifyOtpInProfileUseCase(
+      VerifyOtpInProfileParams(
+          verificationId: event.verificationId, otp: event.otp),
+    );
+    response.fold((l) {
+      emit(state.copyWith(
+          verifyOtpInProfileStatus: VerifyOtpInProfileStatus.failure,
+          signInErrorMessage: l.message));
+    }, (r) async {
+      _prefsRepository.setPhoneNumber((r.data!.phone).toString());
+      _prefsRepository.setIdToken((r.data!.idToken).toString());
+      emit(state.copyWith(
+        verifyOtpInProfileStatus: VerifyOtpInProfileStatus.success,
+      ));
+    });
+  }
+
   FutureOr<void> _onVerifyOtpSignInEvent(
       VerifyOtpSignInEvent event, Emitter<AuthState> emit) async {
     emit(state.copyWith(verifyOtpSignInStatus: VerifyOtpSignInStatus.loading));
@@ -352,7 +381,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(state.copyWith(
           verifyOtpSignInStatus: VerifyOtpSignInStatus.failure,
           signInErrorMessage: l.message));
-    }, (r) {
+    }, (r) async {
       try {
         _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
         if ((r.data!.user!.name?.replaceAll(' ', '') ?? '') != '') {
@@ -361,7 +390,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
         _prefsRepository.setMarketToken(r.data!.token!);
         _prefsRepository.setTokenExpired(false);
-        NotificationProcess().fcmToken();
+
         GetIt.I<HomeBloc>()
             .add(SaveUserInfoFromAuthEvent(userInfo: r.data!.user!));
         GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
@@ -374,12 +403,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
         _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());
 
-        add(LoginToChatEvent(
-            fcmToken: NotificationProcess.myFcmToken!,
-            mobilePhone: r.data!.user!.phone,
-            name: r.data!.user!.name,
-            originalUserId: r.data!.user!.id!.toString(),
-            otpIdToken: r.data!.idToken!));
         add(LoginToStoriesEvent(
           originalUserId: r.data!.user!.id!.toString(),
           otpIdToken: r.data!.idToken!,
@@ -407,6 +430,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(state.copyWith(
           verifyOtpSignInStatus: VerifyOtpSignInStatus.success,
           marketUser: r.data!.user));
+      await NotificationProcess().fcmToken();
+      add(LoginToChatEvent(
+          fcmToken: NotificationProcess.myFcmToken!,
+          mobilePhone: r.data!.user!.phone,
+          name: r.data!.user!.name,
+          originalUserId: r.data!.user!.id!.toString(),
+          otpIdToken: r.data!.idToken!));
     });
   }
 
@@ -424,7 +454,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         signUpErrorMessage: 'faild',
         verifyOtpSignUpStatus: VerifyOtpSignUpStatus.failure,
       ));
-    }, (r) {
+    }, (r) async {
       if ((r.data!.user!.name?.replaceAll(' ', '') ?? '') != '') {
         _prefsRepository.setMyMarketName(r.data!.user!.name!);
       }
@@ -443,14 +473,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
       _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());
 
-      NotificationProcess().fcmToken();
-
-      add(LoginToChatEvent(
-          fcmToken: NotificationProcess.myFcmToken!,
-          mobilePhone: r.data!.user!.phone,
-          originalUserId: r.data!.user!.id!.toString(),
-          name: r.data!.user!.name,
-          otpIdToken: r.data!.idToken!));
       add(LoginToStoriesEvent(
         originalUserId: r.data!.user!.id!.toString(),
         otpIdToken: r.data!.idToken!,
@@ -469,6 +491,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(state.copyWith(
           verifyOtpSignUpStatus: VerifyOtpSignUpStatus.success,
           marketUser: r.data!.user));
+      await NotificationProcess().fcmToken();
+
+      add(LoginToChatEvent(
+          fcmToken: NotificationProcess.myFcmToken!,
+          mobilePhone: r.data!.user!.phone,
+          originalUserId: r.data!.user!.id!.toString(),
+          name: r.data!.user!.name,
+          otpIdToken: r.data!.idToken!));
     });
   }
 

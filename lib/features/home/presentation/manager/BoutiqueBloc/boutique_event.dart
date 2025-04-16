@@ -139,6 +139,7 @@ class GetProductsWithFiltersEvent extends BoutiqueEvent {
   final String boutiqueSlug;
   final bool cashedOrginalBoutique;
   final bool? fromSearch;
+  final BuildContext? context;
   final bool? fromNotification;
   final bool? fromChoosed;
   final bool resetChoosedFilters;
@@ -147,6 +148,7 @@ class GetProductsWithFiltersEvent extends BoutiqueEvent {
   GetProductsWithFiltersEvent(
       {required this.boutiqueSlug,
       this.getWithoutFilter = false,
+      this.context = null,
       this.resetChoosedFilters = true,
       this.searchText,
       this.fromNotification = false,

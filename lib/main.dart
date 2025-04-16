@@ -291,16 +291,20 @@ void main() async {
     configureDependencies(),
     NotificationProcess().init(),
   ]);
+  GetIt.I<PreCachingImageBloc>().add(RemoveUrlThatNotUsedEvent());
   isLoadDotenvFile = true;
 
   await GetIt.I<PrefsRepository>().setOnMessageRun(false);
-  //GetIt.I<PrefsRepository>().removeMainCategoryHasPerfechedWhenOpenApp(false);
-  // GetIt.I<PrefsRepository>().removeBoutiqueHasPerfechedWhenOpenApp(false);
-  // GetIt.I<PrefsRepository>().removeFiveFilterHasPerfechedWhenOpenApp();
 
+  GetIt.I<PrefsRepository>().removeMainCategoryHasPerfechedWhenOpenApp(false);
+
+  GetIt.I<PrefsRepository>().removeBoutiqueHasPerfechedWhenOpenApp(false);
+  GetIt.I<PrefsRepository>().removeFiveFilterHasPerfechedWhenOpenApp();
   //await Eraser.clearAllAppNotifications();
   await GetIt.I<PrefsRepository>().removeMessageFromBackground();
+
   await NotificationProcess().setupInteractedMessage();
+
   //final Smartlook smartLook = Smartlook.instance;
   // await smartLook.start();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -309,7 +313,7 @@ void main() async {
   FirebaseAnalytics.instance.setSessionTimeoutDuration(Duration(seconds: 20));
   GetIt.I<PrefsRepository>().setTimerForOtpRunning(false);
   fetchServersUrlsFromSharedPreference();
-  await NotificationProcess().fcmToken();
+
   isDependencyInitialized = true;
   GetIt.I<AuthBloc>().add(GetUserCountryEvent());
 
@@ -324,6 +328,7 @@ void main() async {
       'login _prefsRepository.marketToken${GetIt.I<PrefsRepository>().marketToken}');
   debugPrint(
       'login _prefsRepository.storiesToken${GetIt.I<PrefsRepository>().storiesToken}');
+
   await SentryFlutter.init(
     (options) {
       options.dsn = dotenv.env['SENTRY_DNS'];

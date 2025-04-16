@@ -313,6 +313,8 @@ class _RegistrationPageState extends State<RegistrationPage>
                                     },
                                   ),
                                   VerifyOtp(
+                                      fromProfile: false,
+                                      navigateToProfile: () {},
                                       fromExpired: false,
                                       isVisWhatsApp: isVisWhatsApp,
                                       navigateToAddName: () {

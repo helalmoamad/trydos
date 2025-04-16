@@ -98,6 +98,7 @@ abstract class MarketEndPoints {
   static final removeItemCartItemEP = 'remove'.cartScope();
   static final verifyOtpSignInEP = 'verify_otp_singin'.phoneScope();
   static final verifyOtpSignUpEP = 'verify_otp_signup'.phoneScope();
+  static final verifyOtpInProfileEP = 'verify_otp'.phoneScope();
   static final verifyOtpFromGuestEP = 'verify_otp_from_guest'.phoneScope();
   static final verifyGuestPhoneEP = 'verify-guest-phone'.authFirebaseScope();
   static final registerEP = 'register'.authScope();

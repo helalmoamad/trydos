@@ -29,3 +29,7 @@ class SetImageCacheStatusEvent extends PreCachingImageEvent {
   const SetImageCacheStatusEvent(
       {required this.isLoaded, required this.imageUrl});
 }
+
+class RemoveUrlThatNotUsedEvent extends PreCachingImageEvent {
+  const RemoveUrlThatNotUsedEvent();
+}

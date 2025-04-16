@@ -1117,7 +1117,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         if (event.currentColorName != "") {
           color = element.type!.split("-")[0];
           colors.add(color);
-          colorsQuantities.add(element.qty ?? 0);
+          colorsQuantities.add((element.qty ?? 0).round());
         }
 
         if (element.type!.split("-")[0] == event.currentColorName ||
@@ -1126,7 +1126,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             size =
                 element.type!.split("-")[event.currentColorName == '' ? 0 : 1];
             sizes.add(size);
-            sizesQuantities.add(element.qty ?? 0);
+            sizesQuantities.add((element.qty ?? 0).round());
             if (element.variantNotifyForUser) {}
           } catch (e) {}
         }
@@ -1428,6 +1428,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         }
       }*/
       emit(state.copyWith(
+          getCartOverviewStatus: GetCartOverviewStatus.success,
           addImagesToProductIdForCart: addImagesToProductIdForCart,
           getCartShippingItemsModel: r,
           cartCollection: List.of(cartCollection),
@@ -1870,9 +1871,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           operation: "remove",
           productId: event.products.productId.toString(),
           resetTheList: true));
-      emit(state.copyWith(
-        addItemInCartStatus: AddItemInCartStatus.success,
-      ));
+
       if (r.data == null || r.data == "" || (r.data?.status ?? 0) != 1) {
         if (index != -1) {
           variation = listVariation[index];
@@ -1953,6 +1952,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         cartCollection.remove(cart);
 
         emit(state.copyWith(
+            addItemInCartStatus: AddItemInCartStatus.success,
             cartCollection: cartCollection,
             cachedProductWithoutRelatedProductsModel:
                 cachedProductWithoutRelatedProductsModel));
@@ -2023,6 +2023,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         cartCollection.add(cart);
 
         emit(state.copyWith(
+            addItemInCartStatus: AddItemInCartStatus.success,
             cachedProductWithoutRelatedProductsModel:
                 cachedProductWithoutRelatedProductsModel,
             cartCollection: cartCollection,
@@ -3419,16 +3420,15 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     ///////////////////////////////
 
     final response = await updateProfileUseCase(UpdateProfileParams(
-        gender:
-            event.gender ?? (state.userInfo?.gender?.value ?? "").toString(),
-        name: event.name ?? state.userInfo?.name ?? "",
-        email: event.email ?? state.userInfo?.email ?? "",
-        image: event.image ?? state.userInfo?.image ?? "",
-        tall: event.tall ?? (state.userInfo?.tall ?? "").toString(),
-        weight: event.weight ?? (state.userInfo?.weight ?? "").toString(),
-        alternative_phone:
-            event.alternative_phone ?? state.userInfo?.alternativePhone ?? "",
-        phone: event.phone ?? state.userInfo?.phone ?? ""));
+        gender: event.gender,
+        name: event.name,
+        email: event.email,
+        image: event.image,
+        tall: event.tall,
+        idToken: event.idToken,
+        weight: event.weight,
+        alternative_phone: event.alternative_phone,
+        phone: event.phone));
 
     response.fold(
       (l) {
@@ -3439,7 +3439,17 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             timeShowing: Toast.LENGTH_LONG);
         if (!isFailedTheFirstTime.contains('UpdateProfileEvent')) {
           add(
-            UpdateProfileEvent(),
+            UpdateProfileEvent(
+              alternative_phone: event.alternative_phone,
+              email: event.email,
+              gender: event.gender,
+              idToken: event.idToken,
+              image: event.image,
+              name: event.name,
+              phone: event.phone,
+              tall: event.tall,
+              weight: event.weight,
+            ),
           );
           isFailedTheFirstTime.add('UpdateProfileEvent');
         }

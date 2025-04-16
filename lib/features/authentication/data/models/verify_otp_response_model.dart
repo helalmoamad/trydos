@@ -4,11 +4,13 @@
 
 import 'dart:convert';
 
-VerifyOtpResponseModel verifyOtpResponseModelFromJson(String str) => VerifyOtpResponseModel.fromJson(json.decode(str));
+VerifyOtpInProfileResponseModel verifyOtpResponseModelFromJson(String str) =>
+    VerifyOtpInProfileResponseModel.fromJson(json.decode(str));
 
-String verifyOtpResponseModelToJson(VerifyOtpResponseModel data) => json.encode(data.toJson());
+String verifyOtpResponseModelToJson(VerifyOtpInProfileResponseModel data) =>
+    json.encode(data.toJson());
 
-class VerifyOtpResponseModel {
+class VerifyOtpInProfileResponseModel {
   final bool? isSuccessful;
   final bool? hasContent;
   final int? code;
@@ -16,7 +18,7 @@ class VerifyOtpResponseModel {
   final dynamic detailedError;
   final Data? data;
 
-  VerifyOtpResponseModel({
+  VerifyOtpInProfileResponseModel({
     this.isSuccessful,
     this.hasContent,
     this.code,
@@ -25,7 +27,7 @@ class VerifyOtpResponseModel {
     this.data,
   });
 
-  VerifyOtpResponseModel copyWith({
+  VerifyOtpInProfileResponseModel copyWith({
     bool? isSuccessful,
     bool? hasContent,
     int? code,
@@ -33,7 +35,7 @@ class VerifyOtpResponseModel {
     dynamic detailedError,
     Data? data,
   }) =>
-      VerifyOtpResponseModel(
+      VerifyOtpInProfileResponseModel(
         isSuccessful: isSuccessful ?? this.isSuccessful,
         hasContent: hasContent ?? this.hasContent,
         code: code ?? this.code,
@@ -42,23 +44,24 @@ class VerifyOtpResponseModel {
         data: data ?? this.data,
       );
 
-  factory VerifyOtpResponseModel.fromJson(Map<String, dynamic> json) => VerifyOtpResponseModel(
-    isSuccessful: json["isSuccessful"],
-    hasContent: json["hasContent"],
-    code: json["code"],
-    message: json["message"],
-    detailedError: json["detailed_error"],
-    data: json["data"] == null ? null : Data.fromJson(json["data"]),
-  );
+  factory VerifyOtpInProfileResponseModel.fromJson(Map<String, dynamic> json) =>
+      VerifyOtpInProfileResponseModel(
+        isSuccessful: json["isSuccessful"],
+        hasContent: json["hasContent"],
+        code: json["code"],
+        message: json["message"],
+        detailedError: json["detailed_error"],
+        data: json["data"] == null ? null : Data.fromJson(json["data"]),
+      );
 
   Map<String, dynamic> toJson() => {
-    "isSuccessful": isSuccessful,
-    "hasContent": hasContent,
-    "code": code,
-    "message": message,
-    "detailed_error": detailedError,
-    "data": data?.toJson(),
-  };
+        "isSuccessful": isSuccessful,
+        "hasContent": hasContent,
+        "code": code,
+        "message": message,
+        "detailed_error": detailedError,
+        "data": data?.toJson(),
+      };
 }
 
 class Data {
@@ -80,12 +83,12 @@ class Data {
       );
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-    phone: json["phone"],
-    idToken: json["id_token"],
-  );
+        phone: json["phone"],
+        idToken: json["id_token"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "phone": phone,
-    "id_token": idToken,
-  };
+        "phone": phone,
+        "id_token": idToken,
+      };
 }

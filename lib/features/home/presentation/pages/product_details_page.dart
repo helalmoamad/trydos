@@ -472,7 +472,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             .tr();
                       } else if (state
                               .productContentForStatusOfOpeningProductDetailsDirectly
-                              ?.isAvailableInMarket ==
+                              ?.isActive ==
                           false) {
                         productNotAvailableNotifier.value = LocaleKeys
                             .this_product_is_not_available_in_store
@@ -515,7 +515,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                 .cachedProductWithoutRelatedProductsModel[
                                     widget.productItem?.productId.toString()]
                                 ?.product
-                                ?.inStock ==
+                                ?.isActive ==
                             false) {
                           productNotAvailableNotifier.value = LocaleKeys
                               .this_product_is_not_available_in_store
@@ -595,7 +595,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                       int currentSelectedColor = state
                               .currentSelectedColorForEveryProduct[productId] ??
                           (productItem?.syncColorImages?.length ?? 0) ~/ 2;
-
+                      if (currentSelectedColor >
+                          (productItem?.syncColorImages?.length ?? 0)) {
+                        currentSelectedColor = 0;
+                      }
                       Future.delayed(
                         Duration(milliseconds: 600),
                         () {
@@ -1229,12 +1232,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                       productNotAvailableNotifier: productNotAvailableNotifier,
                       currentActiveTab: currentActiveTab,
                       qtyForproductWithoutVariant: widget.productItem == null
-                          ? productItem?.currentStock
+                          ? productItem?.availableQuantity
                           : state
                               .cachedProductWithoutRelatedProductsModel[
                                   productItem!.productId.toString()]
                               ?.product
-                              ?.currentStock,
+                              ?.availableQuantity,
                       collectedAfterOrdering: widget.productItem == null
                           ? productItem?.collectedAfterOrdering == 1
                           : state

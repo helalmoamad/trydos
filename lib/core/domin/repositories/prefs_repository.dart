@@ -55,6 +55,7 @@ abstract class PrefsRepository {
   String? get verificationId;
   String? get sessionId;
   String? get otpCode;
+  String? get idToken;
   int? get getdurtion;
 
   String? getPrefechOfMainCategoryInHomePage();
@@ -118,7 +119,7 @@ abstract class PrefsRepository {
   Future<bool> setMyChatPhoto(String? photo);
 
   Future<bool> setPhoneNumber(String phoneNumber);
-
+  Future<bool> setIdToken(String idToken);
   Future<void> setFcmTokenId(int fcmTokenId);
 
   Future<bool> setMyChatId(int id);

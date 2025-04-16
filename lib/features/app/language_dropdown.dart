@@ -51,6 +51,10 @@ class _LanguageDropdownState extends State<LanguageDropdown> {
           onChanged: (String? newValue) async {
             selectedlang = newValue;
             BlocProvider.of<HomeBloc>(context).add(ClearAllAppCashEvent());
+            _prefsRepository.removeBoutiqueHasPerfechedWhenOpenApp(true);
+            _prefsRepository.removeMainCategoryHasPerfechedWhenOpenApp(true);
+
+            _prefsRepository.removeFiveFilterHasPerfechedWhenOpenApp();
             /*   List<String> topicTOUnSubsecribe =
                 _prefsRepository.topicThatAlreadySubsecribed();
             topicTOUnSubsecribe.forEach(

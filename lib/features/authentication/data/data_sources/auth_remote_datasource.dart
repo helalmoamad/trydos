@@ -4,6 +4,7 @@ import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/core/api/methods/detect_server.dart';
 import 'package:trydos/features/authentication/data/models/login_to_stories_response_model.dart';
 import 'package:trydos/features/authentication/data/models/store_fcm_token_response_model.dart';
+import 'package:trydos/features/authentication/data/models/verify_otp_response_model.dart';
 import '../../../../common/constant/configuration/chat_url_routes.dart';
 import '../../../../common/constant/configuration/stories_url_routes.dart';
 import '../../../../core/api/client_config.dart';
@@ -104,6 +105,22 @@ class AuthRemoteDatasource {
       ),
     );
     return verifyOtpSignUp();
+  }
+
+  Future<VerifyOtpInProfileResponseModel> verifyOtpInProfile(
+      Map<String, dynamic> params) {
+    GetClient<VerifyOtpInProfileResponseModel> verifyOtpInProfile =
+        GetClient<VerifyOtpInProfileResponseModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<VerifyOtpInProfileResponseModel>(
+        endpoint: MarketEndPoints.verifyOtpInProfileEP,
+        queryParameters: params,
+        response: ResponseValue<VerifyOtpInProfileResponseModel>(
+            fromJson: (response) =>
+                VerifyOtpInProfileResponseModel.fromJson(response)),
+      ),
+    );
+    return verifyOtpInProfile();
   }
 
   Future<User> getCustomerInfo() {

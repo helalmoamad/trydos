@@ -118,7 +118,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
             if (state.checkWithGetCartStatus ==
                 CheckWithGetCartStatus.successForPlaceOrder) {
               if (!state.cartCollection!.any(
-                (element) => (element.inStock == false ||
+                (element) => (element.isActive == false ||
                     element.isCountryRestricted == true ||
                     element.checkAvailability == false),
               )) {

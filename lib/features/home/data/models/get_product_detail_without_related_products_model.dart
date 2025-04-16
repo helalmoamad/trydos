@@ -47,7 +47,7 @@ class Product {
   final int? id;
   final dynamic description;
 
-  final bool? inStock;
+  final bool? isActive;
   final List<Variation>? variation;
   final List<ChoiceOption>? choiceOptions;
   final String? maxAllowedQty;
@@ -56,7 +56,7 @@ class Product {
   final String? deliveryAt;
 
   final String? slugEnTopic;
-  final int? currentStock;
+  final int? availableQuantity;
   final int? leftStock;
   final int? reviewsCount;
   final bool? shippingCostMultiplyWithQuantity;
@@ -74,12 +74,12 @@ class Product {
   final int? shippingDays;
   final bool isProductNotifiedForUser;
   final bool? countryIsRestricted;
-  final bool? isAvailableInMarket;
+
   Product({
     this.id,
     this.description,
     this.descriptors,
-    this.inStock,
+    this.isActive,
     this.collectedAfterOrdering,
     this.countOfPieces,
     this.variation,
@@ -93,7 +93,7 @@ class Product {
     this.maxAllowedQty,
     this.deliveryAt,
     this.boutique,
-    this.currentStock,
+    this.availableQuantity,
     this.leftStock,
     this.shippingDays,
     this.reviewsCount,
@@ -101,7 +101,6 @@ class Product {
     this.labels,
     required this.isProductNotifiedForUser,
     this.countryIsRestricted,
-    this.isAvailableInMarket,
   });
 
   Product copyWith({
@@ -110,7 +109,7 @@ class Product {
     dynamic model,
     dynamic features,
     String? slugEnTopic,
-    bool? inStock,
+    bool? isActive,
     List<Variation>? variation,
     List<ChoiceOption>? choiceOptions,
     bool? hasDiscount,
@@ -120,7 +119,7 @@ class Product {
     String? tax,
     int? countOfPieces,
     String? unitPrice,
-    int? currentStock,
+    int? availableQuantity,
     int? leftStock,
     int? reviewsCount,
     dynamic sellerId,
@@ -142,20 +141,19 @@ class Product {
     List<Label>? labels,
     bool? isProductNotifiedForUser,
     bool? countryIsRestricted,
-    bool? isAvailableInMarket,
   }) =>
       Product(
         id: id ?? this.id,
         description: description ?? this.description,
         slugEnTopic: slugEnTopic ?? this.slugEnTopic,
-        inStock: inStock ?? this.inStock,
+        isActive: isActive ?? this.isActive,
         variation: variation ?? this.variation,
         choiceOptions: choiceOptions ?? this.choiceOptions,
         hasDiscount: hasDiscount ?? this.hasDiscount,
         maxAllowedQty: maxAllowedQty ?? this.maxAllowedQty,
         deliveryAt: deliveryAt ?? this.deliveryAt,
         shippingDays: shippingDays ?? this.shippingDays,
-        currentStock: currentStock ?? this.currentStock,
+        availableQuantity: availableQuantity ?? this.availableQuantity,
         leftStock: leftStock ?? this.leftStock,
         isLiked: isLiked ?? this.isLiked,
         shippingCostMultiplyWithQuantity: shippingCostMultiplyWithQuantity ??
@@ -173,7 +171,6 @@ class Product {
         countryIsRestricted: countryIsRestricted ?? this.countryIsRestricted,
         isProductNotifiedForUser:
             isProductNotifiedForUser ?? this.isProductNotifiedForUser,
-        isAvailableInMarket: isAvailableInMarket ?? this.isAvailableInMarket,
       );
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
@@ -190,7 +187,7 @@ class Product {
       collectedAfterOrdering: json["collected_after_ordering"],
       maxAllowedQty: json["max_allowed_qty"].toString(),
       countryIsRestricted: json["is_country_restricted"],
-      inStock: json["in_stock"],
+      isActive: json["is_active"],
       variation: json["variation"] == null
           ? []
           : List<Variation>.from(
@@ -203,11 +200,11 @@ class Product {
       deliveryAt: json["delivery_at"],
       isLiked: json["is_liked"],
       countOfLikes: json["count_of_likes"],
-      currentStock: json["current_stock"]?.toInt(),
+      availableQuantity: json["available_quantity"]?.toInt(),
       leftStock: json["Left_stock"],
       // reviewsCount: json["reviews_count"],
       shippingDays: json["shipping_days"],
-      isAvailableInMarket: json["is_available_in_market"],
+
       // viewsCount: json["views_count"],
       descriptors: json["descriptors"] == null
           ? []
@@ -221,7 +218,7 @@ class Product {
   Map<String, dynamic> toJson() => {
         "id": id,
         "description": description,
-        "in_stock": inStock,
+        "is_active": isActive,
         "boutique": boutique?.toJson(),
         "variation": variation == null
             ? []
@@ -237,14 +234,14 @@ class Product {
         "shipping_days": shippingDays,
         "is_liked": isLiked,
         "count_of_likes": countOfLikes,
-        "current_stock": currentStock,
+        "available_quantity": availableQuantity,
         "count_of_pieces": countOfPieces,
         "Left_stock": leftStock,
         "shipping_cost_multiply_with_quantity":
             shippingCostMultiplyWithQuantity,
         "shipping_cost": shippingCost?.toDouble(),
         "max_allowed_qty": maxAllowedQty,
-        "is_available_in_market": isAvailableInMarket,
+
         // "views_count": viewsCount,
         "descriptors": descriptors == null
             ? []
@@ -521,7 +518,7 @@ class Variation {
   final double? offerPrice;
   final String? offerPriceFormated;
   final String? sku;
-  final int? qty;
+  final double? qty;
 
   Variation({
     required this.variantNotifyForUser,
@@ -542,7 +539,7 @@ class Variation {
     double? offerPrice,
     String? offerPriceFormated,
     String? sku,
-    int? qty,
+    double? qty,
   }) =>
       Variation(
         variantNotifyForUser: variantNotifyForUser ?? this.variantNotifyForUser,
@@ -563,7 +560,7 @@ class Variation {
         offerPrice: json["offer_price"]?.toDouble(),
         offerPriceFormated: json["offer_price_formated"],
         sku: json["sku"],
-        qty: json["qty"],
+        qty: double.tryParse(json["qty"].toString()),
       );
 
   Map<String, dynamic> toJson() => {
@@ -574,7 +571,7 @@ class Variation {
         "offer_price": offerPrice,
         "offer_price_formated": offerPriceFormated,
         "sku": sku,
-        "qty": qty,
+        "qty": qty?.toDouble(),
       };
 }
 

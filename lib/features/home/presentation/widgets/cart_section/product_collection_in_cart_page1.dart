@@ -1457,7 +1457,7 @@ class _ProductCollectionInCartPage1State
 
                         ///////////////////////
                         !isOldCart &&
-                                (cartCollection![index].inStock == false ||
+                                (cartCollection![index].isActive == false ||
                                     cartCollection[index].checkAvailability ==
                                         false ||
                                     cartCollection[index].isCountryRestricted ==

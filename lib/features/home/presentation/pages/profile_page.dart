@@ -399,7 +399,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                       child: Container(
                         height: 16,
                         child: Text(
-                          "+" + "${state.userInfo?.phone ?? ''}",
+                          "${state.userInfo?.phone ?? ''}",
                           style: context.textTheme.bodyMedium?.rr.copyWith(
                               color: const Color(0xff8D8D8D),
                               letterSpacing: 0.18,
