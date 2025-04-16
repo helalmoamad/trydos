@@ -73,7 +73,9 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
 
   final GetHomeBoutiqesUseCase getHomeBoutiqesUseCase;
   FutureOr<void> _onGetHomeBoutiquesEvent(
-      GetHomeBoutiqesEvent event, Emitter<CategoryState> emit) async {
+    GetHomeBoutiqesEvent event,
+    Emitter<CategoryState> emit,
+  ) async {
     print(event.categorySlug);
     Map<String, PaginationModel<Boutique>>
         getHomeBoutiquesPaginationObjectByMainCategory =
@@ -250,31 +252,37 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
             getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!
                 .items);
 
-        emit(state.copyWith(getHomeBoutiquesPaginationObjectByMainCategory:
-            getHomeBoutiquesPaginationObjectByMainCategory.map((key, value) {
-          if (key == event.categorySlug) {
-            return MapEntry(
-              key,
-              value.copyWith(
-                hasReachedMax:
-                    (r.data!.boutiques?.length ?? kPageSize) < kPageSize,
-                paginationStatus: PaginationStatus.success,
-                page: event.getWithPagination
-                    ? getHomeBoutiquesPaginationObjectByMainCategory[
-                                event.categorySlug]!
-                            .page +
-                        1
-                    : 2,
-                offset: r.data?.offset,
-                items: !event.getWithPagination
-                    ? [...r.data!.boutiques ?? []]
-                    : [...boutiques, ...r.data!.boutiques ?? []],
-              ),
-            );
-          } else {
-            return MapEntry(key, value);
-          }
-        })));
+        emit(
+          state.copyWith(
+            getHomeBoutiquesPaginationObjectByMainCategory:
+                getHomeBoutiquesPaginationObjectByMainCategory.map(
+              (key, value) {
+                if (key == event.categorySlug) {
+                  return MapEntry(
+                    key,
+                    value.copyWith(
+                      hasReachedMax:
+                          (r.data!.boutiques?.length ?? kPageSize) < kPageSize,
+                      paginationStatus: PaginationStatus.success,
+                      page: event.getWithPagination
+                          ? getHomeBoutiquesPaginationObjectByMainCategory[
+                                      event.categorySlug]!
+                                  .page +
+                              1
+                          : 2,
+                      offset: r.data?.offset,
+                      items: !event.getWithPagination
+                          ? [...r.data!.boutiques ?? []]
+                          : [...boutiques, ...r.data!.boutiques ?? []],
+                    ),
+                  );
+                } else {
+                  return MapEntry(key, value);
+                }
+              },
+            ),
+          ),
+        );
 
         if (!event.getWithPagination && event.getWithPrefetchForEachBoutiques) {
           prefetchBoutiques(event.categorySlug, event.context, 0);

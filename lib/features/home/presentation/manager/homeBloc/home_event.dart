@@ -1,15 +1,9 @@
 import 'dart:io';
-
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 import 'package:trydos/features/authentication/data/models/verify_otp_sign_up_and_in_response_model.dart';
-import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
-
-import '../../../data/models/get_product_filters_model.dart';
 import '../../../domain/use_cases/place_order_usecase.dart';
 
 abstract class HomeEvent extends Equatable {
@@ -219,63 +213,12 @@ class GetFullProductDetailsEvent extends HomeEvent {
   List<Object?> get props => [productId, productSlug];
 }
 
-class AddAddressInfoClassEvent extends HomeEvent {
-  final CustomerAddressesInfo? addressInfoClassToSave;
-
-  const AddAddressInfoClassEvent({required this.addressInfoClassToSave});
-
-  @override
-  // TODO: implement props
-  List<Object?> get props => [addressInfoClassToSave];
-}
-
 class GetNotificationTypeProductEvent extends HomeEvent {
   const GetNotificationTypeProductEvent();
 
   @override
   // TODO: implement props
   List<Object?> get props => [];
-}
-
-class DeleteAdressInfoClassEvent extends HomeEvent {
-  final int? adressInfoClassId;
-
-  const DeleteAdressInfoClassEvent({required this.adressInfoClassId});
-
-  @override
-  // TODO: implement props
-  List<Object?> get props => [adressInfoClassId];
-}
-
-class SetCustomerAddressDefaultEvent extends HomeEvent {
-  final int? adressId;
-
-  const SetCustomerAddressDefaultEvent({required this.adressId});
-
-  @override
-  // TODO: implement props
-  List<Object?> get props => [adressId];
-}
-
-class SetCurrentAddressChoosedEvent extends HomeEvent {
-  final int? index;
-
-  const SetCurrentAddressChoosedEvent({required this.index});
-
-  @override
-  // TODO: implement props
-  List<Object?> get props => [index];
-}
-
-class EditAdressInfoClassEvent extends HomeEvent {
-  final CustomerAddressesInfo? addressInfoClassToSave;
-  final int preIdToEdit;
-  const EditAdressInfoClassEvent(
-      {required this.addressInfoClassToSave, required this.preIdToEdit});
-
-  @override
-  // TODO: implement props
-  List<Object?> get props => [addressInfoClassToSave, preIdToEdit];
 }
 
 /*class GetProductsWithFiltersEventWithoutCancelingPreviousEvents
@@ -350,27 +293,6 @@ class GetStoryForProductEvent extends HomeEvent {
   List<Object?> get props => [productId];
 }
 
-class GetAddressByCoordinatesEvent extends HomeEvent {
-  final double latitude;
-  final double longitude;
-  GetAddressByCoordinatesEvent(
-      {required this.longitude, required this.latitude});
-
-  @override
-  // TODO: implement props
-  List<Object?> get props => [longitude, latitude];
-}
-
-class GetCustomerWalletEvent extends HomeEvent {
-  final int limit;
-  final int offset;
-  GetCustomerWalletEvent({required this.limit, required this.offset});
-
-  @override
-  // TODO: implement props
-  List<Object?> get props => [limit, offset];
-}
-
 class SaveUserInfoFromAuthEvent extends HomeEvent {
   final User userInfo;
 
@@ -402,25 +324,6 @@ class UpdateProfileEvent extends HomeEvent {
       this.weight,
       this.alternative_phone,
       this.phone});
-  @override
-  // TODO: implement props
-  List<Object?> get props => [];
-}
-
-class GetAddressByTextEvent extends HomeEvent {
-  final String query;
-  final bool reset;
-
-  GetAddressByTextEvent({required this.query, required this.reset});
-
-  @override
-  // TODO: implement props
-  List<Object?> get props => [query];
-}
-
-class GetCustomerAddressesEvent extends HomeEvent {
-  GetCustomerAddressesEvent();
-
   @override
   // TODO: implement props
   List<Object?> get props => [];
@@ -806,45 +709,12 @@ class PlaceOrderEvent extends HomeEvent {
   List<Object?> get props => [placeOrderParams];
 }
 
-class GetOrdersByOrderGroupIDEvent extends HomeEvent {
-  final String orderGroupId;
-
-  GetOrdersByOrderGroupIDEvent({
-    required this.orderGroupId,
-  });
-
-  @override
-  // TODO: implement props
-  List<Object?> get props => [orderGroupId];
-}
-
-class GetOrdersByCartGroupIDEvent extends HomeEvent {
-  final String cartGroupId;
-
-  GetOrdersByCartGroupIDEvent({
-    required this.cartGroupId,
-  });
-
-  @override
-  // TODO: implement props
-  List<Object?> get props => [cartGroupId];
-}
-
 class CheckAvailabilityProductCartEvent extends HomeEvent {
   CheckAvailabilityProductCartEvent();
 
   @override
   // TODO: implement props
   List<Object?> get props => [];
-}
-
-class ApplyCouponEvent extends HomeEvent {
-  final String code;
-  ApplyCouponEvent({required this.code});
-
-  @override
-  // TODO: implement props
-  List<Object?> get props => [code];
 }
 
 class GetCartOverviewEvent extends HomeEvent {
@@ -856,18 +726,10 @@ class GetCartOverviewEvent extends HomeEvent {
 }
 
 class GetUserNotificationEvent extends HomeEvent {
-  GetUserNotificationEvent();
+  final bool getWithPagination;
+  GetUserNotificationEvent({required this.getWithPagination});
 
   @override
   // TODO: implement props
-  List<Object?> get props => [];
-}
-
-class GetOrdersEvent extends HomeEvent {
-  final String? status;
-  GetOrdersEvent({required this.status});
-
-  @override
-  // TODO: implement props
-  List<Object?> get props => [status];
+  List<Object?> get props => [getWithPagination];
 }

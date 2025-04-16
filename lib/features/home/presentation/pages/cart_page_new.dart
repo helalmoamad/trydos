@@ -36,6 +36,8 @@ import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/language_service.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
+import '../manager/orderBloc/order_bloc.dart';
+import '../manager/orderBloc/order_event.dart';
 
 class CartPage extends StatefulWidget {
   final bool? fromeFilters;
@@ -50,6 +52,7 @@ class CartPage extends StatefulWidget {
 
 class _CartPageState extends State<CartPage> {
   late HomeBloc homeBloc;
+  late OrderBloc orderBloc;
 
   late AppBloc appBloc;
   late BoutiqueBloc boutiqueBloc;
@@ -73,8 +76,9 @@ class _CartPageState extends State<CartPage> {
     appBloc = BlocProvider.of<AppBloc>(context);
     authBloc = BlocProvider.of<AuthBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
+    orderBloc = BlocProvider.of<OrderBloc>(context);
     boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
-    homeBloc.add(GetCustomerAddressesEvent());
+    orderBloc.add(GetCustomerAddressesEvent());
     homeBloc.add(GetCartItemEvent());
     fromForGroundNotification =
         appBloc.state.isFromForGroundNotification ?? false;

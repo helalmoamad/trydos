@@ -1,9 +1,5 @@
 import 'dart:convert';
-import 'dart:developer';
-import 'dart:math';
-import 'dart:ui';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -34,7 +30,6 @@ import 'package:trydos/features/home/presentation/manager/categoryBloc/category_
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_state.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
-import 'package:trydos/features/home/presentation/widgets/product_details_body/sliding_up_panel_for_reels.dart';
 import 'package:trydos/features/home/presentation/widgets/sliver_list_seprated.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
@@ -48,7 +43,6 @@ import '../../../../service/firebase_analytics_service/analytics_const/analytics
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/my_text_widget.dart';
 import '../../../story/presentation/widget/stories_list.dart';
-import '../manager/homeBloc/home_state.dart';
 import '../widgets/home_page_card2.dart';
 
 class HomePage extends StatefulWidget {

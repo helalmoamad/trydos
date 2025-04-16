@@ -237,6 +237,8 @@ import '../../features/home/presentation/manager/categoryBloc/category_bloc.dart
     as _i944;
 import '../../features/home/presentation/manager/homeBloc/home_bloc.dart'
     as _i903;
+import '../../features/home/presentation/manager/orderBloc/order_bloc.dart'
+    as _i279;
 import '../../features/story/data/data_source/story_data_source.dart' as _i777;
 import '../../features/story/data/repository/story_repository_impl.dart'
     as _i213;
@@ -474,11 +476,7 @@ Future<_i174.GetIt> $initGetIt(
         gh<_i33.AddLikeToProductUsecase>(),
         gh<_i802.UpdateItemInCartUseCase>(),
         gh<_i1035.AddItemToCartUseCase>(),
-        gh<_i1064.SetCustomerAddressDefaultUseCase>(),
         gh<_i939.GetCommentForProductUseCase>(),
-        gh<_i71.DeleteCustomerAddressUseCase>(),
-        gh<_i70.AddCustomerAddressUseCase>(),
-        gh<_i418.UpdateCustomerAddressUseCase>(),
         gh<_i749.GetProductsListInCartUseCase>(),
         gh<_i315.UpdateProfileUseCase>(),
         gh<_i318.GetAllowedCountryUseCase>(),
@@ -495,9 +493,6 @@ Future<_i174.GetIt> $initGetIt(
         gh<_i347.GetProductDetailWithoutRelatedProductsUseCase>(),
         gh<_i815.GetStartingSettingsUseCase>(),
         gh<_i963.GetPopularSearchItemUseCase>(),
-        gh<_i970.GetAddressByCoordinatesUsecase>(),
-        gh<_i976.GetAddressByTextUsecase>(),
-        gh<_i489.GetCustomerAddressesUseCase>(),
         gh<_i651.UpdateUserPhotoUseCase>(),
         gh<_i762.GetCurrencyForCountryUseCase>(),
         gh<_i104.HideItemsInOldCartUseCase>(),
@@ -508,15 +503,9 @@ Future<_i174.GetIt> $initGetIt(
         gh<_i397.GetProductsWithoutFiltersUseCase>(),
         gh<_i68.AddCommentUseCase>(),
         gh<_i715.RequestForNotificationWhenProductBecameAvailableUseCase>(),
-        gh<_i361.GetCustomerWalletUseCase>(),
-        gh<_i649.PlaceOrderUsecase>(),
-        gh<_i1003.GetOrdersByOrderGroupIDUsecase>(),
-        gh<_i59.GetOrdersByCartGroupIDUsecase>(),
         gh<_i812.CheckAvailabilityProductCartUsecase>(),
-        gh<_i493.ApplyCouponUsecase>(),
         gh<_i675.GetCartOverviewUseCase>(),
         gh<_i1021.GetUserNotificationUseCase>(),
-        gh<_i558.GetOrdersUseCase>(),
       ));
   gh.lazySingleton<_i1032.CallsRepository>(
       () => _i722.CallsRepositoryImpl(gh<_i1061.CallsRemoteDataSource>()));
@@ -585,6 +574,21 @@ Future<_i174.GetIt> $initGetIt(
       () => _i711.RejectCallUseCase(gh<_i1032.CallsRepository>()));
   gh.factory<_i961.WatchMissedCallUseCase>(
       () => _i961.WatchMissedCallUseCase(gh<_i1032.CallsRepository>()));
+  gh.lazySingleton<_i279.OrderBloc>(() => _i279.OrderBloc(
+        gh<_i649.PlaceOrderUsecase>(),
+        gh<_i1003.GetOrdersByOrderGroupIDUsecase>(),
+        gh<_i59.GetOrdersByCartGroupIDUsecase>(),
+        gh<_i361.GetCustomerWalletUseCase>(),
+        gh<_i558.GetOrdersUseCase>(),
+        gh<_i1064.SetCustomerAddressDefaultUseCase>(),
+        gh<_i489.GetCustomerAddressesUseCase>(),
+        gh<_i71.DeleteCustomerAddressUseCase>(),
+        gh<_i70.AddCustomerAddressUseCase>(),
+        gh<_i418.UpdateCustomerAddressUseCase>(),
+        gh<_i970.GetAddressByCoordinatesUsecase>(),
+        gh<_i976.GetAddressByTextUsecase>(),
+        gh<_i493.ApplyCouponUsecase>(),
+      ));
   gh.lazySingleton<_i561.AuthBloc>(() => _i561.AuthBloc(
         gh<_i434.UpdateStoriesUserUseCase>(),
         gh<_i730.UpdateChatUserNameUseCase>(),

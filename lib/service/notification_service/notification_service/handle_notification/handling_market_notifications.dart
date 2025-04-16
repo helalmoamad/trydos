@@ -16,6 +16,9 @@ import 'package:trydos/features/home/presentation/pages/product_details_page.dar
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/main.dart';
 
+import '../../../../features/home/presentation/manager/orderBloc/order_bloc.dart';
+import '../../../../features/home/presentation/manager/orderBloc/order_event.dart';
+
 enum TypeOfNotificationForMarketEnum {
   product_cart_expiration,
   product_availability,
@@ -92,7 +95,7 @@ class HandlingMarketNotifications {
     if (data["type"] ==
         typeOfNotificationForMarket[
             TypeOfNotificationForMarketEnum.order_placed]) {
-      GetIt.I<HomeBloc>().add(
+      GetIt.I<OrderBloc>().add(
           GetOrdersByOrderGroupIDEvent(orderGroupId: data["order_group_id"]));
     }
     if (data["type"] ==

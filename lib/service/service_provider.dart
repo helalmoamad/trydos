@@ -10,6 +10,7 @@ import 'package:trydos/features/home/presentation/manager/categoryBloc/category_
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import '../features/app/blocs/pre_caching_image_bloc/pre_caching_image_bloc.dart';
 import '../features/app/blocs/sensitive_connectivity/sensitive_connectivity_bloc.dart';
+import '../features/home/presentation/manager/orderBloc/order_bloc.dart';
 import '../features/story/presentation/bloc/story_bloc.dart';
 
 class ServiceProvider extends StatelessWidget {
@@ -32,6 +33,7 @@ class ServiceProvider extends StatelessWidget {
         BlocProvider(create: (BuildContext context) => GetIt.I<BoutiqueBloc>()),
         BlocProvider(
             create: (BuildContext context) => GetIt.I<PreCachingImageBloc>()),
+        BlocProvider(create: (BuildContext context) => GetIt.I<OrderBloc>()),
       ],
       child: child,
     );

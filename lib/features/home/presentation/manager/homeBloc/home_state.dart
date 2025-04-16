@@ -1,21 +1,13 @@
-import 'dart:io';
-
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:trydos/features/authentication/data/models/verify_otp_sign_up_and_in_response_model.dart';
 import 'package:trydos/features/home/data/models/firebase_setting_for_notification_model.dart';
-import 'package:trydos/features/home/data/models/get_address_by_coordinates_model.dart';
-import 'package:trydos/features/home/data/models/get_address_by_text_model.dart';
-
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart'
     as cart;
-
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
 import 'package:trydos/features/home/data/models/get_currency_for_country_model.dart';
-import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart'
-    as boutiques_model;
 import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
 import 'package:trydos/features/home/data/models/get_old_cart_model.dart'
     as oldCart;
@@ -30,18 +22,11 @@ import 'package:trydos/features/home/presentation/widgets/product_details_sheet/
 import '../../../../../core/data/model/pagination_model.dart';
 import '../../../data/models/apply_coupon_model.dart';
 import '../../../data/models/check_availability_product_cart_model.dart';
-import '../../../data/models/customer_wallet_model.dart';
 import '../../../data/models/get_cart_item_model.dart';
-
 import '../../../data/models/get_old_cart_model.dart';
-import '../../../data/models/get_orders_model.dart';
-import '../../../data/models/get_product_filters_model.dart' as get_filters;
-import '../../../data/models/get_product_filters_model.dart';
 import '../../../data/models/get_product_listing_without_filters_model.dart'
     as product;
 import '../../../data/models/get_user_notifications_model.dart';
-import '../../../data/models/main_categories_response_model.dart';
-import '../../../data/models/place_order_model.dart';
 import '../../../data/models/starting_settings_response_model.dart';
 
 part 'home_state.g.dart';
@@ -94,23 +79,9 @@ enum UploadUserPhotoCloudinaryStatus { init, loading, success, failure }
 
 enum GetNotificationTypeProductStatus { init, loading, success, failure }
 
-enum AddAddressToOrderStatus { init, loading, success, failure }
-
-enum EditAddressToOrderStatus { init, loading, success, failure }
-
-enum GetCustomerAddressesStatus { init, loading, success, failure }
-
-enum RemoveAddressToOrderStatus { init, loading, success, failure }
-
 enum GetProductsWithoutFiltersStatus { init, loading, success, failure }
 
 enum AddOrRemoveLikeOfProductStatus { init, loading, success, failure }
-
-enum GetAddressByTextStatus { init, loading, success, failure }
-
-enum GetAddressByCoordinatesStatus { init, loading, success, failure }
-
-enum GetCustomerWalletStatus { init, loading, success, failure }
 
 enum GetProductListingStatus { init, loading, success, failure }
 
@@ -124,21 +95,11 @@ enum UpdateWhatsappNotificationStatus { init, loading, success, failure }
 
 enum UpdateEmailappNotificationStatus { init, loading, success, failure }
 
-enum PlaceOrderStatus { init, loading, success, failure, unavailable }
-
-enum GetOrdersByOrderGroupIDStatus { init, loading, success, failure }
-
-enum GetOrdersByCartGroupIDStatus { init, loading, success, failure }
-
 enum CheckAvailabilityProductCartStatus { init, loading, success, failure }
-
-enum ApplyCouponStatus { init, loading, success, failure }
 
 enum GetCartOverviewStatus { init, loading, success, failure }
 
 enum UpdateProfileStatus { init, loading, success, failure }
-
-enum SetCustomerAddressDefaultStatus { init, loading, success, failure }
 
 enum EnableAddToCardAfterChangeVariantZero { init, loading, success, failure }
 
@@ -157,7 +118,6 @@ class HomeState extends Equatable {
       this.getAndAddCountViewOfProductStatus = const {},
       this.addItemInCartStatus,
       this.convertItemFromOldcartToCartStatus,
-      this.resultSearch = const [],
       this.hideItemInOldCartStatus,
       this.updateEmailappNotificationStatus,
       this.updateWhatsappNotificationStatus,
@@ -169,10 +129,7 @@ class HomeState extends Equatable {
           GetProductDetailWithoutSimilarRelatedProductsStatus.init,
       this.getStartingSettingsStatus = GetStartingSettingsStatus.init,
       this.getCommentForProductStatus = GetCommentForProductStatus.init,
-      this.editAddressToOrderStatus,
       this.currentSelectedColorForEveryProductStatus,
-      this.addAddressToOrderStatus,
-      this.removeAddressToOrderStatus,
       this.isChangedvariationWhenQtyZero = false,
       this.getFullProductDetailsStatus = GetFullProductDetailsStatus.init,
       this.addCommentStatus = AddCommentStatus.init,
@@ -187,20 +144,11 @@ class HomeState extends Equatable {
       this.enableAddToCardAfterChangeVariantZero,
       this.getOldCartItemsStatus = GetOLdCartItemsStatus.init,
       this.getOldCartModel,
-      this.getAddressByCoordinatesModel,
-      this.customerWalletModel,
-      this.setCustomerAddressDefaultStatus,
-      this.placeOrderModel,
-      this.applyCouponModel,
       this.getUserNotificationModel,
-      this.getOrdersModel,
-      this.getOrdersByOrderGroupIDModel,
-      this.getOrdersByCartGroupIDModel,
       this.checkAvailabilityProductCartModel,
       this.currentPage = 0,
       this.productStatus,
       this.updateItemInCartStatus,
-      this.getCustomerAddressStatus,
       this.productITemForCart = const {},
       this.getCartShippingItemsModel,
       this.getCommentForProductModel = const {},
@@ -217,7 +165,6 @@ class HomeState extends Equatable {
       this.currentQuantityForCart,
       this.addImagesToProductIdForCart = const {},
       this.searchHistory,
-      this.currentAddressChoosed,
       this.getAllowedCountriesModel,
 
       //   this.moveUrlFromElasticToMarketServer = false,
@@ -228,16 +175,9 @@ class HomeState extends Equatable {
           GetListOfProductsFoundedInCartStatus.init,
       this.getCurrencyForCountryModel,
       this.popularSearchTerm,
-      this.getAddressByCoordinatesStatus,
-      this.getCustomerWalletStatus,
-      this.placeOrderStatus = PlaceOrderStatus.init,
-      this.applyCouponStatus = ApplyCouponStatus.init,
       this.getCartOverviewStatus = GetCartOverviewStatus.init,
-      this.getOrdersByOrderGroupIDStatus = GetOrdersByOrderGroupIDStatus.init,
-      this.getOrdersByCartGroupIDStatus = GetOrdersByCartGroupIDStatus.init,
       this.checkAvailabilityProductCartStatus =
           CheckAvailabilityProductCartStatus.init,
-      this.getAddressByTextStatus,
       this.getCartItemsStatus = GetCartItemsStatus.init,
       this.checkWithGetCartStatus = CheckWithGetCartStatus.init,
       this.getProductDetailWithoutRelatedProductsModel,
@@ -247,7 +187,6 @@ class HomeState extends Equatable {
       this.notificationTypeForProductModel,
       this.getNotificationTypeProductStatus,
       this.currentIndexForUpdateCart,
-      this.listOfAddressInfoClassToSave = const [],
       this.userInfo,
       this.listOfErrorSendedToMobileErrorLog = const [],
       this.cachedProductWithoutRelatedProductsModel = const {},
@@ -277,43 +216,24 @@ class HomeState extends Equatable {
 
   final GetNotificationTypeProductStatus? getNotificationTypeProductStatus;
   final HideItemInOldCartStatus? hideItemInOldCartStatus;
-  final GetCustomerAddressesStatus? getCustomerAddressStatus;
+
   final NotificationTypeForProductModel? notificationTypeForProductModel;
   final Map<String, GetAndAddCountViewOfProductStatus>
       getAndAddCountViewOfProductStatus;
   final List<PopularSearchTerm>? popularSearchTerm;
-  final SetCustomerAddressDefaultStatus? setCustomerAddressDefaultStatus;
-  final List<ResultSearch>? resultSearch;
-  final GetAddressByCoordinatesModel? getAddressByCoordinatesModel;
-  final CustomerWalletModel? customerWalletModel;
-  final OrdersGroupModel? placeOrderModel;
-  final PlaceOrderStatus? placeOrderStatus;
-  final ApplyCouponModel? applyCouponModel;
-  final ApplyCouponStatus? applyCouponStatus;
 
   final PaginationModel<NotificationItemModel>? getUserNotificationModel;
-  final PaginationModel<OrderListModel>? getOrdersModel;
 
   final GetCartOverviewStatus? getCartOverviewStatus;
-  final OrdersGroupModel? getOrdersByOrderGroupIDModel;
-  final GetOrdersByOrderGroupIDStatus? getOrdersByOrderGroupIDStatus;
-  final OrdersGroupModel? getOrdersByCartGroupIDModel;
-  final GetOrdersByCartGroupIDStatus? getOrdersByCartGroupIDStatus;
 
   final CheckAvailabilityProductCartModel? checkAvailabilityProductCartModel;
   final CheckAvailabilityProductCartStatus? checkAvailabilityProductCartStatus;
 
   final List<ImageForAddToCart>? listitemForAddToCart;
-  final GetAddressByTextStatus? getAddressByTextStatus;
-  final GetAddressByCoordinatesStatus? getAddressByCoordinatesStatus;
-  final GetCustomerWalletStatus? getCustomerWalletStatus;
+
   //final bool moveUrlFromElasticToMarketServer;
   final GetAllowedCountriesModel? getAllowedCountriesModel;
-  final RemoveAddressToOrderStatus? removeAddressToOrderStatus;
-  final EditAddressToOrderStatus? editAddressToOrderStatus;
-  final AddAddressToOrderStatus? addAddressToOrderStatus;
 
-  final List<CustomerAddressesInfo>? listOfAddressInfoClassToSave;
   final GetCurrencyForCountryModel? getCurrencyForCountryModel;
 
   final AddItemInCartStatus? addItemInCartStatus;
@@ -325,7 +245,6 @@ class HomeState extends Equatable {
 
   final int? selectedCollection;
   final int currentPage;
-  final int? currentAddressChoosed;
 
   // String? idForRequest;
   final List<String>? searchHistory;
@@ -391,56 +310,35 @@ class HomeState extends Equatable {
         getListOfProductsFoundedInCartStatus,
         getCommentForProductStatus,
         productITemForCart,
-
         oldcartCollection,
         convertItemFromOldcartToCartStatus,
         getOldCartModel,
         getOldCartItemsStatus,
-        editAddressToOrderStatus,
-        addAddressToOrderStatus,
         notificationTypeForProductModel,
-        removeAddressToOrderStatus,
-        getCustomerAddressStatus,
         updateProfileStatus,
         currentSelectedColorForEveryProductStatus,
         listitemForAddToCart,
         getAllowedCountriesModel,
-
         userInfo,
         popularSearchTerm,
-
         getCurrencyForCountryModel,
-
         enableAddToCardAfterChangeVariantZero,
-
         cartIdsHurryUPTimerStarted,
         addCommentStatus,
         changeSizesForEveryProduct,
         hideItemInOldCartStatus,
         // moveUrlFromElasticToMarketServer,
 
-        listOfAddressInfoClassToSave,
-        getAddressByCoordinatesStatus,
         updateEmailappNotificationStatus,
         updateWhatsappNotificationStatus,
 
-        getCustomerWalletStatus,
-        placeOrderStatus,
-        placeOrderModel,
-        applyCouponStatus,
-        applyCouponModel,
         getUserNotificationModel,
-        getOrdersModel,
+
         getCartOverviewStatus,
-        getOrdersByOrderGroupIDStatus,
-        getOrdersByOrderGroupIDModel,
-        getOrdersByCartGroupIDStatus,
-        getOrdersByCartGroupIDModel,
 
         checkAvailabilityProductCartStatus,
         checkAvailabilityProductCartModel,
 
-        getAddressByTextStatus,
         listOfErrorSendedToMobileErrorLog,
         uploadUserPhotoCloudinaryStatus,
 
@@ -456,9 +354,6 @@ class HomeState extends Equatable {
         addImagesToProductIdForCart,
         productStatus,
         cartCollection,
-        setCustomerAddressDefaultStatus,
-
-        resultSearch,
 
         reRequestTheseProductListingInBoutiques,
         reRequestProductWithFilters,
@@ -483,7 +378,6 @@ class HomeState extends Equatable {
         addImagesToProductIdForCart,
         deleteItemInCartStatus,
         updateItemInCartStatus,
-        currentAddressChoosed,
         currentSelectedColorForEveryProduct,
         isVariantRequestNotification,
         selectedCollection,
@@ -491,10 +385,10 @@ class HomeState extends Equatable {
         startingSetting,
         currentIndexForUpdateCart,
         currentColorSizeForCart,
-        getAddressByCoordinatesModel,
+
         isChangedvariationWhenQtyZero,
         getFirebaseSettingForNotificationStatus,
-        customerWalletModel,
+
         currentQuantityForCart,
         firebaseSettingForNotificationModel,
         cachedProductWithoutRelatedProductsModel,
@@ -508,29 +402,17 @@ class HomeState extends Equatable {
       final FirebaseSettingForNotificationModel?
           firebaseSettingForNotificationModel,
       final bool? isChangedvariationWhenQtyZero,
-      final GetAddressByCoordinatesModel? getAddressByCoordinatesModel,
-      final CustomerWalletModel? customerWalletModel,
       final EnableAddToCardAfterChangeVariantZero?
           enableAddToCardAfterChangeVariantZero,
-      final OrdersGroupModel? placeOrderModel,
       final UpdateProfileStatus? updateProfileStatus,
       final User? userInfo,
-      final PlaceOrderStatus? placeOrderStatus,
-      final ApplyCouponModel? applyCouponModel,
-      final ApplyCouponStatus? applyCouponStatus,
       final UploadUserPhotoCloudinaryStatus? uploadUserPhotoCloudinaryStatus,
       final PaginationModel<NotificationItemModel>? getUserNotificationModel,
-      final PaginationModel<OrderListModel>? getOrdersModel,
       final GetCartOverviewStatus? getCartOverviewStatus,
       final CurrentSelectedColorForEveryProductStatus?
           currentSelectedColorForEveryProductStatus,
-      final OrdersGroupModel? getOrdersByOrderGroupIDModel,
-      final GetOrdersByOrderGroupIDStatus? getOrdersByOrderGroupIDStatus,
-      final OrdersGroupModel? getOrdersByCartGroupIDModel,
-      final GetOrdersByCartGroupIDStatus? getOrdersByCartGroupIDStatus,
       final CheckAvailabilityProductCartModel?
           checkAvailabilityProductCartModel,
-      final SetCustomerAddressDefaultStatus? setCustomerAddressDefaultStatus,
       final CheckAvailabilityProductCartStatus?
           checkAvailabilityProductCartStatus,
       final AddItemInCartStatus? addItemInCartStatus,
@@ -540,21 +422,12 @@ class HomeState extends Equatable {
       final GetNotificationTypeProductStatus? getNotificationTypeProductStatus,
       // final bool? moveUrlFromElasticToMarketServer,
       final UpdateItemInCartStatus? updateItemInCartStatus,
-      final GetCustomerAddressesStatus? getCustomerAddressesStatus,
-      final List<ResultSearch>? resultSearch,
       final List<String>? listOfErrorSendedToMobileErrorLog,
       final NotificationTypeForProductModel? notificationTypeForProductModel,
       final GetListOfProductsFoundedInCartStatus?
           getListOfProductsFoundedInCartStatus,
       final List<CustomerAddressesInfo>? listOfAdressInfoClassToSave,
-      final RemoveAddressToOrderStatus? removeAddressToOrderStatus,
-      final EditAddressToOrderStatus? editAddressToOrderStatus,
-      final AddAddressToOrderStatus? addAddressToOrderStatus,
       final Map<String, String>? searchWithOutFilterOffset,
-      final int? currentAddressChoosed,
-      final GetAddressByTextStatus? getAddressByTextStatus,
-      final GetAddressByCoordinatesStatus? getAddressByCoordinatesStatus,
-      final GetCustomerWalletStatus? getCustomerWalletStatus,
       final Map<String, GetAndAddCountViewOfProductStatus>?
           getAndAddCountViewOfProductStatus,
       final List<PopularSearchTerm>? popularSearchTerm,
@@ -618,9 +491,6 @@ class HomeState extends Equatable {
       getAndAddCountViewOfProductStatus: getAndAddCountViewOfProductStatus ??
           this.getAndAddCountViewOfProductStatus,
 
-      getAddressByCoordinatesModel:
-          getAddressByCoordinatesModel ?? this.getAddressByCoordinatesModel,
-      customerWalletModel: customerWalletModel ?? this.customerWalletModel,
       enableAddToCardAfterChangeVariantZero:
           enableAddToCardAfterChangeVariantZero ??
               this.enableAddToCardAfterChangeVariantZero,
@@ -644,15 +514,8 @@ class HomeState extends Equatable {
       currentSelectedColorForEveryProductStatus:
           currentSelectedColorForEveryProductStatus ??
               this.currentSelectedColorForEveryProductStatus,
-      setCustomerAddressDefaultStatus: setCustomerAddressDefaultStatus ??
-          this.setCustomerAddressDefaultStatus,
       notificationTypeForProductModel: notificationTypeForProductModel ??
           this.notificationTypeForProductModel,
-      listOfAddressInfoClassToSave:
-          listOfAdressInfoClassToSave ?? this.listOfAddressInfoClassToSave,
-      removeAddressToOrderStatus:
-          removeAddressToOrderStatus ?? this.removeAddressToOrderStatus,
-
       firebaseSettingForNotificationModel:
           firebaseSettingForNotificationModel ??
               this.firebaseSettingForNotificationModel,
@@ -661,48 +524,23 @@ class HomeState extends Equatable {
 
       changeSizesForEveryProduct:
           changeSizesForEveryProduct ?? this.changeSizesForEveryProduct,
-      addAddressToOrderStatus:
-          addAddressToOrderStatus ?? this.addAddressToOrderStatus,
-      resultSearch: resultSearch ?? this.resultSearch,
-      getCustomerAddressStatus:
-          getCustomerAddressesStatus ?? this.getCustomerAddressStatus,
+
       getNotificationTypeProductStatus: getNotificationTypeProductStatus ??
           this.getNotificationTypeProductStatus,
-      editAddressToOrderStatus:
-          editAddressToOrderStatus ?? this.editAddressToOrderStatus,
-      getAddressByCoordinatesStatus:
-          getAddressByCoordinatesStatus ?? this.getAddressByCoordinatesStatus,
-      getCustomerWalletStatus:
-          getCustomerWalletStatus ?? this.getCustomerWalletStatus,
-      placeOrderModel: placeOrderModel ?? this.placeOrderModel,
+
       currentIndexForUpdateCart:
           currentIndexForUpdateCart ?? this.currentIndexForUpdateCart,
-      placeOrderStatus: placeOrderStatus ?? this.placeOrderStatus,
-      applyCouponModel: applyCouponModel ?? this.applyCouponModel,
-      applyCouponStatus: applyCouponStatus ?? this.applyCouponStatus,
 
       getUserNotificationModel:
           getUserNotificationModel ?? this.getUserNotificationModel,
-
-      getOrdersModel: getOrdersModel ?? this.getOrdersModel,
       getCartOverviewStatus:
           getCartOverviewStatus ?? this.getCartOverviewStatus,
-      getOrdersByOrderGroupIDModel:
-          getOrdersByOrderGroupIDModel ?? this.getOrdersByOrderGroupIDModel,
-      getOrdersByOrderGroupIDStatus:
-          getOrdersByOrderGroupIDStatus ?? this.getOrdersByOrderGroupIDStatus,
-      getOrdersByCartGroupIDModel:
-          getOrdersByCartGroupIDModel ?? this.getOrdersByCartGroupIDModel,
-      getOrdersByCartGroupIDStatus:
-          getOrdersByCartGroupIDStatus ?? this.getOrdersByCartGroupIDStatus,
 
       checkAvailabilityProductCartModel: checkAvailabilityProductCartModel ??
           this.checkAvailabilityProductCartModel,
       checkAvailabilityProductCartStatus: checkAvailabilityProductCartStatus ??
           this.checkAvailabilityProductCartStatus,
 
-      getAddressByTextStatus:
-          getAddressByTextStatus ?? this.getAddressByTextStatus,
       addOrRemoveLikeOfProductStatus:
           addOrRemoveLikeOfProductStatus ?? this.addOrRemoveLikeOfProductStatus,
       convertItemFromOldcartToCartStatus: convertItemFromOldcartToCartStatus ??
@@ -738,8 +576,7 @@ class HomeState extends Equatable {
       addImagesToProductIdForCart:
           addImagesToProductIdForCart ?? this.addImagesToProductIdForCart,
       cartCollection: cartCollection ?? this.cartCollection,
-      currentAddressChoosed:
-          currentAddressChoosed ?? this.currentAddressChoosed,
+
       oldcartCollection: oldCartCollection ?? this.oldcartCollection,
       getOldCartItemsStatus:
           getOldCartItemsStatus ?? this.getOldCartItemsStatus,

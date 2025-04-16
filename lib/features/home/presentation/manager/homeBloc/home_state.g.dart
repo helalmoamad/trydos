@@ -22,10 +22,6 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       convertItemFromOldcartToCartStatus: $enumDecodeNullable(
           _$ConvertItemFromOldcartToCartStatusEnumMap,
           json['convertItemFromOldcartToCartStatus']),
-      resultSearch: (json['resultSearch'] as List<dynamic>?)
-              ?.map((e) => ResultSearch.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          const [],
       hideItemInOldCartStatus: $enumDecodeNullable(
           _$HideItemInOldCartStatusEnumMap, json['hideItemInOldCartStatus']),
       updateEmailappNotificationStatus: $enumDecodeNullable(
@@ -58,16 +54,9 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               _$GetCommentForProductStatusEnumMap,
               json['getCommentForProductStatus']) ??
           GetCommentForProductStatus.init,
-      editAddressToOrderStatus: $enumDecodeNullable(
-          _$EditAddressToOrderStatusEnumMap, json['editAddressToOrderStatus']),
       currentSelectedColorForEveryProductStatus: $enumDecodeNullable(
           _$CurrentSelectedColorForEveryProductStatusEnumMap,
           json['currentSelectedColorForEveryProductStatus']),
-      addAddressToOrderStatus: $enumDecodeNullable(
-          _$AddAddressToOrderStatusEnumMap, json['addAddressToOrderStatus']),
-      removeAddressToOrderStatus: $enumDecodeNullable(
-          _$RemoveAddressToOrderStatusEnumMap,
-          json['removeAddressToOrderStatus']),
       isChangedvariationWhenQtyZero:
           json['isChangedvariationWhenQtyZero'] as bool? ?? false,
       getFullProductDetailsStatus: $enumDecodeNullable(
@@ -119,45 +108,12 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           ? null
           : GetOldCartModel.fromJson(
               json['getOldCartModel'] as Map<String, dynamic>),
-      getAddressByCoordinatesModel: json['getAddressByCoordinatesModel'] == null
-          ? null
-          : GetAddressByCoordinatesModel.fromJson(
-              json['getAddressByCoordinatesModel'] as Map<String, dynamic>),
-      customerWalletModel: json['customerWalletModel'] == null
-          ? null
-          : CustomerWalletModel.fromJson(
-              json['customerWalletModel'] as Map<String, dynamic>),
-      setCustomerAddressDefaultStatus: $enumDecodeNullable(
-          _$SetCustomerAddressDefaultStatusEnumMap,
-          json['setCustomerAddressDefaultStatus']),
-      placeOrderModel: json['placeOrderModel'] == null
-          ? null
-          : OrdersGroupModel.fromJson(
-              json['placeOrderModel'] as Map<String, dynamic>),
-      applyCouponModel: json['applyCouponModel'] == null
-          ? null
-          : ApplyCouponModel.fromJson(
-              json['applyCouponModel'] as Map<String, dynamic>),
       getUserNotificationModel: json['getUserNotificationModel'] == null
           ? null
           : PaginationModel<NotificationItemModel>.fromJson(
               json['getUserNotificationModel'] as Map<String, dynamic>,
               (value) => NotificationItemModel.fromJson(
                   value as Map<String, dynamic>)),
-      getOrdersModel: json['getOrdersModel'] == null
-          ? null
-          : PaginationModel<OrderListModel>.fromJson(
-              json['getOrdersModel'] as Map<String, dynamic>,
-              (value) =>
-                  OrderListModel.fromJson(value as Map<String, dynamic>)),
-      getOrdersByOrderGroupIDModel: json['getOrdersByOrderGroupIDModel'] == null
-          ? null
-          : OrdersGroupModel.fromJson(
-              json['getOrdersByOrderGroupIDModel'] as Map<String, dynamic>),
-      getOrdersByCartGroupIDModel: json['getOrdersByCartGroupIDModel'] == null
-          ? null
-          : OrdersGroupModel.fromJson(
-              json['getOrdersByCartGroupIDModel'] as Map<String, dynamic>),
       checkAvailabilityProductCartModel:
           json['checkAvailabilityProductCartModel'] == null
               ? null
@@ -174,9 +130,6 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       ),
       updateItemInCartStatus: $enumDecodeNullable(
           _$UpdateItemInCartStatusEnumMap, json['updateItemInCartStatus']),
-      getCustomerAddressStatus: $enumDecodeNullable(
-          _$GetCustomerAddressesStatusEnumMap,
-          json['getCustomerAddressStatus']),
       productITemForCart:
           (json['productITemForCart'] as Map<String, dynamic>?)?.map(
                 (k, e) =>
@@ -250,7 +203,6 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       searchHistory: (json['searchHistory'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
-      currentAddressChoosed: (json['currentAddressChoosed'] as num?)?.toInt(),
       getAllowedCountriesModel: json['getAllowedCountriesModel'] == null
           ? null
           : GetAllowedCountriesModel.fromJson(
@@ -274,34 +226,13 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       popularSearchTerm: (json['popularSearchTerm'] as List<dynamic>?)
           ?.map((e) => PopularSearchTerm.fromJson(e as Map<String, dynamic>))
           .toList(),
-      getAddressByCoordinatesStatus: $enumDecodeNullable(
-          _$GetAddressByCoordinatesStatusEnumMap,
-          json['getAddressByCoordinatesStatus']),
-      getCustomerWalletStatus: $enumDecodeNullable(
-          _$GetCustomerWalletStatusEnumMap, json['getCustomerWalletStatus']),
-      placeOrderStatus: $enumDecodeNullable(
-              _$PlaceOrderStatusEnumMap, json['placeOrderStatus']) ??
-          PlaceOrderStatus.init,
-      applyCouponStatus: $enumDecodeNullable(
-              _$ApplyCouponStatusEnumMap, json['applyCouponStatus']) ??
-          ApplyCouponStatus.init,
       getCartOverviewStatus: $enumDecodeNullable(
               _$GetCartOverviewStatusEnumMap, json['getCartOverviewStatus']) ??
           GetCartOverviewStatus.init,
-      getOrdersByOrderGroupIDStatus: $enumDecodeNullable(
-              _$GetOrdersByOrderGroupIDStatusEnumMap,
-              json['getOrdersByOrderGroupIDStatus']) ??
-          GetOrdersByOrderGroupIDStatus.init,
-      getOrdersByCartGroupIDStatus: $enumDecodeNullable(
-              _$GetOrdersByCartGroupIDStatusEnumMap,
-              json['getOrdersByCartGroupIDStatus']) ??
-          GetOrdersByCartGroupIDStatus.init,
       checkAvailabilityProductCartStatus: $enumDecodeNullable(
               _$CheckAvailabilityProductCartStatusEnumMap,
               json['checkAvailabilityProductCartStatus']) ??
           CheckAvailabilityProductCartStatus.init,
-      getAddressByTextStatus: $enumDecodeNullable(
-          _$GetAddressByTextStatusEnumMap, json['getAddressByTextStatus']),
       getCartItemsStatus: $enumDecodeNullable(
               _$GetCartItemsStatusEnumMap, json['getCartItemsStatus']) ??
           GetCartItemsStatus.init,
@@ -348,12 +279,6 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           json['getNotificationTypeProductStatus']),
       currentIndexForUpdateCart:
           (json['currentIndexForUpdateCart'] as num?)?.toInt(),
-      listOfAddressInfoClassToSave:
-          (json['listOfAddressInfoClassToSave'] as List<dynamic>?)
-                  ?.map((e) =>
-                      CustomerAddressesInfo.fromJson(e as Map<String, dynamic>))
-                  .toList() ??
-              const [],
       userInfo: json['userInfo'] == null
           ? null
           : User.fromJson(json['userInfo'] as Map<String, dynamic>),
@@ -418,8 +343,6 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
               instance.getNotificationTypeProductStatus],
       'hideItemInOldCartStatus':
           _$HideItemInOldCartStatusEnumMap[instance.hideItemInOldCartStatus],
-      'getCustomerAddressStatus': _$GetCustomerAddressesStatusEnumMap[
-          instance.getCustomerAddressStatus],
       'notificationTypeForProductModel':
           instance.notificationTypeForProductModel?.toJson(),
       'getAndAddCountViewOfProductStatus':
@@ -427,34 +350,11 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
               MapEntry(k, _$GetAndAddCountViewOfProductStatusEnumMap[e]!)),
       'popularSearchTerm':
           instance.popularSearchTerm?.map((e) => e.toJson()).toList(),
-      'setCustomerAddressDefaultStatus':
-          _$SetCustomerAddressDefaultStatusEnumMap[
-              instance.setCustomerAddressDefaultStatus],
-      'resultSearch': instance.resultSearch?.map((e) => e.toJson()).toList(),
-      'getAddressByCoordinatesModel':
-          instance.getAddressByCoordinatesModel?.toJson(),
-      'customerWalletModel': instance.customerWalletModel?.toJson(),
-      'placeOrderModel': instance.placeOrderModel?.toJson(),
-      'placeOrderStatus': _$PlaceOrderStatusEnumMap[instance.placeOrderStatus],
-      'applyCouponModel': instance.applyCouponModel?.toJson(),
-      'applyCouponStatus':
-          _$ApplyCouponStatusEnumMap[instance.applyCouponStatus],
       'getUserNotificationModel': instance.getUserNotificationModel?.toJson(
-        (value) => value.toJson(),
-      ),
-      'getOrdersModel': instance.getOrdersModel?.toJson(
         (value) => value.toJson(),
       ),
       'getCartOverviewStatus':
           _$GetCartOverviewStatusEnumMap[instance.getCartOverviewStatus],
-      'getOrdersByOrderGroupIDModel':
-          instance.getOrdersByOrderGroupIDModel?.toJson(),
-      'getOrdersByOrderGroupIDStatus': _$GetOrdersByOrderGroupIDStatusEnumMap[
-          instance.getOrdersByOrderGroupIDStatus],
-      'getOrdersByCartGroupIDModel':
-          instance.getOrdersByCartGroupIDModel?.toJson(),
-      'getOrdersByCartGroupIDStatus': _$GetOrdersByCartGroupIDStatusEnumMap[
-          instance.getOrdersByCartGroupIDStatus],
       'checkAvailabilityProductCartModel':
           instance.checkAvailabilityProductCartModel?.toJson(),
       'checkAvailabilityProductCartStatus':
@@ -462,22 +362,7 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
               instance.checkAvailabilityProductCartStatus],
       'listitemForAddToCart':
           instance.listitemForAddToCart?.map((e) => e.toJson()).toList(),
-      'getAddressByTextStatus':
-          _$GetAddressByTextStatusEnumMap[instance.getAddressByTextStatus],
-      'getAddressByCoordinatesStatus': _$GetAddressByCoordinatesStatusEnumMap[
-          instance.getAddressByCoordinatesStatus],
-      'getCustomerWalletStatus':
-          _$GetCustomerWalletStatusEnumMap[instance.getCustomerWalletStatus],
       'getAllowedCountriesModel': instance.getAllowedCountriesModel?.toJson(),
-      'removeAddressToOrderStatus': _$RemoveAddressToOrderStatusEnumMap[
-          instance.removeAddressToOrderStatus],
-      'editAddressToOrderStatus':
-          _$EditAddressToOrderStatusEnumMap[instance.editAddressToOrderStatus],
-      'addAddressToOrderStatus':
-          _$AddAddressToOrderStatusEnumMap[instance.addAddressToOrderStatus],
-      'listOfAddressInfoClassToSave': instance.listOfAddressInfoClassToSave
-          ?.map((e) => e.toJson())
-          .toList(),
       'getCurrencyForCountryModel':
           instance.getCurrencyForCountryModel?.toJson(),
       'addItemInCartStatus':
@@ -491,7 +376,6 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           instance.addOrRemoveLikeOfProductStatus]!,
       'selectedCollection': instance.selectedCollection,
       'currentPage': instance.currentPage,
-      'currentAddressChoosed': instance.currentAddressChoosed,
       'searchHistory': instance.searchHistory,
       'listOfErrorSendedToMobileErrorLog':
           instance.listOfErrorSendedToMobileErrorLog,
@@ -650,32 +534,11 @@ const _$GetCommentForProductStatusEnumMap = {
   GetCommentForProductStatus.failure: 'failure',
 };
 
-const _$EditAddressToOrderStatusEnumMap = {
-  EditAddressToOrderStatus.init: 'init',
-  EditAddressToOrderStatus.loading: 'loading',
-  EditAddressToOrderStatus.success: 'success',
-  EditAddressToOrderStatus.failure: 'failure',
-};
-
 const _$CurrentSelectedColorForEveryProductStatusEnumMap = {
   CurrentSelectedColorForEveryProductStatus.init: 'init',
   CurrentSelectedColorForEveryProductStatus.loading: 'loading',
   CurrentSelectedColorForEveryProductStatus.success: 'success',
   CurrentSelectedColorForEveryProductStatus.failure: 'failure',
-};
-
-const _$AddAddressToOrderStatusEnumMap = {
-  AddAddressToOrderStatus.init: 'init',
-  AddAddressToOrderStatus.loading: 'loading',
-  AddAddressToOrderStatus.success: 'success',
-  AddAddressToOrderStatus.failure: 'failure',
-};
-
-const _$RemoveAddressToOrderStatusEnumMap = {
-  RemoveAddressToOrderStatus.init: 'init',
-  RemoveAddressToOrderStatus.loading: 'loading',
-  RemoveAddressToOrderStatus.success: 'success',
-  RemoveAddressToOrderStatus.failure: 'failure',
 };
 
 const _$GetFullProductDetailsStatusEnumMap = {
@@ -713,25 +576,11 @@ const _$GetOLdCartItemsStatusEnumMap = {
   GetOLdCartItemsStatus.failure: 'failure',
 };
 
-const _$SetCustomerAddressDefaultStatusEnumMap = {
-  SetCustomerAddressDefaultStatus.init: 'init',
-  SetCustomerAddressDefaultStatus.loading: 'loading',
-  SetCustomerAddressDefaultStatus.success: 'success',
-  SetCustomerAddressDefaultStatus.failure: 'failure',
-};
-
 const _$UpdateItemInCartStatusEnumMap = {
   UpdateItemInCartStatus.init: 'init',
   UpdateItemInCartStatus.loading: 'loading',
   UpdateItemInCartStatus.success: 'success',
   UpdateItemInCartStatus.failure: 'failure',
-};
-
-const _$GetCustomerAddressesStatusEnumMap = {
-  GetCustomerAddressesStatus.init: 'init',
-  GetCustomerAddressesStatus.loading: 'loading',
-  GetCustomerAddressesStatus.success: 'success',
-  GetCustomerAddressesStatus.failure: 'failure',
 };
 
 const _$GetProductListingStatusEnumMap = {
@@ -755,35 +604,6 @@ const _$GetListOfProductsFoundedInCartStatusEnumMap = {
   GetListOfProductsFoundedInCartStatus.failure: 'failure',
 };
 
-const _$GetAddressByCoordinatesStatusEnumMap = {
-  GetAddressByCoordinatesStatus.init: 'init',
-  GetAddressByCoordinatesStatus.loading: 'loading',
-  GetAddressByCoordinatesStatus.success: 'success',
-  GetAddressByCoordinatesStatus.failure: 'failure',
-};
-
-const _$GetCustomerWalletStatusEnumMap = {
-  GetCustomerWalletStatus.init: 'init',
-  GetCustomerWalletStatus.loading: 'loading',
-  GetCustomerWalletStatus.success: 'success',
-  GetCustomerWalletStatus.failure: 'failure',
-};
-
-const _$PlaceOrderStatusEnumMap = {
-  PlaceOrderStatus.init: 'init',
-  PlaceOrderStatus.loading: 'loading',
-  PlaceOrderStatus.success: 'success',
-  PlaceOrderStatus.failure: 'failure',
-  PlaceOrderStatus.unavailable: 'unavailable',
-};
-
-const _$ApplyCouponStatusEnumMap = {
-  ApplyCouponStatus.init: 'init',
-  ApplyCouponStatus.loading: 'loading',
-  ApplyCouponStatus.success: 'success',
-  ApplyCouponStatus.failure: 'failure',
-};
-
 const _$GetCartOverviewStatusEnumMap = {
   GetCartOverviewStatus.init: 'init',
   GetCartOverviewStatus.loading: 'loading',
@@ -791,32 +611,11 @@ const _$GetCartOverviewStatusEnumMap = {
   GetCartOverviewStatus.failure: 'failure',
 };
 
-const _$GetOrdersByOrderGroupIDStatusEnumMap = {
-  GetOrdersByOrderGroupIDStatus.init: 'init',
-  GetOrdersByOrderGroupIDStatus.loading: 'loading',
-  GetOrdersByOrderGroupIDStatus.success: 'success',
-  GetOrdersByOrderGroupIDStatus.failure: 'failure',
-};
-
-const _$GetOrdersByCartGroupIDStatusEnumMap = {
-  GetOrdersByCartGroupIDStatus.init: 'init',
-  GetOrdersByCartGroupIDStatus.loading: 'loading',
-  GetOrdersByCartGroupIDStatus.success: 'success',
-  GetOrdersByCartGroupIDStatus.failure: 'failure',
-};
-
 const _$CheckAvailabilityProductCartStatusEnumMap = {
   CheckAvailabilityProductCartStatus.init: 'init',
   CheckAvailabilityProductCartStatus.loading: 'loading',
   CheckAvailabilityProductCartStatus.success: 'success',
   CheckAvailabilityProductCartStatus.failure: 'failure',
-};
-
-const _$GetAddressByTextStatusEnumMap = {
-  GetAddressByTextStatus.init: 'init',
-  GetAddressByTextStatus.loading: 'loading',
-  GetAddressByTextStatus.success: 'success',
-  GetAddressByTextStatus.failure: 'failure',
 };
 
 const _$GetCartItemsStatusEnumMap = {

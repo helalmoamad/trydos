@@ -1,18 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 
 import 'package:flutter/material.dart';
-import 'package:trydos/base_page.dart';
+
 import 'package:trydos/core/data/model/pagination_model.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/blocs/pre_caching_image_bloc/pre_caching_image_bloc.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
-import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart'
     as filters_model;
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as product;
@@ -21,7 +18,6 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
-import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 import 'package:trydos/features/home/domain/use_cases/get_product_filters_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_products_with_filters_usecase.dart';
 
@@ -29,14 +25,12 @@ import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_event.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/main.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
 import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 
 import '../../../../../core/domin/repositories/prefs_repository.dart';
-import '../../../data/models/get_product_listing_without_filters_model.dart';
 
 const throttleDuration = Duration(minutes: 2);
 
@@ -183,8 +177,9 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
   }
 
   FutureOr<void> _onGetProductsWithFiltersWithPrefetchForFiveFiltersEvent(
-      GetProductsWithFiltersWithPrefetchForFiveFiltersEvent event,
-      Emitter<BoutiqueState> emit) async {
+    GetProductsWithFiltersWithPrefetchForFiveFiltersEvent event,
+    Emitter<BoutiqueState> emit,
+  ) async {
     String key = '${event.boutiqueSlug}' +
         '${event.filterSlug}' +
         '${(event.category ?? '')}';
@@ -204,9 +199,12 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
           PaginationModel.init();
     }
 
-    emit(state.copyWith(
+    emit(
+      state.copyWith(
         getProductListingWithFiltersPaginationWithPrefetchModels:
-            getProductListingWithFiltersPaginationWithPrefetchModels));
+            getProductListingWithFiltersPaginationWithPrefetchModels,
+      ),
+    );
 
     if (getProductListingWithFiltersPaginationWithPrefetchModels[key]
             ?.paginationStatus ==
@@ -433,7 +431,9 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
   }
 
   FutureOr<void> _onGetProductFiltersEvent(
-      GetProductFiltersEvent event, Emitter<BoutiqueState> emit) async {
+    GetProductFiltersEvent event,
+    Emitter<BoutiqueState> emit,
+  ) async {
     String key = event.boutiqueSlug + (event.category ?? '');
     if (event.getProductsFilterPreFetch &&
         !event.fromHomePageSearch &&
@@ -782,7 +782,9 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
   }
 
   FutureOr<void> _onGetProductsWithFiltersEvent(
-      GetProductsWithFiltersEvent event, Emitter<BoutiqueState> emit) async {
+    GetProductsWithFiltersEvent event,
+    Emitter<BoutiqueState> emit,
+  ) async {
     Map<String, PaginationModel<product.Products>?>
         getProductListingWithFiltersPaginationModels =
         Map.of(state.getProductListingWithFiltersPaginationModels);
@@ -1051,8 +1053,9 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         );
       }
     }
-    Map<String, GetProductFiltersStatus>? getProductFiltersStatus =
-        Map.of(state.getProductFiltersStatus);
+    Map<String, GetProductFiltersStatus>? getProductFiltersStatus = Map.of(
+      state.getProductFiltersStatus,
+    );
     if (getProductFiltersStatus[key] == null) {
       getProductFiltersStatus.addAll({key: GetProductFiltersStatus.loading});
     } else {

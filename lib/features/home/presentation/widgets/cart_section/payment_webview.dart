@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import '../../../../app/trydos_shimmer_loading.dart';
-import '../../manager/homeBloc/home_bloc.dart';
+import '../../manager/orderBloc/order_bloc.dart';
+import '../../manager/orderBloc/order_event.dart';
 
 class PaymentWebview extends StatefulWidget {
   final String url;
@@ -68,7 +68,7 @@ class _PaymentWebviewState extends State<PaymentWebview> {
             if (Navigator.of(context).canPop()) {
               Navigator.of(context).pop();
               /////////////////////////////////////////////
-              BlocProvider.of<HomeBloc>(context).add(
+              BlocProvider.of<OrderBloc>(context).add(
                 GetOrdersByCartGroupIDEvent(
                   cartGroupId: widget.cartGroupId,
                 ),
@@ -78,7 +78,7 @@ class _PaymentWebviewState extends State<PaymentWebview> {
             }
           }
           //////////////////
-          BlocProvider.of<HomeBloc>(context).add(
+          BlocProvider.of<OrderBloc>(context).add(
             GetOrdersByCartGroupIDEvent(
               cartGroupId: widget.cartGroupId,
             ),
@@ -157,7 +157,7 @@ class _PaymentWebviewState extends State<PaymentWebview> {
               _isClosing = true;
               Navigator.of(context).pop();
               /////////////////////////////////////////////
-              BlocProvider.of<HomeBloc>(context).add(
+              BlocProvider.of<OrderBloc>(context).add(
                 GetOrdersByCartGroupIDEvent(
                   cartGroupId: widget.cartGroupId,
                 ),

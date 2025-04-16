@@ -32,6 +32,9 @@ import 'package:trydos/service/language_service.dart';
 import '../../../../../common/constant/payment_methods.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
+import '../../manager/orderBloc/order_bloc.dart';
+import '../../manager/orderBloc/order_event.dart';
+import '../../manager/orderBloc/order_state.dart';
 
 class CartDelivaryAddress extends StatefulWidget {
   final List<Map<String, String>> cartImages;
@@ -55,6 +58,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
   final ValueNotifier<List<String>> paymentMethods = ValueNotifier([]);
   final PanelController panelController = PanelController();
   late HomeBloc homeBloc;
+  late OrderBloc orderBloc;
   bool showDialogToResetSession = true;
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   int indexToDelete = 0;
@@ -66,11 +70,12 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
 
   @override
   void initState() {
-    homeBloc = BlocProvider.of<HomeBloc>(context);
+    // homeBloc = BlocProvider.of<HomeBloc>(context);
+    orderBloc = BlocProvider.of<OrderBloc>(context);
 
     ////////////////////
-    homeBloc.add(GetCustomerAddressesEvent());
-    homeBloc.add(GetCustomerWalletEvent(limit: 10, offset: 1));
+    orderBloc.add(GetCustomerAddressesEvent());
+    orderBloc.add(GetCustomerWalletEvent(limit: 10, offset: 1));
     ////////////////////
     super.initState();
   }
@@ -111,7 +116,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
       },
       child: Scaffold(
         resizeToAvoidBottomInset: true,
-        body: BlocListener<HomeBloc, HomeState>(
+        body: BlocListener<OrderBloc, OrderState>(
           listenWhen: (previous, current) =>
               previous.applyCouponStatus != current.applyCouponStatus &&
               (current.applyCouponStatus == ApplyCouponStatus.success),
@@ -127,7 +132,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
               }
             }
           },
-          child: BlocBuilder<HomeBloc, HomeState>(
+          child: BlocBuilder<OrderBloc, OrderState>(
             buildWhen: (previous, current) =>
                 previous.getCustomerAddressStatus !=
                     current.getCustomerAddressStatus ||
@@ -141,271 +146,300 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                     current.removeAddressToOrderStatus ||
                 previous.getCustomerWalletStatus !=
                     current.getCustomerWalletStatus ||
-                previous.applyCouponStatus != current.applyCouponStatus ||
-                previous.getCartOverviewStatus != current.getCartOverviewStatus,
-            builder: (context, state) {
-              if ((state.listOfAddressInfoClassToSave?.length ?? 0) <
+                previous.applyCouponStatus != current.applyCouponStatus,
+            builder: (context, orderState) {
+              if ((orderState.listOfAddressInfoClassToSave?.length ?? 0) <
                   indexTap.value + 1) {
                 indexTap.value = 0;
               }
-              double totalCashed =
-                  (state.getCartShippingItemsModel?.data?.totalCash ?? 0) *
-                      state.getCurrencyForCountryModel!.data!.currency!
-                          .exchangeRate!;
-
-              double totalPrice =
-                  (state.getCartShippingItemsModel?.data?.total ?? 0) *
-                      state.getCurrencyForCountryModel!.data!.currency!
-                          .exchangeRate!;
-
-              double couponDiscount =
-                  state.getCartShippingItemsModel?.data?.couponDiscount ?? 0;
-
-              String couponCode =
-                  state.getCartShippingItemsModel?.data?.couponCode ?? '';
 
               Future.delayed(
                 Duration(milliseconds: 200),
                 () {
-                  if (state.setCustomerAddressDefaultStatus !=
+                  if (orderState.setCustomerAddressDefaultStatus !=
                           SetCustomerAddressDefaultStatus.loading &&
-                      state.getCustomerAddressStatus !=
+                      orderState.getCustomerAddressStatus !=
                           GetCustomerAddressesStatus.loading) {
-                    indexTap.value = state.currentAddressChoosed ?? 0;
+                    indexTap.value = orderState.currentAddressChoosed ?? 0;
                   }
                 },
               );
-              List<String> availablePaymentMethod = state
-                      .getCartShippingItemsModel!
-                      .data!
-                      .availablePaymentMethod ??
-                  [];
 
-              return ValueListenableBuilder<bool>(
-                valueListenable: showDeleteAddress,
-                builder: (context, _showDeleteAddress, _) {
-                  double walletBalance = state.customerWalletModel == null
-                      ? 0
-                      : state.customerWalletModel!.data.totalWalletBalance ?? 0;
-                  // *
-                  //     state.getCurrencyForCountryModel!.data!.currency!
-                  //         .exchangeRate!;
-                  return ValueListenableBuilder<int>(
-                      valueListenable: indexTap,
-                      builder: (context, _indexTap, _) {
-                        return Stack(
-                          children: [
-                            Column(
+              return BlocBuilder<HomeBloc, HomeState>(
+                buildWhen: (previous, current) =>
+                    previous.getCartOverviewStatus !=
+                    current.getCartOverviewStatus,
+                builder: (context, homeState) {
+                  List<String> availablePaymentMethod = homeState
+                          .getCartShippingItemsModel!
+                          .data!
+                          .availablePaymentMethod ??
+                      [];
+
+                  double totalCashed =
+                      (homeState.getCartShippingItemsModel?.data?.totalCash ??
+                              0) *
+                          homeState.getCurrencyForCountryModel!.data!.currency!
+                              .exchangeRate!;
+
+                  double totalPrice =
+                      (homeState.getCartShippingItemsModel?.data?.total ?? 0) *
+                          homeState.getCurrencyForCountryModel!.data!.currency!
+                              .exchangeRate!;
+
+                  double couponDiscount = homeState
+                          .getCartShippingItemsModel?.data?.couponDiscount ??
+                      0;
+
+                  String couponCode =
+                      homeState.getCartShippingItemsModel?.data?.couponCode ??
+                          '';
+                  return ValueListenableBuilder<bool>(
+                    valueListenable: showDeleteAddress,
+                    builder: (context, _showDeleteAddress, _) {
+                      double walletBalance =
+                          orderState.customerWalletModel == null
+                              ? 0
+                              : orderState.customerWalletModel!.data
+                                      .totalWalletBalance ??
+                                  0;
+                      // *
+                      //     state.getCurrencyForCountryModel!.data!.currency!
+                      //         .exchangeRate!;
+                      return ValueListenableBuilder<int>(
+                          valueListenable: indexTap,
+                          builder: (context, _indexTap, _) {
+                            return Stack(
                               children: [
-                                buildPageHeader(context, state),
-                                ///////////////////////
-                                Expanded(
-                                  child: SingleChildScrollView(
-                                    child: Container(
-                                      margin: EdgeInsets.symmetric(
-                                        horizontal: 10,
-                                      ),
-                                      color: Color.fromARGB(255, 255, 255, 255),
-                                      child: Column(
-                                        children: [
-                                          SizedBox(
-                                            height: 10.h,
+                                Column(
+                                  children: [
+                                    buildPageHeader(context, orderState),
+                                    ///////////////////////
+                                    Expanded(
+                                      child: SingleChildScrollView(
+                                        child: Container(
+                                          margin: EdgeInsets.symmetric(
+                                            horizontal: 10,
                                           ),
-                                          ////////////////////
-                                          ValueListenableBuilder<bool>(
-                                            valueListenable: isExpanded,
-                                            builder: (context, expanded, _) {
-                                              return buildBagItemsWidget(
-                                                  expanded, context);
-                                            },
-                                          ),
-                                          //////////////////////////////////
-                                          SizedBox(
-                                            height: 12.h,
-                                          ),
-                                          //////////////////////////////////
-                                          buildAddressWidget(
-                                              state, context, _indexTap),
-                                          ////////////////////
-                                          SizedBox(
-                                            height: 12.h,
-                                          ),
-                                          ////////////////////
-                                          (state.listOfAddressInfoClassToSave
-                                                  .isNullOrEmpty)
-                                              ? SizedBox.shrink()
-                                              : state.getCustomerWalletStatus ==
-                                                      GetCustomerWalletStatus
-                                                          .failure
-                                                  ? TryAgainWidget(
-                                                      tryAgain: () {
-                                                        BlocProvider.of<
-                                                                    HomeBloc>(
-                                                                context)
-                                                            .add(
-                                                          GetCustomerWalletEvent(
-                                                              limit: 10,
-                                                              offset: 1),
+                                          color: Color.fromARGB(
+                                              255, 255, 255, 255),
+                                          child: Column(
+                                            children: [
+                                              SizedBox(
+                                                height: 10.h,
+                                              ),
+                                              ////////////////////
+                                              ValueListenableBuilder<bool>(
+                                                valueListenable: isExpanded,
+                                                builder:
+                                                    (context, expanded, _) {
+                                                  return buildBagItemsWidget(
+                                                      expanded, context);
+                                                },
+                                              ),
+                                              //////////////////////////////////
+                                              SizedBox(
+                                                height: 12.h,
+                                              ),
+                                              //////////////////////////////////
+                                              buildAddressWidget(orderState,
+                                                  context, _indexTap),
+                                              ////////////////////
+                                              SizedBox(
+                                                height: 12.h,
+                                              ),
+                                              ////////////////////
+                                              (orderState
+                                                      .listOfAddressInfoClassToSave
+                                                      .isNullOrEmpty)
+                                                  ? SizedBox.shrink()
+                                                  : orderState.getCustomerWalletStatus ==
+                                                          GetCustomerWalletStatus
+                                                              .failure
+                                                      ? TryAgainWidget(
+                                                          tryAgain: () {
+                                                            BlocProvider.of<
+                                                                        OrderBloc>(
+                                                                    context)
+                                                                .add(
+                                                              GetCustomerWalletEvent(
+                                                                  limit: 10,
+                                                                  offset: 1),
+                                                            );
+                                                          },
+                                                        )
+                                                      : orderState.getCustomerWalletStatus ==
+                                                              GetCustomerWalletStatus
+                                                                  .loading
+                                                          ? TrydosShimmerLoading(
+                                                              width: 1.sw,
+                                                              logoTextWidth: 15,
+                                                              height: 70,
+                                                              logoTextHeight:
+                                                                  15,
+                                                            )
+                                                          : PaymentMethod(
+                                                              fromSuccessOrder:
+                                                                  false,
+                                                              amount:
+                                                                  walletBalance,
+                                                              fromPalceOrder:
+                                                                  false,
+                                                              availablePaymentMethod:
+                                                                  availablePaymentMethod,
+                                                              currencySymbol: orderState
+                                                                      .customerWalletModel!
+                                                                      .data
+                                                                      .currencySymbol ??
+                                                                  '',
+                                                              paymentMethods:
+                                                                  paymentMethods,
+                                                              totalPrice:
+                                                                  totalPrice,
+                                                              decimalPointSetting:
+                                                                  homeState
+                                                                          .startingSetting
+                                                                          ?.decimalPointSettings ??
+                                                                      2,
+                                                            ),
+                                              ////////////
+                                              SizedBox(
+                                                height: 25.h,
+                                              ),
+                                              ////////////
+                                              ValueListenableBuilder<bool>(
+                                                valueListenable:
+                                                    isExpandedCoupon,
+                                                builder: (context,
+                                                    expandedCoupon, _) {
+                                                  return buildCouponWidget(
+                                                    expandedCoupon,
+                                                    context,
+                                                    orderState,
+                                                    couponDiscount,
+                                                    couponCode,
+                                                  );
+                                                },
+                                              ),
+                                              ////////////////
+                                              (orderState
+                                                      .listOfAddressInfoClassToSave
+                                                      .isNullOrEmpty)
+                                                  ? SizedBox.shrink()
+                                                  : ValueListenableBuilder<
+                                                      bool>(
+                                                      valueListenable:
+                                                          isExpanded,
+                                                      builder: (context,
+                                                          _isExpanded, _) {
+                                                        return ValueListenableBuilder<
+                                                            bool>(
+                                                          valueListenable:
+                                                              isExpandedCoupon,
+                                                          builder: (context,
+                                                              _isExpandedCoupon,
+                                                              child) {
+                                                            return SizedBox(
+                                                                height: _isExpanded
+                                                                    ? 120.h
+                                                                    : (_isExpandedCoupon && !_isExpanded)
+                                                                        ? 120.h
+                                                                        : 0);
+                                                          },
                                                         );
                                                       },
-                                                    )
-                                                  : state.getCustomerWalletStatus ==
-                                                          GetCustomerWalletStatus
-                                                              .loading
-                                                      ? TrydosShimmerLoading(
-                                                          width: 1.sw,
-                                                          logoTextWidth: 15,
-                                                          height: 70,
-                                                          logoTextHeight: 15,
-                                                        )
-                                                      : PaymentMethod(
-                                                          fromSuccessOrder:
-                                                              false,
-                                                          amount: walletBalance,
-                                                          fromPalceOrder: false,
-                                                          availablePaymentMethod:
-                                                              availablePaymentMethod,
-                                                          currencySymbol: state
-                                                                  .customerWalletModel!
-                                                                  .data
-                                                                  .currencySymbol ??
-                                                              '',
-                                                          paymentMethods:
-                                                              paymentMethods,
-                                                          totalPrice:
-                                                              totalPrice,
-                                                          decimalPointSetting: state
-                                                                  .startingSetting
-                                                                  ?.decimalPointSettings ??
-                                                              2,
-                                                        ),
-                                          ////////////
-                                          SizedBox(
-                                            height: 25.h,
+                                                    ),
+                                            ],
                                           ),
-                                          ////////////
-                                          ValueListenableBuilder<bool>(
-                                            valueListenable: isExpandedCoupon,
-                                            builder:
-                                                (context, expandedCoupon, _) {
-                                              return buildCouponWidget(
-                                                expandedCoupon,
-                                                context,
-                                                state,
-                                                couponDiscount,
-                                                couponCode,
-                                              );
-                                            },
-                                          ),
-                                          ////////////////
-                                          (state.listOfAddressInfoClassToSave
-                                                  .isNullOrEmpty)
-                                              ? SizedBox.shrink()
-                                              : ValueListenableBuilder<bool>(
-                                                  valueListenable: isExpanded,
-                                                  builder: (context,
-                                                      _isExpanded, _) {
-                                                    return ValueListenableBuilder<
-                                                        bool>(
-                                                      valueListenable:
-                                                          isExpandedCoupon,
-                                                      builder: (context,
-                                                          _isExpandedCoupon,
-                                                          child) {
-                                                        return SizedBox(
-                                                            height: _isExpanded
-                                                                ? 120.h
-                                                                : (_isExpandedCoupon &&
-                                                                        !_isExpanded)
-                                                                    ? 120.h
-                                                                    : 0);
-                                                      },
-                                                    );
-                                                  },
-                                                ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                ////////////////////////////
-                                (state.listOfAddressInfoClassToSave
-                                        .isNullOrEmpty)
-                                    ? SizedBox.shrink()
-                                    : buildShippingButton(
-                                        state,
-                                        _indexTap,
-                                        walletBalance,
-                                        totalPrice,
-                                        totalCashed,
-                                        availablePaymentMethod,
-                                      ),
-                              ],
-                            ),
-                            //////////////////////////////
-                            ValueListenableBuilder<bool>(
-                              valueListenable: showPanel,
-                              builder: (context, _showPanel, _) {
-                                return !_showPanel
-                                    ? SizedBox.shrink()
-                                    : InkWell(
-                                        onTap: () {
-                                          panelController.close();
-                                          showPanel.value = false;
-                                        },
-                                        child: Container(
-                                          width: 1.sh,
-                                          color: Color.fromRGBO(0, 0, 0, 0.65),
                                         ),
-                                      );
-                              },
-                            ),
-                            ///////////////
-                            Positioned(
-                              bottom: 0,
-                              child: Container(
-                                height: 510,
-                                width: 1.sw,
-                                child: SlidingUpPanel(
-                                  controller: panelController,
-                                  borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(30),
-                                      topRight: Radius.circular(30)),
-                                  isDraggable: true,
-                                  slideDirection: SlideDirection.UP,
-                                  onPanelClosed: () {
-                                    showPanel.value = false;
-                                    homeBloc.add(SetCustomerAddressDefaultEvent(
-                                        adressId: state
-                                            .listOfAddressInfoClassToSave![
-                                                _indexTap]
-                                            .id));
+                                      ),
+                                    ),
+                                    ////////////////////////////
+                                    (orderState.listOfAddressInfoClassToSave
+                                            .isNullOrEmpty)
+                                        ? SizedBox.shrink()
+                                        : buildShippingButton(
+                                            orderState,
+                                            homeState,
+                                            _indexTap,
+                                            walletBalance,
+                                            totalPrice,
+                                            totalCashed,
+                                            availablePaymentMethod,
+                                          ),
+                                  ],
+                                ),
+                                //////////////////////////////
+                                ValueListenableBuilder<bool>(
+                                  valueListenable: showPanel,
+                                  builder: (context, _showPanel, _) {
+                                    return !_showPanel
+                                        ? SizedBox.shrink()
+                                        : InkWell(
+                                            onTap: () {
+                                              panelController.close();
+                                              showPanel.value = false;
+                                            },
+                                            child: Container(
+                                              width: 1.sh,
+                                              color:
+                                                  Color.fromRGBO(0, 0, 0, 0.65),
+                                            ),
+                                          );
                                   },
-                                  onPanelOpened: () {
-                                    showPanel.value = true;
-                                  },
-                                  minHeight: 0,
-                                  maxHeight: 510,
-                                  panelBuilder: (sc) => Container(
-                                    height: 93,
+                                ),
+                                ///////////////
+                                Positioned(
+                                  bottom: 0,
+                                  child: Container(
+                                    height: 510,
                                     width: 1.sw,
-                                    child: buildSlidingUpPanelWidgets(
-                                      context,
-                                      state,
-                                      _indexTap,
-                                      sc,
+                                    child: SlidingUpPanel(
+                                      controller: panelController,
+                                      borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(30),
+                                          topRight: Radius.circular(30)),
+                                      isDraggable: true,
+                                      slideDirection: SlideDirection.UP,
+                                      onPanelClosed: () {
+                                        showPanel.value = false;
+                                        orderBloc.add(
+                                          SetCustomerAddressDefaultEvent(
+                                            adressId: orderState
+                                                .listOfAddressInfoClassToSave![
+                                                    _indexTap]
+                                                .id,
+                                          ),
+                                        );
+                                      },
+                                      onPanelOpened: () {
+                                        showPanel.value = true;
+                                      },
+                                      minHeight: 0,
+                                      maxHeight: 510,
+                                      panelBuilder: (sc) => Container(
+                                        height: 93,
+                                        width: 1.sw,
+                                        child: buildSlidingUpPanelWidgets(
+                                          context,
+                                          orderState,
+                                          _indexTap,
+                                          sc,
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ),
-                            /////////////////////////////////////
-                            _showDeleteAddress
-                                ? buildDeleteAddressWidget(context, state)
-                                : SizedBox.shrink()
-                          ],
-                        );
-                      });
+                                /////////////////////////////////////
+                                _showDeleteAddress
+                                    ? buildDeleteAddressWidget(
+                                        context, orderState)
+                                    : SizedBox.shrink()
+                              ],
+                            );
+                          });
+                    },
+                  );
                 },
               );
             },
@@ -416,7 +450,8 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
   }
 
   Widget buildShippingButton(
-      HomeState state,
+      OrderState orderState,
+      HomeState homeState,
       int _indexTap,
       double walletBalance,
       double totalPrice,
@@ -456,10 +491,11 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
           } else {
             check = false;
           }
-          return (state.applyCouponStatus == ApplyCouponStatus.loading ||
-                  state.setCustomerAddressDefaultStatus ==
+          return (orderState.applyCouponStatus == ApplyCouponStatus.loading ||
+                  orderState.setCustomerAddressDefaultStatus ==
                       SetCustomerAddressDefaultStatus.loading ||
-                  state.getCartOverviewStatus == GetCartOverviewStatus.loading)
+                  homeState.getCartOverviewStatus ==
+                      GetCartOverviewStatus.loading)
               ? Shimmer.fromColors(
                   baseColor: Colors.grey[300]!,
                   highlightColor: Colors.grey[100]!,
@@ -509,11 +545,11 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                               Text(
                                 paymentMethods.value
                                         .contains(PaymentMethods.cod)
-                                    ? totalCashed.toStringAsFixed(state
+                                    ? totalCashed.toStringAsFixed(homeState
                                             .startingSetting
                                             ?.decimalPointSettings ??
                                         2)
-                                    : totalPrice.toStringAsFixed(state
+                                    : totalPrice.toStringAsFixed(homeState
                                             .startingSetting
                                             ?.decimalPointSettings ??
                                         2),
@@ -542,7 +578,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                 )
               : InkWell(
                   onTap: () {
-                    if (state.getCartOverviewStatus ==
+                    if (homeState.getCartOverviewStatus ==
                         GetCartOverviewStatus.failure) {
                       homeBloc.add(GetCartOverviewEvent());
                       return;
@@ -551,8 +587,8 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                       HelperFunctions.slidingNavigation(
                         context,
                         PlaceOrder(
-                          customerAddressesInfo:
-                              state.listOfAddressInfoClassToSave![_indexTap],
+                          customerAddressesInfo: orderState
+                              .listOfAddressInfoClassToSave![_indexTap],
                           walletBalance: walletBalance,
                           cartGroupId: widget.cartGroupId,
                           paymentMethods: paymentMethods,
@@ -560,12 +596,16 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                           cartImages: widget.cartImages,
                           currencySympole: widget.currencySympole,
                           totalPrice: totalPrice,
+                          exchangeRate: homeState.getCurrencyForCountryModel!
+                                  .data!.currency!.exchangeRate ??
+                              0,
                           totalCashed: totalCashed,
-                          currencySymbol:
-                              state.customerWalletModel!.data.currencySymbol ??
-                                  "",
+                          currencySymbol: orderState
+                                  .customerWalletModel!.data.currencySymbol ??
+                              "",
                           decimalPointSetting:
-                              state.startingSetting?.decimalPointSettings ?? 2,
+                              homeState.startingSetting?.decimalPointSettings ??
+                                  2,
                         ),
                       );
                     }
@@ -621,11 +661,11 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                               Text(
                                 paymentMethods.value
                                         .contains(PaymentMethods.cod)
-                                    ? totalCashed.toStringAsFixed(state
+                                    ? totalCashed.toStringAsFixed(homeState
                                             .startingSetting
                                             ?.decimalPointSettings ??
                                         2)
-                                    : totalPrice.toStringAsFixed(state
+                                    : totalPrice.toStringAsFixed(homeState
                                             .startingSetting
                                             ?.decimalPointSettings ??
                                         2),
@@ -663,7 +703,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
   Widget buildCouponWidget(
     bool expandedCoupon,
     BuildContext context,
-    HomeState state,
+    OrderState state,
     double couponDiscount,
     String couponCode,
   ) {
@@ -840,7 +880,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                                         onTap: () {
                                           if (_formKey.currentState!
                                               .validate()) {
-                                            BlocProvider.of<HomeBloc>(context)
+                                            BlocProvider.of<OrderBloc>(context)
                                                 .add(
                                               ApplyCouponEvent(
                                                   code: couponKey.text),
@@ -880,8 +920,12 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
     );
   }
 
-  Widget buildSlidingUpPanelWidgets(BuildContext context, HomeState state,
-      int _indexTap, ScrollController sc) {
+  Widget buildSlidingUpPanelWidgets(
+    BuildContext context,
+    OrderState state,
+    int _indexTap,
+    ScrollController sc,
+  ) {
     return Container(
         width: 1.sw,
         child: Column(
@@ -1023,7 +1067,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
   }
 
   Widget buildAddressWidget(
-      HomeState state, BuildContext context, int _indexTap) {
+      OrderState state, BuildContext context, int _indexTap) {
     return Container(
         // height: !(state.listOfAddressInfoClassToSave.isNullOrEmpty) ? 225 : 203,
         width: 1.sw,
@@ -1367,7 +1411,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
     );
   }
 
-  Widget buildDeleteAddressWidget(BuildContext context, HomeState state) {
+  Widget buildDeleteAddressWidget(BuildContext context, OrderState state) {
     return Container(
       width: 1.sw,
       height: 1.sh,
@@ -1415,7 +1459,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
           InkWell(
             onTap: () {
               showDeleteAddress.value = false;
-              homeBloc.add(DeleteAdressInfoClassEvent(
+              orderBloc.add(DeleteAdressInfoClassEvent(
                   adressInfoClassId:
                       state.listOfAddressInfoClassToSave?[indexToDelete].id));
             },
@@ -1472,7 +1516,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
     );
   }
 
-  Widget buildPageHeader(BuildContext context, HomeState state) {
+  Widget buildPageHeader(BuildContext context, OrderState state) {
     return Container(
       margin: EdgeInsets.only(top: 50),
       width: 1.sw,

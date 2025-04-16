@@ -5,15 +5,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/config/theme/typography.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import '../../../../../common/constant/constant.dart';
 import '../../../../../common/helper/helper_functions.dart';
 import '../../../../../core/data/model/pagination_model.dart';
 import '../../../../../generated/locale_keys.g.dart';
 import '../../../../app/my_cached_network_image.dart';
 import '../../../data/models/get_orders_model.dart';
-import '../../manager/homeBloc/home_bloc.dart';
-import '../../manager/homeBloc/home_event.dart';
+import '../../manager/orderBloc/order_bloc.dart';
+import '../../manager/orderBloc/order_event.dart';
+import '../../manager/orderBloc/order_state.dart';
 import 'order_details1_page.dart';
 
 class OrdersPage extends StatefulWidget {
@@ -24,9 +24,11 @@ class OrdersPage extends StatefulWidget {
 }
 
 class _OrdersPageState extends State<OrdersPage> {
-  late HomeBloc homeBloc;
+  late OrderBloc orderBloc;
 
   final ScrollController ordersScrollController = ScrollController();
+
+  final ValueNotifier<String> currentStatus = ValueNotifier('');
 
   final List<String> orderStatus = [
     'pending',
@@ -44,14 +46,22 @@ class _OrdersPageState extends State<OrdersPage> {
 
   @override
   void initState() {
-    homeBloc = BlocProvider.of<HomeBloc>(context);
-    homeBloc.add(GetOrdersEvent(status: 'pending'));
+    orderBloc = BlocProvider.of<OrderBloc>(context);
+    orderBloc.add(GetOrdersEvent(
+      status: 'pending',
+      getWithPagination: false,
+    ));
 
     ordersScrollController.addListener(() async {
       if (ordersScrollController.position.maxScrollExtent ==
           ordersScrollController.offset) {
         debugPrint('scrollController');
-        homeBloc.add(GetOrdersEvent(status: 'pending'));
+        orderBloc.add(
+          GetOrdersEvent(
+            status: 'pending',
+            getWithPagination: true,
+          ),
+        );
       }
     });
 
@@ -63,83 +73,85 @@ class _OrdersPageState extends State<OrdersPage> {
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: true,
-        body: BlocBuilder<HomeBloc, HomeState>(
-          buildWhen: (p, c) =>
-              p.getOrdersModel?.paginationStatus !=
-              c.getOrdersModel?.paginationStatus,
+        body: BlocBuilder<OrderBloc, OrderState>(
+          // buildWhen: (p, c) =>
+          //     p.getOrdersModel?.paginationStatus !=
+          //     c.getOrdersModel?.paginationStatus,
           builder: (context, state) {
-            int itemsCount = state.getOrdersModel == null
-                ? 0
-                : state.getOrdersModel!.items.length;
-            List<OrderListModel> items = state.getOrdersModel?.items ?? [];
-            return (state.getOrdersModel == null ||
-                    state.getOrdersModel?.paginationStatus ==
-                        PaginationStatus.failure ||
-                    ((state.getOrdersModel?.paginationStatus ==
-                                PaginationStatus.loading ||
-                            state.getOrdersModel?.paginationStatus ==
-                                PaginationStatus.initial) &&
-                        state.getOrdersModel?.items.length == 0))
-                ? Center(child: CircularProgressIndicator())
-                : Column(
-                    children: [
-                      buildHeader(context),
-                      ///////////////////
-                      SizedBox(
-                        height: 11.h,
-                      ),
-                      ///////////////////
-                      buildStatusBar(),
-                      ///////////////////
-                      SizedBox(
-                        height: 50.h,
-                      ),
-                      ///////////////////
-                      Expanded(
-                        child: ListView.separated(
-                          controller: ordersScrollController,
-                          itemCount: itemsCount + 1,
-                          itemBuilder: (context, index) {
-                            if (index < itemsCount) {
-                              return InkWell(
-                                onTap: () {
-                                  HelperFunctions.slidingNavigation(
-                                    context,
-                                    OrderDetails1(),
-                                  );
-                                },
-                                child: buildOrderItemWidget(context),
-                              );
-                            } else {
-                              if (itemsCount > 4) {
-                                return Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 10),
-                                  child: Center(
-                                    child: state.getOrdersModel!.hasReachedMax
-                                        ? Text('No More Items')
-                                        : const CircularProgressIndicator(),
-                                  ),
-                                );
-                              } else {
-                                return Container();
-                              }
-                            }
-                          },
-                          separatorBuilder: (context, index) {
-                            return SizedBox(
-                              height: 10.h,
+            int itemsCount = 5;
+            // state.getOrdersModel == null
+            //     ? 0
+            //     : state.getOrdersModel!.items.length;
+            // List<OrderListModel> items = state.getOrdersModel?.items ?? [];
+            return
+                // (state.getOrdersModel == null ||
+                //         state.getOrdersModel?.paginationStatus ==
+                //             PaginationStatus.failure ||
+                //         ((state.getOrdersModel?.paginationStatus ==
+                //                     PaginationStatus.loading ||
+                //                 state.getOrdersModel?.paginationStatus ==
+                //                     PaginationStatus.initial) &&
+                //             state.getOrdersModel?.items.length == 0))
+                //     ? Center(child: CircularProgressIndicator())
+                //     :
+                Column(
+              children: [
+                buildHeader(context),
+                ///////////////////
+                SizedBox(
+                  height: 11.h,
+                ),
+                ///////////////////
+                buildStatusBar(),
+                ///////////////////
+                SizedBox(
+                  height: 50.h,
+                ),
+                ///////////////////
+                Expanded(
+                  child: ListView.separated(
+                    controller: ordersScrollController,
+                    itemCount: itemsCount + 1,
+                    itemBuilder: (context, index) {
+                      if (index < itemsCount) {
+                        return InkWell(
+                          onTap: () {
+                            HelperFunctions.slidingNavigation(
+                              context,
+                              OrderDetails1(),
                             );
                           },
-                        ),
-                      ),
-                      ///////////////////
-                      SizedBox(
+                          child: buildOrderItemWidget(context),
+                        );
+                      } else {
+                        if (itemsCount > 4) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: Center(child: Text('No More Items')
+                                // state.getOrdersModel!.hasReachedMax
+                                //     ? Text('No More Items')
+                                //     : const CircularProgressIndicator(),
+                                ),
+                          );
+                        } else {
+                          return Container();
+                        }
+                      }
+                    },
+                    separatorBuilder: (context, index) {
+                      return SizedBox(
                         height: 10.h,
-                      ),
-                      ///////////////////
-                    ],
-                  );
+                      );
+                    },
+                  ),
+                ),
+                ///////////////////
+                SizedBox(
+                  height: 10.h,
+                ),
+                ///////////////////
+              ],
+            );
           },
         ),
       ),
@@ -361,70 +373,76 @@ class _OrdersPageState extends State<OrdersPage> {
   }
 
   Widget buildStatusBar() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 17),
-      child: SizedBox(
-        height: 26,
-        child: ListView.separated(
-          scrollDirection: Axis.horizontal,
-          itemBuilder: (context, index) {
-            return index == 0
-                ? SvgPicture.asset(
-                    AppAssets.orderStatusFilterSvg,
-                    width: 25,
-                  )
-                : index == 1
-                    ? Container(
-                        height: 26,
-                        width: 34,
-                        decoration: BoxDecoration(
-                          color: const Color(0xffF8F8F8),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Center(
-                          child: Text(
-                            LocaleKeys.all.tr(),
-                            style: context.textTheme.bodyMedium?.rq.copyWith(
-                              color: const Color(0xff8D8D8D),
-                              letterSpacing: 0.18,
-                              fontSize: 12,
-                              height: 1.3,
-                            ),
-                          ),
-                        ),
-                      )
-                    : Container(
-                        height: 26,
-                        width: 82,
-                        decoration: BoxDecoration(
-                          color: const Color(0xffF8F8F8),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Center(
-                          child: Text(
-                            HelperFunctions.orderStatusText(
-                              inputText: orderStatus[index],
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                            style: context.textTheme.bodyMedium?.rq.copyWith(
-                              color: const Color(0xff8D8D8D),
-                              letterSpacing: 0.18,
-                              fontSize: 12,
-                              height: 1.3,
-                            ),
-                          ),
-                        ),
-                      );
-          },
-          separatorBuilder: (context, index) {
-            return const SizedBox(
-              width: 10,
-            );
-          },
-          itemCount: 10,
-        ),
-      ),
-    );
+    return ValueListenableBuilder<String>(
+        valueListenable: currentStatus,
+        builder: (context, _currentStatus, _) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 17),
+            child: SizedBox(
+              height: 26,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: 10,
+                itemBuilder: (context, index) {
+                  return index == 0
+                      ? SvgPicture.asset(
+                          AppAssets.orderStatusFilterSvg,
+                          width: 25,
+                        )
+                      : index == 1
+                          ? Container(
+                              height: 26,
+                              width: 34,
+                              decoration: BoxDecoration(
+                                color: const Color(0xffF8F8F8),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  LocaleKeys.all.tr(),
+                                  style:
+                                      context.textTheme.bodyMedium?.rq.copyWith(
+                                    color: const Color(0xff8D8D8D),
+                                    letterSpacing: 0.18,
+                                    fontSize: 12,
+                                    height: 1.3,
+                                  ),
+                                ),
+                              ),
+                            )
+                          : Container(
+                              height: 26,
+                              width: 82,
+                              decoration: BoxDecoration(
+                                color: const Color(0xffF8F8F8),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  HelperFunctions.orderStatusText(
+                                    inputText: orderStatus[index],
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                  style:
+                                      context.textTheme.bodyMedium?.rq.copyWith(
+                                    color: const Color(0xff8D8D8D),
+                                    letterSpacing: 0.18,
+                                    fontSize: 12,
+                                    height: 1.3,
+                                  ),
+                                ),
+                              ),
+                            );
+                },
+                separatorBuilder: (context, index) {
+                  return const SizedBox(
+                    width: 10,
+                  );
+                },
+              ),
+            ),
+          );
+        });
   }
 
   Widget buildHeader(BuildContext context) {

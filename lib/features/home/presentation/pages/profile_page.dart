@@ -26,6 +26,7 @@ import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/language_service.dart';
 
 import '../../../../common/helper/helper_functions.dart';
+import '../manager/orderBloc/order_bloc.dart';
 import 'Order/orders_page.dart';
 
 class ProfileHomePage extends StatefulWidget {
@@ -296,26 +297,23 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
 
   Widget _trydosWalletWidget() {
     double walletBalance =
-        BlocProvider.of<HomeBloc>(context).state.customerWalletModel == null
+        BlocProvider.of<OrderBloc>(context).state.customerWalletModel == null
             ? 0
-            : BlocProvider.of<HomeBloc>(context)
+            : BlocProvider.of<OrderBloc>(context)
+                .state
+                .customerWalletModel!
+                .data
+                .totalWalletBalance!;
+    String symbole =
+        BlocProvider.of<OrderBloc>(context).state.customerWalletModel == null
+            ? ''
+            : BlocProvider.of<OrderBloc>(context)
                     .state
                     .customerWalletModel!
                     .data
-                    .totalWalletBalance! *
-                BlocProvider.of<HomeBloc>(context)
-                    .state
-                    .getCurrencyForCountryModel!
-                    .data!
-                    .currency!
-                    .exchangeRate!;
-    String symbole = BlocProvider.of<HomeBloc>(context)
-            .state
-            .getCurrencyForCountryModel!
-            .data!
-            .currency!
-            .symbol ??
-        "";
+                    .currencySymbol ??
+                '';
+
     return Container(
       padding: EdgeInsets.all(10),
       width: 195.w,

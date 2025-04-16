@@ -28,13 +28,13 @@ class _NotificationsPageState extends State<NotificationsPage> {
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
-    homeBloc.add(GetUserNotificationEvent());
+    homeBloc.add(GetUserNotificationEvent(getWithPagination: false));
 
     notifiScrollController.addListener(() async {
       if (notifiScrollController.position.maxScrollExtent ==
           notifiScrollController.offset) {
         debugPrint('scrollController');
-        homeBloc.add(GetUserNotificationEvent());
+        homeBloc.add(GetUserNotificationEvent(getWithPagination: true));
       }
     });
 

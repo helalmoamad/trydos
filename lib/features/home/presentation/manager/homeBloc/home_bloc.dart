@@ -1,83 +1,58 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:math';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:dartz/dartz.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_smartlook/flutter_smartlook.dart';
-import 'package:flutter_svg_image/flutter_svg_image.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/common/helper/show_message.dart';
-import 'package:trydos/core/domin/usecases/upload_file_cloudinary_usecase.dart';
 import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/app_elvated_button.dart';
-import 'package:trydos/features/app/blocs/pre_caching_image_bloc/pre_caching_image_bloc.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/authentication/domain/use_cases/get_customer_info_usecase.dart';
-import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
-import 'package:trydos/features/home/data/models/get_address_by_text_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
-import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
-import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
 import 'package:trydos/features/home/data/models/get_old_cart_model.dart'
     as oldCart;
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart'
     as filters_model;
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart';
-import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
-    as product;
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
-import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
 import 'package:trydos/features/home/data/models/popular_search_terms_model.dart';
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
 import 'package:trydos/features/home/domain/use_cases/GetCommentForProductUseCase.dart';
 import 'package:trydos/features/home/domain/use_cases/add_comment_usecase.dart';
-import 'package:trydos/features/home/domain/use_cases/add_customer_address_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/add_like_to_product_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/change_country_language_for_notification_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/convert_item_from_oldCart_to_Cart_usecase.dart';
-import 'package:trydos/features/home/domain/use_cases/delete_customer_address_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/delete_like_of_product_usecase.dart';
-import 'package:trydos/features/home/domain/use_cases/get_address_by_coordinate_usecase.dart';
-import 'package:trydos/features/home/domain/use_cases/get_address_by_text_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_allowed_country_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_cart_item_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_count_view_of_product_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_currency_for_country_usecase.dart';
-import 'package:trydos/features/home/domain/use_cases/get_customer_addresses_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_full_product_details_usecase.dart';
-import 'package:trydos/features/home/domain/use_cases/get_home_boutiqes_usecase.dart';
-import 'package:trydos/features/home/domain/use_cases/get_main_categories_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_my_firebase_settings_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_notification_type_for_product_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_old_cart_item_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_popular_search_terms_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_product_detail_without_related_products_uswcase.dart';
-import 'package:trydos/features/home/domain/use_cases/get_product_filters_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_product_list_in_cart_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_products_usecase.dart';
-import 'package:trydos/features/home/domain/use_cases/get_products_with_filters_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_starting_settings_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/hide_item_from_oldCart_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/remove_item_from_cart_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/request_for_notification_when_product_became_available_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/send_error_to_mobile_error_log.dart';
-import 'package:trydos/features/home/domain/use_cases/set_customer_address_default_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/store_fcm_token_of_market_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/subscribe_topic_for_notification_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/un_subscribe_topic_for_notification_usecase.dart';
-import 'package:trydos/features/home/domain/use_cases/update_customer_address_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/update_email_notification_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/update_firebase_notification_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/update_item_from_cart_usecase.dart';
@@ -85,11 +60,8 @@ import 'package:trydos/features/home/domain/use_cases/update_notification_freque
 import 'package:trydos/features/home/domain/use_cases/update_profile_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/update_whatsapp_notification_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/upload_user_photo_usecase.dart';
-import 'package:trydos/features/home/presentation/manager/categoryBloc/category_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/categoryBloc/category_event.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
 import 'package:trydos/features/story/domain/useCases/get_width_and_height_usecase.dart';
-import 'package:trydos/features/story/presentation/bloc/story_state.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../../common/helper/helper_functions.dart';
@@ -99,23 +71,15 @@ import '../../../../../main.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
-import '../../../../app/my_cached_network_image.dart';
 import '../../../../chat/presentation/manager/chat_bloc.dart';
 import '../../../../chat/presentation/manager/chat_event.dart';
-import '../../../../story/presentation/bloc/story_bloc.dart';
-import '../../../data/models/get_orders_model.dart';
 import '../../../data/models/get_user_notifications_model.dart';
 import '../../../domain/use_cases/add_item_to_cart_usecase.dart';
 import '../../../domain/use_cases/apply_coupon_usecase.dart';
 import '../../../domain/use_cases/check_availability_product_cart_usecase.dart';
 import '../../../domain/use_cases/get_cart_overview_usecase.dart';
-import '../../../domain/use_cases/get_customer_wallet_usecase.dart';
-import '../../../domain/use_cases/get_orders_by_cart_group_usecase.dart';
-import '../../../domain/use_cases/get_orders_by_order_group_usecase.dart';
-import '../../../domain/use_cases/get_orders_usecase.dart';
 import '../../../domain/use_cases/get_stories_for_product_usecase.dart';
 import '../../../domain/use_cases/get_user_notification_usecase.dart';
-import '../../../domain/use_cases/place_order_usecase.dart';
 import 'home_event.dart';
 
 import 'home_state.dart';
@@ -132,7 +96,6 @@ EventTransformer<E> throttleDroppable<E>(Duration duration) {
 class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   HomeBloc(
     //  this.getHomeSectionsUseCase,
-
     this.getStoryUseCase,
     this.removeItemToCartUseCase,
     this.convertItemFromOldcartToCartUsecase,
@@ -145,11 +108,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.addLikeToProductUsecase,
     this.updateItemInCartUseCase,
     this.addItemToCartUseCase,
-    this.setCustomerAddressDefaultUseCase,
     this.getCommentForProductUseCase,
-    this.deleteCustomerAddressUseCase,
-    this.addCustomerAddressUseCase,
-    this.updateCustomerAddressUseCase,
     this.getProductsListInCartUseCase,
     this.updateProfileUseCase,
     this.getAllowedCountryUseCase,
@@ -166,9 +125,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.getProductDetailWithoutRelatedProductsUseCase,
     this.getStartingSettingsUseCase,
     this.getPopularSearchItemUseCase,
-    this.getAddressByCoordinatesUsecase,
-    this.getAddressByTextUsecase,
-    this.getCustomerAddressesUseCase,
     this.uploadFileCloudinaryUseCase,
     this.getCurrencyForCountryUseCase,
     this.hideItemsInOldCartUseCase,
@@ -179,23 +135,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.getProductsWithoutFiltersUseCase,
     this.addCommentUseCase,
     this.requestForNotificationWhenProductBecameAvailableUseCase,
-    this.getCustomerWalletUseCase,
-    this.placeOrderUsecase,
-    this.getOrdersByOrderGroupIDUsecase,
-    this.getOrdersByCartGroupIDUsecase,
     this.checkAvailabilityProductCartUsecase,
-    this.applyCouponUsecase,
     this.getCartOverviewUseCase,
     this.getUserNotificationUseCase,
-    this.getOrdersUseCase,
   ) : super(HomeState()) {
     on<HomeEvent>((event, emit) {});
 
     on<GetAndAddCountViewOfProductEvent>(
       _onGetAndAddCountViewOfProductEvent,
-    );
-    on<GetAddressByCoordinatesEvent>(
-      _onGetAddressByCoordinatesEvent,
     );
 
     on<IsChangedvariationWhenQtyZeroEvent>(
@@ -209,38 +156,19 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<UpdateProfileEvent>(
       _onUpdateProfileEvent,
     );
-    on<SetCurrentAddressChoosedEvent>(
-      _onSetCurrentAddressChoosedEvent,
-    );
+
     on<UploadUserPhotoCloudinaryEvent>(_onUploadUserPhptoCloudinaryEvent);
+
     on<ChangeStatusOFGetProductsDetailsToSuccessEvent>(
       _onChangeStatusOFGetProductsDetailsToSuccessEvent,
     );
-    on<SetCustomerAddressDefaultEvent>(_onSetCustomerAddressDefaultEvent,
-        transformer: restartable());
-    on<GetCustomerWalletEvent>(
-      _onGetCustomerWalletEvent,
-    );
-    on<GetAddressByTextEvent>(_onGetAddressByTextEvent,
-        transformer: restartable());
 
-    on<EditAdressInfoClassEvent>(
-      _onEditAdressInfoClassEvent,
-    );
-    on<GetCustomerAddressesEvent>(
-      _onGetCustomerAddressesEvent,
-    );
     on<GetNotificationTypeProductEvent>(_onGetNotificationTypeProductEvent);
-    on<DeleteAdressInfoClassEvent>(
-      _onDeleteAdressInfoClassEvent,
-    );
-    on<AddAddressInfoClassEvent>(
-      _onAddAddressInfoClassEvent,
-    );
 
     on<ClearAllAppCashEvent>(
       _onClearAllAppCashEvent,
     );
+
     on<GetCurrencyForCountryEvent>(
       _onGetCurrencyForCountryEvent,
     );
@@ -302,10 +230,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<AddOrRemoveLikeForProductEvent>(_onAddOrRemoveLikeForProductEvent,
         transformer: throttleDroppable(Duration(seconds: 3)));
 
-    /* on<GetSearchREsultEvent>(
-      _onGetSearchResultEventEvent,
-    );*/
-
     on<AddSearchTextToHistoryEvent>(
       _onAddSearchTextToHistoryEvent,
     );
@@ -344,11 +268,17 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       _onHideItemInOldCartEvent,
     );
 
-    on<GetStoryForProductEvent>(_onGetStoryEvent,
-        transformer: throttleDroppable(Duration(seconds: 5)));
+    on<GetStoryForProductEvent>(
+      _onGetStoryEvent,
+      transformer: throttleDroppable(
+        Duration(seconds: 5),
+      ),
+    );
+
     on<AddProductItemForCartEvent>(
       _onAddProductItemForCartEvent,
     );
+
     on<AddSizesForColorsEvent>(
       _onAddSizesForColorsEvent,
     );
@@ -379,23 +309,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<GetCommentForProductEvent>(
       _onGetCommentForProductEvent,
     );
-    on<PlaceOrderEvent>(
-      _onPlaceOrderEvent,
-    );
-    on<GetOrdersByOrderGroupIDEvent>(
-      _onGetOrdersByOrderGroupIDEvent,
-    );
-    on<GetOrdersByCartGroupIDEvent>(
-      _onGetOrdersByCartGroupIDEvent,
-    );
+
     on<RemoveItemsFromCartAfterOrderSuccessEvent>(
       _onRemoveItemsFromCartAfterOrderSuccessEvent,
     );
     on<CheckAvailabilityProductCartEvent>(
       _onCheckAvailabilityProductCartEvent,
-    );
-    on<ApplyCouponEvent>(
-      _onApplyCouponEvent,
     );
     on<GetCartOverviewEvent>(
       _onGetCartOverviewEvent,
@@ -404,11 +323,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
     on<GetUserNotificationEvent>(
       _onGetUserNotificationEvent,
-    );
-
-    on<GetOrdersEvent>(
-      _onGetOrdersEvent,
-      transformer: restartable(),
     );
   }
 
@@ -433,22 +347,16 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final GetCommentForProductUseCase getCommentForProductUseCase;
   final GetStoryForProductUseCase getStoryUseCase;
   final UpdateProfileUseCase updateProfileUseCase;
-  final GetCustomerAddressesUseCase getCustomerAddressesUseCase;
   final GetCustomerInfoUseCase getCustomerInfoUseCase;
-  final SetCustomerAddressDefaultUseCase setCustomerAddressDefaultUseCase;
   final GetProductDetailWithoutRelatedProductsUseCase
       getProductDetailWithoutRelatedProductsUseCase;
-  final GetAddressByTextUsecase getAddressByTextUsecase;
-  final GetAddressByCoordinatesUsecase getAddressByCoordinatesUsecase;
+
   final GetPopularSearchItemUseCase getPopularSearchItemUseCase;
   final GetCurrencyForCountryUseCase getCurrencyForCountryUseCase;
   final RequestForNotificationWhenProductBecameAvailableUseCase
       requestForNotificationWhenProductBecameAvailableUseCase;
   final AddLikeToProductUsecase addLikeToProductUsecase;
   final DeleteLikeOfProductUsecase deleteLikeOfProductUsecase;
-  // final GetBrandUseCase getBrandUseCase;
-
-  // final GetCategoryUseCase getCategoryUseCase;
 
   final RemoveItemToCartUseCase removeItemToCartUseCase;
 
@@ -462,17 +370,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final HideItemsInOldCartUseCase hideItemsInOldCartUseCase;
   final GetAllowedCountryUseCase getAllowedCountryUseCase;
   final GetFullProductDetailsUseCase getFullProductDetailsUseCase;
-  final AddCustomerAddressUseCase addCustomerAddressUseCase;
-  final UpdateCustomerAddressUseCase updateCustomerAddressUseCase;
-  final DeleteCustomerAddressUseCase deleteCustomerAddressUseCase;
-  final PlaceOrderUsecase placeOrderUsecase;
-  final GetOrdersByOrderGroupIDUsecase getOrdersByOrderGroupIDUsecase;
-  final GetOrdersByCartGroupIDUsecase getOrdersByCartGroupIDUsecase;
+
   final CheckAvailabilityProductCartUsecase checkAvailabilityProductCartUsecase;
-
-  final GetCustomerWalletUseCase getCustomerWalletUseCase;
-
-  final ApplyCouponUsecase applyCouponUsecase;
 
   final SubscribeTopicFornotificationUseCase
       subscribeTopicFornotificationUseCase;
@@ -483,8 +382,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final GetMyFirebaseSettingsUseCase getMyFirebaseSettingsUseCase;
 
   final GetUserNotificationUseCase getUserNotificationUseCase;
-
-  final GetOrdersUseCase getOrdersUseCase;
 
   final Smartlook smartLook = Smartlook.instance;
 
@@ -506,12 +403,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       apisMustNotToRequest.add('GetStartingSettingsEvent');
       isFailedTheFirstTime.remove('GetStartingSettingsEvent');
 
-      /*   if (!(prefsRepository.isSmartlookStarted ?? false)) {
-        prefsRepository.setIsSmartlookStarted(true);
-        Logger(printer: PrettyPrinter(methodCount: 0)).i('SMARTLOOK STARTED!');
-     initializeSmartLook();
-      }
-*/
       emit(state.copyWith(
           startingSetting: r.data!.startingSetting,
           getStartingSettingsStatus: GetStartingSettingsStatus.success));
@@ -533,72 +424,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       addImagesToProductIdForCart: {},
       listitemForAddToCart: [],
     ));
-  }
-
-  FutureOr<void> _onAddAddressInfoClassEvent(
-      AddAddressInfoClassEvent event, Emitter<HomeState> emit) async {
-    final List<CustomerAddressesInfo> listOfAddressInfoClassToSave =
-        List.of(state.listOfAddressInfoClassToSave ?? []);
-    CustomerAddressesInfo adressInfoClassToSave = event.addressInfoClassToSave!;
-    listOfAddressInfoClassToSave.insert(0, adressInfoClassToSave);
-    emit(state.copyWith(
-        listOfAdressInfoClassToSave: listOfAddressInfoClassToSave,
-        addAddressToOrderStatus: AddAddressToOrderStatus.loading));
-
-    final response = await addCustomerAddressUseCase(AddCustomerAddressParams(
-      iso: (prefsRepository.userCountryIsAvailable == 1
-              ? prefsRepository.userChoosedCountryIso
-              : prefsRepository.countryIso) ??
-          "",
-      address: event.addressInfoClassToSave?.address ?? "",
-      addressDetail: event.addressInfoClassToSave?.addressDetail ?? "",
-      country: event.addressInfoClassToSave?.regionDetails?.country ?? "",
-      city: event.addressInfoClassToSave?.regionDetails?.city ?? "",
-      district: event.addressInfoClassToSave?.regionDetails?.city ?? "",
-      town: event.addressInfoClassToSave?.regionDetails?.town ?? "",
-      street: event.addressInfoClassToSave?.regionDetails?.street ?? "",
-      zip: event.addressInfoClassToSave?.regionDetails?.zip ?? '',
-      phone: event.addressInfoClassToSave?.contactInfo?.phone ?? "",
-      alternativePhone:
-          event.addressInfoClassToSave?.contactInfo?.alternativePhone ?? "",
-      latitude: event.addressInfoClassToSave?.location?.latitude ?? "",
-      longitude: event.addressInfoClassToSave?.location?.longitude ?? "",
-      province: event.addressInfoClassToSave?.regionDetails?.province ?? "",
-      building: event.addressInfoClassToSave?.regionDetails?.building ?? "",
-      contactPersonName: event.addressInfoClassToSave?.contactInfo?.name ?? "",
-    ));
-
-    response.fold((l) {
-      if (!isFailedTheFirstTime.contains('addCustomerAddress')) {
-        add(AddAddressInfoClassEvent(
-            addressInfoClassToSave: event.addressInfoClassToSave));
-        isFailedTheFirstTime.add('addCustomerAddress');
-      }
-      showMessage(l.message,
-          foreGroundColor: Colors.white,
-          backGroundColor: Colors.black,
-          showInRelease: true,
-          timeShowing: Toast.LENGTH_LONG);
-      final List<CustomerAddressesInfo> listOfAddressInfoClassToSave =
-          List.of(state.listOfAddressInfoClassToSave ?? []);
-      listOfAddressInfoClassToSave.removeAt(0);
-      emit(state.copyWith(
-          listOfAdressInfoClassToSave: listOfAddressInfoClassToSave,
-          addAddressToOrderStatus: AddAddressToOrderStatus.failure));
-    }, (r) async {
-      add(GetCartOverviewEvent());
-      add(GetCustomerAddressesEvent());
-      showMessage(r.message ?? "",
-          foreGroundColor: Colors.white,
-          backGroundColor: Colors.black,
-          showInRelease: true,
-          timeShowing: Toast.LENGTH_LONG);
-      isFailedTheFirstTime.remove('addCustomerAddress');
-
-      emit(state.copyWith(
-          addAddressToOrderStatus: AddAddressToOrderStatus.success,
-          listOfAdressInfoClassToSave: listOfAddressInfoClassToSave));
-    });
   }
 
   FutureOr<void> _onUpdateWhatsappNotificationEvent(
@@ -881,191 +706,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     });
   }
 
-  FutureOr<void> _onGetCustomerAddressesEvent(
-      GetCustomerAddressesEvent event, Emitter<HomeState> emit) async {
-    emit(state.copyWith(
-        getCustomerAddressesStatus: GetCustomerAddressesStatus.loading));
-    final response = await getCustomerAddressesUseCase(NoParams());
-
-    response.fold((l) {
-      if (!isFailedTheFirstTime.contains('getCustomerAddresses')) {
-        add(GetCustomerAddressesEvent());
-        isFailedTheFirstTime.add('getCustomerAddresses');
-      }
-
-      emit(state.copyWith(
-          getCustomerAddressesStatus: GetCustomerAddressesStatus.failure));
-    }, (r) async {
-      isFailedTheFirstTime.remove('getCustomerAddresses');
-      List<CustomerAddressesInfo>? listOfAdressInfoClassToSave = [];
-      listOfAdressInfoClassToSave = [...r.data!];
-      int currentAddressChoosed = 0;
-      for (var i = 0; i < (r.data?.length ?? 0); i++) {
-        if (r.data?[i].isDefault == 1) {
-          currentAddressChoosed = i;
-        }
-      }
-      emit(state.copyWith(
-        currentAddressChoosed: currentAddressChoosed,
-        listOfAdressInfoClassToSave: List.of(listOfAdressInfoClassToSave),
-        getCustomerAddressesStatus: GetCustomerAddressesStatus.success,
-      ));
-    });
-  }
-
-  FutureOr<void> _onDeleteAdressInfoClassEvent(
-      DeleteAdressInfoClassEvent event, Emitter<HomeState> emit) async {
-    final List<CustomerAddressesInfo> listOfAddressInfoClassToSave =
-        List.of(state.listOfAddressInfoClassToSave ?? []);
-    int index = listOfAddressInfoClassToSave
-        .indexWhere((element) => element.id == event.adressInfoClassId);
-    CustomerAddressesInfo preCustomerAddress =
-        listOfAddressInfoClassToSave[index];
-
-    listOfAddressInfoClassToSave
-        .removeWhere((element) => element.id == event.adressInfoClassId);
-    emit(state.copyWith(
-        listOfAdressInfoClassToSave: listOfAddressInfoClassToSave,
-        removeAddressToOrderStatus: RemoveAddressToOrderStatus.loading));
-    final response = await deleteCustomerAddressUseCase(
-        DeleteCustomerAddressParams(addressId: event.adressInfoClassId ?? 0));
-
-    response.fold((l) {
-      if (!isFailedTheFirstTime.contains('deleteCustomerAddress')) {
-        add(DeleteAdressInfoClassEvent(
-            adressInfoClassId: event.adressInfoClassId));
-        isFailedTheFirstTime.add('deleteCustomerAddress');
-      }
-      showMessage(l.message,
-          foreGroundColor: Colors.white,
-          backGroundColor: Colors.black,
-          showInRelease: true,
-          timeShowing: Toast.LENGTH_LONG);
-      final List<CustomerAddressesInfo> listOfAddressInfoClassToSave =
-          List.of(state.listOfAddressInfoClassToSave ?? []);
-      listOfAddressInfoClassToSave.insert(index, preCustomerAddress);
-      emit(state.copyWith(
-          listOfAdressInfoClassToSave: listOfAddressInfoClassToSave,
-          removeAddressToOrderStatus: RemoveAddressToOrderStatus.failure));
-    }, (r) async {
-      add(GetCustomerAddressesEvent());
-      showMessage(r.message ?? "",
-          foreGroundColor: Colors.white,
-          backGroundColor: Colors.black,
-          showInRelease: true,
-          timeShowing: Toast.LENGTH_LONG);
-      isFailedTheFirstTime.remove('deleteCustomerAddress');
-
-      emit(state.copyWith(
-          removeAddressToOrderStatus: RemoveAddressToOrderStatus.success,
-          listOfAdressInfoClassToSave: listOfAddressInfoClassToSave));
-    });
-  }
-
-  FutureOr<void> _onSetCustomerAddressDefaultEvent(
-      SetCustomerAddressDefaultEvent event, Emitter<HomeState> emit) async {
-    emit(state.copyWith(
-        setCustomerAddressDefaultStatus:
-            SetCustomerAddressDefaultStatus.loading));
-    final response = await setCustomerAddressDefaultUseCase(
-        SetCustomerAddressDefaultParams(addressId: event.adressId ?? 0));
-
-    response.fold((l) {
-      if (!isFailedTheFirstTime.contains('SetCustomerAddressDefaultEvent')) {
-        add(SetCustomerAddressDefaultEvent(adressId: event.adressId));
-        isFailedTheFirstTime.add('SetCustomerAddressDefaultEvent');
-        return;
-      }
-
-      emit(state.copyWith(
-          setCustomerAddressDefaultStatus:
-              SetCustomerAddressDefaultStatus.failure));
-    }, (r) async {
-      add(GetCustomerAddressesEvent());
-      add(GetCartOverviewEvent());
-      isFailedTheFirstTime.remove('SetCustomerAddressDefaultEvent');
-
-      emit(state.copyWith(
-          setCustomerAddressDefaultStatus:
-              SetCustomerAddressDefaultStatus.success));
-    });
-  }
-
-  FutureOr<void> _onEditAdressInfoClassEvent(
-      EditAdressInfoClassEvent event, Emitter<HomeState> emit) async {
-    final List<CustomerAddressesInfo> listOfAddressInfoClassToSave =
-        List.of(state.listOfAddressInfoClassToSave ?? []);
-
-    int index = listOfAddressInfoClassToSave
-        .indexWhere((element) => element.id == event.preIdToEdit);
-    CustomerAddressesInfo preCustomerAddresses =
-        listOfAddressInfoClassToSave[index];
-    listOfAddressInfoClassToSave
-        .removeWhere((element) => element.id == event.preIdToEdit);
-
-    listOfAddressInfoClassToSave.insert(index, event.addressInfoClassToSave!);
-    emit(state.copyWith(
-        listOfAdressInfoClassToSave: listOfAddressInfoClassToSave,
-        editAddressToOrderStatus: EditAddressToOrderStatus.loading));
-    final response =
-        await updateCustomerAddressUseCase(UpdateCustomerAddressParams(
-      iso: (prefsRepository.userCountryIsAvailable == 1
-              ? prefsRepository.userChoosedCountryIso
-              : prefsRepository.countryIso) ??
-          "",
-      id: event.preIdToEdit,
-      address: event.addressInfoClassToSave?.address ?? "",
-      addressDetail: event.addressInfoClassToSave?.addressDetail ?? "",
-      country: event.addressInfoClassToSave?.regionDetails?.country ?? "",
-      city: event.addressInfoClassToSave?.regionDetails?.city ?? "",
-      district: event.addressInfoClassToSave?.regionDetails?.city ?? "",
-      town: event.addressInfoClassToSave?.regionDetails?.town ?? "",
-      street: event.addressInfoClassToSave?.regionDetails?.street ?? "",
-      zip: event.addressInfoClassToSave?.regionDetails?.zip ?? '',
-      phone: event.addressInfoClassToSave?.contactInfo?.phone ?? "",
-      alternativePhone:
-          event.addressInfoClassToSave?.contactInfo?.alternativePhone ?? "",
-      latitude: event.addressInfoClassToSave?.location?.latitude ?? "",
-      longitude: event.addressInfoClassToSave?.location?.longitude ?? "",
-      province: event.addressInfoClassToSave?.regionDetails?.province ?? "",
-      building: event.addressInfoClassToSave?.regionDetails?.building ?? "",
-      contactPersonName: event.addressInfoClassToSave?.contactInfo?.name ?? "",
-    ));
-
-    response.fold((l) {
-      if (!isFailedTheFirstTime.contains('updateCustomerAddress')) {
-        add(EditAdressInfoClassEvent(
-          addressInfoClassToSave: event.addressInfoClassToSave,
-          preIdToEdit: event.preIdToEdit,
-        ));
-        showMessage(l.message,
-            foreGroundColor: Colors.white,
-            backGroundColor: Colors.black,
-            showInRelease: true,
-            timeShowing: Toast.LENGTH_LONG);
-        isFailedTheFirstTime.add('updateCustomerAddress');
-      }
-      final List<CustomerAddressesInfo> listOfAddressInfoClassToSave =
-          List.of(state.listOfAddressInfoClassToSave ?? []);
-      listOfAddressInfoClassToSave.insert(index, preCustomerAddresses);
-      emit(state.copyWith(
-          listOfAdressInfoClassToSave: listOfAddressInfoClassToSave,
-          editAddressToOrderStatus: EditAddressToOrderStatus.failure));
-    }, (r) async {
-      add(GetCustomerAddressesEvent());
-      showMessage(r.message ?? "",
-          foreGroundColor: Colors.white,
-          backGroundColor: Colors.black,
-          showInRelease: true,
-          timeShowing: Toast.LENGTH_LONG);
-      isFailedTheFirstTime.remove('updateCustomerAddress');
-
-      emit(state.copyWith(
-          editAddressToOrderStatus: EditAddressToOrderStatus.success,
-          listOfAdressInfoClassToSave: listOfAddressInfoClassToSave));
-    });
-  }
-
   initializeSmartLook() async {
     String deviceId = (await HelperFunctions.getDeviceId()).toString();
     await smartLook.preferences.setProjectKey(dotenv.env['SMART_LOOK_KEY']!);
@@ -1145,7 +785,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       ));
     });
   }
-
   /* FutureOr<void> _onGetProductsWithFiltersUsingPaginationEvent(
       GetProductsWithFiltersUsingPaginationEvent event,
       Emitter<HomeState> emit) async {
@@ -1624,13 +1263,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       getProductDetailWithoutSimilarRelatedProductsStatus:
           GetProductDetailWithoutSimilarRelatedProductsStatus.init,
       getStartingSettingsStatus: GetStartingSettingsStatus.init,
-      placeOrderStatus: PlaceOrderStatus.init,
       checkAvailabilityProductCartStatus:
           CheckAvailabilityProductCartStatus.init,
-      applyCouponStatus: ApplyCouponStatus.init,
       checkWithGetCartStatus: CheckWithGetCartStatus.init,
       getUserNotificationModel: PaginationModel.init(),
-      getOrdersModel: PaginationModel.init(),
     ).toJson();
   }
 
@@ -1680,130 +1316,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           }
         }),
         getCommentForProductStatus: GetCommentForProductStatus.success,
-      ));
-    });
-  }
-
-  FutureOr<void> _onGetCustomerWalletEvent(
-    GetCustomerWalletEvent event,
-    Emitter<HomeState> emit,
-  ) async {
-    ///////////////////////////
-    emit(
-      state.copyWith(
-        getCustomerWalletStatus: GetCustomerWalletStatus.loading,
-      ),
-    );
-
-    final response = await getCustomerWalletUseCase.call(
-      CustomerWalletParams(limit: event.limit, offset: event.offset),
-    );
-
-    response.fold(
-      (l) {
-        if (!isFailedTheFirstTime.contains('GetCustomerWalletEvent')) {
-          add(
-            GetCustomerWalletEvent(limit: event.limit, offset: event.offset),
-          );
-          isFailedTheFirstTime.add('GetCustomerWalletEvent');
-          return;
-        }
-        emit(
-          state.copyWith(
-            getCustomerWalletStatus: GetCustomerWalletStatus.failure,
-          ),
-        );
-      },
-      (r) {
-        isFailedTheFirstTime.remove('GetCustomerWalletEvent');
-
-        emit(
-          state.copyWith(
-            getCustomerWalletStatus: GetCustomerWalletStatus.success,
-            customerWalletModel: r,
-          ),
-        );
-      },
-    );
-  }
-
-  FutureOr<void> _onGetAddressByCoordinatesEvent(
-      GetAddressByCoordinatesEvent event, Emitter<HomeState> emit) async {
-    if (event.latitude == 0 && event.longitude == 0) {
-      return;
-    }
-    ///////////////////////////
-    emit(
-      state.copyWith(
-        getAddressByCoordinatesStatus: GetAddressByCoordinatesStatus.loading,
-      ),
-    );
-
-    final response = await getAddressByCoordinatesUsecase(
-      GetAddressByCoordinatesParams(
-        latitude: event.latitude,
-        longitude: event.longitude,
-      ),
-    );
-
-    response.fold(
-      (l) {
-        if (!isFailedTheFirstTime.contains('GetAddressByCoordinatesEvent')) {
-          isFailedTheFirstTime.add('GetAddressByCoordinatesEvent');
-        }
-        emit(
-          state.copyWith(
-            getAddressByCoordinatesStatus:
-                GetAddressByCoordinatesStatus.failure,
-          ),
-        );
-      },
-      (r) {
-        isFailedTheFirstTime.remove('GetAddressByCoordinatesEvent');
-        emit(
-          state.copyWith(
-              getAddressByCoordinatesStatus:
-                  GetAddressByCoordinatesStatus.success,
-              getAddressByCoordinatesModel: r),
-        );
-      },
-    );
-    await Future.delayed(
-      Duration(seconds: 5),
-      () {
-        emit(state.copyWith(
-          getAddressByCoordinatesStatus: GetAddressByCoordinatesStatus.failure,
-        ));
-      },
-    );
-  }
-
-  FutureOr<void> _onGetAddressByTextEvent(
-      GetAddressByTextEvent event, Emitter<HomeState> emit) async {
-    emit(
-        state.copyWith(getAddressByTextStatus: GetAddressByTextStatus.loading));
-    if (event.reset) {
-      emit(state.copyWith(
-          getAddressByTextStatus: GetAddressByTextStatus.success,
-          resultSearch: []));
-      return;
-    }
-    final response = await getAddressByTextUsecase(
-        GetAddressByTextParams(query: event.query));
-
-    response.fold((l) {
-      if (!isFailedTheFirstTime.contains('GetAddressByTextEvent')) {
-        ;
-        isFailedTheFirstTime.add('GetAddressByTextEvent');
-      }
-      emit(state.copyWith(
-          getAddressByTextStatus: GetAddressByTextStatus.failure));
-    }, (r) {
-      isFailedTheFirstTime.remove('GetAddressByTextEvent');
-
-      emit(state.copyWith(
-        resultSearch: r.results,
-        getAddressByTextStatus: GetAddressByTextStatus.success,
       ));
     });
   }
@@ -3146,11 +2658,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     });
   }
 
-  Future<void> _onSetCurrentAddressChoosedEvent(
-      SetCurrentAddressChoosedEvent event, Emitter<HomeState> emit) async {
-    emit(state.copyWith(currentAddressChoosed: event.index));
-  }
-
   FutureOr<void> _onConvertItemFromCartToOldCartEvent(
       ConvertItemFromCartToOldCartEvent event, Emitter<HomeState> emit) async {
     List<oldCart.OldCart>? oldcartCollection =
@@ -3719,160 +3226,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     response.fold((l) {}, (r) {});
   }
 
-  FutureOr<void> _onPlaceOrderEvent(
-    PlaceOrderEvent event,
-    Emitter<HomeState> emit,
-  ) async {
-    debugPrint(event.placeOrderParams.paymentMethod);
-    debugPrint(event.placeOrderParams.addressId.toString());
-    debugPrint(event.placeOrderParams.payByWallet.toString());
-    ///////////////////////////
-    emit(
-      state.copyWith(
-        placeOrderStatus: PlaceOrderStatus.loading,
-      ),
-    );
-
-    final response = await placeOrderUsecase(
-      event.placeOrderParams,
-    );
-
-    response.fold(
-      (l) {
-        if (l.statusCode == 403) {
-          emit(
-            state.copyWith(
-              placeOrderStatus: PlaceOrderStatus.unavailable,
-            ),
-          );
-        } else {
-          if (!isFailedTheFirstTime.contains('PlaceOrderEvent')) {
-            add(
-              PlaceOrderEvent(placeOrderParams: event.placeOrderParams),
-            );
-            isFailedTheFirstTime.add('PlaceOrderEvent');
-          }
-          emit(
-            state.copyWith(
-              placeOrderStatus: PlaceOrderStatus.failure,
-            ),
-          );
-        }
-      },
-      (r) {
-        isFailedTheFirstTime.remove('PlaceOrderEvent');
-
-        debugPrint('PlaceOrderStatus success');
-
-        debugPrint('orders length : ${r.data!.length}');
-        ////////////////////////////
-        emit(
-          state.copyWith(
-            placeOrderStatus: PlaceOrderStatus.success,
-            placeOrderModel: r,
-          ),
-        );
-      },
-    );
-  }
-
-  FutureOr<void> _onGetOrdersByOrderGroupIDEvent(
-    GetOrdersByOrderGroupIDEvent event,
-    Emitter<HomeState> emit,
-  ) async {
-    ///////////////////////////
-    emit(
-      state.copyWith(
-        getOrdersByOrderGroupIDStatus: GetOrdersByOrderGroupIDStatus.loading,
-      ),
-    );
-
-    final response = await getOrdersByOrderGroupIDUsecase(
-      event.orderGroupId,
-    );
-
-    response.fold(
-      (l) {
-        if (!isFailedTheFirstTime.contains('GetOrdersByOrderGroupIDEvent')) {
-          add(
-            GetOrdersByOrderGroupIDEvent(orderGroupId: event.orderGroupId),
-          );
-          isFailedTheFirstTime.add('GetOrdersByOrderGroupIDEvent');
-        }
-
-        emit(
-          state.copyWith(
-            getOrdersByOrderGroupIDStatus:
-                GetOrdersByOrderGroupIDStatus.failure,
-          ),
-        );
-      },
-      (r) {
-        isFailedTheFirstTime.remove('GetOrdersByOrderGroupIDEvent');
-
-        debugPrint('GetOrdersByOrderGroupIDEvent success');
-
-        debugPrint('orders length : ${r.data!.length}');
-        ////////////////////////////
-        emit(
-          state.copyWith(
-            getOrdersByOrderGroupIDStatus:
-                GetOrdersByOrderGroupIDStatus.success,
-            getOrdersByOrderGroupIDModel: r,
-          ),
-        );
-      },
-    );
-  }
-
-  FutureOr<void> _onGetOrdersByCartGroupIDEvent(
-    GetOrdersByCartGroupIDEvent event,
-    Emitter<HomeState> emit,
-  ) async {
-    ///////////////////////////
-    emit(
-      state.copyWith(
-        getOrdersByCartGroupIDStatus: GetOrdersByCartGroupIDStatus.loading,
-      ),
-    );
-
-    final response = await getOrdersByCartGroupIDUsecase(
-      event.cartGroupId,
-    );
-
-    response.fold(
-      (l) {
-        if (!isFailedTheFirstTime.contains('GetOrdersByCartGroupIDEvent') &&
-            l.statusCode != 400) {
-          add(
-            GetOrdersByCartGroupIDEvent(cartGroupId: event.cartGroupId),
-          );
-          isFailedTheFirstTime.add('GetOrdersByCartGroupIDEvent');
-        }
-
-        emit(
-          state.copyWith(
-            getOrdersByCartGroupIDStatus: GetOrdersByCartGroupIDStatus.failure,
-          ),
-        );
-      },
-      (r) {
-        isFailedTheFirstTime.remove('GetOrdersByCartGroupIDEvent');
-
-        debugPrint('GetOrdersByCartGroupIDEvent success');
-
-        debugPrint('orders length : ${r.data!.length}');
-        ////////////////////////////
-        emit(
-          state.copyWith(
-            getOrdersByCartGroupIDStatus: GetOrdersByCartGroupIDStatus.success,
-            getOrdersByCartGroupIDModel: r,
-          ),
-        );
-      },
-    );
-  }
-
   FutureOr<void> _onCheckAvailabilityProductCartEvent(
     CheckAvailabilityProductCartEvent event,
     Emitter<HomeState> emit,
@@ -3917,75 +3270,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             checkAvailabilityProductCartModel: r,
           ),
         );
-      },
-    );
-  }
-
-  FutureOr<void> _onApplyCouponEvent(
-    ApplyCouponEvent event,
-    Emitter<HomeState> emit,
-  ) async {
-    ///////////////////////////
-    emit(
-      state.copyWith(
-        applyCouponStatus: ApplyCouponStatus.loading,
-      ),
-    );
-
-    final response = await applyCouponUsecase(event.code);
-
-    response.fold(
-      (l) {
-        if (!isFailedTheFirstTime.contains('ApplyCouponEvent')) {
-          add(
-            ApplyCouponEvent(code: event.code),
-          );
-          isFailedTheFirstTime.add('ApplyCouponEvent');
-        }
-
-        emit(
-          state.copyWith(
-            applyCouponStatus: ApplyCouponStatus.failure,
-          ),
-        );
-      },
-      (r) {
-        isFailedTheFirstTime.remove('ApplyCouponEvent');
-        var data = r.data;
-
-        if (data!.status == 0) {
-          emit(
-            state.copyWith(
-              applyCouponStatus: ApplyCouponStatus.failure,
-              applyCouponModel: r,
-            ),
-          );
-          //////////////
-          showMessage(
-            r.message ?? 'invalid',
-            foreGroundColor: Colors.white,
-            backGroundColor: Colors.black,
-            showInRelease: true,
-            timeShowing: Toast.LENGTH_LONG,
-          );
-        } else {
-          debugPrint('ApplyCouponEvent success');
-          ////////////////////////////
-          emit(
-            state.copyWith(
-              applyCouponStatus: ApplyCouponStatus.success,
-              applyCouponModel: r,
-            ),
-          );
-          //////////////
-          showMessage(
-            r.message ?? 'Success',
-            foreGroundColor: Colors.white,
-            backGroundColor: Colors.black,
-            showInRelease: true,
-            timeShowing: Toast.LENGTH_LONG,
-          );
-        }
       },
     );
   }
@@ -4041,16 +3325,19 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     Emitter<HomeState> emit,
   ) async {
     PaginationModel<NotificationItemModel>? getUserNotificationModel =
-        state.getUserNotificationModel;
+        !event.getWithPagination
+            ? PaginationModel.init(page: 1)
+            : state.getUserNotificationModel;
 
     if (getUserNotificationModel == null) {
       (getUserNotificationModel =
           const PaginationModel<NotificationItemModel>.init(page: 1));
     }
     ///////////////////////////////////////
-    if ((getUserNotificationModel.hasReachedMax ||
-        getUserNotificationModel.paginationStatus ==
-            PaginationStatus.loading)) {
+    if (event.getWithPagination &&
+        (getUserNotificationModel.hasReachedMax ||
+            getUserNotificationModel.paginationStatus ==
+                PaginationStatus.loading)) {
       return;
     }
     ///////////////////////////
@@ -4062,8 +3349,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     );
     ///////////////////////////////
 
-    final response =
-        await getUserNotificationUseCase(getUserNotificationModel.page);
+    final response = await getUserNotificationUseCase(
+      event.getWithPagination ? getUserNotificationModel.page : 1,
+    );
 
     response.fold(
       (l) {
@@ -4071,7 +3359,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
         if (!isFailedTheFirstTime.contains('GetUserNotificationEvent')) {
           add(
-            GetUserNotificationEvent(),
+            GetUserNotificationEvent(
+              getWithPagination: event.getWithPagination,
+            ),
           );
           isFailedTheFirstTime.add('GetUserNotificationEvent');
         }
@@ -4099,8 +3389,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             getUserNotificationModel: getUserNotificationModel!.copyWith(
               hasReachedMax: (r.data!.notifications!.length) < kPageSize,
               paginationStatus: PaginationStatus.success,
-              page: getUserNotificationModel!.page + 1,
-              items: [...notifications, ...r.data!.notifications ?? []],
+              page: event.getWithPagination
+                  ? getUserNotificationModel!.page + 1
+                  : 2,
+              items: !event.getWithPagination
+                  ? [...r.data!.notifications ?? []]
+                  : [...notifications, ...r.data!.notifications ?? []],
             ),
           ),
         );
@@ -4167,75 +3461,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           state.copyWith(
               userInfo: r.data,
               updateProfileStatus: UpdateProfileStatus.success),
-        );
-      },
-    );
-  }
-
-  FutureOr<void> _onGetOrdersEvent(
-    GetOrdersEvent event,
-    Emitter<HomeState> emit,
-  ) async {
-    PaginationModel<OrderListModel>? getOrdersModel = state.getOrdersModel;
-
-    if (getOrdersModel == null) {
-      getOrdersModel = const PaginationModel<OrderListModel>.init(page: 1);
-    }
-    ///////////////////////////////////////
-    if ((getOrdersModel.hasReachedMax ||
-        getOrdersModel.paginationStatus == PaginationStatus.loading)) {
-      return;
-    }
-    ///////////////////////////
-    emit(
-      state.copyWith(
-        getOrdersModel:
-            getOrdersModel.copyWith(paginationStatus: PaginationStatus.loading),
-      ),
-    );
-    ///////////////////////////////
-    GetOrdersParams params =
-        GetOrdersParams(offset: getOrdersModel.page, status: event.status);
-
-    final response = await getOrdersUseCase(params);
-
-    response.fold(
-      (l) {
-        getOrdersModel = state.getOrdersModel;
-
-        if (!isFailedTheFirstTime.contains('GetOrdersEvent')) {
-          add(
-            GetOrdersEvent(status: event.status),
-          );
-          isFailedTheFirstTime.add('GetOrdersEvent');
-        }
-
-        emit(
-          state.copyWith(
-            getOrdersModel: getOrdersModel!
-                .copyWith(paginationStatus: PaginationStatus.failure),
-          ),
-        );
-      },
-      (r) {
-        debugPrint('GetOrdersEvent success');
-
-        getOrdersModel = state.getOrdersModel;
-
-        isFailedTheFirstTime.remove('GetOrdersEvent');
-
-        List<OrderListModel> orders = getOrdersModel!.items;
-
-        ////////////////////////////
-        emit(
-          state.copyWith(
-            getOrdersModel: getOrdersModel!.copyWith(
-              hasReachedMax: (r.data!.orders!.length) < kPageSize,
-              paginationStatus: PaginationStatus.success,
-              page: getOrdersModel!.page + 1,
-              items: [...orders, ...r.data!.orders ?? []],
-            ),
-          ),
         );
       },
     );
