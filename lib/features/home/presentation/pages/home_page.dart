@@ -692,6 +692,8 @@ class _HomePageState extends State<HomePage> {
                                                   false)
                                               ? [
                                                   VerifyOtp(
+                                                      fromProfile: false,
+                                                      navigateToProfile: () {},
                                                       fromExpired: true,
                                                       isVisWhatsApp: 1,
                                                       navigateToAddName: () {},
@@ -780,6 +782,8 @@ class _HomePageState extends State<HomePage> {
                                                     },
                                                   ),
                                                   VerifyOtp(
+                                                      fromProfile: false,
+                                                      navigateToProfile: () {},
                                                       fromExpired: true,
                                                       isVisWhatsApp:
                                                           isVisWhatsApp,

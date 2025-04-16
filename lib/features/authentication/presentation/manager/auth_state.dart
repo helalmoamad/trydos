@@ -12,6 +12,8 @@ enum VerifyOtpSignUpStatus { init, loading, success, failure }
 
 enum VerifyOtpSignInStatus { init, loading, success, failure }
 
+enum VerifyOtpInProfileStatus { init, loading, success, failure }
+
 enum VerifyOtpFromGuestStatus { init, loading, success, failure }
 
 enum RegisterGuestStatus { init, loading, success, failure }
@@ -43,6 +45,7 @@ class AuthState {
     this.loginToStoriesStatus = LoginToStoriesStatus.init,
     this.getCustomerInfoStatus = GetCustomerInfoStatus.init,
     this.updateNameStatus = UpdateNameStatus.init,
+    this.verifyOtpInProfileStatus,
     this.getCustomerCountryStatus = GetCustomerCountryStatus.loading,
     this.updateStoriesUserStatus = UpdateStoriesUserStatus.init,
     this.updateChatUserNameStatus = UpdateChatUserNameStatus.init,
@@ -52,7 +55,7 @@ class AuthState {
   final LoginToChatStatus loginToChatStatus;
   final LoginToStoriesStatus loginToStoriesStatus;
   final SendOtpStatus sendOtpStatus;
-
+  final VerifyOtpInProfileStatus? verifyOtpInProfileStatus;
   final VerifyOtpSignUpStatus verifyOtpSignUpStatus;
   final VerifyOtpSignInStatus verifyOtpSignInStatus;
   final VerifyOtpFromGuestStatus verifyOtpFromGuestStatus;
@@ -76,6 +79,7 @@ class AuthState {
       final String? countryName,
       final GetCustomerCountryStatus? getCustomerCountryStatus,
       final RegisterGuestStatus? registerGuestStatus,
+      final VerifyOtpInProfileStatus? verifyOtpInProfileStatus,
       final GetCustomerInfoStatus? getCustomerInfoStatus,
       final UpdateChatUserNameStatus? updateChatUserNameStatus,
       final String? signUpErrorMessage,
@@ -100,6 +104,8 @@ class AuthState {
       sendOtpStatus: sendOtpStatus ?? this.sendOtpStatus,
       getCustomerInfoStatus:
           getCustomerInfoStatus ?? this.getCustomerInfoStatus,
+      verifyOtpInProfileStatus:
+          verifyOtpInProfileStatus ?? this.verifyOtpInProfileStatus,
       signUpErrorMessage: signUpErrorMessage ?? this.signUpErrorMessage,
       signInErrorMessage: signInErrorMessage ?? this.signInErrorMessage,
       marketUser: marketUser ?? this.marketUser,

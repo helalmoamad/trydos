@@ -595,7 +595,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                       int currentSelectedColor = state
                               .currentSelectedColorForEveryProduct[productId] ??
                           (productItem?.syncColorImages?.length ?? 0) ~/ 2;
-
+                      if (currentSelectedColor >
+                          (productItem?.syncColorImages?.length ?? 0)) {
+                        currentSelectedColor = 0;
+                      }
                       Future.delayed(
                         Duration(milliseconds: 600),
                         () {

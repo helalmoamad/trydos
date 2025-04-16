@@ -53,6 +53,8 @@ import '../../features/authentication/domain/use_cases/update_stories_user_useca
     as _i434;
 import '../../features/authentication/domain/use_cases/verify_guest_phone_usecase.dart'
     as _i236;
+import '../../features/authentication/domain/use_cases/verify_otp_in_profile_usecase.dart'
+    as _i995;
 import '../../features/authentication/domain/use_cases/verify_otp_signin_usecase.dart'
     as _i574;
 import '../../features/authentication/domain/use_cases/verify_otp_signup_usecase.dart'
@@ -344,6 +346,8 @@ Future<_i174.GetIt> $initGetIt(
       () => _i574.VerifyOtpSignInUseCase(gh<_i742.AuthRepository>()));
   gh.factory<_i282.VerifyOtpSignUpUseCase>(
       () => _i282.VerifyOtpSignUpUseCase(gh<_i742.AuthRepository>()));
+  gh.factory<_i995.VerifyOtpInProfileUseCase>(
+      () => _i995.VerifyOtpInProfileUseCase(gh<_i742.AuthRepository>()));
   gh.factory<_i68.AddCommentUseCase>(
       () => _i68.AddCommentUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i70.AddCustomerAddressUseCase>(
@@ -585,22 +589,6 @@ Future<_i174.GetIt> $initGetIt(
       () => _i711.RejectCallUseCase(gh<_i1032.CallsRepository>()));
   gh.factory<_i961.WatchMissedCallUseCase>(
       () => _i961.WatchMissedCallUseCase(gh<_i1032.CallsRepository>()));
-  gh.lazySingleton<_i561.AuthBloc>(() => _i561.AuthBloc(
-        gh<_i434.UpdateStoriesUserUseCase>(),
-        gh<_i730.UpdateChatUserNameUseCase>(),
-        gh<_i589.CreateUserUseCase>(),
-        gh<_i919.LoginToChatUseCase>(),
-        gh<_i656.LoginToStoriesUseCase>(),
-        gh<_i142.StoreFcmUseCase>(),
-        gh<_i58.UpdateNameUseCase>(),
-        gh<_i49.RegisterGuestUseCase>(),
-        gh<_i952.SendOtpUseCase>(),
-        gh<_i862.GetCustomerInfoUseCase>(),
-        gh<_i236.VerifyOtpFromGuestUseCase>(),
-        gh<_i574.VerifyOtpSignInUseCase>(),
-        gh<_i644.GetUserCountryUseCase>(),
-        gh<_i282.VerifyOtpSignUpUseCase>(),
-      ));
   gh.lazySingleton<_i536.StoryBloc>(() => _i536.StoryBloc(
         gh<_i1043.UploadFileCloudinaryUseCase>(),
         gh<_i804.GetStoryUseCase>(),
@@ -639,6 +627,23 @@ Future<_i174.GetIt> $initGetIt(
         gh<_i109.GetMediaCountUseCase>(),
         gh<_i668.GetDateTimeUseCase>(),
         gh<_i677.SendErrorToServerUseCase>(),
+      ));
+  gh.lazySingleton<_i561.AuthBloc>(() => _i561.AuthBloc(
+        gh<_i434.UpdateStoriesUserUseCase>(),
+        gh<_i730.UpdateChatUserNameUseCase>(),
+        gh<_i589.CreateUserUseCase>(),
+        gh<_i919.LoginToChatUseCase>(),
+        gh<_i656.LoginToStoriesUseCase>(),
+        gh<_i142.StoreFcmUseCase>(),
+        gh<_i995.VerifyOtpInProfileUseCase>(),
+        gh<_i58.UpdateNameUseCase>(),
+        gh<_i49.RegisterGuestUseCase>(),
+        gh<_i952.SendOtpUseCase>(),
+        gh<_i862.GetCustomerInfoUseCase>(),
+        gh<_i236.VerifyOtpFromGuestUseCase>(),
+        gh<_i574.VerifyOtpSignInUseCase>(),
+        gh<_i644.GetUserCountryUseCase>(),
+        gh<_i282.VerifyOtpSignUpUseCase>(),
       ));
   return getIt;
 }

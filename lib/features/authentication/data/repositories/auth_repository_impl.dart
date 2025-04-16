@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
-import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
+import 'package:trydos/features/authentication/data/models/verify_otp_response_model.dart';
+
 import 'package:trydos/features/authentication/data/models/get_user_country_response_model.dart';
 import 'package:trydos/features/authentication/data/models/login_to_stories_response_model.dart';
 import 'package:trydos/features/authentication/data/models/send_otp_response_model.dart';
@@ -46,6 +47,13 @@ class AuthRepositoryImpl extends AuthRepository with HandlingExceptionRequest {
       Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.storeFcmToken(params));
+  }
+
+  @override
+  Future<Either<Failure, VerifyOtpInProfileResponseModel>> verifyOtpInProfile(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.verifyOtpInProfile(params));
   }
 
   @override

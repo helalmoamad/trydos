@@ -825,6 +825,15 @@ class PrefsRepositoryImpl extends PrefsRepository {
   Future<bool> setPrefechOfMainCategoryInHomePage(String value) {
     return _preferences.setString(PrefsKey.mainCatogryPrefech, value);
   }
+
+  @override
+  // TODO: implement idToken
+  String? get idToken => _preferences.getString(PrefsKey.idToken);
+
+  @override
+  Future<bool> setIdToken(String idToken) {
+    return _preferences.setString(PrefsKey.idToken, idToken);
+  }
 // @override
 
 // List<Map<String,dynamic>> get localMessages {

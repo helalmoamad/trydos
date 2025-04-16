@@ -123,6 +123,20 @@ class VerifyOtpFromGuestEvent extends AuthEvent {
   List<Object?> get props => [verificationId, otp];
 }
 
+class VerifyOtpInProfileEvent extends AuthEvent {
+  final String verificationId;
+  final String otp;
+
+  VerifyOtpInProfileEvent({
+    required this.verificationId,
+    required this.otp,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [verificationId, otp];
+}
+
 class RegisterGuestEvent extends AuthEvent {
   final String deviceId;
   final String? oldGuestUserId;

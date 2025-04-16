@@ -109,9 +109,12 @@ class _PinItemState extends State<PinItem> with TickerProviderStateMixin {
       buildWhen: (p, c) =>
           p.verifyOtpSignInStatus != c.verifyOtpSignInStatus ||
           p.verifyOtpFromGuestStatus != c.verifyOtpFromGuestStatus ||
-          p.verifyOtpSignUpStatus != c.verifyOtpSignUpStatus,
+          p.verifyOtpSignUpStatus != c.verifyOtpSignUpStatus ||
+          p.verifyOtpInProfileStatus != c.verifyOtpInProfileStatus,
       listener: (context, state) {
         if (state.verifyOtpSignInStatus == VerifyOtpSignInStatus.loading ||
+            state.verifyOtpInProfileStatus ==
+                VerifyOtpInProfileStatus.loading ||
             state.verifyOtpFromGuestStatus ==
                 VerifyOtpFromGuestStatus.loading ||
             state.verifyOtpSignUpStatus == VerifyOtpSignUpStatus.loading) {
@@ -151,6 +154,8 @@ class _PinItemState extends State<PinItem> with TickerProviderStateMixin {
                                   controller: widget.controller,
                                   enabled: (state.verifyOtpSignInStatus !=
                                           VerifyOtpSignInStatus.loading &&
+                                      state.verifyOtpInProfileStatus !=
+                                          VerifyOtpInProfileStatus.loading &&
                                       state.verifyOtpSignUpStatus !=
                                           VerifyOtpSignUpStatus.loading &&
                                       state.verifyOtpFromGuestStatus !=

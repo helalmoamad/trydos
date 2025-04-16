@@ -9,6 +9,7 @@ import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/core/use_case/use_case.dart';
+import 'package:trydos/features/authentication/domain/use_cases/verify_otp_in_profile_usecase.dart';
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 import 'package:trydos/features/home/domain/use_cases/get_allowed_country_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/get_user_country_usecase.dart';
@@ -61,6 +62,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     this.loginToChatUseCase,
     this.loginToStoriesUseCase,
     this.storeFcmUseCase,
+    this.verifyOtpInProfileUseCase,
     this.updateNameUseCase,
     this.registerGuestUseCase,
     this.sendOtpUseCase,
@@ -85,6 +87,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         transformer: throttleDroppable(throttleDuration));
     on<SendOtpEvent>(_onSendOtpEvent);
     on<VerifyOtpSignInEvent>(_onVerifyOtpSignInEvent);
+    on<VerifyOtpInProfileEvent>(_onVerifyOtpInProfileEvent);
     on<VerifyOtpSignUpEvent>(_onVerifyOtpSignUpEvent);
     on<VerifyOtpFromGuestEvent>(
       _onVerifyGuestPhoneEvent,
@@ -115,6 +118,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final UpdateNameUseCase updateNameUseCase;
   final GetCustomerInfoUseCase getCustomerInfoUseCase;
   final GetUserCountryUseCase getUserCountryUseCase;
+  final VerifyOtpInProfileUseCase verifyOtpInProfileUseCase;
   final UpdateStoriesUserUseCase updateStoriesUserUseCase;
   final UpdateChatUserNameUseCase updateChatUserNameUseCase;
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
@@ -341,6 +345,28 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         GetIt.I<StoryBloc>().add(GetStoryEvent());
       },
     );
+  }
+
+  FutureOr<void> _onVerifyOtpInProfileEvent(
+      VerifyOtpInProfileEvent event, Emitter<AuthState> emit) async {
+    emit(state.copyWith(
+        verifyOtpInProfileStatus: VerifyOtpInProfileStatus.loading));
+
+    final response = await verifyOtpInProfileUseCase(
+      VerifyOtpInProfileParams(
+          verificationId: event.verificationId, otp: event.otp),
+    );
+    response.fold((l) {
+      emit(state.copyWith(
+          verifyOtpInProfileStatus: VerifyOtpInProfileStatus.failure,
+          signInErrorMessage: l.message));
+    }, (r) async {
+      _prefsRepository.setPhoneNumber((r.data!.phone).toString());
+      _prefsRepository.setIdToken((r.data!.idToken).toString());
+      emit(state.copyWith(
+        verifyOtpInProfileStatus: VerifyOtpInProfileStatus.success,
+      ));
+    });
   }
 
   FutureOr<void> _onVerifyOtpSignInEvent(

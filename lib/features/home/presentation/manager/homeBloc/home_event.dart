@@ -390,11 +390,13 @@ class UpdateProfileEvent extends HomeEvent {
   final String? tall;
   final String? weight;
   final String? alternative_phone;
+  final String? idToken;
   final String? gender;
 
   UpdateProfileEvent(
       {this.name,
       this.email,
+      this.idToken,
       this.gender,
       this.changeStatusToInit,
       this.image,

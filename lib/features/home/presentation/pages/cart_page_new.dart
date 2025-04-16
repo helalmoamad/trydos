@@ -1453,6 +1453,8 @@ class _CartPageState extends State<CartPage> {
                                                                                 children: (prefsRepository.isVerifiedPhonePeforeExpiredToken ?? false)
                                                                                     ? [
                                                                                         VerifyOtp(
+                                                                                            fromProfile: false,
+                                                                                            navigateToProfile: () {},
                                                                                             fromExpired: true,
                                                                                             isVisWhatsApp: 1,
                                                                                             navigateToAddName: () {},
@@ -1502,6 +1504,8 @@ class _CartPageState extends State<CartPage> {
                                                                                           },
                                                                                         ),
                                                                                         VerifyOtp(
+                                                                                            fromProfile: false,
+                                                                                            navigateToProfile: () {},
                                                                                             fromExpired: true,
                                                                                             isVisWhatsApp: isVisWhatsApp,
                                                                                             navigateToAddName: () {},

@@ -140,13 +140,37 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
         }
         boutiquesForEveryMainCategoryThatDidPrefetch[event.categorySlug] = true;
       }
-
+      print(
+          "@@33@@@@@@@@@@@@@@####################################################${boutiquesForEveryMainCategoryThatDidPrefetch}");
       emit(state.copyWith(
           boutiquesForEveryMainCategoryThatDidPrefetch:
               Map.of(boutiquesForEveryMainCategoryThatDidPrefetch),
           getHomeBoutiquesPaginationObjectByMainCategory:
               getHomeBoutiquesPaginationObjectByMainCategory));
+    } else {
+      Map<String, bool> boutiquesForEveryMainCategoryThatDidPrefetch =
+          Map.of(state.boutiquesForEveryMainCategoryThatDidPrefetch);
+      if (!event.getWithPrefetchForEachBoutiques) {
+        if (boutiquesForEveryMainCategoryThatDidPrefetch[event.categorySlug] ==
+            null) {
+          boutiquesForEveryMainCategoryThatDidPrefetch
+              .addAll({event.categorySlug: false});
+        }
+        if (boutiquesForEveryMainCategoryThatDidPrefetch[event.categorySlug] ==
+                true &&
+            event.offset == '1' &&
+            !event.forRefresh) {
+          return;
+        }
+        boutiquesForEveryMainCategoryThatDidPrefetch[event.categorySlug] = true;
+      }
+      emit(state.copyWith(
+        boutiquesForEveryMainCategoryThatDidPrefetch:
+            Map.of(boutiquesForEveryMainCategoryThatDidPrefetch),
+      ));
     }
+    print(
+        "@22@@@@@@@@@@@@@@@###################################################");
 
     final response = await getHomeBoutiqesUseCase(GetHomeBoutiqesParams(
         page: event.getWithPagination
@@ -164,14 +188,6 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
         Map<String, PaginationModel<Boutique>>
             getHomeBoutiquesPaginationObjectByMainCategory =
             Map.of(state.getHomeBoutiquesPaginationObjectByMainCategory);
-
-        Map<String, bool> boutiquesForEveryMainCategoryThatDidPrefetch =
-            Map.of(state.boutiquesForEveryMainCategoryThatDidPrefetch);
-
-        if (!event.getWithPrefetchForEachBoutiques) {
-          boutiquesForEveryMainCategoryThatDidPrefetch[event.categorySlug] =
-              false;
-        }
 
         if (!isFailedTheFirstTime.contains('GetHomeBoutiqesEvent')) {
           add(
@@ -191,8 +207,6 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
         }
         emit(
           state.copyWith(
-            boutiquesForEveryMainCategoryThatDidPrefetch:
-                boutiquesForEveryMainCategoryThatDidPrefetch,
             getHomeBoutiquesPaginationObjectByMainCategory:
                 getHomeBoutiquesPaginationObjectByMainCategory.map(
               (key, value) {

@@ -28,6 +28,8 @@ import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
+import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
+import 'package:trydos/features/authentication/presentation/widgets/verify_otp.dart';
 
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
@@ -49,11 +51,12 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
     with SingleTickerProviderStateMixin {
   final ValueNotifier<String?> changeGender = ValueNotifier("null");
   final ValueNotifier<bool> visibleSave = ValueNotifier(false);
+  final ValueNotifier<bool> visibleOtp = ValueNotifier(false);
   final ValueNotifier<bool> validateBox = ValueNotifier(false);
   final ValueNotifier<int> maxLengthForNumber = ValueNotifier(25);
   final TextEditingController fullNameController = TextEditingController();
   final ValueNotifier<int> maxLengthForOptionalNumber = ValueNotifier(25);
-  final TextEditingController PhoneController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
   final TextEditingController alternativePhoneController =
       TextEditingController();
   final TextEditingController emailController = TextEditingController();
@@ -64,19 +67,33 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
   late AnimationController animationController;
   List<CameraDescription> cameras = [];
   late HomeBloc homeBloc;
+  late AuthBloc authBloc;
   @override
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
+    authBloc = BlocProvider.of<AuthBloc>(context);
     fullNameController.text = homeBloc.state.userInfo?.name ?? "";
-    PhoneController.text = homeBloc.state.userInfo?.phone ?? "";
-    alternativePhoneController.text =
-        homeBloc.state.userInfo?.alternativePhone ?? "";
+
+    try {
+      alternativePhoneController.text =
+          (homeBloc.state.userInfo?.alternativePhone ?? "")
+              .split("+")
+              .toList()[1];
+      print("@@@@@@@@@@@@@@@@@@${alternativePhoneController.text}");
+    } catch (e) {}
+    ;
+    try {
+      phoneController.text =
+          (homeBloc.state.userInfo?.phone ?? "").split("+").toList()[1];
+    } catch (e) {}
+    ;
+
     emailController.text = homeBloc.state.userInfo?.email ?? "";
     changeGender.value =
         (homeBloc.state.userInfo?.gender?.name.toString()) ?? "null";
     animationController =
         AnimationController(duration: Duration(seconds: 1), vsync: this);
-    if (PhoneController.text.length > 0) {
+    if (phoneController.text.length > 0) {
       visiblePrefix.value = true;
     }
     if (alternativePhoneController.text.length > 0) {
@@ -147,6 +164,10 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                 }
                                 return InkWell(
                                   onTap: () {
+                                    if (state.updateProfileStatus ==
+                                        UpdateProfileStatus.loading) {
+                                      return;
+                                    }
                                     validateBox.value = true;
                                     formKey.currentState!.validate();
                                     if (!formKey.currentState!.validate()) {
@@ -162,15 +183,32 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                         .startsWith("Other")) {
                                       genderIndex = "3";
                                     }
-                                    homeBloc.add(UpdateProfileEvent(
-                                        name: fullNameController.text,
-                                        alternative_phone:
-                                            alternativePhoneController.text
-                                                .replaceAll(" ", ""),
-                                        phone: PhoneController.text
-                                            .replaceAll(" ", ""),
-                                        email: emailController.text,
-                                        gender: genderIndex));
+                                    if (("+" +
+                                            phoneController.text
+                                                .replaceAll(" ", "")) !=
+                                        state.userInfo?.phone) {
+                                      visibleOtp.value = true;
+                                    }
+                                    if (visibleOtp.value == false) {
+                                      homeBloc.add(UpdateProfileEvent(
+                                          name: fullNameController.text,
+                                          alternative_phone:
+                                              alternativePhoneController
+                                                          .text.length >
+                                                      0
+                                                  ? "+" +
+                                                      alternativePhoneController
+                                                          .text
+                                                          .replaceAll(" ", "")
+                                                  : null,
+                                          email: emailController.text,
+                                          gender: genderIndex));
+                                    } else {
+                                      authBloc.add(SendOtpEvent(
+                                          phone: phoneController.text
+                                              .replaceAll(" ", ""),
+                                          isViaWhatsApp: 1));
+                                    }
                                   },
                                   child: Container(
                                     alignment: Alignment.center,
@@ -206,162 +244,268 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                     withShadow: false),
               ),
               body: SafeArea(
-                child: SingleChildScrollView(
-                  child: Form(
-                    key: formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                child: Form(
+                  key: formKey,
+                  child: Container(
+                    height: 1.sh,
+                    width: 1.sw,
+                    child: Stack(
                       children: [
-                        Container(
-                            height: 50,
-                            width: 1.sw,
-                            decoration: BoxDecoration(
-                                color: Color(0xffF8F8F8),
-                                border: Border.all(color: Color(0xffD3D3D3))),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                SizedBox(
-                                  width: 10.w,
-                                ),
-                                SvgPicture.asset(
-                                  AppAssets.infoSvg,
-                                  color: Color(0xff402CDD),
-                                  width: 25.w,
-                                ),
-                                SizedBox(
-                                  width: 10.w,
-                                ),
-                                Text(
-                                  LocaleKeys.entering_your_information_correctly
-                                      .tr(),
-                                  style: context.textTheme.bodyMedium?.rr
-                                      .copyWith(
-                                          color: const Color(0xff8D8D8D),
-                                          letterSpacing: 0.18,
-                                          fontSize: 10.sp,
-                                          height: 1.3),
-                                ),
-                              ],
-                            )),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Container(
-                          height: 15,
-                          width: 150,
-                          margin: EdgeInsets.symmetric(horizontal: 20),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              SvgPicture.asset(
-                                AppAssets.personalInfoSvg,
-                                height: 15,
-                                color: Color(0xff1D1D1D),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                                height: 50,
+                                width: 1.sw,
+                                decoration: BoxDecoration(
+                                    color: Color(0xffF8F8F8),
+                                    border:
+                                        Border.all(color: Color(0xffD3D3D3))),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    SizedBox(
+                                      width: 10.w,
+                                    ),
+                                    SvgPicture.asset(
+                                      AppAssets.infoSvg,
+                                      color: Color(0xff402CDD),
+                                      width: 25.w,
+                                    ),
+                                    SizedBox(
+                                      width: 10.w,
+                                    ),
+                                    Text(
+                                      LocaleKeys
+                                          .entering_your_information_correctly
+                                          .tr(),
+                                      style: context.textTheme.bodyMedium?.rr
+                                          .copyWith(
+                                              color: const Color(0xff8D8D8D),
+                                              letterSpacing: 0.18,
+                                              fontSize: 10.sp,
+                                              height: 1.3),
+                                    ),
+                                  ],
+                                )),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            Container(
+                              height: 15,
+                              width: 150,
+                              margin: EdgeInsets.symmetric(horizontal: 20),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  SvgPicture.asset(
+                                    AppAssets.personalInfoSvg,
+                                    height: 15,
+                                    color: Color(0xff1D1D1D),
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text(
+                                    "${LocaleKeys.personal_info.tr()}",
+                                    style: context.textTheme.bodyMedium?.mr
+                                        .copyWith(
+                                            color: const Color(0xff404040),
+                                            letterSpacing: 0.18,
+                                            fontSize: 12,
+                                            height: 1.2),
+                                  ),
+                                  SizedBox(
+                                    width: 15,
+                                  ),
+                                  SvgPicture.asset(
+                                    AppAssets.chatWithQuestionSvg,
+                                    color: Color(0xffD3D3D3),
+                                    height: 15,
+                                  ),
+                                ],
                               ),
-                              SizedBox(
-                                width: 10,
+                            ),
+                            SizedBox(
+                              height: 15,
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              child: _personInfoWidget(
+                                controller: fullNameController,
+                                isPhone: false,
+                                title2: "",
+                                context: context,
+                                isComplate: false,
+                                height: 50,
+                                hint2: "",
+                                title: LocaleKeys.full_name.tr(),
+                                hint: LocaleKeys.enter_full_name.tr(),
                               ),
-                              Text(
-                                "${LocaleKeys.personal_info.tr()}",
-                                style: context.textTheme.bodyMedium?.mr
-                                    .copyWith(
-                                        color: const Color(0xff404040),
-                                        letterSpacing: 0.18,
-                                        fontSize: 12,
-                                        height: 1.2),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              child: _personInfoWidget(
+                                controller: phoneController,
+                                isPhone: true,
+                                context: context,
+                                isComplate: false,
+                                title2: "",
+                                height: 50,
+                                hint2: "",
+                                title: LocaleKeys.phone.tr(),
+                                hint: LocaleKeys.enter_phone.tr(),
                               ),
-                              SizedBox(
-                                width: 15,
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              child: _personInfoWidgetOptional(
+                                  height: 50,
+                                  context: context,
+                                  isPhone: true,
+                                  isComplate: false,
+                                  controller: alternativePhoneController,
+                                  hint2: "",
+                                  hint: LocaleKeys.enter_alternative_phone.tr(),
+                                  title: LocaleKeys.alternative_phone.tr(),
+                                  title2: LocaleKeys.optional.tr()),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              child: _personInfoWidget(
+                                controller: emailController,
+                                isPhone: false,
+                                title2: "",
+                                context: context,
+                                isComplate: false,
+                                height: 50,
+                                hint2: "",
+                                title: LocaleKeys.email.tr(),
+                                hint: LocaleKeys.enter_email_address.tr(),
                               ),
-                              SvgPicture.asset(
-                                AppAssets.chatWithQuestionSvg,
-                                color: Color(0xffD3D3D3),
-                                height: 15,
-                              ),
-                            ],
-                          ),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              child: _genderWidget(),
+                            )
+                          ],
                         ),
-                        SizedBox(
-                          height: 15,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: _personInfoWidget(
-                            controller: fullNameController,
-                            isPhone: false,
-                            title2: "",
-                            context: context,
-                            isComplate: false,
-                            height: 50,
-                            hint2: "",
-                            title: LocaleKeys.full_name.tr(),
-                            hint: LocaleKeys.enter_full_name.tr(),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: _personInfoWidget(
-                            controller: PhoneController,
-                            isPhone: true,
-                            context: context,
-                            isComplate: false,
-                            title2: "",
-                            height: 50,
-                            hint2: "",
-                            title: LocaleKeys.phone.tr(),
-                            hint: LocaleKeys.enter_phone.tr(),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: _personInfoWidgetOptional(
-                              height: 50,
-                              context: context,
-                              isPhone: true,
-                              isComplate: false,
-                              controller: alternativePhoneController,
-                              hint2: "",
-                              hint: LocaleKeys.enter_alternative_phone.tr(),
-                              title: LocaleKeys.alternative_phone.tr(),
-                              title2: LocaleKeys.optional.tr()),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: _personInfoWidget(
-                            controller: emailController,
-                            isPhone: false,
-                            title2: "",
-                            context: context,
-                            isComplate: false,
-                            height: 50,
-                            hint2: "",
-                            title: LocaleKeys.email.tr(),
-                            hint: LocaleKeys.enter_email_address.tr(),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: _genderWidget(),
-                        )
+                        ValueListenableBuilder<bool>(
+                            valueListenable: visibleOtp,
+                            builder: (context, _visibleOtp, _) {
+                              return !_visibleOtp
+                                  ? SizedBox.shrink()
+                                  : Positioned(
+                                      child: Container(
+                                      color: Color.fromRGBO(0, 0, 0, 0.5),
+                                      width: 1.sw,
+                                      height: 1.sh,
+                                    ));
+                            }),
+                        ValueListenableBuilder<bool>(
+                            valueListenable: visibleOtp,
+                            builder: (context, _visibleOtp, _) {
+                              return !_visibleOtp
+                                  ? SizedBox.shrink()
+                                  : Positioned(
+                                      bottom: 0,
+                                      child: Container(
+                                          color: Colors.white,
+                                          width: 1.sw,
+                                          height: 280,
+                                          child: _verifiedOtp()));
+                            })
                       ],
                     ),
                   ),
                 ),
               ));
         });
+  }
+
+  Widget _verifiedOtp() {
+    String? genderIndex;
+    if (changeGender.value == "Man") {
+      genderIndex = "1";
+    } else if (changeGender.value!.startsWith("Wom")) {
+      genderIndex = "2";
+    } else if (changeGender.value!.startsWith("Other")) {
+      genderIndex = "3";
+    }
+    return Container(
+      height: 150,
+      child: Stack(children: [
+        VerifyOtp(
+            fromProfile: true,
+            navigateToProfile: () {
+              GetIt.I<HomeBloc>().add(UpdateProfileEvent(
+                  phone: (phoneController.text.length) > 0
+                      ? "+" + phoneController.text.replaceAll(" ", "")
+                      : null,
+                  idToken: prefsRepository.idToken,
+                  name: fullNameController.text,
+                  alternative_phone: (alternativePhoneController.text.length) >
+                          0
+                      ? "+" +
+                          alternativePhoneController.text.replaceAll(" ", "")
+                      : null,
+                  email: emailController.text,
+                  gender: genderIndex));
+
+              visibleOtp.value = false;
+            },
+            fromExpired: true,
+            isVisWhatsApp: 1,
+            navigateToAddName: () {},
+            navigateTocart: () {},
+            fromLogin: false,
+            onLoginFailed: () {
+              //   pageController.animateToPage(3, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+            },
+            goBack: () {
+              // pageController.animateToPage(1, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+            },
+            methodIcon: AppAssets.whatsappSvg,
+            phoneNumber: phoneController.text.replaceAll(" ", "")),
+        Positioned(
+          top: 0,
+          left: LanguageService.languageCode != "ar" ? null : 0,
+          right: LanguageService.languageCode != "ar" ? 0 : null,
+          child: Container(
+            margin: EdgeInsets.all(10),
+            height: 20,
+            width: 40,
+            child: InkWell(
+                onTap: () {
+                  visibleOtp.value = false;
+                },
+                child: SvgPicture.asset(
+                  AppAssets.closeSvg,
+                  height: 15,
+                  width: 30,
+                  color: Color(0xffFF5F61),
+                )),
+          ),
+        )
+      ]),
+    );
   }
 
   Widget _genderWidget() {

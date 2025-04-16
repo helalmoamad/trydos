@@ -244,6 +244,8 @@ class _TabsBarState extends State<TabsBar> {
         if (categoryBloc.state.boutiquesForEveryMainCategoryThatDidPrefetch[
                 categorySlugs[i]] !=
             true) {
+          print(
+              "@@@@@@@@@@@@######################${categoryBloc.state.boutiquesForEveryMainCategoryThatDidPrefetch}");
           categoryBloc.add(GetHomeBoutiqesEvent(
             getWithPrefetchToStoreInMemory: true,
             getWithPrefetchForEachBoutiques: false,

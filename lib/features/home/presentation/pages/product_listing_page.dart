@@ -2308,14 +2308,33 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                               PaginationStatus
                                                                   .success)) ||
                                                       (state
+                                                                  .getProductListingWithFiltersPaginationModels[
+                                                                      '${widget.boutiqueSlug}' +
+                                                                          '${(widget.category ?? '')}']
+                                                                  ?.paginationStatus ==
+                                                              PaginationStatus
+                                                                  .loading &&
+                                                          currentAppliedFilterSllug ==
+                                                              "null" &&
+                                                          !state
+                                                              .cashedOrginalBoutique) ||
+                                                      ((state
+                                                                          .getProductListingWithFiltersPaginationWithPrefetchModels["${widget.boutiqueSlug}" +
+                                                                              "${currentAppliedFilterSllug}" +
+                                                                              "${widget.category ?? ""}"]
+                                                                          ?.items
+                                                                          .length ??
+                                                                      0) ==
+                                                                  0 &&
+                                                              currentAppliedFilterSllug !=
+                                                                  "null" &&
+                                                              state
                                                                       .getProductListingWithFiltersPaginationModels[
                                                                           '${widget.boutiqueSlug}' +
                                                                               '${(widget.category ?? '')}']
                                                                       ?.paginationStatus ==
                                                                   PaginationStatus
-                                                                      .loading &&
-                                                              !state
-                                                                  .cashedOrginalBoutique) &&
+                                                                      .loading) &&
                                                           !state
                                                               .isGettingProductListingWithPagination) {
                                                     return ProductListingLoading(
@@ -2637,6 +2656,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               previous.getProductDetailWithoutSimilarRelatedProductsStatus !=
                                                   current
                                                       .getProductDetailWithoutSimilarRelatedProductsStatus ||
+                                              previous.getCartOverviewStatus !=
+                                                  current
+                                                      .getCartOverviewStatus ||
                                               previous.currentSelectedColorForEveryProduct !=
                                                   current
                                                       .currentSelectedColorForEveryProduct ||
@@ -2649,6 +2671,16 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               previous.cartCollection !=
                                                   current.cartCollection,
                                           builder: (context, state) {
+                                            state
+                                                .cachedProductWithoutRelatedProductsModel[
+                                                    products[tapIndex]
+                                                        .productId
+                                                        .toString()]!
+                                                .product!
+                                                .variation!
+                                                .forEach((element) => print(
+                                                    "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@${element.qty}"));
+
                                             String productId =
                                                 products[tapIndex]
                                                     .productId
@@ -2839,8 +2871,11 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                         ?.length ??
                                                                     0) ~/
                                                                 2]
-                                                            .option ??
+                                                            .name ??
                                                         "";
+                                                print(
+                                                    "@1111111111111111111111111111111111111112${sizeSelect}");
+
                                                 homeBloc.add(
                                                     AddCurrentColorSizeEvent(
                                                         choice_1: sizeSelect));

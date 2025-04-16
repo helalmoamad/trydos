@@ -271,46 +271,40 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         Map<String, PaginationModel<product.Products>?>
             getProductListingWithFiltersPaginationWithPrefetchModel = Map.of(
                 state.getProductListingWithFiltersPaginationWithPrefetchModels);
+        getProductListingWithFiltersPaginationWithPrefetchModel.removeWhere(
+          (key, value) => !key.contains(event.boutiqueSlug),
+        );
 
-        getProductListingWithFiltersPaginationWithPrefetchModel[key] =
-            getProductListingWithFiltersPaginationWithPrefetchModel[key]!
-                .copyWith(
-                    paginationStatus: PaginationStatus.success,
-                    page: 1,
-                    hasReachedMax: (r.data!.products?.length ?? 0) < kPageSize,
-                    items: r.data!.products);
+        getProductListingWithFiltersPaginationWithPrefetchModel.addAll({
+          key: PaginationModel<Products>(
+              paginationStatus: PaginationStatus.success,
+              page: 1,
+              hasReachedMax: (r.data!.products?.length ?? 0) < kPageSize,
+              items: r.data!.products ?? [])
+        });
+
         List<filters_model.PriceRange> ranges =
             r.data!.prices?.priceRanges ?? [];
         ranges.removeWhere((element) => element.count == 0);
         Map<String, filters_model.GetProductFiltersModel?> data =
             Map.of(state.getProductFiltersWithPrefetchModel);
-        if (data[key] == null) {
-          data.addAll({
-            key: filters_model.GetProductFiltersModel(
-                filters: filters_model.Filter(
-              brands: r.data!.brands,
-              totalSize: r.data?.totalSize,
-              // boutiqueSlug: r.data?.boutiqueSlug,
-              attributes: r.data!.attributes,
-              prices: r.data!.prices?.copyWith(priceRanges: ranges),
-              boutiques: r.data!.boutiques,
-              colors: r.data!.colors,
-              categories: r.data!.categories,
-            ))
-          });
-        }
+        data.removeWhere(
+          (key, value) => !key.contains(event.boutiqueSlug),
+        );
 
-        data[key] = filters_model.GetProductFiltersModel(
-            filters: filters_model.Filter(
-          brands: r.data!.brands,
-          attributes: r.data!.attributes,
-          totalSize: r.data?.totalSize,
-          //   boutiqueSlug: r.data?.boutiqueSlug,
-          prices: r.data!.prices?.copyWith(priceRanges: ranges),
-          boutiques: r.data!.boutiques,
-          colors: r.data!.colors,
-          categories: r.data!.categories,
-        ));
+        data.addAll({
+          key: filters_model.GetProductFiltersModel(
+              filters: filters_model.Filter(
+            brands: r.data!.brands,
+            attributes: r.data!.attributes,
+            totalSize: r.data?.totalSize,
+            //   boutiqueSlug: r.data?.boutiqueSlug,
+            prices: r.data!.prices?.copyWith(priceRanges: ranges),
+            boutiques: r.data!.boutiques,
+            colors: r.data!.colors,
+            categories: r.data!.categories,
+          ))
+        });
         emit(state.copyWith(
             searchWithFilterOffset: searchWithFilterOffset,
             getProductListingWithFiltersPaginationWithPrefetchModels:
@@ -847,6 +841,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               getProductListingWithFiltersForFirstFiveFilterModel.categories,
         ));
       }
+
       emit(state.copyWith(
         getProductFiltersWithPrefetchModel: Map.of(dataForFirstFiveFilter),
         getProductListingWithFiltersPaginationWithPrefetchModels:
@@ -1153,33 +1148,22 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
           appliedFiltersByUser: Map.of(prevAppliedFiltersByUser)));
     }, (r) {
       if (event.context != null) {
-        List<String> cachedLinksOfImages = [];
-        String url, url2;
+        String url;
         r.data?.products?.forEach((product) {
           product.syncColorImages?.forEach((image) {
             if (!image.images.isNullOrEmpty) {
               image.images?.forEach((image) {
                 url = addSuitableWidthAndHeightToImage(
-                    imageUrl: image.filePath!,
-                    width: 200,
-                    // the width of the image in the ui
-                    height: 290,
-                    // the height of the image in the ui
-                    ordinalWidth:
-                        double.tryParse(image.originalWidth.toString()),
-                    ordinalHeight:
-                        double.tryParse(image.originalHeight.toString()));
-                url2 = addSuitableWidthAndHeightToImage(
                   imageUrl: image.filePath!,
                   width: 320,
                   // the width of the image in the ui
                   height: 464,
                 );
-                cachedLinksOfImages.add(url);
-                cachedLinksOfImages.add(url2);
-                prefetchImages(url, event.context!);
+                print(
+                    "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!###########################${url}");
+
                 prefetchImages(
-                  url2,
+                  url,
                   event.context!,
                 );
               });

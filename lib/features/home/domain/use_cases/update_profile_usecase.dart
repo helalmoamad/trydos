@@ -1,9 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 
-import 'package:trydos/features/chat/domain/repositories/chat_repository.dart';
-import 'package:trydos/features/home/data/models/firebase_setting_for_notification_model.dart';
-import 'package:trydos/features/home/data/models/update_item_in_cart_model.dart';
+
 import 'package:trydos/features/home/data/models/update_profile_model.dart';
 import 'package:trydos/features/home/domain/repositories/home_repository.dart';
 
@@ -24,32 +22,35 @@ class UpdateProfileUseCase
 }
 
 class UpdateProfileParams {
-  final String name;
-  final String phone;
-  final String email;
-  final String image;
-  final String tall;
-  final String weight;
-  final String gender;
-  final String alternative_phone;
+  final String? name;
+  final String? phone;
+  final String? email;
+  final String? image;
+  final String? tall;
+  final String? weight;
+  final String? idToken;
+  final String? gender;
+  final String? alternative_phone;
 
   UpdateProfileParams(
-      {required this.name,
-      required this.email,
-      required this.image,
-      required this.tall,
-      required this.weight,
-      required this.gender,
-      required this.alternative_phone,
-      required this.phone});
+      {this.name,
+      this.email,
+      this.image,
+      this.tall,
+      this.weight,
+      this.idToken,
+      this.gender,
+      this.alternative_phone,
+      this.phone});
   Map<String, dynamic> get map => {
         "name": name,
         "phone": phone,
         "email": email,
         "image": image,
+        "id_token":idToken,
         "tall": tall,
         "weight": weight,
         "gender": gender,
         "alternative_phone": alternative_phone,
-      };
+      }..removeWhere((key, value) => value == null || value == "");
 }
