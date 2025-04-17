@@ -74,19 +74,25 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
     authBloc = BlocProvider.of<AuthBloc>(context);
     fullNameController.text = homeBloc.state.userInfo?.name ?? "";
 
-    try {
-      alternativePhoneController.text =
-          (homeBloc.state.userInfo?.alternativePhone ?? "")
-              .split("+")
-              .toList()[1];
-      print("@@@@@@@@@@@@@@@@@@${alternativePhoneController.text}");
-    } catch (e) {}
-    ;
-    try {
-      phoneController.text =
-          (homeBloc.state.userInfo?.phone ?? "").split("+").toList()[1];
-    } catch (e) {}
-    ;
+    homeBloc.state.userInfo?.alternativePhone ?? "";
+    if ((homeBloc.state.userInfo?.phone?.length ?? 0) > 0) {
+      if (homeBloc.state.userInfo!.phone!.startsWith("+")) {
+        phoneController.text =
+            homeBloc.state.userInfo!.phone!.split("+").toList()[1];
+      } else {
+        phoneController.text = homeBloc.state.userInfo?.phone ?? "";
+      }
+    }
+
+    if ((homeBloc.state.userInfo?.alternativePhone?.length ?? 0) > 0) {
+      if (homeBloc.state.userInfo!.alternativePhone!.startsWith("+")) {
+        alternativePhoneController.text =
+            homeBloc.state.userInfo!.alternativePhone!.split("+").toList()[1];
+      } else {
+        alternativePhoneController.text =
+            homeBloc.state.userInfo?.alternativePhone ?? "";
+      }
+    }
 
     emailController.text = homeBloc.state.userInfo?.email ?? "";
     changeGender.value =
@@ -183,10 +189,18 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                         .startsWith("Other")) {
                                       genderIndex = "3";
                                     }
-                                    if (("+" +
-                                            phoneController.text
-                                                .replaceAll(" ", "")) !=
-                                        state.userInfo?.phone) {
+                                    if (phoneController.text
+                                            .replaceAll(" ", "") !=
+                                        ((((state.userInfo?.phone
+                                                            ?.split("+")
+                                                            .toList()) ??
+                                                        [])
+                                                    .length >
+                                                1)
+                                            ? (state.userInfo?.phone
+                                                ?.split("+")
+                                                .toList()[1])
+                                            : state.userInfo?.phone)) {
                                       visibleOtp.value = true;
                                     }
                                     if (visibleOtp.value == false) {
@@ -456,16 +470,16 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
             fromProfile: true,
             navigateToProfile: () {
               GetIt.I<HomeBloc>().add(UpdateProfileEvent(
+                  fromGuest: !(prefsRepository.isVerifiedPhone ?? false),
                   phone: (phoneController.text.length) > 0
                       ? "+" + phoneController.text.replaceAll(" ", "")
                       : null,
                   idToken: prefsRepository.idToken,
                   name: fullNameController.text,
-                  alternative_phone: (alternativePhoneController.text.length) >
-                          0
-                      ? "+" +
-                          alternativePhoneController.text.replaceAll(" ", "")
-                      : null,
+                  alternative_phone:
+                      (alternativePhoneController.text.length) > 0
+                          ? alternativePhoneController.text.replaceAll(" ", "")
+                          : null,
                   email: emailController.text,
                   gender: genderIndex));
 
@@ -474,7 +488,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
             fromExpired: true,
             isVisWhatsApp: 1,
             navigateToAddName: () {},
-            navigateTocart: () {},
+            navigateTocartOrProfile: () {},
             fromLogin: false,
             onLoginFailed: () {
               //   pageController.animateToPage(3, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);

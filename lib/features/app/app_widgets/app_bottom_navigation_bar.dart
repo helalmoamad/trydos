@@ -470,7 +470,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                         });
                   },
                   onTap: () {
-                    if (!(prefsRepository.isVerifiedPhone ?? false)) {
+                    /*  if (!(prefsRepository.isVerifiedPhone ?? false)) {
                       if (Navigator.canPop(context)) {
                         Navigator.of(context).pop();
                       }
@@ -478,12 +478,12 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                         pageBuilder: (context, animation, secondaryAnimation) =>
                             RegistrationPage(),
                       ));
-                    } else {
-                      if (Navigator.canPop(context)) {
-                        Navigator.of(context).pop();
-                      }
-                      appBloc.add(ChangeBasePage(3));
+                    } else {*/
+                    if (Navigator.canPop(context)) {
+                      Navigator.of(context).pop();
                     }
+                    appBloc.add(ChangeBasePage(3));
+                    //  }
 
                     /*      // if (prefsRepository.chatToken != null) return;
                     //appBloc.add(ChangeBasePage(0));

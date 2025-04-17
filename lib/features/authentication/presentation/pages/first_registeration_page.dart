@@ -334,7 +334,7 @@ class _RegistrationPageState extends State<RegistrationPage>
                                             curve: Curves.easeInOut);
                                         pageContent.value = 6;
                                       },
-                                      navigateTocart: () {},
+                                      navigateTocartOrProfile: () {},
                                       fromLogin: fromLogin,
                                       onLoginFailed: () {
                                         fromLogin = true;

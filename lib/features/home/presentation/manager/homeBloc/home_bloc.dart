@@ -16,6 +16,7 @@ import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/app_elvated_button.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/authentication/domain/use_cases/get_customer_info_usecase.dart';
+import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
 import 'package:trydos/features/home/data/models/get_old_cart_model.dart'
@@ -63,6 +64,7 @@ import 'package:trydos/features/home/domain/use_cases/upload_user_photo_usecase.
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
 import 'package:trydos/features/story/domain/useCases/get_width_and_height_usecase.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/service/notification_service/notification_service/handle_notification/notification_process.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../../common/helper/helper_functions.dart';
 import '../../../../../core/data/model/pagination_model.dart';
@@ -3432,11 +3434,6 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
     response.fold(
       (l) {
-        showMessage('${LocaleKeys.your_request_faild.tr()}',
-            foreGroundColor: Colors.white,
-            backGroundColor: Colors.black,
-            showInRelease: true,
-            timeShowing: Toast.LENGTH_LONG);
         if (!isFailedTheFirstTime.contains('UpdateProfileEvent')) {
           add(
             UpdateProfileEvent(
@@ -3458,20 +3455,38 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           state.copyWith(updateProfileStatus: UpdateProfileStatus.failure),
         );
       },
-      (r) {
+      (r) async {
         showMessage(r.message ?? "",
             foreGroundColor: Colors.white,
             backGroundColor: Colors.black,
             showInRelease: true,
             timeShowing: Toast.LENGTH_LONG);
         isFailedTheFirstTime.remove('UpdateProfileEvent');
-
-        ////////////////////////////
+        prefsRepository.setMyMarketName(r.data?.name ?? "");
+        prefsRepository.setVerifiedPhone(r.data?.isPhoneVerified == 1);
+        prefsRepository
+            .setPhoneNumber(r.data?.phone ?? ""); ////////////////////////////
         emit(
           state.copyWith(
               userInfo: r.data,
               updateProfileStatus: UpdateProfileStatus.success),
         );
+        if (event.fromGuest ?? false) {
+          GetIt.I<AuthBloc>().add(LoginToStoriesEvent(
+            originalUserId: r.data?.id.toString(),
+            otpIdToken: prefsRepository.idToken,
+            name: r.data?.name,
+            phone: r.data?.phone,
+          ));
+          await NotificationProcess().fcmToken();
+          GetIt.I<AuthBloc>().add(LoginToChatEvent(
+            fcmToken: NotificationProcess.myFcmToken!,
+            mobilePhone: r.data?.phone,
+            name: r.data?.name,
+            originalUserId: r.data?.id.toString(),
+            otpIdToken: prefsRepository.idToken,
+          ));
+        }
       },
     );
   }

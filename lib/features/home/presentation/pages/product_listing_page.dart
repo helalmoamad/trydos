@@ -2671,16 +2671,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               previous.cartCollection !=
                                                   current.cartCollection,
                                           builder: (context, state) {
-                                            state
-                                                .cachedProductWithoutRelatedProductsModel[
-                                                    products[tapIndex]
-                                                        .productId
-                                                        .toString()]!
-                                                .product!
-                                                .variation!
-                                                .forEach((element) => print(
-                                                    "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@${element.qty}"));
-
                                             String productId =
                                                 products[tapIndex]
                                                     .productId
@@ -2873,8 +2863,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                 2]
                                                             .name ??
                                                         "";
-                                                print(
-                                                    "@1111111111111111111111111111111111111112${sizeSelect}");
 
                                                 homeBloc.add(
                                                     AddCurrentColorSizeEvent(

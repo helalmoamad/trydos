@@ -1462,7 +1462,7 @@ class _CartPageState extends State<CartPage> {
                                                                                             fromExpired: true,
                                                                                             isVisWhatsApp: 1,
                                                                                             navigateToAddName: () {},
-                                                                                            navigateTocart: () {
+                                                                                            navigateTocartOrProfile: () {
                                                                                               isVerified.value = true;
                                                                                             },
                                                                                             fromLogin: false,
@@ -1513,7 +1513,7 @@ class _CartPageState extends State<CartPage> {
                                                                                             fromExpired: true,
                                                                                             isVisWhatsApp: isVisWhatsApp,
                                                                                             navigateToAddName: () {},
-                                                                                            navigateTocart: () {
+                                                                                            navigateTocartOrProfile: () {
                                                                                               isVerified.value = true;
                                                                                             },
                                                                                             fromLogin: false,

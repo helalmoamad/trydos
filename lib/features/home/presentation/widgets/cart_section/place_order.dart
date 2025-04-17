@@ -15,6 +15,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/orderBloc/order_event.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/cart_delivary_adress.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/payment_method.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/successful_order.dart';
@@ -147,7 +148,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                   payByWallet: payByWallet,
                 );
 
-                BlocProvider.of<HomeBloc>(context).add(
+                BlocProvider.of<OrderBloc>(context).add(
                   PlaceOrderEvent(placeOrderParams: placeOrderParams),
                 );
               } else {

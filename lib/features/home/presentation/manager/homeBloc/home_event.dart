@@ -314,11 +314,13 @@ class UpdateProfileEvent extends HomeEvent {
   final String? alternative_phone;
   final String? idToken;
   final String? gender;
+  final bool? fromGuest;
 
   UpdateProfileEvent(
       {this.name,
       this.email,
       this.idToken,
+      this.fromGuest,
       this.gender,
       this.changeStatusToInit,
       this.image,
@@ -697,18 +699,6 @@ class UpdateListOfItemForAddToCartEvent extends HomeEvent {
 
   @override
   List<Object?> get props => [];
-}
-
-class PlaceOrderEvent extends HomeEvent {
-  final PlaceOrderParams placeOrderParams;
-
-  PlaceOrderEvent({
-    required this.placeOrderParams,
-  });
-
-  @override
-  // TODO: implement props
-  List<Object?> get props => [placeOrderParams];
 }
 
 class CheckAvailabilityProductCartEvent extends HomeEvent {

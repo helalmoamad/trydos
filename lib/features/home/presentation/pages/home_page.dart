@@ -697,7 +697,8 @@ class _HomePageState extends State<HomePage> {
                                                       fromExpired: true,
                                                       isVisWhatsApp: 1,
                                                       navigateToAddName: () {},
-                                                      navigateTocart: () {
+                                                      navigateTocartOrProfile:
+                                                          () {
                                                         panelController.close();
                                                       },
                                                       fromLogin: false,
@@ -788,7 +789,8 @@ class _HomePageState extends State<HomePage> {
                                                       isVisWhatsApp:
                                                           isVisWhatsApp,
                                                       navigateToAddName: () {},
-                                                      navigateTocart: () {
+                                                      navigateTocartOrProfile:
+                                                          () {
                                                         panelController.close();
                                                       },
                                                       fromLogin: false,

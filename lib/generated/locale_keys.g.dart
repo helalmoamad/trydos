@@ -430,7 +430,6 @@ abstract class LocaleKeys {
   static const how_tall_are_you = 'how_tall_are_you';
   static const kg = 'kg';
   static const cm = 'cm';
-  static const other = 'other';
   static const profile_country = 'profile_country';
   static const we_operate_in_the_countries = 'we_operate_in_the_countries';
   static const available_country = 'available_country';
@@ -438,7 +437,6 @@ abstract class LocaleKeys {
   static const select_the_part_of_the_image = 'select_the_part_of_the_image';
   static const orders = 'orders';
   static const all = 'all';
-
   static const pending = 'pending';
   static const processing = 'processing';
   static const ready_to_shipping = 'ready_to_shipping';
@@ -456,8 +454,10 @@ abstract class LocaleKeys {
   static const recipient_contact = 'recipient_contact';
   static const expected_delivery_date = 'expected_delivery_date';
   static const order_status = 'order_status';
-  static const order_number = 'order_number';
   static const order_date = 'order_date';
+  static const order_number = 'order_number';
   static const buying = 'buying';
   static const item_status = 'item_status';
+  static const verified = 'verified';
+  static const other = 'other';
 }

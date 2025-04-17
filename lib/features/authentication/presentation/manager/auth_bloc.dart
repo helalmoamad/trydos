@@ -361,7 +361,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           verifyOtpInProfileStatus: VerifyOtpInProfileStatus.failure,
           signInErrorMessage: l.message));
     }, (r) async {
-      _prefsRepository.setPhoneNumber((r.data!.phone).toString());
       _prefsRepository.setIdToken((r.data!.idToken).toString());
       emit(state.copyWith(
         verifyOtpInProfileStatus: VerifyOtpInProfileStatus.success,
@@ -532,7 +531,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
       isFailedTheFirstTime.remove('RegisterGuestEvent');
       _prefsRepository.setMarketToken(r.data!.token!);
-
+      _prefsRepository.setMyMarketName("guest");
       _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
       GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
       GetIt.I<HomeBloc>().add(GetCartItemEvent());

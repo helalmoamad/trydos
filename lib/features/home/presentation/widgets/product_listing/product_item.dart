@@ -63,7 +63,7 @@ class _ProductItemState extends State<ProductItem> {
         alignment: Alignment.bottomCenter,
         clipBehavior: Clip.none,
         children: [
-          Container(
+          /*  Container(
             height: 350,
             width: 200.w,
             decoration: BoxDecoration(
@@ -146,7 +146,7 @@ class _ProductItemState extends State<ProductItem> {
                               imageFit: BoxFit.cover,
                             );
                     })),
-          ),
+          ),*/
           Positioned.fill(
             child: ClipRRect(
               borderRadius: BorderRadius.circular(15.0),
