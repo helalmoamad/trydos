@@ -55,18 +55,19 @@ class GetHomeBoutiqesEvent extends CategoryEvent {
   final String offset;
   final bool getWithPagination;
   final bool forRefresh;
-  final bool getWithPrefetchForEachBoutiques;
-
+  final bool getWithOutPrefetchForEachBoutiques;
+  bool? withSemaphore;
   final bool getWithPrefetchToStoreInMemory;
   final String categorySlug;
   final BuildContext context;
 
-  const GetHomeBoutiqesEvent({
+  GetHomeBoutiqesEvent({
     required this.offset,
     required this.context,
+    this.withSemaphore,
     required this.getWithPrefetchToStoreInMemory,
     this.forRefresh = false,
-    this.getWithPrefetchForEachBoutiques = false,
+    this.getWithOutPrefetchForEachBoutiques = false,
     this.getWithPagination = false,
     required this.categorySlug,
   }

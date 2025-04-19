@@ -55,7 +55,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       _onResetAllSelectedAppliedFilterEvent,
     );
     on<AddIsExpandedForLidtingPageEvent>(
-      _onAddIsExpandedForLidtingPageEvent,
+      _onAddIsExpandedForListingPageEvent,
     );
     on<AddPrefAppliedFilterForExtendFilterEvent>(
       _onAddPrefAppliedFilterForExtendFilterEvent,
@@ -195,6 +195,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       return;
     }
 
+    await prefechFiveFilter.acquire();
     final response =
         await getProductsWithFiltersUseCase(GetProductsWithFiltersParams(
       brandSlugs:
@@ -227,6 +228,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     ));
 
     response.fold((l) {
+      prefechFiveFilter.release();
       Map<String, PaginationModel<product.Products>?>?
           getProductListingWithFiltersPaginationWithPrefetchModels = Map.of(
               state.getProductListingWithFiltersPaginationWithPrefetchModels);
@@ -250,6 +252,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             Map.of(getProductListingWithFiltersPaginationWithPrefetchModels),
       ));
     }, (r) {
+      prefechFiveFilter.release();
       prefsRepository.setPrefechForFiveFilterForEachBoutiqueInHomePage(
           key, jsonEncode(r.data));
       Map<String, List<double>> searchWithFilterOffset =
@@ -275,6 +278,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
           key: PaginationModel<Products>(
               paginationStatus: PaginationStatus.success,
               page: 1,
+              offset: "${r.data?.offset}",
               hasReachedMax: (r.data!.products?.length ?? 0) < kPageSize,
               items: r.data!.products ?? [])
         });
@@ -353,7 +357,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     );
   }
 
-  FutureOr<void> _onAddIsExpandedForLidtingPageEvent(
+  FutureOr<void> _onAddIsExpandedForListingPageEvent(
       AddIsExpandedForLidtingPageEvent event,
       Emitter<BoutiqueState> emit) async {
     emit(state.copyWith(isExpandedForListingPage: event.isExpandedForLidting));
@@ -584,7 +588,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     boutiquesThatDidPrefetch[key] = true;
 
     emit(state.copyWith(boutiquesThatDidPrefetch: boutiquesThatDidPrefetch));
-
+    await prefechBoutiques.acquire();
     final response =
         await getProductsWithFiltersUseCase(GetProductsWithFiltersParams(
       scroll_id: null,
@@ -599,16 +603,18 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       prices: null,
     ));
     response.fold((l) {
+      prefechBoutiques.release();
       Map<String, bool> boutiquesThatDidPrefetch =
           Map.of(state.boutiquesThatDidPrefetch);
       boutiquesThatDidPrefetch[key] = false;
 
       emit(state.copyWith(boutiquesThatDidPrefetch: boutiquesThatDidPrefetch));
     }, (r) async {
+      prefechBoutiques.release();
       prefsRepository.setPrefechOfProductsForEachBoutiqueInHomePage(
           key, jsonEncode(r.data));
       List<String> cachedLinksOfImages = [];
-      String url, url2;
+      String url;
       r.data?.products?.forEach((product) {
         /* product.syncColorImages?.forEach((image) {
           if (!image.images.isNullOrEmpty) {
@@ -639,7 +645,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
           }
         });
 */
-        product.syncColorImages?.forEach((image) {
+        product.syncColorImages?.forEach((image) async {
           if (!image.images.isNullOrEmpty) {
             url = addSuitableWidthAndHeightToImage(
                 imageUrl: image.images![0].filePath!,
@@ -651,10 +657,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                     double.tryParse(image.images![0].originalWidth.toString()),
                 ordinalHeight: double.tryParse(
                     image.images![0].originalHeight.toString()));
-            prefetchImages(
-              url,
-              event.context,
-            );
+            prefetchImages(url, event.context, "syncColorImages");
           }
         });
 
@@ -667,20 +670,20 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               // the height of the image in the ui
               ordinalWidth: double.tryParse(image.originalWidth.toString()),
               ordinalHeight: double.tryParse(image.originalHeight.toString()));
-          url2 = addSuitableWidthAndHeightToImage(
+          /*url2 = addSuitableWidthAndHeightToImage(
             imageUrl: image.filePath!,
             width: 200.w,
             // the width of the image in the ui
             height: 350,
-          );
+          );*/
           if (!cachedLinksOfImages.contains(url)) {
-            prefetchImages(url, event.context);
+            prefetchImages(url, event.context, "productListingImages");
           }
-          Future.delayed(Duration(seconds: 5), () {
+          /*  Future.delayed(Duration(seconds: 5), () {
             if (!cachedLinksOfImages.contains(url2)) {
               prefetchImages(url2, event.context);
             }
-          });
+          });*/
         });
       });
       r.data?.categories?.forEach((category) {
@@ -689,24 +692,19 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
           width: 70,
           height: 70,
         );
-        prefetchImages(
-          url,
-          event.context,
-        );
+        prefetchImages(url, event.context, "categoryListingImages");
         category.subCategories?.forEach((sub) {
           url = addSuitableWidthAndHeightToImage(
             imageUrl: sub.mostViewedProductThumbnail!.filePath!,
             width: 50,
             height: 50,
           );
-          prefetchImages(
-            url,
-            event.context,
-          );
+          prefetchImages(url, event.context, "categoryListingImages");
         });
       });
       r.data?.brands?.forEach((brand) {
         prefetchSvgImages(brand.icon!.filePath.toString(), event.context,
+            "brandListingImages",
             ordinalWidth: double.tryParse(brand.icon!.originalWidth.toString()),
             ordinalHeight:
                 double.tryParse(brand.icon!.originalHeight.toString()));
@@ -717,19 +715,21 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     });
   }
 
-  prefetchImages(String url, BuildContext context) async {
+  prefetchImages(String url, BuildContext context, String type) async {
     GetIt.I<PreCachingImageBloc>()
-        .add(CacheImageEvent(imageUrl: url, context: context));
+        .add(CacheImageEvent(imageUrl: url, context: context, type: type));
   }
 
   prefetchSvgImages(
     String imageUrl,
-    BuildContext context, {
+    BuildContext context,
+    String type, {
     double? ordinalHeight,
     double? ordinalWidth,
   }) {
     GetIt.I<PreCachingImageBloc>().add(CacheSvgEvent(
         svgUrl: imageUrl,
+        type: type,
         width: ordinalWidth,
         height: ordinalHeight,
         context: context));
@@ -815,6 +815,9 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                 items: getProductListingWithFiltersForFirstFiveFilterModel
                         .products ??
                     [],
+                offset: getProductListingWithFiltersForFirstFiveFilterModel
+                    .offset
+                    .toString(),
                 page: 1,
                 paginationStatus: PaginationStatus.success);
 
@@ -876,7 +879,12 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                       10,
               items: getProductListingWithFiltersModel.products ?? [],
               page: 1,
-              paginationStatus: PaginationStatus.success);
+              paginationStatus: keyWithoutFilter.contains("withoutFilter") &&
+                      (getProductListingWithFiltersModel.products?.length ??
+                              0) >
+                          0
+                  ? PaginationStatus.success
+                  : PaginationStatus.loading);
 
       List<filters_model.PriceRange> ranges =
           getProductListingWithFiltersModel.prices?.priceRanges ?? [];
@@ -1148,30 +1156,46 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               Map.of(getProductListingWithFiltersPaginationModels),
           appliedFiltersByUser: Map.of(prevAppliedFiltersByUser)));
     }, (r) {
-      if (event.context != null) {
+      try {
         String url;
         r.data?.products?.forEach((product) {
-          product.syncColorImages?.forEach((image) {
-            if (!image.images.isNullOrEmpty) {
-              image.images?.forEach((image) {
-                url = addSuitableWidthAndHeightToImage(
-                  imageUrl: image.filePath!,
-                  width: 320,
-                  // the width of the image in the ui
-                  height: 464,
-                );
-                print(
-                    "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!###########################${url}");
+          if ((product.syncColorImages?.length ?? 0) > 0) {
+            product.syncColorImages?.forEach((image) {
+              if (!image.images.isNullOrEmpty) {
+                image.images?.forEach((image) {
+                  url = addSuitableWidthAndHeightToImage(
+                    imageUrl: image.filePath!,
+                    ordinalHeight: double.tryParse(image.originalHeight ?? "0"),
+                    ordinalWidth: double.tryParse(image.originalHeight ?? "0"),
+                    width: 320,
+                    // the width of the image in the ui
+                    height: 464,
+                  );
+                  print(
+                      "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!###########################${url}");
 
-                prefetchImages(
-                  url,
-                  event.context!,
-                );
-              });
-            }
-          });
+                  prefetchImages(url, event.context!, "productDetailsImages");
+                });
+              }
+            });
+          } else {
+            product.images?.forEach((image) {
+              url = addSuitableWidthAndHeightToImage(
+                imageUrl: image.filePath!,
+                ordinalHeight: double.tryParse(image.originalHeight ?? "0"),
+                ordinalWidth: double.tryParse(image.originalHeight ?? "0"),
+                width: 320,
+                // the width of the image in the ui
+                height: 464,
+              );
+              print(
+                  "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!###########################${url}");
+
+              prefetchImages(url, event.context!, "productDetailsImages");
+            });
+          }
         });
-      }
+      } catch (e) {}
       if (event.cashedOrginalBoutique &&
           !(event.fromSearch ?? false) &&
           !(event.getWithPagination)) {
@@ -1261,6 +1285,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
           if (key == keyWithoutFilter) {
             getProductListingWithFiltersPaginationModels.addAll({
               key: value!.copyWith(
+                  offset: "${r.data?.offset}",
                   paginationStatus: PaginationStatus.success,
                   page: event.getWithPagination ? value.page + 1 : 2,
                   hasReachedMax: (r.data?.products?.length ?? 0) < kPageSize,

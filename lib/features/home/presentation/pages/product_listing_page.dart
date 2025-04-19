@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:delayed_display/delayed_display.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter_gemini/flutter_gemini.dart' as geminis;
@@ -90,6 +91,7 @@ class ProductListingPage extends StatefulWidget {
   final List<boutiques.BunnerBoutique>? banner;
   final TextEditingController? controllerFormSearchPage;
   final bool fromSearch;
+
   final bool fromBackground;
   final GetProductFiltersModel? getProductFiltersModel;
   final ValueNotifier<bool>? isShowPanelForVerified;
@@ -122,7 +124,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
   late CategoryBloc categoryBloc;
   double? _previousOffset;
   final FocusNode focusNode = FocusNode();
-
+  bool displayImageColors = false;
   final ValueNotifier<int> expandingFiltersStack = ValueNotifier(-1);
 
   final ValueNotifier<int> tapIndexToAddProductToCart = ValueNotifier(-1);
@@ -148,6 +150,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
       ValueNotifier(null);
   bool isExpanded = false;
   bool changeAppearSizeForProduct = true;
+  bool delayDisplay = true;
   int currentSelectedColor = -1;
 
   final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
@@ -308,6 +311,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
   void initState() {
     print("%%%%%%%%%${GetIt.I<PrefsRepository>().marketToken}0*");
     print("%%%%%%%%%${GetIt.I<PrefsRepository>().getFcmTokens}*");
+    Future.delayed(Duration(seconds: 3), () {
+      displayImageColors = true;
+      delayDisplay = false;
+    });
     itExpendForFirst = true;
     key = widget.boutiqueSlug + (widget.category ?? '');
     keyWithoutFilter = '${widget.boutiqueSlug}' +
@@ -383,17 +390,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
         },
       );
     }
-    if (!widget.fromSearch) {
-      boutiqueBloc.add(GetProductsWithFiltersEvent(
-          getWithoutFilter: true,
-          cashedOrginalBoutique: !widget.fromSearch,
-          boutiqueSlug: widget.boutiqueSlug,
-          fromSearch: widget.fromSearch,
-          category: widget.category,
-          context: context,
-          searchText: controller?.text,
-          offset: 1));
-    }
+
     scrollController.addListener(() {
       if (boutiqueBloc.state.isExpandedForListingPage ?? false) return;
       // if (scrollController.position.pixels <= 80) {
@@ -543,20 +540,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
           return Future.value(false);
         } else {
           Navigator.of(context).pop();
-          if (!widget.fromSearch) {
-            boutiqueBloc.add(ChangeAppliedFiltersEvent(
-              boutiqueSlug: widget.boutiqueSlug,
-              category: widget.category,
-              filtersAppliedByUser: null,
-              resetAppliedFilters: true,
-            ));
-            boutiqueBloc.add(ChangeSelectedFiltersEvent(
-              fromHomePageSearch: widget.fromSearch,
-              boutiqueSlug: widget.boutiqueSlug,
-              category: widget.category,
-              filtersChoosedByUser: null,
-            ));
-          }
+
           if (widget.fromSearch) {
             boutiqueBloc.add(ChangeSelectedFiltersEvent(
               requestToUpdateFilters: true,
@@ -920,16 +904,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                 category: widget.category,
                                                                                 filtersChoosedByUser: GetProductFiltersModel(filters: boutiqueBloc.state.appliedFiltersByUser[key]?.filters),
                                                                               ));
-                                                                            }
-                                                                            if (!widget.fromSearch) {
-                                                                              boutiqueBloc.add(ChangeSelectedFiltersEvent(
-                                                                                fromHomePageSearch: widget.fromSearch,
-                                                                                requestToUpdateFilters: false,
-                                                                                boutiqueSlug: widget.boutiqueSlug,
-                                                                                category: widget.category,
-                                                                                filtersChoosedByUser: GetProductFiltersModel(filters: boutiqueBloc.state.appliedFiltersByUser[key]?.filters),
-                                                                              ));
-                                                                              boutiqueBloc.add(ChangeAppliedFiltersEvent(boutiqueSlug: widget.boutiqueSlug, category: widget.category, resetAppliedFilters: true));
                                                                             }
                                                                           },
                                                                           backgroundColor: colorScheme.white,
@@ -1431,61 +1405,102 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                         CrossAxisAlignment
                                                                             .center,
                                                                     children: [
-                                                                      Column(
-                                                                          children: [
-                                                                            Row(
-                                                                              mainAxisSize: MainAxisSize.min,
-                                                                              children: [
-                                                                                widget.boutiqueIcon != null
-                                                                                    ? SvgNetworkWidget(
-                                                                                        svgUrl: widget.boutiqueIcon ?? "",
-                                                                                        height: 20,
-                                                                                      )
-                                                                                    : SizedBox.shrink(),
-                                                                                SizedBox(
-                                                                                  width: 10,
-                                                                                ),
-                                                                                SvgPicture.asset(
-                                                                                  AppAssets.verifiedBadgeSvg,
-                                                                                  height: 15,
-                                                                                  width: 15,
-                                                                                ),
-                                                                                SizedBox(
-                                                                                  width: 10,
-                                                                                ),
-                                                                                SvgPicture.asset(
-                                                                                  AppAssets.starBadgeSvg,
-                                                                                  height: 15,
-                                                                                  width: 15,
-                                                                                ),
-                                                                              ],
-                                                                            ),
-                                                                            SizedBox(
-                                                                              height: 5,
-                                                                            ),
-                                                                            Html(key: htmlDescriptionKey, shrinkWrap: true, data: widget.boutiqueDescription ?? '', style: {
-                                                                              "body": Style(margin: Margins.all(0)),
-                                                                              "p": Style(
-                                                                                margin: Margins.all(0),
+                                                                      Center(
+                                                                        child: Column(
+                                                                            children: [
+                                                                              Row(
+                                                                                mainAxisSize: MainAxisSize.min,
+                                                                                children: [
+                                                                                  widget.boutiqueIcon != null
+                                                                                      ? SvgNetworkWidget(
+                                                                                          svgUrl: widget.boutiqueIcon ?? "",
+                                                                                          height: 20,
+                                                                                        )
+                                                                                      : SizedBox.shrink(),
+                                                                                  SizedBox(
+                                                                                    width: 10,
+                                                                                  ),
+                                                                                  SvgPicture.asset(
+                                                                                    AppAssets.verifiedBadgeSvg,
+                                                                                    height: 15,
+                                                                                    width: 15,
+                                                                                  ),
+                                                                                  SizedBox(
+                                                                                    width: 10,
+                                                                                  ),
+                                                                                  SvgPicture.asset(
+                                                                                    AppAssets.starBadgeSvg,
+                                                                                    height: 15,
+                                                                                    width: 15,
+                                                                                  ),
+                                                                                ],
                                                                               ),
-                                                                            }),
-                                                                            SizedBox(
-                                                                              height: 10,
-                                                                            ),
-                                                                            widget.withSlidingImages
-                                                                                ? Container(
-                                                                                    height: 135,
-                                                                                    //color: Colors.red,
-                                                                                    child: CarouselSlider.builder(
-                                                                                        itemCount: widget.banner!.length,
-                                                                                        itemBuilder: (context, index, _) {
-                                                                                          return Padding(
-                                                                                            padding: EdgeInsets.only(
-                                                                                              right: 10,
-                                                                                              left: 10,
-                                                                                            ),
-                                                                                            child: Container(
-                                                                                              height: 135,
+                                                                              SizedBox(
+                                                                                height: 5,
+                                                                              ),
+                                                                              Html(key: htmlDescriptionKey, shrinkWrap: true, data: widget.boutiqueDescription ?? '', style: {
+                                                                                "body": Style(margin: Margins.all(0)),
+                                                                                "p": Style(
+                                                                                  margin: Margins.all(0),
+                                                                                ),
+                                                                              }),
+                                                                              SizedBox(
+                                                                                height: 10,
+                                                                              ),
+                                                                              widget.withSlidingImages
+                                                                                  ? Container(
+                                                                                      height: 135,
+                                                                                      //color: Colors.red,
+                                                                                      child: CarouselSlider.builder(
+                                                                                          itemCount: widget.banner!.length,
+                                                                                          itemBuilder: (context, index, _) {
+                                                                                            return Padding(
+                                                                                              padding: EdgeInsets.only(
+                                                                                                right: 10,
+                                                                                                left: 10,
+                                                                                              ),
+                                                                                              child: Container(
+                                                                                                height: 135,
+                                                                                                width: 1.sw,
+                                                                                                decoration: BoxDecoration(
+                                                                                                  borderRadius: BorderRadius.circular(15.0),
+                                                                                                  border: Border.all(width: 0.5, color: const Color(0xfffafafa)),
+                                                                                                  boxShadow: [
+                                                                                                    BoxShadow(
+                                                                                                      color: const Color(0x33000000),
+                                                                                                      offset: Offset(0, 3),
+                                                                                                      blurRadius: 10,
+                                                                                                    ),
+                                                                                                  ],
+                                                                                                ),
+                                                                                                child: ClipRRect(
+                                                                                                    borderRadius: BorderRadius.circular(15),
+                                                                                                    child: MyCachedNetworkImage(
+                                                                                                      imageUrl: widget.banner![index].filePath!,
+                                                                                                      imageFit: BoxFit.cover,
+                                                                                                      width: 1.sw,
+                                                                                                      height: 155,
+                                                                                                    )),
+                                                                                              ),
+                                                                                            );
+                                                                                          },
+                                                                                          options: CarouselOptions(
+                                                                                            autoPlay: true,
+                                                                                            autoPlayInterval: Duration(seconds: 6),
+                                                                                            autoPlayAnimationDuration: Duration(seconds: 1),
+                                                                                            initialPage: 0,
+                                                                                            height: 155,
+                                                                                            enableInfiniteScroll: false,
+                                                                                            viewportFraction: 0.85,
+                                                                                          )))
+                                                                                  : Padding(
+                                                                                      padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                                                                                      child: DelayedDisplay(
+                                                                                        delay: Duration(milliseconds: 300),
+                                                                                        child: Stack(
+                                                                                          children: [
+                                                                                            Container(
+                                                                                              height: htmlHeight == 0 ? 0 : 135,
                                                                                               width: 1.sw,
                                                                                               decoration: BoxDecoration(
                                                                                                 borderRadius: BorderRadius.circular(15.0),
@@ -1501,67 +1516,31 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                               child: ClipRRect(
                                                                                                   borderRadius: BorderRadius.circular(15),
                                                                                                   child: MyCachedNetworkImage(
-                                                                                                    imageUrl: widget.banner![index].filePath!,
+                                                                                                    imageUrl: widget.boutiqueFirstBanner!,
                                                                                                     imageFit: BoxFit.cover,
                                                                                                     width: 1.sw,
-                                                                                                    height: 155,
+                                                                                                    height: 135,
                                                                                                   )),
                                                                                             ),
-                                                                                          );
-                                                                                        },
-                                                                                        options: CarouselOptions(
-                                                                                          autoPlay: true,
-                                                                                          autoPlayInterval: Duration(seconds: 6),
-                                                                                          autoPlayAnimationDuration: Duration(seconds: 1),
-                                                                                          initialPage: 0,
-                                                                                          height: 155,
-                                                                                          enableInfiniteScroll: false,
-                                                                                          viewportFraction: 0.85,
-                                                                                        )))
-                                                                                : Padding(
-                                                                                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                                                                                    child: Stack(
-                                                                                      children: [
-                                                                                        Container(
-                                                                                          height: htmlHeight == 0 ? 0 : 135,
-                                                                                          width: 1.sw,
-                                                                                          decoration: BoxDecoration(
-                                                                                            borderRadius: BorderRadius.circular(15.0),
-                                                                                            border: Border.all(width: 0.5, color: const Color(0xfffafafa)),
-                                                                                            boxShadow: [
-                                                                                              BoxShadow(
-                                                                                                color: const Color(0x33000000),
-                                                                                                offset: Offset(0, 3),
-                                                                                                blurRadius: 10,
+                                                                                            Container(
+                                                                                              height: htmlHeight == 0 ? 0 : 135,
+                                                                                              width: 1.sw,
+                                                                                              decoration: BoxDecoration(
+                                                                                                borderRadius: BorderRadius.circular(15.0),
+                                                                                                boxShadow: [
+                                                                                                  BoxShadow(color: Colors.white.withOpacity(0.7), offset: Offset(0, 3), blurRadius: 6, inset: true),
+                                                                                                ],
                                                                                               ),
-                                                                                            ],
-                                                                                          ),
-                                                                                          child: ClipRRect(
-                                                                                              borderRadius: BorderRadius.circular(15),
-                                                                                              child: MyCachedNetworkImage(
-                                                                                                imageUrl: widget.boutiqueFirstBanner!,
-                                                                                                imageFit: BoxFit.cover,
-                                                                                                width: 1.sw,
-                                                                                                height: 135,
-                                                                                              )),
+                                                                                            ),
+                                                                                          ],
                                                                                         ),
-                                                                                        Container(
-                                                                                          height: htmlHeight == 0 ? 0 : 135,
-                                                                                          width: 1.sw,
-                                                                                          decoration: BoxDecoration(
-                                                                                            borderRadius: BorderRadius.circular(15.0),
-                                                                                            boxShadow: [
-                                                                                              BoxShadow(color: Colors.white.withOpacity(0.7), offset: Offset(0, 3), blurRadius: 6, inset: true),
-                                                                                            ],
-                                                                                          ),
-                                                                                        ),
-                                                                                      ],
+                                                                                      ),
                                                                                     ),
-                                                                                  ),
-                                                                            SizedBox(
-                                                                              height: 10,
-                                                                            ),
-                                                                          ])
+                                                                              SizedBox(
+                                                                                height: 10,
+                                                                              ),
+                                                                            ]),
+                                                                      )
                                                                     ]),
                                                               );
                                                       })
@@ -2147,32 +2126,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                           ),
                                                                         ));
                                                               },
-                                                              child:
-                                                                  ProductItem(
-                                                                key: TestVariables
-                                                                        .kTestMode
-                                                                    ? Key(
-                                                                        '${WidgetsKeys.productInBoutiqueListKey}$index')
-                                                                    : null,
-                                                                slidingModeItem:
-                                                                    slidingMode,
-                                                                tapIndexToAddProductToCart:
-                                                                    tapIndexToAddProductToCart,
-                                                                productItem:
-                                                                    products[
-                                                                        index],
-                                                                itemIndex:
-                                                                    index,
-                                                                setThisEnabled:
-                                                                    (int index,
-                                                                        int slideMode) {
-                                                                  setThisEnabledNotifier
-                                                                          .value =
-                                                                      Tuple2(
-                                                                          index,
-                                                                          slideMode);
-                                                                },
-                                                              ),
+                                                              child: _productItem(
+                                                                  index: index,
+                                                                  slidingMode:
+                                                                      slidingMode),
                                                             );
                                                           },
                                                         ),
@@ -2353,9 +2310,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                               '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' +
                                                               '${(widget.category ?? '')}'] !=
                                                       null) {
-                                                    print(
-                                                        "!!!!!!!!!!!!!!!!!!!@@@111111111111111@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#######################${state.cashedOrginalBoutique}");
-
                                                     products = state
                                                         .getProductListingWithFiltersPaginationModels[
                                                             '${widget.boutiqueSlug}' +
@@ -2399,7 +2353,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                   //     ?.items ??
                                                   // [];
                                                   //
-                                                  //                                             }
+                                                  //
+                                                  //
+                                                  //                                       }
+
                                                   return SliverPadding(
                                                     key: TestVariables.kTestMode
                                                         ? Key(WidgetsKeys
@@ -2499,30 +2456,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                 productItem: products[index],
                                                                               ))));
                                                             },
-                                                            child: ProductItem(
-                                                              tapIndexToAddProductToCart:
-                                                                  tapIndexToAddProductToCart,
-                                                              key: TestVariables
-                                                                      .kTestMode
-                                                                  ? Key(
-                                                                      '${WidgetsKeys.productInBoutiqueListKey}$index')
-                                                                  : null,
-                                                              slidingModeItem:
-                                                                  slidingMode,
-                                                              productItem:
-                                                                  products[
-                                                                      index],
-                                                              itemIndex: index,
-                                                              setThisEnabled: (int
-                                                                      index,
-                                                                  int slideMode) {
-                                                                setThisEnabledNotifier
-                                                                        .value =
-                                                                    Tuple2(
-                                                                        index,
-                                                                        slideMode);
-                                                              },
-                                                            ),
+                                                            child: _productItem(
+                                                                index: index,
+                                                                slidingMode:
+                                                                    slidingMode),
                                                           );
                                                         },
                                                       ),
@@ -2671,16 +2608,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               previous.cartCollection !=
                                                   current.cartCollection,
                                           builder: (context, state) {
-                                            state
-                                                .cachedProductWithoutRelatedProductsModel[
-                                                    products[tapIndex]
-                                                        .productId
-                                                        .toString()]!
-                                                .product!
-                                                .variation!
-                                                .forEach((element) => print(
-                                                    "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@${element.qty}"));
-
                                             String productId =
                                                 products[tapIndex]
                                                     .productId
@@ -2873,8 +2800,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                 2]
                                                             .name ??
                                                         "";
-                                                print(
-                                                    "@1111111111111111111111111111111111111112${sizeSelect}");
 
                                                 homeBloc.add(
                                                     AddCurrentColorSizeEvent(
@@ -3197,18 +3122,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                           ),
                         ));
               },
-              child: ProductItem(
-                tapIndexToAddProductToCart: tapIndexToAddProductToCart,
-                key: TestVariables.kTestMode
-                    ? Key('${WidgetsKeys.productInBoutiqueListKey}$index')
-                    : null,
-                slidingModeItem: slidingMode,
-                productItem: products[index],
-                itemIndex: index,
-                setThisEnabled: (int index, int slideMode) {
-                  setThisEnabledNotifier.value = Tuple2(index, slideMode);
-                },
-              ),
+              child: _productItem(index: index, slidingMode: slidingMode),
             );
           },
         ),
@@ -3296,4 +3210,36 @@ class _ProductListingPageState extends State<ProductListingPage> {
         () => homeBloc.add(IsChangedvariationWhenQtyZeroEvent(
             isChangedvariationWhenQtyZero: true)));
   }*/
+  Widget _productItem(
+      {required Tuple2<int, int> slidingMode, required int index}) {
+    return /*!displayImageColors && !widget.fromSearch
+        ? DelayedDisplay(
+            delay: Duration(milliseconds: 300),
+            child: ProductItem(
+              displayImageColors: displayImageColors,
+              tapIndexToAddProductToCart: tapIndexToAddProductToCart,
+              key: TestVariables.kTestMode
+                  ? Key('${WidgetsKeys.productInBoutiqueListKey}$index')
+                  : null,
+              slidingModeItem: slidingMode,
+              productItem: products[index],
+              itemIndex: index,
+              setThisEnabled: (int index, int slideMode) {
+                setThisEnabledNotifier.value = Tuple2(index, slideMode);
+              },
+            ))*/
+        ProductItem(
+      displayImageColors: displayImageColors,
+      tapIndexToAddProductToCart: tapIndexToAddProductToCart,
+      key: TestVariables.kTestMode
+          ? Key('${WidgetsKeys.productInBoutiqueListKey}$index')
+          : null,
+      slidingModeItem: slidingMode,
+      productItem: products[index],
+      itemIndex: index,
+      setThisEnabled: (int index, int slideMode) {
+        setThisEnabledNotifier.value = Tuple2(index, slideMode);
+      },
+    );
+  }
 }

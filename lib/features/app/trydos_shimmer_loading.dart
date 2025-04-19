@@ -30,8 +30,10 @@ class _TrydosShimmerLoadingState extends State<TrydosShimmerLoading>
   void initState() {
     controller = AnimationController(
         vsync: this,
-        duration: Duration(milliseconds: 300),
-        reverseDuration: Duration(milliseconds: 300));
+        lowerBound: 0.9,
+        upperBound: 1.1,
+        duration: Duration(milliseconds: 900),
+        reverseDuration: Duration(milliseconds: 900));
     controller.repeat(reverse: true);
     super.initState();
   }

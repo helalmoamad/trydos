@@ -36,7 +36,7 @@ class VerifyOtp extends StatefulWidget {
     required this.fromLogin,
     required this.isVisWhatsApp,
     required this.navigateToAddName,
-    required this.navigateTocart,
+    required this.navigateTocartOrProfile,
     required this.onLoginFailed,
     required this.goBack,
     required this.navigateToProfile,
@@ -52,7 +52,7 @@ class VerifyOtp extends StatefulWidget {
   final void Function() onLoginFailed;
   final void Function() goBack;
   final void Function() navigateToAddName;
-  final void Function() navigateTocart;
+  final void Function() navigateTocartOrProfile;
   final void Function() navigateToProfile;
   final int isVisWhatsApp;
   @override
@@ -144,7 +144,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
             } else if (state.verifyOtpFromGuestStatus ==
                 VerifyOtpFromGuestStatus.success) {
               checkOtp.value = 1;
-              widget.navigateTocart.call();
+              widget.navigateTocartOrProfile.call();
               Future.delayed(
                 Duration(milliseconds: 700),
                 () {

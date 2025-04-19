@@ -96,6 +96,10 @@ class _MYVideoPlayerState extends State<MYVideoPlayer> {
               alignment: Alignment.center,
               children: [
                 CachedNetworkImage(
+                  memCacheWidth: 200,
+                  memCacheHeight: 300,
+                  maxHeightDiskCache: 300,
+                  maxWidthDiskCache: 200,
                   imageUrl: imageUrl!,
                   width: 200,
                   height: 300,

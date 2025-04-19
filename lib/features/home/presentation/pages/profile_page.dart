@@ -9,12 +9,18 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'package:get_it/get_it.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
+import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/typography.dart';
 
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
+import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
+import 'package:trydos/features/authentication/presentation/widgets/insert_phone_tab.dart';
+import 'package:trydos/features/authentication/presentation/widgets/verification_methods.dart';
+import 'package:trydos/features/authentication/presentation/widgets/verify_otp.dart';
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
@@ -38,8 +44,17 @@ class ProfileHomePage extends StatefulWidget {
 
 class _ProfileHomePageState extends State<ProfileHomePage> {
   late HomeBloc homeBloc;
+  late AuthBloc authBloc;
+  final PanelController panelController = PanelController();
+  final PageController pageController = PageController();
+  final FocusNode focusNode = FocusNode();
+  String phoneNumber = '';
+  int isVisWhatsApp = 0;
+  final ValueNotifier<bool> isVerified = ValueNotifier(true);
+  PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   @override
   void initState() {
+    authBloc = BlocProvider.of<AuthBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
     homeBloc.add(UpdateProfileEvent(changeStatusToInit: true));
     // TODO: implement initState
@@ -63,72 +78,95 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
 
     return Scaffold(
         body: SafeArea(
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            children: [
-              SizedBox(
-                height: 25.h,
-                width: 1.sw,
+      child: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 25.h,
+                    width: 1.sw,
+                  ),
+                  _personInfoWidget(),
+                  SizedBox(
+                    height: 20.h,
+                    width: 1.sw,
+                  ),
+                  Container(
+                    width: 1.sw,
+                    height: 94,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _ordersWidget(),
+                        _trydosWalletWidget(),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 12.h,
+                    width: 1.sw,
+                  ),
+                  _actionWidget(AppAssets.settingSvg, LocaleKeys.settings.tr()),
+                  SizedBox(
+                    height: 12.h,
+                    width: 1.sw,
+                  ),
+                  _actionWidget(
+                      AppAssets.termSvg, LocaleKeys.terms_conditions.tr()),
+                  SizedBox(
+                    height: 12.h,
+                    width: 1.sw,
+                  ),
+                  _actionWidget(AppAssets.legalInfoSvg,
+                      LocaleKeys.legal_information.tr()),
+                  SizedBox(
+                    height: 12.h,
+                    width: 1.sw,
+                  ),
+                  _actionWidget(AppAssets.aboutUsSvg, LocaleKeys.about_us.tr()),
+                  SizedBox(
+                    height: 12.h,
+                    width: 1.sw,
+                  ),
+                  _actionWidget(
+                      AppAssets.shareAppSvg, LocaleKeys.share_app.tr()),
+                  SizedBox(
+                    height: 12.h,
+                    width: 1.sw,
+                  ),
+                  Container(
+                      height: 53,
+                      width: 1.sw,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [_countryWidget(), _languageWidget()],
+                      ))
+                ],
               ),
-              _personInfoWidget(),
-              SizedBox(
-                height: 20.h,
-                width: 1.sw,
-              ),
-              Container(
-                width: 1.sw,
-                height: 94,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _ordersWidget(),
-                    _trydosWalletWidget(),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 12.h,
-                width: 1.sw,
-              ),
-              _actionWidget(AppAssets.settingSvg, LocaleKeys.settings.tr()),
-              SizedBox(
-                height: 12.h,
-                width: 1.sw,
-              ),
-              _actionWidget(
-                  AppAssets.termSvg, LocaleKeys.terms_conditions.tr()),
-              SizedBox(
-                height: 12.h,
-                width: 1.sw,
-              ),
-              _actionWidget(
-                  AppAssets.legalInfoSvg, LocaleKeys.legal_information.tr()),
-              SizedBox(
-                height: 12.h,
-                width: 1.sw,
-              ),
-              _actionWidget(AppAssets.aboutUsSvg, LocaleKeys.about_us.tr()),
-              SizedBox(
-                height: 12.h,
-                width: 1.sw,
-              ),
-              _actionWidget(AppAssets.shareAppSvg, LocaleKeys.share_app.tr()),
-              SizedBox(
-                height: 12.h,
-                width: 1.sw,
-              ),
-              Container(
-                  height: 53,
-                  width: 1.sw,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [_countryWidget(), _languageWidget()],
-                  ))
-            ],
+            ),
           ),
-        ),
+          ValueListenableBuilder<bool>(
+              valueListenable: isVerified,
+              builder: (context, _isverified, _) {
+                return _isverified
+                    ? SizedBox.shrink()
+                    : Container(
+                        width: 1.sw,
+                        height: 1.sh,
+                        color: Color.fromRGBO(0, 0, 0, 0.5),
+                      );
+              }),
+          Positioned(
+              bottom: 0,
+              child: ValueListenableBuilder<bool>(
+                  valueListenable: isVerified,
+                  builder: (context, _isverified, _) {
+                    return _isverified ? SizedBox.shrink() : _veryfiedOtp();
+                  }))
+        ],
       ),
     ));
   }
@@ -139,6 +177,127 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
       textDirection: TextDirection.ltr,
     )..layout(minWidth: 0, maxWidth: 130);
     return textPainter.size.width;
+  }
+
+  Widget _veryfiedOtp() {
+    return Container(
+      color: Colors.white,
+      height: 265,
+      width: 1.sw,
+      child: Stack(children: [
+        PageView(
+            physics: NeverScrollableScrollPhysics(),
+            controller: pageController,
+            children: (prefsRepository.isVerifiedPhonePeforeExpiredToken ??
+                    false)
+                ? [
+                    VerifyOtp(
+                        fromProfile: false,
+                        navigateToProfile: () {},
+                        fromExpired: true,
+                        isVisWhatsApp: 1,
+                        navigateToAddName: () {},
+                        navigateTocartOrProfile: () {
+                          isVerified.value = true;
+                        },
+                        fromLogin: false,
+                        onLoginFailed: () {
+                          //   pageController.animateToPage(3, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+                        },
+                        goBack: () {
+                          // pageController.animateToPage(1, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+                        },
+                        methodIcon: AppAssets.whatsappSvg,
+                        phoneNumber: prefsRepository.myPhoneNumber!),
+                  ]
+                : [
+                    InsertPhoneTab(
+                      fromLogin: false,
+                      focusNode: focusNode,
+                      moveToNextStep: (String phoneNumber) {
+                        this.phoneNumber = phoneNumber.replaceAll(' ', '');
+                        pageController.animateToPage(1,
+                            duration: Duration(milliseconds: 500),
+                            curve: Curves.easeInOut);
+                        setState(() {});
+                      },
+                    ),
+                    VerificationMethods(
+                      phoneNumber: phoneNumber,
+                      onChooseWhatsapp: () {
+                        isVisWhatsApp = 1;
+                        print("###################33333#${isVisWhatsApp}");
+                        pageController.animateToPage(2,
+                            duration: Duration(milliseconds: 500),
+                            curve: Curves.easeInOut);
+
+                        if (prefsRepository.isTimerForOtpRunning ?? false) {
+                          showMessage(
+                              '${LocaleKeys.you_must_wait_for_some_seconds_before_try_again.tr()}');
+                          return;
+                        }
+                        authBloc.add(
+                            SendOtpEvent(phone: phoneNumber, isViaWhatsApp: 1));
+                      },
+                      goBackToPhone: () {
+                        pageController.animateToPage(0,
+                            duration: Duration(milliseconds: 500),
+                            curve: Curves.easeInOut);
+                      },
+                      onChooseSms: () {
+                        isVisWhatsApp = 0;
+                        pageController.animateToPage(3,
+                            duration: Duration(milliseconds: 500),
+                            curve: Curves.easeInOut);
+                        authBloc.add(
+                            SendOtpEvent(phone: phoneNumber, isViaWhatsApp: 0));
+                      },
+                    ),
+                    VerifyOtp(
+                        fromProfile: false,
+                        navigateToProfile: () {},
+                        fromExpired: true,
+                        isVisWhatsApp: isVisWhatsApp,
+                        navigateToAddName: () {},
+                        navigateTocartOrProfile: () {
+                          isVerified.value = true;
+                        },
+                        fromLogin: false,
+                        onLoginFailed: () {
+                          pageController.animateToPage(3,
+                              duration: Duration(milliseconds: 500),
+                              curve: Curves.easeInOut);
+                        },
+                        goBack: () {
+                          pageController.animateToPage(1,
+                              duration: Duration(milliseconds: 500),
+                              curve: Curves.easeInOut);
+                        },
+                        methodIcon: isVisWhatsApp == 1
+                            ? AppAssets.whatsappSvg
+                            : AppAssets.smsSvg,
+                        phoneNumber: phoneNumber),
+                  ]),
+        Positioned(
+          top: 0,
+          left: LanguageService.languageCode != "ar" ? null : 0,
+          right: LanguageService.languageCode != "ar" ? 0 : null,
+          child: Container(
+            margin: EdgeInsets.all(10),
+            height: 20,
+            width: 40,
+            child: InkWell(
+                onTap: () => isVerified.value = true,
+                child: SvgPicture.asset(
+                  AppAssets.closeSvg,
+                  height: 15,
+                  width: 30,
+                  color: Color(0xffFF5F61),
+                )),
+          ),
+        )
+      ]),
+    );
   }
 
   Widget _languageWidget() {
@@ -355,179 +514,213 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
   }
 
   Widget _personInfoWidget() {
-    return InkWell(
-      onTap: () => Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => UserInformationPage())),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-            color: Color(0xffF8F8F8),
-            borderRadius: BorderRadius.circular(15.r)),
-        width: 1.sw,
-        height: 138,
-        child: BlocBuilder<HomeBloc, HomeState>(
-          buildWhen: (previous, current) =>
-              previous.updateProfileStatus != current.updateProfileStatus,
-          builder: (context, state) {
-            return Stack(
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+    return BlocBuilder<AuthBloc, AuthState>(
+      buildWhen: (previous, current) =>
+          previous.verifyOtpSignInStatus != current.verifyOtpSignInStatus ||
+          previous.verifyOtpSignUpStatus != current.verifyOtpSignUpStatus ||
+          previous.verifyOtpFromGuestStatus != current.verifyOtpFromGuestStatus,
+      builder: (context, state) {
+        return InkWell(
+          onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => UserInformationPage())),
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+                color: Color(0xffF8F8F8),
+                borderRadius: BorderRadius.circular(15.r)),
+            width: 1.sw,
+            height: 138,
+            child: BlocBuilder<HomeBloc, HomeState>(
+              buildWhen: (previous, current) =>
+                  previous.updateProfileStatus != current.updateProfileStatus,
+              builder: (context, state) {
+                return Stack(
                   children: [
-                    SvgPicture.asset(
-                      AppAssets.parcodeSvg,
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Container(
-                      height: 20,
-                      child: Text(
-                        state.userInfo?.name ?? '',
-                        style: context.textTheme.bodyMedium?.mr.copyWith(
-                            color: const Color(0xff1D1D1D),
-                            letterSpacing: 0.18,
-                            fontSize: 14,
-                            height: 1.3),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    Directionality(
-                      textDirection: TextDirection.ltr,
-                      child: Container(
-                        height: 16,
-                        child: Text(
-                          "${state.userInfo?.phone ?? ''}",
-                          style: context.textTheme.bodyMedium?.rr.copyWith(
-                              color: const Color(0xff8D8D8D),
-                              letterSpacing: 0.18,
-                              fontSize: 12,
-                              height: 1.3),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SvgPicture.asset(
+                          AppAssets.parcodeSvg,
                         ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    Container(
-                      height: 16,
-                      width: 130,
-                      child: Text(
-                        '${LocaleKeys.add.tr()} ' + "${LocaleKeys.size.tr()}",
-                        style: context.textTheme.bodyMedium?.rr.copyWith(
-                            color: const Color(0xff8D8D8D),
-                            letterSpacing: 0.18,
-                            fontSize: 12,
-                            height: 1.3),
-                      ),
-                    ),
-                  ],
-                ),
-                Positioned(
-                  top: 0,
-                  right: LanguageService.languageCode == "ar" ? null : 0,
-                  left: LanguageService.languageCode != "ar" ? null : 0,
-                  child: Container(
-                    height: 70,
-                    width: 70,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(15.r)),
-                        border: Border.all(
-                            color: state.userInfo?.image != null
-                                ? Colors.white
-                                : Color(0xff1D1D1D))),
-                    child: state.userInfo?.image != null
-                        ? ClipRRect(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(15.r)),
-                            child: MyCachedNetworkImage(
-                                imageUrl: state.userInfo?.image ?? "",
-                                width: 70,
-                                imageFit: BoxFit.cover,
-                                height: 70),
-                          )
-                        : Center(
-                            child: SvgPicture.asset(
-                              AppAssets.trySvg,
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Container(
+                          height: 20,
+                          child: Text(
+                            prefsRepository.myMarketName ?? '',
+                            style: context.textTheme.bodyMedium?.mr.copyWith(
+                                color: const Color(0xff1D1D1D),
+                                letterSpacing: 0.18,
+                                fontSize: 14,
+                                height: 1.3),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Directionality(
+                          textDirection: TextDirection.ltr,
+                          child: Container(
+                            height: 16,
+                            child: Text(
+                              prefsRepository.myPhoneNumber == "0" ||
+                                      prefsRepository.myPhoneNumber == "+0"
+                                  ? ""
+                                  : (prefsRepository.myPhoneNumber ?? "")
+                                          .startsWith("+")
+                                      ? "${prefsRepository.myPhoneNumber ?? ''}"
+                                      : "+" +
+                                          "${prefsRepository.myPhoneNumber ?? ''}",
+                              style: context.textTheme.bodyMedium?.rr.copyWith(
+                                  color: const Color(0xff8D8D8D),
+                                  letterSpacing: 0.18,
+                                  fontSize: 12,
+                                  height: 1.3),
                             ),
                           ),
-                  ),
-                ),
-                Positioned(
-                  top: 38,
-                  left: LanguageService.languageCode == "ar"
-                      ? null
-                      : max(
-                          _calculateTextWidth(
-                              state.userInfo?.name ?? '',
-                              context.textTheme.bodyMedium!.mr.copyWith(
-                                  color: const Color(0xff1D1D1D),
-                                  letterSpacing: 0.18,
-                                  fontSize: 14,
-                                  height: 1.3)),
-                          _calculateTextWidth(
-                              state.userInfo?.phone ?? '',
-                              context.textTheme.bodyMedium!.rr.copyWith(
-                                  color: const Color(0xff8D8D8D),
-                                  letterSpacing: 0.18,
-                                  fontSize: 12,
-                                  height: 1.3))),
-                  right: LanguageService.languageCode != "ar"
-                      ? null
-                      : max(
-                          _calculateTextWidth(
-                              state.userInfo?.name ?? '',
-                              context.textTheme.bodyMedium!.mr.copyWith(
-                                  color: const Color(0xff1D1D1D),
-                                  letterSpacing: 0.18,
-                                  fontSize: 14,
-                                  height: 1.3)),
-                          _calculateTextWidth(
-                              state.userInfo?.phone ?? '',
-                              context.textTheme.bodyMedium!.rr.copyWith(
-                                  color: const Color(0xff8D8D8D),
-                                  letterSpacing: 0.18,
-                                  fontSize: 12,
-                                  height: 1.3))),
-                  child: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 15),
-                    height: 35,
-                    width: 60,
-                    child: Column(
-                      children: [
-                        Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            SvgPicture.asset(
-                              AppAssets.succuessProfileSvg,
-                              color: Color(0xff707070),
-                              height: 16,
-                              width: 16,
-                            ),
-                            SvgPicture.asset(AppAssets.success2Svg,
-                                color: Color(0xff707070), height: 5, width: 5),
-                          ],
                         ),
-                        Spacer(),
-                        Text(
-                          '${LocaleKeys.verified_now.tr()}',
-                          style: context.textTheme.bodyMedium?.rr.copyWith(
-                              color: const Color(0xffFF5F61),
-                              letterSpacing: 0.18,
-                              fontSize: 10,
-                              height: 1.3),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Container(
+                          height: 16,
+                          width: 130,
+                          child: Text(
+                            '${LocaleKeys.add.tr()} ' +
+                                "${LocaleKeys.size.tr()}",
+                            style: context.textTheme.bodyMedium?.rr.copyWith(
+                                color: const Color(0xff8D8D8D),
+                                letterSpacing: 0.18,
+                                fontSize: 12,
+                                height: 1.3),
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
-      ),
+                    Positioned(
+                      top: 0,
+                      right: LanguageService.languageCode == "ar" ? null : 0,
+                      left: LanguageService.languageCode != "ar" ? null : 0,
+                      child: Container(
+                        height: 70,
+                        width: 70,
+                        decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(15.r)),
+                            border: Border.all(
+                                color: state.userInfo?.image != null
+                                    ? Colors.white
+                                    : Color(0xff1D1D1D))),
+                        child: state.userInfo?.image != null
+                            ? ClipRRect(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(15.r)),
+                                child: MyCachedNetworkImage(
+                                    imageUrl: state.userInfo?.image ?? "",
+                                    width: 70,
+                                    imageFit: BoxFit.cover,
+                                    height: 70),
+                              )
+                            : Center(
+                                child: SvgPicture.asset(
+                                  AppAssets.trySvg,
+                                ),
+                              ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 38,
+                      left: LanguageService.languageCode == "ar"
+                          ? null
+                          : max(
+                              _calculateTextWidth(
+                                  prefsRepository.myMarketName ?? '',
+                                  context.textTheme.bodyMedium!.mr.copyWith(
+                                      color: const Color(0xff1D1D1D),
+                                      letterSpacing: 0.18,
+                                      fontSize: 14,
+                                      height: 1.3)),
+                              _calculateTextWidth(
+                                  prefsRepository.myPhoneNumber ?? '',
+                                  context.textTheme.bodyMedium!.rr.copyWith(
+                                      color: const Color(0xff8D8D8D),
+                                      letterSpacing: 0.18,
+                                      fontSize: 12,
+                                      height: 1.3))),
+                      right: LanguageService.languageCode != "ar"
+                          ? null
+                          : max(
+                              _calculateTextWidth(
+                                  prefsRepository.myMarketName ?? '',
+                                  context.textTheme.bodyMedium!.mr.copyWith(
+                                      color: const Color(0xff1D1D1D),
+                                      letterSpacing: 0.18,
+                                      fontSize: 14,
+                                      height: 1.3)),
+                              _calculateTextWidth(
+                                  prefsRepository.myPhoneNumber ?? '',
+                                  context.textTheme.bodyMedium!.rr.copyWith(
+                                      color: const Color(0xff8D8D8D),
+                                      letterSpacing: 0.18,
+                                      fontSize: 12,
+                                      height: 1.3))),
+                      child: ValueListenableBuilder<bool>(
+                          valueListenable: isVerified,
+                          builder: (context, _isverified, _) {
+                            return InkWell(
+                              onTap: () {
+                                if (!(prefsRepository.isVerifiedPhone ??
+                                    false)) {
+                                  isVerified.value = false;
+                                }
+                              },
+                              child: Container(
+                                margin: EdgeInsets.symmetric(horizontal: 15),
+                                height: 35,
+                                width: 60,
+                                child: Column(
+                                  children: [
+                                    Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                        SvgPicture.asset(
+                                          AppAssets.succuessProfileSvg,
+                                          color: Color(0xff707070),
+                                          height: 16,
+                                          width: 16,
+                                        ),
+                                        SvgPicture.asset(AppAssets.success2Svg,
+                                            color: Color(0xff707070),
+                                            height: 5,
+                                            width: 5),
+                                      ],
+                                    ),
+                                    Spacer(),
+                                    Text(
+                                      (prefsRepository.isVerifiedPhone ?? false)
+                                          ? '${LocaleKeys.verified.tr()}'
+                                          : '${LocaleKeys.verified_now.tr()}',
+                                      style: context.textTheme.bodyMedium?.rr
+                                          .copyWith(
+                                              color: const Color(0xffFF5F61),
+                                              letterSpacing: 0.18,
+                                              fontSize: 10,
+                                              height: 1.3),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          }),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 }

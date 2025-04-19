@@ -719,6 +719,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                             );
                                           },
                                           child: ProductDetailsImageWidget(
+                                            height: 464,
+                                            width: 320,
                                             orginalHeight: productItem!
                                                     .syncColorImages
                                                     .isNullOrEmpty

@@ -2,8 +2,11 @@ import 'dart:async';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get_it/get_it.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:injectable/injectable.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/main.dart';
 import '../../../../../common/helper/show_message.dart';
 import '../../../../../core/data/model/pagination_model.dart';
@@ -428,7 +431,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
               SetCustomerAddressDefaultStatus.failure));
     }, (r) async {
       add(GetCustomerAddressesEvent());
-      // add(GetCartOverviewEvent());
+      GetIt.I<HomeBloc>().add(GetCartOverviewEvent());
       isFailedTheFirstTime.remove('SetCustomerAddressDefaultEvent');
 
       emit(state.copyWith(
@@ -576,7 +579,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           listOfAdressInfoClassToSave: listOfAddressInfoClassToSave,
           addAddressToOrderStatus: AddAddressToOrderStatus.failure));
     }, (r) async {
-      // add(GetCartOverviewEvent());
+      GetIt.I<HomeBloc>().add(GetCartOverviewEvent());
       add(GetCustomerAddressesEvent());
       showMessage(r.message ?? "",
           foreGroundColor: Colors.white,

@@ -2083,7 +2083,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                       builder: (context, orderState) {
                                         filterResultSearch = [];
                                         filterLatLngSearch = [];
-                                        state.resultSearch?.forEach(
+                                        orderState.resultSearch?.forEach(
                                           (element) {
                                             filterResultSearch.add(
                                                 address.RegionDetails(
@@ -2436,7 +2436,8 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                     0xffF8F8F8),
                                                                 bordersColor: Color(
                                                                     0xffF8F8F8),
-                                                                icon: state.getAddressByTextStatus ==
+                                                                icon: orderState
+                                                                            .getAddressByTextStatus ==
                                                                         GetAddressByTextStatus
                                                                             .loading
                                                                     ? Container(

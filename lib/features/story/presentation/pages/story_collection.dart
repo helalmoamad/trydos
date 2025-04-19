@@ -82,6 +82,17 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
       createRectTween: HeroAnimationAsset.customTweenRect,
       child: BlocConsumer<StoryBloc, StoryState>(
         listener: (ctx, state) {},
+        buildWhen: (previous, current) =>
+            previous.storiesCollections[widget.collectionIndex]
+                    .selectedStoriesStatusForCollection !=
+                current.storiesCollections[widget.collectionIndex]
+                    .selectedStoriesStatusForCollection ||
+            previous.currentStoryInEachCollection[widget.collectionIndex] !=
+                current.currentStoryInEachCollection[widget.collectionIndex] ||
+            previous.storiesCollections[widget.collectionIndex].stories!
+                    .length !=
+                current
+                    .storiesCollections[widget.collectionIndex].stories!.length,
         builder: (context, state) {
           //todo the initial story
 //        int currentInitialIndex = state.currentStoryInEachCollection!;
@@ -269,8 +280,11 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                         );
                       }
                       if (state.storiesCollections[widget.collectionIndex]
-                              .selectedStoriesStatusForCollection ==
-                          SelectedStoriesStatus.success) {
+                                  .selectedStoriesStatusForCollection ==
+                              SelectedStoriesStatus.success ||
+                          state.storiesCollections[widget.collectionIndex]
+                                  .selectedStoriesStatusForCollection ==
+                              SelectedStoriesStatus.init) {
                         widget.animatedController.forward();
                         if (widget.stopAnimationAndVideo) {
                           print("111111111111111111111111");
@@ -280,6 +294,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                           widget.animatedController.forward();
                         }
                         return MyCachedNetworkImage(
+                          fromStory: true,
                           imageUrl: state
                               .storiesCollections[widget.collectionIndex]
                               .stories![state.currentStoryInEachCollection[
@@ -303,27 +318,39 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                             if (widget.stopAnimationAndVideo) {
                               widget.animatedController.stop();
                             } else {
-                              widget.animatedController.forward();
+                              Future.delayed(Duration(milliseconds: 300),
+                                  () => widget.animatedController.forward());
                             }
                           },
                           callWhenLoadingImage: () {
-                            print("1111111113333333333333333333333333333");
                             widget.animatedController.stop();
                           },
                           width: state
-                              .storiesCollections[widget.collectionIndex]
-                              .imageDetail!
-                              .width
-                              .toDouble(),
+                                      .storiesCollections[
+                                          widget.collectionIndex]
+                                      .imageDetail ==
+                                  null
+                              ? 1.sw
+                              : state.storiesCollections[widget.collectionIndex]
+                                  .imageDetail!.width
+                                  .toDouble(),
                           height: state
-                              .storiesCollections[widget.collectionIndex]
-                              .imageDetail!
-                              .height
-                              .toDouble(),
+                                      .storiesCollections[
+                                          widget.collectionIndex]
+                                      .imageDetail ==
+                                  null
+                              ? (1.sh - 50)
+                              : state.storiesCollections[widget.collectionIndex]
+                                  .imageDetail!.height
+                                  .toDouble(),
                           imageFit: BoxFit.contain,
                         );
+                      } else {
+                        print(
+                            "!!!!!!!!!!!!!!!!!@@@@@@@@@@@@@@@@@@@@@${state.storiesCollections[widget.collectionIndex].selectedStoriesStatusForCollection}");
+                        widget.animatedController.stop();
+                        return Container();
                       }
-                      return Container();
                     } else {
                       if (_videoController == null) {
                         _videoController = VideoPlayerController.networkUrl(

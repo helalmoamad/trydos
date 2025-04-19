@@ -3,8 +3,11 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
+import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
@@ -112,6 +115,17 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
       if (err.requestOptions.path.contains("storage/storage-upload")) {
         GetIt.I<HomeBloc>()
             .add(UploadUserPhotoCloudinaryEvent(File("path"), true));
+      }
+      if (err.requestOptions.path.contains("customer/update-profile")) {
+        try {
+          String massageJson = jsonDecode(err.response.toString())["message"];
+          Map<String, dynamic> messageDecode = jsonDecode(massageJson);
+          showMessage(messageDecode["phone"][0],
+              foreGroundColor: Colors.white,
+              backGroundColor: Colors.black,
+              showInRelease: true,
+              timeShowing: Toast.LENGTH_LONG);
+        } catch (e) {}
       }
       if ((jsonDecode(err.response.toString())["message"]
                   .toString()

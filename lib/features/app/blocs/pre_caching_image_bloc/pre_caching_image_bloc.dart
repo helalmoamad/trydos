@@ -1,12 +1,16 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg_image/flutter_svg_image.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:injectable/injectable.dart';
+import 'package:sync/semaphore.dart';
 
 import 'package:trydos/features/app/blocs/pre_caching_image_bloc/pre_caching_image_state.dart';
+import 'package:trydos/features/app/svg_network_widget.dart';
+import 'package:trydos/main.dart';
 
 import '../../my_cached_network_image.dart';
 
@@ -33,7 +37,7 @@ class PreCachingImageBloc
     return state.toJson();
   }
 
-  FutureOr<void> _onCacheSvgEvent(
+  /*FutureOr<void> _onCacheSvgEvent(
       CacheSvgEvent event, Emitter<PreCachingImageState> emit) async {
     if (await CustomCacheManager().getFileFromCache(event.svgUrl) != null) {
       return;
@@ -42,14 +46,22 @@ class PreCachingImageBloc
     Map<String, bool> cachehSvgs = Map.of(state.cachehSvgs);
     cachehSvgs[event.svgUrl] = false;
     emit(PreCachingImageState(cachehSvgs: cachehSvgs));
+    await brandListingImages.acquire();
     await precacheImage(
-        SvgImage.cachedNetwork(
-          event.svgUrl,
-          width: event.width,
-          height: event.height,
-          cacheManager: CustomCacheManager(),
-        ),
-        event.context);
+            SvgImage.cachedNetwork(
+              event.svgUrl,
+              width: event.width,
+              height: event.height,
+              cacheManager: CustomCacheManager(),
+            ),
+            event.context)
+        .then(
+      (value) {
+        brandListingImages.release();
+      },
+    ).catchError((e) {
+      brandListingImages.release();
+    });
     cachehSvgs = Map.of(state.cachehSvgs);
     cachehSvgs[event.svgUrl] = true;
     emit(PreCachingImageState(cachehSvgs: cachehSvgs));
@@ -62,19 +74,187 @@ class PreCachingImageBloc
     }
     if (state.cachedImages[event.imageUrl] == true) return;
 
-    Map<String, bool> cachedImages = Map.of(state.cachedImages);
+    Map<String, bool> cachedImages = state.cachedImages;
 
     cachedImages[event.imageUrl] = false;
     emit(PreCachingImageState(cachedImages: cachedImages));
+    if (event.type == "banner") {
+      await imageBanner.acquire();
+    } else if (event.type == "categoryBoutique") {
+      await imageCategoryBoutiques.acquire();
+    } else if (event.type == "syncColorImages") {
+      await syncColorImages.acquire();
+    } else if (event.type == "productListingImages") {
+      await productListingImages.acquire();
+    } else if (event.type == "categoryListingImages") {
+      await categoryListingImages.acquire();
+    } else if (event.type == "productDetailsImages") {
+      await productDetailsImages.acquire();
+    }
+    print(
+        "qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqSSSSSSSSSSSSSSSSSSSSSSqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq${event.type}");
     await precacheImage(
-        CachedNetworkImageProvider(event.imageUrl,
-            cacheManager: CustomCacheManager()),
-        event.context);
-    cachedImages = Map.of(state.cachedImages);
+            CachedNetworkImageProvider(event.imageUrl,
+                cacheManager: CustomCacheManager()),
+            event.context)
+        .then(
+      (value) {
+        print(
+            "qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqffffffffffffffffffffffffffffffqqqqqqqqqqqqqqqqqqqqqqqqqqqqq${event.type}");
+        if (event.type == "banner") {
+          imageBanner.release();
+        } else if (event.type == "categoryBoutique") {
+          imageCategoryBoutiques.release();
+        } else if (event.type == "syncColorImages") {
+          syncColorImages.release();
+        } else if (event.type == "productListingImages") {
+          productListingImages.release();
+        } else if (event.type == "categoryListingImages") {
+          categoryListingImages.release();
+        } else if (event.type == "productDetailsImages") {
+          productDetailsImages.release();
+        }
+      },
+    ).catchError((e) {
+      if (event.type == "banner") {
+        imageBanner.release();
+      } else if (event.type == "categoryBoutique") {
+        imageCategoryBoutiques.release();
+      } else if (event.type == "syncColorImages") {
+        syncColorImages.release();
+      } else if (event.type == "productListingImages") {
+        productListingImages.release();
+      } else if (event.type == "categoryListingImages") {
+        categoryListingImages.release();
+      } else if (event.type == "productDetailsImages") {
+        productDetailsImages.release();
+      }
+    });
+
     cachedImages[event.imageUrl] = true;
 
     emit(PreCachingImageState(cachedImages: cachedImages));
   }
+*/
+
+  FutureOr<void> _onCacheSvgEvent(
+    CacheSvgEvent event,
+    Emitter<PreCachingImageState> emit,
+  ) async {
+    /*
+  // 1. التحقق من وجود الملف في الكاش مسبقًا
+  final cachedFile = await CustomCacheManager().getFileFromCache(event.svgUrl);
+  if (cachedFile != null) {
+    return; // الملف موجود مسبقًا، لا حاجة لإعادة التحميل
+  }
+
+  // 2. التحقق من عدم وجود تحميل جارٍ للملف
+  if (state.cachehSvgs[event.svgUrl] == true) return;
+
+  // 3. تحديث الحالة لإظهار أن التحميل جارٍ
+  final updatedCachehSvgs = Map<String, bool>.from(state.cachehSvgs);
+  updatedCachehSvgs[event.svgUrl] = false;
+  emit(PreCachingImageState(cachehSvgs: updatedCachehSvgs));
+
+  // 4. التحكم في التزامن باستخدام Semaphore المناسب
+  final semaphore = brandListingImages; // أو اختر Semaphore حسب نوع SVG إذا كان لديك
+
+  try {
+    await semaphore.acquire();
+
+    // 5. تحميل وتخزين SVG باستخدام CachedNetworkSVGImage.preCache
+    await SvgNetworkWidget(
+      event.svgUrl,
+      cacheManager: CustomCacheManager(),
+      width: event.width,
+      height: event.height,
+    );
+
+    // 6. تحديث الحالة بعد نجاح التحميل
+    final successCachehSvgs = Map<String, bool>.from(updatedCachehSvgs);
+    successCachehSvgs[event.svgUrl] = true;
+    emit(PreCachingImageState(cachehSvgs: successCachehSvgs));
+  } catch (e) {
+    print("Error caching SVG: $e");
+  } finally {
+    semaphore.release();
+  }*/
+  }
+
+// ============= الدوال المساعدة =============
+
+// أ) تحميل SVG مع عزل محتمل
+
+// ب) معاملات العزل
+
+  FutureOr<void> _onCacheImageEvent(
+    CacheImageEvent event,
+    Emitter<PreCachingImageState> emit,
+  ) async {
+    // 1. التحقق من وجود الصورة في الكاش مسبقًا
+    final cachedFile =
+        await CustomCacheManager().getFileFromCache(event.imageUrl);
+    if (cachedFile != null) {
+      return; // الصورة موجودة مسبقًا، لا حاجة لإعادة التحميل
+    }
+
+    // 2. التحقق من عدم وجود تحميل جارٍ للصورة
+    if (state.cachedImages[event.imageUrl] == true) return;
+
+    // 3. تحديث الحالة لإظهار أن التحميل جارٍ
+    final updatedCachedImages = Map<String, bool>.from(state.cachedImages);
+    updatedCachedImages[event.imageUrl] = false;
+    emit(PreCachingImageState(cachedImages: updatedCachedImages));
+
+    // 4. اختيار Semaphore المناسب حسب نوع الصورة
+    final semaphore = _getSemaphoreForType(event.type);
+
+    try {
+      // 5. انتظار السماح بالتحميل بدون حظر واجهة المستخدم
+      await semaphore.acquire();
+
+      // 6. تحميل الصورة مسبقًا في UI thread باستخدام CachedNetworkImageProvider
+      await precacheImage(
+        CachedNetworkImageProvider(event.imageUrl,
+            cacheManager: CustomCacheManager()),
+        event.context,
+      );
+
+      // 7. تحديث الحالة بعد نجاح التحميل
+      final successCachedImages = Map<String, bool>.from(updatedCachedImages);
+      successCachedImages[event.imageUrl] = true;
+      emit(PreCachingImageState(cachedImages: successCachedImages));
+    } catch (e) {
+      print("Error caching image: $e");
+    } finally {
+      // 8. تحرير Semaphore
+      semaphore.release();
+    }
+  }
+
+// دالة اختيار Semaphore حسب نوع الصورة (كما لديك)
+  Semaphore _getSemaphoreForType(String type) {
+    switch (type) {
+      case "banner":
+        return imageBanner;
+      case "categoryBoutique":
+        return imageCategoryBoutiques;
+      case "syncColorImages":
+        return syncColorImages;
+      case "productListingImages":
+        return productListingImages;
+      case "categoryListingImages":
+        return categoryListingImages;
+      case "productDetailsImages":
+        return productDetailsImages;
+      default:
+        throw Exception("Unknown image type");
+    }
+  }
+
+// ج) معاملات العزل
+
+// د) الدالة المعزولة
 
   _onSetImageCacheStatusEvent(
       SetImageCacheStatusEvent event, Emitter<PreCachingImageState> emit) {

@@ -244,11 +244,10 @@ class _TabsBarState extends State<TabsBar> {
         if (categoryBloc.state.boutiquesForEveryMainCategoryThatDidPrefetch[
                 categorySlugs[i]] !=
             true) {
-          print(
-              "@@@@@@@@@@@@######################${categoryBloc.state.boutiquesForEveryMainCategoryThatDidPrefetch}");
           categoryBloc.add(GetHomeBoutiqesEvent(
+            withSemaphore: true,
             getWithPrefetchToStoreInMemory: true,
-            getWithPrefetchForEachBoutiques: false,
+            getWithOutPrefetchForEachBoutiques: false,
             context: context,
             categorySlug: categorySlugs[i],
             offset: "1",
@@ -946,7 +945,7 @@ class _TabsBarState extends State<TabsBar> {
                                                     GetHomeBoutiqesEvent(
                                                       getWithPrefetchToStoreInMemory:
                                                           false,
-                                                      getWithPrefetchForEachBoutiques:
+                                                      getWithOutPrefetchForEachBoutiques:
                                                           true,
                                                       getWithPagination: false,
                                                       offset: "1",
@@ -981,7 +980,7 @@ class _TabsBarState extends State<TabsBar> {
                                                     GetHomeBoutiqesEvent(
                                                       getWithPrefetchToStoreInMemory:
                                                           false,
-                                                      getWithPrefetchForEachBoutiques:
+                                                      getWithOutPrefetchForEachBoutiques:
                                                           true,
                                                       context: context,
                                                       categorySlug: "Empty",

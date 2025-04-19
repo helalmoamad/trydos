@@ -15,6 +15,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/orderBloc/order_event.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/cart_delivary_adress.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/payment_method.dart';
 import 'package:trydos/features/home/presentation/widgets/cart_section/successful_order.dart';
@@ -29,7 +30,6 @@ import '../../../data/models/place_order_model.dart';
 import '../../../domain/use_cases/place_order_usecase.dart';
 import '../../manager/homeBloc/home_state.dart';
 import '../../manager/orderBloc/order_bloc.dart';
-import '../../manager/orderBloc/order_event.dart';
 import '../../manager/orderBloc/order_state.dart';
 import 'payment_webview.dart';
 
