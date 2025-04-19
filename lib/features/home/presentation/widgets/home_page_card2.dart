@@ -17,6 +17,8 @@ import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
@@ -49,9 +51,10 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
   final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   late AutoScrollController autoScrollController;
   late ScrollController scrollController;
-
+  late BoutiqueBloc boutiqueBloc;
   @override
   void initState() {
+    boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
     autoScrollController = AutoScrollController();
     super.initState();
   }
@@ -79,18 +82,49 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
           splashColor: Colors.transparent,
           highlightColor: Colors.transparent,
           onTap: () {
-            HelperFunctions.slidingNavigation(
-              context,
-              ProductListingPage(
-                isShowPanelForVerified: widget.isShowPanelForVerified,
-                banner: widget.boutique.banners,
-                withSlidingImages: widget.withSlidingImages,
+            boutiqueBloc.add(ChangeAppliedFiltersEvent(
+              boutiqueSlug: widget.boutique.slug!,
+              category: null,
+              filtersAppliedByUser: null,
+              resetAppliedFilters: true,
+            ));
+            boutiqueBloc.add(ChangeSelectedFiltersEvent(
+              fromHomePageSearch: false,
+              boutiqueSlug: widget.boutique.slug!,
+              category: null,
+              filtersChoosedByUser: null,
+            ));
+
+            boutiqueBloc.add(GetProductsWithFiltersEvent(
+                getWithoutFilter: true,
+                cashedOrginalBoutique: true,
                 boutiqueSlug: widget.boutique.slug!,
-                boutiqueDescription: widget.boutique.description,
-                boutiqueFirstBanner: widget.boutique.banners![0].filePath!,
-                boutiqueIcon: widget.boutique.icon?.filePath ?? "",
-              ),
-            );
+                fromSearch: false,
+                category: null,
+                context: context,
+                searchText: null,
+                offset: 1));
+
+             Navigator.push(
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder: (_, __, ___) => ProductListingPage(
+                          isShowPanelForVerified: widget.isShowPanelForVerified,
+                          banner: widget.boutique.banners,
+                          withSlidingImages: widget.withSlidingImages,
+                          boutiqueSlug: widget.boutique.slug!,
+                          boutiqueDescription: widget.boutique.description,
+                          boutiqueFirstBanner:
+                              widget.boutique.banners![0].filePath!,
+                          boutiqueIcon: widget.boutique.icon?.filePath ?? "",
+                        ),
+                        transitionsBuilder: (_, __, ___, child) =>
+                            child, // بدون أي حركة
+                        transitionDuration: Duration.zero, // انتقال فوري
+                        reverseTransitionDuration: Duration.zero, // عودة فورية
+                      ),
+                    );
+
             ////////////////////////////////////
             FirebaseAnalyticsService.logEventForSession(
               eventName: AnalyticsEventsConst.buttonClicked,
@@ -365,24 +399,67 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                     itemBuilder: (context, index) {
                       return InkWell(
                           onTap: () {
-                            HelperFunctions.slidingNavigation(
-                                context,
-                                ProductListingPage(
-                                  isShowPanelForVerified:
-                                      widget.isShowPanelForVerified,
-                                  banner: widget.boutique.banners,
-                                  withSlidingImages: widget.withSlidingImages,
-                                  boutiqueSlug: widget.boutique.slug!,
-                                  category: widget
+                            boutiqueBloc.add(ChangeAppliedFiltersEvent(
+                              boutiqueSlug: widget.boutique.slug!,
+                              category: index == 7
+                                  ? null
+                                  : widget
                                       .boutique
                                       .mainCategoriesForProductIds![index]
                                       .categorySlug,
-                                  boutiqueDescription:
-                                      widget.boutique.description!,
-                                  boutiqueFirstBanner:
-                                      widget.boutique.banners![0].filePath!,
-                                  boutiqueIcon: widget.boutique.icon!.filePath!,
-                                ));
+                              filtersAppliedByUser: null,
+                              resetAppliedFilters: true,
+                            ));
+                            boutiqueBloc.add(ChangeSelectedFiltersEvent(
+                              fromHomePageSearch: false,
+                              boutiqueSlug: widget.boutique.slug!,
+                              category: index == 7
+                                  ? null
+                                  : widget
+                                      .boutique
+                                      .mainCategoriesForProductIds![index]
+                                      .categorySlug,
+                              filtersChoosedByUser: null,
+                            ));
+
+                            boutiqueBloc.add(GetProductsWithFiltersEvent(
+                                getWithoutFilter: true,
+                                cashedOrginalBoutique: true,
+                                boutiqueSlug: widget.boutique.slug!,
+                                fromSearch: false,
+                                category: null,
+                                context: context,
+                                searchText: null,
+                                offset: 1));
+
+                           Navigator.push(
+                                      context,
+                                      PageRouteBuilder(
+                                        pageBuilder: (_, __, ___) =>
+                                            ProductListingPage(
+                                          isShowPanelForVerified:
+                                              widget.isShowPanelForVerified,
+                                          banner: widget.boutique.banners,
+                                          withSlidingImages:
+                                              widget.withSlidingImages,
+                                          boutiqueSlug: widget.boutique.slug!,
+                                          category: null,
+                                          boutiqueDescription:
+                                              widget.boutique.description!,
+                                          boutiqueFirstBanner: widget
+                                              .boutique.banners![0].filePath!,
+                                          boutiqueIcon:
+                                              widget.boutique.icon!.filePath!,
+                                        ),
+                                        transitionsBuilder:
+                                            (_, __, ___, child) =>
+                                                child, // بدون أي حركة
+                                        transitionDuration:
+                                            Duration.zero, // انتقال فوري
+                                        reverseTransitionDuration:
+                                            Duration.zero, // عودة فورية
+                                      ),
+                                    );
                           },
                           child: SvgNetworkWidget(
                             svgUrl: widget
@@ -536,34 +613,101 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                                 focused == index ? 150 : 10),
                                         child: InkWell(
                                           onTap: () {
-                                            HelperFunctions.slidingNavigation(
-                                                context,
-                                                ProductListingPage(
-                                                  isShowPanelForVerified: widget
-                                                      .isShowPanelForVerified,
-                                                  banner:
-                                                      widget.boutique.banners,
-                                                  withSlidingImages:
-                                                      widget.withSlidingImages,
-                                                  boutiqueSlug:
-                                                      widget.boutique.slug!,
-                                                  category: index == 7
-                                                      ? null
-                                                      : widget
-                                                          .boutique
-                                                          .mainCategoriesForProductIds![
-                                                              index]
-                                                          .categorySlug,
-                                                  boutiqueDescription: widget
-                                                      .boutique.description,
-                                                  boutiqueFirstBanner: widget
+                                            boutiqueBloc
+                                                .add(ChangeAppliedFiltersEvent(
+                                              boutiqueSlug:
+                                                  widget.boutique.slug!,
+                                              category: index == 7
+                                                  ? null
+                                                  : widget
                                                       .boutique
-                                                      .banners![0]
-                                                      .filePath!,
-                                                  boutiqueIcon: widget.boutique
-                                                          .icon?.filePath ??
-                                                      "",
-                                                ));
+                                                      .mainCategoriesForProductIds![
+                                                          index]
+                                                      .categorySlug,
+                                              filtersAppliedByUser: null,
+                                              resetAppliedFilters: true,
+                                            ));
+                                            boutiqueBloc
+                                                .add(ChangeSelectedFiltersEvent(
+                                              fromHomePageSearch: false,
+                                              boutiqueSlug:
+                                                  widget.boutique.slug!,
+                                              category: index == 7
+                                                  ? null
+                                                  : widget
+                                                      .boutique
+                                                      .mainCategoriesForProductIds![
+                                                          index]
+                                                      .categorySlug,
+                                              filtersChoosedByUser: null,
+                                            ));
+
+                                            boutiqueBloc.add(
+                                                GetProductsWithFiltersEvent(
+                                                    getWithoutFilter: true,
+                                                    cashedOrginalBoutique: true,
+                                                    boutiqueSlug:
+                                                        widget.boutique.slug!,
+                                                    fromSearch: false,
+                                                    category: index == 7
+                                                        ? null
+                                                        : widget
+                                                            .boutique
+                                                            .mainCategoriesForProductIds![
+                                                                index]
+                                                            .categorySlug,
+                                                    context: context,
+                                                    searchText: null,
+                                                    offset: 1));
+
+                                         Navigator.push(
+                                                      context,
+                                                      PageRouteBuilder(
+                                                        pageBuilder: (_, __,
+                                                                ___) =>
+                                                            ProductListingPage(
+                                                          isShowPanelForVerified:
+                                                              widget
+                                                                  .isShowPanelForVerified,
+                                                          banner: widget
+                                                              .boutique.banners,
+                                                          withSlidingImages: widget
+                                                              .withSlidingImages,
+                                                          boutiqueSlug: widget
+                                                              .boutique.slug!,
+                                                          category: index == 7
+                                                              ? null
+                                                              : widget
+                                                                  .boutique
+                                                                  .mainCategoriesForProductIds![
+                                                                      index]
+                                                                  .categorySlug,
+                                                          boutiqueDescription:
+                                                              widget.boutique
+                                                                  .description,
+                                                          boutiqueFirstBanner:
+                                                              widget
+                                                                  .boutique
+                                                                  .banners![0]
+                                                                  .filePath!,
+                                                          boutiqueIcon: widget
+                                                                  .boutique
+                                                                  .icon
+                                                                  ?.filePath ??
+                                                              "",
+                                                        ),
+                                                        transitionsBuilder: (_,
+                                                                __,
+                                                                ___,
+                                                                child) =>
+                                                            child, // بدون أي حركة
+                                                        transitionDuration: Duration
+                                                            .zero, // انتقال فوري
+                                                        reverseTransitionDuration:
+                                                            Duration
+                                                                .zero, // عودة فورية
+                                                      ),
+                                                    );
                                           },
                                           child: ProductItemCircle(
                                             index: index,

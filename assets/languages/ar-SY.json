@@ -415,5 +415,6 @@
   "order_number": "رقم الطلب",
   "buying": "شراء",
   "item_status": "حالة العنصر",
-  "verified": "تم التحقق"
+  "verified": "تم التحقق",
+  "are_you_sure_you_want_to_change_your_country": "هل انت متأكد من تغيير البلد ؟ \\\\nربما تفقد بعض مشترياتك في السلة لكونها غير متوفرة بالبلد الجديد"
 }

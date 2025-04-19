@@ -108,7 +108,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                       categoryBloc.add(
                         GetHomeBoutiqesEvent(
                           getWithPrefetchToStoreInMemory: false,
-                          getWithPrefetchForEachBoutiques: false,
+                          getWithOutPrefetchForEachBoutiques: false,
                           context: context,
                           offset: '1',
                           categorySlug: 'Empty',

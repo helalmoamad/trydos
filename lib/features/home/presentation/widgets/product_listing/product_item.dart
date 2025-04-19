@@ -20,12 +20,13 @@ class ProductItem extends StatefulWidget {
       required this.setThisEnabled,
       required this.slidingModeItem,
       required this.itemIndex,
+      required this.displayImageColors,
       required this.tapIndexToAddProductToCart,
       required this.productItem});
 
   final void Function(int, int) setThisEnabled;
   final ValueNotifier<int> tapIndexToAddProductToCart;
-
+  final bool displayImageColors;
   final Tuple2<int, int> slidingModeItem;
   final productListingModel.Products productItem;
   final int itemIndex;
@@ -175,6 +176,7 @@ class _ProductItemState extends State<ProductItem> {
             ),
           ),
           ProductListing3DSlider(
+              displayImageColors: widget.displayImageColors,
               productItem: widget.productItem,
               slidingModeItem: widget.slidingModeItem,
               tapIndexToAddProductToCart: widget.tapIndexToAddProductToCart,

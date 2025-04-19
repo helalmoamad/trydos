@@ -44,12 +44,15 @@ class ProductListing3DSlider extends StatefulWidget {
       required this.itemIndex,
       required this.tapIndexToAddProductToCart,
       required this.productItem,
+      required this.displayImageColors,
       required this.currentChosenColor});
 
   final Tuple2<int, int> slidingModeItem;
   final void Function(int, int) setThisEnabled;
   final ValueNotifier<int> tapIndexToAddProductToCart;
   final int itemIndex;
+  final bool displayImageColors;
+
   final productListingModel.Products productItem;
   final ValueNotifier<int> currentChosenColor;
 
@@ -200,24 +203,54 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
         () => homeBloc.add(AddCurrentSelectedColorEvent(
             currentSelectedColor: syncColorImageList!.length ~/ 4,
             productId: widget.productItem.productId.toString())));
-    gallery3dControllerForCircles =
-        syncColorImageList.isNullOrEmpty || syncColorImageList!.length < 3
-            ? null
-            : Gallery3DController(
-                itemCount: syncColorImageList!.length,
-                autoLoop: false,
-                minScale: (syncColorImageList!.length) == 4
-                    ? 0.7
-                    : (syncColorImageList!.length) <= 8
-                        ? 0.6
-                        : 0.4,
-                initialIndex: syncColorImageList!.length ~/ 4,
-                primaryshiftingOffsetDivision: (syncColorImageList!.length) == 4
-                    ? 4.5
-                    : (syncColorImageList!.length) <= 8
-                        ? 2.8
-                        : 1.6,
-                scrollTime: 1);
+    gallery3dControllerForCircles = null;
+
+    if (widget.displayImageColors) {
+      gallery3dControllerForCircles = syncColorImageList.isNullOrEmpty ||
+              syncColorImageList!.length < 3
+          ? null
+          : Gallery3DController(
+              itemCount: syncColorImageList!.length,
+              autoLoop: false,
+              minScale: (syncColorImageList!.length) == 4
+                  ? 0.7
+                  : (syncColorImageList!.length) <= 8
+                      ? 0.6
+                      : 0.4,
+              initialIndex: syncColorImageList!.length ~/ 4,
+              primaryshiftingOffsetDivision: (syncColorImageList!.length) == 4
+                  ? 4.5
+                  : (syncColorImageList!.length) <= 8
+                      ? 2.8
+                      : 1.6,
+              scrollTime: 1);
+    } else {
+      Future.delayed(
+        Duration(seconds: 2),
+        () {
+          gallery3dControllerForCircles =
+              syncColorImageList.isNullOrEmpty || syncColorImageList!.length < 3
+                  ? null
+                  : Gallery3DController(
+                      itemCount: syncColorImageList!.length,
+                      autoLoop: false,
+                      minScale: (syncColorImageList!.length) == 4
+                          ? 0.7
+                          : (syncColorImageList!.length) <= 8
+                              ? 0.6
+                              : 0.4,
+                      initialIndex: syncColorImageList!.length ~/ 4,
+                      primaryshiftingOffsetDivision:
+                          (syncColorImageList!.length) == 4
+                              ? 4.5
+                              : (syncColorImageList!.length) <= 8
+                                  ? 2.8
+                                  : 1.6,
+                      scrollTime: 1);
+          setState(() {});
+        },
+      );
+    }
 
     super.initState();
   }

@@ -133,7 +133,6 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
     return ValueListenableBuilder<bool>(
         valueListenable: visibleSave,
         builder: (context, _visibleSave, _) {
-          print("ddddddddddddddddddddddddddddddddddddddd${_visibleSave}");
           return Scaffold(
               appBar: TrydosAppBar(
                 appBarParams: AppBarParams(
@@ -1108,65 +1107,69 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
                                             );
                                           }),
                                     )
-                                  : AppTextField(
-                                      controller: controller,
-                                      textInputType: TextInputType.text,
-                                      bordersColor: Colors.white,
-                                      isErrorBorder: false,
-                                      inputFormatters: !isPhone
-                                          ? null
-                                          : [
-                                              FilteringTextInputFormatter.allow(
-                                                  RegExp(r'[0-9\s]'))
-                                            ],
-                                      textInputAction: TextInputAction.done,
-                                      onChange: (val) {
-                                        visibleSave.value = true;
-                                        if (val.length > 0 && isPhone) {
-                                          visiblePrefix.value = true;
-                                        } else if (val.length == 0 && isPhone) {
-                                          visiblePrefix.value = false;
-                                        }
-                                      },
-                                      onTap: () {},
-                                      validator: (value) {
-                                        if ((value?.length ?? 0) < 8) {
-                                          return LocaleKeys
-                                              .must_be_at_least_8_characters
-                                              .tr();
-                                        }
-                                        return null;
-                                      },
-                                      onFieldSubmitted: (val) {
-                                        FocusScope.of(context).unfocus();
-                                      },
-                                      textAlignVertical:
-                                          TextAlignVertical.center,
-                                      hintText: '${hint}' +
-                                          "${hint2 == "" ? "" : "\n${hint2}"}",
-                                      contentPadding:
-                                          HWEdgeInsetsDirectional.only(
-                                              start: 8,
-                                              end: 1,
-                                              bottom: 1,
-                                              top: 1),
-                                      textAlign: TextAlign.start,
-                                      maxLines: hint2 == "" ? 1 : 2,
-                                      minLines: 1,
-                                      textStyle: context
-                                          .textTheme.bodyMedium?.mr
-                                          .copyWith(
-                                              color: const Color(0xff1D1D1D),
-                                              letterSpacing: 0.18,
-                                              fontSize: 14,
-                                              height: 1.1),
-                                      hintTextStyle: context
-                                          .textTheme.bodyMedium?.rr
-                                          .copyWith(
-                                              color: const Color(0xffD3D3D3),
-                                              letterSpacing: 0.18,
-                                              fontSize: 14,
-                                              height: hint2 == "" ? 1 : 1.3),
+                                  : Directionality(
+                                      textDirection: TextDirection.ltr,
+                                      child: AppTextField(
+                                        controller: controller,
+                                        textInputType: TextInputType.text,
+                                        bordersColor: Colors.white,
+                                        isErrorBorder: false,
+                                        inputFormatters: !isPhone
+                                            ? null
+                                            : [
+                                                FilteringTextInputFormatter
+                                                    .allow(RegExp(r'[0-9\s]'))
+                                              ],
+                                        textInputAction: TextInputAction.done,
+                                        onChange: (val) {
+                                          visibleSave.value = true;
+                                          if (val.length > 0 && isPhone) {
+                                            visiblePrefix.value = true;
+                                          } else if (val.length == 0 &&
+                                              isPhone) {
+                                            visiblePrefix.value = false;
+                                          }
+                                        },
+                                        onTap: () {},
+                                        validator: (value) {
+                                          if ((value?.length ?? 0) < 8) {
+                                            return LocaleKeys
+                                                .must_be_at_least_8_characters
+                                                .tr();
+                                          }
+                                          return null;
+                                        },
+                                        onFieldSubmitted: (val) {
+                                          FocusScope.of(context).unfocus();
+                                        },
+                                        textAlignVertical:
+                                            TextAlignVertical.center,
+                                        hintText: '${hint}' +
+                                            "${hint2 == "" ? "" : "\n${hint2}"}",
+                                        contentPadding:
+                                            HWEdgeInsetsDirectional.only(
+                                                start: 8,
+                                                end: 1,
+                                                bottom: 1,
+                                                top: 1),
+                                        textAlign: TextAlign.start,
+                                        maxLines: hint2 == "" ? 1 : 2,
+                                        minLines: 1,
+                                        textStyle: context
+                                            .textTheme.bodyMedium?.mr
+                                            .copyWith(
+                                                color: const Color(0xff1D1D1D),
+                                                letterSpacing: 0.18,
+                                                fontSize: 14,
+                                                height: 1.1),
+                                        hintTextStyle: context
+                                            .textTheme.bodyMedium?.rr
+                                            .copyWith(
+                                                color: const Color(0xffD3D3D3),
+                                                letterSpacing: 0.18,
+                                                fontSize: 14,
+                                                height: hint2 == "" ? 1 : 1.3),
+                                      ),
                                     ),
                             ),
                           ]),

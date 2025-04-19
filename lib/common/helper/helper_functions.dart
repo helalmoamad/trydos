@@ -325,9 +325,11 @@ class HelperFunctions {
     );
   }
 
-  static slidingNavigation(BuildContext context, Widget page,
-      {int milliseconds = 200}) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (_) => page));
+  static slidingNavigation(
+    BuildContext context,
+    Widget page,
+  ) {
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) => page));
     /*  Navigator.of(context).push(new PageRouteBuilder(
       opaque: false,
       transitionDuration: Duration(milliseconds: milliseconds),

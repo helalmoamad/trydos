@@ -36,6 +36,7 @@ class MyCachedNetworkImage extends StatelessWidget {
       this.withImageShadow = false,
       this.withInnerShadow = false,
       required this.height,
+      this.fromStory,
       this.circleDimensions})
       : super(key: key) {
     currentUrl = imageUrl;
@@ -59,6 +60,7 @@ class MyCachedNetworkImage extends StatelessWidget {
   final double? innerShadowYOffset;
   final bool withImageShadow;
   final bool withInnerShadow;
+  final bool? fromStory;
   final ImageWidgetBuilder? imageBuilder;
   final double? circleDimensions;
   final Color? imageColor;
@@ -99,16 +101,6 @@ class MyCachedNetworkImage extends StatelessWidget {
                 buildWhen: (p, c) =>
                     p.cachedImages[url] == false && c.cachedImages[url] == true,
                 builder: (context, state) {
-                  if (state.cachedImages[url] == false) {
-                    return progressIndicatorBuilderWidget ??
-                        TrydosShimmerLoading(
-                          width: width,
-                          height: height,
-                          logoTextHeight: logoTextHeight ?? 14,
-                          logoTextWidth: logoTextWidth ?? 48.w,
-                          circleDimensions: circleDimensions,
-                        );
-                  }
                   return Center(
                     child: CachedNetworkImage(
                         imageUrl: url,
@@ -134,7 +126,7 @@ class MyCachedNetworkImage extends StatelessWidget {
                         },
                         imageBuilder: imageBuilder ??
                             (ctx, image) {
-                              Future.delayed(Duration(milliseconds: 600),
+                              Future.delayed(Duration(milliseconds: 300),
                                   () => callWhenDisplayImage?.call());
                               return ClipRRect(
                                   child: Align(
@@ -191,6 +183,9 @@ class MyCachedNetworkImage extends StatelessWidget {
                               onTap: () async {
                                 WidgetsBinding.instance
                                     .addPostFrameCallback((_) {
+                                  print(
+                                      "...dd.......${fromStory}.QQ${url}QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
+
                                   currentUrl = '';
                                   enable = true;
                                   rebuildImage.value++;
@@ -224,7 +219,7 @@ class CustomCacheManager extends CacheManager {
   CustomCacheManager._()
       : super(Config(
           key,
-          maxNrOfCacheObjects: 200,
+          maxNrOfCacheObjects: 600,
           stalePeriod: const Duration(days: 3),
         ));
 }
@@ -239,6 +234,16 @@ String addSuitableWidthAndHeightToImage(
     double? ordinalWidth,
     required double width,
     required double height}) {
+  int fHeight = 0;
+  int fWidth = 0;
+  if (height > 200 && width > 200) {
+    fWidth = (width * 1.5).toInt();
+    fHeight = (height * 1.5).toInt();
+  } else {
+    fWidth = (width * 2).toInt();
+    fHeight = (height * 2).toInt();
+  }
+
   if (!imageUrl.contains('upload')) {
     return imageUrl;
   }
@@ -250,10 +255,10 @@ String addSuitableWidthAndHeightToImage(
       ordinalHeight != 0 &&
       ordinalWidth != 0) {
     url = ordinalWidth >= ordinalHeight
-        ? list[0] + 'upload/c_scale,h_${2 * height.toInt()}' + list[1]
-        : list[0] + 'upload/c_scale,w_${2 * width.toInt()}' + list[1];
+        ? list[0] + 'upload/c_scale,h_${fHeight}' + list[1]
+        : list[0] + 'upload/c_scale,w_${fWidth}' + list[1];
   } else {
-    url = list[0] + 'upload/c_scale,h_${2 * height.toInt()}' + list[1];
+    url = list[0] + 'upload/c_scale,h_${fHeight}' + list[1];
   }
   return url;
 }

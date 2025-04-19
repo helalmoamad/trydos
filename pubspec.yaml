@@ -142,6 +142,8 @@ dependencies:
   firebase_core: ^2.32.0
   firebase_database: ^10.5.7
   simple_image_cropper: ^1.0.0
+  sync: ^0.3.0
+  delayed_display: ^2.0.0
   #image_cropper: ^9.1.0
 dev_dependencies:
 

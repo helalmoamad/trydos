@@ -20,6 +20,7 @@ import 'package:flutter_gemini/flutter_gemini.dart' as gemini;
 import 'package:flutter_smartlook/flutter_smartlook.dart';
 import 'package:get_it/get_it.dart';
 import 'package:eraser/eraser.dart';
+import 'package:sync/semaphore.dart';
 import 'package:trydos/common/constant/configuration/chat_url_routes.dart';
 import 'package:trydos/common/constant/configuration/market_url_routes.dart';
 import 'package:trydos/common/constant/configuration/stories_url_routes.dart';
@@ -254,7 +255,17 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 bool isDependencyInitialized = false;
 bool isHydratedStorageInitialized = false;
+final Semaphore imageBanner = Semaphore(3);
+final Semaphore imageCategoryBoutiques = Semaphore(3);
+final Semaphore syncColorImages = Semaphore(1);
+final Semaphore productListingImages = Semaphore(4);
+final Semaphore categoryListingImages = Semaphore(1);
+final Semaphore brandListingImages = Semaphore(1);
+final Semaphore productDetailsImages = Semaphore(5);
 
+final Semaphore prefechMainCategory = Semaphore(2);
+final Semaphore prefechBoutiques = Semaphore(3);
+final Semaphore prefechFiveFilter = Semaphore(2);
 bool isLoadDotenvFile = false;
 Timer? timer;
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();

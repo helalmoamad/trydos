@@ -168,7 +168,7 @@ class _HomePageState extends State<HomePage> {
           (scrollController.position.maxScrollExtent * 0.6)) {
         categoryBloc.add(GetHomeBoutiqesEvent(
             getWithPrefetchToStoreInMemory: false,
-            getWithPrefetchForEachBoutiques: false,
+            getWithOutPrefetchForEachBoutiques: false,
             categorySlug: selectedCategorySlug,
             offset: categoryBloc
                     .state

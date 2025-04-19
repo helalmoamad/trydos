@@ -106,45 +106,72 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
                           ? SizedBox.shrink()
                           : InkWell(
                               onTap: () {
-                                GetIt.I<PrefsRepository>()
-                                    .setUserChoosedCountryIso(homeBloc
-                                            .state
-                                            .getAllowedCountriesModel
-                                            ?.data
-                                            ?.countries?[changeCountry.value]
-                                            .iso ??
-                                        "".toLowerCase());
-                                GetIt.I<PrefsRepository>()
-                                    .setUserCountryIsAvailable(1);
-                                BlocProvider.of<HomeBloc>(context)
-                                    .add(ClearAllAppCashEvent());
-                                GetIt.I<PrefsRepository>()
-                                    .removeBoutiqueHasPerfechedWhenOpenApp(
-                                        true);
-                                GetIt.I<PrefsRepository>()
-                                    .removeMainCategoryHasPerfechedWhenOpenApp(
-                                        true);
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                      title: Text(LocaleKeys
+                                          .are_you_sure_you_want_to_change_your_country
+                                          .tr()),
+                                      actions: [
+                                        MaterialButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                            GetIt.I<PrefsRepository>()
+                                                .setUserChoosedCountryIso(homeBloc
+                                                        .state
+                                                        .getAllowedCountriesModel
+                                                        ?.data
+                                                        ?.countries?[
+                                                            changeCountry.value]
+                                                        .iso ??
+                                                    "".toLowerCase());
+                                            GetIt.I<PrefsRepository>()
+                                                .setUserCountryIsAvailable(1);
+                                            BlocProvider.of<HomeBloc>(context)
+                                                .add(ClearAllAppCashEvent());
+                                            GetIt.I<PrefsRepository>()
+                                                .removeBoutiqueHasPerfechedWhenOpenApp(
+                                                    true);
+                                            GetIt.I<PrefsRepository>()
+                                                .removeMainCategoryHasPerfechedWhenOpenApp(
+                                                    true);
 
-                                GetIt.I<PrefsRepository>()
-                                    .removeFiveFilterHasPerfechedWhenOpenApp();
-                                BlocProvider.of<HomeBloc>(context).add(
-                                    ChangeCountryLanguageForNotificationEvent(
-                                        country: homeBloc
-                                                .state
-                                                .getAllowedCountriesModel
-                                                ?.data
-                                                ?.countries?[
-                                                    changeCountry.value]
-                                                .iso ??
-                                            "".toLowerCase(),
-                                        languageCode:
-                                            LanguageService.languageCode));
+                                            GetIt.I<PrefsRepository>()
+                                                .removeFiveFilterHasPerfechedWhenOpenApp();
+                                            BlocProvider.of<HomeBloc>(context).add(
+                                                ChangeCountryLanguageForNotificationEvent(
+                                                    country: homeBloc
+                                                            .state
+                                                            .getAllowedCountriesModel
+                                                            ?.data
+                                                            ?.countries?[
+                                                                changeCountry
+                                                                    .value]
+                                                            .iso ??
+                                                        "".toLowerCase(),
+                                                    languageCode:
+                                                        LanguageService
+                                                            .languageCode));
 
-                                Future.delayed(
-                                  Duration(microseconds: 500),
-                                  () {
-                                    context.go("/");
-                                  },
+                                            Future.delayed(
+                                              Duration(microseconds: 500),
+                                              () {
+                                                context.go("/");
+                                              },
+                                            );
+                                          },
+                                          child: Text(LocaleKeys.yes.tr()),
+                                        ),
+                                        SizedBox(
+                                          width: 20.w,
+                                        ),
+                                        MaterialButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: Text(LocaleKeys.cansel.tr()),
+                                        )
+                                      ]),
                                 );
                               },
                               child: Container(

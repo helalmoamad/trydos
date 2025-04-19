@@ -130,7 +130,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
 
       Map<String, bool> boutiquesForEveryMainCategoryThatDidPrefetch =
           Map.of(state.boutiquesForEveryMainCategoryThatDidPrefetch);
-      if (!event.getWithPrefetchForEachBoutiques) {
+      if (!event.getWithOutPrefetchForEachBoutiques) {
         if (boutiquesForEveryMainCategoryThatDidPrefetch[event.categorySlug] ==
             null) {
           boutiquesForEveryMainCategoryThatDidPrefetch
@@ -152,7 +152,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     } else {
       Map<String, bool> boutiquesForEveryMainCategoryThatDidPrefetch =
           Map.of(state.boutiquesForEveryMainCategoryThatDidPrefetch);
-      if (!event.getWithPrefetchForEachBoutiques) {
+      if (!event.getWithOutPrefetchForEachBoutiques) {
         if (boutiquesForEveryMainCategoryThatDidPrefetch[event.categorySlug] ==
             null) {
           boutiquesForEveryMainCategoryThatDidPrefetch
@@ -171,6 +171,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
             Map.of(boutiquesForEveryMainCategoryThatDidPrefetch),
       ));
     }
+    await prefechMainCategory.acquire();
     final response = await getHomeBoutiqesUseCase(GetHomeBoutiqesParams(
         page: event.getWithPagination
             ? (getHomeBoutiquesPaginationObjectByMainCategory[
@@ -183,6 +184,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
             event.categorySlug == "Empty" ? null : event.categorySlug));
 
     response.fold((l) {
+      prefechMainCategory.release();
       if (!event.getWithPrefetchToStoreInMemory) {
         Map<String, PaginationModel<Boutique>>
             getHomeBoutiquesPaginationObjectByMainCategory =
@@ -193,8 +195,8 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
             GetHomeBoutiqesEvent(
               getWithPrefetchToStoreInMemory:
                   event.getWithPrefetchToStoreInMemory,
-              getWithPrefetchForEachBoutiques:
-                  event.getWithPrefetchForEachBoutiques,
+              getWithOutPrefetchForEachBoutiques:
+                  event.getWithOutPrefetchForEachBoutiques,
               offset: event.offset,
               context: event.context,
               categorySlug: event.categorySlug,
@@ -221,6 +223,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
         );
       }
     }, (r) {
+      prefechMainCategory.release();
       if (!event.getWithPagination) {
         prefsRepository.setPrefechOfBoutiquesForEachMainCategoryInHomePage(
             event.categorySlug, jsonEncode(r));
@@ -237,7 +240,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
                 imageUrl: banner.filePath!,
                 width: 1.sw,
                 height: numOfBanners == 1 ? 135 : 155);
-            prefetchImages(url, event.context);
+            prefetchImages(url, event.context, "banner");
           });
 
           // boutique categories images
@@ -246,7 +249,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
                 imageUrl: category.mostViewedProductThumbnail!.filePath!,
                 width: 40.w,
                 height: 40.w);
-            prefetchImages(url, event.context);
+            prefetchImages(url, event.context, "categoryBoutique");
           });
         });
 
@@ -290,7 +293,8 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
           ),
         );
 
-        if (!event.getWithPagination && event.getWithPrefetchForEachBoutiques) {
+        if (!event.getWithPagination &&
+            event.getWithOutPrefetchForEachBoutiques) {
           prefetchBoutiques(event.categorySlug, event.context, 0);
         }
       }
@@ -367,22 +371,9 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     ));
   }
 
-  prefetchImages(String url, BuildContext context) async {
+  prefetchImages(String url, BuildContext context, String type) {
     GetIt.I<PreCachingImageBloc>()
-        .add(CacheImageEvent(imageUrl: url, context: context));
-  }
-
-  prefetchSvgImages(
-    String imageUrl,
-    BuildContext context, {
-    double? ordinalHeight,
-    double? ordinalWidth,
-  }) {
-    GetIt.I<PreCachingImageBloc>().add(CacheSvgEvent(
-        svgUrl: imageUrl,
-        width: ordinalWidth,
-        height: ordinalHeight,
-        context: context));
+        .add(CacheImageEvent(imageUrl: url, context: context, type: type));
   }
 
   FutureOr<void> _onGetMainCategoriesEvent(
@@ -403,7 +394,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
         getMainCategoriesStatus: GetMainCategoriesStatus.loading));
     add(GetHomeBoutiqesEvent(
       getWithPrefetchToStoreInMemory: false,
-      getWithPrefetchForEachBoutiques: true,
+      getWithOutPrefetchForEachBoutiques: true,
       context: event.context ?? navigatorKey.currentContext!,
       categorySlug: 'Empty',
       offset: "1",
@@ -453,7 +444,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
         categorySlugs.add(r.data!.mainCategories![i].slug ?? "");
       }
       if (event.getWithPrefech) {
-        Future.delayed(Duration(seconds: 10), () {
+        Future.delayed(Duration(seconds: 5), () {
           for (var i = 0;
               i < min(categorySlugs.length, (1.sw - 55) ~/ 40);
               i++) {
@@ -461,8 +452,9 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
                     categorySlugs[i]] !=
                 true) {
               add(GetHomeBoutiqesEvent(
+                withSemaphore: true,
                 getWithPrefetchToStoreInMemory: true,
-                getWithPrefetchForEachBoutiques: false,
+                getWithOutPrefetchForEachBoutiques: false,
                 context: event.context ?? navigatorKey.currentContext!,
                 categorySlug: categorySlugs[i],
                 offset: "1",
