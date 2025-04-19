@@ -4,7 +4,6 @@ import 'package:trydos/features/authentication/data/models/verify_otp_sign_up_an
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
-import '../../../domain/use_cases/place_order_usecase.dart';
 
 abstract class HomeEvent extends Equatable {
   const HomeEvent();
@@ -697,18 +696,6 @@ class UpdateListOfItemForAddToCartEvent extends HomeEvent {
 
   @override
   List<Object?> get props => [];
-}
-
-class PlaceOrderEvent extends HomeEvent {
-  final PlaceOrderParams placeOrderParams;
-
-  PlaceOrderEvent({
-    required this.placeOrderParams,
-  });
-
-  @override
-  // TODO: implement props
-  List<Object?> get props => [placeOrderParams];
 }
 
 class CheckAvailabilityProductCartEvent extends HomeEvent {

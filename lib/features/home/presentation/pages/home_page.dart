@@ -346,297 +346,507 @@ class _HomePageState extends State<HomePage> {
           onRefresh: _refreshData,
           child: Stack(
             children: [
-              CustomScrollView(
-                key: TestVariables.kTestMode
-                    ? Key(WidgetsKeys.homepageScrollKey)
-                    : null,
-                controller: scrollController,
-                physics: const ClampingScrollPhysics(
-                    parent: AlwaysScrollableScrollPhysics()),
-                scrollBehavior: const CupertinoScrollBehavior(),
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: _isLoading
-                        ? Center(
-                            child:
-                                CircularProgressIndicator()) // إظهار مؤشر التحميل
-                        : SizedBox.shrink(),
-                  ),
-                  SliverToBoxAdapter(child: 50.verticalSpace),
-                  SliverToBoxAdapter(
-                    child: 40.verticalSpace,
-                  ),
-                  SliverToBoxAdapter(
-                    child: Stack(
-                      children: [
-                        StoriesList(
-                          isShowPanelForVerified: widget.isShowPanelForVerified,
-                        ), // height 220
-                        Positioned(
-                            top: 0,
-                            right:
-                                currentLocale.languageCode == "ar" ? 30 : null,
-                            left:
-                                currentLocale.languageCode == "ar" ? null : 30,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                SvgPicture.asset(
-                                  AppAssets.storyFilmSvg,
-                                  width: 20,
-                                  height: 20,
-                                ),
-                                SizedBox(
-                                  width: 7,
-                                ),
-                                MyTextWidget(
-                                  LocaleKeys.story.tr(),
-                                  style: context.textTheme.titleLarge?.rr
-                                      .copyWith(
-                                          height: 0.86,
-                                          color: Color(0xff3C3C3C)),
-                                )
-                              ],
-                            ))
-                      ],
-                    ),
-                  ),
-                  SliverToBoxAdapter(
-                    child: 5.verticalSpace,
-                  ),
-                  BlocBuilder<AppBloc, AppState>(
-                    builder: (context, appState) {
-                      return BlocBuilder<CategoryBloc, CategoryState>(
-                        buildWhen: (p, c) {
-                          String? currentSlug = appState.tabIndex != -1
-                              ? (c
-                                      .mainCategoriesResponseModel
-                                      ?.data
-                                      ?.mainCategories?[appState.tabIndex]
-                                      .slug ??
-                                  "Empty")
-                              : "Empty";
-                          bool rebuild = (p
+              BlocBuilder<AppBloc, AppState>(
+                builder: (context, appState) {
+                  return BlocBuilder<CategoryBloc, CategoryState>(
+                    buildWhen: (p, c) {
+                      String? currentSlug = appState.tabIndex != -1
+                          ? (c.mainCategoriesResponseModel?.data
+                                  ?.mainCategories?[appState.tabIndex].slug ??
+                              "Empty")
+                          : "Empty";
+                      bool rebuild = (p
+                                  .getHomeBoutiquesPaginationObjectByMainCategory[
+                                      currentSlug]
+                                  ?.paginationStatus !=
+                              c
+                                  .getHomeBoutiquesPaginationObjectByMainCategory[
+                                      currentSlug]
+                                  ?.paginationStatus ||
+                          p.currentIndexForMainCategoryEvent !=
+                              c.currentIndexForMainCategoryEvent);
+
+                      return rebuild;
+                    },
+                    builder: (context, categoryState) {
+                      String? currentSlug = appState.tabIndex != -1
+                          ? (categoryState.mainCategoriesResponseModel?.data
+                                  ?.mainCategories?[appState.tabIndex].slug ??
+                              "Empty")
+                          : "Empty";
+                      debugPrint(
+                          "..............${categoryState.getHomeBoutiquesPaginationObjectByMainCategory.keys.toList()}.................${(categoryState.getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]?.items.length ?? 0)}");
+
+                      if ((categoryState
                                       .getHomeBoutiquesPaginationObjectByMainCategory[
                                           currentSlug]
-                                      ?.paginationStatus !=
-                                  c
+                                      ?.paginationStatus ==
+                                  PaginationStatus.loading ||
+                              categoryState
                                       .getHomeBoutiquesPaginationObjectByMainCategory[
                                           currentSlug]
-                                      ?.paginationStatus ||
-                              p.currentIndexForMainCategoryEvent !=
-                                  c.currentIndexForMainCategoryEvent);
+                                      ?.paginationStatus ==
+                                  PaginationStatus.initial) &&
+                          (categoryState
+                                      .getHomeBoutiquesPaginationObjectByMainCategory[
+                                          currentSlug]
+                                      ?.items
+                                      .length ??
+                                  0) ==
+                              0) {
+                        debugPrint(
+                            "1111111111999999999999999999..${(categoryState.getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]?.items.length ?? 0)}");
 
-                          return rebuild;
-                        },
-                        builder: (context, categoryState) {
-                          String? currentSlug = appState.tabIndex != -1
-                              ? (categoryState
-                                      .mainCategoriesResponseModel
-                                      ?.data
-                                      ?.mainCategories?[appState.tabIndex]
-                                      .slug ??
-                                  "Empty")
-                              : "Empty";
-                          print(
-                              "..............${categoryState.getHomeBoutiquesPaginationObjectByMainCategory.keys.toList()}.................${(categoryState.getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]?.items.length ?? 0)}");
-
-                          if ((categoryState
-                                          .getHomeBoutiquesPaginationObjectByMainCategory[
-                                              currentSlug]
-                                          ?.paginationStatus ==
-                                      PaginationStatus.loading ||
-                                  categoryState
-                                          .getHomeBoutiquesPaginationObjectByMainCategory[
-                                              currentSlug]
-                                          ?.paginationStatus ==
-                                      PaginationStatus.initial) &&
-                              (categoryState
-                                          .getHomeBoutiquesPaginationObjectByMainCategory[
-                                              currentSlug]
-                                          ?.items
-                                          .length ??
-                                      0) ==
-                                  0) {
-                            print(
-                                "111111111111111111111111999999999999999999999999999999999999999999999..${(categoryState.getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]?.items.length ?? 0)}");
-                            return sliverListSeparated(
-                              key: TestVariables.kTestMode
-                                  ? Key(WidgetsKeys.boutiquesFailureStatusKey)
-                                  : null,
-                              itemBuilder: (_, index) => Padding(
-                                padding:
-                                    HWEdgeInsets.symmetric(horizontal: 15.w),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  child: Shimmer.fromColors(
-                                    baseColor: Colors.grey.shade300,
-                                    highlightColor: Colors.grey.shade100,
-                                    enabled: true,
-                                    child: Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        Container(
-                                            width: 1.sw,
-                                            height: 235,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(20.0),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: const Color(0xff000000)
-                                                      .withOpacity(0.4),
-                                                  offset: Offset(0, 3),
-                                                  blurRadius: 6,
-                                                )
-                                              ],
-                                            )),
-                                        Container(
-                                            margin: EdgeInsets.symmetric(
-                                                horizontal: 20),
-                                            width: 1.sw,
-                                            height: 135,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(20.0),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: const Color(0xff000000)
-                                                      .withOpacity(0.6),
-                                                  offset: Offset(0, 3),
-                                                  blurRadius: 6,
-                                                )
-                                              ],
-                                            )),
-                                        Positioned(
-                                          bottom: 30,
-                                          child: Row(
-                                            children: List.generate(
-                                                5,
-                                                (index) => CircleAvatar(
-                                                      radius: 20,
-                                                    )),
-                                          ),
-                                        )
-                                      ],
-                                    ),
+                        return ListView.separated(
+                          key: TestVariables.kTestMode
+                              ? Key(WidgetsKeys.boutiquesFailureStatusKey)
+                              : null,
+                          itemCount: 10,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: HWEdgeInsets.symmetric(horizontal: 15.w),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(20.0),
+                                child: Shimmer.fromColors(
+                                  baseColor: Colors.grey.shade300,
+                                  highlightColor: Colors.grey.shade100,
+                                  enabled: true,
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      Container(
+                                          width: 1.sw,
+                                          height: 235,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(20.0),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: const Color(0xff000000)
+                                                    .withOpacity(0.4),
+                                                offset: Offset(0, 3),
+                                                blurRadius: 6,
+                                              )
+                                            ],
+                                          )),
+                                      Container(
+                                          margin: EdgeInsets.symmetric(
+                                              horizontal: 20),
+                                          width: 1.sw,
+                                          height: 135,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(20.0),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: const Color(0xff000000)
+                                                    .withOpacity(0.6),
+                                                offset: Offset(0, 3),
+                                                blurRadius: 6,
+                                              )
+                                            ],
+                                          )),
+                                      Positioned(
+                                        bottom: 30,
+                                        child: Row(
+                                          children: List.generate(
+                                              5,
+                                              (index) => CircleAvatar(
+                                                    radius: 20,
+                                                  )),
+                                        ),
+                                      )
+                                    ],
                                   ),
                                 ),
                               ),
-                              //HomePageCard(showWhite: index % 2 == 0),
-                              separator: SizedBox(
-                                height: 20,
-                              ),
-                              childCount: 10,
                             );
-                          }
-                          return sliverListSeparated(
-                            key: TestVariables.kTestMode
-                                ? Key(WidgetsKeys.boutiquesSuccessStatusKey)
-                                : reRenderingListViewKey[currentSlug],
-                            itemBuilder: (_, index) => Padding(
-                                padding:
-                                    HWEdgeInsets.symmetric(horizontal: 15.w),
-                                child: categoryState
-                                        .getHomeBoutiquesPaginationObjectByMainCategory[
-                                            currentSlug]!
-                                        .items[index]
-                                        .banners
-                                        .isNullOrEmpty
-                                    ? SizedBox.shrink()
-                                    : HomePageCard2(
-                                        isShowPanelForVerified:
-                                            widget.isShowPanelForVerified,
-                                        key: TestVariables.kTestMode
-                                            ? Key(
-                                                '${WidgetsKeys.boutiqueCardKey}$index')
-                                            : null,
-                                        category_Slug: currentSlug,
-                                        withSlidingImages: categoryState
-                                                .getHomeBoutiquesPaginationObjectByMainCategory[
-                                                    currentSlug]!
-                                                .items[index]
-                                                .banners!
-                                                .length >
-                                            1,
-                                        boutique: categoryState
-                                            .getHomeBoutiquesPaginationObjectByMainCategory[
-                                                currentSlug]!
-                                            .items[index],
-                                      )
-
-                                //HomePageCard(showWhite: index % 2 == 0),
-                                ),
-                            separator: SizedBox(
+                          },
+                          separatorBuilder: (context, index) {
+                            return SizedBox(
                               height: 20,
-                            ),
-                            childCount: categoryState
+                            );
+                          },
+                        );
+                      }
+                      return ListView.separated(
+                        itemCount: categoryState
+                                        .getHomeBoutiquesPaginationObjectByMainCategory[
+                                    currentSlug] ==
+                                null
+                            ? 0
+                            : categoryState
                                     .getHomeBoutiquesPaginationObjectByMainCategory[
-                                        currentSlug]
-                                    ?.items
-                                    .length ??
-                                0,
+                                        currentSlug]!
+                                    .items
+                                    .length +
+                                1,
+                        // categoryState
+                        //         .getHomeBoutiquesPaginationObjectByMainCategory[
+                        //             currentSlug]
+                        //         ?.items
+                        //         .length ??
+                        //     0,
+                        physics: const ClampingScrollPhysics(
+                            parent: AlwaysScrollableScrollPhysics()),
+                        key: TestVariables.kTestMode
+                            ? Key(WidgetsKeys.boutiquesSuccessStatusKey)
+                            : reRenderingListViewKey[currentSlug],
+                        controller: scrollController,
+                        itemBuilder: (context, index) {
+                          return index == 0
+                              ? Column(
+                                  children: [
+                                    _isLoading
+                                        ? Center(
+                                            child: CircularProgressIndicator(),
+                                          ) // إظهار مؤشر التحميل
+                                        : SizedBox.shrink(),
+                                    /////////////////////////////////
+                                    SizedBox(
+                                      height: 90,
+                                    ),
+                                    /////////////////////////////////
+                                    storySection(currentLocale, context),
+                                  ],
+                                )
+                              : Padding(
+                                  padding:
+                                      HWEdgeInsets.symmetric(horizontal: 15.w),
+                                  child: categoryState
+                                          .getHomeBoutiquesPaginationObjectByMainCategory[
+                                              currentSlug]!
+                                          .items[index - 1]
+                                          .banners
+                                          .isNullOrEmpty
+                                      ? SizedBox.shrink()
+                                      : HomePageCard2(
+                                          isShowPanelForVerified:
+                                              widget.isShowPanelForVerified,
+                                          key: TestVariables.kTestMode
+                                              ? Key(
+                                                  '${WidgetsKeys.boutiqueCardKey}${index - 1}')
+                                              : null,
+                                          category_Slug: currentSlug,
+                                          withSlidingImages: categoryState
+                                                  .getHomeBoutiquesPaginationObjectByMainCategory[
+                                                      currentSlug]!
+                                                  .items[index - 1]
+                                                  .banners!
+                                                  .length >
+                                              1,
+                                          boutique: categoryState
+                                              .getHomeBoutiquesPaginationObjectByMainCategory[
+                                                  currentSlug]!
+                                              .items[index - 1],
+                                        )
+
+                                  //HomePageCard(showWhite: index % 2 == 0),
+                                  );
+                        },
+                        separatorBuilder: (context, index) {
+                          return SizedBox(
+                            height: 20,
                           );
                         },
                       );
                     },
-                  ),
-                  SliverToBoxAdapter(
-                    child: 20.verticalSpace,
-                  ),
-                  BlocBuilder<AppBloc, AppState>(
-                    builder: (context, appState) {
-                      return BlocBuilder<CategoryBloc, CategoryState>(
-                          buildWhen: (p, c) {
-                        String? currentSlug = appState.tabIndex != -1
-                            ? (c.mainCategoriesResponseModel?.data
-                                    ?.mainCategories?[appState.tabIndex].slug ??
-                                "Empty")
-                            : "Empty";
-                        bool rebuild = (p
-                                    .getHomeBoutiquesPaginationObjectByMainCategory[
-                                        currentSlug]
-                                    ?.paginationStatus !=
-                                c
-                                    .getHomeBoutiquesPaginationObjectByMainCategory[
-                                        currentSlug]
-                                    ?.paginationStatus ||
-                            p.currentIndexForMainCategoryEvent !=
-                                c.currentIndexForMainCategoryEvent);
-                        return rebuild;
-                      }, builder: (context, state) {
-                        String? currentSlug = appState.tabIndex != -1
-                            ? (state.mainCategoriesResponseModel?.data
-                                    ?.mainCategories?[appState.tabIndex].slug ??
-                                "Empty")
-                            : "Empty";
-                        if (((state
-                                        .getHomeBoutiquesPaginationObjectByMainCategory[
-                                            currentSlug]
-                                        ?.items
-                                        .length ??
-                                    0) >
-                                9) &&
-                            state
-                                    .getHomeBoutiquesPaginationObjectByMainCategory[
-                                        currentSlug]
-                                    ?.paginationStatus ==
-                                PaginationStatus.loading) {
-                          return SliverToBoxAdapter(
-                            child: Center(
-                              child: TrydosLoader(),
-                            ),
-                          );
-                        }
-                        return SliverToBoxAdapter();
-                      });
-                    },
-                  ),
-                  SliverToBoxAdapter(
-                    child: 20.verticalSpace,
-                  ),
-                ],
+                  );
+                },
               ),
+
+              ///////////////////////////
+              // CustomScrollView(
+              //   key: TestVariables.kTestMode
+              //       ? Key(WidgetsKeys.homepageScrollKey)
+              //       : null,
+              //   controller: scrollController,
+              //   physics: const ClampingScrollPhysics(
+              //       parent: AlwaysScrollableScrollPhysics()),
+              //   scrollBehavior: const CupertinoScrollBehavior(),
+              //   slivers: [
+              //     SliverToBoxAdapter(
+              //       child: _isLoading
+              //           ? Center(
+              //               child:
+              //                   CircularProgressIndicator()) // إظهار مؤشر التحميل
+              //           : SizedBox.shrink(),
+              //     ),
+              //     SliverToBoxAdapter(child: 50.verticalSpace),
+              //     SliverToBoxAdapter(
+              //       child: 40.verticalSpace,
+              //     ),
+              //     SliverToBoxAdapter(
+              //       child: Stack(
+              //         children: [
+              //           StoriesList(
+              //             isShowPanelForVerified: widget.isShowPanelForVerified,
+              //           ), // height 220
+              //           Positioned(
+              //               top: 0,
+              //               right:
+              //                   currentLocale.languageCode == "ar" ? 30 : null,
+              //               left:
+              //                   currentLocale.languageCode == "ar" ? null : 30,
+              //               child: Row(
+              //                 mainAxisSize: MainAxisSize.min,
+              //                 children: [
+              //                   SvgPicture.asset(
+              //                     AppAssets.storyFilmSvg,
+              //                     width: 20,
+              //                     height: 20,
+              //                   ),
+              //                   SizedBox(
+              //                     width: 7,
+              //                   ),
+              //                   MyTextWidget(
+              //                     LocaleKeys.story.tr(),
+              //                     style: context.textTheme.titleLarge?.rr
+              //                         .copyWith(
+              //                             height: 0.86,
+              //                             color: Color(0xff3C3C3C)),
+              //                   )
+              //                 ],
+              //               ))
+              //         ],
+              //       ),
+              //     ),
+              //     SliverToBoxAdapter(
+              //       child: 5.verticalSpace,
+              //     ),
+              //     BlocBuilder<AppBloc, AppState>(
+              //       builder: (context, appState) {
+              //         return BlocBuilder<CategoryBloc, CategoryState>(
+              //           buildWhen: (p, c) {
+              //             String? currentSlug = appState.tabIndex != -1
+              //                 ? (c
+              //                         .mainCategoriesResponseModel
+              //                         ?.data
+              //                         ?.mainCategories?[appState.tabIndex]
+              //                         .slug ??
+              //                     "Empty")
+              //                 : "Empty";
+              //             bool rebuild = (p
+              //                         .getHomeBoutiquesPaginationObjectByMainCategory[
+              //                             currentSlug]
+              //                         ?.paginationStatus !=
+              //                     c
+              //                         .getHomeBoutiquesPaginationObjectByMainCategory[
+              //                             currentSlug]
+              //                         ?.paginationStatus ||
+              //                 p.currentIndexForMainCategoryEvent !=
+              //                     c.currentIndexForMainCategoryEvent);
+
+              //             return rebuild;
+              //           },
+              //           builder: (context, categoryState) {
+              //             String? currentSlug = appState.tabIndex != -1
+              //                 ? (categoryState
+              //                         .mainCategoriesResponseModel
+              //                         ?.data
+              //                         ?.mainCategories?[appState.tabIndex]
+              //                         .slug ??
+              //                     "Empty")
+              //                 : "Empty";
+              //             print(
+              //                 "..............${categoryState.getHomeBoutiquesPaginationObjectByMainCategory.keys.toList()}.................${(categoryState.getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]?.items.length ?? 0)}");
+
+              //             if ((categoryState
+              //                             .getHomeBoutiquesPaginationObjectByMainCategory[
+              //                                 currentSlug]
+              //                             ?.paginationStatus ==
+              //                         PaginationStatus.loading ||
+              //                     categoryState
+              //                             .getHomeBoutiquesPaginationObjectByMainCategory[
+              //                                 currentSlug]
+              //                             ?.paginationStatus ==
+              //                         PaginationStatus.initial) &&
+              //                 (categoryState
+              //                             .getHomeBoutiquesPaginationObjectByMainCategory[
+              //                                 currentSlug]
+              //                             ?.items
+              //                             .length ??
+              //                         0) ==
+              //                     0) {
+              //               debugPrint(
+              //                   "1111111111999999999999999999..${(categoryState.getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]?.items.length ?? 0)}");
+              //               return sliverListSeparated(
+              //                 key: TestVariables.kTestMode
+              //                     ? Key(WidgetsKeys.boutiquesFailureStatusKey)
+              //                     : null,
+              //                 itemBuilder: (_, index) => Padding(
+              //                   padding:
+              //                       HWEdgeInsets.symmetric(horizontal: 15.w),
+              //                   child: ClipRRect(
+              //                     borderRadius: BorderRadius.circular(20.0),
+              //                     child: Shimmer.fromColors(
+              //                       baseColor: Colors.grey.shade300,
+              //                       highlightColor: Colors.grey.shade100,
+              //                       enabled: true,
+              //                       child: Stack(
+              //                         alignment: Alignment.center,
+              //                         children: [
+              //                           Container(
+              //                               width: 1.sw,
+              //                               height: 235,
+              //                               decoration: BoxDecoration(
+              //                                 borderRadius:
+              //                                     BorderRadius.circular(20.0),
+              //                                 boxShadow: [
+              //                                   BoxShadow(
+              //                                     color: const Color(0xff000000)
+              //                                         .withOpacity(0.4),
+              //                                     offset: Offset(0, 3),
+              //                                     blurRadius: 6,
+              //                                   )
+              //                                 ],
+              //                               )),
+              //                           Container(
+              //                               margin: EdgeInsets.symmetric(
+              //                                   horizontal: 20),
+              //                               width: 1.sw,
+              //                               height: 135,
+              //                               decoration: BoxDecoration(
+              //                                 borderRadius:
+              //                                     BorderRadius.circular(20.0),
+              //                                 boxShadow: [
+              //                                   BoxShadow(
+              //                                     color: const Color(0xff000000)
+              //                                         .withOpacity(0.6),
+              //                                     offset: Offset(0, 3),
+              //                                     blurRadius: 6,
+              //                                   )
+              //                                 ],
+              //                               )),
+              //                           Positioned(
+              //                             bottom: 30,
+              //                             child: Row(
+              //                               children: List.generate(
+              //                                   5,
+              //                                   (index) => CircleAvatar(
+              //                                         radius: 20,
+              //                                       )),
+              //                             ),
+              //                           )
+              //                         ],
+              //                       ),
+              //                     ),
+              //                   ),
+              //                 ),
+              //                 //HomePageCard(showWhite: index % 2 == 0),
+              //                 separator: SizedBox(
+              //                   height: 20,
+              //                 ),
+              //                 childCount: 10,
+              //               );
+              //             }
+              //             return sliverListSeparated(
+              //               key: TestVariables.kTestMode
+              //                   ? Key(WidgetsKeys.boutiquesSuccessStatusKey)
+              //                   : reRenderingListViewKey[currentSlug],
+              //               itemBuilder: (_, index) => Padding(
+              //                   padding:
+              //                       HWEdgeInsets.symmetric(horizontal: 15.w),
+              //                   child: categoryState
+              //                           .getHomeBoutiquesPaginationObjectByMainCategory[
+              //                               currentSlug]!
+              //                           .items[index]
+              //                           .banners
+              //                           .isNullOrEmpty
+              //                       ? SizedBox.shrink()
+              //                       : HomePageCard2(
+              //                           isShowPanelForVerified:
+              //                               widget.isShowPanelForVerified,
+              //                           key: TestVariables.kTestMode
+              //                               ? Key(
+              //                                   '${WidgetsKeys.boutiqueCardKey}$index')
+              //                               : null,
+              //                           category_Slug: currentSlug,
+              //                           withSlidingImages: categoryState
+              //                                   .getHomeBoutiquesPaginationObjectByMainCategory[
+              //                                       currentSlug]!
+              //                                   .items[index]
+              //                                   .banners!
+              //                                   .length >
+              //                               1,
+              //                           boutique: categoryState
+              //                               .getHomeBoutiquesPaginationObjectByMainCategory[
+              //                                   currentSlug]!
+              //                               .items[index],
+              //                         )
+
+              //                   //HomePageCard(showWhite: index % 2 == 0),
+              //                   ),
+              //               separator: SizedBox(
+              //                 height: 20,
+              //               ),
+              //               childCount: categoryState
+              //                       .getHomeBoutiquesPaginationObjectByMainCategory[
+              //                           currentSlug]
+              //                       ?.items
+              //                       .length ??
+              //                   0,
+              //             );
+              //           },
+              //         );
+              //       },
+              //     ),
+              //     SliverToBoxAdapter(
+              //       child: 20.verticalSpace,
+              //     ),
+              //     BlocBuilder<AppBloc, AppState>(
+              //       builder: (context, appState) {
+              //         return BlocBuilder<CategoryBloc, CategoryState>(
+              //             buildWhen: (p, c) {
+              //           String? currentSlug = appState.tabIndex != -1
+              //               ? (c.mainCategoriesResponseModel?.data
+              //                       ?.mainCategories?[appState.tabIndex].slug ??
+              //                   "Empty")
+              //               : "Empty";
+              //           bool rebuild = (p
+              //                       .getHomeBoutiquesPaginationObjectByMainCategory[
+              //                           currentSlug]
+              //                       ?.paginationStatus !=
+              //                   c
+              //                       .getHomeBoutiquesPaginationObjectByMainCategory[
+              //                           currentSlug]
+              //                       ?.paginationStatus ||
+              //               p.currentIndexForMainCategoryEvent !=
+              //                   c.currentIndexForMainCategoryEvent);
+              //           return rebuild;
+              //         }, builder: (context, state) {
+              //           String? currentSlug = appState.tabIndex != -1
+              //               ? (state.mainCategoriesResponseModel?.data
+              //                       ?.mainCategories?[appState.tabIndex].slug ??
+              //                   "Empty")
+              //               : "Empty";
+              //           if (((state
+              //                           .getHomeBoutiquesPaginationObjectByMainCategory[
+              //                               currentSlug]
+              //                           ?.items
+              //                           .length ??
+              //                       0) >
+              //                   9) &&
+              //               state
+              //                       .getHomeBoutiquesPaginationObjectByMainCategory[
+              //                           currentSlug]
+              //                       ?.paginationStatus ==
+              //                   PaginationStatus.loading) {
+              //             return SliverToBoxAdapter(
+              //               child: Center(
+              //                 child: TrydosLoader(),
+              //               ),
+              //             );
+              //           }
+              //           return SliverToBoxAdapter();
+              //         });
+              //       },
+              //     ),
+              //     SliverToBoxAdapter(
+              //       child: 20.verticalSpace,
+              //     ),
+              //   ],
+              // ),
               Positioned(
                 bottom: 0,
                 child: ValueListenableBuilder<bool>(
@@ -855,5 +1065,38 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     ));
+  }
+
+  Widget storySection(Locale currentLocale, BuildContext context) {
+    return Stack(
+      children: [
+        StoriesList(
+          isShowPanelForVerified: widget.isShowPanelForVerified,
+        ), // height 220
+        Positioned(
+          top: 0,
+          right: currentLocale.languageCode == "ar" ? 30 : null,
+          left: currentLocale.languageCode == "ar" ? null : 30,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SvgPicture.asset(
+                AppAssets.storyFilmSvg,
+                width: 20,
+                height: 20,
+              ),
+              SizedBox(
+                width: 7,
+              ),
+              MyTextWidget(
+                LocaleKeys.story.tr(),
+                style: context.textTheme.titleLarge?.rr
+                    .copyWith(height: 0.86, color: Color(0xff3C3C3C)),
+              )
+            ],
+          ),
+        )
+      ],
+    );
   }
 }

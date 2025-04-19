@@ -100,13 +100,19 @@ class _PaymentMethodState extends State<PaymentMethod> {
                     children: [
                       SvgPicture.asset(AppAssets.paymentMethodSvg),
                       SizedBox(width: 10.w),
-                      Text(
-                        "${LocaleKeys.payment_method.tr()} ",
-                        style: context.textTheme.bodyMedium?.rr.copyWith(
-                            color: const Color(0xff1D1D1D),
-                            letterSpacing: 0.18,
-                            fontSize: 14.sp,
-                            height: 1.33),
+                      InkWell(
+                        onTap: () {
+                          print(widget.availablePaymentMethod);
+                          print(_paymentMethods);
+                        },
+                        child: Text(
+                          "${LocaleKeys.payment_method.tr()} ",
+                          style: context.textTheme.bodyMedium?.rr.copyWith(
+                              color: const Color(0xff1D1D1D),
+                              letterSpacing: 0.18,
+                              fontSize: 14.sp,
+                              height: 1.33),
+                        ),
                       ),
                     ],
                   ),
@@ -373,7 +379,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                         ),
                   //////////////////////
                   (!(_paymentMethods.contains(PaymentMethods.cod)) &&
-                              widget.fromPalceOrder) ||
+                              (widget.fromPalceOrder)) ||
                           !widget.availablePaymentMethod
                               .contains(PaymentMethods.cod)
                       ? SizedBox.shrink()

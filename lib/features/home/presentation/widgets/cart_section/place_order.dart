@@ -29,6 +29,7 @@ import '../../../data/models/place_order_model.dart';
 import '../../../domain/use_cases/place_order_usecase.dart';
 import '../../manager/homeBloc/home_state.dart';
 import '../../manager/orderBloc/order_bloc.dart';
+import '../../manager/orderBloc/order_event.dart';
 import '../../manager/orderBloc/order_state.dart';
 import 'payment_webview.dart';
 
@@ -147,7 +148,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                   payByWallet: payByWallet,
                 );
 
-                BlocProvider.of<HomeBloc>(context).add(
+                BlocProvider.of<OrderBloc>(context).add(
                   PlaceOrderEvent(placeOrderParams: placeOrderParams),
                 );
               } else {
@@ -271,15 +272,15 @@ class _PlaceOrderState extends State<PlaceOrder> {
                     widget.paymentMethods.value =
                         List.from(widget.paymentMethods.value)..clear();
 
-                    String paymentMethod = '';
+                    String paymentMethod = data[0].paymentMethod?.value ?? '';
 
-                    if (data[0].paymentMethod == 'trydos_wallet') {
-                      paymentMethod = PaymentMethods.trydosWallet;
-                    } else if (data[0].paymentMethod == 'cash_on_delivery') {
-                      paymentMethod = PaymentMethods.cod;
-                    } else {
-                      paymentMethod = data[0].paymentMethod?.value ?? '';
-                    }
+                    // if (data[0].paymentMethod == 'trydos_wallet') {
+                    //   paymentMethod = PaymentMethods.trydosWallet;
+                    // } else if (data[0].paymentMethod == 'cash_on_delivery') {
+                    //   paymentMethod = PaymentMethods.cod;
+                    // } else {
+                    //   paymentMethod = data[0].paymentMethod?.value ?? '';
+                    // }
 
                     widget.paymentMethods.value =
                         List.from(widget.paymentMethods.value)
@@ -390,15 +391,15 @@ class _PlaceOrderState extends State<PlaceOrder> {
                     widget.paymentMethods.value =
                         List.from(widget.paymentMethods.value)..clear();
 
-                    String paymentMethod = '';
+                    String paymentMethod = data[0].paymentMethod?.value ?? '';
 
-                    if (data[0].paymentMethod == 'trydos_wallet') {
-                      paymentMethod = PaymentMethods.trydosWallet;
-                    } else if (data[0].paymentMethod == 'cash_on_delivery') {
-                      paymentMethod = PaymentMethods.cod;
-                    } else if (data[0].paymentMethod == 'crypto') {
-                      paymentMethod = PaymentMethods.crypto;
-                    }
+                    // if (data[0].paymentMethod == 'trydos_wallet') {
+                    //   paymentMethod = PaymentMethods.trydosWallet;
+                    // } else if (data[0].paymentMethod == 'cash_on_delivery') {
+                    //   paymentMethod = PaymentMethods.cod;
+                    // } else if (data[0].paymentMethod == 'crypto') {
+                    //   paymentMethod = PaymentMethods.crypto;
+                    // }
 
                     widget.paymentMethods.value =
                         List.from(widget.paymentMethods.value)
