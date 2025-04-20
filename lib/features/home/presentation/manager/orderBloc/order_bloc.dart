@@ -380,30 +380,86 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
         List<OrderListModel> orders =
             List.of(getOrdersModel[event.status]!.items);
 
+        List<OrderListModel> ordersFromApi = r.data?.orders ?? [];
+
+        final seen = <String>{};
+        final List<String> duplicatesOrderGroupIds = [];
+
+        for (var item in ordersFromApi) {
+          if (!seen.add(item.orderGroupId ?? '')) {
+            duplicatesOrderGroupIds.add(item.orderGroupId ?? '');
+          }
+        }
+
+        for (var duplicateId in duplicatesOrderGroupIds) {
+          List<OrderListModel> ordersWithSameId = ordersFromApi.where(
+            (element) {
+              return element.orderGroupId == duplicateId;
+            },
+          ).toList();
+          ///////////////////////////
+          OrderListModel firstOrder = ordersWithSameId[0];
+          ////////////////////
+          ordersWithSameId.remove(firstOrder);
+          ////////////////////////////////
+          List<OrderListDetailModel> aggregatedDetails =
+              firstOrder.details ?? [];
+
+          double firstOrderAmount = firstOrder.orderAmount ?? 0;
+          double firstOrderShippingCost = firstOrder.shippingCost ?? 0;
+
+          double aggregatedAmount = firstOrderAmount;
+          double aggregatedshippingCost = firstOrderShippingCost;
+
+          for (var order in ordersWithSameId) {
+            double orderAmount = order.orderAmount ?? 0;
+            double shippingCost = order.shippingCost ?? 0;
+
+            aggregatedAmount = aggregatedAmount + orderAmount;
+            aggregatedshippingCost = aggregatedshippingCost + shippingCost;
+
+            for (var detail in order.details ?? []) {
+              aggregatedDetails.add(detail);
+            }
+          }
+
+          OrderListModel aggregatedOrder = firstOrder.copyWith(
+            orderAmount: aggregatedAmount,
+            shippingCost: aggregatedshippingCost,
+            details: aggregatedDetails,
+          );
+
+          ordersFromApi.removeWhere(
+            (element) => element.orderGroupId == duplicateId,
+          );
+          ordersFromApi.add(aggregatedOrder);
+        }
         ////////////////////////////
         emit(
-          state.copyWith(getOrdersModel: getOrdersModel.map(
-            (key, value) {
-              if (key == event.status) {
-                return MapEntry(
-                  key,
-                  value.copyWith(
-                    hasReachedMax:
-                        (r.data!.orders?.length ?? kPageSize) < kPageSize,
-                    paginationStatus: PaginationStatus.success,
-                    page: event.getWithPagination
-                        ? getOrdersModel[event.status]!.page + 1
-                        : 2,
-                    items: !event.getWithPagination
-                        ? [...r.data!.orders ?? []]
-                        : [...orders, ...r.data!.orders ?? []],
-                  ),
-                );
-              } else {
-                return MapEntry(key, value);
-              }
-            },
-          )),
+          state.copyWith(
+            getOrdersModel: getOrdersModel.map(
+              (key, value) {
+                if (key == event.status) {
+                  return MapEntry(
+                    key,
+                    value.copyWith(
+                      hasReachedMax:
+                          (r.data!.orders?.length ?? kPageSize) < kPageSize,
+                      paginationStatus: PaginationStatus.success,
+                      page: event.getWithPagination
+                          ? getOrdersModel[event.status]!.page + 1
+                          : 2,
+                      items: !event.getWithPagination
+                          ? [...ordersFromApi]
+                          : [...orders, ...ordersFromApi],
+                    ),
+                  );
+                } else {
+                  return MapEntry(key, value);
+                }
+              },
+            ),
+          ),
         );
       },
     );
