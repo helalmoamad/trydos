@@ -200,7 +200,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                       double walletBalance =
                           orderState.customerWalletModel == null
                               ? 0
-                              : orderState.customerWalletModel!.data
+                              : orderState.customerWalletModel?.data
                                       .totalWalletBalance ??
                                   0;
                       // *
