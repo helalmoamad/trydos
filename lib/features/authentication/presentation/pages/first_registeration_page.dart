@@ -242,7 +242,7 @@ class _RegistrationPageState extends State<RegistrationPage>
                                       animate.value = true;
                                       pageContent.value = 2;
                                       pageController.animateToPage(2,
-                                          duration: Duration(milliseconds: 500),
+                                          duration: Duration(milliseconds: 100),
                                           curve: Curves.easeInOut);
                                     },
                                     goToCreateAccount: () {

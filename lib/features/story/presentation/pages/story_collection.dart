@@ -346,8 +346,6 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                           imageFit: BoxFit.contain,
                         );
                       } else {
-                        print(
-                            "!!!!!!!!!!!!!!!!!@@@@@@@@@@@@@@@@@@@@@${state.storiesCollections[widget.collectionIndex].selectedStoriesStatusForCollection}");
                         widget.animatedController.stop();
                         return Container();
                       }

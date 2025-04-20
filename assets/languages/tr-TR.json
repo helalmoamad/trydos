@@ -415,6 +415,6 @@
   "buying": "Satın alma",
   "item_status": "Öğe Durumu",
   "verified": "Doğrulandı",
-  "are_you_sure_you_want_to_change_your_country": "Ülkeyi değiştirmek istediğinizden emin misiniz? \\\\nSepetinizdeki satın alımlarınızın bir kısmı yeni ülkede mevcut olmadığı için kaybolabilir.",
+  "are_you_sure_you_want_to_change_your_country": "Ülkeyi değiştirmek istediğinizden emin misiniz? \nSepetinizdeki satın alımlarınızın bir kısmı yeni ülkede mevcut olmadığı için kaybolabilir.",
   "no_orders_found":"Sipariş bulunamadı"
 }

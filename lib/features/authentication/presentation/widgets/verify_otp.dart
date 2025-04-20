@@ -159,9 +159,6 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
               listener: (context, state) {
                 if (state.verifyOtpSignInStatus ==
                     VerifyOtpSignInStatus.failure) {
-                  print(
-                      "###6666666666666666666666666666666666#################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-
                   if (!widget.fromExpired && !widget.fromProfile) {
                     if (state.signInErrorMessage == 'auth-001') {
                       context.go(
@@ -188,8 +185,6 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                   checkOtp.value = 2;
                 } else if (state.verifyOtpSignInStatus ==
                     VerifyOtpSignInStatus.success) {
-                  print(
-                      "###55555555555555######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
                   checkOtp.value = 1;
 
                   Future.delayed(
@@ -212,9 +207,6 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                 listener: (context, state) {
                   if (state.verifyOtpSignUpStatus ==
                       VerifyOtpSignUpStatus.failure) {
-                    print(
-                        "###5555555563333337777777###########################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-
                     if (state.signUpErrorMessage == 'auth-001') {
                       debugPrint('auth-00122');
                       context.go(
@@ -239,8 +231,6 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                     checkOtp.value = 2;
                   } else if (state.verifyOtpSignUpStatus ==
                       VerifyOtpSignUpStatus.success) {
-                    print(
-                        "#########################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
                     checkOtp.value = 1;
 
                     Future.delayed(

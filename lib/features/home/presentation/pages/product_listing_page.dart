@@ -1405,102 +1405,67 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                         CrossAxisAlignment
                                                                             .center,
                                                                     children: [
-                                                                      Center(
-                                                                        child: Column(
-                                                                            children: [
-                                                                              Row(
-                                                                                mainAxisSize: MainAxisSize.min,
-                                                                                children: [
-                                                                                  widget.boutiqueIcon != null
-                                                                                      ? SvgNetworkWidget(
-                                                                                          svgUrl: widget.boutiqueIcon ?? "",
-                                                                                          height: 20,
-                                                                                        )
-                                                                                      : SizedBox.shrink(),
-                                                                                  SizedBox(
-                                                                                    width: 10,
-                                                                                  ),
-                                                                                  SvgPicture.asset(
-                                                                                    AppAssets.verifiedBadgeSvg,
-                                                                                    height: 15,
-                                                                                    width: 15,
-                                                                                  ),
-                                                                                  SizedBox(
-                                                                                    width: 10,
-                                                                                  ),
-                                                                                  SvgPicture.asset(
-                                                                                    AppAssets.starBadgeSvg,
-                                                                                    height: 15,
-                                                                                    width: 15,
-                                                                                  ),
-                                                                                ],
-                                                                              ),
-                                                                              SizedBox(
-                                                                                height: 5,
-                                                                              ),
-                                                                              Html(key: htmlDescriptionKey, shrinkWrap: true, data: widget.boutiqueDescription ?? '', style: {
-                                                                                "body": Style(margin: Margins.all(0)),
-                                                                                "p": Style(
-                                                                                  margin: Margins.all(0),
+                                                                      DelayedDisplay(
+                                                                        delay: Duration(
+                                                                            milliseconds:
+                                                                                600),
+                                                                        child:
+                                                                            Center(
+                                                                          child:
+                                                                              Column(children: [
+                                                                            Row(
+                                                                              mainAxisSize: MainAxisSize.min,
+                                                                              children: [
+                                                                                widget.boutiqueIcon != null
+                                                                                    ? SvgNetworkWidget(
+                                                                                        svgUrl: widget.boutiqueIcon ?? "",
+                                                                                        height: 20,
+                                                                                      )
+                                                                                    : SizedBox.shrink(),
+                                                                                SizedBox(
+                                                                                  width: 8,
                                                                                 ),
-                                                                              }),
-                                                                              SizedBox(
-                                                                                height: 10,
+                                                                                SvgPicture.asset(
+                                                                                  AppAssets.verifiedBadgeSvg,
+                                                                                  height: 15,
+                                                                                  width: 15,
+                                                                                ),
+                                                                                SizedBox(
+                                                                                  width: 8,
+                                                                                ),
+                                                                                SvgPicture.asset(
+                                                                                  AppAssets.starBadgeSvg,
+                                                                                  height: 15,
+                                                                                  width: 15,
+                                                                                ),
+                                                                              ],
+                                                                            ),
+                                                                            SizedBox(
+                                                                              height: 5,
+                                                                            ),
+                                                                            Html(key: htmlDescriptionKey, shrinkWrap: true, data: widget.boutiqueDescription ?? '', style: {
+                                                                              "body": Style(margin: Margins.all(0)),
+                                                                              "p": Style(
+                                                                                margin: Margins.all(0),
                                                                               ),
-                                                                              widget.withSlidingImages
-                                                                                  ? Container(
-                                                                                      height: 135,
-                                                                                      //color: Colors.red,
-                                                                                      child: CarouselSlider.builder(
-                                                                                          itemCount: widget.banner!.length,
-                                                                                          itemBuilder: (context, index, _) {
-                                                                                            return Padding(
-                                                                                              padding: EdgeInsets.only(
-                                                                                                right: 10,
-                                                                                                left: 10,
-                                                                                              ),
-                                                                                              child: Container(
-                                                                                                height: 135,
-                                                                                                width: 1.sw,
-                                                                                                decoration: BoxDecoration(
-                                                                                                  borderRadius: BorderRadius.circular(15.0),
-                                                                                                  border: Border.all(width: 0.5, color: const Color(0xfffafafa)),
-                                                                                                  boxShadow: [
-                                                                                                    BoxShadow(
-                                                                                                      color: const Color(0x33000000),
-                                                                                                      offset: Offset(0, 3),
-                                                                                                      blurRadius: 10,
-                                                                                                    ),
-                                                                                                  ],
-                                                                                                ),
-                                                                                                child: ClipRRect(
-                                                                                                    borderRadius: BorderRadius.circular(15),
-                                                                                                    child: MyCachedNetworkImage(
-                                                                                                      imageUrl: widget.banner![index].filePath!,
-                                                                                                      imageFit: BoxFit.cover,
-                                                                                                      width: 1.sw,
-                                                                                                      height: 155,
-                                                                                                    )),
-                                                                                              ),
-                                                                                            );
-                                                                                          },
-                                                                                          options: CarouselOptions(
-                                                                                            autoPlay: true,
-                                                                                            autoPlayInterval: Duration(seconds: 6),
-                                                                                            autoPlayAnimationDuration: Duration(seconds: 1),
-                                                                                            initialPage: 0,
-                                                                                            height: 155,
-                                                                                            enableInfiniteScroll: false,
-                                                                                            viewportFraction: 0.85,
-                                                                                          )))
-                                                                                  : Padding(
-                                                                                      padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                                                                                      child: DelayedDisplay(
-                                                                                        delay: Duration(milliseconds: 300),
-                                                                                        child: Stack(
-                                                                                          children: [
-                                                                                            Container(
-                                                                                              height: htmlHeight == 0 ? 0 : 135,
+                                                                            }),
+                                                                            SizedBox(
+                                                                              height: 5,
+                                                                            ),
+                                                                            widget.withSlidingImages
+                                                                                ? Container(
+                                                                                    height: 128,
+                                                                                    //color: Colors.red,
+                                                                                    child: CarouselSlider.builder(
+                                                                                        itemCount: widget.banner!.length,
+                                                                                        itemBuilder: (context, index, _) {
+                                                                                          return Padding(
+                                                                                            padding: EdgeInsets.only(
+                                                                                              right: 10,
+                                                                                              left: 10,
+                                                                                            ),
+                                                                                            child: Container(
+                                                                                              height: 128,
                                                                                               width: 1.sw,
                                                                                               decoration: BoxDecoration(
                                                                                                 borderRadius: BorderRadius.circular(15.0),
@@ -1516,30 +1481,65 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                               child: ClipRRect(
                                                                                                   borderRadius: BorderRadius.circular(15),
                                                                                                   child: MyCachedNetworkImage(
-                                                                                                    imageUrl: widget.boutiqueFirstBanner!,
+                                                                                                    imageUrl: widget.banner![index].filePath!,
                                                                                                     imageFit: BoxFit.cover,
                                                                                                     width: 1.sw,
-                                                                                                    height: 135,
+                                                                                                    height: 128,
                                                                                                   )),
                                                                                             ),
-                                                                                            Container(
-                                                                                              height: htmlHeight == 0 ? 0 : 135,
-                                                                                              width: 1.sw,
-                                                                                              decoration: BoxDecoration(
-                                                                                                borderRadius: BorderRadius.circular(15.0),
-                                                                                                boxShadow: [
-                                                                                                  BoxShadow(color: Colors.white.withOpacity(0.7), offset: Offset(0, 3), blurRadius: 6, inset: true),
-                                                                                                ],
+                                                                                          );
+                                                                                        },
+                                                                                        options: CarouselOptions(
+                                                                                          autoPlay: true,
+                                                                                          autoPlayInterval: Duration(seconds: 6),
+                                                                                          autoPlayAnimationDuration: Duration(seconds: 1),
+                                                                                          initialPage: 0,
+                                                                                          height: 128,
+                                                                                          enableInfiniteScroll: false,
+                                                                                          viewportFraction: 0.85,
+                                                                                        )))
+                                                                                : Padding(
+                                                                                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                                                                                    child: Stack(
+                                                                                      children: [
+                                                                                        Container(
+                                                                                          height: htmlHeight == 0 ? 0 : 135,
+                                                                                          width: 1.sw,
+                                                                                          decoration: BoxDecoration(
+                                                                                            borderRadius: BorderRadius.circular(15.0),
+                                                                                            border: Border.all(width: 0.5, color: const Color(0xfffafafa)),
+                                                                                            boxShadow: [
+                                                                                              BoxShadow(
+                                                                                                color: const Color(0x33000000),
+                                                                                                offset: Offset(0, 3),
+                                                                                                blurRadius: 10,
                                                                                               ),
-                                                                                            ),
-                                                                                          ],
+                                                                                            ],
+                                                                                          ),
+                                                                                          child: ClipRRect(
+                                                                                              borderRadius: BorderRadius.circular(15),
+                                                                                              child: MyCachedNetworkImage(
+                                                                                                imageUrl: widget.boutiqueFirstBanner!,
+                                                                                                imageFit: BoxFit.cover,
+                                                                                                width: 1.sw,
+                                                                                                height: 130,
+                                                                                              )),
                                                                                         ),
-                                                                                      ),
+                                                                                        Container(
+                                                                                          height: htmlHeight == 0 ? 0 : 128,
+                                                                                          width: 1.sw,
+                                                                                          decoration: BoxDecoration(
+                                                                                            borderRadius: BorderRadius.circular(15.0),
+                                                                                            boxShadow: [
+                                                                                              BoxShadow(color: Colors.white.withOpacity(0.7), offset: Offset(0, 3), blurRadius: 6, inset: true),
+                                                                                            ],
+                                                                                          ),
+                                                                                        ),
+                                                                                      ],
                                                                                     ),
-                                                                              SizedBox(
-                                                                                height: 10,
-                                                                              ),
-                                                                            ]),
+                                                                                  ),
+                                                                          ]),
+                                                                        ),
                                                                       )
                                                                     ]),
                                                               );

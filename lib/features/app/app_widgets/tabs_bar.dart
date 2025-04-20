@@ -285,8 +285,6 @@ class _TabsBarState extends State<TabsBar> {
                             newState.theReplyFromGemini &&
                         newState.fromSearchForSearchWithGemini == true)),
             builder: (context, homeState) {
-              print(
-                  "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB////////////////////////fffffffffffffffffffffffffffffffffffffffffffffffffffffff/////////////////////////");
               if ((homeState.theReplyFromGemini ?? '') != "" &&
                   homeState.fromSearchForSearchWithGemini == true) {
                 List<String>? colorsFilter = [];
