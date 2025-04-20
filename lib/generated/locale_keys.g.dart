@@ -462,4 +462,5 @@ abstract class LocaleKeys {
   static const other = 'other';
   static const are_you_sure_you_want_to_change_your_country =
       'are_you_sure_you_want_to_change_your_country';
+  static const no_orders_found = 'no_orders_found';
 }

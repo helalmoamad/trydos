@@ -11,6 +11,7 @@ import '../../../../../common/constant/constant.dart';
 import '../../../../../common/helper/helper_functions.dart';
 import '../../../../../core/data/model/pagination_model.dart';
 import '../../../../../generated/locale_keys.g.dart';
+import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../app/my_cached_network_image.dart';
 import '../../../data/models/get_orders_model.dart';
 import '../../manager/orderBloc/order_bloc.dart';
@@ -155,7 +156,9 @@ class _OrdersPageState extends State<OrdersPage> {
                               state.getOrdersModel[currentStatus.value]?.items
                                       .length ==
                                   0))
-                      ? Center(child: CircularProgressIndicator())
+                      ? Center(
+                          child: TrydosLoader(),
+                        )
                       : Expanded(
                           child: Padding(
                             padding: EdgeInsets.only(bottom: 10.h),
@@ -187,8 +190,22 @@ class _OrdersPageState extends State<OrdersPage> {
                                               .getOrdersModel[
                                                   currentStatus.value]!
                                               .hasReachedMax
-                                          ? Center(child: Text('No More Items'))
-                                          : const CircularProgressIndicator(),
+                                          ? Center(
+                                              child: Text(
+                                                LocaleKeys.no_orders_found.tr(),
+                                                overflow: TextOverflow.ellipsis,
+                                                style: context
+                                                    .textTheme.bodyMedium?.bq
+                                                    .copyWith(
+                                                  color:
+                                                      const Color(0xff8D8D8D),
+                                                  letterSpacing: 0.18,
+                                                  fontSize: 15,
+                                                  height: 1.3,
+                                                ),
+                                              ),
+                                            )
+                                          : Center(child: TrydosLoader()),
                                     );
                                   } else {
                                     return Container();
