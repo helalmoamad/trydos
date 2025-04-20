@@ -63,8 +63,6 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
       try {
-        print(
-            "##################################################@@@@@@@@@@@@@@@@@@@@@@@@@!!!!!!!!!!!!!!!!!!!!!!!!!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@2");
         BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
             errorExption: error.exceptionAsString().toString(),
             errorPath: error.stack.toString().split("#")[1],
@@ -105,25 +103,24 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                 searchText: null,
                 offset: 1));
 
-             Navigator.push(
-                      context,
-                      PageRouteBuilder(
-                        pageBuilder: (_, __, ___) => ProductListingPage(
-                          isShowPanelForVerified: widget.isShowPanelForVerified,
-                          banner: widget.boutique.banners,
-                          withSlidingImages: widget.withSlidingImages,
-                          boutiqueSlug: widget.boutique.slug!,
-                          boutiqueDescription: widget.boutique.description,
-                          boutiqueFirstBanner:
-                              widget.boutique.banners![0].filePath!,
-                          boutiqueIcon: widget.boutique.icon?.filePath ?? "",
-                        ),
-                        transitionsBuilder: (_, __, ___, child) =>
-                            child, // بدون أي حركة
-                        transitionDuration: Duration.zero, // انتقال فوري
-                        reverseTransitionDuration: Duration.zero, // عودة فورية
-                      ),
-                    );
+            Navigator.push(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (_, __, ___) => ProductListingPage(
+                  isShowPanelForVerified: widget.isShowPanelForVerified,
+                  banner: widget.boutique.banners,
+                  withSlidingImages: widget.withSlidingImages,
+                  boutiqueSlug: widget.boutique.slug!,
+                  boutiqueDescription: widget.boutique.description,
+                  boutiqueFirstBanner: widget.boutique.banners![0].filePath!,
+                  boutiqueIcon: widget.boutique.icon?.filePath ?? "",
+                ),
+                transitionsBuilder: (_, __, ___, child) =>
+                    child, // بدون أي حركة
+                transitionDuration: Duration.zero, // انتقال فوري
+                reverseTransitionDuration: Duration.zero, // عودة فورية
+              ),
+            );
 
             ////////////////////////////////////
             FirebaseAnalyticsService.logEventForSession(
@@ -432,34 +429,30 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                 searchText: null,
                                 offset: 1));
 
-                           Navigator.push(
-                                      context,
-                                      PageRouteBuilder(
-                                        pageBuilder: (_, __, ___) =>
-                                            ProductListingPage(
-                                          isShowPanelForVerified:
-                                              widget.isShowPanelForVerified,
-                                          banner: widget.boutique.banners,
-                                          withSlidingImages:
-                                              widget.withSlidingImages,
-                                          boutiqueSlug: widget.boutique.slug!,
-                                          category: null,
-                                          boutiqueDescription:
-                                              widget.boutique.description!,
-                                          boutiqueFirstBanner: widget
-                                              .boutique.banners![0].filePath!,
-                                          boutiqueIcon:
-                                              widget.boutique.icon!.filePath!,
-                                        ),
-                                        transitionsBuilder:
-                                            (_, __, ___, child) =>
-                                                child, // بدون أي حركة
-                                        transitionDuration:
-                                            Duration.zero, // انتقال فوري
-                                        reverseTransitionDuration:
-                                            Duration.zero, // عودة فورية
-                                      ),
-                                    );
+                            Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                pageBuilder: (_, __, ___) => ProductListingPage(
+                                  isShowPanelForVerified:
+                                      widget.isShowPanelForVerified,
+                                  banner: widget.boutique.banners,
+                                  withSlidingImages: widget.withSlidingImages,
+                                  boutiqueSlug: widget.boutique.slug!,
+                                  category: null,
+                                  boutiqueDescription:
+                                      widget.boutique.description!,
+                                  boutiqueFirstBanner:
+                                      widget.boutique.banners![0].filePath!,
+                                  boutiqueIcon: widget.boutique.icon!.filePath!,
+                                ),
+                                transitionsBuilder: (_, __, ___, child) =>
+                                    child, // بدون أي حركة
+                                transitionDuration:
+                                    Duration.zero, // انتقال فوري
+                                reverseTransitionDuration:
+                                    Duration.zero, // عودة فورية
+                              ),
+                            );
                           },
                           child: SvgNetworkWidget(
                             svgUrl: widget
@@ -660,54 +653,45 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                                     searchText: null,
                                                     offset: 1));
 
-                                         Navigator.push(
-                                                      context,
-                                                      PageRouteBuilder(
-                                                        pageBuilder: (_, __,
-                                                                ___) =>
-                                                            ProductListingPage(
-                                                          isShowPanelForVerified:
-                                                              widget
-                                                                  .isShowPanelForVerified,
-                                                          banner: widget
-                                                              .boutique.banners,
-                                                          withSlidingImages: widget
-                                                              .withSlidingImages,
-                                                          boutiqueSlug: widget
-                                                              .boutique.slug!,
-                                                          category: index == 7
-                                                              ? null
-                                                              : widget
-                                                                  .boutique
-                                                                  .mainCategoriesForProductIds![
-                                                                      index]
-                                                                  .categorySlug,
-                                                          boutiqueDescription:
-                                                              widget.boutique
-                                                                  .description,
-                                                          boutiqueFirstBanner:
-                                                              widget
-                                                                  .boutique
-                                                                  .banners![0]
-                                                                  .filePath!,
-                                                          boutiqueIcon: widget
-                                                                  .boutique
-                                                                  .icon
-                                                                  ?.filePath ??
-                                                              "",
-                                                        ),
-                                                        transitionsBuilder: (_,
-                                                                __,
-                                                                ___,
-                                                                child) =>
-                                                            child, // بدون أي حركة
-                                                        transitionDuration: Duration
-                                                            .zero, // انتقال فوري
-                                                        reverseTransitionDuration:
-                                                            Duration
-                                                                .zero, // عودة فورية
-                                                      ),
-                                                    );
+                                            Navigator.push(
+                                              context,
+                                              PageRouteBuilder(
+                                                pageBuilder: (_, __, ___) =>
+                                                    ProductListingPage(
+                                                  isShowPanelForVerified: widget
+                                                      .isShowPanelForVerified,
+                                                  banner:
+                                                      widget.boutique.banners,
+                                                  withSlidingImages:
+                                                      widget.withSlidingImages,
+                                                  boutiqueSlug:
+                                                      widget.boutique.slug!,
+                                                  category: index == 7
+                                                      ? null
+                                                      : widget
+                                                          .boutique
+                                                          .mainCategoriesForProductIds![
+                                                              index]
+                                                          .categorySlug,
+                                                  boutiqueDescription: widget
+                                                      .boutique.description,
+                                                  boutiqueFirstBanner: widget
+                                                      .boutique
+                                                      .banners![0]
+                                                      .filePath!,
+                                                  boutiqueIcon: widget.boutique
+                                                          .icon?.filePath ??
+                                                      "",
+                                                ),
+                                                transitionsBuilder:
+                                                    (_, __, ___, child) =>
+                                                        child, // بدون أي حركة
+                                                transitionDuration: Duration
+                                                    .zero, // انتقال فوري
+                                                reverseTransitionDuration:
+                                                    Duration.zero, // عودة فورية
+                                              ),
+                                            );
                                           },
                                           child: ProductItemCircle(
                                             index: index,

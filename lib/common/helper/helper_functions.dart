@@ -84,8 +84,6 @@ class HelperFunctions {
   }
 
   static Locale getInitLocale() {
-    print(
-        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@${_prefsRepository.language}");
     final devicelang = WidgetsBinding.instance.window.locale.languageCode;
     return _prefsRepository.language == null
         ? mpaLanguageCodeToLocale[devicelang] ?? defaultLocal

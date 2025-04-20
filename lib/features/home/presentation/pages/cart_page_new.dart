@@ -205,9 +205,6 @@ class _CartPageState extends State<CartPage> {
                         current.checkWithGetCartStatus;
               },
               builder: (context, state) {
-                debugPrint(
-                    "444@@@@@@@@@@@@@@@@@@@@@@@@@@!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!${state.currentQuantityForCart}");
-
                 cartImages = [];
 
                 state.cartCollection?.forEach(
