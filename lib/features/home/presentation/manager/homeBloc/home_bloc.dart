@@ -3456,6 +3456,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         );
       },
       (r) async {
+        prefsRepository.setMyProfilePhoto((r.data?.image ?? "").toString());
         showMessage(r.message ?? "",
             foreGroundColor: Colors.white,
             backGroundColor: Colors.black,

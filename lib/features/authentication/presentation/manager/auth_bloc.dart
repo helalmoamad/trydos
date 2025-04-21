@@ -270,6 +270,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             .add(SaveUserInfoFromAuthEvent(userInfo: r.data!.user!));
         _prefsRepository.setVerifiedPhone(r.data?.user?.isPhoneVerified == 1);
         _prefsRepository.setPhoneNumber((r.data?.user?.phone).toString());
+        _prefsRepository
+            .setMyProfilePhoto((r.data?.user?.image ?? "").toString());
         GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
         GetIt.I<HomeBloc>().add(GetCartItemEvent());
         GetIt.I<HomeBloc>().add(GetOldCartItemEvent());
@@ -401,7 +403,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             "*****************************-----------------------------${r.data!.token!}");
         _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
         _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());
-
+        _prefsRepository
+            .setMyProfilePhoto((r.data?.user?.image ?? "").toString());
         add(LoginToStoriesEvent(
           originalUserId: r.data!.user!.id!.toString(),
           otpIdToken: r.data!.idToken!,
@@ -471,7 +474,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
       _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());
-
+      _prefsRepository
+          .setMyProfilePhoto((r.data?.user?.image ?? "").toString());
       add(LoginToStoriesEvent(
         originalUserId: r.data!.user!.id!.toString(),
         otpIdToken: r.data!.idToken!,
@@ -531,6 +535,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
       isFailedTheFirstTime.remove('RegisterGuestEvent');
       _prefsRepository.setMarketToken(r.data!.token!);
+      _prefsRepository
+          .setMyProfilePhoto((r.data?.user?.image ?? "").toString());
       _prefsRepository.setMyMarketName("guest");
       _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
       GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());

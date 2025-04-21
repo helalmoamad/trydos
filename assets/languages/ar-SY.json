@@ -388,7 +388,7 @@
   "kg": "كغ",
   "cm": "سم",
   "profile_country": "الملف الشخصي | البلد",
-  "we_operate_in_the_countries": "نحن نعمل في البلدان المدرجة أدناه وفقًا لظروف البلدان \nولدينا مكاتب رسمية",
+  "we_operate_in_the_countries": "نحن نعمل في البلدان المدرجة أدناه وفقًا لظروف البلدان ولدينا مكاتب رسمية",
   "available_country": "البلد المتاح",
   "coming_soon_country": "قريبا البلد",
   "select_the_part_of_the_image": "قم بتحديد جزء الصورة التي تريدها أن تظهر في ملفك الشخصي",
@@ -417,5 +417,9 @@
   "item_status": "حالة العنصر",
   "verified": "تم التحقق",
   "are_you_sure_you_want_to_change_your_country": "هل انت متأكد من تغيير البلد ؟ \nربما تفقد بعض مشترياتك في السلة لكونها غير متوفرة بالبلد الجديد",
-  "no_orders_found":"لا يوجد طلبات"
+  "no_orders_found": "لا يوجد طلبات",
+  "we_work_in_the_languages_listed_below": "نحن نعمل في هذه اللغات المدرجة أدناه",
+  "language": "اللغة",
+  "available_language": "اللغة المتاحة",
+  "profile_language": "الملف الشخصي | اللغة"
 }

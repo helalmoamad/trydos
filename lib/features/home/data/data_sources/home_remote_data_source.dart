@@ -17,6 +17,7 @@ import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_
 import 'package:trydos/features/home/data/models/get_old_cart_model.dart';
 import 'package:trydos/features/home/data/models/get_only_message_from_api_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
+import 'package:trydos/features/home/data/models/get_provinces_by_iso_model.dart';
 import 'package:trydos/features/home/data/models/list_of_products_in_cart_model.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
 import 'package:trydos/features/home/data/models/notificaation_poroduct_types.dart';
@@ -62,6 +63,23 @@ class HomeRemoteDatasource {
       ),
     );
     return getStartingSettings();
+  }
+
+  Future<GetProvincesByIsoModel> getProvincesByIso() {
+    ///// for test /////
+
+    ////////////////////
+    GetClient<GetProvincesByIsoModel> getProvincesByIso =
+        GetClient<GetProvincesByIsoModel>(
+      serverName: ServerName.elastic,
+      requestPrams: RequestConfig<GetProvincesByIsoModel>(
+        endpoint: ElasticEndPoints.getProvincesByIsoEP,
+        response: ResponseValue<GetProvincesByIsoModel>(
+          fromJson: (response) => GetProvincesByIsoModel.fromJson(response),
+        ),
+      ),
+    );
+    return getProvincesByIso();
   }
 
   Future<GetProductDetailWithoutRelatedProductsModel>

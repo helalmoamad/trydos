@@ -22,10 +22,12 @@ import 'package:trydos/features/authentication/presentation/widgets/insert_phone
 import 'package:trydos/features/authentication/presentation/widgets/verification_methods.dart';
 import 'package:trydos/features/authentication/presentation/widgets/verify_otp.dart';
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
+import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
 
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
+import 'package:trydos/features/home/presentation/widgets/profile_section/language_profile.dart';
 import 'package:trydos/features/home/presentation/widgets/profile_section/profile_country_page.dart';
 import 'package:trydos/features/home/presentation/widgets/profile_section/user_information_page.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
@@ -301,33 +303,42 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
   }
 
   Widget _languageWidget() {
-    return Container(
-        decoration: BoxDecoration(
-            color: Color(0xffF8F8F8),
-            borderRadius: BorderRadius.circular(15.r)),
-        width: 195.w,
-        height: 53,
-        child: Row(
-          children: [
-            SizedBox(
-              width: 10,
-            ),
-            SvgPicture.asset(
-              AppAssets.languageSvg,
-            ),
-            SizedBox(
-              width: 10,
-            ),
-            Text(
-              "English",
-              style: context.textTheme.bodyMedium?.rr.copyWith(
-                  color: const Color(0xff1D1D1D),
-                  letterSpacing: 0.18,
-                  fontSize: 14,
-                  height: 1.3),
-            ),
-          ],
-        ));
+    List<Language> language = [];
+    language = homeBloc.state.startingSetting?.languages ?? [];
+    int languageIndex = language
+        .indexWhere((element) => element.code == LanguageService.languageCode);
+
+    return InkWell(
+      onTap: () => Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => ProfileLanguagePage())),
+      child: Container(
+          decoration: BoxDecoration(
+              color: Color(0xffF8F8F8),
+              borderRadius: BorderRadius.circular(15.r)),
+          width: 195.w,
+          height: 53,
+          child: Row(
+            children: [
+              SizedBox(
+                width: 10,
+              ),
+              SvgPicture.asset(
+                AppAssets.languageSvg,
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              Text(
+                "${language[languageIndex].name}",
+                style: context.textTheme.bodyMedium?.rr.copyWith(
+                    color: const Color(0xff1D1D1D),
+                    letterSpacing: 0.18,
+                    fontSize: 14,
+                    height: 1.3),
+              ),
+            ],
+          )),
+    );
   }
 
   Widget _countryWidget() {
@@ -609,15 +620,19 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                             borderRadius:
                                 BorderRadius.all(Radius.circular(15.r)),
                             border: Border.all(
-                                color: state.userInfo?.image != null
+                                color: !(prefsRepository.myProfilePhoto ==
+                                            null ||
+                                        prefsRepository.myProfilePhoto == "")
                                     ? Colors.white
                                     : Color(0xff1D1D1D))),
-                        child: state.userInfo?.image != null
+                        child: !(prefsRepository.myProfilePhoto == null ||
+                                prefsRepository.myProfilePhoto == "")
                             ? ClipRRect(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(15.r)),
                                 child: MyCachedNetworkImage(
-                                    imageUrl: state.userInfo?.image ?? "",
+                                    imageUrl:
+                                        prefsRepository.myProfilePhoto ?? "",
                                     width: 70,
                                     imageFit: BoxFit.cover,
                                     height: 70),

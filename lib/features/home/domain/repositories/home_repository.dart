@@ -15,6 +15,7 @@ import 'package:trydos/features/home/data/models/get_old_cart_model.dart';
 import 'package:trydos/features/home/data/models/get_only_message_from_api_model.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
+import 'package:trydos/features/home/data/models/get_provinces_by_iso_model.dart';
 import 'package:trydos/features/home/data/models/list_of_products_in_cart_model.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
 import 'package:trydos/features/home/data/models/notificaation_poroduct_types.dart';
@@ -88,7 +89,7 @@ abstract class HomeRepository {
   Future<Either<Failure, PopularSearchTermsModel>> getPopularSearchTerms();
   Future<Either<Failure, GetListOfCustomerAddressesInfoModel>>
       getCustomerAddresses();
-
+  Future<Either<Failure, GetProvincesByIsoModel>> getProvincesByIso();
   Future<Either<Failure, GetAllowedCountriesModel>> getAllowCountries();
   Future<Either<Failure, GetStoryForProductModel>> getStories(String productId);
   Future<Either<Failure, GetProductListingWithoutFiltersModel>>

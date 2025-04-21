@@ -5,6 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:injectable/injectable.dart';
+import 'package:trydos/features/home/domain/use_cases/get_provinces_by_iso_usecase.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/main.dart';
@@ -45,11 +46,13 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
   final GetAddressByCoordinatesUsecase getAddressByCoordinatesUsecase;
   final GetAddressByTextUsecase getAddressByTextUsecase;
   final ApplyCouponUsecase applyCouponUsecase;
+  final GetProvincesByIsoUseCase getProvincesByIsoUseCase;
 
   OrderBloc(
     this.placeOrderUsecase,
     this.getOrdersByOrderGroupIDUsecase,
     this.getOrdersByCartGroupIDUsecase,
+    this.getProvincesByIsoUseCase,
     this.getCustomerWalletUseCase,
     this.getOrdersUseCase,
     this.setCustomerAddressDefaultUseCase,
@@ -67,11 +70,18 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     on<GetOrdersByOrderGroupIDEvent>(
       _onGetOrdersByOrderGroupIDEvent,
     );
+
+    on<SaveLastAddress>(
+      _onSaveLastAddress,
+    );
     on<GetOrdersByCartGroupIDEvent>(
       _onGetOrdersByCartGroupIDEvent,
     );
     on<GetCustomerWalletEvent>(
       _onGetCustomerWalletEvent,
+    );
+    on<GetProvincesByIsoEvent>(
+      _onGetProvincesByIsoEvent,
     );
     on<GetOrdersEvent>(
       _onGetOrdersEvent,
@@ -262,6 +272,36 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     );
   }
 
+  FutureOr<void> _onGetProvincesByIsoEvent(
+    GetProvincesByIsoEvent event,
+    Emitter<OrderState> emit,
+  ) async {
+    ///////////////////////////
+
+    final response = await getProvincesByIsoUseCase.call(NoParams());
+
+    response.fold(
+      (l) {
+        if (!isFailedTheFirstTime.contains('GetProvincesByIsoEvent')) {
+          add(
+            GetProvincesByIsoEvent(),
+          );
+          isFailedTheFirstTime.add('GetProvincesByIsoEvent');
+          return;
+        }
+      },
+      (r) {
+        isFailedTheFirstTime.remove('GetProvincesByIsoEvent');
+
+        emit(
+          state.copyWith(
+            provincesByIso: r.data,
+          ),
+        );
+      },
+    );
+  }
+
   FutureOr<void> _onGetCustomerWalletEvent(
     GetCustomerWalletEvent event,
     Emitter<OrderState> emit,
@@ -302,6 +342,18 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           ),
         );
       },
+    );
+  }
+
+  FutureOr<void> _onSaveLastAddress(
+    SaveLastAddress event,
+    Emitter<OrderState> emit,
+  ) async {
+    ///////////////////////////
+    emit(
+      state.copyWith(
+        lastAdressInfoClassToSave: event.lastAddress,
+      ),
     );
   }
 

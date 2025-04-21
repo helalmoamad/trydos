@@ -1461,6 +1461,9 @@ class _CartPageState extends State<CartPage> {
                                                                                             navigateToAddName: () {},
                                                                                             navigateTocartOrProfile: () {
                                                                                               isVerified.value = true;
+                                                                                              BlocProvider.of<HomeBloc>(context).add(
+                                                                                                CheckWithGetCartEvent(isForPlaceOrder: false),
+                                                                                              );
                                                                                             },
                                                                                             fromLogin: false,
                                                                                             onLoginFailed: () {
@@ -1512,6 +1515,9 @@ class _CartPageState extends State<CartPage> {
                                                                                             navigateToAddName: () {},
                                                                                             navigateTocartOrProfile: () {
                                                                                               isVerified.value = true;
+                                                                                              BlocProvider.of<HomeBloc>(context).add(
+                                                                                                CheckWithGetCartEvent(isForPlaceOrder: false),
+                                                                                              );
                                                                                             },
                                                                                             fromLogin: false,
                                                                                             onLoginFailed: () {

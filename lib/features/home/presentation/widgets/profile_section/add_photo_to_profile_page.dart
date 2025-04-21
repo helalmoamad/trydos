@@ -54,7 +54,8 @@ class _AddPhotoProfilePageState extends State<AddPhotoProfilePage> {
   void initState() {
     homeBloc = BlocProvider.of<HomeBloc>(context);
     homeBloc.add(UpdateProfileEvent(changeStatusToInit: true));
-    if (homeBloc.state.userInfo?.image != null) {
+    if (!(prefsRepository.myProfilePhoto == null ||
+        prefsRepository.myProfilePhoto == "")) {
       print(
           "22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222");
       visiblePersonPhoto.value = File("initImage");
@@ -362,10 +363,11 @@ class _AddPhotoProfilePageState extends State<AddPhotoProfilePage> {
                   decoration: BoxDecoration(
                     color: Color(0xffF8F8F8),
                   ),
-                  child: homeBloc.state.userInfo?.image != null &&
+                  child: !(prefsRepository.myProfilePhoto == null ||
+                              prefsRepository.myProfilePhoto == "") &&
                           !(visibleNewImage.value)
                       ? MyCachedNetworkImage(
-                          imageUrl: homeBloc.state.userInfo!.image!,
+                          imageUrl: prefsRepository.myProfilePhoto!,
                           width: 1.sw,
                           imageFit: BoxFit.cover,
                           height: 406.h)

@@ -38,6 +38,10 @@ OrderState _$OrderStateFromJson(Map<String, dynamic> json) => OrderState(
           ? null
           : CustomerWalletModel.fromJson(
               json['customerWalletModel'] as Map<String, dynamic>),
+      lastAdressInfoClassToSave: json['lastAdressInfoClassToSave'] == null
+          ? null
+          : CustomerAddressesInfo.fromJson(
+              json['lastAdressInfoClassToSave'] as Map<String, dynamic>),
       getOrdersModel: (json['getOrdersModel'] as Map<String, dynamic>?)?.map(
             (k, e) => MapEntry(
                 k,
@@ -93,6 +97,10 @@ OrderState _$OrderStateFromJson(Map<String, dynamic> json) => OrderState(
               ?.map((e) => ResultSearch.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
+      provincesByIso: (json['provincesByIso'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
       applyCouponModel: json['applyCouponModel'] == null
           ? null
           : ApplyCouponModel.fromJson(
@@ -132,6 +140,7 @@ Map<String, dynamic> _$OrderStateToJson(OrderState instance) =>
           instance.removeAddressToOrderStatus],
       'addAddressToOrderStatus':
           _$AddAddressToOrderStatusEnumMap[instance.addAddressToOrderStatus],
+      'lastAdressInfoClassToSave': instance.lastAdressInfoClassToSave?.toJson(),
       'editAddressToOrderStatus':
           _$EditAddressToOrderStatusEnumMap[instance.editAddressToOrderStatus],
       'getAddressByCoordinatesStatus': _$GetAddressByCoordinatesStatusEnumMap[
@@ -141,6 +150,7 @@ Map<String, dynamic> _$OrderStateToJson(OrderState instance) =>
       'getAddressByTextStatus':
           _$GetAddressByTextStatusEnumMap[instance.getAddressByTextStatus],
       'resultSearch': instance.resultSearch?.map((e) => e.toJson()).toList(),
+      'provincesByIso': instance.provincesByIso,
       'applyCouponStatus':
           _$ApplyCouponStatusEnumMap[instance.applyCouponStatus],
       'applyCouponModel': instance.applyCouponModel?.toJson(),

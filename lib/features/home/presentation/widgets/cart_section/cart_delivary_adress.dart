@@ -74,7 +74,9 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
     orderBloc = BlocProvider.of<OrderBloc>(context);
 
     ////////////////////
+
     orderBloc.add(GetCustomerAddressesEvent());
+    orderBloc.add(GetProvincesByIsoEvent());
     orderBloc.add(GetCustomerWalletEvent(limit: 10, offset: 1));
     ////////////////////
     super.initState();

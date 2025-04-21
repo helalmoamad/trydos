@@ -834,6 +834,14 @@ class PrefsRepositoryImpl extends PrefsRepository {
   Future<bool> setIdToken(String idToken) {
     return _preferences.setString(PrefsKey.idToken, idToken);
   }
+
+  @override
+  // TODO: implement myProfilePhoto
+  String? get myProfilePhoto => _preferences.getString(PrefsKey.profilePhoto);
+
+  @override
+  Future<bool> setMyProfilePhoto(String? photo) =>
+      _preferences.setString(PrefsKey.profilePhoto, photo ?? '');
 // @override
 
 // List<Map<String,dynamic>> get localMessages {

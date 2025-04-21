@@ -108,25 +108,24 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                 SizedBox(
                   height: 10,
                 ),
-                Container(
-                  width: 1.sw,
-                  height: 60,
-                  margin: HWEdgeInsets.symmetric(horizontal: 20),
-                  decoration: BoxDecoration(
-                    color: const Color(0xffF4FFF4),
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          context
-                              .go(GRouter.config.applicationRoutes.kBasePage);
-                          Future.delayed(Duration(seconds: 1),
-                              () => appBloc.add(ChangeBasePage(3)));
-                        },
-                        child: MyTextWidget(
+                InkWell(
+                  onTap: () {
+                    context.go(GRouter.config.applicationRoutes.kBasePage);
+                    Future.delayed(Duration(milliseconds: 300),
+                        () => appBloc.add(ChangeBasePage(3)));
+                  },
+                  child: Container(
+                    width: 1.sw,
+                    height: 60,
+                    margin: HWEdgeInsets.symmetric(horizontal: 20),
+                    decoration: BoxDecoration(
+                      color: const Color(0xffF4FFF4),
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        MyTextWidget(
                           LocaleKeys.complete_my_profile.tr(),
                           style: textTheme.displayMedium?.ra.copyWith(
                             color: Color(0xff5D5C5D),
@@ -134,8 +133,8 @@ class _RegisterCompletedState extends ThemeState<RegisterCompleted> {
                             height: 1.25,
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
                 SizedBox(

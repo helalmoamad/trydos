@@ -10,6 +10,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:trydos/common/constant/design/assets_provider.dart';
+import 'package:trydos/common/helper/helper_functions.dart';
 
 import 'package:trydos/config/theme/typography.dart';
 
@@ -20,6 +21,7 @@ import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.da
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
+import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
 
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
@@ -27,39 +29,31 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.da
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/language_service.dart';
 
-class ProfileCountryPage extends StatefulWidget {
-  const ProfileCountryPage({super.key});
+class ProfileLanguagePage extends StatefulWidget {
+  const ProfileLanguagePage({super.key});
 
   @override
-  State<ProfileCountryPage> createState() => _ProfileCountryPageState();
+  State<ProfileLanguagePage> createState() => _ProfileLanguagePageState();
 }
 
-class _ProfileCountryPageState extends State<ProfileCountryPage>
+class _ProfileLanguagePageState extends State<ProfileLanguagePage>
     with SingleTickerProviderStateMixin {
   final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
 
   final ValueNotifier<bool> visibleSave = ValueNotifier(false);
-  final ValueNotifier<int> changeCountry = ValueNotifier(0);
-  String choosedCountryIso = "";
+  final ValueNotifier<int> changeLanguage = ValueNotifier(0);
+  List<Language> language = [];
   late HomeBloc homeBloc;
   late AppBloc appBloc;
   @override
   void initState() {
-    appBloc = BlocProvider.of<AppBloc>(context);
-    choosedCountryIso = (GetIt.I<PrefsRepository>().userCountryIsAvailable == 1
-            ? GetIt.I<PrefsRepository>().userChoosedCountryIso
-            : GetIt.I<PrefsRepository>().countryIso) ??
-        "";
-
     homeBloc = BlocProvider.of<HomeBloc>(context);
-    if ((homeBloc.state.getAllowedCountriesModel?.data?.countries?.length ??
-            0) !=
-        0) {
-      changeCountry.value = homeBloc
-          .state.getAllowedCountriesModel!.data!.countries!
-          .indexWhere((element) =>
-              element.iso!.toLowerCase() == choosedCountryIso.toLowerCase());
-    }
+    appBloc = BlocProvider.of<AppBloc>(context);
+    language = homeBloc.state.startingSetting?.languages ?? [];
+
+    changeLanguage.value = language
+        .indexWhere((element) => element.code == LanguageService.languageCode);
+
     super.initState();
   }
 
@@ -98,7 +92,7 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
                               width: 55.w,
                             ),
                       Text(
-                        LocaleKeys.profile_country.tr(),
+                        LocaleKeys.profile_language.tr(),
                         style: context.textTheme.bodyMedium?.mr.copyWith(
                             color: const Color(0xff1D1D1D),
                             letterSpacing: 0.18,
@@ -110,74 +104,50 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
                           ? SizedBox.shrink()
                           : InkWell(
                               onTap: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                      title: Text(LocaleKeys
-                                          .are_you_sure_you_want_to_change_your_country
-                                          .tr()),
-                                      actions: [
-                                        MaterialButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                            GetIt.I<PrefsRepository>()
-                                                .setUserChoosedCountryIso(homeBloc
-                                                        .state
-                                                        .getAllowedCountriesModel
-                                                        ?.data
-                                                        ?.countries?[
-                                                            changeCountry.value]
-                                                        .iso ??
-                                                    "".toLowerCase());
-                                            GetIt.I<PrefsRepository>()
-                                                .setUserCountryIsAvailable(1);
-                                            BlocProvider.of<HomeBloc>(context)
-                                                .add(ClearAllAppCashEvent());
-                                            GetIt.I<PrefsRepository>()
-                                                .removeBoutiqueHasPerfechedWhenOpenApp(
-                                                    true);
-                                            GetIt.I<PrefsRepository>()
-                                                .removeMainCategoryHasPerfechedWhenOpenApp(
-                                                    true);
+                                BlocProvider.of<HomeBloc>(context)
+                                    .add(ClearAllAppCashEvent());
+                                GetIt.I<PrefsRepository>()
+                                    .removeBoutiqueHasPerfechedWhenOpenApp(
+                                        true);
+                                GetIt.I<PrefsRepository>()
+                                    .removeMainCategoryHasPerfechedWhenOpenApp(
+                                        true);
 
-                                            GetIt.I<PrefsRepository>()
-                                                .removeFiveFilterHasPerfechedWhenOpenApp();
-                                            BlocProvider.of<HomeBloc>(context).add(
-                                                ChangeCountryLanguageForNotificationEvent(
-                                                    country: homeBloc
-                                                            .state
-                                                            .getAllowedCountriesModel
-                                                            ?.data
-                                                            ?.countries?[
-                                                                changeCountry
-                                                                    .value]
-                                                            .iso ??
-                                                        "".toLowerCase(),
-                                                    languageCode:
-                                                        LanguageService
-                                                            .languageCode));
+                                GetIt.I<PrefsRepository>()
+                                    .removeFiveFilterHasPerfechedWhenOpenApp();
 
-                                            Future.delayed(
-                                              Duration(microseconds: 500),
-                                              () {
-                                                appBloc.add(ChangeBasePage(0));
-                                                context.go("/");
-                                              },
-                                            );
-                                          },
-                                          child: Text(LocaleKeys.yes.tr()),
-                                        ),
-                                        SizedBox(
-                                          width: 20.w,
-                                        ),
-                                        MaterialButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: Text(LocaleKeys.cansel.tr()),
-                                        )
-                                      ]),
+                                BlocProvider.of<HomeBloc>(context)
+                                    .add(ClearAllAppCashEvent());
+                                GetIt.I<PrefsRepository>()
+                                    .removeBoutiqueHasPerfechedWhenOpenApp(
+                                        true);
+                                GetIt.I<PrefsRepository>()
+                                    .removeMainCategoryHasPerfechedWhenOpenApp(
+                                        true);
+
+                                GetIt.I<PrefsRepository>()
+                                    .removeFiveFilterHasPerfechedWhenOpenApp();
+
+                                BlocProvider.of<HomeBloc>(context).add(
+                                    ChangeCountryLanguageForNotificationEvent(
+                                        country: GetIt.I<PrefsRepository>()
+                                            .countryIso!
+                                            .toLowerCase(),
+                                        languageCode:
+                                            language[changeLanguage.value]
+                                                    .code ??
+                                                ""));
+                                Future.delayed(
+                                  Duration(microseconds: 500),
+                                  () {
+                                    appBloc.add(ChangeBasePage(0));
+                                    context.go("/");
+                                  },
                                 );
+                                GetIt.I<PrefsRepository>().setLanguage(
+                                    language[changeLanguage.value].code ?? "");
+                                context
+                                    .setLocale(HelperFunctions.getInitLocale());
                               },
                               child: Container(
                                 alignment: Alignment.center,
@@ -211,8 +181,8 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
               body: SafeArea(
                   child: SingleChildScrollView(
                 child: ValueListenableBuilder<int>(
-                    valueListenable: changeCountry,
-                    builder: (context, selectCountry, _) {
+                    valueListenable: changeLanguage,
+                    builder: (context, selectLanguage, _) {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -237,7 +207,9 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
                                     width: 10.w,
                                   ),
                                   Text(
-                                    LocaleKeys.we_operate_in_the_countries.tr(),
+                                    LocaleKeys
+                                        .we_work_in_the_languages_listed_below
+                                        .tr(),
                                     style: context.textTheme.bodyMedium?.rr
                                         .copyWith(
                                             color: const Color(0xff8D8D8D),
@@ -250,11 +222,10 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
                           SizedBox(
                             height: 20,
                           ),
-                          _availableCountry(),
+                          _availableLanguage(),
                           SizedBox(
                             height: 20,
                           ),
-                          _commingSoonCountry(),
                         ],
                       );
                     }),
@@ -262,7 +233,7 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
         });
   }
 
-  Widget _availableCountry() {
+  Widget _availableLanguage() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -274,15 +245,14 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               SvgPicture.asset(
-                AppAssets.availableCountrySvg,
-                height: 15,
-                color: Color(0xff707070),
+                AppAssets.languageSvg,
+                height: 25,
               ),
               SizedBox(
                 width: 5,
               ),
               Text(
-                LocaleKeys.available_country.tr(),
+                LocaleKeys.available_language.tr(),
                 style: context.textTheme.bodyMedium?.mr.copyWith(
                     color: const Color(0xff404040),
                     letterSpacing: 0.18,
@@ -308,108 +278,43 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
           width: 1.sw,
           height: 245,
           child: ListView.separated(
-            itemBuilder: (context, index) => _countryWidget(
-                homeBloc.state.getAllowedCountriesModel!.data!.countries?[index]
-                        .iso ??
-                    "",
-                homeBloc.state.getAllowedCountriesModel?.data?.countries?[index]
-                        .name ??
-                    "",
-                index,
-                true),
+            itemBuilder: (context, index) {
+              return _LanguageWidget(
+                  language[index].code == "ar"
+                      ? "SA"
+                      : language[index].code == "tr"
+                          ? "TR"
+                          : "US",
+                  language[index].name ?? "",
+                  index);
+            },
             separatorBuilder: (context, index) => SizedBox(
               height: 5,
             ),
-            itemCount: (homeBloc.state.getAllowedCountriesModel?.data?.countries
-                            ?.length ??
-                        0) !=
-                    0
-                ? homeBloc
-                    .state.getAllowedCountriesModel!.data!.countries!.length
-                : 0,
+            itemCount: language.length,
           ),
         )
       ],
     );
   }
 
-  Widget _commingSoonCountry() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          height: 15,
-          width: 170,
-          margin: EdgeInsets.symmetric(horizontal: 20),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              SvgPicture.asset(
-                AppAssets.availableCountrySvg,
-                height: 15,
-                color: Color(0xff707070),
-              ),
-              SizedBox(
-                width: 5,
-              ),
-              Text(
-                LocaleKeys.coming_soon_country.tr(),
-                style: context.textTheme.bodyMedium?.mr.copyWith(
-                    color: const Color(0xff404040),
-                    letterSpacing: 0.18,
-                    fontSize: 12,
-                    height: 1.2),
-              ),
-              SizedBox(
-                width: 12,
-              ),
-              SvgPicture.asset(
-                AppAssets.chatWithQuestionSvg,
-                color: Color(0xffD3D3D3),
-                height: 15,
-              ),
-            ],
-          ),
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        Container(
-          margin: EdgeInsets.symmetric(horizontal: 5),
-          width: 1.sw,
-          height: 400.h,
-          child: ListView.separated(
-              itemBuilder: (context, index) =>
-                  _countryWidget("TR", "Turkiy", index, false),
-              separatorBuilder: (context, index) => SizedBox(
-                    height: 5,
-                  ),
-              itemCount: 5),
-        )
-      ],
-    );
-  }
-
-  Widget _countryWidget(
-      String code, String country, int index, bool isAvailable) {
+  Widget _LanguageWidget(String code, String country, int index) {
     return InkWell(
       onTap: () {},
       child: InkWell(
         onTap: () {
-          if (isAvailable) {
-            changeCountry.value = index;
-            visibleSave.value = true;
-          }
+          changeLanguage.value = index;
+          visibleSave.value = true;
         },
         child: Container(
             margin: EdgeInsets.symmetric(horizontal: 10.w),
             decoration: BoxDecoration(
-                color: isAvailable && index == changeCountry.value
+                color: index == changeLanguage.value
                     ? Color(0xffF8F8F8)
                     : Colors.white,
                 borderRadius: BorderRadius.circular(15.r),
                 border: Border.all(
-                    color: isAvailable && index == changeCountry.value
+                    color: index == changeLanguage.value
                         ? Color(0xff402CDD)
                         : Color(0xffD3D3D3))),
             width: 1.sw,

@@ -22,6 +22,7 @@ abstract class ElasticEndPoints {
   static final getMainCategoriesEP = "mainCategories".homeScope();
   static final getHomeBoutiquesEP = "boutiques".homeScope();
   static final getAddressByTextEP = "get-address-by-text".addressesScope();
+  static final getProvincesByIsoEP = "get-provinces-by-iso".addressesScope();
   static final getAddressByCoordinatesEP =
       "get-address-by-coordinates".addressesScope();
 }

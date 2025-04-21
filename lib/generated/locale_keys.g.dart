@@ -459,8 +459,13 @@ abstract class LocaleKeys {
   static const buying = 'buying';
   static const item_status = 'item_status';
   static const verified = 'verified';
-  static const other = 'other';
   static const are_you_sure_you_want_to_change_your_country =
       'are_you_sure_you_want_to_change_your_country';
   static const no_orders_found = 'no_orders_found';
+  static const we_work_in_the_languages_listed_below =
+      'we_work_in_the_languages_listed_below';
+  static const language = 'language';
+  static const available_language = 'available_language';
+  static const profile_language = 'profile_language';
+  static const other = 'other';
 }

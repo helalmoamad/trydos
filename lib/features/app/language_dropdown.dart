@@ -67,8 +67,8 @@ class _LanguageDropdownState extends State<LanguageDropdown> {
             );*/
             BlocProvider.of<HomeBloc>(context).add(
                 ChangeCountryLanguageForNotificationEvent(
-                    country: newValue!,
-                    languageCode: _prefsRepository.countryIso!.toLowerCase()));
+                    country: _prefsRepository.countryIso!.toLowerCase(),
+                    languageCode: newValue ?? ""));
             Future.delayed(
               Duration(microseconds: 500),
               () {

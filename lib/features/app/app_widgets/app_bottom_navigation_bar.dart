@@ -104,17 +104,18 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                         Navigator.of(context).pop();
                       } catch (e) {}
                     }
-                    if (state.currentIndex != 0) {
-                      categoryBloc.add(
-                        GetHomeBoutiqesEvent(
-                          getWithPrefetchToStoreInMemory: false,
-                          getWithOutPrefetchForEachBoutiques: false,
-                          context: context,
-                          offset: '1',
-                          categorySlug: 'Empty',
-                        ),
-                      );
-                    }
+
+                    categoryBloc.add(
+                      GetHomeBoutiqesEvent(
+                        getWithPrefetchToStoreInMemory: false,
+                        getWithOutPrefetchForEachBoutiques: true,
+                        context: context,
+                        categorySlug: "Empty",
+                        offset: "1",
+                        getWithPagination: false,
+                      ),
+                    );
+
                     appBloc.add(ChangeBasePage(0));
                     boutiqueBloc.add(ResetAllSelectedAppliedFilterEvent());
                     /////////////////////////
@@ -504,8 +505,8 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      (!(prefsRepository.isVerifiedPhone ?? false)) ||
-                              homeBloc.state.userInfo?.image == null
+                      prefsRepository.myProfilePhoto == null ||
+                              prefsRepository.myProfilePhoto == ""
                           ? Container(
                               height: 30.h,
                               width: 30.h,
@@ -535,8 +536,7 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                 ),
                               ),
                               child: MyCachedNetworkImage(
-                                  imageUrl:
-                                      homeBloc.state.userInfo?.image ?? "",
+                                  imageUrl: prefsRepository.myProfilePhoto!,
                                   height: 30.h,
                                   width: 30.h,
                                   imageFit: BoxFit.cover)),
