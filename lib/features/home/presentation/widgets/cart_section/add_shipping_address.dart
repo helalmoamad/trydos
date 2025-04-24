@@ -1486,7 +1486,19 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                           builder: (context, child) => Transform.translate(
                                                                                             offset: Offset(!(finishSelectedByUserToAppear.length == 0) ? 0 : sin(3 * 2 * pi * animationController.value) * 5, 0),
                                                                                             child: state.getAddressByCoordinatesStatus == GetAddressByCoordinatesStatus.loading
-                                                                                                ? Shimmer.fromColors(baseColor: Colors.grey[500]!, highlightColor: Colors.grey[200]!, child: Container(margin: EdgeInsets.symmetric(vertical: 10.h), width: 1.sw, height: 53.h, decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.r), border: Border.all(color: (isValidateBox && (finishSelectedByUserToAppear.length == 0)) ? Colors.red : Color(0xffD3D3D3))), child: Padding(padding: const EdgeInsets.all(8.0))))
+                                                                                                ? Shimmer.fromColors(
+                                                                                                    baseColor: Colors.grey[500]!,
+                                                                                                    highlightColor: Colors.grey[200]!,
+                                                                                                    child: Container(
+                                                                                                      margin: EdgeInsets.symmetric(vertical: 10.h),
+                                                                                                      width: 1.sw,
+                                                                                                      height: 53.h,
+                                                                                                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.r), border: Border.all(color: (isValidateBox && (finishSelectedByUserToAppear.length == 0)) ? Colors.red : Color(0xffD3D3D3))),
+                                                                                                      child: Padding(
+                                                                                                        padding: const EdgeInsets.all(8.0),
+                                                                                                      ),
+                                                                                                    ),
+                                                                                                  )
                                                                                                 : Container(
                                                                                                     margin: EdgeInsets.symmetric(vertical: 10.h),
                                                                                                     width: 1.sw,

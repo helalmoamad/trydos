@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -10,6 +11,8 @@ import '../../../../app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import '../../../../app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import '../../../../app/my_cached_network_image.dart';
 import '../../../data/models/get_orders_model.dart';
+import '../../manager/homeBloc/home_bloc.dart';
+import '../../manager/homeBloc/home_state.dart';
 
 class OrderDetails2 extends StatelessWidget {
   OrderDetails2({super.key, required this.order});
@@ -114,46 +117,66 @@ class OrderDetails2 extends StatelessWidget {
                             height: 5,
                           ),
                           ///////////////////
-                          RichText(
-                            overflow: TextOverflow.ellipsis,
-                            text: TextSpan(
-                              style: context.textTheme.bodyMedium?.rq.copyWith(
-                                color: const Color(0xff505050),
-                                letterSpacing: 0.18,
-                                fontSize: 12,
-                                height: 1.3,
-                              ),
-                              children: [
-                                TextSpan(text: '${LocaleKeys.buying.tr()} '),
-                                /////////////////////////
-                                TextSpan(
-                                  text: '${order.details?.length ?? 0}',
+                          BlocBuilder<HomeBloc, HomeState>(
+                            buildWhen: (previous, current) =>
+                                (previous.getCurrencyForCountryModel !=
+                                    current.getCurrencyForCountryModel),
+                            builder: (context, state) {
+                              String currencySymbol = state
+                                      .getCurrencyForCountryModel!
+                                      .data!
+                                      .currency!
+                                      .symbol ??
+                                  "";
+                              double orderAmount = order.orderAmount! *
+                                  state.getCurrencyForCountryModel!.data!
+                                      .currency!.exchangeRate!;
+                              ;
+                              return RichText(
+                                overflow: TextOverflow.ellipsis,
+                                text: TextSpan(
                                   style:
-                                      context.textTheme.bodyMedium?.bq.copyWith(
-                                    color: const Color(0xff1D1D1D),
+                                      context.textTheme.bodyMedium?.rq.copyWith(
+                                    color: const Color(0xff505050),
                                     letterSpacing: 0.18,
                                     fontSize: 12,
                                     height: 1.3,
                                   ),
+                                  children: [
+                                    TextSpan(
+                                        text: '${LocaleKeys.buying.tr()} '),
+                                    /////////////////////////
+                                    TextSpan(
+                                      text: '${order.details?.length ?? 0}',
+                                      style: context.textTheme.bodyMedium?.bq
+                                          .copyWith(
+                                        color: const Color(0xff1D1D1D),
+                                        letterSpacing: 0.18,
+                                        fontSize: 12,
+                                        height: 1.3,
+                                      ),
+                                    ),
+                                    /////////////////////////
+                                    TextSpan(
+                                        text: ' ${LocaleKeys.item.tr()} . '),
+                                    /////////////////////////
+                                    TextSpan(
+                                      text: '${orderAmount}',
+                                      style: context.textTheme.bodyMedium?.bq
+                                          .copyWith(
+                                        color: const Color(0xff1D1D1D),
+                                        letterSpacing: 0.18,
+                                        fontSize: 12,
+                                        height: 1.3,
+                                      ),
+                                    ),
+                                    /////////////////////////
+                                    TextSpan(text: ' $currencySymbol'),
+                                    /////////////////////////
+                                  ],
                                 ),
-                                /////////////////////////
-                                TextSpan(text: ' ${LocaleKeys.item.tr()} . '),
-                                /////////////////////////
-                                TextSpan(
-                                  text: '${order.orderAmount}',
-                                  style:
-                                      context.textTheme.bodyMedium?.bq.copyWith(
-                                    color: const Color(0xff1D1D1D),
-                                    letterSpacing: 0.18,
-                                    fontSize: 12,
-                                    height: 1.3,
-                                  ),
-                                ),
-                                /////////////////////////
-                                TextSpan(text: ' currency'),
-                                /////////////////////////
-                              ],
-                            ),
+                              );
+                            },
                           ),
                           ///////////////////
                           SizedBox(
@@ -574,8 +597,9 @@ class OrderDetails2 extends StatelessWidget {
                                                             ////////////////////////////
                                                             TextSpan(
                                                               text: order
-                                                                  .details
-                                                                  ?.length
+                                                                  .details?[
+                                                                      index]
+                                                                  .qty
                                                                   .toString(),
                                                               style: context
                                                                   .textTheme
@@ -628,7 +652,7 @@ class OrderDetails2 extends StatelessWidget {
                                                             ////////////////////////////
                                                             TextSpan(
                                                               text: order
-                                                                      .orderStatus
+                                                                      .orderGroupStatus
                                                                       ?.label ??
                                                                   '',
                                                               style: context

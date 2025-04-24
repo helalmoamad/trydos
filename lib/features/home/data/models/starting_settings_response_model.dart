@@ -98,6 +98,8 @@ class StartingSetting {
   final int? androidMinVersion;
   final int? iosMinVersion;
   final int? shippingCost;
+  final List<OrderStatusModel>? orderGroupStatuses;
+  final List<OrderStatusModel>? orderStatuses;
 
   StartingSetting({
     this.notificationTypes,
@@ -106,6 +108,8 @@ class StartingSetting {
     this.androidMinVersion,
     this.iosMinVersion,
     this.shippingCost,
+    this.orderGroupStatuses,
+    this.orderStatuses,
   });
 
   StartingSetting copyWith({
@@ -115,6 +119,8 @@ class StartingSetting {
     int? androidMinVersion,
     int? iosMinVersion,
     int? shippingCost,
+    List<OrderStatusModel>? orderGroupStatuses,
+    List<OrderStatusModel>? orderStatuses,
   }) =>
       StartingSetting(
         notificationTypes: notificationTypes ?? this.notificationTypes,
@@ -123,6 +129,8 @@ class StartingSetting {
         androidMinVersion: androidMinVersion ?? this.androidMinVersion,
         iosMinVersion: iosMinVersion ?? this.iosMinVersion,
         shippingCost: shippingCost ?? this.shippingCost,
+        orderGroupStatuses: orderGroupStatuses ?? this.orderGroupStatuses,
+        orderStatuses: orderStatuses ?? this.orderStatuses,
       );
 
   factory StartingSetting.fromJson(Map<String, dynamic> json) =>
@@ -139,6 +147,14 @@ class StartingSetting {
         androidMinVersion: json["android_min_version"],
         iosMinVersion: json["ios_min_version"],
         shippingCost: json["shipping_cost"],
+        orderGroupStatuses: json["order_group_statuses"] == null
+            ? []
+            : List<OrderStatusModel>.from(json["order_group_statuses"]!
+                .map((x) => OrderStatusModel.fromJson(x))),
+        orderStatuses: json["order_statuses"] == null
+            ? []
+            : List<OrderStatusModel>.from(json["order_statuses"]!
+                .map((x) => OrderStatusModel.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -152,6 +168,33 @@ class StartingSetting {
         "android_min_version": androidMinVersion,
         "ios_min_version": iosMinVersion,
         "shipping_cost": shippingCost,
+        "order_group_statuses": orderGroupStatuses == null
+            ? []
+            : List<dynamic>.from(orderGroupStatuses!.map((x) => x.toJson())),
+        "order_statuses": orderStatuses == null
+            ? []
+            : List<dynamic>.from(orderStatuses!.map((x) => x.toJson())),
+      };
+}
+
+class OrderStatusModel {
+  final String? value;
+  final String? label;
+
+  OrderStatusModel({
+    this.value,
+    this.label,
+  });
+
+  factory OrderStatusModel.fromJson(Map<String, dynamic> json) =>
+      OrderStatusModel(
+        value: json["value"] ?? '',
+        label: json["label"] ?? '',
+      );
+
+  Map<String, dynamic> toJson() => {
+        "value": value,
+        "label": label,
       };
 }
 

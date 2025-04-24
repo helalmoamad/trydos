@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -10,6 +11,8 @@ import '../../../../app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import '../../../../app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import '../../../../app/my_cached_network_image.dart';
 import '../../../data/models/get_orders_model.dart';
+import '../../manager/homeBloc/home_bloc.dart';
+import '../../manager/homeBloc/home_state.dart';
 import 'order_details2_page.dart';
 import 'package:trydos/config/theme/typography.dart';
 
@@ -85,19 +88,35 @@ class OrderDetails1 extends StatelessWidget {
                   height: 11.h,
                 ),
                 ///////////////////
-                SizedBox(
-                  height: 95,
-                  child: buildFirstSection(
-                    context: context,
-                    orderNumber: order.orderGroupId ?? '',
-                    orderDate: HelperFunctions.orderFormatDate(
-                      DateTime.parse(order.createdAt ?? ''),
-                    ),
-                    orderAmount: order.orderAmount.toString(),
-                    orderCurrency: 'currency',
-                  ),
+                BlocBuilder<HomeBloc, HomeState>(
+                  buildWhen: (previous, current) =>
+                      (previous.getCurrencyForCountryModel !=
+                          current.getCurrencyForCountryModel),
+                  builder: (context, state) {
+                    String currencySymbol = state.getCurrencyForCountryModel!
+                            .data!.currency!.symbol ??
+                        "";
+                    double orderAmount = order.orderAmount! *
+                        state.getCurrencyForCountryModel!.data!.currency!
+                            .exchangeRate!;
+                    ;
+
+                    return SizedBox(
+                      height: 95,
+                      child: buildFirstSection(
+                        context: context,
+                        orderNumber: order.orderGroupId ?? '',
+                        orderDate: HelperFunctions.orderFormatDate(
+                          DateTime.parse(order.createdAt ?? ''),
+                        ),
+                        orderAmount: orderAmount.toString(),
+                        orderCurrency: currencySymbol,
+                      ),
+                    );
+                  },
                 ),
-                ///////////////////
+                ///////////////////////
+
                 SizedBox(
                   height: 8.h,
                 ),
@@ -107,7 +126,7 @@ class OrderDetails1 extends StatelessWidget {
                   child: buildSecondSection(
                     context: context,
                     expectedDeliveryDate: 'Monday 2.Jun | 3 Work Days',
-                    orderStatus: order.orderStatus?.label ?? '',
+                    orderStatus: order.orderGroupStatus?.label ?? '',
                   ),
                 ),
                 ///////////////////

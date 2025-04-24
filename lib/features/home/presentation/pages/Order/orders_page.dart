@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
@@ -14,6 +15,8 @@ import '../../../../../generated/locale_keys.g.dart';
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../app/my_cached_network_image.dart';
 import '../../../data/models/get_orders_model.dart';
+import '../../manager/homeBloc/home_bloc.dart';
+import '../../manager/homeBloc/home_state.dart';
 import '../../manager/orderBloc/order_bloc.dart';
 import '../../manager/orderBloc/order_event.dart';
 import '../../manager/orderBloc/order_state.dart';
@@ -33,19 +36,19 @@ class _OrdersPageState extends State<OrdersPage> {
 
   final ValueNotifier<String> currentStatus = ValueNotifier('');
 
-  final List<String> orderStatus = [
-    'pending',
-    'processing',
-    'ready_to_shipping',
-    'shipped',
-    'out_for_delivery',
-    'delivered',
-    'partial_return',
-    'returned',
-    'failed',
-    'canceled',
-    'canceled_archived'
-  ];
+  // final List<String> orderStatus = [
+  //   'pending',
+  //   'processing',
+  //   'ready_to_shipping',
+  //   'shipped',
+  //   'out_for_delivery',
+  //   'delivered',
+  //   'partial_return',
+  //   'returned',
+  //   'failed',
+  //   'canceled',
+  //   'canceled_archived'
+  // ];
 
   @override
   void initState() {
@@ -262,18 +265,32 @@ class _OrdersPageState extends State<OrdersPage> {
               height: 11,
             ),
             ///////////////////
-            buildInfoWidget(
-              isSecondInfo: true,
-              context: context,
-              isTextSpan: true,
-              text1: item.orderStatus!.label ?? '',
-              text2: '',
-              svgIcon1: AppAssets.orderBag2Svg,
-              svgIcon2: AppAssets.orderInvoice2Svg,
-              secondInfoSvgIcon: AppAssets.orderPreparingSvg,
-              amount: item.orderAmount.toString(),
-              currency: 'currency',
-              itemsCount: item.details?.length.toString() ?? '0',
+            BlocBuilder<HomeBloc, HomeState>(
+              buildWhen: (previous, current) =>
+                  (previous.getCurrencyForCountryModel !=
+                      current.getCurrencyForCountryModel),
+              builder: (context, state) {
+                String currencySymbol =
+                    state.getCurrencyForCountryModel!.data!.currency!.symbol ??
+                        "";
+                double orderAmount = item.orderAmount! *
+                    state.getCurrencyForCountryModel!.data!.currency!
+                        .exchangeRate!;
+                ;
+                return buildInfoWidget(
+                  isSecondInfo: true,
+                  context: context,
+                  isTextSpan: true,
+                  text1: item.orderGroupStatus!.label ?? '',
+                  text2: '',
+                  svgIcon1: AppAssets.orderBag2Svg,
+                  svgIcon2: AppAssets.orderInvoice2Svg,
+                  secondInfoSvgIcon: AppAssets.orderPreparingSvg,
+                  amount: orderAmount.toString(),
+                  currency: currencySymbol,
+                  itemsCount: item.details?.length.toString() ?? '0',
+                );
+              },
             ),
             ///////////////////
             const SizedBox(
@@ -451,113 +468,173 @@ class _OrdersPageState extends State<OrdersPage> {
 
   Widget buildStatusBar() {
     return ValueListenableBuilder<String>(
-        valueListenable: currentStatus,
-        builder: (context, _currentStatus, _) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 17),
-            child: SizedBox(
-              height: 26,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: orderStatus.length + 2,
-                itemBuilder: (context, index) {
-                  return index == 0
-                      ? SvgPicture.asset(
-                          AppAssets.orderStatusFilterSvg,
-                          width: 25,
-                        )
-                      : index == 1
-                          ? InkWell(
-                              onTap: () {
-                                currentStatus.value = '';
-                                ////////////////////////
-                                orderBloc.add(
-                                  GetOrdersEvent(
-                                    status: '',
-                                    getWithPagination: false,
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                height: 26,
-                                width: 34,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xffF8F8F8),
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: _currentStatus == ''
-                                      ? Border.all(
-                                          color: const Color(0xff388CFF),
-                                        )
-                                      : Border.all(
+      valueListenable: currentStatus,
+      builder: (context, _currentStatus, _) {
+        return BlocBuilder<HomeBloc, HomeState>(
+          buildWhen: (previous, current) =>
+              previous.getStartingSettingsStatus !=
+              current.getStartingSettingsStatus,
+          builder: (context, state) {
+            List<String> orderStatuseValue =
+                state.startingSetting!.orderGroupStatuses!
+                    .map(
+                      (e) => e.value ?? '',
+                    )
+                    .toList();
+            List<String> orderStatuseLabel =
+                state.startingSetting!.orderGroupStatuses!
+                    .map(
+                      (e) => e.label ?? '',
+                    )
+                    .toList();
+            return (state.startingSetting == null)
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 17),
+                    child: SizedBox(
+                      height: 40,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: 10,
+                        itemBuilder: (context, index) {
+                          return Shimmer.fromColors(
+                            baseColor: Colors.grey.shade200,
+                            highlightColor: Colors.grey.shade50,
+                            enabled: true,
+                            child: Container(
+                              margin: EdgeInsets.symmetric(vertical: 10.h),
+                              height: 40,
+                              width: 80,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: const Color.fromARGB(255, 247, 247, 247),
+                              ),
+                            ),
+                          );
+                        },
+                        separatorBuilder: (context, index) {
+                          return const SizedBox(
+                            width: 5,
+                          );
+                        },
+                      ),
+                    ),
+                  )
+                : Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 17),
+                    child: SizedBox(
+                      height: 26,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: orderStatuseValue.length + 2,
+                        itemBuilder: (context, index) {
+                          return index == 0
+                              ? SvgPicture.asset(
+                                  AppAssets.orderStatusFilterSvg,
+                                  width: 25,
+                                )
+                              : index == 1
+                                  ? InkWell(
+                                      onTap: () {
+                                        currentStatus.value = '';
+                                        ////////////////////////
+                                        orderBloc.add(
+                                          GetOrdersEvent(
+                                            status: '',
+                                            getWithPagination: false,
+                                          ),
+                                        );
+                                      },
+                                      child: Container(
+                                        height: 26,
+                                        width: 34,
+                                        decoration: BoxDecoration(
                                           color: const Color(0xffF8F8F8),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          border: _currentStatus == ''
+                                              ? Border.all(
+                                                  color:
+                                                      const Color(0xff388CFF),
+                                                )
+                                              : Border.all(
+                                                  color:
+                                                      const Color(0xffF8F8F8),
+                                                ),
                                         ),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    LocaleKeys.all.tr(),
-                                    style: context.textTheme.bodyMedium?.rq
-                                        .copyWith(
-                                      color: const Color(0xff8D8D8D),
-                                      letterSpacing: 0.18,
-                                      fontSize: 12,
-                                      height: 1.3,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            )
-                          : InkWell(
-                              onTap: () {
-                                currentStatus.value = orderStatus[index - 2];
-                                ////////////////////////
-                                orderBloc.add(
-                                  GetOrdersEvent(
-                                    status: orderStatus[index - 2],
-                                    getWithPagination: false,
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                height: 26,
-                                width: 130,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xffF8F8F8),
-                                  borderRadius: BorderRadius.circular(10),
-                                  border:
-                                      _currentStatus == orderStatus[index - 2]
-                                          ? Border.all(
-                                              color: const Color(0xff388CFF),
-                                            )
-                                          : Border.all(
-                                              color: const Color(0xffF8F8F8),
+                                        child: Center(
+                                          child: Text(
+                                            LocaleKeys.all.tr(),
+                                            style: context
+                                                .textTheme.bodyMedium?.rq
+                                                .copyWith(
+                                              color: const Color(0xff8D8D8D),
+                                              letterSpacing: 0.18,
+                                              fontSize: 12,
+                                              height: 1.3,
                                             ),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    HelperFunctions.orderStatusText(
-                                      inputText: orderStatus[index - 2],
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                    style: context.textTheme.bodyMedium?.rq
-                                        .copyWith(
-                                      color: const Color(0xff8D8D8D),
-                                      letterSpacing: 0.18,
-                                      fontSize: 12,
-                                      height: 1.3,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                },
-                separatorBuilder: (context, index) {
-                  return const SizedBox(
-                    width: 10,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  : InkWell(
+                                      onTap: () {
+                                        currentStatus.value =
+                                            orderStatuseValue[index - 2];
+                                        ////////////////////////
+                                        orderBloc.add(
+                                          GetOrdersEvent(
+                                            status:
+                                                orderStatuseValue[index - 2],
+                                            getWithPagination: false,
+                                          ),
+                                        );
+                                      },
+                                      child: Container(
+                                        height: 26,
+                                        width: 130,
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xffF8F8F8),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          border: _currentStatus ==
+                                                  orderStatuseValue[index - 2]
+                                              ? Border.all(
+                                                  color:
+                                                      const Color(0xff388CFF),
+                                                )
+                                              : Border.all(
+                                                  color:
+                                                      const Color(0xffF8F8F8),
+                                                ),
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            orderStatuseLabel[index - 2],
+                                            overflow: TextOverflow.ellipsis,
+                                            style: context
+                                                .textTheme.bodyMedium?.rq
+                                                .copyWith(
+                                              color: const Color(0xff8D8D8D),
+                                              letterSpacing: 0.18,
+                                              fontSize: 12,
+                                              height: 1.3,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                        },
+                        separatorBuilder: (context, index) {
+                          return const SizedBox(
+                            width: 10,
+                          );
+                        },
+                      ),
+                    ),
                   );
-                },
-              ),
-            ),
-          );
-        });
+          },
+        );
+      },
+    );
   }
 }

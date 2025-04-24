@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:contacts_service/contacts_service.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dotted_border/dotted_border.dart';
@@ -11,7 +10,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
-import 'package:intl/intl.dart';
 import 'package:store_redirect/store_redirect.dart';
 import 'package:trydos/common/constant/countries.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -559,94 +557,16 @@ class HelperFunctions {
     }
   }
 
-  static String orderStatusText({required String inputText}) {
-    String text = '';
-
-    switch (inputText) {
-      case 'pending':
-        {
-          text = LocaleKeys.pending.tr();
-          break;
-        }
-
-      case 'processing':
-        {
-          text = LocaleKeys.processing.tr();
-          break;
-        }
-
-      case 'ready_to_shipping':
-        {
-          text = LocaleKeys.ready_to_shipping.tr();
-          break;
-        }
-
-      case 'shipped':
-        {
-          text = LocaleKeys.shipped.tr();
-          break;
-        }
-
-      case 'out_for_delivery':
-        {
-          text = LocaleKeys.out_for_delivery.tr();
-          break;
-        }
-
-      case 'delivered':
-        {
-          text = LocaleKeys.delivered.tr();
-          break;
-        }
-
-      case 'partial_return':
-        {
-          text = LocaleKeys.partial_return.tr();
-          break;
-        }
-
-      case 'returned':
-        {
-          text = LocaleKeys.returned.tr();
-          break;
-        }
-
-      case 'failed':
-        {
-          text = LocaleKeys.failed.tr();
-          break;
-        }
-
-      case 'canceled':
-        {
-          text = LocaleKeys.canceled.tr();
-          break;
-        }
-
-      case 'canceled_archived':
-        {
-          text = LocaleKeys.canceled_archived.tr();
-          break;
-        }
-
-      default:
-        {
-          text = 'New Status';
-          break;
-        }
-    }
-
-    return text;
-  }
-
   static String orderFormatDate(DateTime dateTime) {
+    DateTime dTime = dateTime.isUtc ? dateTime : dateTime.toLocal();
+
     final now = DateTime.now();
-    final isToday = dateTime.year == now.year &&
-        dateTime.month == now.month &&
-        dateTime.day == now.day;
+    final isToday = dTime.year == now.year &&
+        dTime.month == now.month &&
+        dTime.day == now.day;
 
-    final timeFormatted = DateFormat('HH:mm:ss').format(dateTime);
+    final timeFormatted = DateFormat('HH:mm:ss').format(dTime);
 
-    return '${isToday ? '${LocaleKeys.today.tr()}' : DateFormat('yyyy-MM-dd').format(dateTime)} | $timeFormatted';
+    return '${isToday ? '${LocaleKeys.today.tr()}' : DateFormat('yyyy-MM-dd').format(dTime)} | $timeFormatted';
   }
 }
