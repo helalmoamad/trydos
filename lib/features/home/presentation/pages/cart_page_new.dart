@@ -1489,7 +1489,6 @@ class _CartPageState extends State<CartPage> {
                                                                                           phoneNumber: phoneNumber,
                                                                                           onChooseWhatsapp: () {
                                                                                             isVisWhatsApp = 1;
-                                                                                            print("###################33333#${isVisWhatsApp}");
                                                                                             pageController.animateToPage(2, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
 
                                                                                             if (prefsRepository.isTimerForOtpRunning ?? false) {

@@ -163,6 +163,7 @@ class HomeState extends Equatable {
       this.getStoriesForProductStatus = GetStoriesForProductStatus.init,
       this.currentColorSizeForCart,
       this.currentQuantityForCart,
+      this.addVariationToCartId = const {},
       this.addImagesToProductIdForCart = const {},
       this.searchHistory,
       this.getAllowedCountriesModel,
@@ -252,6 +253,7 @@ class HomeState extends Equatable {
 
   final Map<String, String>? searchWithOutFilterOffset;
   final Map<String, Map<int, List<String>>> addImagesToProductIdForCart;
+  final Map<String, Map<String, String>>? addVariationToCartId;
   final Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>?
       productStatus;
   final List<cart.Cart>? cartCollection;
@@ -374,8 +376,7 @@ class HomeState extends Equatable {
         getProductDetailWithoutRelatedProductsModel,
 
         addItemInCartStatus,
-
-        addImagesToProductIdForCart,
+        addVariationToCartId,
         deleteItemInCartStatus,
         updateItemInCartStatus,
         currentSelectedColorForEveryProduct,
@@ -411,6 +412,7 @@ class HomeState extends Equatable {
       final GetCartOverviewStatus? getCartOverviewStatus,
       final CurrentSelectedColorForEveryProductStatus?
           currentSelectedColorForEveryProductStatus,
+      final Map<String, Map<String, String>>? addVariationToCartId,
       final CheckAvailabilityProductCartModel?
           checkAvailabilityProductCartModel,
       final CheckAvailabilityProductCartStatus?
@@ -494,6 +496,7 @@ class HomeState extends Equatable {
       enableAddToCardAfterChangeVariantZero:
           enableAddToCardAfterChangeVariantZero ??
               this.enableAddToCardAfterChangeVariantZero,
+      addVariationToCartId: addVariationToCartId ?? this.addVariationToCartId,
       updateProfileStatus: updateProfileStatus ?? this.updateProfileStatus,
       uploadUserPhotoCloudinaryStatus: uploadUserPhotoCloudinaryStatus ??
           this.uploadUserPhotoCloudinaryStatus,

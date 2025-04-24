@@ -92,9 +92,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<VerifyOtpFromGuestEvent>(
       _onVerifyGuestPhoneEvent,
     );
-    on<RegisterGuestEvent>(
-      _onRegisterGuestEvent,
-    );
+    on<RegisterGuestEvent>(_onRegisterGuestEvent,
+        transformer: throttleDroppable(throttleDuration));
     on<UpdateNameEvent>(_onUpdateNameEvent,
         transformer: throttleDroppable(throttleDuration));
     on<GetCustomerInfoEvent>(_onGetCustomerInfoEvent,

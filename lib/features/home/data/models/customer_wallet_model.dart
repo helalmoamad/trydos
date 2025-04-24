@@ -97,7 +97,7 @@ class CustomerWalletDataModel {
       CustomerWalletDataModel(
         limit: json["limit"] ?? 0,
         offset: json["offset"] ?? 0,
-        totalWalletBalance: json["total_wallet_balance"] == null
+        totalWalletBalance: json["wallet_balance"] == null
             ? 0
             : double.parse(
                 json["wallet_balance"].toString(),
@@ -117,7 +117,7 @@ class CustomerWalletDataModel {
         "total_wallet_balance": totalWalletBalance,
         "currency_code": currencyCode,
         "currency_symbol": currencySymbol,
-        "total_wallet_transaction": totalWalletTransaction,
+        "wallet_balance": totalWalletTransaction,
         "wallet_transaction_list":
             List<dynamic>.from(walletTransactionList.map((x) => x.toJson())),
       };

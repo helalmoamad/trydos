@@ -84,6 +84,10 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
       }
     }
 
+    String formattedPhone = _formatNumber(
+        phoneController.text, _getCountryCodeFromNumber(phoneController.text));
+    phoneController.text = formattedPhone;
+
     if ((homeBloc.state.userInfo?.alternativePhone?.length ?? 0) > 0) {
       if (homeBloc.state.userInfo!.alternativePhone!.startsWith("+")) {
         alternativePhoneController.text =
@@ -93,6 +97,11 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
             homeBloc.state.userInfo?.alternativePhone ?? "";
       }
     }
+
+    String formattedAlternativePhone = _formatNumber(
+        alternativePhoneController.text,
+        _getCountryCodeFromNumber(alternativePhoneController.text));
+    alternativePhoneController.text = formattedAlternativePhone;
 
     emailController.text = homeBloc.state.userInfo?.email ?? "";
     changeGender.value =
@@ -1181,6 +1190,9 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
   }
 
   String _formatNumber(String input, String countryCode) {
+    if (countryCode == "") {
+      return input;
+    }
     // إزالة الفراغات
 
     String inputWithoutCode = input.split("${countryCode}").toList()[1];
@@ -1197,5 +1209,22 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
     }
 
     return "${countryCode}${(digitsOnly.length == 0) ? formatted.toString() : (" " + formatted.toString())}";
+  }
+
+  String _getCountryCodeFromNumber(String num) {
+    Country newCountry = countries.firstWhere(
+        (element) =>
+            '+${num.toLowerCase()}'.startsWith(element.dialCode.toLowerCase()),
+        orElse: () => Country(
+            name: '',
+            flag: '',
+            code: '',
+            dialCode: '',
+            minLength: 0,
+            maxLength: 0));
+    if (newCountry.code != "") {
+      return newCountry.dialCode.split("+").toList()[1];
+    }
+    return "";
   }
 }

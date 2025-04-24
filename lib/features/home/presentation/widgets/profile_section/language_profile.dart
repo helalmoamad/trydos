@@ -106,27 +106,6 @@ class _ProfileLanguagePageState extends State<ProfileLanguagePage>
                               onTap: () {
                                 BlocProvider.of<HomeBloc>(context)
                                     .add(ClearAllAppCashEvent());
-                                GetIt.I<PrefsRepository>()
-                                    .removeBoutiqueHasPerfechedWhenOpenApp(
-                                        true);
-                                GetIt.I<PrefsRepository>()
-                                    .removeMainCategoryHasPerfechedWhenOpenApp(
-                                        true);
-
-                                GetIt.I<PrefsRepository>()
-                                    .removeFiveFilterHasPerfechedWhenOpenApp();
-
-                                BlocProvider.of<HomeBloc>(context)
-                                    .add(ClearAllAppCashEvent());
-                                GetIt.I<PrefsRepository>()
-                                    .removeBoutiqueHasPerfechedWhenOpenApp(
-                                        true);
-                                GetIt.I<PrefsRepository>()
-                                    .removeMainCategoryHasPerfechedWhenOpenApp(
-                                        true);
-
-                                GetIt.I<PrefsRepository>()
-                                    .removeFiveFilterHasPerfechedWhenOpenApp();
 
                                 BlocProvider.of<HomeBloc>(context).add(
                                     ChangeCountryLanguageForNotificationEvent(

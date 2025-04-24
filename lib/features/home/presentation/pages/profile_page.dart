@@ -9,13 +9,18 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'package:get_it/get_it.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:trydos/base_page.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/typography.dart';
 
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/core/utils/extensions/list.dart';
+import 'package:trydos/core/utils/responsive_padding.dart';
+import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/authentication/presentation/widgets/insert_phone_tab.dart';
@@ -27,6 +32,8 @@ import 'package:trydos/features/home/data/models/starting_settings_response_mode
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
+import 'package:trydos/features/home/presentation/manager/orderBloc/order_event.dart';
+import 'package:trydos/features/home/presentation/manager/orderBloc/order_state.dart';
 import 'package:trydos/features/home/presentation/widgets/profile_section/language_profile.dart';
 import 'package:trydos/features/home/presentation/widgets/profile_section/profile_country_page.dart';
 import 'package:trydos/features/home/presentation/widgets/profile_section/user_information_page.dart';
@@ -56,6 +63,9 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   @override
   void initState() {
+    BlocProvider.of<OrderBloc>(context).add(
+      GetCustomerWalletEvent(limit: 10, offset: 1),
+    );
     authBloc = BlocProvider.of<AuthBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
     homeBloc.add(UpdateProfileEvent(changeStatusToInit: true));
@@ -304,40 +314,66 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
 
   Widget _languageWidget() {
     List<Language> language = [];
-    language = homeBloc.state.startingSetting?.languages ?? [];
-    int languageIndex = language
-        .indexWhere((element) => element.code == LanguageService.languageCode);
 
-    return InkWell(
-      onTap: () => Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => ProfileLanguagePage())),
-      child: Container(
-          decoration: BoxDecoration(
-              color: Color(0xffF8F8F8),
-              borderRadius: BorderRadius.circular(15.r)),
-          width: 195.w,
-          height: 53,
-          child: Row(
-            children: [
-              SizedBox(
-                width: 10,
-              ),
-              SvgPicture.asset(
-                AppAssets.languageSvg,
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              Text(
-                "${language[languageIndex].name}",
-                style: context.textTheme.bodyMedium?.rr.copyWith(
-                    color: const Color(0xff1D1D1D),
-                    letterSpacing: 0.18,
-                    fontSize: 14,
-                    height: 1.3),
-              ),
-            ],
-          )),
+    int languageIndex;
+
+    return BlocBuilder<HomeBloc, HomeState>(
+      buildWhen: (previous, current) =>
+          previous.getStartingSettingsStatus !=
+          current.getStartingSettingsStatus,
+      builder: (context, state) {
+        language = state.startingSetting?.languages ?? [];
+        languageIndex = language.indexWhere(
+            (element) => element.code == LanguageService.languageCode);
+        return (state.getStartingSettingsStatus !=
+                    GetStartingSettingsStatus.success &&
+                languageIndex == -1)
+            ? Container(
+                width: 195.w,
+                height: 53,
+                child: Shimmer.fromColors(
+                    baseColor: Colors.grey[200]!,
+                    highlightColor: Colors.grey[100]!,
+                    child: Container(
+                        width: 195,
+                        height: 53,
+                        margin: HWEdgeInsets.symmetric(horizontal: 20),
+                        decoration: BoxDecoration(
+                          color: const Color(0xffFAFAFA),
+                          borderRadius: BorderRadius.circular(20.0),
+                        ))))
+            : InkWell(
+                onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => ProfileLanguagePage())),
+                child: Container(
+                    decoration: BoxDecoration(
+                        color: Color(0xffF8F8F8),
+                        borderRadius: BorderRadius.circular(15.r)),
+                    width: 195.w,
+                    height: 53,
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 10,
+                        ),
+                        SvgPicture.asset(
+                          AppAssets.languageSvg,
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text(
+                          "${language[languageIndex].name}",
+                          style: context.textTheme.bodyMedium?.rr.copyWith(
+                              color: const Color(0xff1D1D1D),
+                              letterSpacing: 0.18,
+                              fontSize: 14,
+                              height: 1.3),
+                        ),
+                      ],
+                    )),
+              );
+      },
     );
   }
 
@@ -347,48 +383,72 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                 ? GetIt.I<PrefsRepository>().userChoosedCountryIso
                 : GetIt.I<PrefsRepository>().countryIso) ??
             "";
-    List<Country>? alowCountries =
-        homeBloc.state.getAllowedCountriesModel?.data?.countries;
-    Country? country = alowCountries?.firstWhere(
-        (element) => '${choosedCountryIso.toLowerCase()}'
-            .startsWith(element.iso!.toLowerCase()),
-        orElse: () => alowCountries[0]);
-    return InkWell(
-      onTap: () => Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => ProfileCountryPage())),
-      child: Container(
-          decoration: BoxDecoration(
-              color: Color(0xffF8F8F8),
-              borderRadius: BorderRadius.circular(15.r)),
-          width: 195.w,
-          height: 53,
-          child: Row(
-            children: [
-              SizedBox(
-                width: 10,
-              ),
-              Container(
-                  width: 25,
-                  height: 25,
-                  child: CountryFlag.fromCountryCode(
-                    country!.iso!.toUpperCase(),
-                    height: 25,
-                    width: 25,
-                    borderRadius: 4.r,
-                  )),
-              SizedBox(
-                width: 10,
-              ),
-              Text(
-                country.name ?? "",
-                style: context.textTheme.bodyMedium?.rr.copyWith(
-                    color: const Color(0xff1D1D1D),
-                    letterSpacing: 0.18,
-                    fontSize: 14,
-                    height: 1.3),
-              ),
-            ],
-          )),
+    List<Country>? allowCountries;
+    Country? country;
+    return BlocBuilder<HomeBloc, HomeState>(
+      buildWhen: (previous, current) =>
+          previous.getAllowedCountriesModel?.data?.countries?.length !=
+          current.getAllowedCountriesModel?.data?.countries?.length,
+      builder: (context, state) {
+        allowCountries =
+            homeBloc.state.getAllowedCountriesModel?.data?.countries ?? [];
+        country = allowCountries?.firstWhere(
+            (element) => '${choosedCountryIso.toLowerCase()}'
+                .startsWith(element.iso!.toLowerCase()),
+            orElse: () => Country(id: -1));
+        return (allowCountries.isNullOrEmpty || country?.id == -1)
+            ? Container(
+                width: 195.w,
+                height: 53,
+                child: Shimmer.fromColors(
+                    baseColor: Colors.grey[200]!,
+                    highlightColor: Colors.grey[100]!,
+                    child: Container(
+                        width: 195,
+                        height: 53,
+                        margin: HWEdgeInsets.symmetric(horizontal: 20),
+                        decoration: BoxDecoration(
+                          color: const Color(0xffFAFAFA),
+                          borderRadius: BorderRadius.circular(20.0),
+                        ))))
+            : InkWell(
+                onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => ProfileCountryPage())),
+                child: Container(
+                    decoration: BoxDecoration(
+                        color: Color(0xffF8F8F8),
+                        borderRadius: BorderRadius.circular(15.r)),
+                    width: 195.w,
+                    height: 53,
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Container(
+                            width: 25,
+                            height: 25,
+                            child: CountryFlag.fromCountryCode(
+                              country!.iso!.toUpperCase(),
+                              height: 25,
+                              width: 25,
+                              borderRadius: 4.r,
+                            )),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text(
+                          country?.name ?? "",
+                          style: context.textTheme.bodyMedium?.rr.copyWith(
+                              color: const Color(0xff1D1D1D),
+                              letterSpacing: 0.18,
+                              fontSize: 14,
+                              height: 1.3),
+                        ),
+                      ],
+                    )),
+              );
+      },
     );
   }
 
@@ -466,61 +526,62 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
   }
 
   Widget _trydosWalletWidget() {
-    double walletBalance =
-        BlocProvider.of<OrderBloc>(context).state.customerWalletModel == null
+    return BlocBuilder<OrderBloc, OrderState>(
+      buildWhen: (previous, current) =>
+          previous.getCustomerWalletStatus != current.getCustomerWalletStatus,
+      builder: (context, state) {
+        double walletBalance = state.customerWalletModel == null
             ? 0
-            : BlocProvider.of<OrderBloc>(context)
-                .state
-                .customerWalletModel!
-                .data
-                .totalWalletBalance!;
-    String symbole =
-        BlocProvider.of<OrderBloc>(context).state.customerWalletModel == null
+            : state.customerWalletModel!.data.totalWalletBalance!;
+        String symbole = state.customerWalletModel == null
             ? ''
-            : BlocProvider.of<OrderBloc>(context)
-                    .state
-                    .customerWalletModel!
-                    .data
-                    .currencySymbol ??
-                '';
-
-    return Container(
-      padding: EdgeInsets.all(10),
-      width: 195.w,
-      decoration: BoxDecoration(
-          color: Color(0xffF8F8F8), borderRadius: BorderRadius.circular(15.r)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          SvgPicture.asset(
-            AppAssets.trydosWalletSvg,
-            color: const Color(0xff3C3C3C),
-            width: 25,
+            : state.customerWalletModel!.data.currencySymbol ?? '';
+        return Container(
+          padding: EdgeInsets.all(10),
+          width: 195.w,
+          decoration: BoxDecoration(
+              color: Color(0xffF8F8F8),
+              borderRadius: BorderRadius.circular(15.r)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              SvgPicture.asset(
+                AppAssets.trydosWalletSvg,
+                color: const Color(0xff3C3C3C),
+                width: 25,
+              ),
+              Text(
+                LanguageService.languageCode == "ar"
+                    ? LocaleKeys.wallet.tr() + " " + LocaleKeys.trydos.tr()
+                    : LocaleKeys.trydos.tr() + " " + LocaleKeys.wallet.tr(),
+                style: context.textTheme.bodyMedium?.mr.copyWith(
+                    color: const Color(0xff1D1D1D),
+                    letterSpacing: 0.18,
+                    fontSize: 14,
+                    height: 1.3),
+              ),
+              state.getCustomerWalletStatus == GetCustomerWalletStatus.loading
+                  ? Container(
+                      alignment: Alignment.center,
+                      width: 40,
+                      height: 20,
+                      child: TrydosLoader(
+                        size: 20,
+                      ),
+                    )
+                  : Text(
+                      '${LocaleKeys.your_balance.tr()} ${walletBalance} ${symbole}',
+                      style: context.textTheme.bodyMedium?.rr.copyWith(
+                          color: const Color(0xff8D8D8D),
+                          letterSpacing: 0.18,
+                          fontSize: 12,
+                          height: 1.3),
+                    ),
+            ],
           ),
-          Text(
-            LanguageService.languageCode == "ar"
-                ? LocaleKeys.wallet.tr() + " " + LocaleKeys.trydos.tr()
-                : LocaleKeys.trydos.tr() + " " + LocaleKeys.wallet.tr(),
-            style: context.textTheme.bodyMedium?.mr.copyWith(
-                color: const Color(0xff1D1D1D),
-                letterSpacing: 0.18,
-                fontSize: 14,
-                height: 1.3),
-          ),
-          Directionality(
-            textDirection: TextDirection.ltr,
-            child: Text(
-              '${walletBalance} ${symbole}',
-              style: context.textTheme.bodyMedium?.rr.copyWith(
-                  color: const Color(0xff8D8D8D),
-                  letterSpacing: 0.18,
-                  fontSize: 12,
-                  height: 1.3),
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -718,7 +779,11 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                                           : '${LocaleKeys.verified_now.tr()}',
                                       style: context.textTheme.bodyMedium?.rr
                                           .copyWith(
-                                              color: const Color(0xffFF5F61),
+                                              color: (prefsRepository
+                                                          .isVerifiedPhone ??
+                                                      false)
+                                                  ? Colors.green
+                                                  : const Color(0xffFF5F61),
                                               letterSpacing: 0.18,
                                               fontSize: 10,
                                               height: 1.3),

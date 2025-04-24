@@ -144,6 +144,8 @@ dependencies:
   simple_image_cropper: ^1.0.0
   sync: ^0.3.0
   delayed_display: ^2.0.0
+  expandable_richtext: ^1.0.7
+  #readmore: ^3.0.0
   #image_cropper: ^9.1.0
 dev_dependencies:
 

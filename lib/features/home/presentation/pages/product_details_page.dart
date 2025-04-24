@@ -99,6 +99,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   late HomeBloc homeBloc;
   late ChatBloc chatBloc;
   late AppBloc appBloc;
+  int? initialColor;
 
   final ValueNotifier<int> addToBagButtonShapeNotifier = ValueNotifier(0);
   bool enable = true;
@@ -126,6 +127,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     }
 
     homeBloc = BlocProvider.of<HomeBloc>(context);
+    initialColor = homeBloc.state.currentSelectedColorForEveryProduct[
+            widget.productItem?.productId.toString()] ??
+        -1;
     homeBloc.add(IsChangedvariationWhenQtyZeroEvent(
         isChangedvariationWhenQtyZero: false));
 
@@ -187,6 +191,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
           return Future.value(false);
         }
         if (Navigator.of(context).canPop()) {
+          if (widget.productItem != null && initialColor != -1) {
+            homeBloc.add(AddCurrentSelectedColorEvent(
+                currentSelectedColor: initialColor ?? 0,
+                productId: widget.productItem!.productId.toString()));
+          }
+
           Navigator.of(context).pop();
 
           return Future.value(false);
@@ -201,6 +211,14 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
             Scaffold(
               appBar: TrydosAppBar(
                 appBarParams: AppBarParams(
+                    onBack: () {
+                      if (widget.productItem != null && initialColor != -1) {
+                        homeBloc.add(AddCurrentSelectedColorEvent(
+                            currentSelectedColor: initialColor ?? 0,
+                            productId:
+                                widget.productItem!.productId.toString()));
+                      }
+                    },
                     scrolledUnderElevation: 0,
                     backIconColor: Colors.black,
                     action: [
@@ -599,6 +617,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           (productItem?.syncColorImages?.length ?? 0)) {
                         currentSelectedColor = 0;
                       }
+                      print(
+                          "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR${currentSelectedColor}");
                       Future.delayed(
                         Duration(milliseconds: 600),
                         () {
@@ -1166,22 +1186,16 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     currentSelectedColor =
                         state.currentSelectedColorForEveryProduct[productId] ??
                             (productItem?.syncColorImages?.length ?? 0) ~/ 2;
-                    print(
-                        "....qqqqqqqq${productId}qqqqqq${state.currentSelectedColorForEveryProduct[productId]}qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq${currentSelectedColor}");
                     String currentSelectedColorName =
                         ((productItem?.colors?.length ?? 0) > 0)
                             ? productItem!.colors![currentSelectedColor].name ??
                                 ""
                             : "";
-                    print(
-                        "q111111111qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq${currentSelectedColorName}");
 
                     String currentVariantType =
                         "${currentSelectedColorName != "" ? currentSelectedColorName : ""}" +
                             "${(state.currentColorSizeForCart?["size"] != null && (state.cachedProductWithoutRelatedProductsModel[productItem!.productId.toString()]?.product?.choiceOptions?.isNullOrEmpty ?? false) && state.currentColorSizeForCart?["size"] != "") && (currentSelectedColorName != "") ? "-" : ""}" +
                             "${(state.currentColorSizeForCart?["size"] != null && (state.cachedProductWithoutRelatedProductsModel[productItem!.productId.toString()]?.product?.choiceOptions?.isNullOrEmpty ?? false) && state.currentColorSizeForCart?["size"] != "") ? "${state.currentColorSizeForCart?["size"]}" : ""}";
-                    print(
-                        "q2222222qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq${currentVariantType}");
 
                     Variation? currentVariation = state
                         .cachedProductWithoutRelatedProductsModel[
@@ -1206,9 +1220,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                 .success)) {
                       Future.delayed(Duration(seconds: 2),
                           () => visibleSizeAndColorCard.value = true);
-                      print(
-                          "yyyyyyyyyyyyyyyyyyyyyyyyyyy${currentVariation?.type}yy${currentVariation?.qty}");
-
                       Future.delayed(
                         Duration(milliseconds: 1200),
                         () {

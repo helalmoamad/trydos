@@ -29,8 +29,9 @@ import '../widgets/adding_name.dart';
 import '../widgets/verification_methods.dart';
 
 class RegistrationPage extends StatefulWidget {
-  final bool? fromExpiredToken;
-  const RegistrationPage({this.fromExpiredToken, Key? key}) : super(key: key);
+  final bool? fromLogOut;
+
+  const RegistrationPage({this.fromLogOut = false, Key? key}) : super(key: key);
 
   @override
   State<RegistrationPage> createState() => _RegistrationPageState();
@@ -98,10 +99,9 @@ class _RegistrationPageState extends State<RegistrationPage>
           error: error.toString());
     };
     return PopScope(
-      canPop: true,
+      canPop: (widget.fromLogOut ?? false) ? false : true,
       onPopInvokedWithResult: (didPop, result) {
-        print(pageContent.value);
-        print("#######################@@@@@@@@@@@@@@@@@@!!!!!!!!!!");
+        if (widget.fromLogOut ?? false) {}
         Future.delayed(Duration(milliseconds: 100), () {
           if (pageController.page == 2 || pageController.page == 1) {
             pageController.animateToPage(0,
@@ -162,6 +162,9 @@ class _RegistrationPageState extends State<RegistrationPage>
                             highlightColor: Colors.transparent,
                             splashColor: Colors.transparent,
                             onTap: () async {
+                              if (widget.fromLogOut ?? false) {
+                                return;
+                              }
                               Future.delayed(
                                 Duration(milliseconds: 100),
                                 () {

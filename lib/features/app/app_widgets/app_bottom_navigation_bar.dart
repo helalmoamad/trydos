@@ -13,10 +13,13 @@ import 'package:trydos/common/test_utils/widgets_keys.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/app_widgets/update_user_name_widget.dart';
 import 'package:trydos/features/app/country_dropdown.dart';
 import 'package:trydos/features/app/language_dropdown.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
+import 'package:trydos/features/authentication/data/models/verify_otp_sign_up_and_in_response_model.dart';
+import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/authentication/presentation/pages/first_registeration_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/feed_back_page.dart';
 import 'package:trydos/features/feed_back/presentation/pages/files_exist_page.dart';
@@ -30,6 +33,7 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.da
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/notification_service/setting_fitrbase_notification.dart';
+import 'package:trydos/splash_page.dart';
 import '../../../common/helper/helper_functions.dart';
 import '../../../common/test_utils/test_var.dart';
 import '../../../core/domin/repositories/prefs_repository.dart';
@@ -320,293 +324,374 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                 ),
               ),
               Expanded(
-                child: InkWell(
-                  onLongPress: () {
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            content: MyTextWidget('Dev tools'),
-                            actions: [
-                              BlocBuilder<HomeBloc, HomeState>(
-                                buildWhen: (p, c) =>
-                                    p.getAllowedCountriesModel !=
-                                        c.getAllowedCountriesModel ||
-                                    p.getStartingSettingsStatus !=
-                                        c.getStartingSettingsStatus,
-                                builder: (context, homestate) {
-                                  return Container(
-                                    width: 300,
-                                    height: 390,
-                                    child: Stack(
-                                      children: [
-                                        Positioned(
-                                          left: 10,
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceAround,
+                child: BlocBuilder<AuthBloc, AuthState>(
+                    buildWhen: (p, c) =>
+                        p.verifyOtpSignInStatus != c.verifyOtpSignInStatus ||
+                        p.verifyOtpSignUpStatus != c.verifyOtpSignUpStatus ||
+                        c.verifyOtpFromGuestStatus !=
+                            p.verifyOtpFromGuestStatus ||
+                        p.registerGuestStatus != c.registerGuestStatus,
+                    builder: (context, authstate) {
+                      return InkWell(
+                        onLongPress: () {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  content: MyTextWidget('Dev tools'),
+                                  actions: [
+                                    BlocBuilder<HomeBloc, HomeState>(
+                                      buildWhen: (p, c) =>
+                                          p.getAllowedCountriesModel !=
+                                              c.getAllowedCountriesModel ||
+                                          p.getStartingSettingsStatus !=
+                                              c.getStartingSettingsStatus,
+                                      builder: (context, homestate) {
+                                        return Container(
+                                          alignment: Alignment.center,
+                                          width: 300,
+                                          height: 390,
+                                          child: Stack(
+                                            alignment: Alignment.center,
                                             children: [
-                                              TextButton(
-                                                onPressed: () {
-                                                  Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (_) =>
-                                                              FeedBackScreen(
-                                                                showRequests:
-                                                                    true,
-                                                              )));
-                                                },
-                                                child: MyTextWidget('requests'),
-                                              ),
-                                              TextButton(
-                                                onPressed: () {
-                                                  Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (_) =>
-                                                              SharedPreferencePage()));
-                                                },
-                                                child: MyTextWidget(
-                                                    'shared preferences'),
-                                              ),
-                                              TextButton(
-                                                onPressed: () {
-                                                  Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (_) =>
-                                                              SwitchListForNotification()));
-                                                },
-                                                child: MyTextWidget(
-                                                    'Firebase Setting'),
-                                              ),
-                                              TextButton(
-                                                onPressed: () {
-                                                  Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (_) =>
-                                                              FeedBackScreen(
-                                                                showRequests:
-                                                                    false,
-                                                              )));
-                                                },
-                                                child: MyTextWidget(
-                                                    'flutter errors'),
-                                              ),
-                                              TextButton(
-                                                onPressed: () {
-                                                  Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (_) =>
-                                                              FilesExistPage()));
-                                                },
-                                                child: MyTextWidget(
-                                                    'files exists'),
-                                              ),
-                                              TextButton(
-                                                onPressed: () {
-                                                  Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (_) =>
-                                                              EditUrlsPage()));
-                                                },
-                                                child:
-                                                    MyTextWidget('Edit Urls'),
-                                              ),
-                                              Row(
-                                                children: [
-                                                  LanguageDropdown(
-                                                      language: homestate
-                                                              .startingSetting
-                                                              ?.languages ??
-                                                          []),
-                                                  SizedBox(
-                                                    width: 10,
-                                                  ),
-                                                  CountryDropdown(
-                                                    fromHomepage: true,
-                                                    countries: homestate
-                                                                .getAllowedCountriesModel !=
-                                                            null
-                                                        ? homestate
-                                                                .getAllowedCountriesModel!
-                                                                .data!
-                                                                .countries ??
-                                                            []
-                                                        : [],
-                                                  ),
-                                                ],
-                                              ),
-                                              //////////////
-                                              SizedBox(
-                                                width: 50,
-                                                height: 50,
-                                                child: IconButton(
-                                                  icon:
-                                                      Icon(Icons.notifications),
-                                                  color: Colors.red,
-                                                  onPressed: () {
-                                                    HelperFunctions
-                                                        .slidingNavigation(
-                                                      context,
-                                                      NotificationsPage(),
-                                                    );
-                                                  },
+                                              Positioned(
+                                                left: 10,
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceAround,
+                                                  children: [
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                                builder: (_) =>
+                                                                    FeedBackScreen(
+                                                                      showRequests:
+                                                                          true,
+                                                                    )));
+                                                      },
+                                                      child: MyTextWidget(
+                                                          'requests'),
+                                                    ),
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                                builder: (_) =>
+                                                                    SharedPreferencePage()));
+                                                      },
+                                                      child: MyTextWidget(
+                                                          'shared preferences'),
+                                                    ),
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                                builder: (_) =>
+                                                                    SwitchListForNotification()));
+                                                      },
+                                                      child: MyTextWidget(
+                                                          'Firebase Setting'),
+                                                    ),
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                                builder: (_) =>
+                                                                    FeedBackScreen(
+                                                                      showRequests:
+                                                                          false,
+                                                                    )));
+                                                      },
+                                                      child: MyTextWidget(
+                                                          'flutter errors'),
+                                                    ),
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                                builder: (_) =>
+                                                                    FilesExistPage()));
+                                                      },
+                                                      child: MyTextWidget(
+                                                          'files exists'),
+                                                    ),
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                                builder: (_) =>
+                                                                    EditUrlsPage()));
+                                                      },
+                                                      child: MyTextWidget(
+                                                          'Edit Urls'),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 50,
+                                                      height: 50,
+                                                      child: IconButton(
+                                                        icon: Icon(Icons
+                                                            .notifications),
+                                                        color: Colors.red,
+                                                        onPressed: () {
+                                                          HelperFunctions
+                                                              .slidingNavigation(
+                                                            context,
+                                                            NotificationsPage(),
+                                                          );
+                                                        },
+                                                      ),
+                                                    ),
+                                                    //////////////
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        BlocProvider.of<
+                                                                    HomeBloc>(
+                                                                context)
+                                                            .add(
+                                                                ClearAllAppCashEvent());
+                                                        BlocProvider.of<
+                                                                    HomeBloc>(
+                                                                context)
+                                                            .add(
+                                                                SaveUserInfoFromAuthEvent(
+                                                                    userInfo:
+                                                                        User(
+                                                          alternativePhone: "",
+                                                          email: "",
+                                                          gender: null,
+                                                          id: null,
+                                                          image: "",
+                                                          isPhoneVerified: 0,
+                                                          lastOtpIdToken: "",
+                                                          name: "",
+                                                          phone: "",
+                                                          tall: null,
+                                                          weight: null,
+                                                        )));
+                                                        prefsRepository
+                                                            .setVerifiedPhone(
+                                                                false);
+                                                        prefsRepository
+                                                            .setPhoneNumber("");
+                                                        prefsRepository
+                                                            .setChatToken("");
+                                                        prefsRepository
+                                                            .setMarketToken(
+                                                                null);
+                                                        prefsRepository
+                                                            .setMyMarketName(
+                                                                "");
+                                                        prefsRepository
+                                                            .setMyProfilePhoto(
+                                                                "");
+                                                        Future.delayed(
+                                                          Duration(
+                                                              microseconds:
+                                                                  500),
+                                                          () {
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pushReplacement(
+                                                                    PageRouteBuilder(
+                                                              pageBuilder: (context,
+                                                                      animation,
+                                                                      secondaryAnimation) =>
+                                                                  RegistrationPage(
+                                                                      fromLogOut:
+                                                                          true),
+                                                            ));
+                                                          },
+                                                        );
+                                                      },
+                                                      child: MyTextWidget(
+                                                          'log out'),
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
                                             ],
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
-                              )
-                            ],
-                          );
-                        });
-                  },
-                  onTap: () {
-                    /*  if (!(prefsRepository.isVerifiedPhone ?? false)) {
-                      if (Navigator.canPop(context)) {
-                        Navigator.of(context).pop();
-                      }
-                      Navigator.of(context).push(PageRouteBuilder(
-                        pageBuilder: (context, animation, secondaryAnimation) =>
-                            RegistrationPage(),
-                      ));
-                    } else {*/
-                    if (Navigator.canPop(context)) {
-                      Navigator.of(context).pop();
-                    }
-                    appBloc.add(ChangeBasePage(3));
-                    //  }
+                                        );
+                                      },
+                                    )
+                                  ],
+                                );
+                              });
+                        },
+                        onTap: () {
+                          /*  if (!(prefsRepository.isVerifiedPhone ?? false)) {
+                          if (Navigator.canPop(context)) {
+                            Navigator.of(context).pop();
+                          }
+                          Navigator.of(context).push(PageRouteBuilder(
+                            pageBuilder: (context, animation, secondaryAnimation) =>
+                                RegistrationPage(),
+                          ));
+                        } else {*/
+                          if (authstate.registerGuestStatus ==
+                                  RegisterGuestStatus.loading ||
+                              authstate.verifyOtpFromGuestStatus ==
+                                  VerifyOtpFromGuestStatus.loading ||
+                              authstate.verifyOtpSignInStatus ==
+                                  VerifyOtpInProfileStatus.loading ||
+                              authstate.verifyOtpSignUpStatus ==
+                                  VerifyOtpSignUpStatus.loading) {
+                            return;
+                          }
+                          if (Navigator.canPop(context)) {
+                            Navigator.of(context).pop();
+                          }
+                          appBloc.add(ChangeBasePage(3));
+                          //  }
 
-                    /*      // if (prefsRepository.chatToken != null) return;
-                    //appBloc.add(ChangeBasePage(0));
-                    if (Navigator.canPop(context)) {
-                      Navigator.of(context).pop();
-                    }
-                    Navigator.of(context).push(PageRouteBuilder(
-                      pageBuilder: (context, animation, secondaryAnimation) =>
-                          RegistrationPage(),
-                    ));
-                    /////////////////////////
-                    FirebaseAnalyticsService.logEventForSession(
-                      eventName: AnalyticsEventsConst.buttonClicked,
-                      executedEventName:
-                          AnalyticsExecutedEventNameConst.meNavBarButton,
-                    );*/
-                  },
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      prefsRepository.myProfilePhoto == null ||
-                              prefsRepository.myProfilePhoto == ""
-                          ? Container(
-                              height: 30.h,
-                              width: 30.h,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: AssetImage(AppAssets.profileJpg),
-                                  fit: BoxFit.cover,
-                                ),
-                                borderRadius: BorderRadius.circular(15.0),
-                                border: Border.all(
-                                  width: 1.0,
-                                  color: (state.currentIndex == 3)
-                                      ? const Color(0xfff53c3c)
-                                      : Color(0xfffff),
-                                ),
-                              ))
-                          : Container(
-                              height: 30.h,
-                              width: 30.h,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15.0),
-                                border: Border.all(
-                                  width: 1.0,
-                                  color: (state.currentIndex == 3)
-                                      ? const Color(0xfff53c3c)
-                                      : Color(0xfffff),
-                                ),
-                              ),
-                              child: MyCachedNetworkImage(
-                                  imageUrl: prefsRepository.myProfilePhoto!,
-                                  height: 30.h,
-                                  width: 30.h,
-                                  imageFit: BoxFit.cover)),
-                      // Container(
-                      //     height: 30.h,
-                      //     width: 30.h,
-                      //     decoration: BoxDecoration(
-                      //         borderRadius: BorderRadius.circular(15.r),
-                      //         border: Border.all(
-                      //             color: colorScheme.error, width: 1)),
-                      //     child: Image.asset(
-                      //       AppAssets.profilePng,
-                      //       fit: BoxFit.fitHeight,
-                      //     ),
-                      //       )
-                      /*  : SizedBox(
-                              height: 30.h,
-                              width: 30.h,
-                              child: Stack(
-                                children: [
-                                  Container(
+                          /*      // if (prefsRepository.chatToken != null) return;
+                        //appBloc.add(ChangeBasePage(0));
+                        if (Navigator.canPop(context)) {
+                          Navigator.of(context).pop();
+                        }
+                        Navigator.of(context).push(PageRouteBuilder(
+                          pageBuilder: (context, animation, secondaryAnimation) =>
+                              RegistrationPage(),
+                        ));
+                        /////////////////////////
+                        FirebaseAnalyticsService.logEventForSession(
+                          eventName: AnalyticsEventsConst.buttonClicked,
+                          executedEventName:
+                              AnalyticsExecutedEventNameConst.meNavBarButton,
+                        );*/
+                        },
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            authstate.registerGuestStatus ==
+                                        RegisterGuestStatus.loading ||
+                                    authstate.verifyOtpFromGuestStatus ==
+                                        VerifyOtpFromGuestStatus.loading ||
+                                    authstate.verifyOtpSignInStatus ==
+                                        VerifyOtpInProfileStatus.loading ||
+                                    authstate.verifyOtpSignUpStatus ==
+                                        VerifyOtpSignUpStatus.loading
+                                ? Container(
                                     height: 30.h,
                                     width: 30.h,
-                                    decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                        image: AssetImage(AppAssets.profileJpg),
-                                        fit: BoxFit.cover,
-                                      ),
-                                      boxShadow: const [
-                                        BoxShadow(
-                                          color: Color(0x33000000),
-                                          offset: Offset(0, 3),
-                                          blurRadius: 3,
+                                    child: TrydosLoader(size: 15))
+                                : prefsRepository.myProfilePhoto == null ||
+                                        prefsRepository.myProfilePhoto == ""
+                                    ? Container(
+                                        height: 30.h,
+                                        width: 30.h,
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                            image: AssetImage(
+                                                AppAssets.profileJpg),
+                                            fit: BoxFit.cover,
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(15.0),
+                                          border: Border.all(
+                                            width: 1.0,
+                                            color: (state.currentIndex == 3)
+                                                ? const Color(0xfff53c3c)
+                                                : Color(0xfffff),
+                                          ),
+                                        ))
+                                    : Container(
+                                        height: 30.h,
+                                        width: 30.h,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(15.0),
+                                          border: Border.all(
+                                            width: 1.0,
+                                            color: (state.currentIndex == 3)
+                                                ? const Color(0xfff53c3c)
+                                                : Color(0xfffff),
+                                          ),
                                         ),
-                                      ],
-                                      borderRadius: BorderRadius.circular(15.0),
-                                    ),
-                                  ),
-                                  // Container(
-                                  //   height: 6,
-                                  //   width: 1.sw,
-                                  //   decoration: BoxDecoration(
-                                  //     gradient: LinearGradient(
-                                  //       begin: const Alignment(1, 1),
-                                  //       end: const Alignment(1, -3),
-                                  //       colors: [
-                                  //         colorScheme.white,
-                                  //         colorScheme.white.withOpacity(0.6),
-                                  //       ],
-                                  //       stops: const [0.0, 1.0],
-                                  //     ),
-                                  //     borderRadius: BorderRadius.circular(20.0),
-                                  //   ),
-                                  // ),
-                                ],
-                              ),
-                            ),*/
-                      10.verticalSpace,
-                      MyTextWidget(
-                        LocaleKeys.me.tr(),
-                        maxLines: 1,
-                        style: textTheme.titleSmall?.lr.copyWith(
-                            letterSpacing: 0.28,
-                            color: state.currentIndex != 3
-                                ? colorScheme.grey200
-                                : colorScheme.black),
-                      ),
-                    ],
-                  ),
-                ),
+                                        child: MyCachedNetworkImage(
+                                            imageUrl:
+                                                prefsRepository.myProfilePhoto!,
+                                            height: 30.h,
+                                            width: 30.h,
+                                            imageFit: BoxFit.cover)),
+                            // Container(
+                            //     height: 30.h,
+                            //     width: 30.h,
+                            //     decoration: BoxDecoration(
+                            //         borderRadius: BorderRadius.circular(15.r),
+                            //         border: Border.all(
+                            //             color: colorScheme.error, width: 1)),
+                            //     child: Image.asset(
+                            //       AppAssets.profilePng,
+                            //       fit: BoxFit.fitHeight,
+                            //     ),
+                            //       )
+                            /*  : SizedBox(
+                                                    height: 30.h,
+                                                    width: 30.h,
+                                                    child: Stack(
+                                                      children: [
+                                                        Container(
+                                                          height: 30.h,
+                                                          width: 30.h,
+                                                          decoration: BoxDecoration(
+                                                            image: DecorationImage(
+                                                              image: AssetImage(AppAssets.profileJpg),
+                                                              fit: BoxFit.cover,
+                                                            ),
+                                                            boxShadow: const [
+                                                              BoxShadow(
+                                                                color: Color(0x33000000),
+                                                                offset: Offset(0, 3),
+                                                                blurRadius: 3,
+                                                              ),
+                                                            ],
+                                                            borderRadius: BorderRadius.circular(15.0),
+                                                          ),
+                                                        ),
+                                                        // Container(
+                                                        //   height: 6,
+                                                        //   width: 1.sw,
+                                                        //   decoration: BoxDecoration(
+                                                        //     gradient: LinearGradient(
+                                                        //       begin: const Alignment(1, 1),
+                                                        //       end: const Alignment(1, -3),
+                                                        //       colors: [
+                                                        //         colorScheme.white,
+                                                        //         colorScheme.white.withOpacity(0.6),
+                                                        //       ],
+                                                        //       stops: const [0.0, 1.0],
+                                                        //     ),
+                                                        //     borderRadius: BorderRadius.circular(20.0),
+                                                        //   ),
+                                                        // ),
+                                                      ],
+                                                    ),
+                                                  ),*/
+                            10.verticalSpace,
+                            MyTextWidget(
+                              LocaleKeys.me.tr(),
+                              maxLines: 1,
+                              style: textTheme.titleSmall?.lr.copyWith(
+                                  letterSpacing: 0.28,
+                                  color: state.currentIndex != 3
+                                      ? colorScheme.grey200
+                                      : colorScheme.black),
+                            ),
+                          ],
+                        ),
+                      );
+                    }),
               ),
             ],
           ),

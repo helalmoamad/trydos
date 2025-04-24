@@ -697,6 +697,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
       isFailedTheFirstTime.remove('addCustomerAddress');
 
       emit(state.copyWith(
+          lastAdressInfoClassToSave: CustomerAddressesInfo(),
           addAddressToOrderStatus: AddAddressToOrderStatus.success,
           listOfAdressInfoClassToSave: listOfAddressInfoClassToSave));
     });
