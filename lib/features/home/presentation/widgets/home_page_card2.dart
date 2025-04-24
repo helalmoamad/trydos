@@ -398,25 +398,14 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                           onTap: () {
                             boutiqueBloc.add(ChangeAppliedFiltersEvent(
                               boutiqueSlug: widget.boutique.slug!,
-                              category: index == 7
-                                  ? null
-                                  : widget
-                                      .boutique
-                                      .mainCategoriesForProductIds![index]
-                                      .categorySlug,
+                              category: null,
                               filtersAppliedByUser: null,
                               resetAppliedFilters: true,
                             ));
                             boutiqueBloc.add(ChangeSelectedFiltersEvent(
                               fromHomePageSearch: false,
                               boutiqueSlug: widget.boutique.slug!,
-                              category: index == 7
-                                  ? null
-                                  : widget
-                                      .boutique
-                                      .mainCategoriesForProductIds![index]
-                                      .categorySlug,
-                              filtersChoosedByUser: null,
+                              category: null,
                             ));
 
                             boutiqueBloc.add(GetProductsWithFiltersEvent(
@@ -509,19 +498,20 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
               builder: (context, focused, _) {
                 return GestureDetector(
                   onPanDown: (details) {
-                    print(focused);
                     HapticFeedback.lightImpact();
                     resizeItems.value = (details.globalPosition.dx -
                             40 -
                             (8 -
-                                            widget
+                                    (widget
                                                 .boutique
-                                                .mainCategoriesForProductIds!
+                                                .childCategoriesForProductIds!
                                                 .length >
-                                        8
-                                    ? 8
-                                    : widget.boutique
-                                        .mainCategoriesForProductIds!.length) /
+                                            8
+                                        ? 8
+                                        : widget
+                                            .boutique
+                                            .childCategoriesForProductIds!
+                                            .length)) /
                                 //childCategoriesForProductIds!.length) /
                                 2 *
                                 (40.w - 5.w)) ~/
@@ -537,16 +527,16 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                     int prev = resizeItems.value;
                     resizeItems.value = (details.globalPosition.dx -
                             40 -
-                            (9 -
+                            (8 -
                                     (widget
                                                 .boutique
-                                                .mainCategoriesForProductIds!
+                                                .childCategoriesForProductIds!
                                                 .length >
-                                            9
-                                        ? 9
+                                            8
+                                        ? 8
                                         : widget
                                             .boutique
-                                            .mainCategoriesForProductIds!
+                                            .childCategoriesForProductIds!
                                             .length)) /
                                 2 *
                                 (40.w - 5.w)) ~/
@@ -569,23 +559,25 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                           child: Stack(
                               alignment: Alignment.bottomCenter,
                               children: List.generate(
-                                  (widget.boutique.mainCategoriesForProductIds!
+                                  (widget.boutique.childCategoriesForProductIds!
                                               .length) >
                                           8
                                       ? 8
-                                      : (widget.boutique
-                                          .mainCategoriesForProductIds!.length),
+                                      : (widget
+                                          .boutique
+                                          .childCategoriesForProductIds!
+                                          .length),
                                   (index) => AnimatedPositioned(
                                         left: (8 -
                                                     (widget
                                                                 .boutique
-                                                                .mainCategoriesForProductIds!
+                                                                .childCategoriesForProductIds!
                                                                 .length >
                                                             8
                                                         ? 8
                                                         : widget
                                                             .boutique
-                                                            .mainCategoriesForProductIds!
+                                                            .childCategoriesForProductIds!
                                                             .length)) /
                                                 2 *
                                                 (40.w - 5.w) +
@@ -614,7 +606,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                                   ? null
                                                   : widget
                                                       .boutique
-                                                      .mainCategoriesForProductIds![
+                                                      .childCategoriesForProductIds![
                                                           index]
                                                       .categorySlug,
                                               filtersAppliedByUser: null,
@@ -629,7 +621,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                                   ? null
                                                   : widget
                                                       .boutique
-                                                      .mainCategoriesForProductIds![
+                                                      .childCategoriesForProductIds![
                                                           index]
                                                       .categorySlug,
                                               filtersChoosedByUser: null,
@@ -646,7 +638,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                                         ? null
                                                         : widget
                                                             .boutique
-                                                            .mainCategoriesForProductIds![
+                                                            .childCategoriesForProductIds![
                                                                 index]
                                                             .categorySlug,
                                                     context: context,
@@ -670,7 +662,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                                       ? null
                                                       : widget
                                                           .boutique
-                                                          .mainCategoriesForProductIds![
+                                                          .childCategoriesForProductIds![
                                                               index]
                                                           .categorySlug,
                                                   boutiqueDescription: widget
@@ -698,7 +690,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                             isFocused: focused == index,
                                             imageUrl: widget
                                                     .boutique
-                                                    .mainCategoriesForProductIds![
+                                                    .childCategoriesForProductIds![
                                                         //  .childCategoriesForProductIds![
                                                         index]
                                                     .mostViewedProductThumbnail!
@@ -706,14 +698,14 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                                 "",
                                             name: widget
                                                     .boutique
-                                                    .mainCategoriesForProductIds![
+                                                    .childCategoriesForProductIds![
                                                         //.childCategoriesForProductIds![
                                                         index]
                                                     .categoryName ??
                                                 "",
                                             countProducts: (widget
                                                         .boutique
-                                                        .mainCategoriesForProductIds![
+                                                        .childCategoriesForProductIds![
                                                             //.childCategoriesForProductIds![
                                                             index]
                                                         .countProducts ??

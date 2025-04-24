@@ -503,12 +503,11 @@ class RemoveItemFormCartEvent extends HomeEvent {
   final String itemId;
   final String productId;
   final String currentSize;
-  final int? countOfPieces;
+
   final String colorName;
   final String image;
   RemoveItemFormCartEvent({
     required this.itemId,
-    required this.countOfPieces,
     required this.boutiqueId,
     required this.image,
     required this.currentSize,
@@ -530,7 +529,7 @@ class UpdateItemInCartEvent extends HomeEvent {
   final String colorName;
   final String image;
   final String boutiqueId;
-  final int? countOfPieces;
+
   final double? maxAllowed;
 
   UpdateItemInCartEvent({
@@ -541,7 +540,6 @@ class UpdateItemInCartEvent extends HomeEvent {
     required this.cartId,
     required this.image,
     required this.maxAllowed,
-    required this.countOfPieces,
     required this.currentSize,
     required this.productId,
     required this.boutiqueId,

@@ -25,7 +25,7 @@ abstract class PrefsKey {
   static const storiesName = r'__$__storiesName__$__';
 
   static const chatPhoto = r'__$__chatPhoto__$__';
-
+  static const profilePhoto = r'__$profilePhoto$__';
   static const marketName = r'__$__marketName__$__';
 
   static const chatToken = r'__$__chatToken__$__';

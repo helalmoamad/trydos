@@ -187,6 +187,11 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
         (k, e) => MapEntry(
             k, (e as List<dynamic>).map((e) => (e as num).toInt()).toList()),
       ),
+      addVariationToCartId:
+          (json['addVariationToCartId'] as Map<String, dynamic>?)?.map(
+                (k, e) => MapEntry(k, Map<String, String>.from(e as Map)),
+              ) ??
+              const {},
       addImagesToProductIdForCart:
           (json['addImagesToProductIdForCart'] as Map<String, dynamic>?)?.map(
                 (k, e) => MapEntry(
@@ -382,6 +387,7 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'searchWithOutFilterOffset': instance.searchWithOutFilterOffset,
       'addImagesToProductIdForCart': instance.addImagesToProductIdForCart.map(
           (k, e) => MapEntry(k, e.map((k, e) => MapEntry(k.toString(), e)))),
+      'addVariationToCartId': instance.addVariationToCartId,
       'productStatus': instance.productStatus?.map((k, e) => MapEntry(
           k, _$GetProductDetailWithoutSimilarRelatedProductsStatusEnumMap[e]!)),
       'cartCollection':

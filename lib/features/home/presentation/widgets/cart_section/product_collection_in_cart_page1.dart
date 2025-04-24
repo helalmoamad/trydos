@@ -843,9 +843,6 @@ class _ProductCollectionInCartPage1State
                                                               maxAllowed: double.tryParse(
                                                                   cartCollection[index].maxAllowedQty ??
                                                                       "0"),
-                                                              countOfPieces:
-                                                                  cartCollection[index]
-                                                                      .countOfPieces,
                                                               currentSize: !cartCollection[index]
                                                                       .variations
                                                                       .isNullOrEmpty
@@ -858,14 +855,16 @@ class _ProductCollectionInCartPage1State
                                                                   ? cartCollection[index].variations![0].color ??
                                                                       ""
                                                                   : "",
-                                                              productId: cartCollection[index]
-                                                                  .productId
-                                                                  .toString(),
-                                                              totalQuantity: (cartCollection[index].quantity ?? 0) - 1,
+                                                              productId:
+                                                                  cartCollection[index]
+                                                                      .productId
+                                                                      .toString(),
+                                                              totalQuantity:
+                                                                  (cartCollection[index].quantity ?? 0) - 1,
                                                               image: cartCollection[index].image ?? "",
                                                               cartId: cartCollection[index].id.toString(),
                                                               boutiqueId: cartCollection[index].boutique!.id.toString()))
-                                                          : GetIt.I<HomeBloc>().add(RemoveItemFormCartEvent(countOfPieces: cartCollection[index].countOfPieces, image: cartCollection[index].image ?? '', currentSize: !cartCollection[index].variations.isNullOrEmpty ? cartCollection[index].variations![0].size ?? "" : "", colorName: !cartCollection[index].variations.isNullOrEmpty ? cartCollection[index].variations![0].color ?? "" : "", productId: cartCollection[index].productId.toString(), itemId: cartCollection[index].id.toString(), boutiqueId: cartCollection[index].boutique!.id.toString()));
+                                                          : GetIt.I<HomeBloc>().add(RemoveItemFormCartEvent(image: cartCollection[index].image ?? '', currentSize: !cartCollection[index].variations.isNullOrEmpty ? cartCollection[index].variations![0].size ?? "" : "", colorName: !cartCollection[index].variations.isNullOrEmpty ? cartCollection[index].variations![0].color ?? "" : "", productId: cartCollection[index].productId.toString(), itemId: cartCollection[index].id.toString(), boutiqueId: cartCollection[index].boutique!.id.toString()));
                                                     },
                                                     child: (cartCollection![
                                                                         index]
@@ -944,28 +943,26 @@ class _ProductCollectionInCartPage1State
                                                     GetIt.I<HomeBloc>().add(UpdateItemInCartEvent(
                                                         newQuantity: 1,
                                                         maxAllowed: double.tryParse(
-                                                            cartCollection![index].maxAllowedQty ??
+                                                            cartCollection![index]
+                                                                    .maxAllowedQty ??
                                                                 "0"),
-                                                        countOfPieces:
-                                                            cartCollection[index]
-                                                                .countOfPieces,
-                                                        currentSize:
-                                                            !cartCollection[index]
-                                                                    .variations
-                                                                    .isNullOrEmpty
-                                                                ? cartCollection[index].variations![0].size ??
-                                                                    ""
-                                                                : "",
+                                                        currentSize: !cartCollection[index]
+                                                                .variations
+                                                                .isNullOrEmpty
+                                                            ? cartCollection[index].variations![0].size ??
+                                                                ""
+                                                            : "",
                                                         colorName: !cartCollection[index]
                                                                 .variations
                                                                 .isNullOrEmpty
-                                                            ? cartCollection[index]
-                                                                    .variations![0]
-                                                                    .color ??
+                                                            ? cartCollection[index].variations![0].color ??
                                                                 ""
                                                             : "",
-                                                        productId: cartCollection[index].productId.toString(),
-                                                        totalQuantity: (cartCollection[index].quantity ?? 0) + 1,
+                                                        productId: cartCollection[index]
+                                                            .productId
+                                                            .toString(),
+                                                        totalQuantity:
+                                                            (cartCollection[index].quantity ?? 0) + 1,
                                                         image: cartCollection[index].image ?? "",
                                                         cartId: cartCollection[index].id.toString(),
                                                         boutiqueId: cartCollection[index].boutique!.id.toString()));

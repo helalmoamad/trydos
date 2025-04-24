@@ -64,18 +64,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
   final TextEditingController contactPhoneController = TextEditingController();
   final TextEditingController detailsAddressController =
       TextEditingController();
-  List<String> addressTilte = [
-    "Istanbul",
-    "Ankara",
-    "Adana",
-    "Mersin",
-    "Antalya",
-    "Istanbul",
-    "Ankara",
-    "Adana",
-    "Mersin",
-    "Antalya"
-  ];
+  List<String> addressTilte = [];
 
   List<address.RegionDetails> filterResultSearch = [];
   List<LatLng> filterLatLngSearch = [];
@@ -129,9 +118,16 @@ class _AddShippingAdressState extends State<AddShippingAdress>
         });
       });
       // إضافة علامة حمراء في الموقع الحالي
-
+      if (latlng?.latitude != null && latlng?.longitude != null) {
+        mapController.animateCamera(CameraUpdate.newLatLng(
+          _currentLocation!,
+        ));
+      } else {
+        mapController.animateCamera(CameraUpdate.newCameraPosition(
+            CameraPosition(target: _currentLocation!, zoom: 16)));
+      }
       // تحريك الكاميرا إلى الموقع الحالي
-      mapController.animateCamera(CameraUpdate.newLatLng(_currentLocation!));
+
       loadingToGoCurrentLoacation.value = false;
     } catch (e) {
       loadingToGoCurrentLoacation.value = false;
@@ -144,6 +140,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
     fromEditeTodenychangeDetailAddress = widget.fromEdid ?? false;
     homeBloc = BlocProvider.of<HomeBloc>(context);
     orderBloc = BlocProvider.of<OrderBloc>(context);
+    addressTilte = orderBloc.state.provincesByIso ?? [];
     alowCountries = homeBloc.state.getAllowedCountriesModel?.data?.countries;
 
     choosedCountry = GetIt.I<PrefsRepository>().userCountryIsAvailable == 1
@@ -251,12 +248,95 @@ class _AddShippingAdressState extends State<AddShippingAdress>
         visiblePrefix.value = true;
       }
     } else {
-      _kinitialPosition = CameraPosition(
-          bearing: 0,
-          target: LatLng(double.tryParse(country?.latitude ?? "0") ?? 0,
-              double.tryParse(country?.longitude ?? "0") ?? 0),
-          tilt: 0,
-          zoom: 6);
+      if (orderBloc.state.lastAdressInfoClassToSave?.location?.latitude !=
+              null &&
+          orderBloc.state.lastAdressInfoClassToSave?.location?.latitude != "") {
+        _currentLocation = LatLng(
+            double.tryParse(orderBloc
+                .state.lastAdressInfoClassToSave!.location!.latitude!)!,
+            double.tryParse(orderBloc
+                .state.lastAdressInfoClassToSave!.location!.longitude!)!);
+        _kinitialPosition = CameraPosition(
+            bearing: 0, target: _currentLocation!, tilt: 0, zoom: 8);
+        _goToCurrentLocation(latlng: _currentLocation);
+      } else {
+        _kinitialPosition = CameraPosition(
+            bearing: 0,
+            target: LatLng(double.tryParse(country?.latitude ?? "0") ?? 0,
+                double.tryParse(country?.longitude ?? "0") ?? 0),
+            tilt: 0,
+            zoom: 6);
+      }
+
+      if ((orderBloc.state.lastAdressInfoClassToSave?.location?.latitude !=
+              null &&
+          orderBloc.state.lastAdressInfoClassToSave?.location?.latitude !=
+              "")) {
+        _locationFromSearch = LatLng(
+            double.tryParse(orderBloc
+                .state.lastAdressInfoClassToSave!.location!.latitude!)!,
+            double.tryParse(orderBloc
+                .state.lastAdressInfoClassToSave!.location!.longitude!)!);
+      }
+
+      contactPhoneController.text =
+          orderBloc.state.lastAdressInfoClassToSave?.contactInfo?.phone ?? "";
+
+      detailsAddressController.text =
+          orderBloc.state.lastAdressInfoClassToSave?.addressDetail ?? "";
+
+      addressTitleController.text =
+          orderBloc.state.lastAdressInfoClassToSave?.address ?? "";
+      if (orderBloc.state.lastAdressInfoClassToSave?.contactInfo
+                  ?.alternativePhone !=
+              null &&
+          orderBloc.state.lastAdressInfoClassToSave?.contactInfo
+                  ?.alternativePhone !=
+              "") {
+        alternativePhoneController.text = orderBloc.state
+                .lastAdressInfoClassToSave?.contactInfo?.alternativePhone ??
+            "";
+      }
+
+      reciptionNameController.text =
+          orderBloc.state.lastAdressInfoClassToSave?.contactInfo?.name ?? "";
+      finishSelectedByUser = [
+        address.RegionDetails(
+            building: orderBloc.state.lastAdressInfoClassToSave?.regionDetails?.building.toString() == "null"
+                ? ""
+                : orderBloc.state.lastAdressInfoClassToSave?.regionDetails?.building ??
+                    "",
+            city: orderBloc.state.lastAdressInfoClassToSave?.regionDetails?.building.toString() == "null"
+                ? ""
+                : orderBloc.state.lastAdressInfoClassToSave?.regionDetails?.city ??
+                    "",
+            country: "",
+            province:
+                orderBloc.state.lastAdressInfoClassToSave?.regionDetails?.province.toString() == "null"
+                    ? ""
+                    : orderBloc.state.lastAdressInfoClassToSave?.regionDetails
+                            ?.province ??
+                        "",
+            street: orderBloc.state.lastAdressInfoClassToSave?.regionDetails?.street.toString() == "null"
+                ? ""
+                : orderBloc.state.lastAdressInfoClassToSave?.regionDetails?.street ??
+                    "",
+            town: orderBloc.state.lastAdressInfoClassToSave?.regionDetails?.town.toString() == "null"
+                ? ""
+                : orderBloc.state.lastAdressInfoClassToSave?.regionDetails?.town ??
+                    "",
+            zip: orderBloc.state.lastAdressInfoClassToSave?.regionDetails?.zip.toString() == "null"
+                ? ""
+                : orderBloc.state.lastAdressInfoClassToSave?.regionDetails?.zip ?? "")
+      ];
+      if (alternativePhoneController.text.length > 0) {
+        visiblePrefixOptional.value = true;
+      }
+      if (contactPhoneController.text.length > 0 &&
+          contactPhoneController.text.toString() != "null") {
+        visiblePrefix.value = true;
+      }
+
       //   _goToCurrentLocation(latlng: _currentLocation);
     }
     // appBloc = BlocProvider.of<AppBloc>(context);
@@ -919,8 +999,49 @@ class _AddShippingAdressState extends State<AddShippingAdress>
             loadingToGoCurrentLoacation.value = false;
             return false;
           }
+          if (MediaQuery.of(context).viewInsets.bottom > 0) {
+            FocusManager.instance.primaryFocus?.unfocus();
+            return false;
+          }
+          if (panelController.isPanelOpen) {
+            panelController.close();
+            showPanel.value = false;
+            return false;
+          }
           if (Navigator.canPop(context)) {
             if (Navigator.of(context).canPop()) {
+              orderBloc.add(SaveLastAddress(
+                  lastAddress: address.CustomerAddressesInfo(
+                addressDetail: detailsAddressController.text,
+                contactInfo: address.ContactInfo(
+                  alternativePhone: alternativePhoneController.text,
+                  name: reciptionNameController.text,
+                  phone: contactPhoneController.text,
+                ),
+                address: addressTitleController.text,
+                location: address.Location(
+                    latitude: _currentLocation?.latitude.toString() ?? "",
+                    longitude: _currentLocation?.longitude.toString() ?? ""),
+                regionDetails: address.RegionDetails(
+                  zip: finishSelectedByUser.length > 0
+                      ? finishSelectedByUser[0].zip
+                      : "",
+                  building: finishSelectedByUser.length > 0
+                      ? finishSelectedByUser[0].building
+                      : "",
+                  city: finishSelectedByUser.length > 0
+                      ? finishSelectedByUser[0].city
+                      : "",
+                  country: "${country?.name}",
+                  province: finishSelectedByUser[0].province,
+                  street: finishSelectedByUser.length > 0
+                      ? finishSelectedByUser[0].street
+                      : "",
+                  town: finishSelectedByUser.length > 0
+                      ? finishSelectedByUser[0].town
+                      : "",
+                ),
+              )));
               Navigator.of(context).pop();
 
               return false;
@@ -932,7 +1053,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
           return true;
         },
         child: Scaffold(
-            resizeToAvoidBottomInset: false,
+            resizeToAvoidBottomInset: true,
             body: BlocBuilder<HomeBloc, HomeState>(
               builder: (context, state) {
                 return ValueListenableBuilder<bool>(
@@ -1000,6 +1121,82 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                 }
                                                 // didCallOnWillPop = true;
                                                 if (Navigator.canPop(context)) {
+                                                  orderBloc.add(SaveLastAddress(
+                                                      lastAddress: address
+                                                          .CustomerAddressesInfo(
+                                                    addressDetail:
+                                                        detailsAddressController
+                                                            .text,
+                                                    contactInfo:
+                                                        address.ContactInfo(
+                                                      alternativePhone:
+                                                          alternativePhoneController
+                                                              .text,
+                                                      name:
+                                                          reciptionNameController
+                                                              .text,
+                                                      phone:
+                                                          contactPhoneController
+                                                              .text,
+                                                    ),
+                                                    address:
+                                                        addressTitleController
+                                                            .text,
+                                                    location: address.Location(
+                                                        latitude: _currentLocation
+                                                                ?.latitude
+                                                                .toString() ??
+                                                            "",
+                                                        longitude:
+                                                            _currentLocation
+                                                                    ?.longitude
+                                                                    .toString() ??
+                                                                ""),
+                                                    regionDetails:
+                                                        address.RegionDetails(
+                                                      zip: finishSelectedByUser
+                                                                  .length >
+                                                              0
+                                                          ? finishSelectedByUser[
+                                                                  0]
+                                                              .zip
+                                                          : "",
+                                                      building: finishSelectedByUser
+                                                                  .length >
+                                                              0
+                                                          ? finishSelectedByUser[
+                                                                  0]
+                                                              .building
+                                                          : "",
+                                                      city: finishSelectedByUser
+                                                                  .length >
+                                                              0
+                                                          ? finishSelectedByUser[
+                                                                  0]
+                                                              .city
+                                                          : "",
+                                                      country:
+                                                          "${country?.name}",
+                                                      province:
+                                                          finishSelectedByUser[
+                                                                  0]
+                                                              .province,
+                                                      street: finishSelectedByUser
+                                                                  .length >
+                                                              0
+                                                          ? finishSelectedByUser[
+                                                                  0]
+                                                              .street
+                                                          : "",
+                                                      town: finishSelectedByUser
+                                                                  .length >
+                                                              0
+                                                          ? finishSelectedByUser[
+                                                                  0]
+                                                              .town
+                                                          : "",
+                                                    ),
+                                                  )));
                                                   if (Navigator.of(context)
                                                       .canPop()) {
                                                     Navigator.of(context).pop();
@@ -1073,7 +1270,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                           valueListenable: showFulMap,
                                           builder: (context, isShowFulMap, _) {
                                             return Scaffold(
-                                              resizeToAvoidBottomInset: true,
+                                              resizeToAvoidBottomInset: false,
                                               body: SingleChildScrollView(
                                                   physics: isShowFulMap
                                                       ? NeverScrollableScrollPhysics()
@@ -2120,15 +2317,15 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                           builder: (context,
                                               addressTilteSeletedByUser, _) {
                                             if (listOfAddressTilteSeletedByUser
-                                                    .value.length >=
-                                                4) {
+                                                    .value.length >
+                                                0) {
                                               panelController.close();
                                             }
                                             return Positioned(
                                               bottom: 0,
                                               child: Container(
                                                 width: 1.sw,
-                                                height: isShowPanel ? 441 : 0,
+                                                height: isShowPanel ? 400 : 0,
                                                 decoration: BoxDecoration(
                                                     borderRadius: BorderRadius
                                                         .only(
@@ -2223,10 +2420,10 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                       },
                                                       onPanelOpened: () {},
                                                       minHeight: 0,
-                                                      maxHeight: 441,
+                                                      maxHeight: 400,
                                                       panelBuilder: (sc) =>
                                                           Container(
-                                                        height: 441,
+                                                        height: 400,
                                                         width: 1.sw,
                                                         child: Column(
                                                           mainAxisAlignment:

@@ -255,17 +255,17 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 bool isDependencyInitialized = false;
 bool isHydratedStorageInitialized = false;
-final Semaphore imageBanner = Semaphore(3);
+final Semaphore imageBanner = Semaphore(4);
 final Semaphore imageCategoryBoutiques = Semaphore(3);
-final Semaphore syncColorImages = Semaphore(1);
-final Semaphore productListingImages = Semaphore(4);
-final Semaphore categoryListingImages = Semaphore(1);
-final Semaphore brandListingImages = Semaphore(1);
-final Semaphore productDetailsImages = Semaphore(5);
+final Semaphore syncColorImages = Semaphore(5);
+final Semaphore productListingImages = Semaphore(10);
+final Semaphore categoryListingImages = Semaphore(3);
+final Semaphore brandListingImages = Semaphore(3);
+final Semaphore productDetailsImages = Semaphore(10);
 
-final Semaphore prefechMainCategory = Semaphore(2);
-final Semaphore prefechBoutiques = Semaphore(3);
-final Semaphore prefechFiveFilter = Semaphore(2);
+//final Semaphore prefechMainCategory = Semaphore(2);
+//final Semaphore prefechBoutiques = Semaphore(3);
+//final Semaphore prefechFiveFilter = Semaphore(2);
 bool isLoadDotenvFile = false;
 Timer? timer;
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();

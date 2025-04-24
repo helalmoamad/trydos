@@ -416,5 +416,9 @@
   "item_status": "Item Status",
   "verified": "Verified",
   "are_you_sure_you_want_to_change_your_country": "Are you sure you want to change your country? \nYou may lose some of your items in your shopping cart because they are not available in your new country.",
-  "no_orders_found":"No orders found"
+  "no_orders_found": "No orders found",
+  "we_work_in_the_languages_listed_below": "We work in the languages ​​listed below",
+  "language": "Language",
+  "available_language": "Available language",
+  "profile_language": "Profile | Language"
 }

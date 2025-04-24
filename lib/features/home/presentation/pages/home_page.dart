@@ -30,6 +30,8 @@ import 'package:trydos/features/home/presentation/manager/categoryBloc/category_
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_state.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/orderBloc/order_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/orderBloc/order_event.dart';
 import 'package:trydos/features/home/presentation/widgets/sliver_list_seprated.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
@@ -101,8 +103,10 @@ class _HomePageState extends State<HomePage> {
     authBloc = BlocProvider.of<AuthBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
     boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
-    GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
-    Future.delayed(Duration(seconds: 20), () {
+    homeBloc.add(GetCurrencyForCountryEvent());
+
+    Future.delayed(Duration(seconds: 10), () {
+      GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
       homeBloc.add(GetNotificationTypeProductEvent());
       homeBloc.add(GetFirebaseSettingForNotificationEvent());
       homeBloc.add(GetPopularSearchItemEvent());
@@ -133,7 +137,6 @@ class _HomePageState extends State<HomePage> {
               scrollController.position.viewportDimension +
               235) ~/
           235;
-      print(lastIndexSeenByUser);
       int currentSelectedMainCategoryTab = appBloc.state.tabIndex;
 
       if (currentSelectedMainCategoryTab == -1) {
@@ -604,8 +607,6 @@ class _HomePageState extends State<HomePage> {
                                       .slug ??
                                   "Empty")
                               : "Empty";
-                          print(
-                              "..............${categoryState.getHomeBoutiquesPaginationObjectByMainCategory.keys.toList()}.................${(categoryState.getHomeBoutiquesPaginationObjectByMainCategory[currentSlug]?.items.length ?? 0)}");
 
                           if ((categoryState
                                           .getHomeBoutiquesPaginationObjectByMainCategory[
@@ -905,8 +906,6 @@ class _HomePageState extends State<HomePage> {
                                                     phoneNumber: phoneNumber,
                                                     onChooseWhatsapp: () {
                                                       isVisWhatsApp = 1;
-                                                      print(
-                                                          "###################33333#${isVisWhatsApp}");
                                                       pageController
                                                           .animateToPage(2,
                                                               duration: Duration(

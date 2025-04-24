@@ -185,9 +185,10 @@ class _UserInformationPageState extends State<UserInformationPage> {
                   )),
                 ),
               ),
-              state.userInfo?.image != null
+              !(prefsRepository.myProfilePhoto == null ||
+                      prefsRepository.myProfilePhoto == "")
                   ? MyCachedNetworkImage(
-                      imageUrl: homeBloc.state.userInfo?.image ?? "",
+                      imageUrl: prefsRepository.myProfilePhoto!,
                       width: 128,
                       imageFit: BoxFit.cover,
                       height: 128)

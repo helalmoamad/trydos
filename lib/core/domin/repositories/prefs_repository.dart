@@ -40,7 +40,7 @@ abstract class PrefsRepository {
   String? get myChatName;
 
   String? get myChatPhoto;
-
+  String? get myProfilePhoto;
   String? get myMarketName;
 
   String? get getMarketUrl;
@@ -115,7 +115,7 @@ abstract class PrefsRepository {
   Future<bool> setMyChatName(String name);
 
   Future<bool> setMyStoriesName(String name);
-
+  Future<bool> setMyProfilePhoto(String? photo);
   Future<bool> setMyChatPhoto(String? photo);
 
   Future<bool> setPhoneNumber(String phoneNumber);

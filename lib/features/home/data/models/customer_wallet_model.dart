@@ -117,7 +117,7 @@ class CustomerWalletDataModel {
         "wallet_balance": totalWalletBalance,
         "currency_code": currencyCode,
         "currency_symbol": currencySymbol,
-        "total_wallet_transaction": totalWalletTransaction,
+        "wallet_balance": totalWalletTransaction,
         "wallet_transaction_list":
             List<dynamic>.from(walletTransactionList.map((x) => x.toJson())),
       };

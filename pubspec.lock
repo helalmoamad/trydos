@@ -550,6 +550,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.2"
+  expandable_richtext:
+    dependency: "direct main"
+    description:
+      name: expandable_richtext
+      sha256: "446c5f921e9459e96752352a1d07214bca65031961ce5fef6812a4096d0742a2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.7"
   extended_image:
     dependency: transitive
     description:

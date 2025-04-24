@@ -28,6 +28,7 @@ import 'package:trydos/features/home/data/models/get_orders_model.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
+import 'package:trydos/features/home/data/models/get_provinces_by_iso_model.dart';
 import 'package:trydos/features/home/data/models/get_user_notifications_model.dart';
 
 import 'package:trydos/features/home/data/models/list_of_products_in_cart_model.dart';
@@ -160,6 +161,12 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
       getNotificationTypeForProduct() {
     return handlingExceptionRequest(
         tryCall: () => dataSource.getNotificationTypeForProduct());
+  }
+
+  @override
+  Future<Either<Failure, GetProvincesByIsoModel>> getProvincesByIso() {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.getProvincesByIso());
   }
 
   @override

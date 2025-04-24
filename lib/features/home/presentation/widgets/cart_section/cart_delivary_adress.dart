@@ -74,7 +74,9 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
     orderBloc = BlocProvider.of<OrderBloc>(context);
 
     ////////////////////
+
     orderBloc.add(GetCustomerAddressesEvent());
+    orderBloc.add(GetProvincesByIsoEvent());
     orderBloc.add(GetCustomerWalletEvent(limit: 10, offset: 1));
     ////////////////////
     super.initState();
@@ -1607,6 +1609,7 @@ Widget addressInfoWithContactInfoCart({
       //         ? 125
       //         : 90,
       width: 1.sw,
+      height: (isDelete || cartChoosed) ? 125 : 100,
       padding: EdgeInsets.only(
         right: LanguageService.languageCode == "ar" ? 20 : 10,
         left: LanguageService.languageCode != "ar" ? 20 : 10,
@@ -1670,8 +1673,8 @@ Widget addressInfoWithContactInfoCart({
                         onTap: onTapEdit,
                         child: Container(
                           margin: EdgeInsets.only(top: 5),
-                          width: 15,
-                          height: 12,
+                          width: 20,
+                          height: 30,
                           child: SvgPicture.asset(
                             AppAssets.editSvg,
                             height: 30,

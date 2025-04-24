@@ -18,6 +18,18 @@ class PlaceOrderEvent extends OrderEvent {
   List<Object?> get props => [placeOrderParams];
 }
 
+class SaveLastAddress extends OrderEvent {
+  final CustomerAddressesInfo lastAddress;
+
+  SaveLastAddress({
+    required this.lastAddress,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [lastAddress];
+}
+
 class GetOrdersByOrderGroupIDEvent extends OrderEvent {
   final String orderGroupId;
 
@@ -101,6 +113,14 @@ class AddAddressInfoClassEvent extends OrderEvent {
   @override
   // TODO: implement props
   List<Object?> get props => [addressInfoClassToSave];
+}
+
+class GetProvincesByIsoEvent extends OrderEvent {
+  const GetProvincesByIsoEvent();
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
 }
 
 class EditAdressInfoClassEvent extends OrderEvent {

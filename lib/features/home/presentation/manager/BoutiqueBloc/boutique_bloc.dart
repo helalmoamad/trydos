@@ -195,7 +195,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       return;
     }
 
-    await prefechFiveFilter.acquire();
+    //  await prefechFiveFilter.acquire();
     final response =
         await getProductsWithFiltersUseCase(GetProductsWithFiltersParams(
       brandSlugs:
@@ -228,7 +228,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     ));
 
     response.fold((l) {
-      prefechFiveFilter.release();
+      //   prefechFiveFilter.release();
       Map<String, PaginationModel<product.Products>?>?
           getProductListingWithFiltersPaginationWithPrefetchModels = Map.of(
               state.getProductListingWithFiltersPaginationWithPrefetchModels);
@@ -252,7 +252,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             Map.of(getProductListingWithFiltersPaginationWithPrefetchModels),
       ));
     }, (r) {
-      prefechFiveFilter.release();
+      //  prefechFiveFilter.release();
       prefsRepository.setPrefechForFiveFilterForEachBoutiqueInHomePage(
           key, jsonEncode(r.data));
       Map<String, List<double>> searchWithFilterOffset =
@@ -588,7 +588,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     boutiquesThatDidPrefetch[key] = true;
 
     emit(state.copyWith(boutiquesThatDidPrefetch: boutiquesThatDidPrefetch));
-    await prefechBoutiques.acquire();
+    // await prefechBoutiques.acquire();
     final response =
         await getProductsWithFiltersUseCase(GetProductsWithFiltersParams(
       scroll_id: null,
@@ -603,14 +603,14 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       prices: null,
     ));
     response.fold((l) {
-      prefechBoutiques.release();
+      // prefechBoutiques.release();
       Map<String, bool> boutiquesThatDidPrefetch =
           Map.of(state.boutiquesThatDidPrefetch);
       boutiquesThatDidPrefetch[key] = false;
 
       emit(state.copyWith(boutiquesThatDidPrefetch: boutiquesThatDidPrefetch));
     }, (r) async {
-      prefechBoutiques.release();
+      // prefechBoutiques.release();
       prefsRepository.setPrefechOfProductsForEachBoutiqueInHomePage(
           key, jsonEncode(r.data));
       List<String> cachedLinksOfImages = [];
