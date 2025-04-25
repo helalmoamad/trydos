@@ -16,13 +16,37 @@ import '../../manager/homeBloc/home_state.dart';
 import 'order_details2_page.dart';
 import 'package:trydos/config/theme/typography.dart';
 
-class OrderDetails1 extends StatelessWidget {
+class OrderDetails1 extends StatefulWidget {
   OrderDetails1({super.key, required this.order});
 
   final OrderListModel order;
 
   @override
+  State<OrderDetails1> createState() => _OrderDetails1State();
+}
+
+class _OrderDetails1State extends State<OrderDetails1> {
+  List<String?> addressParts = [];
+  @override
+  void initState() {
+    addressParts = [
+      widget.order.shippingAddressData?.country,
+      widget.order.shippingAddressData?.province,
+      widget.order.shippingAddressData?.city,
+      widget.order.shippingAddressData?.town,
+      widget.order.shippingAddressData?.street,
+      widget.order.shippingAddressData?.building,
+    ];
+
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final addressString = addressParts
+        .where((part) => part != null && part.isNotEmpty)
+        .join(' | ');
+
     return Container(
       color: const Color(0xffFFFFFF),
       child: SafeArea(
@@ -96,7 +120,7 @@ class OrderDetails1 extends StatelessWidget {
                     String currencySymbol = state.getCurrencyForCountryModel!
                             .data!.currency!.symbol ??
                         "";
-                    double orderAmount = order.orderAmount! *
+                    double orderAmount = widget.order.orderAmount! *
                         state.getCurrencyForCountryModel!.data!.currency!
                             .exchangeRate!;
                     ;
@@ -105,9 +129,9 @@ class OrderDetails1 extends StatelessWidget {
                       height: 95,
                       child: buildFirstSection(
                         context: context,
-                        orderNumber: order.orderGroupId ?? '',
+                        orderNumber: widget.order.orderGroupId ?? '',
                         orderDate: HelperFunctions.orderFormatDate(
-                          DateTime.parse(order.createdAt ?? ''),
+                          DateTime.parse(widget.order.createdAt ?? ''),
                         ),
                         orderAmount: orderAmount.toString(),
                         orderCurrency: currencySymbol,
@@ -126,7 +150,7 @@ class OrderDetails1 extends StatelessWidget {
                   child: buildSecondSection(
                     context: context,
                     expectedDeliveryDate: 'Monday 2.Jun | 3 Work Days',
-                    orderStatus: order.orderGroupStatus?.label ?? '',
+                    orderStatus: widget.order.orderGroupStatus?.label ?? '',
                   ),
                 ),
                 ///////////////////
@@ -136,11 +160,10 @@ class OrderDetails1 extends StatelessWidget {
                 ///////////////////
                 buildThirdSection(
                   context: context,
-                  contactInfo: order.shippingAddressData?.phone ?? '',
+                  contactInfo: widget.order.shippingAddressData?.phone ?? '',
                   recipientName:
-                      order.shippingAddressData?.contactPersonName ?? '',
-                  shippingDeliveryAddress:
-                      '${order.shippingAddressData?.country ?? ''} | ${order.shippingAddressData?.province ?? ''} | ${order.shippingAddressData?.city ?? ''} | ${order.shippingAddressData?.town ?? ''} | ${order.shippingAddressData?.street ?? ''} | ${order.shippingAddressData?.building ?? ''}',
+                      widget.order.shippingAddressData?.contactPersonName ?? '',
+                  shippingDeliveryAddress: addressString,
                 ),
                 ///////////////////
                 SizedBox(
@@ -152,13 +175,13 @@ class OrderDetails1 extends StatelessWidget {
                     HelperFunctions.slidingNavigation(
                       context,
                       OrderDetails2(
-                        order: order,
+                        order: widget.order,
                       ),
                     );
                   },
                   child: buildFourthSection(
                       context: context,
-                      itemsCount: order.details!.length.toString()),
+                      itemsCount: widget.order.details!.length.toString()),
                 ),
                 ///////////////////
                 SizedBox(
@@ -166,7 +189,7 @@ class OrderDetails1 extends StatelessWidget {
                 ),
                 ///////////////////
                 buildFifthSection(
-                  details: order.details,
+                  details: widget.order.details,
                 ),
                 ///////////////////
                 SizedBox(

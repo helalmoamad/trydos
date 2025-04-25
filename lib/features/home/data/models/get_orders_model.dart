@@ -325,6 +325,7 @@ class OrderListDetailModel {
   final OrderProductDetailsModel? productDetails;
   final double? qty;
   final double? price;
+  final int? countOfPieces;
   final double? discount;
   final double? priceAfterDiscount;
   final double? tax;
@@ -348,6 +349,7 @@ class OrderListDetailModel {
     this.productId,
     this.productDetails,
     this.qty,
+    this.countOfPieces,
     this.price,
     this.discount,
     this.priceAfterDiscount,
@@ -371,6 +373,7 @@ class OrderListDetailModel {
     int? id,
     int? orderId,
     int? productId,
+    int? countOfPieces,
     OrderProductDetailsModel? productDetails,
     double? qty,
     double? price,
@@ -397,6 +400,7 @@ class OrderListDetailModel {
         productId: productId ?? this.productId,
         productDetails: productDetails ?? this.productDetails,
         qty: qty ?? this.qty,
+        countOfPieces: countOfPieces ?? this.countOfPieces,
         price: price ?? this.price,
         discount: discount ?? this.discount,
         priceAfterDiscount: priceAfterDiscount ?? this.priceAfterDiscount,
@@ -426,6 +430,7 @@ class OrderListDetailModel {
             ? null
             : OrderProductDetailsModel.fromJson(json["product_details"]),
         qty: json["qty"] == null ? 0 : double.parse(json["qty"].toString()),
+        countOfPieces: json["count_of_pieces"] ?? 0,
         price:
             json["price"] == null ? 0 : double.parse(json["price"].toString()),
         discount: json["discount"] == null
@@ -458,6 +463,7 @@ class OrderListDetailModel {
         "product_id": productId,
         "product_details": productDetails?.toJson(),
         "qty": qty,
+        "count_of_pieces": countOfPieces,
         "price": price,
         "discount": discount,
         "price_after_discount": priceAfterDiscount,

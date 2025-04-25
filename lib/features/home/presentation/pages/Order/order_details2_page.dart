@@ -546,11 +546,12 @@ class OrderDetails2 extends StatelessWidget {
                                                         children: [
                                                           TextSpan(
                                                             text:
-                                                                '${LocaleKeys.composed_of.tr()}:',
+                                                                '${LocaleKeys.composed_of.tr()}: ',
                                                           ),
                                                           ////////////////////////////
                                                           TextSpan(
-                                                            text: ' 1 Piece',
+                                                            text:
+                                                                '${order.details?[index].countOfPieces} ${LocaleKeys.piece.tr()}',
                                                             style: context
                                                                 .textTheme
                                                                 .bodyMedium
