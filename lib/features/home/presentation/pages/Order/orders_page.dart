@@ -36,20 +36,6 @@ class _OrdersPageState extends State<OrdersPage> {
 
   final ValueNotifier<String> currentStatus = ValueNotifier('');
 
-  // final List<String> orderStatus = [
-  //   'pending',
-  //   'processing',
-  //   'ready_to_shipping',
-  //   'shipped',
-  //   'out_for_delivery',
-  //   'delivered',
-  //   'partial_return',
-  //   'returned',
-  //   'failed',
-  //   'canceled',
-  //   'canceled_archived'
-  // ];
-
   @override
   void initState() {
     orderBloc = BlocProvider.of<OrderBloc>(context);
@@ -310,9 +296,7 @@ class _OrdersPageState extends State<OrdersPage> {
                     child: Container(
                       color: Colors.white,
                       child: MyCachedNetworkImage(
-                        imageUrl:
-                            item.details?[index].productDetails?.images?[0] ??
-                                '',
+                        imageUrl: item.details?[index].image ?? '',
                         imageFit: BoxFit.contain,
                         width: 90,
                         height: 125,

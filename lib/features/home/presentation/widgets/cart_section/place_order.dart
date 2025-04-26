@@ -222,7 +222,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                             for (var i = 0; i < (element.qty ?? 0); i++) {
                               cartImages.add(
                                 {
-                                  "image": element.productDetails!.images![0],
+                                  "image": element.image ?? '',
                                   "size": element.variation == null
                                       ? ""
                                       : element.variation?.size ?? "",
@@ -341,7 +341,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                             for (var i = 0; i < (element.qty ?? 0); i++) {
                               cartImages.add(
                                 {
-                                  "image": element.productDetails!.images![0],
+                                  "image": element.image ?? '',
                                   "size": element.variation == null
                                       ? ""
                                       : element.variation?.size ?? "",

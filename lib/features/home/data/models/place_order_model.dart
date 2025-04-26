@@ -467,6 +467,7 @@ class PlaceOrderDetailsModel {
   final int? isOdooProduct;
   final int? odooId;
   final int? odooOrderId;
+  final String? image;
 
   PlaceOrderDetailsModel({
     required this.id,
@@ -491,6 +492,7 @@ class PlaceOrderDetailsModel {
     required this.isOdooProduct,
     required this.odooId,
     required this.odooOrderId,
+    required this.image,
   });
 
   PlaceOrderDetailsModel copyWith({
@@ -516,6 +518,7 @@ class PlaceOrderDetailsModel {
     int? isOdooProduct,
     int? odooId,
     int? odooOrderId,
+    String? image,
   }) =>
       PlaceOrderDetailsModel(
         id: id ?? this.id,
@@ -541,6 +544,7 @@ class PlaceOrderDetailsModel {
         odooId: odooId ?? this.odooId,
         odooOrderId: odooOrderId ?? this.odooOrderId,
         variation: variation ?? this.variation,
+        image: image ?? this.image,
       );
 
   factory PlaceOrderDetailsModel.fromJson(Map<String, dynamic> json) =>
@@ -574,6 +578,7 @@ class PlaceOrderDetailsModel {
         variation: json["variation"] == null
             ? null
             : Variation.fromJson(json["variation"]),
+        image: json["image"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -598,6 +603,7 @@ class PlaceOrderDetailsModel {
         "is_odoo_product": isOdooProduct,
         "odoo_id": odooId,
         "odoo_order_id": odooOrderId,
+        "image": image,
         "variation": variation?.toJson(),
       };
 }

@@ -342,6 +342,7 @@ class OrderListDetailModel {
   final int? isOdooProduct;
   final int? odooId;
   final int? odooOrderId;
+  final String? image;
 
   OrderListDetailModel({
     this.id,
@@ -367,6 +368,7 @@ class OrderListDetailModel {
     this.isOdooProduct,
     this.odooId,
     this.odooOrderId,
+    this.image,
   });
 
   OrderListDetailModel copyWith({
@@ -393,6 +395,7 @@ class OrderListDetailModel {
     int? isOdooProduct,
     int? odooId,
     int? odooOrderId,
+    String? image,
   }) =>
       OrderListDetailModel(
         id: id ?? this.id,
@@ -419,6 +422,7 @@ class OrderListDetailModel {
         isOdooProduct: isOdooProduct ?? this.isOdooProduct,
         odooId: odooId ?? this.odooId,
         odooOrderId: odooOrderId ?? this.odooOrderId,
+        image: image ?? this.image,
       );
 
   factory OrderListDetailModel.fromJson(Map<String, dynamic> json) =>
@@ -455,6 +459,7 @@ class OrderListDetailModel {
         isOdooProduct: json["is_odoo_product"],
         odooId: json["odoo_id"],
         odooOrderId: json["odoo_order_id"],
+        image: json["image"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -481,6 +486,7 @@ class OrderListDetailModel {
         "is_odoo_product": isOdooProduct,
         "odoo_id": odooId,
         "odoo_order_id": odooOrderId,
+        "image": image,
       };
 }
 

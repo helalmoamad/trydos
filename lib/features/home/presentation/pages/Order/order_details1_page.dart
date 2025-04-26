@@ -224,8 +224,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                   child: Container(
                     color: Colors.white,
                     child: MyCachedNetworkImage(
-                      imageUrl:
-                          details?[index].productDetails?.images?[0] ?? '',
+                      imageUrl: details?[index].image ?? '',
                       imageFit: BoxFit.contain,
                       width: 91,
                       height: 125,

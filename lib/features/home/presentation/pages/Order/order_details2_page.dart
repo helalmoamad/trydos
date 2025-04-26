@@ -349,9 +349,8 @@ class OrderDetails2 extends StatelessWidget {
                                       child: Container(
                                         color: Colors.white,
                                         child: MyCachedNetworkImage(
-                                          imageUrl: order.details?[index]
-                                                  .productDetails?.images?[0] ??
-                                              '',
+                                          imageUrl:
+                                              order.details?[index].image ?? '',
                                           imageFit: BoxFit.contain,
                                           width: 100,
                                           height: 150,

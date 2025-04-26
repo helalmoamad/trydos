@@ -35,7 +35,7 @@ class GetOrdersParams {
     };
 
     if (status != '') {
-      result["order_status"] = status;
+      result["order_group_status"] = status;
     }
 
     return result;
