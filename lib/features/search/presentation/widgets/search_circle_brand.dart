@@ -4,9 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
-import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
-import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
@@ -14,12 +12,11 @@ import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
+
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
+
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:get_it/get_it.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../app/my_text_widget.dart';

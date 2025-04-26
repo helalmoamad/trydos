@@ -3,12 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
-import 'package:trydos/core/utils/extensions/object.dart';
+
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
+
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 
 import '../../../../../common/test_utils/test_var.dart';
@@ -19,10 +19,9 @@ import '../../../../../service/firebase_analytics_service/firebase_analytics_ser
 import '../../../data/models/get_product_filters_model.dart';
 import '../../../data/models/get_product_listing_with_filters_model.dart';
 import '../../manager/homeBloc/home_event.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
+
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:get_it/get_it.dart';
 
 class CategoriesFilterList extends StatelessWidget {
@@ -135,7 +134,7 @@ class CategoriesFilterList extends StatelessWidget {
                     element.isSubSubCategory == false,
               );
               if (!(filters.categories?[index].isSubCategory ?? false)) {
-                subCategories?.forEach((elements) {
+                subCategories.forEach((elements) {
                   if (!(workWithChoosedFilter)) {
                     if (boutiqueBloc.state.appliedFiltersByUser[key]?.filters
                             ?.categories
@@ -169,20 +168,20 @@ class CategoriesFilterList extends StatelessWidget {
                       margin: EdgeInsetsDirectional.only(end: 5),
                       width:
                           (currentExpandedIndex == index) || isChildCategorySlug
-                              ? (75 + subCategories!.length * 55)
+                              ? (75 + subCategories.length * 55)
                               : 80.0,
                       height: 70.0,
                       child: Stack(
                         alignment: AlignmentDirectional.topStart,
                         children: [
                           ...List.generate(
-                            subCategories!.length,
+                            subCategories.length,
                             (innerIndex) => AnimatedPositionedDirectional(
                                 curve: Curves.fastEaseInToSlowEaseOut,
                                 duration: Duration(milliseconds: 300),
                                 top: (currentExpandedIndex == index ||
                                         isChildCategorySlug)
-                                    ? subCategories![innerIndex]
+                                    ? subCategories[innerIndex]
                                                 .isSubSubCategory ??
                                             false
                                         ? 35
@@ -191,7 +190,7 @@ class CategoriesFilterList extends StatelessWidget {
                                 end: currentExpandedIndex == index ||
                                         isChildCategorySlug
                                     ? innerIndex * 55
-                                    : innerIndex >= (subCategories!.length - 2)
+                                    : innerIndex >= (subCategories.length - 2)
                                         ? (innerIndex - 1) * 3
                                         : 0,
                                 child: subCategories[innerIndex]
@@ -199,22 +198,22 @@ class CategoriesFilterList extends StatelessWidget {
                                         null
                                     ? FilterCircleWidget(
                                         isSubSubCategory:
-                                            subCategories![innerIndex]
+                                            subCategories[innerIndex]
                                                     .isSubSubCategory ??
                                                 false,
                                         isSvg: false,
-                                        width: subCategories![innerIndex]
+                                        width: subCategories[innerIndex]
                                                     .isSubSubCategory ??
                                                 false
                                             ? 35
                                             : 50,
-                                        height: subCategories![innerIndex]
+                                        height: subCategories[innerIndex]
                                                     .isSubSubCategory ??
                                                 false
                                             ? 35
                                             : 50,
                                         originalWidth: double.tryParse(
-                                            subCategories![innerIndex]
+                                            subCategories[innerIndex]
                                                 .mostViewedProductThumbnail!
                                                 .originalWidth
                                                 .toString()),
@@ -226,7 +225,7 @@ class CategoriesFilterList extends StatelessWidget {
                                         categoryName: subCategories[innerIndex]
                                             .name
                                             .toString(),
-                                        imageUrl: subCategories![innerIndex]
+                                        imageUrl: subCategories[innerIndex]
                                             .mostViewedProductThumbnail!
                                             .filePath
                                             .toString(),
@@ -241,7 +240,7 @@ class CategoriesFilterList extends StatelessWidget {
                                                         .categories!
                                                         .any((element) =>
                                                             element.slug ==
-                                                            subCategories![
+                                                            subCategories[
                                                                     innerIndex]
                                                                 .slug))
                                                 : ((choosedFilters?.categories
@@ -252,7 +251,7 @@ class CategoriesFilterList extends StatelessWidget {
                                                         .categories!
                                                         .any((element) =>
                                                             element.slug ==
-                                                            subCategories![
+                                                            subCategories[
                                                                     innerIndex]
                                                                 .slug)),
                                         addOrRemoveSpecificFilter: (bool add) {
@@ -286,15 +285,15 @@ class CategoriesFilterList extends StatelessWidget {
                                             // expandingFiltersStack.value =
                                             //   innerIndex;
                                             Category category = Category(
-                                                slug: subCategories![innerIndex]
+                                                slug: subCategories[innerIndex]
                                                     .slug,
                                                 isSubCategory: true,
-                                                id: subCategories![innerIndex]
+                                                id: subCategories[innerIndex]
                                                     .id,
-                                                name: subCategories![innerIndex]
+                                                name: subCategories[innerIndex]
                                                     .name,
                                                 flatPhotoPath:
-                                                    subCategories![innerIndex]
+                                                    subCategories[innerIndex]
                                                         .flatPhotoPath);
                                             if (prevChoosedOrAppliedFilterToAddToIt ==
                                                 null) {
@@ -343,11 +342,8 @@ class CategoriesFilterList extends StatelessWidget {
                                             //////////////////////////////
                                             categories.removeWhere(((element) =>
                                                 element.id ==
-                                                subCategories![innerIndex].id));
-                                            bool mustDeleteParentCategory =
-                                                categories.any(((element) =>
-                                                    subCategories!.any((sub) =>
-                                                        sub.id == element.id)));
+                                                subCategories[innerIndex].id));
+
                                             /*    if (mustDeleteParentCategory) {
                                       prevChoosedOrAppliedFilterToAddToIt
                                           .categories!
@@ -555,7 +551,7 @@ class CategoriesFilterList extends StatelessWidget {
                                                 filters.categories![index].id));
 
                                             categories.removeWhere(((element) =>
-                                                subCategories!.any((sub) =>
+                                                subCategories.any((sub) =>
                                                     sub.id == element.id)));
                                             prevChoosedOrAppliedFilterToAddToIt =
                                                 prevChoosedOrAppliedFilterToAddToIt!

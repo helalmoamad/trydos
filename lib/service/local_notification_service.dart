@@ -22,10 +22,7 @@ class NotificationService {
         onDidReceiveBackgroundNotificationResponse: (details) => print(
             "111111111111111fffffffffffffffffffRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR${details.payload}"),
         onDidReceiveNotificationResponse:
-            (NotificationResponse notificationResponse) async {
-          print(
-              "fffffffffffffffffffRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR${notificationResponse.payload}");
-        });
+            (NotificationResponse notificationResponse) async {});
     notificationsPlugin.getNotificationAppLaunchDetails().then(
           (value) => print(
               "fffffffffffffffffffRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR${value?.notificationResponse?.payload}"),

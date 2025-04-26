@@ -4,12 +4,13 @@
 
 import 'dart:convert';
 
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:trydos/features/story/data/models/get_stories_model.dart';
 
-UploadStoryResponseModel uploadStoryResponseModelFromJson(String str) => UploadStoryResponseModel.fromJson(json.decode(str));
+UploadStoryResponseModel uploadStoryResponseModelFromJson(String str) =>
+    UploadStoryResponseModel.fromJson(json.decode(str));
 
-String uploadStoryResponseModelToJson(UploadStoryResponseModel data) => json.encode(data.toJson());
+String uploadStoryResponseModelToJson(UploadStoryResponseModel data) =>
+    json.encode(data.toJson());
 
 class UploadStoryResponseModel {
   bool? isSuccessful;
@@ -46,9 +47,8 @@ class UploadStoryResponseModel {
       );
 
   factory UploadStoryResponseModel.fromJson(Map<String, dynamic> json) {
-
 //    Fluttertoast.showToast(msg: json.toString());
-    return  UploadStoryResponseModel(
+    return UploadStoryResponseModel(
       isSuccessful: json["isSuccessful"],
       hasContent: json["hasContent"],
       code: json["code"],
@@ -59,12 +59,11 @@ class UploadStoryResponseModel {
   }
 
   Map<String, dynamic> toJson() => {
-    "isSuccessful": isSuccessful,
-    "hasContent": hasContent,
-    "code": code,
-    "message": message,
-    "detailed_error": detailedError,
-    "data": data?.toJson(),
-  };
+        "isSuccessful": isSuccessful,
+        "hasContent": hasContent,
+        "code": code,
+        "message": message,
+        "detailed_error": detailedError,
+        "data": data?.toJson(),
+      };
 }
-

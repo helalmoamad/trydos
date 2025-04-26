@@ -11,7 +11,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'package:trydos/base_page.dart';
+
 import 'package:trydos/common/constant/design/assets_provider.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -428,12 +428,16 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                         Container(
                             width: 25,
                             height: 25,
-                            child: CountryFlag.fromCountryCode(
-                              country!.iso!.toUpperCase(),
-                              height: 25,
-                              width: 25,
-                              borderRadius: 4.r,
-                            )),
+                            child: country!.iso!.toUpperCase() == "SY"
+                                ? SvgPicture.asset(
+                                    AppAssets.syriaFlagSvg,
+                                  )
+                                : CountryFlag.fromCountryCode(
+                                    country!.iso!.toUpperCase(),
+                                    height: 25,
+                                    width: 25,
+                                    borderRadius: 4.r,
+                                  )),
                         SizedBox(
                           width: 10,
                         ),
@@ -571,7 +575,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                       ),
                     )
                   : Text(
-                      '${LocaleKeys.your_balance.tr()} ${walletBalance} ${symbole}',
+                      '${LocaleKeys.your_balance.tr()} ${HelperFunctions.formatNumber(number: walletBalance)} ${symbole}',
                       style: context.textTheme.bodyMedium?.rr.copyWith(
                           color: const Color(0xff8D8D8D),
                           letterSpacing: 0.18,

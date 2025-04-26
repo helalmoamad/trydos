@@ -20,7 +20,7 @@ import 'package:trydos/features/home/data/models/notificaation_poroduct_types.da
 import 'package:trydos/features/home/data/models/popular_search_terms_model.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
 import '../../../../../core/data/model/pagination_model.dart';
-import '../../../data/models/apply_coupon_model.dart';
+
 import '../../../data/models/check_availability_product_cart_model.dart';
 import '../../../data/models/get_cart_item_model.dart';
 import '../../../data/models/get_old_cart_model.dart';

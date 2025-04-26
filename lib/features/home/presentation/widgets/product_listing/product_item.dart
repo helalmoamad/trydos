@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:trydos/core/utils/extensions/list.dart';
-import 'package:trydos/features/app/my_cached_network_image.dart';
+
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as productListingModel;
 import 'dart:ui' as ui;

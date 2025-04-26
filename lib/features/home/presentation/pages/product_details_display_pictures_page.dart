@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
-import 'package:overscroll_pop/overscroll_pop.dart';
+
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
@@ -11,12 +11,11 @@ import 'package:trydos/features/home/data/models/get_product_listing_without_fil
     as listing;
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
-import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
+
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../service/language_service.dart';
-import '../../data/models/get_product_listing_without_filters_model.dart'
-    as images;
+
 import '../widgets/product_details_body/product_details_image_widget.dart';
 
 class ProductDetailsDisplayPicturesPage extends StatefulWidget {

@@ -1617,15 +1617,19 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                   width: 250.w,
                                                                                   child: Row(
                                                                                     children: [
-                                                                                      Container(
-                                                                                          width: 18,
-                                                                                          height: 18,
-                                                                                          child: CountryFlag.fromCountryCode(
-                                                                                            "${country?.iso}",
-                                                                                            height: 18.h,
-                                                                                            width: 18.w,
-                                                                                            borderRadius: 4.r,
-                                                                                          )),
+                                                                                      country?.iso?.toUpperCase() == "SY"
+                                                                                          ? SvgPicture.asset(
+                                                                                              AppAssets.syriaFlagSvg,
+                                                                                            )
+                                                                                          : Container(
+                                                                                              width: 18,
+                                                                                              height: 18,
+                                                                                              child: CountryFlag.fromCountryCode(
+                                                                                                "${country?.iso}",
+                                                                                                height: 18.h,
+                                                                                                width: 18.w,
+                                                                                                borderRadius: 4.r,
+                                                                                              )),
                                                                                       SizedBox(
                                                                                         width: 8.w,
                                                                                       ),
@@ -2127,10 +2131,10 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                           addressTitleController
                                                                               .text,
                                                                       location: address.Location(
-                                                                          latitude: _currentLocation?.latitude.toString() ??
-                                                                              "",
+                                                                          latitude: ((_currentLocation?.latitude ?? _locationFromSearch?.latitude) ?? "")
+                                                                              .toString(),
                                                                           longitude:
-                                                                              _currentLocation?.longitude.toString() ?? ""),
+                                                                              ((_currentLocation?.longitude ?? _locationFromSearch?.longitude) ?? "").toString()),
                                                                       regionDetails:
                                                                           address
                                                                               .RegionDetails(
@@ -2484,16 +2488,20 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                       width: 18,
                                                                       height:
                                                                           18,
-                                                                      child: CountryFlag
-                                                                          .fromCountryCode(
-                                                                        "${country?.iso}",
-                                                                        height:
-                                                                            18.h,
-                                                                        width:
-                                                                            18.w,
-                                                                        borderRadius:
-                                                                            4.r,
-                                                                      )),
+                                                                      child: country?.iso?.toUpperCase() ==
+                                                                              "SY"
+                                                                          ? SvgPicture
+                                                                              .asset(
+                                                                              AppAssets.syriaFlagSvg,
+                                                                              width: 18.w,
+                                                                            )
+                                                                          : CountryFlag
+                                                                              .fromCountryCode(
+                                                                              "${country?.iso}",
+                                                                              height: 18.h,
+                                                                              width: 18.w,
+                                                                              borderRadius: 4.r,
+                                                                            )),
                                                                   Text(
                                                                     " ${country?.name} ",
                                                                     style: context.textTheme.bodyMedium?.rr.copyWith(

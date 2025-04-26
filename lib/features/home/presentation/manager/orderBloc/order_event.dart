@@ -88,7 +88,8 @@ class SetCustomerAddressDefaultEvent extends OrderEvent {
 }
 
 class GetCustomerAddressesEvent extends OrderEvent {
-  GetCustomerAddressesEvent();
+  final bool? setDefault;
+  GetCustomerAddressesEvent({this.setDefault = false});
 
   @override
   // TODO: implement props

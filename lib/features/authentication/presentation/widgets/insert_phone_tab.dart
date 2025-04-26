@@ -253,12 +253,17 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                                       height: 15.h,
                                     );
                                   else
-                                    return CountryFlag.fromCountryCode(
-                                      country.code,
-                                      height: 15.h,
-                                      width: 22.w,
-                                      borderRadius: 4.r,
-                                    );
+                                    return country.code.toUpperCase() == "SY"
+                                        ? SvgPicture.asset(
+                                            AppAssets.syriaFlagSvg,
+                                            width: 22.w,
+                                          )
+                                        : CountryFlag.fromCountryCode(
+                                            country.code,
+                                            height: 15.h,
+                                            width: 22.w,
+                                            borderRadius: 4.r,
+                                          );
                                 }),
                             10.horizontalSpace,
                             MyTextWidget(

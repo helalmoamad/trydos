@@ -15,7 +15,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/app_elvated_button.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
-import 'package:trydos/features/authentication/domain/use_cases/get_customer_info_usecase.dart';
+
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
@@ -77,7 +77,7 @@ import '../../../../chat/presentation/manager/chat_bloc.dart';
 import '../../../../chat/presentation/manager/chat_event.dart';
 import '../../../data/models/get_user_notifications_model.dart';
 import '../../../domain/use_cases/add_item_to_cart_usecase.dart';
-import '../../../domain/use_cases/apply_coupon_usecase.dart';
+
 import '../../../domain/use_cases/check_availability_product_cart_usecase.dart';
 import '../../../domain/use_cases/get_cart_overview_usecase.dart';
 import '../../../domain/use_cases/get_stories_for_product_usecase.dart';

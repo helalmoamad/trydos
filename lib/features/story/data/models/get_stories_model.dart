@@ -5,7 +5,6 @@
 import 'dart:convert';
 
 import 'package:trydos/features/story/data/models/image_detail.dart';
-import 'package:video_player/video_player.dart';
 
 GetStoriesModel getStoriesModelFromJson(String str) =>
     GetStoriesModel.fromJson(json.decode(str));

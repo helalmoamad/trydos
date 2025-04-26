@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:carousel_slider/carousel_controller.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart' as trans;
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
@@ -15,7 +14,7 @@ import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/app/svg_network_widget.dart';
-import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
+
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as listing;
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
@@ -30,10 +29,9 @@ import '../../../../../core/utils/theme_state.dart';
 import '../../../../../service/language_service.dart';
 import '../../../../app/my_text_widget.dart';
 import 'my_gallery3d_widget.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
+
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:get_it/get_it.dart';
 
 class ProductListing3DSlider extends StatefulWidget {
@@ -675,6 +673,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                                       prevIndexInSecondSlider] =
                                                   page;
                                               indicatorForProductImages
+                                                  // ignore: invalid_use_of_protected_member, invalid_use_of_visible_for_testing_member
                                                   .notifyListeners();
                                               if (widget
                                                       .slidingModeItem.item1 !=

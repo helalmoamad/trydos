@@ -5,17 +5,16 @@ import 'dart:math';
 
 import 'dart:ui' as ui;
 
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/material.dart';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
+
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
-import 'package:trydos/main.dart';
-import 'package:trydos/routes/router.dart';
+import 'package:trydos/features/home/presentation/widgets/cart_section/payment_method.dart';
+
 import '../../../../base_page.dart';
 import '../../../../core/di/di_container.dart';
 
@@ -78,10 +77,24 @@ class LocalNotificationService {
       {required RemoteMessage message, required int fromBackGround}) async {
     final Random random = Random();
     final int notificationId = random.nextInt(1000000);
+
     if (HandlingMarketNotifications.checkIfTheNotificationIsNotRelatedToChat(
         message)) {
       String imageUrl = "";
       Map? data = convert.jsonDecode(message.data["body"] ?? "") ?? {};
+
+      if (data?["type"] ==
+              typeOfNotificationForMarket[
+                  TypeOfNotificationForMarketEnum.product_cart_expiration] ||
+          data?["type"] ==
+              typeOfNotificationForMarket[
+                  TypeOfNotificationForMarketEnum.product_hurry_up_quantity] ||
+          data?["type"] ==
+              typeOfNotificationForMarket[
+                  TypeOfNotificationForMarketEnum.product_hurry_up_time_left]) {
+        prefsRepository.setNotificationIdsToRemoveAfterplaceOrder(
+            notificationId.toString());
+      }
 
       if (data?["type"] ==
               typeOfNotificationForMarket[

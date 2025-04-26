@@ -1,12 +1,7 @@
-import 'dart:math';
-import 'dart:ui' as ui;
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/animation.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -17,7 +12,6 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
-import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
@@ -26,14 +20,11 @@ import 'package:trydos/features/home/presentation/widgets/product_listing/produc
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:tuple/tuple.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
+
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:get_it/get_it.dart';
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
-import '../../../../search/presentation/widgets/close_circle.dart';
-import '../../manager/homeBloc/home_bloc.dart';
-import '../../manager/homeBloc/home_state.dart';
 
 class PriceFilter extends StatefulWidget {
   const PriceFilter({
@@ -96,7 +87,7 @@ class _PriceFilterState extends State<PriceFilter> {
           error: error.toString());
     };
     if ((widget.pricesFiltersRanges.maxPrice! -
-            widget.pricesFiltersRanges!.minPrice!) <
+            widget.pricesFiltersRanges.minPrice!) <
         1) {
       return SizedBox.shrink();
     }

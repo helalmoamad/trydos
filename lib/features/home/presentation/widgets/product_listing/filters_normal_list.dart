@@ -1,7 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -23,11 +22,9 @@ import '../../../../../service/firebase_analytics_service/firebase_analytics_ser
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../data/models/get_product_filters_model.dart';
 import '../../manager/homeBloc/home_event.dart';
-import '../../manager/homeBloc/home_state.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
+
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:get_it/get_it.dart';
 
 class FiltersNormalList<T> extends StatefulWidget {

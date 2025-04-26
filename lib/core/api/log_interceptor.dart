@@ -127,6 +127,18 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
               timeShowing: Toast.LENGTH_LONG);
         } catch (e) {}
       }
+      if (err.requestOptions.path.contains("order/checkout")) {
+        try {
+          String massageJson = jsonDecode(err.response.toString())["message"];
+          // Map<String, dynamic> messageDecode = jsonDecode(massageJson);
+          showMessage(massageJson,
+              foreGroundColor: Colors.white,
+              backGroundColor: Colors.black,
+              showInRelease: true,
+              timeShowing: Toast.LENGTH_LONG);
+        } catch (e) {}
+      }
+
       if ((jsonDecode(err.response.toString())["message"]
                   .toString()
                   .contains("Unauth") ||

@@ -1,8 +1,7 @@
-import 'package:flutter/animation.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -17,10 +16,9 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.da
 import 'package:trydos/features/search/presentation/widgets/search_history_chip.dart';
 
 import '../../../../common/constant/design/assets_provider.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
+
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:get_it/get_it.dart';
 
 class SearchHistory extends StatefulWidget {
@@ -240,6 +238,7 @@ class _SearchHistoryState extends State<SearchHistory> {
           onClickClose: () {
             final removedItem = _items[index];
             _items.removeAt(index);
+            // ignore: invalid_use_of_protected_member, invalid_use_of_visible_for_testing_member
             changeViewMode.notifyListeners();
             _listKey.currentState!.removeItem(
               index,

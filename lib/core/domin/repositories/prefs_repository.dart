@@ -20,6 +20,7 @@ abstract class PrefsRepository {
 
   List<Message>? get getTheMessageFromBackground;
   List<String>? get getTheChatsIdsToRemoveFromBackground;
+  List<String>? get getNotificationIdsToRemoveAfterplaceOrder;
   String? get getNotificationTypeOfMarketFromTerminated;
   List<Map>? get getTheRemovedMessageFromBackground;
   List<Map>? get getTheMessageWatchStatusFromBackground;
@@ -61,6 +62,7 @@ abstract class PrefsRepository {
   String? getPrefechOfMainCategoryInHomePage();
   Future<bool> setPrefechOfMainCategoryInHomePage(String value);
   Future<bool> removeMainCategoryWhenOpenApp();
+  Future<bool> setNotificationIdsToRemoveAfterplaceOrder(String id);
 
   String? getPrefechOfBoutiquesForEachMainCategoryInHomePage(String key);
   Future<bool> setPrefechOfBoutiquesForEachMainCategoryInHomePage(
@@ -148,6 +150,7 @@ abstract class PrefsRepository {
   Future<bool> clear();
   List<String> getviewedProductsProducts();
   Future<bool> removeViewedProducts();
+  Future<bool> removeNotificationIdsToRemoveAfterplaceOrder();
   List<String> topicThatAlreadySubsecribed();
   Future<bool> setViewedBoutiques(String boutiqueId);
   List<String> getviewedProductsBoutiques();

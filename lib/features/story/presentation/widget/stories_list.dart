@@ -7,10 +7,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 import 'dart:ui' as ui;
-import 'package:go_router/go_router.dart';
+
 import 'package:overscroll_pop/overscroll_pop.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
+
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/features/app/app_widgets/gallery_and_camera_dialog_widget.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
@@ -24,7 +24,7 @@ import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
-import '../../../../routes/router.dart';
+
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';

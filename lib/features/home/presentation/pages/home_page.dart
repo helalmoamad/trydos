@@ -30,8 +30,7 @@ import 'package:trydos/features/home/presentation/manager/categoryBloc/category_
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_state.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
-import 'package:trydos/features/home/presentation/manager/orderBloc/order_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/orderBloc/order_event.dart';
+
 import 'package:trydos/features/home/presentation/widgets/sliver_list_seprated.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
@@ -101,19 +100,14 @@ class _HomePageState extends State<HomePage> {
     categoryBloc = BlocProvider.of<CategoryBloc>(context);
     appBloc = BlocProvider.of<AppBloc>(context);
     authBloc = BlocProvider.of<AuthBloc>(context);
+
     homeBloc = BlocProvider.of<HomeBloc>(context);
     boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
     homeBloc.add(GetCurrencyForCountryEvent());
 
-    Future.delayed(Duration(seconds: 10), () {
-      GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
-      homeBloc.add(GetNotificationTypeProductEvent());
-      homeBloc.add(GetFirebaseSettingForNotificationEvent());
-      homeBloc.add(GetPopularSearchItemEvent());
-    });
     appBloc.add(ChangeIndexForSearch(0));
 
-    Future.delayed(Duration(seconds: 7), () {});
+    Future.delayed(Duration(seconds: 5), () {});
     boutiqueBloc.add(GetProductsWithFiltersEvent(
         boutiqueSlug: "search",
         cashedOrginalBoutique: true,

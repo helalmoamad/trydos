@@ -11,6 +11,7 @@ import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
+import 'package:trydos/features/home/presentation/pages/Order/orders_page.dart';
 import 'package:trydos/features/home/presentation/pages/cart_page_new.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
@@ -31,13 +32,15 @@ enum TypeOfNotificationForMarketEnum {
   product_when_change_in_price,
   remember_abandon_cart,
   product_before_stock_out,
-  order_placed
+  order_placed,
+  order_status_changed
 }
 
 Map<TypeOfNotificationForMarketEnum, String> typeOfNotificationForMarket = {
   TypeOfNotificationForMarketEnum.boutique_created: "boutique created",
   TypeOfNotificationForMarketEnum.remember_abandon_cart:
       "remember abandon cart",
+  TypeOfNotificationForMarketEnum.order_status_changed: "order status changed",
   TypeOfNotificationForMarketEnum.category_created: "category created",
   TypeOfNotificationForMarketEnum.product_availability: "product availability",
   TypeOfNotificationForMarketEnum.product_cart_expiration:
@@ -93,10 +96,28 @@ class HandlingMarketNotifications {
     GetIt.I<PrefsRepository>().setNotificationTypesOfMarketFromTerminated("");
     //    BlocProvider.of<AppBloc>(context).add(ChangeBasePage(1));
     if (data["type"] ==
-        typeOfNotificationForMarket[
-            TypeOfNotificationForMarketEnum.order_placed]) {
-      GetIt.I<OrderBloc>().add(
-          GetOrdersByOrderGroupIDEvent(orderGroupId: data["order_group_id"]));
+            typeOfNotificationForMarket[
+                TypeOfNotificationForMarketEnum.order_placed] ||
+        data["type"] ==
+            typeOfNotificationForMarket[
+                TypeOfNotificationForMarketEnum.order_status_changed]) {
+      if (data["type"] ==
+          typeOfNotificationForMarket[
+              TypeOfNotificationForMarketEnum.order_placed]) {
+        //      homeBloc.add(RemoveItemsFromCartAfterOrderSuccessEvent());
+        GetIt.I<HomeBloc>().add(GetCartItemEvent());
+      }
+      // GetIt.I<OrderBloc>().add(
+      //   GetOrdersByOrderGroupIDEvent(orderGroupId: data["order_group_id"]));
+
+      Future.delayed(
+          Duration(seconds: 1),
+          () => Navigator.of(navigatorKey.currentState!.context).push(
+              PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) =>
+                      OrdersPage(
+                          fromNotification: true,
+                          groupId: data["order_group_id"].toString()))));
     }
     if (data["type"] ==
             typeOfNotificationForMarket[

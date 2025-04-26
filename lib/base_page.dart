@@ -12,8 +12,8 @@ import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_event.dart';
-
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
+
 import 'package:trydos/features/home/presentation/pages/cart_page_new.dart';
 import 'package:trydos/features/home/presentation/pages/profile_page.dart';
 import 'package:trydos/features/search/presentation/pages/search_page.dart';
@@ -380,7 +380,16 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     homeBloc = BlocProvider.of<HomeBloc>(context);
     appBloc = BlocProvider.of<AppBloc>(context);
     categoryBloc = BlocProvider.of<CategoryBloc>(context);
+    Future.delayed(Duration(seconds: 10), () {
+      if ((prefsRepository.marketToken?.length ?? 0) > 10) {
+        homeBloc.add(GetProductsListInCartEvent());
+        homeBloc.add(GetNotificationTypeProductEvent());
+        homeBloc.add(GetFirebaseSettingForNotificationEvent());
+        homeBloc.add(GetPopularSearchItemEvent());
+      }
+    });
     callsBloc = BlocProvider.of<CallsBloc>(context);
+    //  homeBloc.add(GetAllowedCountriesEvent());
     prefsRepository.setRequestNotificationPermission(false);
     if (!(prefsRepository.onMessageRun ?? false)) {
       onMessage();

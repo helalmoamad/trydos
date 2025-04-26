@@ -1,27 +1,4 @@
-import 'dart:ui';
 
-import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_gallery_3d/gallery3d.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:flutter_xlider/flutter_xlider.dart';
-import 'package:local_hero/local_hero.dart';
-import 'package:shimmer/shimmer.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'package:trydos/common/constant/constant.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
-import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_image_widget.dart';
-import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_bottom_sheet.dart';
-import 'package:trydos/generated/locale_keys.g.dart';
-
-import '../../../data/models/get_product_listing_without_filters_model.dart';
 
 /*class FiltersLoadingListPage extends StatefulWidget {
   const FiltersLoadingListPage({super.key, required this.countOfListInPage,

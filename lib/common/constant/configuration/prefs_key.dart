@@ -28,6 +28,8 @@ abstract class PrefsKey {
   static const profilePhoto = r'__$profilePhoto$__';
   static const marketName = r'__$__marketName__$__';
 
+  static const notificationsIds = r'__$notifictionsIds$__';
+
   static const chatToken = r'__$__chatToken__$__';
 
   static const marketToken = r'__$__marketToken__$__';

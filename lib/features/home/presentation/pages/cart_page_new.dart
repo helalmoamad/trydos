@@ -78,7 +78,7 @@ class _CartPageState extends State<CartPage> {
     homeBloc = BlocProvider.of<HomeBloc>(context);
     orderBloc = BlocProvider.of<OrderBloc>(context);
     boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
-    orderBloc.add(GetCustomerAddressesEvent());
+    orderBloc.add(GetCustomerAddressesEvent(setDefault: true));
     homeBloc.add(GetCartItemEvent());
     fromForGroundNotification =
         appBloc.state.isFromForGroundNotification ?? false;

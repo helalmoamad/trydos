@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -9,6 +10,7 @@ import 'package:trydos/features/home/domain/use_cases/get_provinces_by_iso_useca
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/main.dart';
+import 'package:trydos/service/notification_service/notification_service/handle_notification/local_notification_service.dart';
 import '../../../../../common/helper/show_message.dart';
 import '../../../../../core/data/model/pagination_model.dart';
 import '../../../../../core/use_case/use_case.dart';
@@ -158,12 +160,21 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           );
         }
       },
-      (r) {
+      (r) async {
         isFailedTheFirstTime.remove('PlaceOrderEvent');
 
         debugPrint('PlaceOrderStatus success');
 
         debugPrint('orders length : ${r.data!.length}');
+        List<String> getNotificationIdsToRemoveAfterplaceOrder =
+            prefsRepository.getNotificationIdsToRemoveAfterplaceOrder ?? [];
+        getNotificationIdsToRemoveAfterplaceOrder.forEach((element) {
+          try {
+            LocalNotificationService.localNotificationPlugin
+                .cancel(int.tryParse(element) ?? 0);
+          } catch (e) {}
+        });
+        prefsRepository.removeNotificationIdsToRemoveAfterplaceOrder();
         ////////////////////////////
         emit(
           state.copyWith(
@@ -429,8 +440,11 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
 
         isFailedTheFirstTime.remove('GetOrdersEvent');
 
-        List<OrderListModel> orders =
-            List.of(getOrdersModel[event.status]!.items);
+        List<OrderListModel> orders = [];
+        if (getOrdersModel[event.status] != null &&
+            ((getOrdersModel[event.status]?.items.length ?? 0) > 0)) {
+          orders = List.of(getOrdersModel[event.status]!.items);
+        }
 
         List<OrderListModel> ordersFromApi = r.data?.orders ?? [];
 
@@ -574,6 +588,11 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           currentAddressChoosed = i;
         }
       }
+      if ((r.data?.length ?? 0) > 0 && (event.setDefault ?? false)) {
+        add(SetCustomerAddressDefaultEvent(
+            adressId: r.data?[currentAddressChoosed].id));
+      }
+
       emit(state.copyWith(
         currentAddressChoosed: currentAddressChoosed,
         listOfAdressInfoClassToSave: List.of(listOfAdressInfoClassToSave),

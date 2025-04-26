@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:device_preview_plus/device_preview_plus.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
+
 import 'package:flutter/services.dart';
 import 'dart:developer' as dev;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -17,17 +17,15 @@ import 'package:flutter_callkit_incoming/entities/ios_params.dart';
 import 'package:flutter_callkit_incoming/entities/notification_params.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:flutter_gemini/flutter_gemini.dart' as gemini;
-import 'package:flutter_smartlook/flutter_smartlook.dart';
+
 import 'package:get_it/get_it.dart';
-import 'package:eraser/eraser.dart';
+
 import 'package:sync/semaphore.dart';
 import 'package:trydos/common/constant/configuration/chat_url_routes.dart';
 import 'package:trydos/common/constant/configuration/market_url_routes.dart';
 import 'package:trydos/common/constant/configuration/stories_url_routes.dart';
 import 'package:trydos/features/app/blocs/pre_caching_image_bloc/pre_caching_image_bloc.dart';
-import 'package:trydos/features/app/my_cached_network_image.dart';
-import 'package:trydos/service/language_service.dart';
-import 'package:trydos/service/local_notification_service.dart';
+
 import 'package:trydos/service/notification_service/notification_service/handle_notification/handling_market_notifications.dart';
 import 'package:uuid/uuid.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -258,7 +256,7 @@ bool isHydratedStorageInitialized = false;
 final Semaphore imageBanner = Semaphore(4);
 final Semaphore imageCategoryBoutiques = Semaphore(3);
 final Semaphore syncColorImages = Semaphore(5);
-final Semaphore productListingImages = Semaphore(10);
+final Semaphore productListingImages = Semaphore(12);
 final Semaphore categoryListingImages = Semaphore(3);
 final Semaphore brandListingImages = Semaphore(3);
 final Semaphore productDetailsImages = Semaphore(10);

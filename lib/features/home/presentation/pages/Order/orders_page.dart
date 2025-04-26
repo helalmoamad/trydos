@@ -23,7 +23,10 @@ import '../../manager/orderBloc/order_state.dart';
 import 'order_details1_page.dart';
 
 class OrdersPage extends StatefulWidget {
-  OrdersPage({super.key});
+  bool? fromNotification;
+  final String? groupId;
+
+  OrdersPage({super.key, this.groupId, this.fromNotification});
 
   @override
   State<OrdersPage> createState() => _OrdersPageState();
@@ -126,6 +129,27 @@ class _OrdersPageState extends State<OrdersPage> {
                     p.getOrdersModel[currentStatus.value]?.paginationStatus !=
                     c.getOrdersModel[currentStatus.value]?.paginationStatus,
                 builder: (context, state) {
+                  if ((widget.fromNotification ?? false) &&
+                      state.getOrdersModel[currentStatus.value]
+                              ?.paginationStatus ==
+                          PaginationStatus.success &&
+                      state.getOrdersModel[currentStatus.value] != null) {
+                    widget.fromNotification = false;
+                    int index = state.getOrdersModel[currentStatus.value]!.items
+                        .indexWhere((element) =>
+                            element.orderGroupId == widget.groupId);
+                    if (index != -1) {
+                      Future.delayed(
+                          Duration(milliseconds: 50),
+                          () => Navigator.of(context).push(PageRouteBuilder(
+                              pageBuilder: (context, animation,
+                                      secondaryAnimation) =>
+                                  OrderDetails1(
+                                      order: state
+                                          .getOrdersModel[currentStatus.value]!
+                                          .items[index]))));
+                    }
+                  }
                   int itemsCount = state.getOrdersModel[currentStatus.value] ==
                           null
                       ? 0

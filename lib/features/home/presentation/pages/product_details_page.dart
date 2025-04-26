@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:easy_localization/easy_localization.dart' as localization;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,39 +9,34 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:local_hero/local_hero.dart';
+
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'package:trydos/base_page.dart';
+
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
-import 'package:trydos/features/app/app_elvated_button.dart';
-import 'package:trydos/features/app/app_widgets/app_bottom_navigation_bar.dart';
 
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
-import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
+
 import 'package:trydos/features/app/my_text_widget.dart';
-import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
-import 'package:trydos/features/authentication/presentation/pages/first_registeration_page.dart';
+
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
-import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
-import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
+
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/pages/cart_page_new.dart';
-import 'package:trydos/features/home/presentation/pages/home_page.dart';
+
 import 'package:trydos/features/home/presentation/pages/product_details_display_pictures_page.dart';
-import 'package:trydos/features/home/presentation/pages/cart_page.dart';
+
 import 'package:trydos/features/home/presentation/widgets/product_details_body/display_sizes_card.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_title.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_bottom_sheet.dart';
-import 'package:trydos/features/home/presentation/widgets/product_stories_section/story/widget/stories_list.dart';
-import 'package:trydos/main.dart';
+
 import 'package:trydos/routes/router.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../generated/locale_keys.g.dart';
@@ -54,8 +47,7 @@ import '../../../../service/firebase_analytics_service/firebase_analytics_servic
 import '../../../../service/language_service.dart';
 
 import '../../../app/app_widgets/loading_indicator/trydos_loader.dart';
-import '../../../chat/presentation/manager/chat_bloc.dart';
-import '../../../chat/presentation/manager/chat_event.dart';
+
 import '../../data/models/get_product_listing_without_filters_model.dart'
     as productListingModel;
 
@@ -71,6 +63,7 @@ import '../widgets/product_details_body/sliding_up_panel_for_reels.dart';
 import '../widgets/product_stories_section/product_stories_card.dart';
 import '../widgets/product_details_body/buyers_camera_shots.dart';
 
+// ignore: must_be_immutable
 class ProductDetailsPage extends StatefulWidget {
   ProductDetailsPage({
     super.key,

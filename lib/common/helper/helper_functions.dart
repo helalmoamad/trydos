@@ -503,6 +503,8 @@ class HelperFunctions {
           ;
 
           return '$result$thousand';
+        } else if (number == 0) {
+          return '0.0';
         } else if (number < 1e3) {
           return '1$thousand';
         } else {
@@ -527,6 +529,8 @@ class HelperFunctions {
           ;
 
           return '$result$thousand';
+        } else if (number == 0) {
+          return '0.0';
         } else if (number < 1e4) {
           return '10$thousand';
         } else {

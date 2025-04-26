@@ -38,15 +38,14 @@ import '../../../../app/my_text_widget.dart';
 import '../../../data/models/get_product_filters_model.dart' as filter_model;
 import '../../manager/homeBloc/home_bloc.dart';
 import '../../manager/homeBloc/home_event.dart';
-import '../../manager/homeBloc/home_state.dart';
+
 import 'categories_filter_list.dart';
 import 'color_list_filter.dart';
 import 'filters_loding_list.dart';
 import 'filters_normal_list.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
+
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:get_it/get_it.dart';
 
 class StackedFiltersList extends StatefulWidget {
@@ -2545,7 +2544,7 @@ class FilterImage extends StatelessWidget {
           boxShadow: withBackGroundShadow
               ? [
                   BoxShadow(
-                    color: Color(0x19000000),
+                    color: Colors.white.withOpacity(0.6),
                     offset: Offset(0, 3),
                     blurRadius: 3,
                   ),
@@ -2563,7 +2562,7 @@ class FilterImage extends StatelessWidget {
                       : MyCachedNetworkImage(
                           imageUrl: imageUrl,
                           width: width,
-                          imageFit: BoxFit.cover,
+                          imageFit: BoxFit.contain,
                           height: height),
               //Image.asset(imageUrl , fit: BoxFit.cover, width: width, height: height,),
               Container(
