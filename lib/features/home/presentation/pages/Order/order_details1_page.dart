@@ -35,7 +35,8 @@ class _OrderDetails1State extends State<OrderDetails1> {
       widget.order.shippingAddressData?.city,
       widget.order.shippingAddressData?.town,
       widget.order.shippingAddressData?.street,
-      widget.order.shippingAddressData?.building,
+      // widget.order.shippingAddressData?.building,
+      'null',
     ];
 
     super.initState();
@@ -44,7 +45,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
   @override
   Widget build(BuildContext context) {
     final addressString = addressParts
-        .where((part) => part != null && part.isNotEmpty)
+        .where((part) => part != null && part != 'null' && part.isNotEmpty)
         .join(' | ');
 
     return Container(
