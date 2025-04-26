@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:trydos/features/home/presentation/widgets/share_products_with_social_media/social_media_type.dart';
 import 'package:trydos/service/language_service.dart';
-import 'package:trydos/trydos_application.dart';
 
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';

@@ -1,25 +1,23 @@
 import 'dart:async';
-import 'dart:io';
-import 'dart:typed_data';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:delayed_display/delayed_display.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:flutter_gemini/flutter_gemini.dart' as geminis;
+
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mime/mime.dart';
+
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'package:trydos/base_page.dart';
+
 import 'package:trydos/common/constant/design/constant_design.dart';
-import 'package:trydos/common/helper/show_message.dart';
+
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -29,9 +27,6 @@ import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/features/app/animated_search_bar/animated_search_bar.dart';
-import 'package:trydos/features/app/app_widgets/gallery_and_camera_dialog_widget.dart';
-import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart'
-    as productDetail;
 
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
@@ -53,7 +48,7 @@ import 'package:trydos/routes/router.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/language_service.dart';
 import 'package:tuple/tuple.dart';
-import 'package:wechat_assets_picker/wechat_assets_picker.dart';
+
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/data/model/pagination_model.dart';

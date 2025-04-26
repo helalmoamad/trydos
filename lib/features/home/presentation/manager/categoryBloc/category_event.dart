@@ -1,17 +1,7 @@
-import 'dart:io';
-
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:trydos/features/authentication/data/models/verify_otp_sign_up_and_in_response_model.dart';
-import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
-import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
-import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
-import 'package:trydos/features/home/presentation/manager/categoryBloc/category_state.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
-import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
 
-import '../../../data/models/get_product_filters_model.dart';
-import '../../../domain/use_cases/place_order_usecase.dart';
+import 'package:trydos/features/home/presentation/manager/categoryBloc/category_state.dart';
 
 abstract class CategoryEvent extends Equatable {
   const CategoryEvent();
@@ -50,6 +40,7 @@ class ChangeCurrentIndexForMainCategoryEvent extends CategoryEvent {
   List<Object?> get props => [];
 }
 
+// ignore: must_be_immutable
 class GetHomeBoutiqesEvent extends CategoryEvent {
   // final bool getWithPagination;
   final String offset;

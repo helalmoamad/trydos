@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:ui' as ui;
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -11,7 +10,7 @@ import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
-import 'package:trydos/common/helper/helper_functions.dart';
+
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -23,7 +22,7 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dar
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/service/language_service.dart';
+
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
@@ -793,6 +792,7 @@ class ProductItemCircle extends StatelessWidget {
                   height: 40.w,
                   width: 40.w,
                   decoration: BoxDecoration(
+                    color: Colors.white,
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
@@ -807,7 +807,7 @@ class ProductItemCircle extends StatelessWidget {
                       child: MyCachedNetworkImage(
                           imageUrl: imageUrl,
                           width: 40.w,
-                          imageFit: cupertino.BoxFit.cover,
+                          imageFit: cupertino.BoxFit.contain,
                           height: 40.w)),
                 ),
                 Container(

@@ -432,6 +432,8 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                           widget.currentColor] ==
                                       0 &&
                                   !widget.collectedAfterOrdering) {
+                                print(
+                                    "D${colorsForEachProduct[widget.currentColor]}DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
                                 Future.delayed(
                                     Duration(milliseconds: 300),
                                     () => colorIsNotAvailableNotifier.value =
@@ -650,11 +652,17 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                               0 &&
                                                           !widget
                                                               .collectedAfterOrdering) {
+                                                        print(
+                                                            "666666666..dd........666666666666${index}666666666${colorsQuantityForEachProduct}666666666666666666666666666666666666666666666666666666${currentIndexInSlider}");
+
                                                         colorIsNotAvailableNotifier
                                                                 .value =
                                                             colorsForEachProduct[
                                                                 index];
                                                       } else {
+                                                        print(
+                                                            "666666666..........666666666666${index}666666666${colorsQuantityForEachProduct}666666666666666666666666666666666666666666666666666666${currentIndexInSlider}");
+
                                                         colorIsNotAvailableNotifier
                                                             .value = null;
                                                       }
@@ -663,8 +671,6 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                 );
 
                                                 currentIndexInSlider = index;
-                                                print(
-                                                    "666666666666666666666666666666666666666666666666666666666666666666666666666666666666${currentIndexInSlider}");
                                                 homeBloc.add(
                                                     AddCurrentSelectedColorEvent(
                                                         currentSelectedColor:

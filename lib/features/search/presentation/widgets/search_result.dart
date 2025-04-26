@@ -3,28 +3,27 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:shimmer/shimmer.dart';
+
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/data/model/pagination_model.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
-import 'package:trydos/features/app/my_cached_network_image.dart';
+
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
+
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
+
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:get_it/get_it.dart';
 import '../../../../core/utils/theme_state.dart';
-import '../../../home/presentation/manager/homeBloc/home_bloc.dart';
 
 class SearchResult extends StatefulWidget {
   final TextEditingController controller;
@@ -294,6 +293,7 @@ class _SearchResultState extends ThemeState<SearchResult> {
                         height: 50,
                         width: 35,
                         decoration: BoxDecoration(
+                            color: Colors.white,
                             border: Border.all(
                                 color: Color(0xff388CFF), width: 0.3),
                             borderRadius: BorderRadius.only(
@@ -303,7 +303,7 @@ class _SearchResultState extends ThemeState<SearchResult> {
                               bottomRight: Radius.circular(5),
                             ),
                             image: DecorationImage(
-                                fit: BoxFit.cover,
+                                fit: BoxFit.contain,
                                 image: NetworkImage(
                                   state
                                       .getProductListingWithFiltersPaginationModels[

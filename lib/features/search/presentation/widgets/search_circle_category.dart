@@ -134,18 +134,13 @@ import 'package:flutter_svg/svg.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
-import 'package:trydos/core/utils/extensions/string.dart';
 
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
-import 'package:trydos/features/app/my_cached_network_image.dart';
+
 import 'package:trydos/features/app/svg_network_widget.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
-
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../app/my_text_widget.dart';
@@ -249,7 +244,7 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                             scrollDirection: Axis.horizontal,
                             itemBuilder: (context, index) {
                               bool isChildCategorySlug = false;
-                              filters.categories?[index]?.subCategories
+                              filters.categories?[index].subCategories
                                   ?.forEach((elements) {
                                 if (state.choosedFiltersByUser[key]?.filters
                                         ?.categories

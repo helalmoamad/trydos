@@ -1,12 +1,11 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
-import 'package:trydos/service/notification_service/notification_service/handle_notification/handling_market_notifications.dart';
 
+// ignore: must_be_immutable
 class NotificationFrequencyDropdown extends StatefulWidget {
   final List<String> notificationFrequency;
   String selectedNotificationFrequency;

@@ -303,15 +303,19 @@ class _ProfileLanguagePageState extends State<ProfileLanguagePage>
                 SizedBox(
                   width: 10,
                 ),
-                Container(
-                    width: 25,
-                    height: 25,
-                    child: CountryFlag.fromCountryCode(
-                      code,
-                      height: 25,
-                      width: 25,
-                      borderRadius: 4.r,
-                    )),
+                code.toUpperCase() == "SY"
+                    ? SvgPicture.asset(
+                        AppAssets.syriaFlagSvg,
+                      )
+                    : Container(
+                        width: 25,
+                        height: 25,
+                        child: CountryFlag.fromCountryCode(
+                          code,
+                          height: 25,
+                          width: 25,
+                          borderRadius: 4.r,
+                        )),
                 SizedBox(
                   width: 10,
                 ),

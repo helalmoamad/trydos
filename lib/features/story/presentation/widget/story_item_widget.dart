@@ -1,7 +1,5 @@
-import 'dart:ffi';
 import 'dart:typed_data';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -56,7 +54,7 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: error.toString());
-        print(error.toString());
+      print(error.toString());
     };
     return BlocBuilder<StoryBloc, StoryState>(builder: (context, state) {
       print("${state.storiesCollections[widget.index].name}" +
@@ -175,8 +173,9 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
                                   width: 80,
                                   child: MyTextWidget(
                                     state.storiesCollections[widget.index]
-                                            .name ?? state.storiesCollections[widget.index]
-                                .mobilePhone ??
+                                            .name ??
+                                        state.storiesCollections[widget.index]
+                                            .mobilePhone ??
                                         LocaleKeys.unknown_user.tr(),
                                     textAlign: TextAlign.center,
                                     overflow: TextOverflow.ellipsis,

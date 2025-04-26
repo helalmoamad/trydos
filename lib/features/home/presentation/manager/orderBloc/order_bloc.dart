@@ -429,8 +429,11 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
 
         isFailedTheFirstTime.remove('GetOrdersEvent');
 
-        List<OrderListModel> orders =
-            List.of(getOrdersModel[event.status]!.items);
+        List<OrderListModel> orders = [];
+        if (getOrdersModel[event.status] != null &&
+            ((getOrdersModel[event.status]?.items.length ?? 0) > 0)) {
+          orders = List.of(getOrdersModel[event.status]!.items);
+        }
 
         List<OrderListModel> ordersFromApi = r.data?.orders ?? [];
 
@@ -574,6 +577,11 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           currentAddressChoosed = i;
         }
       }
+      if ((r.data?.length ?? 0) > 0 && (event.setDefault ?? false)) {
+        add(SetCustomerAddressDefaultEvent(
+            adressId: r.data?[currentAddressChoosed].id));
+      }
+
       emit(state.copyWith(
         currentAddressChoosed: currentAddressChoosed,
         listOfAdressInfoClassToSave: List.of(listOfAdressInfoClassToSave),

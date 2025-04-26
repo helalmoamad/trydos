@@ -1,6 +1,3 @@
-import 'dart:math';
-
-import 'package:flutter_html/flutter_html.dart';
 import 'package:get_it/get_it.dart';
 import 'package:html/parser.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';

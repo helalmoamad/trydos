@@ -23,6 +23,7 @@ import '../bloc/story_state.dart';
 import '../widget/animated_builder.dart';
 import 'dart:ui';
 
+// ignore: must_be_immutable
 class StoryCollection extends StatefulWidget {
   final int collectionIndex;
   final AnimationController animatedController;

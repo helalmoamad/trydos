@@ -34,10 +34,7 @@ import '../../../home/presentation/manager/homeBloc/home_bloc.dart';
 import '../../../home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 import '../widgets/search_history.dart';
 import '../widgets/search_result.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 
 class SearchPage extends StatefulWidget {

@@ -47,7 +47,7 @@ class StoriesDataSource {
               if (onError != null) onError();
             },
           ));
-    } catch (e, s) {
+    } catch (e) {
       GetIt.I<StoryBloc>().add(LoadFailureEvent(collectionId: collectionId));
     }
     return completer.future;

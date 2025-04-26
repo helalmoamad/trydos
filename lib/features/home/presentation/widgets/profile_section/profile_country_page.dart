@@ -414,12 +414,17 @@ class _ProfileCountryPageState extends State<ProfileCountryPage>
                 Container(
                     width: 25,
                     height: 25,
-                    child: CountryFlag.fromCountryCode(
-                      code,
-                      height: 25,
-                      width: 25,
-                      borderRadius: 4.r,
-                    )),
+                    child: code.toUpperCase() == "SY"
+                        ? SvgPicture.asset(
+                            AppAssets.syriaFlagSvg,
+                            width: 18.w,
+                          )
+                        : CountryFlag.fromCountryCode(
+                            code,
+                            height: 25,
+                            width: 25,
+                            borderRadius: 4.r,
+                          )),
                 SizedBox(
                   width: 10,
                 ),

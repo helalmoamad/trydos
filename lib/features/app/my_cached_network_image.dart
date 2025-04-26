@@ -90,7 +90,7 @@ class MyCachedNetworkImage extends StatelessWidget {
               boxShadow: withImageShadow
                   ? [
                       BoxShadow(
-                        color: context.colorScheme.black.withOpacity(0.1),
+                        color: context.colorScheme.white.withOpacity(0.1),
                         offset: const Offset(0, 3),
                         blurRadius: 6,
                       ),

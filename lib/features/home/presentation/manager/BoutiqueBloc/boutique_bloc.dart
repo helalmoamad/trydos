@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:trydos/core/data/model/pagination_model.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
@@ -1093,11 +1092,10 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                   '"name"': '"${filters.attributes![0].name}"',
                   '"options"': [
                     ...(filters.attributes![0].options) ?? [],
-                    ...(state.sizeAndColorFilterinTextToSearch!["size"]
+                    ...(state.sizeAndColorFilterinTextToSearch["size"]
                                 .isNullOrEmpty
                             ? []
-                            : state
-                                .sizeAndColorFilterinTextToSearch!["size"]) ??
+                            : state.sizeAndColorFilterinTextToSearch["size"]) ??
                         []
                   ]
                       .map(
@@ -1108,9 +1106,9 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               ],
         colors: ([
           ...filters.colors ?? [],
-          ...(state.sizeAndColorFilterinTextToSearch!["color"].isNullOrEmpty
+          ...(state.sizeAndColorFilterinTextToSearch["color"].isNullOrEmpty
                   ? []
-                  : state.sizeAndColorFilterinTextToSearch!["color"]) ??
+                  : state.sizeAndColorFilterinTextToSearch["color"]) ??
               []
         ]).map((e) => '"${e.toString()}"').toList(),
         limit: event.limit ?? 10,
