@@ -842,6 +842,28 @@ class PrefsRepositoryImpl extends PrefsRepository {
   @override
   Future<bool> setMyProfilePhoto(String? photo) =>
       _preferences.setString(PrefsKey.profilePhoto, photo ?? '');
+
+  @override
+  // TODO: implement getNotificationIdsToRemoveAfterplaceOrder
+  List<String>? get getNotificationIdsToRemoveAfterplaceOrder {
+    List<String> list =
+        _preferences.getStringList(PrefsKey.notificationsIds) ?? [];
+    return list;
+  }
+
+  @override
+  Future<bool> setNotificationIdsToRemoveAfterplaceOrder(String id) {
+    List<String> list =
+        _preferences.getStringList(PrefsKey.notificationsIds) ?? [];
+
+    list.add(id);
+    return _preferences.setStringList(PrefsKey.notificationsIds, list);
+  }
+
+  @override
+  Future<bool> removeNotificationIdsToRemoveAfterplaceOrder() {
+    return _preferences.remove(PrefsKey.notificationsIds);
+  }
 // @override
 
 // List<Map<String,dynamic>> get localMessages {
