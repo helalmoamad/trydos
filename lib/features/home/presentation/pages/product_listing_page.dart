@@ -161,6 +161,46 @@ class _ProductListingPageState extends State<ProductListingPage> {
   Key gridViewKeyForRenderingForTheFiveFilters = UniqueKey();
   Key gridViewKeyForRendering = UniqueKey();
   bool _speechEnabled = false;
+  void _listenToScroll() {
+    if (boutiqueBloc.state.isExpandedForListingPage ?? false) return;
+    // if (scrollController.position.pixels <= 80) {
+    //   debugPrint(scrollController.position.pixels.toString());
+    //   appBloc.add(ShowOrHideBars(true));
+    // }
+    // else if(filterPageExpanded.value){
+    //   scrollController.jumpTo(80);
+    // }
+    if (setThisEnabledNotifier.value.item1 != -1) {
+      setThisEnabledNotifier.value = Tuple2(-1, -1);
+    }
+    if (scrollController.offset >=
+        (scrollController.position.maxScrollExtent * 0.7)) {
+      if (boutiqueBloc.state.isGettingProductListingWithPagination) return;
+
+      if (boutiqueBloc
+          .state
+          .getProductListingWithFiltersPaginationModels[
+              '${widget.boutiqueSlug}' +
+                  ((boutiqueBloc.state.cashedOrginalBoutique)
+                      ? 'withoutFilter'
+                      : "") +
+                  '${(widget.category ?? '')}']!
+          .hasReachedMax) {
+        return;
+      }
+      boutiqueBloc.add(GetProductsWithFiltersEvent(
+          context: context,
+          fromNotification: widget.fromNotificationCategory,
+          limit: 10,
+          cashedOrginalBoutique: !widget.fromSearch,
+          boutiqueSlug: widget.boutiqueSlug,
+          getWithPagination: true,
+          fromSearch: widget.fromSearch,
+          category: widget.category,
+          searchText: controller.text,
+          offset: 2));
+    }
+  }
 
   List<filter_products.Products> products = [];
   List<String> sizesForSearch = [
@@ -304,6 +344,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
   @override
   void initState() {
+    super.initState();
     print("%%%%%%%%%${GetIt.I<PrefsRepository>().marketToken}0*");
     print("%%%%%%%%%${GetIt.I<PrefsRepository>().getFcmTokens}*");
     Future.delayed(Duration(seconds: 3), () {
@@ -386,47 +427,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
       );
     }
 
-    scrollController.addListener(() {
-      if (boutiqueBloc.state.isExpandedForListingPage ?? false) return;
-      // if (scrollController.position.pixels <= 80) {
-      //   debugPrint(scrollController.position.pixels.toString());
-      //   appBloc.add(ShowOrHideBars(true));
-      // }
-      // else if(filterPageExpanded.value){
-      //   scrollController.jumpTo(80);
-      // }
-      if (setThisEnabledNotifier.value.item1 != -1) {
-        setThisEnabledNotifier.value = Tuple2(-1, -1);
-      }
-      if (scrollController.offset >=
-          (scrollController.position.maxScrollExtent * 0.7)) {
-        if (boutiqueBloc.state.isGettingProductListingWithPagination) return;
-
-        if (boutiqueBloc
-            .state
-            .getProductListingWithFiltersPaginationModels[
-                '${widget.boutiqueSlug}' +
-                    ((boutiqueBloc.state.cashedOrginalBoutique)
-                        ? 'withoutFilter'
-                        : "") +
-                    '${(widget.category ?? '')}']!
-            .hasReachedMax) {
-          return;
-        }
-        boutiqueBloc.add(GetProductsWithFiltersEvent(
-            context: context,
-            fromNotification: widget.fromNotificationCategory,
-            limit: 10,
-            cashedOrginalBoutique: !widget.fromSearch,
-            boutiqueSlug: widget.boutiqueSlug,
-            getWithPagination: true,
-            fromSearch: widget.fromSearch,
-            category: widget.category,
-            searchText: controller.text,
-            offset: 2));
-      }
-    });
-    super.initState();
+    scrollController.addListener(_listenToScroll);
   }
 
   @override
@@ -447,7 +448,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
     _speechToText.cancel();
     focusNode.dispose();
     appBloc.add(ShowOrHideBars(true));
+    scrollController.removeListener(_listenToScroll);
     scrollController.dispose();
+    controller.dispose();
     categoryBloc.add(ReplyFromGeminiEvent(
         fromSearch: false,
         sendRequestToGeminiStatus: SendRequestToGeminiStatus.success,
@@ -466,7 +469,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
+    /* FlutterError.onError = (FlutterErrorDetails error) {
       try {
         BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
             errorExption: error.exceptionAsString().toString(),
@@ -477,7 +480,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: error.toString());
-    };
+    };*/
     return WillPopScope(
       onWillPop: () async {
         try {
@@ -1224,7 +1227,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                         searchText: null,
                                                                                       )),
                                                                                     ));
-                                                                                    boutiqueBloc.add(GetProductFiltersEvent(
+                                                                                    boutiqueBloc.add(GetFiltersEvent(
                                                                                       fromHomePageSearch: widget.fromSearch,
                                                                                       searchText: null,
                                                                                       category: widget.category,
@@ -2122,6 +2125,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                         ));
                                                               },
                                                               child: _productItem(
+                                                                  displayFirstColors:
+                                                                      ((appliedFiltersByUser?.filters?.colors?.length ??
+                                                                              0) >
+                                                                          0),
                                                                   index: index,
                                                                   slidingMode:
                                                                       slidingMode),
@@ -2452,6 +2459,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                               ))));
                                                             },
                                                             child: _productItem(
+                                                                displayFirstColors:
+                                                                    ((appliedFiltersByUser?.filters?.colors?.length ??
+                                                                            0) >
+                                                                        0),
                                                                 index: index,
                                                                 slidingMode:
                                                                     slidingMode),
@@ -3117,7 +3128,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                           ),
                         ));
               },
-              child: _productItem(index: index, slidingMode: slidingMode),
+              child: _productItem(
+                  index: index,
+                  slidingMode: slidingMode,
+                  displayFirstColors: false),
             );
           },
         ),
@@ -3206,7 +3220,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
             isChangedvariationWhenQtyZero: true)));
   }*/
   Widget _productItem(
-      {required Tuple2<int, int> slidingMode, required int index}) {
+      {required Tuple2<int, int> slidingMode,
+      required int index,
+      required bool displayFirstColors}) {
     return /*!displayImageColors && !widget.fromSearch
         ? DelayedDisplay(
             delay: Duration(milliseconds: 300),
@@ -3224,6 +3240,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
               },
             ))*/
         ProductItem(
+      displayFirstColors: displayFirstColors,
       displayImageColors: displayImageColors,
       tapIndexToAddProductToCart: tapIndexToAddProductToCart,
       key: TestVariables.kTestMode

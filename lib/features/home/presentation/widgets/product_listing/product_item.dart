@@ -6,11 +6,6 @@ import 'dart:ui' as ui;
 
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_3d_slider.dart';
 import 'package:tuple/tuple.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 
 class ProductItem extends StatefulWidget {
   const ProductItem(
@@ -18,6 +13,7 @@ class ProductItem extends StatefulWidget {
       required this.setThisEnabled,
       required this.slidingModeItem,
       required this.itemIndex,
+      required this.displayFirstColors,
       required this.displayImageColors,
       required this.tapIndexToAddProductToCart,
       required this.productItem});
@@ -25,6 +21,7 @@ class ProductItem extends StatefulWidget {
   final void Function(int, int) setThisEnabled;
   final ValueNotifier<int> tapIndexToAddProductToCart;
   final bool displayImageColors;
+  final bool displayFirstColors;
   final Tuple2<int, int> slidingModeItem;
   final productListingModel.Products productItem;
   final int itemIndex;
@@ -39,14 +36,14 @@ class _ProductItemState extends State<ProductItem> {
 
   @override
   void initState() {
+    super.initState();
     currentChosenColor =
         ValueNotifier((widget.productItem.syncColorImages?.length ?? 0) ~/ 2);
-    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
+    /*  FlutterError.onError = (FlutterErrorDetails error) {
       try {
         BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
             errorExption: error.exceptionAsString().toString(),
@@ -57,7 +54,7 @@ class _ProductItemState extends State<ProductItem> {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: error.toString());
-    };
+    };*/
     return Stack(
         alignment: Alignment.bottomCenter,
         clipBehavior: Clip.none,
@@ -174,6 +171,7 @@ class _ProductItemState extends State<ProductItem> {
             ),
           ),
           ProductListing3DSlider(
+              displayFirstColors: widget.displayFirstColors,
               displayImageColors: widget.displayImageColors,
               productItem: widget.productItem,
               slidingModeItem: widget.slidingModeItem,

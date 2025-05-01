@@ -308,6 +308,11 @@ class CategoriesFilterList extends StatelessWidget {
                                                     element.slug ==
                                                     filters.categories?[index]
                                                         .slug);
+                                            if (subCategories[innerIndex]
+                                                    .isSubSubCategory ??
+                                                false) {
+                                              categoryParent = [];
+                                            }
                                             prevChoosedOrAppliedFilterToAddToIt =
                                                 prevChoosedOrAppliedFilterToAddToIt
                                                     .copyWithSaveOtherField(
@@ -443,7 +448,7 @@ class CategoriesFilterList extends StatelessWidget {
                                         scale: scale,
                                         paddingValue: 2,
                                         isExpanded: (currentExpandedIndex == index),
-                                        displayFilterMark: (isChildCategorySlug || (!workWithChoosedFilter ? ((appliedFilters?.categories?.isNullOrEmpty ?? true) ? false : appliedFilters!.categories!.any((element) => (element.slug == filters.categories![index].slug))) : ((choosedFilters?.categories?.isNullOrEmpty ?? true) ? false : choosedFilters!.categories!.any((element) => element.slug == filters.categories![index].slug)))),
+                                        displayFilterMark: ((!workWithChoosedFilter ? ((appliedFilters?.categories?.isNullOrEmpty ?? true) ? false : appliedFilters!.categories!.any((element) => (element.slug == filters.categories![index].slug))) : ((choosedFilters?.categories?.isNullOrEmpty ?? true) ? false : choosedFilters!.categories!.any((element) => element.slug == filters.categories![index].slug)))),
                                         addOrRemoveSpecificFilter: (bool add) {
                                           if (appliedFilters?.categories ==
                                                   null &&

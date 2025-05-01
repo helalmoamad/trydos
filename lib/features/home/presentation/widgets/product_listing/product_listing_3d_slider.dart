@@ -30,8 +30,6 @@ import '../../../../../service/language_service.dart';
 import '../../../../app/my_text_widget.dart';
 import 'my_gallery3d_widget.dart';
 
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-
 import 'package:get_it/get_it.dart';
 
 class ProductListing3DSlider extends StatefulWidget {
@@ -42,6 +40,7 @@ class ProductListing3DSlider extends StatefulWidget {
       required this.itemIndex,
       required this.tapIndexToAddProductToCart,
       required this.productItem,
+      required this.displayFirstColors,
       required this.displayImageColors,
       required this.currentChosenColor});
 
@@ -50,6 +49,7 @@ class ProductListing3DSlider extends StatefulWidget {
   final ValueNotifier<int> tapIndexToAddProductToCart;
   final int itemIndex;
   final bool displayImageColors;
+  final bool displayFirstColors;
 
   final productListingModel.Products productItem;
   final ValueNotifier<int> currentChosenColor;
@@ -114,11 +114,31 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
   final CarouselSliderController carouselController =
       CarouselSliderController();
   List<productListingModel.SyncColorImage>? syncColorImageList;
-
+  List<listing.Color>? colorsForSync = [];
   @override
   void initState() {
+    colorsForSync = widget.productItem.colors;
     homeBloc = BlocProvider.of<HomeBloc>(context);
     syncColorImageList = widget.productItem.syncColorImages;
+    if (widget.displayFirstColors) {
+      if (syncColorImageList?.length == 3) {
+        listing.SyncColorImage firstImage = syncColorImageList![0];
+        listing.Color firstColor = colorsForSync![0];
+        firstImage = syncColorImageList!.removeAt(0);
+        firstColor = colorsForSync!.removeAt(0);
+        syncColorImageList!.insert(1, firstImage);
+        colorsForSync!.insert(1, firstColor);
+      } else if ((syncColorImageList?.length ?? 0) > 3) {
+        listing.SyncColorImage firstImage = syncColorImageList![0];
+        listing.Color firstColor = colorsForSync![0];
+        firstColor = colorsForSync!.removeAt(0);
+        firstImage = syncColorImageList!.removeAt(0);
+        colorsForSync!
+            .insert(((syncColorImageList!.length ~/ 2) + 1), firstColor);
+        syncColorImageList!
+            .insert(((syncColorImageList!.length ~/ 2) + 1), firstImage);
+      }
+    }
     syncColorImageList?.removeWhere((element) => element.images.isNullOrEmpty);
     syncColorImageList = [
       ...syncColorImageList ?? [],
@@ -255,7 +275,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
+    /* FlutterError.onError = (FlutterErrorDetails error) {
       try {
         BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
             errorExption: error.exceptionAsString().toString(),
@@ -273,7 +293,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
 
     FlutterError.onError = (error) {
       debugPrint(error.toString());
-    };
+    };*/
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Material(
@@ -330,7 +350,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                             child: Stack(
                                               children: [
                                                 MyCachedNetworkImage(
-                                                  ordinalHeight: syncColorImageList
+                                                  /*   ordinalHeight: syncColorImageList
                                                           .isNullOrEmpty
                                                       ? double.parse(widget
                                                           .productItem
@@ -351,7 +371,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                                           syncColorImageList![
                                                                   prevIndexInSecondSlider]
                                                               .images![index]
-                                                              .originalWidth!),
+                                                              .originalWidth!),*/
                                                   imageUrl: syncColorImageList
                                                           .isNullOrEmpty
                                                       ? widget
@@ -632,7 +652,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                       textAlign: TextAlign.center,
                                       style: textTheme.titleMedium?.mq.copyWith(
                                         color: Color(int.parse(
-                                            '0xff${widget.productItem.colors![currentIndex % widget.productItem.colors!.length].color!.substring(1)}')),
+                                            '0xff${colorsForSync![currentIndex % colorsForSync!.length].color!.substring(1)}')),
                                       ),
                                     );
                                   },
@@ -1259,14 +1279,13 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                       height: 40,
                                       imageUrl: images[index],
                                       innerShadowYOffset: 4,
-                                      borderColor: (widget.productItem.colors
-                                                      ?.length ??
+                                      borderColor: (colorsForSync?.length ??
                                                   0) ==
                                               0
                                           ? Colors.white
                                           : index == prevIndexInFirstSlider
                                               ? Color(int.parse(
-                                                  '0xff${widget.productItem.colors![currentColorIndex.value % widget.productItem.colors!.length].color!.substring(1)}'))
+                                                  '0xff${colorsForSync![currentColorIndex.value % colorsForSync!.length].color!.substring(1)}'))
                                               : Colors.white,
                                       circleShape: true,
                                     ),
