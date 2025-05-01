@@ -189,7 +189,7 @@ class _SearchHistoryState extends State<SearchHistory> {
                                         searchText: _items[index]));
 
                                 BlocProvider.of<BoutiqueBloc>(context).add(
-                                    GetProductFiltersEvent(
+                                    GetFiltersEvent(
                                         fromHomePageSearch: true,
                                         boutiqueSlug: 'search',
                                         searchText: _items[index]));

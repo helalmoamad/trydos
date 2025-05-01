@@ -131,7 +131,7 @@ class _TrendingSectionState extends State<TrendingSection> {
                                               .popularSearchTerms[index].term));
 
                                   BlocProvider.of<BoutiqueBloc>(context).add(
-                                      GetProductFiltersEvent(
+                                      GetFiltersEvent(
                                           fromHomePageSearch: true,
                                           boutiqueSlug: 'search',
                                           searchText: widget
@@ -214,7 +214,7 @@ class _TrendingSectionState extends State<TrendingSection> {
                                               .popularSearchTerms[index].term));
 
                                   BlocProvider.of<BoutiqueBloc>(context).add(
-                                      GetProductFiltersEvent(
+                                      GetFiltersEvent(
                                           fromHomePageSearch: true,
                                           boutiqueSlug: 'search',
                                           searchText: widget

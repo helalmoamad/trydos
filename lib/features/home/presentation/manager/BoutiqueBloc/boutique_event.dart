@@ -6,8 +6,41 @@ abstract class BoutiqueEvent extends Equatable {
   const BoutiqueEvent();
 }
 
-class GetProductFiltersEvent extends BoutiqueEvent {
-  const GetProductFiltersEvent(
+class GetFiltersEvent extends BoutiqueEvent {
+  const GetFiltersEvent(
+      {this.category,
+      this.fromHomePageSearch = false,
+      this.getWithoutFilter = false,
+      required this.boutiqueSlug,
+      this.searchText,
+      this.fromExpandPage = false,
+      this.cashedOrginalBoutique = false,
+      this.getProductsFilterPreFetch = false,
+      this.forceUpdate = false,
+      this.resetAppliesFilters = false,
+      this.filtersChoosedByUser});
+
+  final String boutiqueSlug;
+
+  final bool cashedOrginalBoutique;
+  final bool getProductsFilterPreFetch;
+  final String? searchText;
+  final bool getWithoutFilter;
+  final String? category;
+  final bool forceUpdate;
+
+  final bool fromHomePageSearch;
+  final bool fromExpandPage;
+  final bool resetAppliesFilters;
+  final GetProductFiltersModel? filtersChoosedByUser;
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [category, boutiqueSlug, forceUpdate];
+}
+
+class GetFiltersWithPaginatioEvent extends BoutiqueEvent {
+  const GetFiltersWithPaginatioEvent(
       {this.category,
       this.fromHomePageSearch = false,
       this.getWithoutFilter = false,

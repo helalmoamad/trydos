@@ -100,8 +100,8 @@ class MyCachedNetworkImage extends StatelessWidget {
             child: /*BlocBuilder<PreCachingImageBloc, PreCachingImageState>(
                 buildWhen: (p, c) =>
                     p.cachedImages[url] == false && c.cachedImages[url] == true,
-                builder: (context, state) {
-                  return*/
+                builder: (context, state) {*/
+                //    return
                 Center(
               child: CachedNetworkImage(
                   imageUrl: url,
@@ -109,21 +109,27 @@ class MyCachedNetworkImage extends StatelessWidget {
                   fit: imageFit,
                   width: width,
                   color: imageColor,
+                  useOldImageOnUrlChange: true,
                   height: height,
                   fadeInDuration: Duration(milliseconds: 0),
                   fadeOutDuration: Duration(milliseconds: 0),
-                  //cacheKey: CustomCacheManager.key,
-                  cacheManager: CustomCacheManager(),
+                  //     cacheKey: url,
+                  // cacheManager: CustomCacheManagers._instance,
                   progressIndicatorBuilder: (context, _, progress) {
                     callWhenLoadingImage?.call();
-                    return progressIndicatorBuilderWidget ??
-                        TrydosShimmerLoading(
-                          width: width,
-                          height: height,
-                          logoTextHeight: logoTextHeight ?? 14,
-                          logoTextWidth: logoTextWidth ?? 48.w,
-                          circleDimensions: circleDimensions,
-                        );
+
+                    if ((progressIndicatorBuilderWidget != null)) {
+                      return progressIndicatorBuilderWidget!;
+                    } /*else if (state.cachedImages[url] == true) {
+                            return SizedBox.fromSize();
+                          }*/
+                    return TrydosShimmerLoading(
+                      width: width,
+                      height: height,
+                      logoTextHeight: logoTextHeight ?? 14,
+                      logoTextWidth: logoTextWidth ?? 48.w,
+                      circleDimensions: circleDimensions,
+                    );
                   },
                   imageBuilder: imageBuilder ??
                       (ctx, image) {
@@ -183,9 +189,6 @@ class MyCachedNetworkImage extends StatelessWidget {
                         splashColor: Colors.transparent,
                         onTap: () async {
                           WidgetsBinding.instance.addPostFrameCallback((_) {
-                            print(
-                                "...dd.......${fromStory}.QQ${url}QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
-
                             currentUrl = '';
                             enable = true;
                             rebuildImage.value++;
@@ -205,17 +208,17 @@ class MyCachedNetworkImage extends StatelessWidget {
   }
 }
 
-class CustomCacheManager extends CacheManager {
-  static const key = 'customCache';
+class CustomCacheManagers extends CacheManager {
+  static const key = 'customCaches';
 
-  static CustomCacheManager? _instance;
+  static CustomCacheManagers? _instance;
 
-  factory CustomCacheManager() {
-    _instance ??= CustomCacheManager._();
+  factory CustomCacheManagers() {
+    _instance ??= CustomCacheManagers._();
     return _instance!;
   }
 
-  CustomCacheManager._()
+  CustomCacheManagers._()
       : super(Config(
           key,
           maxNrOfCacheObjects: 600,
@@ -224,7 +227,7 @@ class CustomCacheManager extends CacheManager {
 }
 
 void clearCustomCashe() async {
-  await CustomCacheManager().emptyCache();
+  await CustomCacheManagers().emptyCache();
 }
 
 String addSuitableWidthAndHeightToImage(

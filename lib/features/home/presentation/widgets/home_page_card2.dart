@@ -60,7 +60,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
+    /*  FlutterError.onError = (FlutterErrorDetails error) {
       try {
         BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
             errorExption: error.exceptionAsString().toString(),
@@ -71,7 +71,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: error.toString());
-    };
+    };*/
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
@@ -252,7 +252,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                         right: widget.withSlidingImages ? 0 : 10),
                     child: widget.withSlidingImages
                         ? cupertino.Container(
-                            //color: Colors.red,
+                            color: Colors.white,
                             child: CarouselSlider.builder(
                                 itemCount: widget.boutique.banners!.length,
                                 itemBuilder: (context, index, _) {
@@ -274,7 +274,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                                 color: const Color(0xfffafafa)),
                                             boxShadow: [
                                               BoxShadow(
-                                                color: const Color(0x33000000),
+                                                color: Colors.white,
                                                 offset: Offset(0, 3),
                                                 blurRadius: 10,
                                               ),
@@ -287,6 +287,10 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                                   borderRadius:
                                                       BorderRadius.circular(15),
                                                   child: MyCachedNetworkImage(
+                                                    imageColor: Colors.white,
+                                                    //      progressIndicatorBuilderWidget:
+                                                    //          cupertino.SizedBox
+                                                    //              .shrink(),
                                                     imageUrl: widget
                                                         .boutique
                                                         .banners![index]
@@ -321,7 +325,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                 },
                                 options: CarouselOptions(
                                   autoPlay: true,
-                                  autoPlayInterval: Duration(seconds: 12),
+                                  autoPlayInterval: Duration(seconds: 15),
                                   autoPlayAnimationDuration:
                                       Duration(seconds: 1),
                                   initialPage: 0,
@@ -344,7 +348,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                       color: const Color(0xfffafafa)),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: const Color(0x33000000),
+                                      color: Colors.white,
                                       offset: Offset(0, 3),
                                       blurRadius: 10,
                                     ),
@@ -357,6 +361,8 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                             0)
                                         ? cupertino.SizedBox.shrink()
                                         : MyCachedNetworkImage(
+                                            //     progressIndicatorBuilderWidget:
+                                            //         cupertino.SizedBox.shrink(),
                                             imageUrl: widget
                                                 .boutique.banners![0].filePath!,
                                             imageFit: BoxFit.cover,
@@ -805,6 +811,8 @@ class ProductItemCircle extends StatelessWidget {
                   child: ClipRRect(
                       borderRadius: BorderRadius.circular(180),
                       child: MyCachedNetworkImage(
+                          //  progressIndicatorBuilderWidget:
+                          //   cupertino.SizedBox.shrink(),
                           imageUrl: imageUrl,
                           width: 40.w,
                           imageFit: cupertino.BoxFit.contain,

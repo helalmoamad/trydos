@@ -45,6 +45,16 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
 
   @override
   void initState() {
+    scrollController.addListener(() {
+      if (scrollController.offset >=
+          (scrollController.position.maxScrollExtent * 0.6)) {
+        boutiqueBloc.add(GetFiltersWithPaginatioEvent(
+          fromHomePageSearch: true,
+          searchText: widget.controller.text,
+          boutiqueSlug: "search",
+        ));
+      }
+    });
     boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
 
     super.initState();
@@ -137,6 +147,9 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
                                   false;
                               return InkWell(
                                 onTap: () {
+                                  if ((widget.isLoading)) {
+                                    return;
+                                  }
                                   Filter? prevChoosedFilterToAddToIt =
                                       state.choosedFiltersByUser[key]?.filters;
                                   if (prevChoosedFilterToAddToIt == null) {

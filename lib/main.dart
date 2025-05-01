@@ -255,15 +255,15 @@ bool isDependencyInitialized = false;
 bool isHydratedStorageInitialized = false;
 final Semaphore imageBanner = Semaphore(4);
 final Semaphore imageCategoryBoutiques = Semaphore(3);
-final Semaphore syncColorImages = Semaphore(5);
-final Semaphore productListingImages = Semaphore(12);
-final Semaphore categoryListingImages = Semaphore(3);
-final Semaphore brandListingImages = Semaphore(3);
-final Semaphore productDetailsImages = Semaphore(10);
+final Semaphore syncColorImages = Semaphore(2);
+final Semaphore productListingImages = Semaphore(4);
+final Semaphore categoryListingImages = Semaphore(2);
+final Semaphore brandListingImages = Semaphore(2);
+final Semaphore productDetailsImages = Semaphore(4);
 
-//final Semaphore prefechMainCategory = Semaphore(2);
-//final Semaphore prefechBoutiques = Semaphore(3);
-//final Semaphore prefechFiveFilter = Semaphore(2);
+final Semaphore prefechMainCategory = Semaphore(1);
+final Semaphore prefechBoutiques = Semaphore(2);
+final Semaphore prefechFiveFilter = Semaphore(1);
 bool isLoadDotenvFile = false;
 Timer? timer;
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -293,6 +293,7 @@ void main() async {
     storageDirectory: await getApplicationDocumentsDirectory(),
   );
   isHydratedStorageInitialized = true;
+  PaintingBinding.instance.imageCache.maximumSizeBytes = 700 * 1024 * 1024;
   HttpOverrides.global = MyHttpOverrides();
   await Future.wait([
     EasyLocalization.ensureInitialized(),

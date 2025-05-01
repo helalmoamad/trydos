@@ -171,7 +171,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
             Map.of(boutiquesForEveryMainCategoryThatDidPrefetch),
       ));
     }
-    //   await prefechMainCategory.acquire();
+    await prefechMainCategory.acquire();
     final response = await getHomeBoutiqesUseCase(GetHomeBoutiqesParams(
         page: event.getWithPagination
             ? (getHomeBoutiquesPaginationObjectByMainCategory[
@@ -184,7 +184,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
             event.categorySlug == "Empty" ? null : event.categorySlug));
 
     response.fold((l) {
-      //  prefechMainCategory.release();
+      prefechMainCategory.release();
       if (!event.getWithPrefetchToStoreInMemory) {
         Map<String, PaginationModel<Boutique>>
             getHomeBoutiquesPaginationObjectByMainCategory =
@@ -223,7 +223,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
         );
       }
     }, (r) {
-      //   prefechMainCategory.release();
+      prefechMainCategory.release();
       if (!event.getWithPagination) {
         prefsRepository.setPrefechOfBoutiquesForEachMainCategoryInHomePage(
             event.categorySlug, jsonEncode(r));

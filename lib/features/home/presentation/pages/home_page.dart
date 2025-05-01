@@ -89,9 +89,64 @@ class _HomePageState extends State<HomePage> {
       );
     }
   }*/
+  void listenToScroll() {
+    int lastIndexSeenByUser = (scrollController.position.pixels +
+            scrollController.position.viewportDimension +
+            235) ~/
+        235;
+    int currentSelectedMainCategoryTab = appBloc.state.tabIndex;
+
+    if (currentSelectedMainCategoryTab == -1) {
+      selectedCategorySlug = "Empty";
+    } else {
+      selectedCategorySlug = categoryBloc.state.mainCategoriesResponseModel
+              ?.data?.mainCategories?[currentSelectedMainCategoryTab].slug ??
+          '';
+    }
+
+    if (selectedCategorySlug == '') return;
+    /*  if (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
+              selectedCategorySlug] ==
+          null) {
+        lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
+            selectedCategorySlug] = -1;
+      }
+      if (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
+              selectedCategorySlug] !=
+          lastIndexSeenByUser) {
+        // prefetchBoutiques(selectedCategorySlug);
+        lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
+            selectedCategorySlug] = lastIndexSeenByUser;
+      }*/
+    if (scrollController.offset >=
+        (scrollController.position.maxScrollExtent * 0.6)) {
+      categoryBloc.add(GetHomeBoutiqesEvent(
+          getWithPrefetchToStoreInMemory: false,
+          getWithOutPrefetchForEachBoutiques: false,
+          categorySlug: selectedCategorySlug,
+          offset: categoryBloc
+                  .state
+                  .getHomeBoutiquesPaginationObjectByMainCategory[
+                      selectedCategorySlug]!
+                  .offset ??
+              "",
+          context: context,
+          getWithPagination: true));
+    }
+    if (scrollController.position.pixels <= 80) {
+      debugPrint(scrollController.position.pixels.toString());
+      appBloc.add(ShowOrHideBars(true));
+    }
+    if (scrollController.offset >=
+        (scrollController.position.maxScrollExtent * 0.4)) {
+      categoryBloc.prefetchBoutiques(
+          selectedCategorySlug, context, lastIndexSeenByUser);
+    }
+  }
 
   @override
   void initState() {
+    super.initState();
     if (!(prefsRepository.isRequestNotificationPermission ?? false)) {
       PermissionServices().requestNotificationPermission();
       prefsRepository.setRequestNotificationPermission(true);
@@ -126,57 +181,7 @@ class _HomePageState extends State<HomePage> {
       filtersChoosedByUser: null,
     ));
 
-    scrollController.addListener(() {
-      int lastIndexSeenByUser = (scrollController.position.pixels +
-              scrollController.position.viewportDimension +
-              235) ~/
-          235;
-      int currentSelectedMainCategoryTab = appBloc.state.tabIndex;
-
-      if (currentSelectedMainCategoryTab == -1) {
-        selectedCategorySlug = "Empty";
-      } else {
-        selectedCategorySlug = categoryBloc.state.mainCategoriesResponseModel
-                ?.data?.mainCategories?[currentSelectedMainCategoryTab].slug ??
-            '';
-      }
-
-      if (selectedCategorySlug == '') return;
-      /*  if (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
-              selectedCategorySlug] ==
-          null) {
-        lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
-            selectedCategorySlug] = -1;
-      }
-      if (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
-              selectedCategorySlug] !=
-          lastIndexSeenByUser) {
-        // prefetchBoutiques(selectedCategorySlug);
-        lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
-            selectedCategorySlug] = lastIndexSeenByUser;
-      }*/
-      if (scrollController.offset >=
-          (scrollController.position.maxScrollExtent * 0.6)) {
-        categoryBloc.add(GetHomeBoutiqesEvent(
-            getWithPrefetchToStoreInMemory: false,
-            getWithOutPrefetchForEachBoutiques: false,
-            categorySlug: selectedCategorySlug,
-            offset: categoryBloc
-                    .state
-                    .getHomeBoutiquesPaginationObjectByMainCategory[
-                        selectedCategorySlug]!
-                    .offset ??
-                "",
-            context: context,
-            getWithPagination: true));
-      }
-      if (scrollController.position.pixels <= 80) {
-        debugPrint(scrollController.position.pixels.toString());
-        appBloc.add(ShowOrHideBars(true));
-      }
-      categoryBloc.prefetchBoutiques(
-          selectedCategorySlug, context, lastIndexSeenByUser);
-    });
+    scrollController.addListener(listenToScroll);
 
     String notificationTypesOfMarketFromTerminated =
         GetIt.I<PrefsRepository>().getNotificationTypeOfMarketFromTerminated ??
@@ -187,7 +192,6 @@ class _HomePageState extends State<HomePage> {
       HandlingMarketNotifications.dealWithNotificationFromMarket(data, true);
     }
     //  getInitialForNotification();
-    super.initState();
   }
 
 /*  prefetchBoutiques(String currentSlug) {
@@ -244,6 +248,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
+    scrollController.removeListener(listenToScroll);
     scrollController.dispose();
     super.dispose();
   }
@@ -261,7 +266,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     Locale currentLocale = Localizations.localeOf(context);
 
-    FlutterError.onError = (FlutterErrorDetails error) {
+    /* FlutterError.onError = (FlutterErrorDetails error) {
       try {
         BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
             errorExption: error.exceptionAsString().toString(),
@@ -272,7 +277,7 @@ class _HomePageState extends State<HomePage> {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: error.toString());
-    };
+    };*/
     bool _isLoading = false;
 
     Future<void> _refreshData() async {
@@ -568,7 +573,11 @@ class _HomePageState extends State<HomePage> {
                     child: 5.verticalSpace,
                   ),
                   BlocBuilder<AppBloc, AppState>(
+                    buildWhen: (previous, current) =>
+                        previous.tabIndex != current.tabIndex,
                     builder: (context, appState) {
+                      print(
+                          "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
                       return BlocBuilder<CategoryBloc, CategoryState>(
                         buildWhen: (p, c) {
                           String? currentSlug = appState.tabIndex != -1
@@ -593,6 +602,9 @@ class _HomePageState extends State<HomePage> {
                           return rebuild;
                         },
                         builder: (context, categoryState) {
+                          print(
+                              "11111111111111EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+
                           String? currentSlug = appState.tabIndex != -1
                               ? (categoryState
                                       .mainCategoriesResponseModel
@@ -746,6 +758,8 @@ class _HomePageState extends State<HomePage> {
                     child: 20.verticalSpace,
                   ),
                   BlocBuilder<AppBloc, AppState>(
+                    buildWhen: (previous, current) =>
+                        previous.tabIndex != current.tabIndex,
                     builder: (context, appState) {
                       return BlocBuilder<CategoryBloc, CategoryState>(
                           buildWhen: (p, c) {
@@ -766,6 +780,9 @@ class _HomePageState extends State<HomePage> {
                                 c.currentIndexForMainCategoryEvent);
                         return rebuild;
                       }, builder: (context, state) {
+                        print(
+                            "EddddddddddddddddddddddddEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+
                         String? currentSlug = appState.tabIndex != -1
                             ? (state.mainCategoriesResponseModel?.data
                                     ?.mainCategories?[appState.tabIndex].slug ??
