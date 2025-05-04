@@ -13,7 +13,6 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dar
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/language_service.dart';
-
 import '../../../../../common/constant/payment_methods.dart';
 import '../../../../../common/helper/show_message.dart';
 
@@ -145,7 +144,19 @@ class _PaymentMethodState extends State<PaymentMethod> {
                       : InkWell(
                           onTap: () {
                             if (widget.fromPalceOrder ||
-                                widget.fromSuccessOrder) {
+                                widget.fromSuccessOrder ||
+                                widget.amount < widget.totalPrice) {
+                              if (widget.amount < widget.totalPrice &&
+                                  !(widget.fromPalceOrder ||
+                                      widget.fromSuccessOrder)) {
+                                showMessage(
+                                  " ${LocaleKeys.you_dont_have_enough_credit_in_the_wallet.tr()}",
+                                  foreGroundColor: Colors.white,
+                                  backGroundColor: Colors.black,
+                                  showInRelease: true,
+                                  timeShowing: Toast.LENGTH_LONG,
+                                );
+                              }
                               return;
                             }
                             ///////////////////////////
@@ -209,8 +220,8 @@ class _PaymentMethodState extends State<PaymentMethod> {
                           onTap: () {
                             if (widget.fromPalceOrder ||
                                 widget.fromSuccessOrder ||
-                                widget.amount > widget.totalPrice) {
-                              if (widget.amount > widget.totalPrice &&
+                                widget.amount >= widget.totalPrice) {
+                              if (widget.amount >= widget.totalPrice &&
                                   !(widget.fromPalceOrder ||
                                       widget.fromSuccessOrder)) {
                                 showMessage(
@@ -297,8 +308,8 @@ class _PaymentMethodState extends State<PaymentMethod> {
                           onTap: () {
                             if (widget.fromPalceOrder ||
                                 widget.fromSuccessOrder ||
-                                widget.amount > widget.totalPrice) {
-                              if (widget.amount > widget.totalPrice &&
+                                widget.amount >= widget.totalPrice) {
+                              if (widget.amount >= widget.totalPrice &&
                                   !(widget.fromPalceOrder ||
                                       widget.fromSuccessOrder)) {
                                 showMessage(
@@ -387,8 +398,8 @@ class _PaymentMethodState extends State<PaymentMethod> {
                           onTap: () {
                             if (widget.fromPalceOrder ||
                                 widget.fromSuccessOrder ||
-                                widget.amount > widget.totalPrice) {
-                              if (widget.amount > widget.totalPrice &&
+                                widget.amount >= widget.totalPrice) {
+                              if (widget.amount >= widget.totalPrice &&
                                   !(widget.fromPalceOrder ||
                                       widget.fromSuccessOrder)) {
                                 showMessage(

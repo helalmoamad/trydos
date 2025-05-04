@@ -421,5 +421,6 @@
   "we_work_in_the_languages_listed_below": "نحن نعمل في هذه اللغات المدرجة أدناه",
   "language": "اللغة",
   "available_language": "اللغة المتاحة",
-  "profile_language": "الملف الشخصي | اللغة"
+  "profile_language": "الملف الشخصي | اللغة",
+  "you_dont_have_enough_credit_in_the_wallet": "ليس لديك رصيد كافي بالمحفظة"
 }

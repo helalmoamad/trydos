@@ -468,4 +468,6 @@ abstract class LocaleKeys {
   static const available_language = 'available_language';
   static const profile_language = 'profile_language';
   static const other = 'other';
+  static const you_dont_have_enough_credit_in_the_wallet =
+      'you_dont_have_enough_credit_in_the_wallet';
 }

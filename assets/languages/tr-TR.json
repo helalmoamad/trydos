@@ -420,5 +420,6 @@
   "we_work_in_the_languages_listed_below": "Aşağıda listelenen dillerde çalışmaktayız",
   "language": "Dil",
   "available_language": "Mevcut dil",
-  "profile_language": "Profil | Dil"
+  "profile_language": "Profil | Dil",
+  "you_dont_have_enough_credit_in_the_wallet": "Cüzdanınızda yeterli kredi yok"
 }
