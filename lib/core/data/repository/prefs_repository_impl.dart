@@ -864,6 +864,22 @@ class PrefsRepositoryImpl extends PrefsRepository {
   Future<bool> removeNotificationIdsToRemoveAfterplaceOrder() {
     return _preferences.remove(PrefsKey.notificationsIds);
   }
+
+  @override
+  String getOrderCoupon() {
+    _preferences.reload();
+    return _preferences.getString(PrefsKey.coupon) ?? '';
+  }
+
+  @override
+  Future<bool> removeOrderCoupon() {
+    return _preferences.remove(PrefsKey.coupon);
+  }
+
+  @override
+  Future<bool> setOrderCoupon(String coupon) {
+    return _preferences.setString(PrefsKey.coupon, coupon);
+  }
 // @override
 
 // List<Map<String,dynamic>> get localMessages {

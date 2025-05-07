@@ -215,4 +215,8 @@ abstract class PrefsRepository {
   void removeRequestFromCache(Map<String, dynamic> request);
 
   List<Map<String, dynamic>> getRequestsData();
+
+  Future<bool> setOrderCoupon(String coupon);
+  String getOrderCoupon();
+  Future<bool> removeOrderCoupon();
 }

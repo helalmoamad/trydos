@@ -78,6 +78,15 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
     //  orderBloc.add(GetCustomerAddressesEvent());
     orderBloc.add(GetProvincesByIsoEvent());
     orderBloc.add(GetCustomerWalletEvent(limit: 10, offset: 1));
+
+    couponKey.text = prefsRepository.getOrderCoupon();
+
+    if (prefsRepository.getOrderCoupon().isNotEmpty) {
+      BlocProvider.of<OrderBloc>(context).add(
+        ApplyCouponEvent(code: prefsRepository.getOrderCoupon()),
+      );
+    }
+
     ////////////////////
     super.initState();
   }
