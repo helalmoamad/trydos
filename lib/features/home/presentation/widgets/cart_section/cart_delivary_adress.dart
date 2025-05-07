@@ -137,6 +137,10 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
               if (data.status == 1) {
 // TestCoupon10
                 /////////////////////////////////////////
+                if (prefsRepository.getOrderCoupon().isNotEmpty) {
+                  prefsRepository.removeOrderCoupon();
+                }
+
                 BlocProvider.of<HomeBloc>(context).add(
                   GetCartOverviewEvent(),
                 );
