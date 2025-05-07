@@ -163,11 +163,6 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                           return ValueListenableBuilder<bool>(
                               valueListenable: startStoriesNotifier,
                               builder: (context, startStories, child) {
-                                print(
-                                    "111111111111111${stopAnimationAndVideo}");
-                                print(
-                                    "11111113311111111${index != prevPageNumber}");
-                                print("11111112211111111${!startStories}");
                                 return StoryCollection(
                                     collectionIndex: index,
                                     animatedController:

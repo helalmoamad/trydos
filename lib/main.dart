@@ -25,6 +25,8 @@ import 'package:trydos/common/constant/configuration/chat_url_routes.dart';
 import 'package:trydos/common/constant/configuration/market_url_routes.dart';
 import 'package:trydos/common/constant/configuration/stories_url_routes.dart';
 import 'package:trydos/features/app/blocs/pre_caching_image_bloc/pre_caching_image_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 
 import 'package:trydos/service/notification_service/notification_service/handle_notification/handling_market_notifications.dart';
 import 'package:uuid/uuid.dart';
@@ -43,6 +45,7 @@ import 'core/domin/repositories/prefs_repository.dart';
 import 'dart:convert' as convert;
 import 'features/chat/data/models/my_chats_response_model.dart';
 import 'features/chat/presentation/manager/chat_event.dart';
+import 'features/home/presentation/manager/homeBloc/home_bloc.dart';
 
 @pragma('vm:entry-point')
 showCallKitIncoming(Map<String, dynamic> data, String currentUuid,
@@ -253,17 +256,17 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 bool isDependencyInitialized = false;
 bool isHydratedStorageInitialized = false;
-final Semaphore imageBanner = Semaphore(4);
-final Semaphore imageCategoryBoutiques = Semaphore(3);
-final Semaphore syncColorImages = Semaphore(5);
-final Semaphore productListingImages = Semaphore(12);
-final Semaphore categoryListingImages = Semaphore(3);
-final Semaphore brandListingImages = Semaphore(3);
-final Semaphore productDetailsImages = Semaphore(10);
+final Semaphore imageBanner = Semaphore(2);
+final Semaphore imageCategoryBoutiques = Semaphore(1);
+final Semaphore syncColorImages = Semaphore(1);
+final Semaphore productListingImages = Semaphore(2);
+final Semaphore categoryListingImages = Semaphore(1);
+final Semaphore brandListingImages = Semaphore(1);
+final Semaphore productDetailsImages = Semaphore(2);
 
-//final Semaphore prefechMainCategory = Semaphore(2);
-//final Semaphore prefechBoutiques = Semaphore(3);
-//final Semaphore prefechFiveFilter = Semaphore(2);
+final Semaphore prefechMainCategory = Semaphore(1);
+final Semaphore prefechBoutiques = Semaphore(1);
+final Semaphore prefechFiveFilter = Semaphore(1);
 bool isLoadDotenvFile = false;
 Timer? timer;
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -293,6 +296,7 @@ void main() async {
     storageDirectory: await getApplicationDocumentsDirectory(),
   );
   isHydratedStorageInitialized = true;
+  PaintingBinding.instance.imageCache.maximumSizeBytes = 700 * 1024 * 1024;
   HttpOverrides.global = MyHttpOverrides();
   await Future.wait([
     EasyLocalization.ensureInitialized(),
@@ -300,7 +304,7 @@ void main() async {
     configureDependencies(),
     NotificationProcess().init(),
   ]);
-  GetIt.I<PreCachingImageBloc>().add(RemoveUrlThatNotUsedEvent());
+  //GetIt.I<PreCachingImageBloc>().add(RemoveUrlThatNotUsedEvent());
   isLoadDotenvFile = true;
 
   await GetIt.I<PrefsRepository>().setOnMessageRun(false);
@@ -325,9 +329,15 @@ void main() async {
 
   isDependencyInitialized = true;
   GetIt.I<AuthBloc>().add(GetUserCountryEvent());
-
+  GetIt.I<BoutiqueBloc>().add(GetProductsWithFiltersEvent(
+      fromNotification: false,
+      limit: 10,
+      cashedOrginalBoutique: true,
+      boutiqueSlug: "*featured*",
+      getWithPagination: false,
+      offset: 1));
   gemini.Gemini.init(
-    apiKey: "AIzaSyDP0q_EapML_zg4ibE_p1NbWNlUa2DjefI",
+    apiKey: dotenv.env['Gemini']!,
   );
   gemini.Gemini.enableDebugging = true;
   print('market token : ${(GetIt.I<PrefsRepository>().marketToken)}');

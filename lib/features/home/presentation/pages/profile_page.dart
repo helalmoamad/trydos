@@ -15,6 +15,7 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/common/constant/design/assets_provider.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/data/model/pagination_model.dart';
 
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -54,6 +55,7 @@ class ProfileHomePage extends StatefulWidget {
 class _ProfileHomePageState extends State<ProfileHomePage> {
   late HomeBloc homeBloc;
   late AuthBloc authBloc;
+  late OrderBloc orderBloc;
   final PanelController panelController = PanelController();
   final PageController pageController = PageController();
   final FocusNode focusNode = FocusNode();
@@ -63,11 +65,18 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   @override
   void initState() {
-    BlocProvider.of<OrderBloc>(context).add(
-      GetCustomerWalletEvent(limit: 10, offset: 1),
-    );
     authBloc = BlocProvider.of<AuthBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
+    orderBloc = BlocProvider.of<OrderBloc>(context);
+    orderBloc.add(
+      GetCustomerWalletEvent(limit: 10, offset: 1),
+    );
+    orderBloc.add(
+      GetOrdersEvent(
+        status: "",
+        getWithPagination: false,
+      ),
+    );
     homeBloc.add(UpdateProfileEvent(changeStatusToInit: true));
     // TODO: implement initState
     super.initState();
@@ -493,38 +502,55 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
           OrdersPage(),
         );
       },
-      child: Container(
-        padding: EdgeInsets.all(10),
-        width: 195.w,
-        decoration: BoxDecoration(
-            color: Color(0xffF8F8F8),
-            borderRadius: BorderRadius.circular(15.r)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            SvgPicture.asset(
-              AppAssets.bagsSvg,
-              width: 25,
+      child: BlocBuilder<OrderBloc, OrderState>(
+        buildWhen: (previous, current) =>
+            previous.getOrdersModel[""]?.paginationStatus !=
+            current.getOrdersModel[""]?.paginationStatus,
+        builder: (context, state) {
+          return Container(
+            padding: EdgeInsets.all(10),
+            width: 195.w,
+            decoration: BoxDecoration(
+                color: Color(0xffF8F8F8),
+                borderRadius: BorderRadius.circular(15.r)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                SvgPicture.asset(
+                  AppAssets.bagsSvg,
+                  width: 25,
+                ),
+                Text(
+                  LocaleKeys.order_invoice.tr(),
+                  style: context.textTheme.bodyMedium?.mr.copyWith(
+                      color: const Color(0xff1D1D1D),
+                      letterSpacing: 0.18,
+                      fontSize: 14,
+                      height: 1.3),
+                ),
+                state.getOrdersModel[""]?.paginationStatus ==
+                        PaginationStatus.loading
+                    ? Container(
+                        alignment: Alignment.center,
+                        width: 40,
+                        height: 20,
+                        child: TrydosLoader(
+                          size: 20,
+                        ),
+                      )
+                    : Text(
+                        '${state.orderTotalSize} ${LocaleKeys.action.tr()}',
+                        style: context.textTheme.bodyMedium?.rr.copyWith(
+                            color: const Color(0xff8D8D8D),
+                            letterSpacing: 0.18,
+                            fontSize: 12,
+                            height: 1.3),
+                      ),
+              ],
             ),
-            Text(
-              LocaleKeys.order_invoice.tr(),
-              style: context.textTheme.bodyMedium?.mr.copyWith(
-                  color: const Color(0xff1D1D1D),
-                  letterSpacing: 0.18,
-                  fontSize: 14,
-                  height: 1.3),
-            ),
-            Text(
-              '1 ${LocaleKeys.action.tr()}',
-              style: context.textTheme.bodyMedium?.rr.copyWith(
-                  color: const Color(0xff8D8D8D),
-                  letterSpacing: 0.18,
-                  fontSize: 12,
-                  height: 1.3),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

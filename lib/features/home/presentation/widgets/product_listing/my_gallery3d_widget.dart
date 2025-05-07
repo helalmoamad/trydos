@@ -10,21 +10,21 @@ import 'package:get_it/get_it.dart';
 
 // ignore: must_be_immutable
 class MyGallery3DWidget extends StatefulWidget {
-  MyGallery3DWidget(
-      {super.key,
-      required this.itemWidth,
-      required this.gallery3dController,
-      required this.gallery3dControllerForCircles,
-      required this.itemCount,
-      this.itemHeight,
-      this.stopScrollingOnEdges,
-      this.onItemChanged,
-      required this.radius,
-      required this.galleryWidth,
-      required this.galleryHeight,
-      this.onItemClick,
-      required this.threeImages,
-      required this.images});
+  const MyGallery3DWidget({
+    super.key,
+    required this.itemWidth,
+    required this.gallery3dController,
+    required this.gallery3dControllerForCircles,
+    required this.itemCount,
+    this.itemHeight,
+    this.stopScrollingOnEdges,
+    this.onItemChanged,
+    required this.radius,
+    required this.galleryWidth,
+    required this.galleryHeight,
+    this.onItemClick,
+    required this.threeImages,
+  });
 
   final int itemCount;
   final double itemWidth;
@@ -38,8 +38,7 @@ class MyGallery3DWidget extends StatefulWidget {
   final void Function(int index)? onItemChanged;
   final void Function(int index)? onItemClick;
 
-  List<String> images;
-  List<String> threeImages;
+  final List<String> threeImages;
 
   @override
   State<MyGallery3DWidget> createState() => _MyGallery3DWidgetState();

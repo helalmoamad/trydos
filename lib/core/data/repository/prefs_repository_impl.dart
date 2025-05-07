@@ -751,8 +751,10 @@ class PrefsRepositoryImpl extends PrefsRepository {
     } else {
       if (list.length > 10) {
         for (var i = 10; i < list.length; i++) {
-          _preferences.remove(list[i]);
-          newList.remove(list[i]);
+          if (!(list[i].contains("*featured*"))) {
+            _preferences.remove(list[i]);
+            newList.remove(list[i]);
+          }
         }
       }
       return _preferences.setStringList(PrefsKey.productPrefech, newList);
@@ -766,9 +768,6 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   String? getPrefechForFiveFilterForEachBoutiqueInHomePage(String key) {
-    print(
-        "get-+-+-+-+-*******************----${_preferences.getString(key)}---###########################..${key}.............11111111111111111111111111111111111111++++++++++");
-
     _preferences.reload();
     return _preferences.getString(key);
   }

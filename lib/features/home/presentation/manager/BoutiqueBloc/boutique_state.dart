@@ -8,6 +8,13 @@ import '../../../../../core/data/model/pagination_model.dart';
 
 enum GetProductFiltersStatus { init, loading, success, failure }
 
+enum GetFiltersForNavigatorFromLinkToListingPageStatus {
+  init,
+  loading,
+  success,
+  failure
+}
+
 @JsonSerializable(explicitToJson: true)
 @immutable
 class BoutiqueState extends Equatable {
@@ -20,12 +27,15 @@ class BoutiqueState extends Equatable {
     this.isGettingProductListingWithPaginationForAppearProduct = false,
     this.cashedOrginalBoutique = false,
     this.isExpandedForListingPage = false,
+    this.finishGetAllFilter = false,
     this.getProductListingWithFiltersPaginationModels = const {},
     this.getProductFiltersModel = const {},
+    this.getFiltersForNavigatorFromLinkToListingPageStatus,
     this.prefAppliedFilterForExtendFilter,
     this.isGettingProductListingWithPagination = false,
     this.choosedFiltersByUser = const {},
     this.appliedFiltersByUser = const {},
+    this.filterOffset = 1,
     this.boutiquesThatDidPrefetch = const {},
     this.countOfProductExpectedByFiltering,
   });
@@ -39,6 +49,10 @@ class BoutiqueState extends Equatable {
   final Map<String, get_filters.GetProductFiltersModel?> appliedFiltersByUser;
   final Map<String, get_filters.GetProductFiltersModel?> choosedFiltersByUser;
   final bool cashedOrginalBoutique;
+  final GetFiltersForNavigatorFromLinkToListingPageStatus?
+      getFiltersForNavigatorFromLinkToListingPageStatus;
+
+  final bool finishGetAllFilter;
   final bool isGettingProductListingWithPagination;
   final bool? isExpandedForListingPage;
   final Map<String, PaginationModel<product.Products>?>
@@ -46,6 +60,7 @@ class BoutiqueState extends Equatable {
   final bool isGettingProductListingWithPaginationForAppearProduct;
   final Map<String, get_filters.GetProductFiltersModel?>
       getProductFiltersWithPrefetchModel;
+  final int? filterOffset;
   final Map<String, List<double>>? searchWithFilterOffset;
   final Map<String, get_filters.GetProductFiltersModel?> getProductFiltersModel;
 
@@ -57,7 +72,10 @@ class BoutiqueState extends Equatable {
         prefAppliedFilterForExtendFilter,
         cashedOrginalBoutique,
         isExpandedForListingPage,
+        getFiltersForNavigatorFromLinkToListingPageStatus,
+        filterOffset,
         getProductFiltersStatus,
+        finishGetAllFilter,
         getProductFiltersModel,
         isGettingProductListingWithPaginationForAppearProduct,
         getProductListingWithFiltersPaginationModels,
@@ -84,49 +102,58 @@ class BoutiqueState extends Equatable {
     final Map<String, PaginationModel<product.Products>?>?
         getProductListingWithFiltersPaginationModels,
     final Map<String, bool>? boutiquesThatDidPrefetch,
+    final GetFiltersForNavigatorFromLinkToListingPageStatus?
+        getFiltersForNavigatorFromLinkToListingPageStatus,
     final Map<String, get_filters.GetProductFiltersModel?>?
         getProductFiltersModel,
     get_filters.Filter? prefAppliedFilterForExtendFilter,
     bool? cashedOrginalBoutique,
+    final bool? finishGetAllFilter,
+    final int? filterOffset,
     final Map<String, get_filters.GetProductFiltersModel?>?
         getProductFiltersWithPrefetchModel,
     final Map<String, List<double>>? searchWithFilterOffset,
   }) {
     return BoutiqueState(
-      sizeAndColorFilterinTextToSearch: sizeAndColorFilterinTextToSearch ??
-          this.sizeAndColorFilterinTextToSearch,
-      getProductListingWithFiltersPaginationWithPrefetchModels:
-          getProductListingWithFiltersPaginationWithPrefetchModels ??
-              this.getProductListingWithFiltersPaginationWithPrefetchModels,
-      getProductFiltersModel:
-          getProductFiltersModel ?? this.getProductFiltersModel,
-      prefAppliedFilterForExtendFilter: prefAppliedFilterForExtendFilter ??
-          this.prefAppliedFilterForExtendFilter,
-      boutiquesThatDidPrefetch:
-          boutiquesThatDidPrefetch ?? this.boutiquesThatDidPrefetch,
-      countOfProductExpectedByFiltering: countOfProductExpectedByFiltering ??
-          this.countOfProductExpectedByFiltering,
-      searchWithFilterOffset:
-          searchWithFilterOffset ?? this.searchWithFilterOffset,
-      choosedFiltersByUser: choosedFiltersByUser ?? this.choosedFiltersByUser,
-      isExpandedForListingPage:
-          isExpandedForListingPage ?? this.isExpandedForListingPage,
-      appliedFiltersByUser: appliedFiltersByUser ?? this.appliedFiltersByUser,
-      isGettingProductListingWithPagination:
-          isGettingProductListingWithPagination ??
-              this.isGettingProductListingWithPagination,
-      cashedOrginalBoutique:
-          cashedOrginalBoutique ?? this.cashedOrginalBoutique,
-      getProductFiltersStatus:
-          getProductFiltersStatus ?? this.getProductFiltersStatus,
-      getProductFiltersWithPrefetchModel: getProductFiltersWithPrefetchModel ??
-          this.getProductFiltersWithPrefetchModel,
-      getProductListingWithFiltersPaginationModels:
-          getProductListingWithFiltersPaginationModels ??
-              this.getProductListingWithFiltersPaginationModels,
-      isGettingProductListingWithPaginationForAppearProduct:
-          isGettingProductListingWithPaginationForAppearProduct ??
-              this.isGettingProductListingWithPaginationForAppearProduct,
-    );
+        sizeAndColorFilterinTextToSearch: sizeAndColorFilterinTextToSearch ??
+            this.sizeAndColorFilterinTextToSearch,
+        getProductListingWithFiltersPaginationWithPrefetchModels:
+            getProductListingWithFiltersPaginationWithPrefetchModels ??
+                this.getProductListingWithFiltersPaginationWithPrefetchModels,
+        getProductFiltersModel:
+            getProductFiltersModel ?? this.getProductFiltersModel,
+        prefAppliedFilterForExtendFilter: prefAppliedFilterForExtendFilter ??
+            this.prefAppliedFilterForExtendFilter,
+        boutiquesThatDidPrefetch:
+            boutiquesThatDidPrefetch ?? this.boutiquesThatDidPrefetch,
+        countOfProductExpectedByFiltering: countOfProductExpectedByFiltering ??
+            this.countOfProductExpectedByFiltering,
+        searchWithFilterOffset:
+            searchWithFilterOffset ?? this.searchWithFilterOffset,
+        choosedFiltersByUser: choosedFiltersByUser ?? this.choosedFiltersByUser,
+        isExpandedForListingPage:
+            isExpandedForListingPage ?? this.isExpandedForListingPage,
+        getFiltersForNavigatorFromLinkToListingPageStatus:
+            getFiltersForNavigatorFromLinkToListingPageStatus ??
+                this.getFiltersForNavigatorFromLinkToListingPageStatus,
+        appliedFiltersByUser: appliedFiltersByUser ?? this.appliedFiltersByUser,
+        isGettingProductListingWithPagination:
+            isGettingProductListingWithPagination ??
+                this.isGettingProductListingWithPagination,
+        finishGetAllFilter: finishGetAllFilter ?? this.finishGetAllFilter,
+        cashedOrginalBoutique:
+            cashedOrginalBoutique ?? this.cashedOrginalBoutique,
+        getProductFiltersStatus:
+            getProductFiltersStatus ?? this.getProductFiltersStatus,
+        getProductFiltersWithPrefetchModel:
+            getProductFiltersWithPrefetchModel ??
+                this.getProductFiltersWithPrefetchModel,
+        getProductListingWithFiltersPaginationModels:
+            getProductListingWithFiltersPaginationModels ??
+                this.getProductListingWithFiltersPaginationModels,
+        isGettingProductListingWithPaginationForAppearProduct:
+            isGettingProductListingWithPaginationForAppearProduct ??
+                this.isGettingProductListingWithPaginationForAppearProduct,
+        filterOffset: filterOffset ?? this.filterOffset);
   }
 }

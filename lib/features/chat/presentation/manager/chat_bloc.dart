@@ -567,8 +567,10 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     }
     apisMustNotToRequest.add('SaveContactsEvent');
     emit(state.copyWith(saveContactsStatus: SaveContactsStatus.loading));
+
     List<Map<String, dynamic>> contacts =
         await HelperFunctions.getContactsFromDevice();
+
     final response =
         await saveContactsUseCase(SaveContactsParams(contacts: contacts));
     response.fold(

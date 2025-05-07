@@ -34,7 +34,7 @@ import '../bloc/story_state.dart';
 
 class StoriesList extends StatefulWidget {
   final ValueNotifier<bool> isShowPanelForVerified;
-  StoriesList({super.key, required this.isShowPanelForVerified});
+  const StoriesList({super.key, required this.isShowPanelForVerified});
 
   @override
   State<StoriesList> createState() => _StoriesListState();

@@ -52,7 +52,7 @@ class TrydosAppBar extends StatelessWidget implements PreferredSizeWidget {
             surfaceTintColor: appBarParams.surfaceTintColor,
             leadingWidth: 45.w,
             shape: appBarParams.shape,
-            automaticallyImplyLeading: false,
+            automaticallyImplyLeading: appBarParams.automaticallyImplyLeading,
             flexibleSpace: appBarParams.child,
             bottom: appBarParams.bottom,
           ),

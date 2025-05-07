@@ -145,6 +145,7 @@ dependencies:
   sync: ^0.3.0
   delayed_display: ^2.0.0
   expandable_richtext: ^1.0.7
+  geodesy: ^0.10.2
   #readmore: ^3.0.0
   #image_cropper: ^9.1.0
 dev_dependencies:

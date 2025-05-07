@@ -132,11 +132,16 @@ class HelperFunctions {
         });
       }
     }
-    String myPhoneNumber = '+${GetIt.I<PrefsRepository>().myPhoneNumber!}';
+    String myPhoneNumber = '${GetIt.I<PrefsRepository>().myPhoneNumber!}';
+    if (!(myPhoneNumber.startsWith("+"))) {
+      myPhoneNumber = "+" + myPhoneNumber;
+    }
     print(myPhoneNumber);
+
     String dialCode = countries
         .firstWhere((element) => myPhoneNumber.startsWith(element.dialCode))
         .dialCode;
+
     String myPhoneNumberWithoutDial = myPhoneNumber.contains('+')
         ? myPhoneNumber.substring(dialCode.length)
         : myPhoneNumber;
@@ -325,7 +330,16 @@ class HelperFunctions {
     BuildContext context,
     Widget page,
   ) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (context) => page));
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (_, __, ___) => page,
+        transitionsBuilder: (_, __, ___, child) => child, // بدون أي حركة
+        transitionDuration: Duration.zero, // انتقال فوري
+        reverseTransitionDuration: Duration.zero, // عودة فورية
+      ),
+    );
+    // Navigator.of(context).push(MaterialPageRoute(builder: (context) => page));
     /*  Navigator.of(context).push(new PageRouteBuilder(
       opaque: false,
       transitionDuration: Duration(milliseconds: milliseconds),

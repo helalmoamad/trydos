@@ -222,12 +222,12 @@ class _ProductCollectionInCartPage1State
                                 BlocProvider.of<HomeBloc>(context).add(
                                     AddCurrentSelectedColorEvent(
                                         currentSelectedColor: indexess,
-                                        productId: isOldCart
+                                        productSlug: isOldCart
                                             ? oldCartCollection![index]
-                                                .productId
+                                                .slug
                                                 .toString()
                                             : cartCollection![index]
-                                                .productId
+                                                .slug
                                                 .toString()));
                               }
                               HelperFunctions.slidingNavigation(
@@ -616,69 +616,102 @@ class _ProductCollectionInCartPage1State
                               SizedBox(
                                 height: 2,
                               ),
-                              Container(
-                                  alignment:
-                                      LanguageService.languageCode != "ar"
-                                          ? Alignment.centerLeft
-                                          : Alignment.centerRight,
-                                  width: 200,
-                                  height: 17,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      SvgPicture.asset(
-                                        color: Color(0xff8D8D8D),
-                                        AppAssets.shappingCartNew,
-                                        height: 12,
-                                      ),
-                                      SizedBox(
-                                        width: 5,
-                                      ),
-                                      Text(
-                                        isOldCart
-                                            ? "${LocaleKeys.shipping.tr()}: "
-                                            : "${LocaleKeys.shipping.tr()}: ",
-                                        style: context.textTheme.bodyMedium?.ra
-                                            .copyWith(
-                                                fontWeight: FontWeight.normal,
-                                                fontSize: 12,
-                                                color: const Color(0xff8D8D8D),
-                                                letterSpacing: 0.18,
-                                                height: 1.33),
-                                      ),
-                                      Text(
-                                        isOldCart
-                                            ? "${state.oldcartCollection?[index].shippingDays ?? 0} ${LocaleKeys.day.tr()} "
-                                            : "${state.cartCollection?[index].shippingDays ?? 0} ${LocaleKeys.day.tr()} ",
-                                        style: context.textTheme.bodyMedium?.mr
-                                            .copyWith(
-                                                fontWeight: FontWeight.w100,
-                                                fontSize: 12,
-                                                color: const Color(0xff505050),
-                                                letterSpacing: 0.18,
-                                                height: 1.33),
-                                      ),
-                                      Text(
-                                        isOldCart
-                                            ? "${LocaleKeys.details.tr()}"
-                                            : "${LocaleKeys.details.tr()}",
-                                        strutStyle:
-                                            LanguageService.languageCode != "ar"
-                                                ? null
-                                                : StrutStyle(
-                                                    height: 0.8, leading: 0.6),
-                                        style: context.textTheme.bodyMedium?.mr
-                                            .copyWith(
-                                                decoration:
-                                                    TextDecoration.underline,
-                                                fontWeight: FontWeight.w100,
-                                                fontSize: 12,
-                                                color: const Color(0xff505050),
-                                                letterSpacing: 0.18,
-                                                height: 1.33),
-                                      ),
-                                    ],
-                                  )),
+                              (isOldCart &&
+                                          state.oldcartCollection
+                                              .isNullOrEmpty) ||
+                                      (!isOldCart &&
+                                          state.cartCollection.isNullOrEmpty)
+                                  ? SizedBox()
+                                  : isOldCart &&
+                                          (state.oldcartCollection?[index]
+                                                      .shippingDays ??
+                                                  0) ==
+                                              0
+                                      ? SizedBox()
+                                      : !isOldCart &&
+                                              (state.cartCollection?[index]
+                                                          .shippingDays ??
+                                                      0) ==
+                                                  0
+                                          ? SizedBox()
+                                          : Container(
+                                              alignment: LanguageService
+                                                          .languageCode !=
+                                                      "ar"
+                                                  ? Alignment.centerLeft
+                                                  : Alignment.centerRight,
+                                              width: 200,
+                                              height: 17,
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                children: [
+                                                  SvgPicture.asset(
+                                                    color: Color(0xff8D8D8D),
+                                                    AppAssets.shappingCartNew,
+                                                    height: 12,
+                                                  ),
+                                                  SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                  Text(
+                                                    isOldCart
+                                                        ? "${LocaleKeys.shipping.tr()}: "
+                                                        : "${LocaleKeys.shipping.tr()}: ",
+                                                    style: context.textTheme
+                                                        .bodyMedium?.ra
+                                                        .copyWith(
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .normal,
+                                                            fontSize: 12,
+                                                            color: const Color(
+                                                                0xff8D8D8D),
+                                                            letterSpacing: 0.18,
+                                                            height: 1.33),
+                                                  ),
+                                                  Text(
+                                                    isOldCart
+                                                        ? "${state.oldcartCollection?[index].shippingDays ?? 0} ${LocaleKeys.day.tr()} "
+                                                        : "${state.cartCollection?[index].shippingDays ?? 0} ${LocaleKeys.day.tr()} ",
+                                                    style: context.textTheme
+                                                        .bodyMedium?.mr
+                                                        .copyWith(
+                                                            fontWeight:
+                                                                FontWeight.w100,
+                                                            fontSize: 12,
+                                                            color: const Color(
+                                                                0xff505050),
+                                                            letterSpacing: 0.18,
+                                                            height: 1.33),
+                                                  ),
+                                                  Text(
+                                                    isOldCart
+                                                        ? "${LocaleKeys.details.tr()}"
+                                                        : "${LocaleKeys.details.tr()}",
+                                                    strutStyle: LanguageService
+                                                                .languageCode !=
+                                                            "ar"
+                                                        ? null
+                                                        : StrutStyle(
+                                                            height: 0.8,
+                                                            leading: 0.6),
+                                                    style: context.textTheme
+                                                        .bodyMedium?.mr
+                                                        .copyWith(
+                                                            decoration:
+                                                                TextDecoration
+                                                                    .underline,
+                                                            fontWeight:
+                                                                FontWeight.w100,
+                                                            fontSize: 12,
+                                                            color: const Color(
+                                                                0xff505050),
+                                                            letterSpacing: 0.18,
+                                                            height: 1.33),
+                                                  ),
+                                                ],
+                                              )),
                               SizedBox(
                                 height: 14,
                               ),
@@ -775,14 +808,14 @@ class _ProductCollectionInCartPage1State
                                                           .add(AddCurrentSelectedColorEvent(
                                                               currentSelectedColor:
                                                                   indexess,
-                                                              productId: isOldCart
+                                                              productSlug: isOldCart
                                                                   ? oldCartCollection![
                                                                           index]
-                                                                      .productId
+                                                                      .slug
                                                                       .toString()
                                                                   : cartCollection![
                                                                           index]
-                                                                      .productId
+                                                                      .slug
                                                                       .toString()));
                                                     }
                                                     HelperFunctions
@@ -1119,7 +1152,7 @@ class _ProductCollectionInCartPage1State
                                                       width: 5,
                                                     ),
                                                     Text(
-                                                        "${LocaleKeys.saved.tr()} ${(((cartCollection![index].price! - cartCollection[index].offerPrice!) / cartCollection[index].price!) * 100).toStringAsFixed(1)}%",
+                                                        "${LocaleKeys.saved.tr()} ${(((cartCollection![index].price! - cartCollection[index].offerPrice!) / cartCollection[index].price!) * 100).toStringAsFixed(0)} %",
                                                         style: context.textTheme
                                                             .bodyMedium?.ra
                                                             .copyWith(
@@ -1254,14 +1287,14 @@ class _ProductCollectionInCartPage1State
                                                   .add(AddCurrentSelectedColorEvent(
                                                       currentSelectedColor:
                                                           indexess,
-                                                      productId: isOldCart
+                                                      productSlug: isOldCart
                                                           ? oldCartCollection![
                                                                   index]
-                                                              .productId
+                                                              .slug
                                                               .toString()
                                                           : cartCollection![
                                                                   index]
-                                                              .productId
+                                                              .slug
                                                               .toString()));
                                             }
                                             HelperFunctions.slidingNavigation(

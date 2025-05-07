@@ -19,14 +19,14 @@ class GetStartingSettingsEvent extends HomeEvent {
 
 class AddCurrentSelectedColorEvent extends HomeEvent {
   final int currentSelectedColor;
-  final String productId;
+  final String productSlug;
 
   const AddCurrentSelectedColorEvent(
-      {required this.currentSelectedColor, required this.productId});
+      {required this.currentSelectedColor, required this.productSlug});
 
   @override
   // TODO: implement props
-  List<Object?> get props => [currentSelectedColor, productId];
+  List<Object?> get props => [currentSelectedColor, productSlug];
 }
 
 class GetCommentForProductEvent extends HomeEvent {
@@ -178,6 +178,14 @@ class GetProductsListInCartEvent extends HomeEvent {
   List<Object?> get props => [];
 }
 
+class GeColorsAndSizesForSearchEvent extends HomeEvent {
+  const GeColorsAndSizesForSearchEvent();
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+}
+
 class StoreFcmTokenOfMarketEvent extends HomeEvent {
   final int userId;
   final String fcmToken;
@@ -203,13 +211,14 @@ class GetProductDatailsWithoutRelatedProductsEvent extends HomeEvent {
 }
 
 class GetFullProductDetailsEvent extends HomeEvent {
-  final String? productId;
   final String productSlug;
-  const GetFullProductDetailsEvent({this.productId, required this.productSlug});
+  final String? currentColorName;
+  const GetFullProductDetailsEvent(
+      {required this.productSlug, this.currentColorName});
 
   @override
   // TODO: implement props
-  List<Object?> get props => [productId, productSlug];
+  List<Object?> get props => [productSlug];
 }
 
 class GetNotificationTypeProductEvent extends HomeEvent {
@@ -385,13 +394,22 @@ class CheckWithGetCartEvent extends HomeEvent {
   List<Object?> get props => [isForPlaceOrder];
 }
 
-class IsChangedvariationWhenQtyZeroEvent extends HomeEvent {
-  final bool isChangedvariationWhenQtyZero;
-  const IsChangedvariationWhenQtyZeroEvent(
-      {required this.isChangedvariationWhenQtyZero});
+class IsChangedVariationWhenQtyZeroEvent extends HomeEvent {
+  final bool isChangedVariationWhenQtyZero;
+  const IsChangedVariationWhenQtyZeroEvent(
+      {required this.isChangedVariationWhenQtyZero});
 
   @override
-  List<Object?> get props => [isChangedvariationWhenQtyZero];
+  List<Object?> get props => [isChangedVariationWhenQtyZero];
+}
+
+class IsChangedColorBeforOpenPanelEvent extends HomeEvent {
+  final bool iChangedColorBeforOpenPanelEvent;
+  const IsChangedColorBeforOpenPanelEvent(
+      {required this.iChangedColorBeforOpenPanelEvent});
+
+  @override
+  List<Object?> get props => [iChangedColorBeforOpenPanelEvent];
 }
 
 class ChangeStatusOFGetProductsDetailsToSuccessEvent extends HomeEvent {

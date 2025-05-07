@@ -37,16 +37,11 @@ import '../../../../app/my_cached_network_image.dart';
 import '../../../../app/my_text_widget.dart';
 import '../../../data/models/get_product_filters_model.dart' as filter_model;
 import '../../manager/homeBloc/home_bloc.dart';
-import '../../manager/homeBloc/home_event.dart';
 
 import 'categories_filter_list.dart';
 import 'color_list_filter.dart';
 import 'filters_loding_list.dart';
 import 'filters_normal_list.dart';
-
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-
-import 'package:get_it/get_it.dart';
 
 class StackedFiltersList extends StatefulWidget {
   const StackedFiltersList(
@@ -107,19 +102,32 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
     boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
 
     autoScrollController = AutoScrollController();
-
+    autoScrollController.addListener(() {
+      try {
+        if (autoScrollController.offset >=
+            (autoScrollController.position.maxScrollExtent * 0.6)) {
+          boutiqueBloc.add(GetFiltersWithPaginatioEvent(
+            fromHomePageSearch: true,
+            searchText: widget.searchText,
+            category: widget.category,
+            boutiqueSlug: widget.boutiqueSlug,
+          ));
+        }
+      } catch (e) {}
+    });
     super.initState();
   }
 
   @override
   void dispose() {
+    autoScrollController.dispose();
     lowerAndUpperPrices?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
+/*FlutterError.onError = (FlutterErrorDetails error) {
       try {
         BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
             errorExption: error.exceptionAsString().toString(),
@@ -130,7 +138,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: error.toString());
-    };
+    };*/
     return BlocBuilder<BoutiqueBloc, BoutiqueState>(
         buildWhen: (previous, current) =>
             previous.appliedFiltersByUser[key] !=
@@ -1662,7 +1670,7 @@ Widget choosedOrAppliedFiltersWidget({
                       resetChoosedFilters: true,
                       fromHomePageSearch: fromSearch,
                     ));
-                    boutiqueBloc.add(GetProductFiltersEvent(
+                    boutiqueBloc.add(GetFiltersEvent(
                       fromHomePageSearch: fromSearch,
                       boutiqueSlug: boutiqueSlug,
                       cashedOrginalBoutique: true,

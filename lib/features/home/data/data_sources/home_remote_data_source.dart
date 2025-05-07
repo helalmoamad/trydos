@@ -9,6 +9,7 @@ import 'package:trydos/features/home/data/models/get_address_by_coordinates_mode
 import 'package:trydos/features/home/data/models/get_address_by_text_model.dart';
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
+import 'package:trydos/features/home/data/models/get_colors_and_sizes_model.dart';
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
 import 'package:trydos/features/home/data/models/get_count_view_of_product_model.dart';
 import 'package:trydos/features/home/data/models/get_full_product_details_model.dart';
@@ -99,6 +100,21 @@ class HomeRemoteDatasource {
       ),
     );
     return getProductDetailWithoutRelatedProducts();
+  }
+
+  Future<GeColorsAndSizesForSearchModel> getColorsAndSizesForSearch() {
+    GetClient<GeColorsAndSizesForSearchModel> getColorsAndSizesForSearch =
+        GetClient<GeColorsAndSizesForSearchModel>(
+      serverName: ServerName.market,
+      requestPrams: RequestConfig<GeColorsAndSizesForSearchModel>(
+        endpoint: MarketEndPoints.getColorsAndSizesForSearchEP,
+        response:
+            ResponseValue<GeColorsAndSizesForSearchModel>(fromJson: (response) {
+          return GeColorsAndSizesForSearchModel.fromJson(response);
+        }),
+      ),
+    );
+    return getColorsAndSizesForSearch();
   }
 
   Future<GetFullProductDetailsModel> getFullProductDetails(String productId) {
@@ -493,6 +509,26 @@ class HomeRemoteDatasource {
     );
 
     return getProductsWithFilters();
+  }
+
+  Future<GetProductListingWithFiltersModel> getFeaturedProducts(
+      Map<String, dynamic> params) {
+    GetClient<GetProductListingWithFiltersModel> getFeaturedProducts =
+        GetClient<GetProductListingWithFiltersModel>(
+      serverName: ServerName.elastic,
+      requestPrams: RequestConfig<GetProductListingWithFiltersModel>(
+        endpoint: ElasticEndPoints.getFeaturedProductEP,
+        /*serverName: ServerName.market,
+      requestPrams: RequestConfig<GetProductListingWithFiltersModel>(
+        endpoint: MarketEndPoints.getProductListingWithFiltersEP,*/
+        queryParameters: params,
+        response: ResponseValue<GetProductListingWithFiltersModel>(
+            fromJson: (response) =>
+                GetProductListingWithFiltersModel.fromJson(response)),
+      ),
+    );
+
+    return getFeaturedProducts();
   }
 
   Future<Comment> addComment(Map<String, dynamic> params) {

@@ -42,12 +42,6 @@ class _OrdersPageState extends State<OrdersPage> {
   @override
   void initState() {
     orderBloc = BlocProvider.of<OrderBloc>(context);
-    orderBloc.add(
-      GetOrdersEvent(
-        status: currentStatus.value,
-        getWithPagination: false,
-      ),
-    );
 
     ordersScrollController.addListener(() async {
       if (ordersScrollController.position.maxScrollExtent ==

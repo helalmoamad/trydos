@@ -12,6 +12,7 @@ class AppBarParams {
     this.leading,
     this.backButton,
     this.title,
+    this.automaticallyImplyLeading = true,
     this.iconColor,
     this.action,
     this.elevation,
@@ -42,6 +43,7 @@ class AppBarParams {
   final VoidCallback? onBack;
   final bool hasLeading;
   final TextStyle? tittleStyle;
+  final bool automaticallyImplyLeading;
   final bool dividerBottom;
   final bool withShadow;
   final ShapeBorder? shape;

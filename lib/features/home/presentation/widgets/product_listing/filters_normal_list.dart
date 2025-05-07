@@ -54,9 +54,24 @@ class FiltersNormalList<T> extends StatefulWidget {
 
 class _FiltersNormalListState extends State<FiltersNormalList> {
   String key = '';
-
+  final ScrollController scrollController = ScrollController();
   @override
   void initState() {
+    scrollController.addListener(() {
+      print("FFFFFFFFFFFFF");
+      try {
+        if (scrollController.offset >=
+            (scrollController.position.maxScrollExtent * 0.6)) {
+          BlocProvider.of<BoutiqueBloc>(context)
+              .add(GetFiltersWithPaginatioEvent(
+            fromHomePageSearch: true,
+            searchText: widget.searchText,
+            category: widget.category,
+            boutiqueSlug: widget.boutiqueSlug,
+          ));
+        }
+      } catch (e) {}
+    });
     key = widget.boutiqueSlug + (widget.category ?? '');
     super.initState();
   }
@@ -134,6 +149,7 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
           SizedBox(
               height: 105,
               child: ListView.separated(
+                  controller: scrollController,
                   shrinkWrap: true,
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (ctx, index) {

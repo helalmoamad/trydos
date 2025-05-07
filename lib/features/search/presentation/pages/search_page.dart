@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/data/model/pagination_model.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
@@ -146,6 +147,11 @@ class _SearchPageState extends ThemeState<SearchPage> {
               buildWhen: (previous, current) {
                 return previous.getProductFiltersStatus[key] !=
                         current.getProductFiltersStatus[key] ||
+                    previous.getProductListingWithFiltersPaginationModels[key]
+                            ?.paginationStatus !=
+                        current
+                            .getProductListingWithFiltersPaginationModels[key]
+                            ?.paginationStatus ||
                     previous.cashedOrginalBoutique !=
                         current.cashedOrginalBoutique ||
                     previous.countOfProductExpectedByFiltering?.values !=
@@ -255,7 +261,17 @@ class _SearchPageState extends ThemeState<SearchPage> {
                             valueListenable: widget.appearTrendingAndHistory,
                             child: SearchChipBrand(
                               isLoading: state.getProductFiltersStatus[key] ==
-                                  GetProductFiltersStatus.loading,
+                                      GetProductFiltersStatus.loading ||
+                                  state
+                                          .getProductListingWithFiltersPaginationModels[
+                                              [
+                                        'search' +
+                                            (state.cashedOrginalBoutique
+                                                ? 'withoutFilter'
+                                                : "")
+                                      ]]
+                                          ?.paginationStatus ==
+                                      PaginationStatus.loading,
                               controller: widget.controller,
                               title: LocaleKeys.Brands.tr(),
                             ),
@@ -274,7 +290,17 @@ class _SearchPageState extends ThemeState<SearchPage> {
                             valueListenable: widget.appearTrendingAndHistory,
                             child: SearchChipCategory(
                               isLoading: state.getProductFiltersStatus[key] ==
-                                  GetProductFiltersStatus.loading,
+                                      GetProductFiltersStatus.loading ||
+                                  state
+                                          .getProductListingWithFiltersPaginationModels[
+                                              [
+                                        'search' +
+                                            (state.cashedOrginalBoutique
+                                                ? 'withoutFilter'
+                                                : "")
+                                      ]]
+                                          ?.paginationStatus ==
+                                      PaginationStatus.loading,
                               controller: widget.controller,
                               title: LocaleKeys.categories.tr(),
                             ),
@@ -293,7 +319,17 @@ class _SearchPageState extends ThemeState<SearchPage> {
                             valueListenable: widget.appearTrendingAndHistory,
                             child: SearchChipBoutique(
                               isLoading: state.getProductFiltersStatus[key] ==
-                                  GetProductFiltersStatus.loading,
+                                      GetProductFiltersStatus.loading ||
+                                  state
+                                          .getProductListingWithFiltersPaginationModels[
+                                              [
+                                        'search' +
+                                            (state.cashedOrginalBoutique
+                                                ? 'withoutFilter'
+                                                : "")
+                                      ]]
+                                          ?.paginationStatus ==
+                                      PaginationStatus.loading,
                               controller: widget.controller,
                               title: LocaleKeys.boutiques.tr(),
                             ),

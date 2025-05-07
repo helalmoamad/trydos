@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:trydos/core/utils/extensions/list.dart';
+import 'package:trydos/features/app/my_cached_network_image.dart';
 
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as productListingModel;
@@ -6,11 +9,6 @@ import 'dart:ui' as ui;
 
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_3d_slider.dart';
 import 'package:tuple/tuple.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 
 class ProductItem extends StatefulWidget {
   const ProductItem(
@@ -18,6 +16,7 @@ class ProductItem extends StatefulWidget {
       required this.setThisEnabled,
       required this.slidingModeItem,
       required this.itemIndex,
+      this.fromHomePage = false,
       required this.displayImageColors,
       required this.tapIndexToAddProductToCart,
       required this.productItem});
@@ -25,6 +24,7 @@ class ProductItem extends StatefulWidget {
   final void Function(int, int) setThisEnabled;
   final ValueNotifier<int> tapIndexToAddProductToCart;
   final bool displayImageColors;
+  final bool fromHomePage;
   final Tuple2<int, int> slidingModeItem;
   final productListingModel.Products productItem;
   final int itemIndex;
@@ -39,14 +39,14 @@ class _ProductItemState extends State<ProductItem> {
 
   @override
   void initState() {
+    super.initState();
     currentChosenColor =
         ValueNotifier((widget.productItem.syncColorImages?.length ?? 0) ~/ 2);
-    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
+    /*  FlutterError.onError = (FlutterErrorDetails error) {
       try {
         BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
             errorExption: error.exceptionAsString().toString(),
@@ -57,95 +57,105 @@ class _ProductItemState extends State<ProductItem> {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: error.toString());
-    };
+    };*/
     return Stack(
+        key: ValueKey(widget.productItem.slug),
         alignment: Alignment.bottomCenter,
         clipBehavior: Clip.none,
         children: [
-          /*  Container(
-            height: 350,
-            width: 200.w,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15.0),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xff000000).withOpacity(0.1),
-                  offset: const Offset(0, 3),
-                  blurRadius: 10,
+          !widget.fromHomePage
+              ? SizedBox.fromSize()
+              : Container(
+                  height: 350,
+                  width: 200.w,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xff000000).withOpacity(0.1),
+                        offset: const Offset(0, 3),
+                        blurRadius: 10,
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      child: ValueListenableBuilder<int>(
+                          valueListenable: currentChosenColor,
+                          builder: (context, index, _) {
+                            if (widget
+                                .productItem.syncColorImages.isNullOrEmpty) {
+                              return Image.asset(
+                                  'assets/product_listing_background_blur_image.png',
+                                  fit: BoxFit.cover);
+                            }
+                            if (index >
+                                (widget.productItem.syncColorImages?.length ??
+                                        0) -
+                                    1) {
+                              currentChosenColor.value =
+                                  (widget.productItem.syncColorImages?.length ??
+                                          0) ~/
+                                      2;
+                              return MyCachedNetworkImage(
+                                ordinalHeight: double.parse(widget
+                                    .productItem
+                                    .syncColorImages![(widget.productItem
+                                                .syncColorImages?.length ??
+                                            0) ~/
+                                        2]
+                                    .images![0]
+                                    .originalHeight!),
+                                ordinalwidth: double.parse(widget
+                                    .productItem
+                                    .syncColorImages![(widget.productItem
+                                                .syncColorImages?.length ??
+                                            0) ~/
+                                        2]
+                                    .images![0]
+                                    .originalWidth!),
+                                imageUrl: widget
+                                    .productItem
+                                    .syncColorImages![(widget.productItem
+                                                .syncColorImages?.length ??
+                                            0) ~/
+                                        2]
+                                    .images![0]
+                                    .filePath!,
+                                height: 350,
+                                width: 200.w,
+                                imageFit: BoxFit.cover,
+                              );
+                            }
+                            return widget.productItem.syncColorImages!
+                                        .isNullOrEmpty ||
+                                    widget.productItem.syncColorImages![index]
+                                        .images.isNullOrEmpty
+                                ? Image.asset(
+                                    'assets/product_listing_background_blur_image.png',
+                                    fit: BoxFit.cover)
+                                : MyCachedNetworkImage(
+                                    ordinalHeight: double.parse(widget
+                                        .productItem
+                                        .syncColorImages![index]
+                                        .images![0]
+                                        .originalHeight!),
+                                    ordinalwidth: double.parse(widget
+                                        .productItem
+                                        .syncColorImages![index]
+                                        .images![0]
+                                        .originalWidth!),
+                                    imageUrl: widget
+                                        .productItem
+                                        .syncColorImages![index]
+                                        .images![0]
+                                        .filePath!,
+                                    height: 350,
+                                    width: 200.w,
+                                    imageFit: BoxFit.cover,
+                                  );
+                          })),
                 ),
-              ],
-            ),
-            child: ClipRRect(
-                borderRadius: BorderRadius.circular(15),
-                child: ValueListenableBuilder<int>(
-                    valueListenable: currentChosenColor,
-                    builder: (context, index, _) {
-                      if (widget.productItem.syncColorImages.isNullOrEmpty) {
-                        return Image.asset(
-                            'assets/product_listing_background_blur_image.png',
-                            fit: BoxFit.cover);
-                      }
-                      if (index >
-                          (widget.productItem.syncColorImages?.length ?? 0) -
-                              1) {
-                        currentChosenColor.value =
-                            (widget.productItem.syncColorImages?.length ?? 0) ~/
-                                2;
-                        return MyCachedNetworkImage(
-                          ordinalHeight: double.parse(widget
-                              .productItem
-                              .syncColorImages![
-                                  (widget.productItem.syncColorImages?.length ??
-                                          0) ~/
-                                      2]
-                              .images![0]
-                              .originalHeight!),
-                          ordinalwidth: double.parse(widget
-                              .productItem
-                              .syncColorImages![
-                                  (widget.productItem.syncColorImages?.length ??
-                                          0) ~/
-                                      2]
-                              .images![0]
-                              .originalWidth!),
-                          imageUrl: widget
-                              .productItem
-                              .syncColorImages![
-                                  (widget.productItem.syncColorImages?.length ??
-                                          0) ~/
-                                      2]
-                              .images![0]
-                              .filePath!,
-                          height: 350,
-                          width: 200.w,
-                          imageFit: BoxFit.cover,
-                        );
-                      }
-                      return widget.productItem.syncColorImages.isNullOrEmpty ||
-                              widget.productItem.syncColorImages![index].images
-                                  .isNullOrEmpty
-                          ? Image.asset(
-                              'assets/product_listing_background_blur_image.png',
-                              fit: BoxFit.cover)
-                          : MyCachedNetworkImage(
-                              ordinalHeight: double.parse(widget
-                                  .productItem
-                                  .syncColorImages![index]
-                                  .images![0]
-                                  .originalHeight!),
-                              ordinalwidth: double.parse(widget
-                                  .productItem
-                                  .syncColorImages![index]
-                                  .images![0]
-                                  .originalWidth!),
-                              imageUrl: widget.productItem
-                                  .syncColorImages![index].images![0].filePath!,
-                              height: 350,
-                              width: 200.w,
-                              imageFit: BoxFit.cover,
-                            );
-                    })),
-          ),*/
           Positioned.fill(
             child: ClipRRect(
               borderRadius: BorderRadius.circular(15.0),
@@ -174,6 +184,7 @@ class _ProductItemState extends State<ProductItem> {
             ),
           ),
           ProductListing3DSlider(
+              fromHomePage: widget.fromHomePage,
               displayImageColors: widget.displayImageColors,
               productItem: widget.productItem,
               slidingModeItem: widget.slidingModeItem,

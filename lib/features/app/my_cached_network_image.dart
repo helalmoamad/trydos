@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart'
     as inset_shadow;
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -10,42 +9,34 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
-import 'package:trydos/features/app/blocs/pre_caching_image_bloc/pre_caching_image_bloc.dart';
-import 'package:trydos/features/app/blocs/pre_caching_image_bloc/pre_caching_image_state.dart';
 import 'package:trydos/features/app/trydos_shimmer_loading.dart';
 
-class MyCachedNetworkImage extends StatelessWidget {
-  MyCachedNetworkImage(
-      {Key? key,
-      required this.imageUrl,
-      required this.width,
-      this.logoTextWidth,
-      this.ordinalHeight,
-      this.ordinalwidth,
-      this.logoTextHeight,
-      this.imageWidth,
-      this.imageHeight,
-      required this.imageFit,
-      this.imageBuilder,
-      this.imageColor,
-      this.progressIndicatorBuilderWidget,
-      this.callWhenDisplayImage,
-      this.callWhenLoadingImage,
-      this.radius = 12,
-      this.innerShadowYOffset,
-      this.withImageShadow = false,
-      this.withInnerShadow = false,
-      required this.height,
-      this.fromStory,
-      this.circleDimensions})
-      : super(key: key) {
-    currentUrl = imageUrl;
-  }
+class MyCachedNetworkImage extends StatefulWidget {
+  const MyCachedNetworkImage({
+    Key? key,
+    required this.imageUrl,
+    required this.width,
+    this.logoTextWidth,
+    this.ordinalHeight,
+    this.ordinalwidth,
+    this.logoTextHeight,
+    this.imageWidth,
+    this.imageHeight,
+    required this.imageFit,
+    this.imageBuilder,
+    this.imageColor,
+    this.progressIndicatorBuilderWidget,
+    this.callWhenDisplayImage,
+    this.callWhenLoadingImage,
+    this.radius = 12,
+    this.innerShadowYOffset,
+    this.withImageShadow = false,
+    this.withInnerShadow = false,
+    required this.height,
+    this.fromStory,
+    this.circleDimensions,
+  }) : super(key: key);
 
-  final ValueNotifier<int> rebuildImage = ValueNotifier(0);
-
-  String currentUrl = '';
-  bool enable = true;
   final String imageUrl;
   final double width;
   final double? logoTextWidth;
@@ -66,173 +57,191 @@ class MyCachedNetworkImage extends StatelessWidget {
   final Color? imageColor;
   final void Function()? callWhenDisplayImage;
   final void Function()? callWhenLoadingImage;
-
   final Widget? progressIndicatorBuilderWidget;
 
   @override
+  State<MyCachedNetworkImage> createState() => _MyCachedNetworkImageState();
+}
+
+class _MyCachedNetworkImageState extends State<MyCachedNetworkImage>
+    with AutomaticKeepAliveClientMixin {
+  late String currentUrl;
+  bool enable = true;
+  @override
+  bool get wantKeepAlive => true;
+  @override
+  void initState() {
+    super.initState();
+    currentUrl = widget.imageUrl;
+  }
+
+  @override
+  void didUpdateWidget(covariant MyCachedNetworkImage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.imageUrl != widget.imageUrl) {
+      setState(() {
+        currentUrl = widget.imageUrl;
+        enable = true;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     String url = addSuitableWidthAndHeightToImage(
-        imageUrl: currentUrl,
-        ordinalWidth: ordinalwidth,
-        ordinalHeight: ordinalHeight,
-        height: (imageHeight ?? height),
-        width: (imageWidth ?? width));
+      imageUrl: currentUrl,
+      ordinalWidth: widget.ordinalwidth,
+      ordinalHeight: widget.ordinalHeight,
+      height: (widget.imageHeight ?? widget.height),
+      width: (widget.imageWidth ?? widget.width),
+    );
 
-    return ValueListenableBuilder<int>(
-      valueListenable: rebuildImage,
-      builder: (context, count, _) {
-        return Container(
-            alignment: Alignment.center,
-            width: width,
-            height: height,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(radius),
-              boxShadow: withImageShadow
-                  ? [
-                      BoxShadow(
-                        color: context.colorScheme.white.withOpacity(0.1),
-                        offset: const Offset(0, 3),
-                        blurRadius: 6,
-                      ),
-                    ]
-                  : null,
-            ),
-            child: /*BlocBuilder<PreCachingImageBloc, PreCachingImageState>(
-                buildWhen: (p, c) =>
-                    p.cachedImages[url] == false && c.cachedImages[url] == true,
-                builder: (context, state) {
-                  return*/
-                Center(
-              child: CachedNetworkImage(
-                  imageUrl: url,
-                  key: ValueKey(url),
-                  fit: imageFit,
-                  width: width,
-                  color: imageColor,
-                  height: height,
-                  fadeInDuration: Duration(milliseconds: 0),
-                  fadeOutDuration: Duration(milliseconds: 0),
-                  //cacheKey: CustomCacheManager.key,
-                  cacheManager: CustomCacheManager(),
-                  progressIndicatorBuilder: (context, _, progress) {
-                    callWhenLoadingImage?.call();
-                    return progressIndicatorBuilderWidget ??
-                        TrydosShimmerLoading(
-                          width: width,
-                          height: height,
-                          logoTextHeight: logoTextHeight ?? 14,
-                          logoTextWidth: logoTextWidth ?? 48.w,
-                          circleDimensions: circleDimensions,
-                        );
-                  },
-                  imageBuilder: imageBuilder ??
-                      (ctx, image) {
-                        Future.delayed(Duration(milliseconds: 300),
-                            () => callWhenDisplayImage?.call());
-                        return ClipRRect(
-                            child: Align(
-                                alignment: Alignment.center,
-                                child: Stack(
-                                  children: [
-                                    Container(
-                                      alignment: Alignment.center,
-                                      width: width,
-                                      height: height,
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                          image: image,
-                                          fit: imageFit,
-                                        ),
-                                        borderRadius:
-                                            BorderRadius.circular(radius),
-                                      ),
-                                    ),
-                                    withInnerShadow
-                                        ? Container(
-                                            alignment: Alignment.center,
-                                            decoration:
-                                                inset_shadow.BoxDecoration(
-                                              boxShadow: [
-                                                inset_shadow.BoxShadow(
-                                                  offset: Offset(
-                                                      0, innerShadowYOffset!),
-                                                  blurRadius: 20,
-                                                  color: Colors.white
-                                                      .withOpacity(0.7),
-                                                  inset: true,
-                                                ),
-                                              ],
-                                            ),
-                                          )
-                                        : SizedBox.shrink()
-                                  ],
-                                )));
-                      },
-                  errorWidget: (context, url, error) {
-                    if (enable) {
-                      enable = false;
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        currentUrl = imageUrl;
-                        rebuildImage.value++;
-                      });
-                    }
-                    return Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        focusColor: Colors.transparent,
-                        splashColor: Colors.transparent,
-                        onTap: () async {
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            print(
-                                "...dd.......${fromStory}.QQ${url}QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
+    return Container(
+      key: ValueKey(url),
+      alignment: Alignment.center,
+      width: widget.width,
+      height: widget.height,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(widget.radius),
+        boxShadow: widget.withImageShadow
+            ? [
+                BoxShadow(
+                  color: context.colorScheme.white.withOpacity(0.1),
+                  offset: const Offset(0, 3),
+                  blurRadius: 6,
+                ),
+              ]
+            : null,
+      ),
+      child: Center(
+        child: CachedNetworkImage(
+          imageUrl: url,
+          fit: widget.imageFit,
+          width: widget.width,
+          color: widget.imageColor,
+          useOldImageOnUrlChange: true,
+          height: widget.height,
+          fadeInDuration: Duration(milliseconds: 0),
+          fadeOutDuration: Duration(milliseconds: 0),
+          progressIndicatorBuilder: (context, _, progress) {
+            widget.callWhenLoadingImage?.call();
 
-                            currentUrl = '';
-                            enable = true;
-                            rebuildImage.value++;
-                          });
-                        },
-                        child: Center(
-                          child: Icon(Icons.refresh,
-                              color: const Color(0xffff5f61),
-                              size: min(25, height)),
+            if ((widget.progressIndicatorBuilderWidget != null)) {
+              return widget.progressIndicatorBuilderWidget!;
+            }
+            return TrydosShimmerLoading(
+              width: widget.width,
+              height: widget.height,
+              logoTextHeight: widget.logoTextHeight ?? 14,
+              logoTextWidth: widget.logoTextWidth ?? 48.w,
+              circleDimensions: widget.circleDimensions,
+            );
+          },
+          imageBuilder: widget.imageBuilder ??
+              (ctx, image) {
+                Future.delayed(const Duration(milliseconds: 300),
+                    () => widget.callWhenDisplayImage?.call());
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(widget.radius),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Stack(
+                      children: [
+                        Container(
+                          alignment: Alignment.center,
+                          width: widget.width,
+                          height: widget.height,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: image,
+                              fit: widget.imageFit,
+                            ),
+                            borderRadius: BorderRadius.circular(widget.radius),
+                          ),
                         ),
-                      ),
-                    );
-                  }),
-            ));
-      },
+                        widget.withInnerShadow
+                            ? Container(
+                                alignment: Alignment.center,
+                                decoration: inset_shadow.BoxDecoration(
+                                  boxShadow: [
+                                    inset_shadow.BoxShadow(
+                                      offset: Offset(
+                                          0, widget.innerShadowYOffset ?? 0),
+                                      blurRadius: 20,
+                                      color: Colors.white.withOpacity(0.7),
+                                      inset: true,
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : const SizedBox.shrink(),
+                      ],
+                    ),
+                  ),
+                );
+              },
+          errorWidget: (context, url, error) {
+            if (enable) {
+              enable = false;
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  currentUrl = widget.imageUrl;
+                });
+              });
+            }
+            return Material(
+              color: Colors.transparent,
+              child: InkWell(
+                focusColor: Colors.transparent,
+                splashColor: Colors.transparent,
+                onTap: () async {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    setState(() {
+                      currentUrl = '';
+                      enable = true;
+                    });
+                  });
+                },
+                child: Center(
+                  child: Icon(Icons.refresh,
+                      color: const Color(0xffff5f61),
+                      size: min(25, widget.height)),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 }
 
-class CustomCacheManager extends CacheManager {
-  static const key = 'customCache';
+// باقي الكود كما هو (CustomCacheManagers و clearCustomCashe و addSuitableWidthAndHeightToImage)
+class CustomCacheManagers extends CacheManager {
+  static const key = 'customCaches';
+  static CustomCacheManagers? _instance;
 
-  static CustomCacheManager? _instance;
-
-  factory CustomCacheManager() {
-    _instance ??= CustomCacheManager._();
-    return _instance!;
+  factory CustomCacheManagers() {
+    return _instance ??= CustomCacheManagers._internal();
   }
 
-  CustomCacheManager._()
-      : super(Config(
-          key,
-          maxNrOfCacheObjects: 600,
-          stalePeriod: const Duration(days: 3),
-        ));
+  CustomCacheManagers._internal()
+      : super(Config(key,
+            maxNrOfCacheObjects: 600, stalePeriod: const Duration(days: 3)));
 }
 
 void clearCustomCashe() async {
-  await CustomCacheManager().emptyCache();
+  await CustomCacheManagers().emptyCache();
 }
 
-String addSuitableWidthAndHeightToImage(
-    {required String imageUrl,
-    double? ordinalHeight,
-    double? ordinalWidth,
-    required double width,
-    required double height}) {
+String addSuitableWidthAndHeightToImage({
+  required String imageUrl,
+  double? ordinalHeight,
+  double? ordinalWidth,
+  required double width,
+  required double height,
+}) {
   int fHeight = 0;
   int fWidth = 0;
   if (height > 200 && width > 200) {

@@ -1092,11 +1092,11 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                                                               .messageType
                                                                               ?.name ==
                                                                           'ShareProduct') {
-                                                                        BlocProvider.of<HomeBloc>(context).add(GetFullProductDetailsEvent(
-                                                                            productSlug: messages[index].shareProductContent?.productSlug.toString() ??
-                                                                                "",
-                                                                            productId:
-                                                                                messages[index].shareProductContent?.productSlug.toString()));
+                                                                        BlocProvider.of<HomeBloc>(context)
+                                                                            .add(GetFullProductDetailsEvent(
+                                                                          productSlug:
+                                                                              messages[index].shareProductContent?.productSlug.toString() ?? "",
+                                                                        ));
                                                                         Navigator.of(context).push(MaterialPageRoute(
                                                                             builder: (ctx) => ProductDetailsPage(
                                                                                   productIdForOpeningChatDirectly: messages[index].shareProductContent?.productId.toString(),

@@ -22,6 +22,7 @@ extension ScopeApi on String {
   String likeScope() => '$_api/${_currentVersion}/product_likes/$this';
   String productScopeWeb() => '$_api/${_currentVersion}/web/product/$this';
   String homeScope() => '$_api/${_currentVersion}/mobile/home/$this';
+  String colorsSizesScope() => '$_api/${_currentVersion}/mobile/$this';
   String cartScope() => '$_api/${_currentVersion}/cart/$this';
   String oldCartScope() => '$_api/${_currentVersion}/old-cart/$this';
   String searchScope() => '$_api/${_currentVersion}/products/$this';
@@ -42,7 +43,8 @@ abstract class MarketEndPoints {
   ////
   static String getFullProductDetailsEP(String productId) =>
       "details/$productId".productScope();
-
+  static final getColorsAndSizesForSearchEP =
+      "get-colors-and-sizes".colorsSizesScope();
   static final deleteCustomerAddressEP = "address/delete".customerScope();
   static final updateCustomerAddressEP = "address/update".customerScope();
   static final addCustomerAddressEP = "address/add".customerScope();

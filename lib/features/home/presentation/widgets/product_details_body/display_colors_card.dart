@@ -229,12 +229,12 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
     return BlocBuilder<HomeBloc, HomeState>(
       buildWhen: (previous, current) =>
           previous.currentSelectedColorForEveryProduct[
-              widget.productItem.productId.toString()] !=
+              widget.productItem.slug.toString()] !=
           current.currentSelectedColorForEveryProduct[
-              widget.productItem.productId.toString()],
+              widget.productItem.slug.toString()],
       builder: (context, state) {
         currentIndexInSlider = state.currentSelectedColorForEveryProduct[
-                widget.productItem.productId.toString()] ??
+                widget.productItem.slug.toString()] ??
             (widget.productItem.syncColorImages?.length ?? 0) ~/ 2;
         if ((currentIndexInSlider ?? 0) >
             (widget.productItem.syncColorImages?.length ?? 0)) {
@@ -673,10 +673,11 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                             .add(AddCurrentSelectedColorEvent(
                                                                 currentSelectedColor:
                                                                     index,
-                                                                productId: widget
+                                                                productSlug: widget
                                                                     .productItem
-                                                                    .productId
+                                                                    .slug
                                                                     .toString()));
+
                                                         //////////////////////////////
                                                         FirebaseAnalyticsService
                                                             .logEventForSession(

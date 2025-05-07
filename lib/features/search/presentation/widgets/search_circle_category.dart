@@ -171,6 +171,18 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
   List<String> selectedCaregorySlugs = [];
   @override
   void initState() {
+    scrollController.addListener(() {
+      try {
+        if (scrollController.offset >=
+            (scrollController.position.maxScrollExtent * 0.6)) {
+          boutiqueBloc.add(GetFiltersWithPaginatioEvent(
+            fromHomePageSearch: true,
+            searchText: widget.controller.text,
+            boutiqueSlug: "search",
+          ));
+        }
+      } catch (e) {}
+    });
     boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
     super.initState();
   }
@@ -264,6 +276,9 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
                                 children: [
                                   InkWell(
                                     onTap: () {
+                                      if ((widget.isLoading)) {
+                                        return;
+                                      }
                                       Filter? prevChoosedFilterToAddToIt = state
                                           .choosedFiltersByUser[key]?.filters;
                                       if (prevChoosedFilterToAddToIt == null) {

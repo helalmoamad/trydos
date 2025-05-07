@@ -1,9 +1,24 @@
+import 'dart:convert';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:trydos/base_page.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
+import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
+import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart'
+    as filter;
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
+import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../config/theme/typography.dart';
 import 'package:trydos/service/language_service.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +33,9 @@ import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../app/my_cached_network_image.dart';
 import '../../../app/my_text_widget.dart';
 import '../../../app/trydos_shimmer_loading.dart';
+import '../../../home/data/models/get_home_boutiqes_model.dart' as banner;
+import '../../../home/presentation/manager/homeBloc/home_event.dart'
+    as homeEvent;
 import '../../data/models/get_stories_model.dart';
 import '../bloc/story_state.dart';
 import '../widget/animated_builder.dart';
@@ -27,7 +45,7 @@ import 'dart:ui';
 class StoryCollection extends StatefulWidget {
   final int collectionIndex;
   final AnimationController animatedController;
-  bool stopAnimationAndVideo;
+  final bool stopAnimationAndVideo;
   final bool screenChanged;
   final void Function(int collectionIndex, bool isReachTheLeftMost)
       onReachStoryAtEdge;
@@ -35,7 +53,7 @@ class StoryCollection extends StatefulWidget {
   @override
   State<StoryCollection> createState() => _StoryCollectionState();
 
-  StoryCollection(
+  const StoryCollection(
       {Key? key,
       required this.collectionIndex,
       required this.animatedController,
@@ -51,7 +69,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
 
   LongPressDownDetails details = LongPressDownDetails();
   var init;
-
+  bool fromBoutiqueListing = false;
   @override
   void initState() {
     debugPrint('initState ${widget.collectionIndex}');
@@ -114,6 +132,8 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                       .length) {
                 widget.onReachStoryAtEdge.call(widget.collectionIndex, false);
               } else {
+                //   Future.delayed(Duration(milliseconds: 330),
+                //         () => Navigator.of(context).pop());
                 GetIt.I<StoryBloc>().add(StorySelectedEvent(
                     collectionIndex: widget.collectionIndex,
                     currentPage: -1,
@@ -137,6 +157,12 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                   _videoController?.pause();
                 },
                 onLongPressUp: () {
+                  final double screenHeight =
+                      MediaQuery.of(context).size.height;
+                  final double dy = details.localPosition.dy;
+                  if (dy > screenHeight * 3 / 3.7) {
+                    return;
+                  }
                   widget.animatedController.forward();
                   _videoController?.play();
                 },
@@ -147,8 +173,14 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                 //   }
                 // },
                 onLongPressCancel: () {
+                  final double screenHeight =
+                      MediaQuery.of(context).size.height;
                   final double screenWidth = MediaQuery.of(context).size.width;
                   final double dx = details.localPosition.dx;
+                  final double dy = details.localPosition.dy;
+                  if (dy > screenHeight * 3 / 3.7) {
+                    return;
+                  }
                   debugPrint(dx.toString());
                   _videoController?.dispose();
                   _videoController = null;
@@ -294,57 +326,89 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                           print("112222222222222211111111111");
                           widget.animatedController.forward();
                         }
-                        return MyCachedNetworkImage(
-                          fromStory: true,
-                          imageUrl: state
-                              .storiesCollections[widget.collectionIndex]
-                              .stories![state.currentStoryInEachCollection[
-                                  widget.collectionIndex]!]
-                              .photoPath!,
-                          callWhenDisplayImage: () {
-                            Story story = state
+                        return Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            MyCachedNetworkImage(
+                              fromStory: true,
+                              imageUrl: state
+                                  .storiesCollections[widget.collectionIndex]
+                                  .stories![state.currentStoryInEachCollection[
+                                      widget.collectionIndex]!]
+                                  .photoPath!,
+                              callWhenDisplayImage: () {
+                                Story story = state
                                     .storiesCollections[widget.collectionIndex]
-                                    .stories![
-                                state.currentStoryInEachCollection[
+                                    .stories![state
+                                        .currentStoryInEachCollection[
                                     widget.collectionIndex]!];
-                            if (!(story.isSeen ?? false)) {
-                              GetIt.I<StoryBloc>().add(IncreaseViewersEvent(
-                                  collectionId: state
+                                if (!(story.isSeen ?? false)) {
+                                  GetIt.I<StoryBloc>().add(IncreaseViewersEvent(
+                                      collectionId: state
+                                          .storiesCollections[
+                                              widget.collectionIndex]
+                                          .id
+                                          .toString(),
+                                      storyId: story.id.toString()));
+                                }
+                                if (widget.stopAnimationAndVideo) {
+                                  widget.animatedController.stop();
+                                } else {
+                                  Future.delayed(
+                                      Duration(milliseconds: 300),
+                                      () =>
+                                          widget.animatedController.forward());
+                                }
+                              },
+                              callWhenLoadingImage: () {
+                                widget.animatedController.stop();
+                              },
+                              width: state
+                                          .storiesCollections[
+                                              widget.collectionIndex]
+                                          .imageDetail ==
+                                      null
+                                  ? 1.sw
+                                  : state
                                       .storiesCollections[
                                           widget.collectionIndex]
-                                      .id
-                                      .toString(),
-                                  storyId: story.id.toString()));
-                            }
-                            if (widget.stopAnimationAndVideo) {
-                              widget.animatedController.stop();
-                            } else {
-                              Future.delayed(Duration(milliseconds: 300),
-                                  () => widget.animatedController.forward());
-                            }
-                          },
-                          callWhenLoadingImage: () {
-                            widget.animatedController.stop();
-                          },
-                          width: state
+                                      .imageDetail!
+                                      .width
+                                      .toDouble(),
+                              height: state
+                                          .storiesCollections[
+                                              widget.collectionIndex]
+                                          .imageDetail ==
+                                      null
+                                  ? (1.sh - 50)
+                                  : state
                                       .storiesCollections[
                                           widget.collectionIndex]
-                                      .imageDetail ==
-                                  null
-                              ? 1.sw
-                              : state.storiesCollections[widget.collectionIndex]
-                                  .imageDetail!.width
-                                  .toDouble(),
-                          height: state
-                                      .storiesCollections[
-                                          widget.collectionIndex]
-                                      .imageDetail ==
-                                  null
-                              ? (1.sh - 50)
-                              : state.storiesCollections[widget.collectionIndex]
-                                  .imageDetail!.height
-                                  .toDouble(),
-                          imageFit: BoxFit.contain,
+                                      .imageDetail!
+                                      .height
+                                      .toDouble(),
+                              imageFit: BoxFit.contain,
+                            ),
+                            state
+                                        .storiesCollections[
+                                            widget.collectionIndex]
+                                        .stories![
+                                            state.currentStoryInEachCollection[
+                                                widget.collectionIndex]!]
+                                        .oneLink ==
+                                    null
+                                ? SizedBox.shrink()
+                                : Positioned(
+                                    bottom: 0,
+                                    child: _handleWithUrlWidget(state
+                                            .storiesCollections[
+                                                widget.collectionIndex]
+                                            .stories![state
+                                                    .currentStoryInEachCollection[
+                                                widget.collectionIndex]!]
+                                            .oneLink ??
+                                        ""))
+                          ],
                         );
                       } else {
                         widget.animatedController.stop();
@@ -418,8 +482,33 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                               child: SizedBox(
                                 width: _videoController!.value.size.width,
                                 height: _videoController!.value.size.height,
-                                child: VideoPlayer(
-                                  _videoController!,
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    VideoPlayer(
+                                      _videoController!,
+                                    ),
+                                    state
+                                                .storiesCollections[
+                                                    widget.collectionIndex]
+                                                .stories![state
+                                                        .currentStoryInEachCollection[
+                                                    widget.collectionIndex]!]
+                                                .oneLink ==
+                                            null
+                                        ? SizedBox.shrink()
+                                        : Positioned(
+                                            bottom: 0,
+                                            child: _handleWithUrlWidget(state
+                                                    .storiesCollections[
+                                                        widget.collectionIndex]
+                                                    .stories![state
+                                                            .currentStoryInEachCollection[
+                                                        widget
+                                                            .collectionIndex]!]
+                                                    .oneLink ??
+                                                ""))
+                                  ],
                                 ),
                               ),
                             );
@@ -545,6 +634,285 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
             ],
           );
         },
+      ),
+    );
+  }
+
+  void parseUrl(String url) {
+    fromBoutiqueListing = false;
+    final uri = Uri.parse(url);
+
+    // دالة لفك التشفير المزدوج للمعاملات
+    String? decodeParam(String? param) {
+      if (param == null) return null;
+      try {
+        return Uri.decodeComponent(Uri.decodeComponent(param));
+      } catch (e) {
+        print('خطأ في فك التشفير: $e');
+        return null;
+      }
+    }
+
+    // دالة لتحويل النص المشفر إلى قائمة نصوص
+    List<String> parseListParam(String? param) {
+      final decoded = decodeParam(param);
+      if (decoded == null) return [];
+      try {
+        final list = jsonDecode(decoded);
+        if (list is List) {
+          return list.map((e) => e.toString()).toList();
+        } else {
+          print('المعطى ليس قائمة JSON');
+          return [];
+        }
+      } catch (e) {
+        print('خطأ في تحويل JSON: $e');
+        return [];
+      }
+    }
+
+    // استخراج وتحليل المعاملات
+    final categories = parseListParam(uri.queryParameters['categories']);
+    final brands = parseListParam(uri.queryParameters['brands']);
+    final sizes = parseListParam(uri.queryParameters['sizes']);
+    final colors = parseListParam(uri.queryParameters['colors']);
+    final boutiques = parseListParam(uri.queryParameters['boutiques']);
+    List<Boutique>? boutiquesFilter = [];
+    boutiques.forEach((element) =>
+        boutiquesFilter.add(Boutique(id: 0, name: "null", slug: element)));
+    List<Brand>? brandFilter = [];
+    brands.forEach((element) =>
+        brandFilter.add(Brand(id: 0, name: "null", slug: element)));
+    List<filter.Category>? categoriesFilter = [];
+    categories.forEach((element) => categoriesFilter
+        .add(filter.Category(id: 0, name: "null", slug: element)));
+    print('الفئات: $categories');
+    print('العلامات: $brands');
+    print('المقاسات: $sizes');
+    print('الألوان: $colors');
+    print('البوتيكات: $boutiques');
+    if (!(url.contains("boutique/listing")) && (url.contains("boutique"))) {
+      String boutiueSlug = "";
+      boutiueSlug = url.split("/").toList().last;
+      boutiueSlug = boutiueSlug.split("?").first;
+      fromBoutiqueListing = true;
+      BlocProvider.of<BoutiqueBloc>(context)
+          .add(GetFiltersForNavigatorFromLinkToListingPageEvent(
+              fromHomePageSearch: false,
+              boutiqueSlug: boutiueSlug,
+              filtersChoosedByUser: GetProductFiltersModel(
+                  filters: Filter(
+                attributes: sizes.isNullOrEmpty
+                    ? []
+                    : [Attribute(id: 0, name: "size", options: sizes)],
+                brands: brandFilter,
+                categories: categoriesFilter,
+                colors: colors,
+              ))));
+    } else {
+      BlocProvider.of<BoutiqueBloc>(context)
+          .add(GetFiltersForNavigatorFromLinkToListingPageEvent(
+              fromHomePageSearch: true,
+              boutiqueSlug: "search",
+              filtersChoosedByUser: GetProductFiltersModel(
+                  filters: Filter(
+                attributes: sizes.isNullOrEmpty
+                    ? []
+                    : [Attribute(id: 0, name: "size", options: sizes)],
+                brands: brandFilter,
+                categories: categoriesFilter,
+                boutiques: boutiquesFilter,
+                colors: colors,
+              ))));
+    }
+  }
+
+  void tapOnUrl(String uri) async {
+    try {
+      if (uri.contains("trydos")) {
+        if (uri.contains("products")) {
+          String? uriWithFilter;
+          String? colorName;
+          String uriWithoutFilter = uri.split("?").toList().first;
+          if (uri.split("?").toList().length > 1) {
+            uriWithFilter = uri.split("?").toList()[1];
+          }
+          if (uriWithFilter != null) {
+            colorName = uriWithFilter.split("&").firstWhere(
+                  (element) => element.contains("color"),
+                  orElse: () => "",
+                );
+            if (colorName != "") {
+              colorName = colorName.split("=").toList().last;
+            }
+          }
+          BlocProvider.of<HomeBloc>(context).add(
+              homeEvent.ChangeStatusOFGetProductsDetailsToSuccessEvent(
+                  isStatusInitaial: true));
+          BlocProvider.of<HomeBloc>(context)
+              .add(homeEvent.GetFullProductDetailsEvent(
+            currentColorName: colorName == "" ? null : colorName,
+            productSlug: uriWithoutFilter.split("/").toList().last,
+          ));
+
+          Future.delayed(
+              Duration(milliseconds: 300),
+              () => Navigator.of(context).push(PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) =>
+                      ProductDetailsPage(
+                        productSlugForOpeningChatDirectly:
+                            uriWithoutFilter.split("/").toList().last,
+                        fromNotification: false,
+                      ))));
+          return;
+        }
+        if (uri.contains("boutique")) {
+          BlocProvider.of<BoutiqueBloc>(context).add(ChangeAppliedFiltersEvent(
+              boutiqueSlug: "search", resetAppliedFilters: true));
+          BlocProvider.of<BoutiqueBloc>(context).add(ChangeSelectedFiltersEvent(
+              boutiqueSlug: "search",
+              fromHomePageSearch: true,
+              resetChoosedFilters: true,
+              requestToUpdateFilters: false));
+          parseUrl(uri);
+
+          return;
+        }
+      } else {
+        await launchUrl(Uri.parse(uri));
+      }
+      // Navigator.of(context).pop();
+    } catch (e) {}
+  }
+
+  Widget _handleWithUrlWidget(String url) {
+    return Material(
+      color: Color.fromRGBO(0, 0, 0, 0),
+      child: BlocListener<BoutiqueBloc, BoutiqueState>(
+        listenWhen: (previous, current) =>
+            previous.getFiltersForNavigatorFromLinkToListingPageStatus !=
+            current.getFiltersForNavigatorFromLinkToListingPageStatus,
+        listener: (context, boutiqueState) async {
+          if (boutiqueState.getFiltersForNavigatorFromLinkToListingPageStatus ==
+              GetFiltersForNavigatorFromLinkToListingPageStatus.success) {
+            if (fromBoutiqueListing) {
+              BlocProvider.of<BoutiqueBloc>(context)
+                  .add(ChangeAppliedFiltersEvent(
+                boutiqueSlug: boutiqueState.appliedFiltersByUser["link"]
+                        ?.filters?.boutiques?[0].slug ??
+                    "",
+                filtersAppliedByUser: boutiqueState.appliedFiltersByUser["link"]
+                    ?.copyWith(
+                        filters: boutiqueState
+                            .appliedFiltersByUser["link"]?.filters
+                            ?.copyWithSaveOtherField(boutiques: [])),
+              ));
+
+              BlocProvider.of<BoutiqueBloc>(context).add(
+                  GetProductsWithFiltersEvent(
+                      getWithoutFilter: true,
+                      cashedOrginalBoutique: false,
+                      boutiqueSlug: boutiqueState.appliedFiltersByUser["link"]
+                              ?.filters?.boutiques?[0].slug ??
+                          "",
+                      fromSearch: false,
+                      category: null,
+                      context: context,
+                      searchText: null,
+                      offset: 1));
+              await Future.delayed(
+                Duration(milliseconds: 300),
+                () => Navigator.of(context).push(PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) =>
+                      ProductListingPage(
+                          fromBackground: false,
+                          boutiqueSlug: boutiqueState
+                                  .appliedFiltersByUser["link"]
+                                  ?.filters
+                                  ?.boutiques?[0]
+                                  .slug ??
+                              "",
+                          banner: [
+                            (boutiqueState.appliedFiltersByUser["link"]?.filters
+                                ?.boutiques?[0].banner)!
+                          ],
+                          boutiqueFirstBanner: boutiqueState
+                              .appliedFiltersByUser["link"]
+                              ?.filters
+                              ?.boutiques?[0]
+                              .banner
+                              ?.filePath),
+                )),
+              );
+              return;
+            }
+
+            await Future.delayed(
+                Duration(milliseconds: 300),
+                () => Navigator.of(context).push(PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        ProductListingPage(
+                            getProductFiltersModel:
+                                boutiqueState.appliedFiltersByUser["link"],
+                            fromNotificationCategory: true,
+                            fromBackground: false,
+                            fromSearch: true,
+                            boutiqueSlug: "search"))));
+          }
+        },
+        child: BlocBuilder<BoutiqueBloc, BoutiqueState>(
+          buildWhen: (previous, current) =>
+              previous.getFiltersForNavigatorFromLinkToListingPageStatus !=
+              current.getFiltersForNavigatorFromLinkToListingPageStatus,
+          builder: (context, boutiqueState) {
+            if (boutiqueState
+                    .getFiltersForNavigatorFromLinkToListingPageStatus ==
+                GetFiltersForNavigatorFromLinkToListingPageStatus.loading) {}
+            return Container(
+              width: 300,
+              height: 100,
+              child: InkWell(
+                onTap: () {
+                  _videoController?.pause();
+                  widget.animatedController.stop();
+                  tapOnUrl(url);
+                },
+                child: Center(
+                  child: boutiqueState
+                              .getFiltersForNavigatorFromLinkToListingPageStatus ==
+                          GetFiltersForNavigatorFromLinkToListingPageStatus
+                              .loading
+                      ? Container(
+                          height: 30,
+                          width: 30,
+                          color: Colors.white,
+                          child: TrydosLoader(
+                            size: 28,
+                            color: Colors.black,
+                          ))
+                      : Container(
+                          width: 300,
+                          height: 100,
+                          child: Center(
+                            child: Text(
+                              url,
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              style: context.textTheme.bodyMedium?.ba.copyWith(
+                                decorationColor: Colors.blue,
+                                decoration: TextDecoration.underline,
+                                fontSize: 16,
+                                color: Colors.blue,
+                                letterSpacing: 0.18,
+                              ),
+                            ),
+                          ),
+                        ),
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }

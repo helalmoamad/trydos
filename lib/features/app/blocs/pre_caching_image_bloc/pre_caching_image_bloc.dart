@@ -1,15 +1,15 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/foundation.dart';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_svg_image/flutter_svg_image.dart';
+
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:sync/semaphore.dart';
 
 import 'package:trydos/features/app/blocs/pre_caching_image_bloc/pre_caching_image_state.dart';
-import 'package:trydos/features/app/svg_network_widget.dart';
+
 import 'package:trydos/main.dart';
 
 import '../../my_cached_network_image.dart';
@@ -191,38 +191,43 @@ class PreCachingImageBloc
     CacheImageEvent event,
     Emitter<PreCachingImageState> emit,
   ) async {
+    final updatedCachedImages = Map<String, bool>.from(state.cachedImages);
+    updatedCachedImages[event.imageUrl] = false;
+
+    if (state.cachedImages[event.imageUrl] == true) return;
     // 1. التحقق من وجود الصورة في الكاش مسبقًا
     final cachedFile =
-        await CustomCacheManager().getFileFromCache(event.imageUrl);
+        await CustomCacheManagers().getFileFromCache(event.imageUrl);
     if (cachedFile != null) {
       return; // الصورة موجودة مسبقًا، لا حاجة لإعادة التحميل
     }
 
     // 2. التحقق من عدم وجود تحميل جارٍ للصورة
-    if (state.cachedImages[event.imageUrl] == true) return;
 
     // 3. تحديث الحالة لإظهار أن التحميل جارٍ
-    final updatedCachedImages = Map<String, bool>.from(state.cachedImages);
-    updatedCachedImages[event.imageUrl] = false;
     emit(PreCachingImageState(cachedImages: updatedCachedImages));
 
     // 4. اختيار Semaphore المناسب حسب نوع الصورة
     final semaphore = _getSemaphoreForType(event.type);
 
     try {
+      print(
+          "999999999999999999999999999999999vvv//ddddddddddddd الصورة موجودة مسبقًا، لا حاجة لإعادة التحميل");
       // 5. انتظار السماح بالتحميل بدون حظر واجهة المستخدم
       await semaphore.acquire();
 
       // 6. تحميل الصورة مسبقًا في UI thread باستخدام CachedNetworkImageProvider
       await precacheImage(
         CachedNetworkImageProvider(event.imageUrl,
-            cacheManager: CustomCacheManager()),
+            cacheManager: CustomCacheManagers()),
         event.context,
       );
 
       // 7. تحديث الحالة بعد نجاح التحميل
       final successCachedImages = Map<String, bool>.from(updatedCachedImages);
+
       successCachedImages[event.imageUrl] = true;
+
       emit(PreCachingImageState(cachedImages: successCachedImages));
     } catch (e) {
       print("Error caching image: $e");
@@ -270,16 +275,20 @@ class PreCachingImageBloc
     Map<String, bool> cachefSvgs = Map.of(state.cachehSvgs);
     List<String> keysImages = cachedImages.keys.toList();
     List<String> keysSvgs = cachefSvgs.keys.toList();
-    for (var i = 0; i < keysImages.length; i++) {
-      if (await CustomCacheManager().getFileFromCache(keysImages[i]) == null) {
-        cachedImages.removeWhere((key, value) => key == key[i]);
+
+    try {
+      for (var i = 0; i < keysImages.length; i++) {
+        if (await CustomCacheManagers().getFileFromCache(keysImages[i]) ==
+            null) {
+          cachedImages.removeWhere((key, value) => key == key[i]);
+        }
       }
-    }
-    for (var i = 0; i < keysSvgs.length; i++) {
-      if (await CustomCacheManager().getFileFromCache(keysSvgs[i]) == null) {
-        cachefSvgs.removeWhere((key, value) => key == key[i]);
+      for (var i = 0; i < keysSvgs.length; i++) {
+        if (await CustomCacheManagers().getFileFromCache(keysSvgs[i]) == null) {
+          cachefSvgs.removeWhere((key, value) => key == key[i]);
+        }
       }
-    }
+    } catch (e) {}
     emit(PreCachingImageState(
         cachedImages: cachedImages, cachehSvgs: cachefSvgs));
   }

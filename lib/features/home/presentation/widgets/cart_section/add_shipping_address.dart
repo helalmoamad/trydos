@@ -36,6 +36,7 @@ import '../../../../../service/firebase_analytics_service/firebase_analytics_ser
 import '../../manager/orderBloc/order_bloc.dart';
 import '../../manager/orderBloc/order_event.dart';
 import '../../manager/orderBloc/order_state.dart';
+import 'package:geodesy/geodesy.dart' as geod;
 
 class AddShippingAdress extends StatefulWidget {
   const AddShippingAdress(
@@ -92,10 +93,12 @@ class _AddShippingAdressState extends State<AddShippingAdress>
   LatLng? _locationFromSearch;
   List<Marker> _markers = [];
   List<Marker> _markersInSmallMap = [];
+  geod.Geodesy geodesy = geod.Geodesy();
   bool? fromEditeTodenychangeDetailAddress;
   Future<void> _goToCurrentLocation({required LatLng? latlng}) async {
     Location location = new Location();
     LocationData currentLocation;
+
     loadingToGoCurrentLoacation.value = true;
     try {
       if (latlng?.latitude != null && latlng?.longitude != null) {
@@ -106,6 +109,18 @@ class _AddShippingAdressState extends State<AddShippingAdress>
         _currentLocation =
             LatLng(currentLocation.latitude!, currentLocation.longitude!);
       }
+      bool inside = geodesy.isGeoPointInPolygon(
+          geod.LatLng(_currentLocation!.latitude, _currentLocation!.longitude),
+          syriaBorders);
+      if (!inside) {
+        // عرض رسالة
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('غير ممكن خارج المنطقة المتاحة')),
+        );
+        _currentLocation = null;
+        return;
+      }
+
       await Future.delayed(Duration(seconds: 2), () {
         setState(() {
           _markers.add(Marker(
@@ -135,8 +150,52 @@ class _AddShippingAdressState extends State<AddShippingAdress>
     }
   }
 
+  final List<geod.LatLng> syriaBorders = [
+    geod.LatLng(37.317, 35.832), // شمال غرب سوريا (الحدود مع تركيا ولبنان)
+    geod.LatLng(36.000, 39.000), // شمال شرق سوريا (الحدود مع تركيا والعراق)
+    geod.LatLng(32.500, 39.000), // جنوب شرق سوريا (الحدود مع العراق والأردن)
+    geod.LatLng(32.500, 35.500), // جنوب غرب سوريا (الحدود مع الأردن وفلسطين)
+    geod.LatLng(36.500, 35.500),
+    geod.LatLng(37.317, 35.832), // شمال غرب سوريا (الحدود مع لبنان)
+  ];
+  // مستطيل يغطي العالم تقريباً
+  final List<LatLng> worldRect = [
+    LatLng(20, 20),
+    LatLng(50, 20),
+    LatLng(50, 50),
+    LatLng(20, 50),
+    LatLng(20, 20),
+  ];
+  Set<Polygon>? polygons;
+
+  LatLng convertToLatLng(geod.LatLng point) {
+    return LatLng(point.latitude, point.longitude);
+  }
+
+  LatLngBounds? bounds =
+      LatLngBounds(southwest: LatLng(30, 30), northeast: LatLng(40, 40));
+  List<LatLng> mapSyriaBorders = [];
   @override
   void initState() {
+    mapSyriaBorders = syriaBorders.map((p) => convertToLatLng(p)).toList();
+    polygons = {
+      Polygon(
+        polygonId: PolygonId('mask'),
+        points: worldRect,
+        holes: [mapSyriaBorders],
+        fillColor: const Color.fromARGB(255, 214, 29, 29)
+            .withOpacity(0.3), // تظليل أسود مع شفافية
+        strokeWidth: 0,
+      ),
+      Polygon(
+        polygonId: PolygonId('border'),
+        points: mapSyriaBorders,
+
+        fillColor: Colors.transparent,
+        strokeColor: Colors.red, // لون الحدود
+        strokeWidth: 2,
+      ),
+    };
     fromEditeTodenychangeDetailAddress = widget.fromEdid ?? false;
     homeBloc = BlocProvider.of<HomeBloc>(context);
     orderBloc = BlocProvider.of<OrderBloc>(context);
@@ -1379,6 +1438,12 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                               border: Border.all(color: Color(0xffD3D3D3))),
                                                                           child:
                                                                               GoogleMap(
+                                                                            cameraTargetBounds:
+                                                                                CameraTargetBounds(bounds),
+                                                                            minMaxZoomPreference:
+                                                                                MinMaxZoomPreference(5, 24),
+                                                                            polygons:
+                                                                                polygons!,
                                                                             buildingsEnabled:
                                                                                 true,
                                                                             mapType:
@@ -1392,6 +1457,16 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                             onTap:
                                                                                 (argument) {
                                                                               _markers = [];
+
+                                                                              bool inside = geodesy.isGeoPointInPolygon(geod.LatLng(argument.latitude, argument.longitude), syriaBorders);
+                                                                              if (!inside) {
+                                                                                // عرض رسالة
+                                                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                                                  SnackBar(content: Text('غير ممكن خارج المنطقة المتاحة')),
+                                                                                );
+                                                                                return;
+                                                                              }
+
                                                                               _markers.add(Marker(markerId: MarkerId('current_location'), position: LatLng(argument.latitude, argument.longitude)));
                                                                               _currentLocation = LatLng(argument.latitude, argument.longitude);
                                                                               setState(() {});

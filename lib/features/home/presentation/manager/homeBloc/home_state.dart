@@ -6,6 +6,7 @@ import 'package:trydos/features/home/data/models/firebase_setting_for_notificati
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart'
     as cart;
+import 'package:trydos/features/home/data/models/get_colors_and_sizes_model.dart';
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
 import 'package:trydos/features/home/data/models/get_currency_for_country_model.dart';
 import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
@@ -124,6 +125,7 @@ class HomeState extends Equatable {
       this.changeSizesForEveryProduct,
       this.uploadUserPhotoCloudinaryStatus,
       this.searchWithOutFilterOffset,
+      this.isChangedColorBeforeOpenPanel,
       this.updateProfileStatus,
       this.getProductDetailWithoutSimilarRelatedProductsStatus =
           GetProductDetailWithoutSimilarRelatedProductsStatus.init,
@@ -187,6 +189,7 @@ class HomeState extends Equatable {
       this.currentSelectedColorForEveryProduct = const {},
       this.notificationTypeForProductModel,
       this.getNotificationTypeProductStatus,
+      this.geColorsAndSizesForSearchModel,
       this.currentIndexForUpdateCart,
       this.userInfo,
       this.listOfErrorSendedToMobileErrorLog = const [],
@@ -212,7 +215,7 @@ class HomeState extends Equatable {
   final EnableAddToCardAfterChangeVariantZero?
       enableAddToCardAfterChangeVariantZero;
   final bool isChangedvariationWhenQtyZero;
-
+  final bool? isChangedColorBeforeOpenPanel;
   final ConvertItemFromOldcartToCartStatus? convertItemFromOldcartToCartStatus;
 
   final GetNotificationTypeProductStatus? getNotificationTypeProductStatus;
@@ -222,7 +225,7 @@ class HomeState extends Equatable {
   final Map<String, GetAndAddCountViewOfProductStatus>
       getAndAddCountViewOfProductStatus;
   final List<PopularSearchTerm>? popularSearchTerm;
-
+  final GeColorsAndSizesForSearchModel? geColorsAndSizesForSearchModel;
   final PaginationModel<NotificationItemModel>? getUserNotificationModel;
 
   final GetCartOverviewStatus? getCartOverviewStatus;
@@ -382,7 +385,7 @@ class HomeState extends Equatable {
         currentSelectedColorForEveryProduct,
         isVariantRequestNotification,
         selectedCollection,
-
+        isChangedColorBeforeOpenPanel,
         startingSetting,
         currentIndexForUpdateCart,
         currentColorSizeForCart,
@@ -393,7 +396,8 @@ class HomeState extends Equatable {
         currentQuantityForCart,
         firebaseSettingForNotificationModel,
         cachedProductWithoutRelatedProductsModel,
-        addOrRemoveLikeOfProductStatus
+        addOrRemoveLikeOfProductStatus,
+        geColorsAndSizesForSearchModel
       ];
 
   HomeState copyWith(
@@ -410,11 +414,13 @@ class HomeState extends Equatable {
       final UploadUserPhotoCloudinaryStatus? uploadUserPhotoCloudinaryStatus,
       final PaginationModel<NotificationItemModel>? getUserNotificationModel,
       final GetCartOverviewStatus? getCartOverviewStatus,
+      final GeColorsAndSizesForSearchModel? geColorsAndSizesForSearchModel,
       final CurrentSelectedColorForEveryProductStatus?
           currentSelectedColorForEveryProductStatus,
       final Map<String, Map<String, String>>? addVariationToCartId,
       final CheckAvailabilityProductCartModel?
           checkAvailabilityProductCartModel,
+      final bool? isChangedColorBeforeOpenPanel,
       final CheckAvailabilityProductCartStatus?
           checkAvailabilityProductCartStatus,
       final AddItemInCartStatus? addItemInCartStatus,
@@ -504,6 +510,8 @@ class HomeState extends Equatable {
 
       hideItemInOldCartStatus:
           hideItemInOldCartStatus ?? this.hideItemInOldCartStatus,
+      geColorsAndSizesForSearchModel:
+          geColorsAndSizesForSearchModel ?? this.geColorsAndSizesForSearchModel,
       getCommentForProductModel:
           getCommentForProductModel ?? this.getCommentForProductModel,
       getFirebaseSettingForNotificationStatus:
@@ -517,6 +525,8 @@ class HomeState extends Equatable {
       currentSelectedColorForEveryProductStatus:
           currentSelectedColorForEveryProductStatus ??
               this.currentSelectedColorForEveryProductStatus,
+      isChangedColorBeforeOpenPanel:
+          isChangedColorBeforeOpenPanel ?? this.isChangedColorBeforeOpenPanel,
       notificationTypeForProductModel: notificationTypeForProductModel ??
           this.notificationTypeForProductModel,
       firebaseSettingForNotificationModel:

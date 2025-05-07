@@ -5,11 +5,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
+import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
+import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
+import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import 'package:trydos/features/app/country_dropdown.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
+import 'package:trydos/features/home/domain/use_cases/get_colors_sizes_for_search_usecase.dart';
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
@@ -19,6 +23,7 @@ import 'package:trydos/features/home/presentation/pages/profile_page.dart';
 import 'package:trydos/features/search/presentation/pages/search_page.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import 'package:trydos/service/language_service.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/handling_market_notifications.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/local_notification_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -380,9 +385,13 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     homeBloc = BlocProvider.of<HomeBloc>(context);
     appBloc = BlocProvider.of<AppBloc>(context);
     categoryBloc = BlocProvider.of<CategoryBloc>(context);
-    Future.delayed(Duration(seconds: 10), () {
+    homeBloc.add(GetCurrencyForCountryEvent());
+    Future.delayed(Duration(seconds: 3), () {
+      homeBloc.add(GeColorsAndSizesForSearchEvent());
       if ((prefsRepository.marketToken?.length ?? 0) > 10) {
         homeBloc.add(GetProductsListInCartEvent());
+        homeBloc.add(GetCartItemEvent());
+
         homeBloc.add(GetNotificationTypeProductEvent());
         homeBloc.add(GetFirebaseSettingForNotificationEvent());
         homeBloc.add(GetPopularSearchItemEvent());
@@ -427,9 +436,6 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     FirebaseMessaging.onMessage.listen((event) {
       if (HandlingMarketNotifications.checkIfTheNotificationIsNotRelatedToChat(
           event)) {
-        print(
-            "###################11111111111111111111111111111111111111${event.data}111111##################################################################");
-
         LocalNotificationService()
             .showNotificationWithPayload(message: event, fromBackGround: 0);
         return;
@@ -811,10 +817,128 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                             BlocBuilder<AppBloc, AppState>(
                                                 buildWhen: (p, c) =>
                                                     p.showBars != c.showBars ||
+                                                    p.hideBottomNavigationBar !=
+                                                        c
+                                                            .hideBottomNavigationBar ||
                                                     p.currentIndex !=
                                                         c.currentIndex,
                                                 builder: (context, state) {
-                                                  if (state.showBars == true &&
+                                                  if (state.hideBottomNavigationBar ==
+                                                          true &&
+                                                      state.currentIndex == 0) {
+                                                    return TrydosAppBar(
+                                                      appBarParams:
+                                                          AppBarParams(
+                                                              automaticallyImplyLeading:
+                                                                  false,
+                                                              hasLeading: false,
+                                                              scrolledUnderElevation:
+                                                                  0,
+                                                              action: [
+                                                                LanguageService
+                                                                        .rtl
+                                                                    ? Spacer()
+                                                                    : SizedBox
+                                                                        .shrink(),
+                                                                Padding(
+                                                                  padding:
+                                                                      const EdgeInsetsDirectional
+                                                                          .only(
+                                                                          end:
+                                                                              10.0),
+                                                                  child: BlocBuilder<
+                                                                      HomeBloc,
+                                                                      HomeState>(
+                                                                    buildWhen: (previous,
+                                                                            current) =>
+                                                                        previous.getProductDetailWithoutSimilarRelatedProductsStatus != current.getProductDetailWithoutSimilarRelatedProductsStatus ||
+                                                                        previous.updateItemInCartStatus !=
+                                                                            current
+                                                                                .updateItemInCartStatus ||
+                                                                        previous.addItemInCartStatus !=
+                                                                            current
+                                                                                .addItemInCartStatus ||
+                                                                        previous.deleteItemInCartStatus !=
+                                                                            current
+                                                                                .deleteItemInCartStatus ||
+                                                                        previous.getCartItemsStatus !=
+                                                                            current.getCartItemsStatus,
+                                                                    builder:
+                                                                        (context,
+                                                                            state) {
+                                                                      int qtyItemsInCart =
+                                                                          0;
+                                                                      state
+                                                                          .cartCollection
+                                                                          ?.forEach(
+                                                                        (element) {
+                                                                          qtyItemsInCart =
+                                                                              qtyItemsInCart + (element.quantity ?? 0);
+                                                                        },
+                                                                      );
+
+                                                                      return Container(
+                                                                        alignment:
+                                                                            Alignment.center,
+                                                                        height:
+                                                                            40,
+                                                                        width: LanguageService.languageCode !=
+                                                                                "ar"
+                                                                            ? 40
+                                                                            : 50,
+                                                                        child: InkWell(
+                                                                            onTap: () {
+                                                                              Navigator.of(context).push(
+                                                                                MaterialPageRoute(
+                                                                                  builder: (context) => CartPage(
+                                                                                    fromeFilters: true,
+                                                                                  ),
+                                                                                ),
+                                                                              );
+                                                                              //////////////////////////////
+                                                                              FirebaseAnalyticsService.logEventForSession(
+                                                                                eventName: AnalyticsEventsConst.buttonClicked,
+                                                                                executedEventName: AnalyticsExecutedEventNameConst.showShoppingBagButton,
+                                                                              );
+                                                                            },
+                                                                            child: Stack(children: [
+                                                                              Positioned(
+                                                                                child: SvgPicture.asset(AppAssets.bagsSvg),
+                                                                                right: LanguageService.languageCode != "ar" ? 0 : null,
+                                                                                left: LanguageService.languageCode == "ar" ? 0 : null,
+                                                                                bottom: 5,
+                                                                              ),
+                                                                              Positioned(
+                                                                                child: Container(
+                                                                                  width: (qtyItemsInCart > 0) ? 15 : 0,
+                                                                                  alignment: Alignment.center,
+                                                                                  height: (qtyItemsInCart > 0) ? 15 : 0,
+                                                                                  decoration: BoxDecoration(color: Colors.green, borderRadius: BorderRadius.circular(20)),
+                                                                                  child: MyTextWidget(
+                                                                                    (qtyItemsInCart > 0) ? "${qtyItemsInCart}" : "",
+                                                                                    maxLines: 1,
+                                                                                    style: textTheme.titleSmall?.ra.copyWith(fontSize: 12, color: Colors.white, letterSpacing: 0.28),
+                                                                                  ),
+                                                                                ),
+                                                                                top: 0,
+                                                                                left: LanguageService.languageCode != "ar" ? 5 : null,
+                                                                                right: LanguageService.languageCode != "en"
+                                                                                    ? (qtyItemsInCart.toString().length > 1)
+                                                                                        ? 0
+                                                                                        : 10
+                                                                                    : null,
+                                                                              )
+                                                                            ])),
+                                                                      );
+                                                                    },
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                              withShadow:
+                                                                  false),
+                                                    );
+                                                  } else if (state.showBars ==
+                                                              true &&
                                                           state.currentIndex ==
                                                               0 ||
                                                       state.currentIndex == 4) {
