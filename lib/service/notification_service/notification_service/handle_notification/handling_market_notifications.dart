@@ -33,14 +33,34 @@ enum TypeOfNotificationForMarketEnum {
   remember_abandon_cart,
   product_before_stock_out,
   order_placed,
-  order_status_changed
+  order_status_changed_to_pending,
+  order_status_changed_to_preparing,
+  order_status_changed_to_shipped,
+  order_status_changed_to_delivered,
+  seller_order_added,
+  seller_comment_added,
+  seller_product_stock_out,
+  seller_order_status_changed
 }
 
 Map<TypeOfNotificationForMarketEnum, String> typeOfNotificationForMarket = {
   TypeOfNotificationForMarketEnum.boutique_created: "boutique created",
+  TypeOfNotificationForMarketEnum.seller_order_added: "seller order added",
+  TypeOfNotificationForMarketEnum.seller_comment_added: "seller comment added",
+  TypeOfNotificationForMarketEnum.seller_product_stock_out:
+      "seller product stock out",
+  TypeOfNotificationForMarketEnum.seller_order_status_changed:
+      "seller_order_status_changed",
   TypeOfNotificationForMarketEnum.remember_abandon_cart:
       "remember abandon cart",
-  TypeOfNotificationForMarketEnum.order_status_changed: "order status changed",
+  TypeOfNotificationForMarketEnum.order_status_changed_to_pending:
+      "order status changed to pending",
+  TypeOfNotificationForMarketEnum.order_status_changed_to_preparing:
+      "order status changed to preparing",
+  TypeOfNotificationForMarketEnum.order_status_changed_to_shipped:
+      "order status changed to shipped",
+  TypeOfNotificationForMarketEnum.order_status_changed_to_delivered:
+      "order status changed to delivered",
   TypeOfNotificationForMarketEnum.category_created: "category created",
   TypeOfNotificationForMarketEnum.product_availability: "product availability",
   TypeOfNotificationForMarketEnum.product_cart_expiration:
@@ -100,7 +120,22 @@ class HandlingMarketNotifications {
                 TypeOfNotificationForMarketEnum.order_placed] ||
         data["type"] ==
             typeOfNotificationForMarket[
-                TypeOfNotificationForMarketEnum.order_status_changed]) {
+                TypeOfNotificationForMarketEnum.seller_order_added] ||
+        data["type"] ==
+            typeOfNotificationForMarket[
+                TypeOfNotificationForMarketEnum.seller_order_status_changed] ||
+        data["type"] ==
+            typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                .order_status_changed_to_delivered] ||
+        data["type"] ==
+            typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                .order_status_changed_to_pending] ||
+        data["type"] ==
+            typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                .order_status_changed_to_preparing] ||
+        data["type"] ==
+            typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                .order_status_changed_to_shipped]) {
       if (data["type"] ==
           typeOfNotificationForMarket[
               TypeOfNotificationForMarketEnum.order_placed]) {
@@ -150,14 +185,14 @@ class HandlingMarketNotifications {
           typeOfNotificationForMarket[
               TypeOfNotificationForMarketEnum.product_availability]) {
         try {
-          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
-              GetFullProductDetailsEvent(
-                  productSlug: data["product_slug"].toString(),
-                  productId: data["product_id"].toString()));
+          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context)
+              .add(GetFullProductDetailsEvent(
+            productSlug: data["product_slug"].toString(),
+          ));
           BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
               AddCurrentSelectedColorEvent(
                   currentSelectedColor: data["image_color_sort"],
-                  productId: data["product_id"].toString()));
+                  productSlug: data["product_slug"].toString()));
 
           Future.delayed(
               Duration(seconds: 1),
@@ -178,14 +213,15 @@ class HandlingMarketNotifications {
           typeOfNotificationForMarket[
               TypeOfNotificationForMarketEnum.product_before_stock_out]) {
         try {
-          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
-              GetFullProductDetailsEvent(
-                  productSlug: data["product_slug"].toString(),
-                  productId: data["product_id"].toString()));
-          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
-              AddCurrentSelectedColorEvent(
-                  currentSelectedColor: 0,
-                  productId: data["product_id"].toString()));
+          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context)
+              .add(GetFullProductDetailsEvent(
+            productSlug: data["product_slug"].toString(),
+          ));
+          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context)
+              .add(AddCurrentSelectedColorEvent(
+            currentSelectedColor: 0,
+            productSlug: data["product_slug"].toString(),
+          ));
 
           Future.delayed(
               Duration(seconds: 1),
@@ -203,17 +239,21 @@ class HandlingMarketNotifications {
       }
 
       if (data["type"] ==
-          typeOfNotificationForMarket[
-              TypeOfNotificationForMarketEnum.product_when_change_in_price]) {
+              typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                  .product_when_change_in_price] ||
+          data["type"] ==
+              typeOfNotificationForMarket[
+                  TypeOfNotificationForMarketEnum.seller_product_stock_out]) {
         try {
-          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
-              GetFullProductDetailsEvent(
-                  productSlug: data["product_slug"].toString(),
-                  productId: data["product_id"].toString()));
-          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
-              AddCurrentSelectedColorEvent(
-                  currentSelectedColor: 0,
-                  productId: data["product_id"].toString()));
+          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context)
+              .add(GetFullProductDetailsEvent(
+            productSlug: data["product_slug"].toString(),
+          ));
+          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context)
+              .add(AddCurrentSelectedColorEvent(
+            currentSelectedColor: 0,
+            productSlug: data["product_slug"].toString(),
+          ));
 
           Future.delayed(
               Duration(seconds: 1),
@@ -234,14 +274,15 @@ class HandlingMarketNotifications {
           typeOfNotificationForMarket[
               TypeOfNotificationForMarketEnum.product_discount]) {
         try {
-          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
-              GetFullProductDetailsEvent(
-                  productSlug: data["product_slug"].toString(),
-                  productId: data["product_id"].toString()));
-          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
-              AddCurrentSelectedColorEvent(
-                  currentSelectedColor: 0,
-                  productId: data["product_id"].toString()));
+          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context)
+              .add(GetFullProductDetailsEvent(
+            productSlug: data["product_slug"].toString(),
+          ));
+          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context)
+              .add(AddCurrentSelectedColorEvent(
+            currentSelectedColor: 0,
+            productSlug: data["product_slug"].toString(),
+          ));
 
           Future.delayed(
               Duration(seconds: 1),
@@ -258,17 +299,21 @@ class HandlingMarketNotifications {
         } catch (e) {}
       }
       if (data["type"] ==
-          typeOfNotificationForMarket[
-              TypeOfNotificationForMarketEnum.product_comment]) {
+              typeOfNotificationForMarket[
+                  TypeOfNotificationForMarketEnum.product_comment] ||
+          data["type"] ==
+              typeOfNotificationForMarket[
+                  TypeOfNotificationForMarketEnum.seller_comment_added]) {
         try {
-          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
-              GetFullProductDetailsEvent(
-                  productSlug: data["product_slug"].toString(),
-                  productId: data["product_id"].toString()));
-          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context).add(
-              AddCurrentSelectedColorEvent(
-                  currentSelectedColor: 0,
-                  productId: data["product_id"].toString()));
+          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context)
+              .add(GetFullProductDetailsEvent(
+            productSlug: data["product_slug"].toString(),
+          ));
+          BlocProvider.of<HomeBloc>(navigatorKey.currentState!.context)
+              .add(AddCurrentSelectedColorEvent(
+            currentSelectedColor: 0,
+            productSlug: data["product_slug"].toString(),
+          ));
 
           Future.delayed(
               Duration(seconds: 1),

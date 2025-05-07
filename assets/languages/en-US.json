@@ -420,5 +420,7 @@
   "we_work_in_the_languages_listed_below": "We work in the languages ​​listed below",
   "language": "Language",
   "available_language": "Available language",
-  "profile_language": "Profile | Language"
+  "profile_language": "Profile | Language",
+  "feature_product": "Featured Products",
+  "outside_available_area": "Not possible outside the available area"
 }

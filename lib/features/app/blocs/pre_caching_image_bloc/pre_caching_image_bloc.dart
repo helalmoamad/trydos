@@ -191,8 +191,10 @@ class PreCachingImageBloc
     CacheImageEvent event,
     Emitter<PreCachingImageState> emit,
   ) async {
-    print(state.cachedImages);
-    // if (state.cachedImages[event.imageUrl] == true) return;
+    final updatedCachedImages = Map<String, bool>.from(state.cachedImages);
+    updatedCachedImages[event.imageUrl] = false;
+
+    if (state.cachedImages[event.imageUrl] == true) return;
     // 1. التحقق من وجود الصورة في الكاش مسبقًا
     final cachedFile =
         await CustomCacheManagers().getFileFromCache(event.imageUrl);
@@ -203,8 +205,6 @@ class PreCachingImageBloc
     // 2. التحقق من عدم وجود تحميل جارٍ للصورة
 
     // 3. تحديث الحالة لإظهار أن التحميل جارٍ
-    final updatedCachedImages = Map<String, bool>.from(state.cachedImages);
-    updatedCachedImages[event.imageUrl] = false;
     emit(PreCachingImageState(cachedImages: updatedCachedImages));
 
     // 4. اختيار Semaphore المناسب حسب نوع الصورة
@@ -275,16 +275,20 @@ class PreCachingImageBloc
     Map<String, bool> cachefSvgs = Map.of(state.cachehSvgs);
     List<String> keysImages = cachedImages.keys.toList();
     List<String> keysSvgs = cachefSvgs.keys.toList();
-    for (var i = 0; i < keysImages.length; i++) {
-      if (await CustomCacheManagers().getFileFromCache(keysImages[i]) == null) {
-        cachedImages.removeWhere((key, value) => key == key[i]);
+
+    try {
+      for (var i = 0; i < keysImages.length; i++) {
+        if (await CustomCacheManagers().getFileFromCache(keysImages[i]) ==
+            null) {
+          cachedImages.removeWhere((key, value) => key == key[i]);
+        }
       }
-    }
-    for (var i = 0; i < keysSvgs.length; i++) {
-      if (await CustomCacheManagers().getFileFromCache(keysSvgs[i]) == null) {
-        cachefSvgs.removeWhere((key, value) => key == key[i]);
+      for (var i = 0; i < keysSvgs.length; i++) {
+        if (await CustomCacheManagers().getFileFromCache(keysSvgs[i]) == null) {
+          cachefSvgs.removeWhere((key, value) => key == key[i]);
+        }
       }
-    }
+    } catch (e) {}
     emit(PreCachingImageState(
         cachedImages: cachedImages, cachehSvgs: cachefSvgs));
   }

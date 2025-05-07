@@ -161,10 +161,8 @@ class _ProductDetailsSheetBottomBarState
                   ?.length !=
               current.addImagesToProductIdForCart[widget.productIdForRequestApi]
                   ?.length ||
-          previous.currentSelectedColorForEveryProduct[
-                  widget.productIdForRequestApi] !=
-              current.currentSelectedColorForEveryProduct[
-                  widget.productIdForRequestApi] ||
+          previous.currentSelectedColorForEveryProduct[widget.productSlug] !=
+              current.currentSelectedColorForEveryProduct[widget.productSlug] ||
           previous.productStatus != current.productStatus ||
           previous.updateItemInCartStatus != current.updateItemInCartStatus ||
           previous.addItemInCartStatus != current.addItemInCartStatus ||
@@ -272,9 +270,11 @@ class _ProductDetailsSheetBottomBarState
                                                                     widget
                                                                         .collectedAfterOrder
                                                                 ? (state.getProductDetailWithoutSimilarRelatedProductsStatus ==
-                                                                        GetProductDetailWithoutSimilarRelatedProductsStatus.failure)
+                                                                        GetProductDetailWithoutSimilarRelatedProductsStatus
+                                                                            .failure)
                                                                     ? Container(
-                                                                        width: 120,
+                                                                        width:
+                                                                            120,
                                                                         height: 60,
                                                                         decoration: BoxDecoration(
                                                                           borderRadius:
@@ -288,8 +288,8 @@ class _ProductDetailsSheetBottomBarState
                                                                                 productId: widget.products.productId.toString().toString()));
                                                                           } else {
                                                                             BlocProvider.of<HomeBloc>(context).add(GetFullProductDetailsEvent(
-                                                                                productSlug: widget.productSlug,
-                                                                                productId: widget.products.productId.toString()));
+                                                                              productSlug: widget.productSlug,
+                                                                            ));
                                                                           }
                                                                         }))
                                                                     : (state.getProductDetailWithoutSimilarRelatedProductsStatus != GetProductDetailWithoutSimilarRelatedProductsStatus.success || state.changeSizesForEveryProduct != ChangeSizesForEveryProduct.success || state.enableAddToCardAfterChangeVariantZero != EnableAddToCardAfterChangeVariantZero.success)
@@ -358,7 +358,7 @@ class _ProductDetailsSheetBottomBarState
                                                                                                   : ""
                                                                                               : ""
                                                                                           : "",
-                                                                                      productSlugForTopic: state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]?.product?.slugEnTopic ?? "",
+                                                                                      productSlugForTopic: state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]?.product?.slug ?? "",
                                                                                       boutiqueId: state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi] != null
                                                                                           ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.boutique != null
                                                                                               ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.boutique!.id!
@@ -428,7 +428,7 @@ class _ProductDetailsSheetBottomBarState
                                                                                                   : ""
                                                                                               : ""
                                                                                           : "",
-                                                                                      productSlugForTopic: state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]?.product?.slugEnTopic ?? "",
+                                                                                      productSlugForTopic: state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]?.product?.slug ?? "",
                                                                                       boutiqueId: state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi] != null
                                                                                           ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.boutique != null
                                                                                               ? state.cachedProductWithoutRelatedProductsModel[widget.productIdForRequestApi]!.product!.boutique!.id!
@@ -733,7 +733,7 @@ class _ProductDetailsSheetBottomBarState
                                                                   widget
                                                                       .productIdForCashproducts]
                                                               ?.product
-                                                              ?.slugEnTopic ??
+                                                              ?.slug ??
                                                           "",
                                                       productSlug:
                                                           widget.productSlug,

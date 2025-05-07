@@ -503,6 +503,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
         ////////////////////////////
         emit(
           state.copyWith(
+            orderTotalSize: r.data?.total ?? 0,
             getOrdersModel: getOrdersModel.map(
               (key, value) {
                 if (key == event.status) {

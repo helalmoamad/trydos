@@ -172,14 +172,16 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
   @override
   void initState() {
     scrollController.addListener(() {
-      if (scrollController.offset >=
-          (scrollController.position.maxScrollExtent * 0.6)) {
-        boutiqueBloc.add(GetFiltersWithPaginatioEvent(
-          fromHomePageSearch: true,
-          searchText: widget.controller.text,
-          boutiqueSlug: "search",
-        ));
-      }
+      try {
+        if (scrollController.offset >=
+            (scrollController.position.maxScrollExtent * 0.6)) {
+          boutiqueBloc.add(GetFiltersWithPaginatioEvent(
+            fromHomePageSearch: true,
+            searchText: widget.controller.text,
+            boutiqueSlug: "search",
+          ));
+        }
+      } catch (e) {}
     });
     boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
     super.initState();

@@ -222,12 +222,12 @@ class _ProductCollectionInCartPage1State
                                 BlocProvider.of<HomeBloc>(context).add(
                                     AddCurrentSelectedColorEvent(
                                         currentSelectedColor: indexess,
-                                        productId: isOldCart
+                                        productSlug: isOldCart
                                             ? oldCartCollection![index]
-                                                .productId
+                                                .slug
                                                 .toString()
                                             : cartCollection![index]
-                                                .productId
+                                                .slug
                                                 .toString()));
                               }
                               HelperFunctions.slidingNavigation(
@@ -808,14 +808,14 @@ class _ProductCollectionInCartPage1State
                                                           .add(AddCurrentSelectedColorEvent(
                                                               currentSelectedColor:
                                                                   indexess,
-                                                              productId: isOldCart
+                                                              productSlug: isOldCart
                                                                   ? oldCartCollection![
                                                                           index]
-                                                                      .productId
+                                                                      .slug
                                                                       .toString()
                                                                   : cartCollection![
                                                                           index]
-                                                                      .productId
+                                                                      .slug
                                                                       .toString()));
                                                     }
                                                     HelperFunctions
@@ -1287,14 +1287,14 @@ class _ProductCollectionInCartPage1State
                                                   .add(AddCurrentSelectedColorEvent(
                                                       currentSelectedColor:
                                                           indexess,
-                                                      productId: isOldCart
+                                                      productSlug: isOldCart
                                                           ? oldCartCollection![
                                                                   index]
-                                                              .productId
+                                                              .slug
                                                               .toString()
                                                           : cartCollection![
                                                                   index]
-                                                              .productId
+                                                              .slug
                                                               .toString()));
                                             }
                                             HelperFunctions.slidingNavigation(

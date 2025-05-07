@@ -8,6 +8,13 @@ import '../../../../../core/data/model/pagination_model.dart';
 
 enum GetProductFiltersStatus { init, loading, success, failure }
 
+enum GetFiltersForNavigatorFromLinkToListingPageStatus {
+  init,
+  loading,
+  success,
+  failure
+}
+
 @JsonSerializable(explicitToJson: true)
 @immutable
 class BoutiqueState extends Equatable {
@@ -23,6 +30,7 @@ class BoutiqueState extends Equatable {
     this.finishGetAllFilter = false,
     this.getProductListingWithFiltersPaginationModels = const {},
     this.getProductFiltersModel = const {},
+    this.getFiltersForNavigatorFromLinkToListingPageStatus,
     this.prefAppliedFilterForExtendFilter,
     this.isGettingProductListingWithPagination = false,
     this.choosedFiltersByUser = const {},
@@ -41,6 +49,9 @@ class BoutiqueState extends Equatable {
   final Map<String, get_filters.GetProductFiltersModel?> appliedFiltersByUser;
   final Map<String, get_filters.GetProductFiltersModel?> choosedFiltersByUser;
   final bool cashedOrginalBoutique;
+  final GetFiltersForNavigatorFromLinkToListingPageStatus?
+      getFiltersForNavigatorFromLinkToListingPageStatus;
+
   final bool finishGetAllFilter;
   final bool isGettingProductListingWithPagination;
   final bool? isExpandedForListingPage;
@@ -61,6 +72,7 @@ class BoutiqueState extends Equatable {
         prefAppliedFilterForExtendFilter,
         cashedOrginalBoutique,
         isExpandedForListingPage,
+        getFiltersForNavigatorFromLinkToListingPageStatus,
         filterOffset,
         getProductFiltersStatus,
         finishGetAllFilter,
@@ -90,6 +102,8 @@ class BoutiqueState extends Equatable {
     final Map<String, PaginationModel<product.Products>?>?
         getProductListingWithFiltersPaginationModels,
     final Map<String, bool>? boutiquesThatDidPrefetch,
+    final GetFiltersForNavigatorFromLinkToListingPageStatus?
+        getFiltersForNavigatorFromLinkToListingPageStatus,
     final Map<String, get_filters.GetProductFiltersModel?>?
         getProductFiltersModel,
     get_filters.Filter? prefAppliedFilterForExtendFilter,
@@ -119,6 +133,9 @@ class BoutiqueState extends Equatable {
         choosedFiltersByUser: choosedFiltersByUser ?? this.choosedFiltersByUser,
         isExpandedForListingPage:
             isExpandedForListingPage ?? this.isExpandedForListingPage,
+        getFiltersForNavigatorFromLinkToListingPageStatus:
+            getFiltersForNavigatorFromLinkToListingPageStatus ??
+                this.getFiltersForNavigatorFromLinkToListingPageStatus,
         appliedFiltersByUser: appliedFiltersByUser ?? this.appliedFiltersByUser,
         isGettingProductListingWithPagination:
             isGettingProductListingWithPagination ??

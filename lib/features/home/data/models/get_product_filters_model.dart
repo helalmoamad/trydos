@@ -6,6 +6,7 @@ import 'dart:convert';
 
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/home/data/models/get_category_model.dart';
+import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 
@@ -228,7 +229,7 @@ class Boutique {
   final int? id;
   final String? slug;
   final String? name;
-  final CategoryBanner? banner;
+  final BunnerBoutique? banner;
   final String? image;
   final bool? isSelected;
 
@@ -244,7 +245,7 @@ class Boutique {
           {int? id,
           String? slug,
           String? name,
-          CategoryBanner? banner,
+          BunnerBoutique? banner,
           String? image,
           final bool? isSelected}) =>
       Boutique(
@@ -262,7 +263,7 @@ class Boutique {
         name: json["name"],
         banner: json["banner"] == null || json["banner"] == []
             ? null
-            : CategoryBanner.fromJson(json["banner"]),
+            : BunnerBoutique.fromJson(json["banner"]),
         image: json["image"],
       );
 

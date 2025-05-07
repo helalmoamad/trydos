@@ -50,6 +50,7 @@ class OrderState extends Equatable {
     this.customerWalletModel,
     this.lastAdressInfoClassToSave,
     this.getOrdersModel = const {},
+    this.orderTotalSize = 0,
     this.setCustomerAddressDefaultStatus = SetCustomerAddressDefaultStatus.init,
     this.getCustomerAddressStatus = GetCustomerAddressesStatus.init,
     this.currentAddressChoosed,
@@ -89,6 +90,7 @@ class OrderState extends Equatable {
   final GetAddressByTextStatus? getAddressByTextStatus;
   final List<ResultSearch>? resultSearch;
   final List<String>? provincesByIso;
+  final int orderTotalSize;
   final ApplyCouponStatus? applyCouponStatus;
   final ApplyCouponModel? applyCouponModel;
 
@@ -107,6 +109,7 @@ class OrderState extends Equatable {
         getOrdersModel,
         setCustomerAddressDefaultStatus,
         getCustomerAddressStatus,
+        orderTotalSize,
         currentAddressChoosed,
         listOfAddressInfoClassToSave,
         removeAddressToOrderStatus,
@@ -135,6 +138,7 @@ class OrderState extends Equatable {
     final int? currentAddressChoosed,
     final List<CustomerAddressesInfo>? listOfAdressInfoClassToSave,
     final CustomerAddressesInfo? lastAdressInfoClassToSave,
+    final int? orderTotalSize,
     final RemoveAddressToOrderStatus? removeAddressToOrderStatus,
     final AddAddressToOrderStatus? addAddressToOrderStatus,
     final EditAddressToOrderStatus? editAddressToOrderStatus,
@@ -166,6 +170,7 @@ class OrderState extends Equatable {
           this.setCustomerAddressDefaultStatus,
       lastAdressInfoClassToSave:
           lastAdressInfoClassToSave ?? this.lastAdressInfoClassToSave,
+      orderTotalSize: orderTotalSize ?? this.orderTotalSize,
       getCustomerAddressStatus:
           getCustomerAddressesStatus ?? this.getCustomerAddressStatus,
       currentAddressChoosed:

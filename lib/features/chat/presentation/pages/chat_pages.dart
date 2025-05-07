@@ -93,7 +93,6 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
       BlocProvider.of<AppBloc>(context).add(ChangeTabInChat(0));
     }
     saveUserContacts();
-
     super.initState();
   }
 

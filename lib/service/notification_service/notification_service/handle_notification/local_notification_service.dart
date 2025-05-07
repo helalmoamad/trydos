@@ -125,6 +125,12 @@ class LocalNotificationService {
                   .product_when_change_in_price] ||
           data?["type"] ==
               typeOfNotificationForMarket[
+                  TypeOfNotificationForMarketEnum.seller_comment_added] ||
+          data?["type"] ==
+              typeOfNotificationForMarket[
+                  TypeOfNotificationForMarketEnum.seller_product_stock_out] ||
+          data?["type"] ==
+              typeOfNotificationForMarket[
                   TypeOfNotificationForMarketEnum.product_before_stock_out]) {
         imageUrl = data?["image"] ?? "";
       }

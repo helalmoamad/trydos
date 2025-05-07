@@ -2,7 +2,13 @@ import 'package:flutter/material.dart';
 
 class MyTextWidget extends StatelessWidget {
   const MyTextWidget(this.text,
-      {this.style, this.textScaleFactor, this.maxLines,this.textDirection ,this.textAlign,this.overflow,  super.key});
+      {this.style,
+      this.textScaleFactor,
+      this.maxLines,
+      this.textDirection,
+      this.textAlign,
+      this.overflow,
+      super.key});
 
   final String text;
   final TextStyle? style;
@@ -15,6 +21,7 @@ class MyTextWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
+      key: ValueKey(text),
       text,
       style: style,
       maxLines: maxLines,

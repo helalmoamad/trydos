@@ -18,8 +18,7 @@ import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
+
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 
@@ -30,7 +29,7 @@ import '../../../app/my_text_widget.dart';
 import '../../../app/svg_network_widget.dart';
 
 class HomePageCard2 extends cupertino.StatefulWidget {
-  HomePageCard2(
+  const HomePageCard2(
       {super.key,
       this.withSlidingImages = false,
       required this.boutique,
@@ -73,6 +72,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
           error: error.toString());
     };*/
     return Stack(
+      key: cupertino.ValueKey(widget.boutique.slug),
       alignment: Alignment.bottomCenter,
       children: [
         InkWell(
@@ -284,6 +284,11 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                                       .banners?[index] !=
                                                   null
                                               ? ClipRRect(
+                                                  key: cupertino.ValueKey(widget
+                                                          .boutique
+                                                          .banners![index]
+                                                          .filePath ??
+                                                      ""),
                                                   borderRadius:
                                                       BorderRadius.circular(15),
                                                   child: MyCachedNetworkImage(

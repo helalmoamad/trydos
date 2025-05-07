@@ -421,5 +421,7 @@
   "we_work_in_the_languages_listed_below": "نحن نعمل في هذه اللغات المدرجة أدناه",
   "language": "اللغة",
   "available_language": "اللغة المتاحة",
-  "profile_language": "الملف الشخصي | اللغة"
+  "profile_language": "الملف الشخصي | اللغة",
+  "feature_product": "المنتجات المميزة",
+  "outside_available_area": "غير ممكن خارج المنطقة المتاحة"
 }

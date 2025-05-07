@@ -25,7 +25,7 @@ import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:get_it/get_it.dart';
 
 class CategoriesFilterList extends StatelessWidget {
-  CategoriesFilterList(
+  const CategoriesFilterList(
       {super.key,
       required this.expandingFiltersStack,
       required this.workWithChoosedFilter,

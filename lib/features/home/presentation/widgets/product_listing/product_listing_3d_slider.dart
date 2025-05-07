@@ -30,17 +30,15 @@ import '../../../../../service/language_service.dart';
 import '../../../../app/my_text_widget.dart';
 import 'my_gallery3d_widget.dart';
 
-import 'package:get_it/get_it.dart';
-
 class ProductListing3DSlider extends StatefulWidget {
   const ProductListing3DSlider(
       {super.key,
       required this.setThisEnabled,
       required this.slidingModeItem,
       required this.itemIndex,
+      this.fromHomePage = false,
       required this.tapIndexToAddProductToCart,
       required this.productItem,
-      required this.displayFirstColors,
       required this.displayImageColors,
       required this.currentChosenColor});
 
@@ -49,8 +47,7 @@ class ProductListing3DSlider extends StatefulWidget {
   final ValueNotifier<int> tapIndexToAddProductToCart;
   final int itemIndex;
   final bool displayImageColors;
-  final bool displayFirstColors;
-
+  final bool fromHomePage;
   final productListingModel.Products productItem;
   final ValueNotifier<int> currentChosenColor;
 
@@ -114,31 +111,12 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
   final CarouselSliderController carouselController =
       CarouselSliderController();
   List<productListingModel.SyncColorImage>? syncColorImageList;
-  List<listing.Color>? colorsForSync = [];
+
   @override
   void initState() {
-    colorsForSync = widget.productItem.colors;
     homeBloc = BlocProvider.of<HomeBloc>(context);
     syncColorImageList = widget.productItem.syncColorImages;
-    if (widget.displayFirstColors) {
-      if (syncColorImageList?.length == 3) {
-        listing.SyncColorImage firstImage = syncColorImageList![0];
-        listing.Color firstColor = colorsForSync![0];
-        firstImage = syncColorImageList!.removeAt(0);
-        firstColor = colorsForSync!.removeAt(0);
-        syncColorImageList!.insert(1, firstImage);
-        colorsForSync!.insert(1, firstColor);
-      } else if ((syncColorImageList?.length ?? 0) > 3) {
-        listing.SyncColorImage firstImage = syncColorImageList![0];
-        listing.Color firstColor = colorsForSync![0];
-        firstColor = colorsForSync!.removeAt(0);
-        firstImage = syncColorImageList!.removeAt(0);
-        colorsForSync!
-            .insert(((syncColorImageList!.length ~/ 2) + 1), firstColor);
-        syncColorImageList!
-            .insert(((syncColorImageList!.length ~/ 2) + 1), firstImage);
-      }
-    }
+
     syncColorImageList?.removeWhere((element) => element.images.isNullOrEmpty);
     syncColorImageList = [
       ...syncColorImageList ?? [],
@@ -220,7 +198,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
         Duration(milliseconds: 600),
         () => homeBloc.add(AddCurrentSelectedColorEvent(
             currentSelectedColor: syncColorImageList!.length ~/ 4,
-            productId: widget.productItem.productId.toString())));
+            productSlug: widget.productItem.slug.toString())));
     gallery3dControllerForCircles = null;
 
     if (widget.displayImageColors) {
@@ -269,7 +247,6 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
         },
       );
     }
-
     super.initState();
   }
 
@@ -286,14 +263,14 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: error.toString());
-    };
+    };*/
     slideModeIndex = widget.itemIndex == widget.slidingModeItem.item1
         ? widget.slidingModeItem.item2
         : 0;
 
     FlutterError.onError = (error) {
       debugPrint(error.toString());
-    };*/
+    };
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Material(
@@ -461,7 +438,6 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                         onItemClick: (index) {
                                           widget.setThisEnabled.call(-1, -1);
                                         },
-                                        images: sliderData.item2,
                                         galleryHeight: 240,
                                         itemHeight: 240,
                                         onItemChanged: (int index) {
@@ -558,7 +534,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                               widget.setThisEnabled
                                                   .call(-1, -1);
                                             },
-                                            images: sliderData.item2,
+
                                             galleryHeight: 240,
                                             onItemChanged: (int index) {
                                               bool scrollToLeft = false;
@@ -635,14 +611,19 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                   valueListenable: currentColorIndex,
                                   builder: (context, currentIndex, _) {
                                     Future.delayed(
-                                        Duration(milliseconds: 600),
-                                        () => homeBloc.add(
-                                            AddCurrentSelectedColorEvent(
-                                                currentSelectedColor:
-                                                    currentIndex,
-                                                productId: widget
-                                                    .productItem.productId
-                                                    .toString())));
+                                        Duration(milliseconds: 50),
+                                        () => homeBloc.add(AddCurrentSelectedColorEvent(
+                                            currentSelectedColor: currentIndex >
+                                                    ((widget
+                                                                .productItem
+                                                                .syncColorImages
+                                                                ?.length ??
+                                                            0) -
+                                                        1)
+                                                ? 0
+                                                : currentIndex,
+                                            productSlug: widget.productItem.slug
+                                                .toString())));
                                     return MyTextWidget(
                                       syncColorImageList.isNullOrEmpty
                                           ? ""
@@ -652,7 +633,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                       textAlign: TextAlign.center,
                                       style: textTheme.titleMedium?.mq.copyWith(
                                         color: Color(int.parse(
-                                            '0xff${colorsForSync![currentIndex % colorsForSync!.length].color!.substring(1)}')),
+                                            '0xff${widget.productItem.colors![currentIndex % widget.productItem.colors!.length].color!.substring(1)}')),
                                       ),
                                     );
                                   },
@@ -673,14 +654,16 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                       height: 290,
                                       width: 200,
                                       child: CarouselSlider.builder(
-                                          itemCount: syncColorImageList
-                                                  .isNullOrEmpty
-                                              ? widget
-                                                  .productItem.images!.length
-                                              : syncColorImageList![
-                                                      prevIndexInSecondSlider]
-                                                  .images!
-                                                  .length,
+                                          key: UniqueKey(),
+                                          itemCount: widget.fromHomePage
+                                              ? 1
+                                              : syncColorImageList.isNullOrEmpty
+                                                  ? widget.productItem.images!
+                                                      .length
+                                                  : syncColorImageList![
+                                                          prevIndexInSecondSlider]
+                                                      .images!
+                                                      .length,
                                           carouselController:
                                               carouselController,
                                           options: CarouselOptions(
@@ -986,11 +969,14 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                     MyTextWidget(
                                       HelperFunctions.formatNumber(
                                           number: (price *
-                                              state
-                                                  .getCurrencyForCountryModel!
-                                                  .data!
-                                                  .currency!
-                                                  .exchangeRate!))
+                                              ((state.getCurrencyForCountryModel ==
+                                                      null)
+                                                  ? 1
+                                                  : state
+                                                      .getCurrencyForCountryModel!
+                                                      .data!
+                                                      .currency!
+                                                      .exchangeRate!)))
                                       /* .toStringAsFixed(state.startingSetting
                                                     ?.decimalPointSetting ??
                                                 2)
@@ -1008,11 +994,14 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                     MyTextWidget(
                                       HelperFunctions.formatNumber(
                                           number: (offerPrice *
-                                              state
-                                                  .getCurrencyForCountryModel!
-                                                  .data!
-                                                  .currency!
-                                                  .exchangeRate!))
+                                              ((state.getCurrencyForCountryModel ==
+                                                      null)
+                                                  ? 1
+                                                  : state
+                                                      .getCurrencyForCountryModel!
+                                                      .data!
+                                                      .currency!
+                                                      .exchangeRate!)))
                                       /*.toStringAsFixed(state.startingSetting
                                                     ?.decimalPointSetting ??
                                                 2)
@@ -1027,9 +1016,11 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                       width: 2,
                                     ),
                                     MyTextWidget(
-                                      state.getCurrencyForCountryModel!.data!
-                                              .currency!.symbol ??
-                                          "",
+                                      state.getCurrencyForCountryModel == null
+                                          ? ""
+                                          : state.getCurrencyForCountryModel!
+                                                  .data!.currency!.symbol ??
+                                              "",
                                       style: TextStyle(fontSize: 10),
                                     )
                                   ]),
@@ -1279,13 +1270,14 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                       height: 40,
                                       imageUrl: images[index],
                                       innerShadowYOffset: 4,
-                                      borderColor: (colorsForSync?.length ??
+                                      borderColor: (widget.productItem.colors
+                                                      ?.length ??
                                                   0) ==
                                               0
                                           ? Colors.white
                                           : index == prevIndexInFirstSlider
                                               ? Color(int.parse(
-                                                  '0xff${colorsForSync![currentColorIndex.value % colorsForSync!.length].color!.substring(1)}'))
+                                                  '0xff${widget.productItem.colors![currentColorIndex.value % widget.productItem.colors!.length].color!.substring(1)}'))
                                               : Colors.white,
                                       circleShape: true,
                                     ),

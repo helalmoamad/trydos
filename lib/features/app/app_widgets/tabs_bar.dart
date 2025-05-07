@@ -63,55 +63,25 @@ class TabsBar extends StatefulWidget {
 class _TabsBarState extends State<TabsBar> {
   late AppBloc appBloc;
   late BoutiqueBloc boutiqueBloc;
-
+  late HomeBloc homeBloc;
   late CategoryBloc categoryBloc;
   late final geminis.Gemini gemini;
   SpeechToText _speechToText = SpeechToText();
   final ValueNotifier<bool> isRecordeForSearchWithMic = ValueNotifier(false);
   bool _speechEnabled = false;
-  List<String> sizesForSearch = [
-    "2xl",
-    "34 eu",
-    "38eu",
-    "39.5eu",
-    "3xl",
-    "41eu",
-    "42eu",
-    "44eu",
-    "45eu",
-    "46eu",
-    "4xl",
-    "5xl",
-    "l",
-    "m",
-    "s",
-    "s/m",
-    "xl",
-    "xs",
-    "xxl"
-  ];
-  List<String> colorsCodeForSearch = [
-    "#000000",
-    "#0000ff",
-    "#ffff00",
-    "#228b22",
-    "#a52a2a",
-    "#ffffff"
-  ];
-  List<String> colorsNameForSearch = [
-    "أسود",
-    "ازرق",
-    "اصفر",
-    "اخضر",
-    "احمر",
-    "ابيض"
-  ];
+  List<String> sizesForSearch = [];
+  List<String> colorsCodeForSearch = [];
+  List<String> colorsNameForSearch = [];
   List<String> constWordToRemoveItFromSearch = [
     "قياس",
     "حجم",
     "لون",
     "اللون",
     "الالوان"
+        "Measurement",
+    "Size",
+    "Color",
+    "Colors"
   ];
   void _startListening() async {
     if (!_speechEnabled) {
@@ -213,8 +183,18 @@ class _TabsBarState extends State<TabsBar> {
   void initState() {
     categoryBloc = BlocProvider.of<CategoryBloc>(context);
     boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
+    homeBloc = BlocProvider.of<HomeBloc>(context);
     gemini = geminis.Gemini.instance;
+    homeBloc.state.geColorsAndSizesForSearchModel?.data?.colors
+        ?.forEach((element) {
+      colorsCodeForSearch.add(element.code ?? "");
+      colorsNameForSearch.add(element.name ?? "");
+    });
 
+    homeBloc.state.geColorsAndSizesForSearchModel?.data?.sizes
+        ?.forEach((element) {
+      sizesForSearch.add(element);
+    });
     widget.controller.clear();
     List<String>? categorySlugs = [];
     categoryBloc.state.mainCategoriesResponseModel?.data?.mainCategories

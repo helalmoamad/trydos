@@ -47,6 +47,7 @@ class _TrydosShimmerLoadingState extends State<TrydosShimmerLoading>
   @override
   Widget build(BuildContext context) {
     return Container(
+      key: ValueKey("shimmer"),
       width: widget.width,
       height: widget.height,
       decoration: BoxDecoration(

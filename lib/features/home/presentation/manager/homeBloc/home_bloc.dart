@@ -36,6 +36,7 @@ import 'package:trydos/features/home/domain/use_cases/convert_item_from_oldCart_
 import 'package:trydos/features/home/domain/use_cases/delete_like_of_product_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_allowed_country_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_cart_item_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/get_colors_sizes_for_search_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_count_view_of_product_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_currency_for_country_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_full_product_details_usecase.dart';
@@ -135,6 +136,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.getAndAddCountViewOfProductUsecase,
     this.sendErrorToMobileErrorLogUseCase,
     this.getProductsWithoutFiltersUseCase,
+    this.getColorsAndSizesForSearchUseCase,
     this.addCommentUseCase,
     this.requestForNotificationWhenProductBecameAvailableUseCase,
     this.checkAvailabilityProductCartUsecase,
@@ -147,8 +149,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       _onGetAndAddCountViewOfProductEvent,
     );
 
-    on<IsChangedvariationWhenQtyZeroEvent>(
+    on<IsChangedVariationWhenQtyZeroEvent>(
       _onIsChangedvariationWhenQtyZeroEvent,
+    );
+
+    on<IsChangedColorBeforOpenPanelEvent>(
+      _onIsChangedColorBeforOpenPanelEvent,
     );
 
     on<SaveUserInfoFromAuthEvent>(
@@ -311,6 +317,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<GetCommentForProductEvent>(
       _onGetCommentForProductEvent,
     );
+    on<GeColorsAndSizesForSearchEvent>(
+      _onGeColorsAndSizesForSearchEvent,
+    );
 
     on<RemoveItemsFromCartAfterOrderSuccessEvent>(
       _onRemoveItemsFromCartAfterOrderSuccessEvent,
@@ -372,7 +381,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final HideItemsInOldCartUseCase hideItemsInOldCartUseCase;
   final GetAllowedCountryUseCase getAllowedCountryUseCase;
   final GetFullProductDetailsUseCase getFullProductDetailsUseCase;
-
+  final GetColorsAndSizesForSearchUseCase getColorsAndSizesForSearchUseCase;
   final CheckAvailabilityProductCartUsecase checkAvailabilityProductCartUsecase;
 
   final SubscribeTopicFornotificationUseCase
@@ -412,9 +421,15 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   }
 
   FutureOr<void> _onIsChangedvariationWhenQtyZeroEvent(
-      IsChangedvariationWhenQtyZeroEvent event, Emitter<HomeState> emit) async {
+      IsChangedVariationWhenQtyZeroEvent event, Emitter<HomeState> emit) async {
     emit(state.copyWith(
-        isChangedvariationWhenQtyZero: event.isChangedvariationWhenQtyZero));
+        isChangedvariationWhenQtyZero: event.isChangedVariationWhenQtyZero));
+  }
+
+  FutureOr<void> _onIsChangedColorBeforOpenPanelEvent(
+      IsChangedColorBeforOpenPanelEvent event, Emitter<HomeState> emit) async {
+    emit(state.copyWith(
+        isChangedColorBeforeOpenPanel: event.iChangedColorBeforOpenPanelEvent));
   }
 
   FutureOr<void> _onRemoveItemsFromCartAfterOrderSuccessEvent(
@@ -602,6 +617,22 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     });
   }
 
+  FutureOr<void> _onGeColorsAndSizesForSearchEvent(
+      GeColorsAndSizesForSearchEvent event, Emitter<HomeState> emit) async {
+    final response = await getColorsAndSizesForSearchUseCase(NoParams());
+
+    response.fold((l) {
+      if (!isFailedTheFirstTime.contains('GeColorsAndSizesForSearchEvent')) {
+        add(GeColorsAndSizesForSearchEvent());
+
+        isFailedTheFirstTime.add('GeColorsAndSizesForSearchEvent');
+      }
+    }, (r) async {
+      isFailedTheFirstTime.remove('GeColorsAndSizesForSearchEvent');
+      emit(state.copyWith(geColorsAndSizesForSearchModel: r));
+    });
+  }
+
   FutureOr<void> _onGetFirebaseSettingForNotificationEvent(
       GetFirebaseSettingForNotificationEvent event,
       Emitter<HomeState> emit) async {
@@ -726,11 +757,11 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             CurrentSelectedColorForEveryProductStatus.loading));
     Map<String, int> currentSelectedColorForEveryProduct =
         Map.of(state.currentSelectedColorForEveryProduct);
-    if (currentSelectedColorForEveryProduct[event.productId] == null) {
+    if (currentSelectedColorForEveryProduct[event.productSlug] == null) {
       currentSelectedColorForEveryProduct
-          .addAll({event.productId: event.currentSelectedColor});
+          .addAll({event.productSlug: event.currentSelectedColor});
     } else {
-      currentSelectedColorForEveryProduct[event.productId] =
+      currentSelectedColorForEveryProduct[event.productSlug] =
           event.currentSelectedColor;
     }
     emit(state.copyWith(
@@ -3179,6 +3210,17 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
         return;
       }
+      if (event.currentColorName != null) {
+        int index = -1;
+        index = r.productItem!.colors!.indexWhere(
+          (element) => element.name == event.currentColorName,
+        );
+        if (index != -1) {
+          add(AddCurrentSelectedColorEvent(
+              currentSelectedColor: index,
+              productSlug: r.productItem!.slug ?? ""));
+        }
+      }
       Future.delayed(Duration(seconds: 2), () {
         add(GetAndAddCountViewOfProductEvent(
             productId: r.productItem!.productId.toString()));
@@ -3194,10 +3236,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           Map.of(state.cachedProductWithoutRelatedProductsModel);
       Map<String, GetProductDetailWithoutSimilarRelatedProductsStatus>
           productStatus = Map.from(state.productStatus ?? {});
-      productStatus[event.productId!] =
+      productStatus[r.productItem!.productId.toString()] =
           GetProductDetailWithoutSimilarRelatedProductsStatus.success;
-      cachedData.addAll(
-          {event.productId!: r.getProductDetailWithoutRelatedProductsModel!});
+      cachedData.addAll({
+        r.productItem!.productId.toString():
+            r.getProductDetailWithoutRelatedProductsModel!
+      });
       emit(state.copyWith(
         productStatus: productStatus,
         cachedProductWithoutRelatedProductsModel: cachedData,

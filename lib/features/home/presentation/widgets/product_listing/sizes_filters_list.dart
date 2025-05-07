@@ -60,13 +60,35 @@ class SizesFiltersList extends StatefulWidget {
 class _SizesFiltersListState extends State<SizesFiltersList> {
   late final ValueNotifier<int> currentIndexInSizes;
   String key = '';
-
+  final ScrollController scrollController = ScrollController();
   @override
   void initState() {
+    scrollController.addListener(() {
+      try {
+        if (scrollController.offset >=
+            (scrollController.position.maxScrollExtent * 0.6)) {
+          BlocProvider.of<BoutiqueBloc>(context)
+              .add(GetFiltersWithPaginatioEvent(
+            fromHomePageSearch: true,
+            searchText: widget.searchText,
+            category: widget.category,
+            boutiqueSlug: widget.boutiqueSlug,
+          ));
+        }
+      } catch (e) {}
+    });
     key = widget.boutiqueSlug + (widget.category ?? '');
     currentIndexInSizes =
         ValueNotifier((widget.attribute.options?.length ?? 0) ~/ 2);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+
+    // TODO: implement dispose
+    super.dispose();
   }
 
   @override
@@ -136,6 +158,7 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                 valueListenable: currentIndexInSizes,
                 builder: (context, currentIndex, _) {
                   return ListView.separated(
+                    controller: scrollController,
                     itemCount: widget.attribute.options?.length ?? 0,
                     shrinkWrap: true,
                     scrollDirection: Axis.horizontal,

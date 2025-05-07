@@ -6,6 +6,7 @@ import 'package:trydos/features/home/data/models/get_address_by_coordinates_mode
 import 'package:trydos/features/home/data/models/get_address_by_text_model.dart';
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
+import 'package:trydos/features/home/data/models/get_colors_and_sizes_model.dart';
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
 import 'package:trydos/features/home/data/models/get_count_view_of_product_model.dart';
 import 'package:trydos/features/home/data/models/get_currency_for_country_model.dart';
@@ -82,6 +83,9 @@ abstract class HomeRepository {
 
   Future<Either<Failure, NotificationTypeForProductModel>>
       getNotificationTypeForProduct();
+
+  Future<Either<Failure, GeColorsAndSizesForSearchModel>>
+      getColorsAndSizesForSearch();
   Future<Either<Failure, ListOfProductsFoundedInCartModel>>
       getProductsListInCart();
   Future<Either<Failure, bool>> storeFcmTokenOfMarket(
@@ -98,6 +102,8 @@ abstract class HomeRepository {
       Map<String, dynamic> params);
   Future<Either<Failure, GetProductListingWithFiltersModel>>
       getProductsWithFilters(Map<String, dynamic> params);
+  Future<Either<Failure, GetProductListingWithFiltersModel>>
+      getFeaturedProducts(Map<String, dynamic> params);
   Future<Either<Failure, ResponseOnlyMessageModel>> addCustomerAddress(
       Map<String, dynamic> params);
   Future<Either<Failure, GetAddressByTextModel>> getAddressByText(

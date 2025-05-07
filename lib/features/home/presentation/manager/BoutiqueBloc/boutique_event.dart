@@ -39,6 +39,22 @@ class GetFiltersEvent extends BoutiqueEvent {
   List<Object?> get props => [category, boutiqueSlug, forceUpdate];
 }
 
+class GetFiltersForNavigatorFromLinkToListingPageEvent extends BoutiqueEvent {
+  const GetFiltersForNavigatorFromLinkToListingPageEvent(
+      {required this.boutiqueSlug,
+      this.fromHomePageSearch = false,
+      this.filtersChoosedByUser});
+
+  final String boutiqueSlug;
+  final bool fromHomePageSearch;
+
+  final GetProductFiltersModel? filtersChoosedByUser;
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [boutiqueSlug];
+}
+
 class GetFiltersWithPaginatioEvent extends BoutiqueEvent {
   const GetFiltersWithPaginatioEvent(
       {this.category,
@@ -46,7 +62,7 @@ class GetFiltersWithPaginatioEvent extends BoutiqueEvent {
       this.getWithoutFilter = false,
       required this.boutiqueSlug,
       this.searchText,
-      this.fromExpandPage = false,
+      this.fromListingPage = false,
       this.cashedOrginalBoutique = false,
       this.getProductsFilterPreFetch = false,
       this.forceUpdate = false,
@@ -63,7 +79,7 @@ class GetFiltersWithPaginatioEvent extends BoutiqueEvent {
   final bool forceUpdate;
 
   final bool fromHomePageSearch;
-  final bool fromExpandPage;
+  final bool fromListingPage;
   final bool resetAppliesFilters;
   final GetProductFiltersModel? filtersChoosedByUser;
 

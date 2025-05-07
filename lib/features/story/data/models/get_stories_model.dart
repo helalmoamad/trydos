@@ -273,6 +273,7 @@ class Story {
   int? isPhoto;
   int? isVideo;
   String? photoPath;
+  String? oneLink;
   dynamic file;
   bool? isSeen;
   int? viewersCount;
@@ -285,6 +286,7 @@ class Story {
     this.id,
     this.cutVideoName,
     this.cutVideoPath,
+    this.oneLink,
     this.fullVideoName,
     this.fullVideoPath,
     this.storageVideoPath,
@@ -311,6 +313,7 @@ class Story {
     int? userId,
     int? isPhoto,
     int? isVideo,
+    String? oneLink,
     String? photoPath,
     dynamic file,
     bool? isSeen,
@@ -330,6 +333,7 @@ class Story {
         userId: userId ?? this.userId,
         isPhoto: isPhoto ?? this.isPhoto,
         isVideo: isVideo ?? this.isVideo,
+        oneLink: oneLink ?? this.oneLink,
         photoPath: photoPath ?? this.photoPath,
         file: file ?? this.file,
         isSeen: isSeen ?? this.isSeen,
@@ -341,6 +345,7 @@ class Story {
         id: json["id"],
         cutVideoName: json["cut_video_name"],
         cutVideoPath: json["cut_video_path"],
+        oneLink: json["link"],
         fullVideoName: json["full_video_name"],
         fullVideoPath: json["full_video_path"],
         storageVideoPath: json["storage_video_path"],
@@ -360,6 +365,7 @@ class Story {
         "id": id,
         "cut_video_name": cutVideoName,
         "cut_video_path": cutVideoPath,
+        "link": oneLink,
         "full_video_name": fullVideoName,
         "full_video_path": fullVideoPath,
         "storage_video_path": storageVideoPath,

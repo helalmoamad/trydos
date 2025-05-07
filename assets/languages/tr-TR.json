@@ -420,5 +420,7 @@
   "we_work_in_the_languages_listed_below": "Aşağıda listelenen dillerde çalışmaktayız",
   "language": "Dil",
   "available_language": "Mevcut dil",
-  "profile_language": "Profil | Dil"
+  "profile_language": "Profil | Dil",
+  "feature_product": "Öne Çıkan Ürünler",
+  "outside_available_area": "Mevcut alanın dışında mümkün değil"
 }

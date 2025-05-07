@@ -102,12 +102,25 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
     boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
 
     autoScrollController = AutoScrollController();
-
+    autoScrollController.addListener(() {
+      try {
+        if (autoScrollController.offset >=
+            (autoScrollController.position.maxScrollExtent * 0.6)) {
+          boutiqueBloc.add(GetFiltersWithPaginatioEvent(
+            fromHomePageSearch: true,
+            searchText: widget.searchText,
+            category: widget.category,
+            boutiqueSlug: widget.boutiqueSlug,
+          ));
+        }
+      } catch (e) {}
+    });
     super.initState();
   }
 
   @override
   void dispose() {
+    autoScrollController.dispose();
     lowerAndUpperPrices?.dispose();
     super.dispose();
   }

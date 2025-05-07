@@ -40,6 +40,8 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           (json['searchWithOutFilterOffset'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
       ),
+      isChangedColorBeforeOpenPanel:
+          json['isChangedColorBeforeOpenPanel'] as bool?,
       updateProfileStatus: $enumDecodeNullable(
           _$UpdateProfileStatusEnumMap, json['updateProfileStatus']),
       getProductDetailWithoutSimilarRelatedProductsStatus: $enumDecodeNullable(
@@ -282,6 +284,11 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       getNotificationTypeProductStatus: $enumDecodeNullable(
           _$GetNotificationTypeProductStatusEnumMap,
           json['getNotificationTypeProductStatus']),
+      geColorsAndSizesForSearchModel: json['geColorsAndSizesForSearchModel'] ==
+              null
+          ? null
+          : GeColorsAndSizesForSearchModel.fromJson(
+              json['geColorsAndSizesForSearchModel'] as Map<String, dynamic>),
       currentIndexForUpdateCart:
           (json['currentIndexForUpdateCart'] as num?)?.toInt(),
       userInfo: json['userInfo'] == null
@@ -340,6 +347,7 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           _$EnableAddToCardAfterChangeVariantZeroEnumMap[
               instance.enableAddToCardAfterChangeVariantZero],
       'isChangedvariationWhenQtyZero': instance.isChangedvariationWhenQtyZero,
+      'isChangedColorBeforeOpenPanel': instance.isChangedColorBeforeOpenPanel,
       'convertItemFromOldcartToCartStatus':
           _$ConvertItemFromOldcartToCartStatusEnumMap[
               instance.convertItemFromOldcartToCartStatus],
@@ -355,6 +363,8 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
               MapEntry(k, _$GetAndAddCountViewOfProductStatusEnumMap[e]!)),
       'popularSearchTerm':
           instance.popularSearchTerm?.map((e) => e.toJson()).toList(),
+      'geColorsAndSizesForSearchModel':
+          instance.geColorsAndSizesForSearchModel?.toJson(),
       'getUserNotificationModel': instance.getUserNotificationModel?.toJson(
         (value) => value.toJson(),
       ),

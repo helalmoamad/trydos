@@ -55,7 +55,7 @@ class Product {
 
   final String? deliveryAt;
 
-  final String? slugEnTopic;
+  final String? slug;
   final int? availableQuantity;
   final int? leftStock;
   final int? reviewsCount;
@@ -84,7 +84,7 @@ class Product {
     this.countOfPieces,
     this.variation,
     this.isLiked,
-    this.slugEnTopic,
+    this.slug,
     this.shippingCostMultiplyWithQuantity,
     this.shippingCost,
     this.countOfLikes,
@@ -108,7 +108,7 @@ class Product {
     dynamic description,
     dynamic model,
     dynamic features,
-    String? slugEnTopic,
+    String? slug,
     bool? isActive,
     List<Variation>? variation,
     List<ChoiceOption>? choiceOptions,
@@ -145,7 +145,7 @@ class Product {
       Product(
         id: id ?? this.id,
         description: description ?? this.description,
-        slugEnTopic: slugEnTopic ?? this.slugEnTopic,
+        slug: slug ?? this.slug,
         isActive: isActive ?? this.isActive,
         variation: variation ?? this.variation,
         choiceOptions: choiceOptions ?? this.choiceOptions,
@@ -177,7 +177,7 @@ class Product {
       id: json["id"],
       description: json["description"],
       countOfPieces: json["count_of_pieces"],
-      slugEnTopic: json["slug_en_topic"],
+      slug: json["slug"],
       shippingCostMultiplyWithQuantity:
           json["shipping_cost_multiply_with_quantity"],
       shippingCost: double.tryParse(json["shipping_cost"].toString()),
@@ -229,7 +229,7 @@ class Product {
         "has_discount": hasDiscount,
         "collected_after_ordering": collectedAfterOrdering,
         "delivery_at": deliveryAt,
-        "slug_en_topic": slugEnTopic,
+        "slug": slug,
         "is_country_restricted": countryIsRestricted,
         "shipping_days": shippingDays,
         "is_liked": isLiked,
@@ -239,6 +239,7 @@ class Product {
         "Left_stock": leftStock,
         "shipping_cost_multiply_with_quantity":
             shippingCostMultiplyWithQuantity,
+
         "shipping_cost": shippingCost?.toDouble(),
         "max_allowed_qty": maxAllowedQty,
 

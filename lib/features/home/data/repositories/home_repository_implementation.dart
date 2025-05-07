@@ -13,6 +13,7 @@ import 'package:trydos/features/home/data/models/get_address_by_text_model.dart'
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
+import 'package:trydos/features/home/data/models/get_colors_and_sizes_model.dart';
 
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
 
@@ -58,6 +59,12 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
   @override
   Future<Either<Failure, StartingSettingsResponseModel>> getStartingSettings() {
     return handlingExceptionRequest(tryCall: dataSource.getStartingSettings);
+  }
+
+  Future<Either<Failure, GeColorsAndSizesForSearchModel>>
+      getColorsAndSizesForSearch() {
+    return handlingExceptionRequest(
+        tryCall: dataSource.getColorsAndSizesForSearch);
   }
 
   @override
@@ -318,6 +325,13 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
       getProductsWithFilters(Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.getProductsWithFilters(params));
+  }
+
+  @override
+  Future<Either<Failure, GetProductListingWithFiltersModel>>
+      getFeaturedProducts(Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.getFeaturedProducts(params));
   }
 
   @override

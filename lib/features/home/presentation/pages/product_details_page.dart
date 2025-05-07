@@ -120,11 +120,13 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     }
 
     homeBloc = BlocProvider.of<HomeBloc>(context);
+    homeBloc.add(IsChangedColorBeforOpenPanelEvent(
+        iChangedColorBeforOpenPanelEvent: false));
     initialColor = homeBloc.state.currentSelectedColorForEveryProduct[
-            widget.productItem?.productId.toString()] ??
+            widget.productItem?.slug.toString()] ??
         -1;
-    homeBloc.add(IsChangedvariationWhenQtyZeroEvent(
-        isChangedvariationWhenQtyZero: false));
+    homeBloc.add(IsChangedVariationWhenQtyZeroEvent(
+        isChangedVariationWhenQtyZero: false));
 
     chatBloc = BlocProvider.of<ChatBloc>(context);
     appBloc = BlocProvider.of<AppBloc>(context);
@@ -170,6 +172,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     };
     return WillPopScope(
       onWillPop: () {
+        homeBloc.add(IsChangedColorBeforOpenPanelEvent(
+            iChangedColorBeforOpenPanelEvent: false));
         if (widget.fromCart ?? false) {
           homeBloc.add(GetCartItemEvent());
         }
@@ -187,7 +191,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
           if (widget.productItem != null && initialColor != -1) {
             homeBloc.add(AddCurrentSelectedColorEvent(
                 currentSelectedColor: initialColor ?? 0,
-                productId: widget.productItem!.productId.toString()));
+                productSlug: widget.productItem!.slug.toString()));
           }
 
           Navigator.of(context).pop();
@@ -205,11 +209,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               appBar: TrydosAppBar(
                 appBarParams: AppBarParams(
                     onBack: () {
+                      homeBloc.add(IsChangedColorBeforOpenPanelEvent(
+                          iChangedColorBeforOpenPanelEvent: false));
                       if (widget.productItem != null && initialColor != -1) {
                         homeBloc.add(AddCurrentSelectedColorEvent(
                             currentSelectedColor: initialColor ?? 0,
-                            productId:
-                                widget.productItem!.productId.toString()));
+                            productSlug: widget.productItem!.slug.toString()));
                       }
                     },
                     scrolledUnderElevation: 0,
@@ -355,13 +360,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                             productId: productItem?.productId
                                                 .toString()));
                                   } else {
-                                    BlocProvider.of<HomeBloc>(context).add(
-                                        GetFullProductDetailsEvent(
-                                            productSlug: widget
-                                                    .productSlugForOpeningChatDirectly ??
-                                                "",
-                                            productId: widget
-                                                .productIdForOpeningChatDirectly));
+                                    BlocProvider.of<HomeBloc>(context)
+                                        .add(GetFullProductDetailsEvent(
+                                      productSlug: widget
+                                              .productSlugForOpeningChatDirectly ??
+                                          "",
+                                    ));
                                   }
                                 },
                               );
@@ -566,6 +570,28 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         productId =
                             widget.productItem?.productId.toString() ?? '';
                       }
+                      String productSlug = widget
+                              .productIdForOpeningChatDirectly ??
+                          (state.cachedProductWithoutRelatedProductsModel[
+                                      productItem?.productId.toString()] !=
+                                  null
+                              ? state
+                                          .cachedProductWithoutRelatedProductsModel[
+                                              productItem?.productId
+                                                  .toString()]!
+                                          .product !=
+                                      null
+                                  ? state
+                                      .cachedProductWithoutRelatedProductsModel[
+                                          productItem?.productId.toString()]!
+                                      .product!
+                                      .slug
+                                      .toString()
+                                  : ""
+                              : "");
+                      if (productSlug == "") {
+                        productSlug = widget.productItem?.slug.toString() ?? '';
+                      }
                       /*     if (state
                                 .getProductDetailWithoutSimilarRelatedProductsStatus ==
                             GetProductDetailWithoutSimilarRelatedProductsStatus
@@ -603,9 +629,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         homeBloc.add(AddCurrentColorSizeEvent(choice_1: null));
                       }
 
-                      int currentSelectedColor = state
-                              .currentSelectedColorForEveryProduct[productId] ??
-                          (productItem?.syncColorImages?.length ?? 0) ~/ 2;
+                      int currentSelectedColor =
+                          state.currentSelectedColorForEveryProduct[
+                                  productSlug] ??
+                              (productItem?.syncColorImages?.length ?? 0) ~/ 2;
                       if (currentSelectedColor >
                           (productItem?.syncColorImages?.length ?? 0)) {
                         currentSelectedColor = 0;
@@ -1158,15 +1185,35 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                 .toString()
                             : ""
                         : "";
+                String productSlug =
+                    state.cachedProductWithoutRelatedProductsModel[
+                                productItem?.productId.toString()] !=
+                            null
+                        ? state
+                                    .cachedProductWithoutRelatedProductsModel[
+                                        productItem?.productId.toString()]!
+                                    .product !=
+                                null
+                            ? state
+                                .cachedProductWithoutRelatedProductsModel[
+                                    productItem?.productId.toString()]!
+                                .product!
+                                .slug
+                                .toString()
+                            : ""
+                        : "";
                 if (productId == "") {
                   productId = widget.productItem?.productId.toString() ?? '';
+                }
+                if (productSlug == "") {
+                  productSlug = widget.productItem?.slug.toString() ?? '';
                 }
                 return BlocBuilder<HomeBloc, HomeState>(
                   buildWhen: (previous, current) {
                     return previous.currentSelectedColorForEveryProduct[
-                                productId] !=
+                                productSlug] !=
                             current.currentSelectedColorForEveryProduct[
-                                productId] ||
+                                productSlug] ||
                         previous.getProductDetailWithoutSimilarRelatedProductsStatus !=
                             current
                                 .getProductDetailWithoutSimilarRelatedProductsStatus ||
@@ -1176,9 +1223,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             current.currentColorSizeForCart?["size"];
                   },
                   builder: (context, state) {
-                    currentSelectedColor =
-                        state.currentSelectedColorForEveryProduct[productId] ??
-                            (productItem?.syncColorImages?.length ?? 0) ~/ 2;
+                    currentSelectedColor = state
+                            .currentSelectedColorForEveryProduct[productSlug] ??
+                        (productItem?.syncColorImages?.length ?? 0) ~/ 2;
                     String currentSelectedColorName =
                         ((productItem?.colors?.length ?? 0) > 0)
                             ? productItem!.colors![currentSelectedColor].name ??
@@ -1224,6 +1271,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                     .cachedProductWithoutRelatedProductsModel[
                                         productItem?.productId.toString()]
                                     ?.product,
+                                productSlug: productSlug,
                                 productId: productId);
                             changeVariationIfQtyZero = false;
                           }
@@ -1252,15 +1300,13 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                   ?.product
                                   ?.collectedAfterOrdering ==
                               1,
-                      productIdForCashData:
-                          widget.productIdForOpeningChatDirectly ??
-                              widget.productItem!.productId.toString(),
+                      productIdForCashData: productId,
                       panelController: panelControllerForCart,
                       productSlugForTopic: state
                               .cachedProductWithoutRelatedProductsModel[
                                   productItem!.productId.toString()]
                               ?.product
-                              ?.slugEnTopic ??
+                              ?.slug ??
                           "",
                       productDescription:
                           HtmlParser.parseHTML(productItem!.details ?? "").text,
@@ -1389,6 +1435,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   void changeVariationWhenNotAvailable(
       {required Variation? currentVariation,
       required String productId,
+      required String productSlug,
       required Product? product}) async {
     if (!widget.fromNotification &&
         !widget.fromNotificationComment &&
@@ -1416,7 +1463,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
             Duration(milliseconds: 300),
             () => homeBloc.add(AddCurrentSelectedColorEvent(
                 currentSelectedColor: index != -1 ? index : 0,
-                productId: productId)));
+                productSlug: productSlug)));
 
         await Future.delayed(
             Duration(milliseconds: 300),
@@ -1439,7 +1486,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
             Duration(milliseconds: 300),
             () => homeBloc.add(AddCurrentSelectedColorEvent(
                 currentSelectedColor: index != -1 ? index : 0,
-                productId: productId)));
+                productSlug: productSlug)));
       } else {
         currentSelectedColorAfterChangeVariant = currentSelectedColor;
         currentVariation = product?.variation?.firstWhere(
@@ -1467,7 +1514,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     }
     await Future.delayed(
         Duration(seconds: 1),
-        () => homeBloc.add(IsChangedvariationWhenQtyZeroEvent(
-            isChangedvariationWhenQtyZero: true)));
+        () => homeBloc.add(IsChangedVariationWhenQtyZeroEvent(
+            isChangedVariationWhenQtyZero: true)));
   }
 }

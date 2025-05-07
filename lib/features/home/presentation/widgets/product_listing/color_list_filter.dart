@@ -51,11 +51,31 @@ class ColorsListFilter extends StatefulWidget {
 
 class _ColorsListFilterState extends State<ColorsListFilter> {
   String key = '';
-
+  final ScrollController scrollController = ScrollController();
   @override
   void initState() {
+    scrollController.addListener(() {
+      try {
+        if (scrollController.offset >=
+            (scrollController.position.maxScrollExtent * 0.6)) {
+          BlocProvider.of<BoutiqueBloc>(context)
+              .add(GetFiltersWithPaginatioEvent(
+            fromHomePageSearch: true,
+            searchText: widget.searchText,
+            category: widget.category,
+            boutiqueSlug: widget.boutiqueSlug,
+          ));
+        }
+      } catch (e) {}
+    });
     key = widget.boutiqueSlug + (widget.category ?? '');
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -125,6 +145,7 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
           SizedBox(
               height: 105,
               child: ListView.separated(
+                  controller: scrollController,
                   shrinkWrap: true,
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (ctx, index) {

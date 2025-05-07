@@ -135,6 +135,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
   final ValueNotifier<int> addToBagButtonShapeNotifier = ValueNotifier(0);
   final ValueNotifier<Tuple2<int, int>> setThisEnabledNotifier =
       ValueNotifier(Tuple2(-1, -1));
+
   final ValueNotifier<String?> showTitleForFilterList = ValueNotifier(null);
   final ValueNotifier<bool> displayBoutiqueIconInAppBar = ValueNotifier(false);
   final ValueNotifier<bool> fromSearchListing = ValueNotifier(false);
@@ -174,7 +175,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
       setThisEnabledNotifier.value = Tuple2(-1, -1);
     }
     if (scrollController.offset >=
-        (scrollController.position.maxScrollExtent * 0.7)) {
+        (scrollController.position.maxScrollExtent * 0.6)) {
       if (boutiqueBloc.state.isGettingProductListingWithPagination) return;
 
       if (boutiqueBloc
@@ -203,49 +204,19 @@ class _ProductListingPageState extends State<ProductListingPage> {
   }
 
   List<filter_products.Products> products = [];
-  List<String> sizesForSearch = [
-    "2xl",
-    "34 eu",
-    "38eu",
-    "39.5eu",
-    "3xl",
-    "41eu",
-    "42eu",
-    "44eu",
-    "45eu",
-    "46eu",
-    "4xl",
-    "5xl",
-    "l",
-    "m",
-    "s",
-    "s/m",
-    "xl",
-    "xs",
-    "xxl"
-  ];
-  List<String> colorsCodeForSearch = [
-    "#000000",
-    "#0000ff",
-    "#ffff00",
-    "#228b22",
-    "#a52a2a",
-    "#ffffff"
-  ];
-  List<String> colorsNameForSearch = [
-    "أسود",
-    "ازرق",
-    "اصفر",
-    "اخضر",
-    "احمر",
-    "ابيض"
-  ];
+  List<String> sizesForSearch = [];
+  List<String> colorsCodeForSearch = [];
+  List<String> colorsNameForSearch = [];
   List<String> constWordToRemoveItFromSearch = [
     "قياس",
     "حجم",
     "لون",
     "اللون",
     "الالوان"
+        "Measurement",
+    "Size",
+    "Color",
+    "Colors"
   ];
   void _startListening() async {
     if (!_speechEnabled) {
@@ -367,10 +338,20 @@ class _ProductListingPageState extends State<ProductListingPage> {
     categoryBloc = BlocProvider.of<CategoryBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
     boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
-    homeBloc.add(IsChangedvariationWhenQtyZeroEvent(
-        isChangedvariationWhenQtyZero: false));
-    homeBloc.add(IsChangedvariationWhenQtyZeroEvent(
-        isChangedvariationWhenQtyZero: false));
+    homeBloc.add(IsChangedVariationWhenQtyZeroEvent(
+        isChangedVariationWhenQtyZero: false));
+    homeBloc.add(IsChangedVariationWhenQtyZeroEvent(
+        isChangedVariationWhenQtyZero: false));
+    homeBloc.state.geColorsAndSizesForSearchModel?.data?.colors
+        ?.forEach((element) {
+      colorsCodeForSearch.add(element.code ?? "");
+      colorsNameForSearch.add(element.name ?? "");
+    });
+
+    homeBloc.state.geColorsAndSizesForSearchModel?.data?.sizes
+        ?.forEach((element) {
+      sizesForSearch.add(element);
+    });
     boutiqueBloc.add(AddSizeAndColorFilterinTextToSearchEvent(
         sizeAndColorFilterinTextToSearch: {}));
     appBloc.add(HideBottomNavigationBar(false));
@@ -762,6 +743,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                           false;
 
                                   return CustomScrollView(
+                                      cacheExtent: 600,
                                       key: TestVariables.kTestMode
                                           ? Key(WidgetsKeys
                                               .productListingScrollKey)
@@ -1170,8 +1152,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                     return;
                                                                                   }
                                                                                   if (text.length > 2) {
-                                                                                    boutiqueBloc.add(AddSizeAndColorFilterinTextToSearchEvent(sizeAndColorFilterinTextToSearch: {}));
-
                                                                                     List<String> listOfSearchText = text.split(" ").toList();
                                                                                     for (var i = 0; i < colorsNameForSearch.length; i++) {
                                                                                       if (listOfSearchText.contains(colorsNameForSearch[i])) {
@@ -1215,6 +1195,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                     ));
                                                                                   }
                                                                                   if (text.length < 3 && resetSearchAfterSearchingWhileRemoveSearch) {
+                                                                                    boutiqueBloc.add(AddSizeAndColorFilterinTextToSearchEvent(sizeAndColorFilterinTextToSearch: {}));
                                                                                     resetSearchAfterSearchingWhileRemoveSearch = false;
                                                                                     Filter filters = boutiqueBloc.state.appliedFiltersByUser[key]?.filters ?? Filter();
 
@@ -2041,6 +2022,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                         ),
                                                         delegate:
                                                             SliverChildBuilderDelegate(
+                                                          addRepaintBoundaries:
+                                                              true,
                                                           childCount:
                                                               products.length,
                                                           (BuildContext context,
@@ -2125,10 +2108,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                         ));
                                                               },
                                                               child: _productItem(
-                                                                  displayFirstColors:
-                                                                      ((appliedFiltersByUser?.filters?.colors?.length ??
-                                                                              0) >
-                                                                          0),
                                                                   index: index,
                                                                   slidingMode:
                                                                       slidingMode),
@@ -2171,6 +2150,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                   .isNullOrEmpty) &&
                                                           !state
                                                               .isGettingProductListingWithPagination) {
+                                                    print(
+                                                        "...............###################################################");
                                                     return ProductListingLoading();
                                                   }
                                                   if ((state
@@ -2296,6 +2277,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                       .loading) &&
                                                           !state
                                                               .isGettingProductListingWithPagination) {
+                                                    print(
+                                                        "......${state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${(widget.category ?? '')}']?.paginationStatus == PaginationStatus.loading}222.##################################################");
+
                                                     return ProductListingLoading(
                                                       key: TestVariables
                                                               .kTestMode
@@ -2378,6 +2362,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                       ),
                                                       delegate:
                                                           SliverChildBuilderDelegate(
+                                                        addRepaintBoundaries:
+                                                            true,
                                                         childCount:
                                                             products.length,
                                                         (BuildContext context,
@@ -2459,10 +2445,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                               ))));
                                                             },
                                                             child: _productItem(
-                                                                displayFirstColors:
-                                                                    ((appliedFiltersByUser?.filters?.colors?.length ??
-                                                                            0) >
-                                                                        0),
                                                                 index: index,
                                                                 slidingMode:
                                                                     slidingMode),
@@ -2556,8 +2538,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                   valueListenable: tapIndexToAddProductToCart,
                   builder: (context, tapIndex, _) {
                     if (tapIndex != -1) {
-                      homeBloc.add(IsChangedvariationWhenQtyZeroEvent(
-                          isChangedvariationWhenQtyZero: false));
+                      homeBloc.add(IsChangedVariationWhenQtyZeroEvent(
+                          isChangedVariationWhenQtyZero: false));
 
                       /* homeBloc.add(IsChangedvariationWhenQtyZeroEvent(
                           isChangedvariationWhenQtyZero: false));
@@ -2595,10 +2577,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                       width: 1.sw,
                                       child: BlocBuilder<HomeBloc, HomeState>(
                                           buildWhen: (previous, current) =>
-                                              previous.currentSelectedColorForEveryProduct != current.currentSelectedColorForEveryProduct ||
-                                              previous.getProductDetailWithoutSimilarRelatedProductsStatus !=
-                                                  current
-                                                      .getProductDetailWithoutSimilarRelatedProductsStatus ||
+                                              previous.getProductDetailWithoutSimilarRelatedProductsStatus != current.getProductDetailWithoutSimilarRelatedProductsStatus ||
                                               previous.getCartOverviewStatus !=
                                                   current
                                                       .getCartOverviewStatus ||
@@ -2618,10 +2597,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                 products[tapIndex]
                                                     .productId
                                                     .toString();
+                                            String productSlug =
+                                                products[tapIndex]
+                                                    .slug
+                                                    .toString();
 
                                             currentSelectedColor =
                                                 state.currentSelectedColorForEveryProduct[
-                                                        productId] ??
+                                                        productSlug] ??
                                                     (products[tapIndex]
                                                                 .syncColorImages
                                                                 ?.length ??
@@ -2812,8 +2795,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                         choice_1: sizeSelect));
                                               }
                                               homeBloc.add(
-                                                  IsChangedvariationWhenQtyZeroEvent(
-                                                      isChangedvariationWhenQtyZero:
+                                                  IsChangedVariationWhenQtyZeroEvent(
+                                                      isChangedVariationWhenQtyZero:
                                                           true));
                                               /*   String currentSelectedColorName =
                                                   ((products[tapIndex]
@@ -2929,7 +2912,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                     .productId
                                                                     .toString()]
                                                             ?.product
-                                                            ?.slugEnTopic ??
+                                                            ?.slug ??
                                                         "",
                                                     productDescription: HtmlParser
                                                             .parseHTML(products[
@@ -3087,6 +3070,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
           mainAxisSpacing: 15,
         ),
         delegate: SliverChildBuilderDelegate(
+          addRepaintBoundaries: true,
           childCount: products.length,
           (BuildContext context, int index) {
             return InkWell(
@@ -3129,9 +3113,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                         ));
               },
               child: _productItem(
-                  index: index,
-                  slidingMode: slidingMode,
-                  displayFirstColors: false),
+                index: index,
+                slidingMode: slidingMode,
+              ),
             );
           },
         ),
@@ -3219,10 +3203,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
         () => homeBloc.add(IsChangedvariationWhenQtyZeroEvent(
             isChangedvariationWhenQtyZero: true)));
   }*/
-  Widget _productItem(
-      {required Tuple2<int, int> slidingMode,
-      required int index,
-      required bool displayFirstColors}) {
+  Widget _productItem({
+    required Tuple2<int, int> slidingMode,
+    required int index,
+  }) {
     return /*!displayImageColors && !widget.fromSearch
         ? DelayedDisplay(
             delay: Duration(milliseconds: 300),
@@ -3240,7 +3224,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
               },
             ))*/
         ProductItem(
-      displayFirstColors: displayFirstColors,
       displayImageColors: displayImageColors,
       tapIndexToAddProductToCart: tapIndexToAddProductToCart,
       key: TestVariables.kTestMode
