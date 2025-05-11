@@ -879,6 +879,26 @@ class PrefsRepositoryImpl extends PrefsRepository {
   Future<bool> setOrderCoupon(String coupon) {
     return _preferences.setString(PrefsKey.coupon, coupon);
   }
+
+  @override
+  // TODO: implement getImageUrlHasPrefeched
+  List<String>? get getImageUrlHasPrefeched {
+    List<String> list = _preferences.getStringList(PrefsKey.imagesUrls) ?? [];
+    return list;
+  }
+
+  @override
+  Future<bool> setImageUrlHasPrefeched(String? url) {
+    List<String> list = _preferences.getStringList(PrefsKey.imagesUrls) ?? [];
+    if (list.length == 300) {
+      list.removeLast();
+      list.insert(0, url ?? "");
+    } else {
+      list.insert(0, url ?? "");
+    }
+
+    return _preferences.setStringList(PrefsKey.imagesUrls, list);
+  }
 // @override
 
 // List<Map<String,dynamic>> get localMessages {

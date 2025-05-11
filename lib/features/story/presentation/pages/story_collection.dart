@@ -17,6 +17,7 @@ import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
+import 'package:trydos/features/home/presentation/widgets/cart_section/payment_method.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../config/theme/typography.dart';
@@ -400,14 +401,14 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                 ? SizedBox.shrink()
                                 : Positioned(
                                     bottom: 0,
-                                    child: _handleWithUrlWidget(state
+                                    child: _handleWithUrlWidget((state
                                             .storiesCollections[
                                                 widget.collectionIndex]
                                             .stories![state
                                                     .currentStoryInEachCollection[
                                                 widget.collectionIndex]!]
                                             .oneLink ??
-                                        ""))
+                                        "")))
                           ],
                         );
                       } else {
@@ -671,12 +672,18 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
       }
     }
 
+    //
     // استخراج وتحليل المعاملات
     final categories = parseListParam(uri.queryParameters['categories']);
     final brands = parseListParam(uri.queryParameters['brands']);
     final sizes = parseListParam(uri.queryParameters['sizes']);
     final colors = parseListParam(uri.queryParameters['colors']);
     final boutiques = parseListParam(uri.queryParameters['boutiques']);
+    final coupon = decodeParam(uri.queryParameters['coupon']);
+    if (coupon != null) {
+      prefsRepository.setOrderCoupon(coupon);
+    }
+
     List<Boutique>? boutiquesFilter = [];
     boutiques.forEach((element) =>
         boutiquesFilter.add(Boutique(id: 0, name: "null", slug: element)));

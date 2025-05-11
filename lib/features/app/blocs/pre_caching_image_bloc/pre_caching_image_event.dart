@@ -8,9 +8,15 @@ abstract class PreCachingImageEvent {
 class CacheImageEvent extends PreCachingImageEvent {
   final String imageUrl;
   final String type;
+  final int? width;
+  final int? height;
   final BuildContext context;
   const CacheImageEvent(
-      {required this.imageUrl, required this.type, required this.context});
+      {required this.imageUrl,
+      required this.type,
+      required this.height,
+      required this.width,
+      required this.context});
 }
 
 class CacheSvgEvent extends PreCachingImageEvent {

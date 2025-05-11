@@ -70,17 +70,21 @@ class StoriesDataSource {
     return getStories();
   }
 
-  Future<UploadStoryResponseModel> uploadStory(Map<String, dynamic> params) {
-    PostClient<UploadStoryResponseModel> uploadStory =
-        PostClient<UploadStoryResponseModel>(
+  Future<Either<int, CollectionStoryModel>> uploadStory(
+      Map<String, dynamic> params) {
+    PostClient<Either<int, CollectionStoryModel>> uploadStory =
+        PostClient<Either<int, CollectionStoryModel>>(
       onSendProgress: (count, total) {},
-      requestPrams: RequestConfig<UploadStoryResponseModel>(
+      requestPrams: RequestConfig<Either<int, CollectionStoryModel>>(
         // sendTimeout: Duration(seconds: 10),
         endpoint: StoriesEndPoints.uploadStoriesEP,
         data: params['data'],
-        response: ResponseValue<UploadStoryResponseModel>(
-            fromJson: (response) =>
-                UploadStoryResponseModel.fromJson(response)),
+        response: ResponseValue<Either<int, CollectionStoryModel>>(
+            fromJson: (response) {
+          if (response['data']['id'] != null)
+            return Left(response['data']['id']);
+          return Right(CollectionStoryModel.fromJson(response['data']));
+        }),
       ),
       serverName: ServerName.stories,
     );

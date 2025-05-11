@@ -62,6 +62,8 @@ import 'package:trydos/features/home/domain/use_cases/update_notification_freque
 import 'package:trydos/features/home/domain/use_cases/update_profile_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/update_whatsapp_notification_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/upload_user_photo_usecase.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
 import 'package:trydos/features/story/domain/useCases/get_width_and_height_usecase.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
@@ -776,6 +778,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     prefsRepository.removeMainCategoryHasPerfechedWhenOpenApp(true);
 
     prefsRepository.removeFiveFilterHasPerfechedWhenOpenApp();
+    GetIt.I<BoutiqueBloc>().add(ClearAllBoutiquesEvent());
 
     prefsRepository.removeMainCategoryWhenOpenApp();
     emit(state.copyWith(
@@ -813,8 +816,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       } else {
         isFailedTheFirstTime.insert(
             isFailedTheFirstTime.length, 'GetStoryEvent');
-        GetIt.I<HomeBloc>()
-            .add(GetStoryForProductEvent(productId: event.productId));
+
+        add(GetStoryForProductEvent(productId: event.productId));
       }
     }, (r) {
       apisMustNotToRequest.add('GetStoryEvent');
@@ -1592,6 +1595,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       emit(state.copyWith(getCartItemsStatus: GetCartItemsStatus.failure));
     }, (r) {
       if (state.hideItemInOldCartStatus == HideItemInOldCartStatus.loading) {
+        add(GetOldCartItemEvent());
+        emit(state.copyWith(
+            hideItemInOldCartStatus: HideItemInOldCartStatus.success));
         return;
       }
       oldCarts = r.data?.original?.data?.oldCart;
@@ -3535,8 +3541,36 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         isFailedTheFirstTime.remove('UpdateProfileEvent');
         prefsRepository.setMyMarketName(r.data?.name ?? "");
         prefsRepository.setVerifiedPhone(r.data?.isPhoneVerified == 1);
-        prefsRepository
-            .setPhoneNumber(r.data?.phone ?? ""); ////////////////////////////
+        prefsRepository.setPhoneNumber(r.data?.phone ?? "");
+        ////////////////////////////
+
+        if ((prefsRepository.chatToken?.length ?? 0) > 6 &&
+            (event.name != null ||
+                event.image != null ||
+                event.phone != null)) {
+          GetIt.I<ChatBloc>().add(UpdateProfileInChatEvent(
+              userId: prefsRepository.myMarketId.toString(),
+              name: r.data?.name ?? "",
+              phone: r.data?.phone ?? "",
+              photo: r.data?.image ?? ""));
+
+          prefsRepository.setMyChatName((r.data?.name ?? 'No Name'));
+          prefsRepository.setMyChatPhoto(r.data?.phone ?? "");
+        }
+        if ((prefsRepository.storiesToken?.length ?? 0) > 6 &&
+            (event.name != null ||
+                event.image != null ||
+                event.phone != null)) {
+          prefsRepository.setMyStoriesName((r.data?.name ?? 'No Name'));
+
+          GetIt.I<AuthBloc>().add(UpdateStoriesUserEvent(
+              name: r.data?.name ?? "",
+              phone: r.data?.phone ?? "",
+              photo: r.data?.image ?? ""));
+
+          prefsRepository.setMyChatName((r.data?.name ?? 'No Name'));
+          prefsRepository.setMyChatPhoto(r.data?.phone ?? "");
+        }
         emit(
           state.copyWith(
               userInfo: r.data,

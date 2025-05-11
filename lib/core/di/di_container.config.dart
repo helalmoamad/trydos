@@ -117,6 +117,8 @@ import '../../features/chat/domain/use_cases/share_product_on_social_app_count_u
     as _i710;
 import '../../features/chat/domain/use_cases/share_product_with_contacts_or_channels_usecase.dart'
     as _i139;
+import '../../features/chat/domain/use_cases/update_profile_chat_usecase.dart'
+    as _i750;
 import '../../features/chat/domain/use_cases/upload_file_usecase.dart' as _i897;
 import '../../features/chat/presentation/manager/chat_bloc.dart' as _i243;
 import '../../features/chat/presentation/manager/preload_bloc/preloading_videos_bloc.dart'
@@ -399,6 +401,8 @@ Future<_i174.GetIt> $initGetIt(
       () => _i489.GetCustomerAddressesUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i361.GetCustomerWalletUseCase>(
       () => _i361.GetCustomerWalletUseCase(gh<_i0.HomeRepository>()));
+  gh.factory<_i146.GetFeaturedProductsUseCase>(
+      () => _i146.GetFeaturedProductsUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i149.GetFullProductDetailsUseCase>(
       () => _i149.GetFullProductDetailsUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i518.GetHomeBoutiqesUseCase>(
@@ -473,8 +477,6 @@ Future<_i174.GetIt> $initGetIt(
       () => _i744.UpdateWhatsappNotificationUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i651.UpdateUserPhotoUseCase>(
       () => _i651.UpdateUserPhotoUseCase(gh<_i0.HomeRepository>()));
-  gh.factory<_i146.GetFeaturedProductsUseCase>(
-      () => _i146.GetFeaturedProductsUseCase(gh<_i0.HomeRepository>()));
   gh.lazySingleton<_i944.CategoryBloc>(() => _i944.CategoryBloc(
         gh<_i158.GetMainCategoriesUseCase>(),
         gh<_i518.GetHomeBoutiqesUseCase>(),
@@ -589,6 +591,8 @@ Future<_i174.GetIt> $initGetIt(
   gh.factory<_i139.ShareProductWithContactsOrChannelsUsecase>(() =>
       _i139.ShareProductWithContactsOrChannelsUsecase(
           gh<_i420.ChatRepository>()));
+  gh.factory<_i750.UpdateProfileInChatUseCase>(
+      () => _i750.UpdateProfileInChatUseCase(gh<_i420.ChatRepository>()));
   gh.factory<_i897.UploadFileUseCase>(
       () => _i897.UploadFileUseCase(gh<_i420.ChatRepository>()));
   gh.factory<_i661.AnswerCallUseCase>(
@@ -641,6 +645,7 @@ Future<_i174.GetIt> $initGetIt(
         gh<_i897.UploadFileUseCase>(),
         gh<_i314.ReadAllMessagesUseCase>(),
         gh<_i40.ReceiveMessageUseCase>(),
+        gh<_i750.UpdateProfileInChatUseCase>(),
         gh<_i139.ShareProductWithContactsOrChannelsUsecase>(),
         gh<_i109.GetMediaCountUseCase>(),
         gh<_i668.GetDateTimeUseCase>(),

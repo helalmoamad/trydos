@@ -34,6 +34,8 @@ class FeatureProductsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ScrollController scrollController =
+        ScrollController(initialScrollOffset: 75.w);
     final ValueNotifier<Tuple2<int, int>> setThisEnabledNotifier =
         ValueNotifier(Tuple2(-1, -1));
     List<filter.Products> products = [];
@@ -67,7 +69,7 @@ class FeatureProductsWidget extends StatelessWidget {
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
+                    /*  Container(
                       padding: EdgeInsets.symmetric(horizontal: 10),
                       width: 250,
                       height: 25,
@@ -75,11 +77,11 @@ class FeatureProductsWidget extends StatelessWidget {
                         "${LocaleKeys.feature_product.tr()}",
                         style: TextStyle(color: Colors.black, fontSize: 14),
                       ),
-                    ),
+                    ),*/
                     Container(
                       margin: EdgeInsets.only(bottom: 5),
                       width: 1.sw,
-                      height: 375,
+                      height: 320,
                       child: ScrollConfiguration(
                           behavior: const CupertinoScrollBehavior(),
                           child: ValueListenableBuilder<Tuple2<int, int>>(
@@ -88,6 +90,7 @@ class FeatureProductsWidget extends StatelessWidget {
                                 return Directionality(
                                   textDirection: ui.TextDirection.ltr,
                                   child: ListView.separated(
+                                      controller: scrollController,
                                       itemBuilder: (context, index) {
                                         if (index == 5) {
                                           return InkWell(
@@ -122,7 +125,7 @@ class FeatureProductsWidget extends StatelessWidget {
                                                       tapIndexToAddProductToCart,
                                                   key: TestVariables.kTestMode
                                                       ? Key(
-                                                          '"featuresPtoduct"$index')
+                                                          'featuresProduct$index')
                                                       : null,
                                                   slidingModeItem: slidingMode,
                                                   productItem: products[index],
@@ -144,10 +147,10 @@ class FeatureProductsWidget extends StatelessWidget {
                                                               Radius.circular(
                                                                   12))),
                                                   width: 200,
-                                                  height: 370,
+                                                  height: 320,
                                                 ),
                                                 Positioned(
-                                                  top: 150,
+                                                  top: 100,
                                                   left: 75,
                                                   child: Container(
                                                     alignment: Alignment.center,

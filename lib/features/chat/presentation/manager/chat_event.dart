@@ -85,6 +85,23 @@ class ReadAllMessagesEvent extends ChatEvent {
   List<Object?> get props => [channelId];
 }
 
+class UpdateProfileInChatEvent extends ChatEvent {
+  final String userId;
+  final String phone;
+  final String photo;
+  final String name;
+
+  const UpdateProfileInChatEvent(
+      {required this.userId,
+      required this.name,
+      required this.phone,
+      required this.photo});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [userId, photo, phone, name];
+}
+
 class GetChatsEvent extends ChatEvent {
   final Chat? chatToNavigateFromTerminated;
   final DateTime? timeStamp;

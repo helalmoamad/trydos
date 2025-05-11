@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:injectable/injectable.dart';
 import 'package:trydos/core/api/methods/detect_server.dart';
+import 'package:trydos/core/api/methods/put.dart';
 import 'package:trydos/features/authentication/data/models/create_user_response_model.dart';
 import 'package:trydos/features/chat/data/models/change_chat_property_model.dart';
 import 'package:trydos/features/chat/data/models/my_contacts_response_model.dart';
@@ -45,6 +46,22 @@ class ChatRemoteDataSource {
       ),
     );
     return readAllMessages();
+  }
+
+  Future<bool> updateProfileInChat(Map<String, dynamic> params) {
+    print(
+        "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD${params['id'].toString()}");
+    Map<String, dynamic> data = Map.of(params);
+    data.removeWhere((key, value) => key == "id");
+    PutClient<bool> updateProfileInChat = PutClient<bool>(
+      serverName: ServerName.chat,
+      requestPrams: RequestConfig<bool>(
+        data: data,
+        endpoint: ChatEndPoints.updateProfileInChatEP(params['id'].toString()),
+        response: ResponseValue<bool>(returnValueOnSuccess: true),
+      ),
+    );
+    return updateProfileInChat();
   }
 
   Future<bool> receiveMessage(Map<String, dynamic> params) {

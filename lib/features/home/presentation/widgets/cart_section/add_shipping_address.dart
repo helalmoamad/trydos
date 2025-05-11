@@ -115,9 +115,12 @@ class _AddShippingAdressState extends State<AddShippingAdress>
       if (!inside) {
         // عرض رسالة
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('غير ممكن خارج المنطقة المتاحة')),
+          SnackBar(
+              duration: Duration(seconds: 2),
+              content: Text('${LocaleKeys.outside_available_area.tr()}')),
         );
         _currentLocation = null;
+        loadingToGoCurrentLoacation.value = false;
         return;
       }
 
@@ -151,12 +154,39 @@ class _AddShippingAdressState extends State<AddShippingAdress>
   }
 
   final List<geod.LatLng> syriaBorders = [
-    geod.LatLng(37.317, 35.832), // شمال غرب سوريا (الحدود مع تركيا ولبنان)
-    geod.LatLng(36.000, 39.000), // شمال شرق سوريا (الحدود مع تركيا والعراق)
-    geod.LatLng(32.500, 39.000), // جنوب شرق سوريا (الحدود مع العراق والأردن)
-    geod.LatLng(32.500, 35.500), // جنوب غرب سوريا (الحدود مع الأردن وفلسطين)
-    geod.LatLng(36.500, 35.500),
-    geod.LatLng(37.317, 35.832), // شمال غرب سوريا (الحدود مع لبنان)
+    // شمالاً (الحدود مع تركيا)
+    geod.LatLng(37.2300, 36.0000),
+    geod.LatLng(37.1000, 36.2000),
+    geod.LatLng(36.9000, 36.4000),
+    geod.LatLng(36.7000, 36.6000),
+    geod.LatLng(36.5000, 36.8000),
+
+    // شرقاً (الحدود مع العراق)
+    geod.LatLng(36.3000, 37.0000),
+    geod.LatLng(35.9000, 37.2000),
+    geod.LatLng(35.5000, 37.4000),
+    geod.LatLng(35.2000, 37.6000),
+
+    // جنوباً (الحدود مع الأردن)
+    geod.LatLng(32.9000, 37.2000),
+    geod.LatLng(32.7000, 36.9000),
+    geod.LatLng(32.5000, 36.7000),
+
+    // جنوب غرب (الحدود مع فلسطين المحتلة - إسرائيل)
+    geod.LatLng(32.9000, 35.7000),
+    geod.LatLng(33.1000, 35.5000),
+
+    // غرباً (الحدود مع لبنان والبحر الأبيض المتوسط)
+    geod.LatLng(34.9000, 35.6000),
+    geod.LatLng(35.2000, 35.8000),
+    geod.LatLng(35.5000, 35.9000),
+    geod.LatLng(35.8000, 36.0000),
+
+    // الساحل على البحر الأبيض المتوسط
+    geod.LatLng(35.9000, 36.1000),
+    geod.LatLng(36.2000, 36.2000),
+    geod.LatLng(36.5000, 36.3000),
+    // شمال غرب سوريا (الحدود مع لبنان)
   ];
   // مستطيل يغطي العالم تقريباً
   final List<LatLng> worldRect = [
@@ -183,8 +213,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
         polygonId: PolygonId('mask'),
         points: worldRect,
         holes: [mapSyriaBorders],
-        fillColor: const Color.fromARGB(255, 214, 29, 29)
-            .withOpacity(0.3), // تظليل أسود مع شفافية
+        fillColor: Colors.black.withOpacity(0.3), // تظليل أسود مع شفافية
         strokeWidth: 0,
       ),
       Polygon(
@@ -1462,7 +1491,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                               if (!inside) {
                                                                                 // عرض رسالة
                                                                                 ScaffoldMessenger.of(context).showSnackBar(
-                                                                                  SnackBar(content: Text('غير ممكن خارج المنطقة المتاحة')),
+                                                                                  SnackBar(duration: Duration(seconds: 2), content: Text("${LocaleKeys.outside_available_area.tr()}")),
                                                                                 );
                                                                                 return;
                                                                               }

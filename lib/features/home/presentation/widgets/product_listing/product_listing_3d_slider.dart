@@ -527,15 +527,19 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                                               .currentIndex ==
                                                           0));
                                             },
-                                            itemWidth: 170.w,
-                                            itemHeight: 240,
+                                            itemWidth: widget.fromHomePage
+                                                ? 150.w
+                                                : 170.w,
+                                            itemHeight:
+                                                widget.fromHomePage ? 200 : 240,
                                             threeImages: sliderData.item1,
                                             onItemClick: (index) {
                                               widget.setThisEnabled
                                                   .call(-1, -1);
                                             },
 
-                                            galleryHeight: 240,
+                                            galleryHeight:
+                                                widget.fromHomePage ? 200 : 240,
                                             onItemChanged: (int index) {
                                               bool scrollToLeft = false;
                                               if ((prevIndexForThreeColors ==
@@ -600,7 +604,9 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                                     calledFromOnChanged: true);
                                               }
                                             },
-                                            galleryWidth: 200,
+                                            galleryWidth: widget.fromHomePage
+                                                ? 170.w
+                                                : 200,
                                             radius: 15,
                                             itemCount: 3,
                                           ),
@@ -651,8 +657,8 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                       : Alignment.centerLeft,
                                   children: [
                                     SizedBox(
-                                      height: 290,
-                                      width: 200,
+                                      height: widget.fromHomePage ? 220 : 290,
+                                      width: widget.fromHomePage ? 170 : 200,
                                       child: CarouselSlider.builder(
                                           key: UniqueKey(),
                                           itemCount: widget.fromHomePage
@@ -836,8 +842,8 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
               bottom: 10,
               child: Column(
                 children: [
-                  const SizedBox(
-                    height: 20,
+                  SizedBox(
+                    height: (widget.fromHomePage) ? 0 : 20,
                   ),
                   SizedBox(
                     width: 200,
@@ -939,8 +945,8 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                               ),
                             ])),
                   ),
-                  const SizedBox(
-                    height: 10,
+                  SizedBox(
+                    height: (widget.fromHomePage) ? 0 : 10,
                   ),
                   SizedBox(
                     width: 225,
@@ -1072,7 +1078,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
             ),
             slideModeIndex != 2 && gallery3dControllerForCircles != null
                 ? Positioned(
-                    bottom: 70,
+                    bottom: (widget.fromHomePage) ? 60 : 70,
                     child: AnimatedScale(
                       scale: slideModeIndex == 0 ? 0.625 : 1,
                       alignment: Alignment.bottomCenter,

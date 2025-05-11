@@ -151,10 +151,10 @@ class RegisterGuestEvent extends AuthEvent {
 }
 
 class UpdateNameEvent extends AuthEvent {
-  final String name;
+  final String? name;
 
   UpdateNameEvent({
-    required this.name,
+    this.name,
   });
 
   @override
@@ -175,10 +175,13 @@ class UpdateChatUserNameEvent extends AuthEvent {
 }
 
 class UpdateStoriesUserEvent extends AuthEvent {
-  final String name;
-
+  final String? name;
+  final String? phone;
+  final String? photo;
   UpdateStoriesUserEvent({
-    required this.name,
+    this.name,
+    this.phone,
+    this.photo,
   });
 
   @override

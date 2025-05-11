@@ -359,7 +359,7 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                                               ));
                                                     },
                                                     child: ProductItem(
-                                                      fromHomePage: true,
+                                                      fromHomePage: false,
                                                       displayImageColors: true,
                                                       tapIndexToAddProductToCart:
                                                           tapIndexToAddProductToCart,
@@ -392,21 +392,18 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                     }),
                               );
                       }),
-                  Positioned(
-                    bottom: 10,
-                    child: BlocBuilder<BoutiqueBloc, BoutiqueState>(
-                        buildWhen: (previous, current) =>
-                            previous.isGettingProductListingWithPagination !=
-                            current.isGettingProductListingWithPagination,
-                        builder: (context, state) {
-                          if (state.isGettingProductListingWithPagination) {
-                            return Center(
-                              child: TrydosLoader(),
-                            );
-                          }
-                          return SizedBox.shrink();
-                        }),
-                  )
+                  BlocBuilder<BoutiqueBloc, BoutiqueState>(
+                      buildWhen: (previous, current) =>
+                          previous.isGettingProductListingWithPagination !=
+                          current.isGettingProductListingWithPagination,
+                      builder: (context, state) {
+                        if (state.isGettingProductListingWithPagination) {
+                          return Center(
+                            child: TrydosLoader(),
+                          );
+                        }
+                        return SizedBox.shrink();
+                      })
                 ],
               ),
               BlocBuilder<BoutiqueBloc, BoutiqueState>(

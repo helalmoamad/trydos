@@ -191,49 +191,44 @@ class PreCachingImageBloc
     CacheImageEvent event,
     Emitter<PreCachingImageState> emit,
   ) async {
-    final updatedCachedImages = Map<String, bool>.from(state.cachedImages);
-    updatedCachedImages[event.imageUrl] = false;
+    // final updatedCachedImages = Map<String, bool>.from(state.cachedImages);
+    // updatedCachedImages[event.imageUrl] = false;
 
-    if (state.cachedImages[event.imageUrl] == true) return;
+    // if (state.cachedImages[event.imageUrl] == true) return;
     // 1. التحقق من وجود الصورة في الكاش مسبقًا
-    final cachedFile =
+    /*  final cachedFile =
         await CustomCacheManagers().getFileFromCache(event.imageUrl);
     if (cachedFile != null) {
       return; // الصورة موجودة مسبقًا، لا حاجة لإعادة التحميل
-    }
+    }*/
 
     // 2. التحقق من عدم وجود تحميل جارٍ للصورة
 
     // 3. تحديث الحالة لإظهار أن التحميل جارٍ
-    emit(PreCachingImageState(cachedImages: updatedCachedImages));
+    // emit(PreCachingImageState(cachedImages: updatedCachedImages));
 
     // 4. اختيار Semaphore المناسب حسب نوع الصورة
     final semaphore = _getSemaphoreForType(event.type);
 
     try {
-      print(
-          "999999999999999999999999999999999vvv//ddddddddddddd الصورة موجودة مسبقًا، لا حاجة لإعادة التحميل");
-      // 5. انتظار السماح بالتحميل بدون حظر واجهة المستخدم
       await semaphore.acquire();
 
-      // 6. تحميل الصورة مسبقًا في UI thread باستخدام CachedNetworkImageProvider
-      await precacheImage(
+      precacheImage(
         CachedNetworkImageProvider(event.imageUrl,
+            maxHeight: event.height,
+            maxWidth: event.width,
             cacheManager: CustomCacheManagers()),
         event.context,
-      );
+      ).whenComplete(() => semaphore.release());
 
-      // 7. تحديث الحالة بعد نجاح التحميل
-      final successCachedImages = Map<String, bool>.from(updatedCachedImages);
+      //final successCachedImages = Map<String, bool>.from(updatedCachedImages);
 
-      successCachedImages[event.imageUrl] = true;
+      // successCachedImages[event.imageUrl] = true;
 
-      emit(PreCachingImageState(cachedImages: successCachedImages));
+      //  emit(PreCachingImageState(cachedImages: successCachedImages));
     } catch (e) {
-      print("Error caching image: $e");
-    } finally {
-      // 8. تحرير Semaphore
       semaphore.release();
+      print("Error caching image: $e");
     }
   }
 

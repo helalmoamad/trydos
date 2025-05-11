@@ -38,7 +38,7 @@ class StoryRepositoryImpl extends StoryRepository
   }
 
   @override
-  Future<Either<Failure, UploadStoryResponseModel>> uploadStory(
+  Future<Either<Failure, Either<int, CollectionStoryModel>>> uploadStory(
       Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => storyDataSource.uploadStory(params));

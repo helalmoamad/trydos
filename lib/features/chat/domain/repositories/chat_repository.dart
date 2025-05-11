@@ -23,7 +23,8 @@ abstract class ChatRepository {
       Map<String, dynamic> params);
   Future<Either<Failure, GetSharedProductCountModel>> getSharedProductCount(
       Map<String, dynamic> params);
-
+  Future<Either<Failure, bool>> updateProfileInChat(
+      Map<String, dynamic> params);
   Future<Either<Failure, bool>> saveContacts(Map<String, dynamic> params);
 
   Future<Either<Failure, bool>> shareProductOnApps(Map<String, dynamic> params);

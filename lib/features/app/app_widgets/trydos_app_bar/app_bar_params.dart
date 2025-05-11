@@ -12,7 +12,7 @@ class AppBarParams {
     this.leading,
     this.backButton,
     this.title,
-    this.automaticallyImplyLeading = true,
+    this.automaticallyImplyLeading = false,
     this.iconColor,
     this.action,
     this.elevation,

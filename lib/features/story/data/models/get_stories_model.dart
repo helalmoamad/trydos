@@ -232,14 +232,16 @@ class CollectionStoryModel {
       CollectionStoryModel(
         id: json["id"],
         mobilePhone: json["mobile_phone"],
-        photoPath: json["photo_path"],
+        photoPath: (json["photo_path"] is String) ? json["photo_path"] : null,
         name: json["name"],
         username: json["username"],
         originalUserId: json["original_user_id"],
         email: json["email"],
         stories: json["stories"] == null
             ? []
-            : List<Story>.from(json["stories"]!.map((x) => Story.fromJson(x))),
+            : List<Story>.from((json["stories"])!.map((x) => Story.fromJson(x)))
+                .reversed
+                .toList(),
         media: json["media"] == null
             ? []
             : List<dynamic>.from(json["media"]!.map((x) => x)),

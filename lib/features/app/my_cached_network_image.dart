@@ -88,6 +88,7 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage>
 
   @override
   Widget build(BuildContext context) {
+    int pixelRatio = MediaQuery.of(context).devicePixelRatio.round();
     super.build(context);
     String url = addSuitableWidthAndHeightToImage(
       imageUrl: currentUrl,
@@ -122,6 +123,8 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage>
           color: widget.imageColor,
           useOldImageOnUrlChange: true,
           height: widget.height,
+          memCacheHeight: widget.height.round() * pixelRatio,
+          memCacheWidth: widget.width.round() * pixelRatio,
           fadeInDuration: Duration(milliseconds: 0),
           fadeOutDuration: Duration(milliseconds: 0),
           progressIndicatorBuilder: (context, _, progress) {
@@ -218,7 +221,7 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage>
 }
 
 // باقي الكود كما هو (CustomCacheManagers و clearCustomCashe و addSuitableWidthAndHeightToImage)
-class CustomCacheManagers extends CacheManager {
+/*class CustomCacheManagers extends CacheManager {
   static const key = 'customCaches';
   static CustomCacheManagers? _instance;
 
@@ -228,7 +231,15 @@ class CustomCacheManagers extends CacheManager {
 
   CustomCacheManagers._internal()
       : super(Config(key,
-            maxNrOfCacheObjects: 600, stalePeriod: const Duration(days: 3)));
+            maxNrOfCacheObjects: 300, stalePeriod: const Duration(days: 3)));
+}
+*/
+class CustomCacheManagers extends DefaultCacheManager {
+  static CustomCacheManagers? _instance;
+
+  factory CustomCacheManagers() {
+    return _instance!;
+  }
 }
 
 void clearCustomCashe() async {
@@ -266,7 +277,7 @@ String addSuitableWidthAndHeightToImage({
         ? list[0] + 'upload/c_scale,h_${fHeight}' + list[1]
         : list[0] + 'upload/c_scale,w_${fWidth}' + list[1];
   } else {
-    url = list[0] + 'upload/c_scale,h_${fHeight}' + list[1];
+    url = list[0] + 'upload/f_auto,q_auto,c_scale,h_${fHeight}' + list[1];
   }
   return url;
 }

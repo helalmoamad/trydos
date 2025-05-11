@@ -63,11 +63,11 @@ class _ProductItemState extends State<ProductItem> {
         alignment: Alignment.bottomCenter,
         clipBehavior: Clip.none,
         children: [
-          !widget.fromHomePage
+          /*  !widget.fromHomePage
               ? SizedBox.fromSize()
               : Container(
-                  height: 350,
-                  width: 200.w,
+                  height: widget.fromHomePage ? 250 : 350,
+                  width: widget.fromHomePage ? 120 : 200.w,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15.0),
                     boxShadow: [
@@ -122,7 +122,7 @@ class _ProductItemState extends State<ProductItem> {
                                         2]
                                     .images![0]
                                     .filePath!,
-                                height: 350,
+                                height: widget.fromHomePage ? 250 : 350,
                                 width: 200.w,
                                 imageFit: BoxFit.cover,
                               );
@@ -150,12 +150,12 @@ class _ProductItemState extends State<ProductItem> {
                                         .syncColorImages![index]
                                         .images![0]
                                         .filePath!,
-                                    height: 350,
+                                    height: widget.fromHomePage ? 250 : 350,
                                     width: 200.w,
                                     imageFit: BoxFit.cover,
                                   );
                           })),
-                ),
+                ),*/
           Positioned.fill(
             child: ClipRRect(
               borderRadius: BorderRadius.circular(15.0),

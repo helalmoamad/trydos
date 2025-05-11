@@ -247,7 +247,8 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
                 imageUrl: banner.filePath!,
                 width: 1.sw,
                 height: numOfBanners == 1 ? 135 : 155);
-            prefetchImages(url, event.context, "banner");
+            prefetchImages(url, event.context, "banner", (1.sw).round(),
+                numOfBanners == 1 ? 135 : 155);
           });
 
           // boutique categories images
@@ -256,7 +257,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
                 imageUrl: category.mostViewedProductThumbnail!.filePath!,
                 width: 40.w,
                 height: 40.w);
-            prefetchImages(url, event.context, "categoryBoutique");
+            prefetchImages(url, event.context, "categoryBoutique", 40, 40);
           });
         });
 
@@ -378,9 +379,19 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     ));
   }
 
-  prefetchImages(String url, BuildContext context, String type) {
-    GetIt.I<PreCachingImageBloc>()
-        .add(CacheImageEvent(imageUrl: url, context: context, type: type));
+  prefetchImages(
+      String url, BuildContext context, String type, int width, int height) {
+    List<String> urlHasPredeched =
+        prefsRepository.getImageUrlHasPrefeched ?? [];
+    if (urlHasPredeched.contains(url)) {
+      return;
+    }
+    GetIt.I<PreCachingImageBloc>().add(CacheImageEvent(
+        imageUrl: url,
+        context: context,
+        type: type,
+        height: height,
+        width: width));
   }
 
   FutureOr<void> _onGetMainCategoriesEvent(

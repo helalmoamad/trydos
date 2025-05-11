@@ -94,7 +94,7 @@ class GetProductWithFiltersWithoutCancelingPreviousEvents
       {this.category,
       this.fromHomePageSearch = false,
       required this.boutiqueSlug,
-      required this.context,
+      this.context,
       this.getWithoutFilter = false,
       this.indexOfCategory = 0,
       this.searchText,
@@ -112,7 +112,7 @@ class GetProductWithFiltersWithoutCancelingPreviousEvents
   final String? category;
   final int indexOfCategory;
   final bool forceUpdate;
-  final BuildContext context;
+  final BuildContext? context;
   final List<String> categorySlugs;
   final bool fromHomePageSearch;
   final bool fromExpandPage;
@@ -286,6 +286,13 @@ class AddPrefAppliedFilterForExtendFilterEvent extends BoutiqueEvent {
 
 class ResetAllSelectedAppliedFilterEvent extends BoutiqueEvent {
   ResetAllSelectedAppliedFilterEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class ClearAllBoutiquesEvent extends BoutiqueEvent {
+  ClearAllBoutiquesEvent();
 
   @override
   List<Object?> get props => [];

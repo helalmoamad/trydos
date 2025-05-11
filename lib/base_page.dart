@@ -14,6 +14,8 @@ import 'package:trydos/features/app/country_dropdown.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/home/domain/use_cases/get_colors_sizes_for_search_usecase.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
@@ -702,6 +704,14 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                     categoryBloc.add(GetMainCategoriesEvent(
                                         getWithPrefech: true,
                                         context: context));
+                                    GetIt.I<BoutiqueBloc>().add(
+                                        GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                            categorySlugs: [],
+                                            cashedOrginalBoutique: true,
+                                            fromHomePageSearch: false,
+                                            boutiqueSlug: "*featured*",
+                                            category: null,
+                                            searchText: null));
                                     /* if (prefsRepository.marketToken != null) {
                                       homeBloc
                                           .add(GetCurrencyForCountryEvent());

@@ -12,6 +12,6 @@ abstract class StoryRepository {
   Future<Either<Failure, bool>> increaseViewers(Map<String, dynamic> params);
   Future<Either<Failure, ImageDetail>> loadWidthAndHeight(
       {required String url, required int collectionId});
-  Future<Either<Failure, UploadStoryResponseModel>> uploadStory(
+  Future<Either<Failure, Either<int, CollectionStoryModel>>> uploadStory(
       Map<String, dynamic> params);
 }

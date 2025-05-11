@@ -44,6 +44,7 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
 
   @override
   void dispose() {
+    carouselSliderController.dispose();
     for (int i = 0; i < animationControllers.length; i++)
       animationControllers[i].dispose();
     super.dispose();

@@ -51,6 +51,7 @@ OrderState _$OrderStateFromJson(Map<String, dynamic> json) => OrderState(
                         value as Map<String, dynamic>))),
           ) ??
           const {},
+      orderTotalSize: (json['orderTotalSize'] as num?)?.toInt() ?? 0,
       setCustomerAddressDefaultStatus: $enumDecodeNullable(
               _$SetCustomerAddressDefaultStatusEnumMap,
               json['setCustomerAddressDefaultStatus']) ??
@@ -151,6 +152,7 @@ Map<String, dynamic> _$OrderStateToJson(OrderState instance) =>
           _$GetAddressByTextStatusEnumMap[instance.getAddressByTextStatus],
       'resultSearch': instance.resultSearch?.map((e) => e.toJson()).toList(),
       'provincesByIso': instance.provincesByIso,
+      'orderTotalSize': instance.orderTotalSize,
       'applyCouponStatus':
           _$ApplyCouponStatusEnumMap[instance.applyCouponStatus],
       'applyCouponModel': instance.applyCouponModel?.toJson(),

@@ -187,6 +187,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           _prefsRepository.setMyChatName(name ?? 'No Name');
           _prefsRepository.setMyChatPhoto(photo);
         }
+        print(
+            "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd${checkToken}8888${token}.");
         add(StoreFcmTokenEvent(
             userId: id!,
             fcmToken: event.fcmToken,
@@ -390,7 +392,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
         _prefsRepository.setMarketToken(r.data!.token!);
         _prefsRepository.setTokenExpired(false);
-
+        _prefsRepository.setIdToken((r.data!.idToken).toString());
         GetIt.I<HomeBloc>()
             .add(SaveUserInfoFromAuthEvent(userInfo: r.data!.user!));
         GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
@@ -469,7 +471,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       GetIt.I<HomeBloc>().add(GetOldCartItemEvent());
       GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
       ;
+      _prefsRepository.setIdToken((r.data!.idToken).toString());
       _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
+      print(
+          "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd${r.data!.user?.isPhoneVerified}");
 
       _prefsRepository.setVerifiedPhone(r.data!.user?.isPhoneVerified == 1);
       _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());
@@ -564,8 +569,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
       emit(state.copyWith(updateNameStatus: UpdateNameStatus.failure));
     }, (r) {
-      add(UpdateChatUserNameEvent(name: event.name));
-      add(UpdateStoriesUserEvent(name: event.name));
+      //  GetIt.I<HomeBloc>().add(UpdateProfileEvent(name: event.name));
+      add(UpdateChatUserNameEvent(name: event.name ?? ""));
+      add(UpdateStoriesUserEvent(name: event.name ?? ""));
       isFailedTheFirstTime.remove('UpdateNameEvent');
       emit(state.copyWith(
         updateNameStatus: UpdateNameStatus.success,
@@ -588,6 +594,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           state.copyWith(getCustomerInfoStatus: GetCustomerInfoStatus.failure));
     }, (userInfo) {
       isFailedTheFirstTime.remove('GetCustomerInfoEvent');
+
       _prefsRepository.setVerifiedPhone(userInfo.isPhoneVerified == 1);
       if ((userInfo.name?.replaceAll(' ', '') ?? '') != '') {
         _prefsRepository.setMyMarketName(userInfo.name!);
@@ -622,11 +629,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   FutureOr<void> _onUpdateStoriesUserEvent(
       UpdateStoriesUserEvent event, Emitter<AuthState> emit) async {
+    if (_prefsRepository.storiesToken == null ||
+        _prefsRepository.storiesToken == "") {
+      return;
+    }
     bool requestForMarketName = false;
     emit(state.copyWith(
         updateStoriesUserStatus: UpdateStoriesUserStatus.loading));
     final response = await updateStoriesUserUseCase(
-      UpdateStoriesUserParams(name: event.name),
+      UpdateStoriesUserParams(
+          name: event.name, phone: event.phone, photo: event.photo),
     );
     response.fold((l) {
       if (!isFailedTheFirstTime.contains('UpdateStoriesUserEvent')) {
@@ -655,7 +667,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
     if (!requestForMarketName) return;
     final chatResponse = await updateChatUserNameUseCase(
-      UpdateChatUserNameParams(name: event.name),
+      UpdateChatUserNameParams(name: event.name ?? ""),
     );
     chatResponse.fold((l) {
       if (!isFailedTheFirstTime.contains('UpdateStoriesUserEvent')) {
@@ -666,12 +678,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         updateStoriesUserStatus: UpdateStoriesUserStatus.failure,
       ));
     }, (r) {
+      GetIt.I<StoryBloc>().add(GetStoryEvent());
       isFailedTheFirstTime.remove('UpdateStoriesUserEvent');
-      _prefsRepository.setMyStoriesName(event.name);
-      _prefsRepository.setMyMarketName(event.name);
+      _prefsRepository.setMyStoriesName(event.name ?? "");
+      _prefsRepository.setMyMarketName(event.name ?? "");
 
-      GetIt.I<StoryBloc>()
-          .add(UpdateNameForUserInCollectionIfExistEvent(name: event.name));
+      GetIt.I<StoryBloc>().add(
+          UpdateNameForUserInCollectionIfExistEvent(name: event.name ?? ""));
 
       emit(state.copyWith(
         updateStoriesUserStatus: UpdateStoriesUserStatus.success,
@@ -682,6 +695,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   FutureOr<void> _onUpdateChatUserNameEvent(
       UpdateChatUserNameEvent event, Emitter<AuthState> emit) async {
     bool requestForMarketName = false;
+    if (_prefsRepository.chatToken == null ||
+        _prefsRepository.chatToken == "") {
+      return;
+    }
     emit(state.copyWith(
         updateChatUserNameStatus: UpdateChatUserNameStatus.loading));
     final response = await updateChatUserNameUseCase(
@@ -709,9 +726,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(state.copyWith(
           updateChatUserNameStatus: UpdateChatUserNameStatus.failure));
     }, (r) {
+      _prefsRepository.setMyChatName(event.name);
+      _prefsRepository.setMyMarketName(event.name);
       requestForMarketName = true;
     });
     if (!requestForMarketName) return;
+    if (_prefsRepository.storiesToken == null ||
+        _prefsRepository.storiesToken == "") {
+      return;
+    }
     final storiesResponse = await updateStoriesUserUseCase(
       UpdateStoriesUserParams(name: event.name),
     );
@@ -724,8 +747,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           updateChatUserNameStatus: UpdateChatUserNameStatus.failure));
     }, (r) {
       isFailedTheFirstTime.remove('UpdateChatUserNameEvent');
-      _prefsRepository.setMyChatName(event.name);
-      _prefsRepository.setMyMarketName(event.name);
+      _prefsRepository.setMyStoriesName(event.name);
+
       emit(state.copyWith(
         updateChatUserNameStatus: UpdateChatUserNameStatus.success,
       ));

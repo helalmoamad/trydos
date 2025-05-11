@@ -46,14 +46,14 @@ class HomePageCard2 extends cupertino.StatefulWidget {
 class _HomePageCard2State extends cupertino.State<HomePageCard2> {
   final ValueNotifier<int> resizeItems = ValueNotifier(-1);
   final ValueNotifier<int> changeBackgroundBlurImage = ValueNotifier(0);
-  final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
-  late AutoScrollController autoScrollController;
-  late ScrollController scrollController;
+  // final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
+  // late AutoScrollController autoScrollController;
+  //late ScrollController scrollController;
   late BoutiqueBloc boutiqueBloc;
   @override
   void initState() {
     boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
-    autoScrollController = AutoScrollController();
+    // autoScrollController = AutoScrollController();
     super.initState();
   }
 
@@ -217,18 +217,18 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                 height: 20,
                                 width: 40,
                               )
-                            : MyTextWidget(
-                                widget.boutique.name!,
-                                style:
-                                    context.textTheme.titleMedium?.rd.copyWith(
-                                  fontSize: 16,
-                                  color: ui.Color.fromARGB(255, 15, 15, 15),
-                                ),
-                              ),
+                            : cupertino.SizedBox.shrink(),
                         SizedBox(
                           height: 5,
                         ),
-                        Html(
+                        MyTextWidget(
+                          widget.boutique.name!,
+                          style: context.textTheme.titleMedium?.rd.copyWith(
+                            fontSize: 16,
+                            color: ui.Color.fromARGB(255, 15, 15, 15),
+                          ),
+                        ),
+                        /*Html(
                           shrinkWrap: true,
                           data: widget.boutique.description ?? '',
                           style: {
@@ -238,7 +238,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                               margin: Margins.all(0),
                             ),
                           },
-                        ),
+                        ),*/
                         if (!widget.withSlidingImages)
                           SizedBox(
                             height: 10,

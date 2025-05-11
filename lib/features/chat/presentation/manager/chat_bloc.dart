@@ -30,6 +30,7 @@ import 'package:trydos/features/chat/domain/use_cases/search_For_message_text_in
 import 'package:trydos/features/chat/domain/use_cases/send_error_to_server_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/send_message_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/share_product_on_social_app_count_usecase.dart';
+import 'package:trydos/features/chat/domain/use_cases/update_profile_chat_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/upload_file_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/share_product_with_contacts_or_channels_usecase.dart';
 import 'package:trydos/features/feed_back/presentation/pages/shared_preference_page.dart';
@@ -74,6 +75,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       this.uploadFileUseCase,
       this.readAllMessagesUseCase,
       this.receiveMessageUseCase,
+      this.updateProfileInChatUseCase,
       this.shareProductWithContactsOrChannelsUsecase,
       this.getMediaCountUseCase,
       this.getDateTimeUseCase,
@@ -82,6 +84,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     on<ChatEvent>((event, emit) {});
     on<UpdateChannelObjectFromNotificationEvent>(
         _onUpdateChannelObjectFromNotificationEvent);
+    on<UpdateProfileInChatEvent>(_onUpdateProfileInChatEvent);
     on<SendErrorChatToServerEvent>(_onSendErrorChatToServerEvent);
     on<IncreaseSharedProductCountOnSocialAppEvent>(
         _onIncreaseSharedProductCountOnSocialAppEvent);
@@ -142,6 +145,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
   final SendErrorToServerUseCase sendErrorToServerUseCase;
   final UploadFileCloudinaryUseCase uploadFileCloudinaryUseCase;
   final UploadFileUseCase uploadFileUseCase;
+  final UpdateProfileInChatUseCase updateProfileInChatUseCase;
   final ShareProductOnAppsUseCase shareProductOnAppsUseCase;
   final SearchForMessageTextInChatUseCase searchForMessageTextInChatUseCase;
   final ReadAllMessagesUseCase readAllMessagesUseCase;
@@ -1011,6 +1015,31 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
             }
             return e;
           }).toList()));
+    });
+  }
+
+  FutureOr<void> _onUpdateProfileInChatEvent(
+      UpdateProfileInChatEvent event, Emitter<ChatState> emit) async {
+    if (_prefsRepository.chatToken == null ||
+        _prefsRepository.chatToken == "") {
+      return;
+    }
+    final response = await updateProfileInChatUseCase(UpdateProfileInChatParams(
+        userId: event.userId,
+        name: event.name,
+        phone: event.phone,
+        photo: event.photo));
+    response.fold((l) {
+      if (!isFailedTheFirstTime.contains('UpdateProfileInChatEvent')) {
+        add(UpdateProfileInChatEvent(
+            name: event.name,
+            phone: event.phone,
+            photo: event.photo,
+            userId: event.userId));
+        isFailedTheFirstTime.add('UpdateProfileInChatEvent');
+      }
+    }, (r) {
+      isFailedTheFirstTime.remove('UpdateProfileInChatEvent');
     });
   }
 

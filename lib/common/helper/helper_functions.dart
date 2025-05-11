@@ -6,6 +6,9 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -65,6 +68,21 @@ class HelperFunctions {
     } else {
       throw Exception('Unable to launch url');
     }
+  }
+
+  static Future<File> urlToFile(String imageUrl) async {
+    // تحميل الصورة من الإنترنت
+    final response = await http.get(Uri.parse(imageUrl));
+
+    // الحصول على مسار التخزين المؤقت
+    final documentDirectory = await getTemporaryDirectory();
+
+    // إنشاء ملف مؤقت باسم فريد
+    final file = File('${documentDirectory.path}/temp_image.png');
+
+    // كتابة بيانات الصورة إلى الملف
+    file.writeAsBytesSync(response.bodyBytes);
+    return file;
   }
 
   static Future<bool> urlLauncherBrowser(String url) async {

@@ -80,10 +80,11 @@ class PostClient<T> extends BaseApi<T> {
             response.requestOptions.headers,
             response.statusCode,
             response.requestOptions.method,
-            response.requestOptions.queryParameters,
-            response.data is! FormData ? response.data : {'data': 'formData'},
-            responseTime: stopWatch.elapsed.toString()
-        );
+            null,
+            requestPrams.data is! FormData
+                ? response.data
+                : {'data': 'formData'},
+            responseTime: stopWatch.elapsed.toString());
         log('request time: ${stopWatch.elapsed.toString()}');
         onUploadingFinished?.call(true);
         return response;

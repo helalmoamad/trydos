@@ -72,6 +72,6 @@ abstract class PrefsKey {
   static const fiveFilterPrefech = r'__$fiveFilterPrefech$__';
   static const mainCatogryPrefech = r'__$__MainCatogryPrefech__$__';
   static const idToken = r'__$__IdToken__$__';
-
+  static const imagesUrls = r'__$__imagesUrls_$__';
   static const coupon = r'__$__coupon__$__';
 }

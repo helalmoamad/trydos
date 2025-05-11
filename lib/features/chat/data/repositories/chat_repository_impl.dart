@@ -54,6 +54,13 @@ class ChatRepositoryImpl extends ChatRepository with HandlingExceptionRequest {
   }
 
   @override
+  Future<Either<Failure, bool>> updateProfileInChat(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.updateProfileInChat(params));
+  }
+
+  @override
   Future<Either<Failure, GetSharedProductCountModel>> getSharedProductCount(
       Map<String, dynamic> params) {
     return handlingExceptionRequest(

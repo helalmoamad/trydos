@@ -53,14 +53,16 @@ class GetClient<T> extends BaseApi<T> {
       );
 
       stopWatch.stop();
+      print(
+          "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF${requestPrams.queryParameters}");
       GetIt.I<PrefsRepository>().saveRequestsData(
           'This From Response   ${response.requestOptions.path}',
           response.data is! FormData ? response.data : {'data': 'formData'},
           response.requestOptions.headers,
           response.statusCode,
           response.requestOptions.method,
-          response.requestOptions.queryParameters,
-          response.data is! FormData ? response.data : {'data': 'formData'},
+          requestPrams.queryParameters,
+          null,
           responseTime: stopWatch.elapsed.toString());
       log('request time: ${stopWatch.elapsed.toString()}');
       prettyPrinterI(stopWatch.elapsed.toString());

@@ -467,8 +467,9 @@ abstract class LocaleKeys {
   static const language = 'language';
   static const available_language = 'available_language';
   static const profile_language = 'profile_language';
-  static const feature_product = 'feature_product';
-  static const other = 'other';
   static const you_dont_have_enough_credit_in_the_wallet =
       'you_dont_have_enough_credit_in_the_wallet';
+  static const feature_product = 'feature_product';
+  static const outside_available_area = 'outside_available_area';
+  static const other = 'other';
 }

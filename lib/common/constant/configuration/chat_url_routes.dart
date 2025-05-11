@@ -39,6 +39,8 @@ abstract class ChatEndPoints {
   static final loginEP = 'login'.usersScope();
   static final updateUserNameEP = 'update_user_name'.usersScope();
   static final getMyContactsEP = 'my_contacts'.usersScope();
+  static String updateProfileInChatEP(String userId) =>
+      '${userId}'.usersScope();
   static final saveContactsEP = 'save_contacts'.usersScope();
   static final myCallReg = 'my_calls'.channelsScope();
 
