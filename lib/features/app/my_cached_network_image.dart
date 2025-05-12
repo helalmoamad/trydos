@@ -221,7 +221,7 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage>
 }
 
 // باقي الكود كما هو (CustomCacheManagers و clearCustomCashe و addSuitableWidthAndHeightToImage)
-/*class CustomCacheManagers extends CacheManager {
+class CustomCacheManagers extends CacheManager {
   static const key = 'customCaches';
   static CustomCacheManagers? _instance;
 
@@ -233,14 +233,14 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage>
       : super(Config(key,
             maxNrOfCacheObjects: 300, stalePeriod: const Duration(days: 3)));
 }
-*/
-class CustomCacheManagers extends DefaultCacheManager {
+
+/*class CustomCacheManagers extends DefaultCacheManager {
   static CustomCacheManagers? _instance;
 
   factory CustomCacheManagers() {
     return _instance!;
   }
-}
+}*/
 
 void clearCustomCashe() async {
   await CustomCacheManagers().emptyCache();

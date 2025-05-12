@@ -1,0 +1,2 @@
+D:/trrdos/trydos/tyrdos/trydos/android/app/.cxx/Debug/4130k4v4/armeabi-v7a/CMakeFiles/edit_cache.dir
+D:/trrdos/trydos/tyrdos/trydos/android/app/.cxx/Debug/4130k4v4/armeabi-v7a/CMakeFiles/rebuild_cache.dir

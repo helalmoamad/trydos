@@ -1,11 +1,12 @@
 import 'dart:io';
-import 'package:contacts_service/contacts_service.dart';
+
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_contacts/flutter_contacts.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
@@ -139,12 +140,12 @@ class HelperFunctions {
     List<Contact> contacts = [];
 
     if (permissionStatus == PermissionStatus.granted) {
-      contacts = await ContactsService.getContacts(withThumbnails: false);
+      contacts = await FlutterContacts.getContacts(withThumbnail: false);
     }
     List<Contact> myContacts = [];
     for (Contact contact in contacts) {
-      if (contact.phones?.isNotEmpty ?? false) {
-        contact.phones?.forEach((element) {
+      if (contact.phones.isNotEmpty) {
+        contact.phones.forEach((element) {
           myContacts.add(
               Contact(phones: [element], displayName: contact.displayName));
         });
@@ -165,14 +166,14 @@ class HelperFunctions {
         : myPhoneNumber;
     return myContacts
         .map((e) => {
-              "mobile_phone": !e.phones!.first.value!.contains('+')
-                  ? countries.indexWhere((element) => e.phones!.first.value!
+              "mobile_phone": !e.phones.first.number.contains('+')
+                  ? countries.indexWhere((element) => e.phones.first.number
                               .startsWith(element.dialCode.substring(1))) ==
                           -1
-                      ? dialCode + e.phones!.first.value!
-                      : '+${e.phones!.first.value}'
-                  : e.phones!.first.value,
-              "name": e.displayName ?? 'No Name',
+                      ? dialCode + e.phones.first.number
+                      : '+${e.phones.first.number}'
+                  : e.phones.first.number,
+              "name": e.displayName,
             })
         .toList()
       ..removeWhere((element) =>

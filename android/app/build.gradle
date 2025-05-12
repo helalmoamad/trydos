@@ -8,16 +8,18 @@ plugins {
 
 android {
     namespace = "com.example.trydos"
-    compileSdk = 34
+    compileSdk = 35
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility  JavaVersion.VERSION_17
+        targetCompatibility   JavaVersion.VERSION_17
+        coreLibraryDesugaringEnabled true
+
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8
+        jvmTarget = "17"
     }
 
     defaultConfig {
@@ -25,7 +27,7 @@ android {
         applicationId = "com.example.trydos"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = 22
+        minSdk = 24
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -37,12 +39,13 @@ android {
         execution "ANDROIDX_TEST_ORCHESTRATOR"
     }
     buildTypes {
-        release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.debug
-        }
-    }
+    release {
+        minifyEnabled true  // تفعيل تقليل الكود (R8)
+        shrinkResources true // تقليل حجم الموارد (اختياري لكن مفيد)
+        proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        signingConfig signingConfigs.debug // أو استبدلها بتوقيع الإصدار الخاص بك
+}
+}
 }
 
 flutter {
@@ -51,8 +54,10 @@ flutter {
 
 dependencies {
     androidTestUtil "androidx.test:orchestrator:1.4.2"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.0.10"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.1.20"
     implementation platform('com.google.firebase:firebase-bom:33.10.0')
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation("com.smartlook.android:smartlook-analytics:2.3.24")
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.4'
+
 }

@@ -215,8 +215,6 @@ class PreCachingImageBloc
 
       precacheImage(
         CachedNetworkImageProvider(event.imageUrl,
-            maxHeight: event.height,
-            maxWidth: event.width,
             cacheManager: CustomCacheManagers()),
         event.context,
       ).whenComplete(() => semaphore.release());
