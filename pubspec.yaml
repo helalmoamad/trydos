@@ -71,7 +71,9 @@ dependencies:
   flutter_contacts: ^1.1.9+2
   cupertino_back_gesture: ^0.1.0
   inview_notifier_list: ^3.0.0
-  audioplayers: ^6.4.0
+  audioplayers:
+    git:
+      url: https://gitlab.com/trydos_app/audioplayers-6.4.0.git
   uuid: ^4.3.5
   open_file: ^3.5.10
   flutter_sound: ^9.28.0
