@@ -52,9 +52,14 @@ class AddStoryToOurServerEvent extends StoryEvent {
   final int isVideo;
   final int? width;
   final int? height;
+  final String path;
 
   const AddStoryToOurServerEvent(
-      {required this.file, required this.isVideo, this.width, this.height});
+      {required this.file,
+      required this.path,
+      required this.isVideo,
+      this.width,
+      this.height});
 
   @override
   List<Object?> get props => [file, isVideo, width, height];

@@ -110,6 +110,11 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           ? null
           : GetOldCartModel.fromJson(
               json['getOldCartModel'] as Map<String, dynamic>),
+      countryCoordinatesBorders:
+          (json['countryCoordinatesBorders'] as List<dynamic>?)
+                  ?.map((e) => geod.LatLng.fromJson(e as Map<String, dynamic>))
+                  .toList() ??
+              const [],
       getUserNotificationModel: json['getUserNotificationModel'] == null
           ? null
           : PaginationModel<NotificationItemModel>.fromJson(
@@ -291,6 +296,9 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               json['geColorsAndSizesForSearchModel'] as Map<String, dynamic>),
       currentIndexForUpdateCart:
           (json['currentIndexForUpdateCart'] as num?)?.toInt(),
+      getCoutryBoundaryByIsoStatus: $enumDecodeNullable(
+          _$GetCoutryBoundaryByIsoStatusEnumMap,
+          json['getCoutryBoundaryByIsoStatus']),
       userInfo: json['userInfo'] == null
           ? null
           : User.fromJson(json['userInfo'] as Map<String, dynamic>),
@@ -324,6 +332,8 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'getFirebaseSettingForNotificationStatus':
           _$GetFirebaseSettingForNotificationStatusEnumMap[
               instance.getFirebaseSettingForNotificationStatus],
+      'getCoutryBoundaryByIsoStatus': _$GetCoutryBoundaryByIsoStatusEnumMap[
+          instance.getCoutryBoundaryByIsoStatus],
       'firebaseSettingForNotificationModel':
           instance.firebaseSettingForNotificationModel?.toJson(),
       'updateProfileStatus':
@@ -391,6 +401,8 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           instance.addOrRemoveLikeOfProductStatus]!,
       'selectedCollection': instance.selectedCollection,
       'currentPage': instance.currentPage,
+      'countryCoordinatesBorders':
+          instance.countryCoordinatesBorders.map((e) => e.toJson()).toList(),
       'searchHistory': instance.searchHistory,
       'listOfErrorSendedToMobileErrorLog':
           instance.listOfErrorSendedToMobileErrorLog,
@@ -663,6 +675,13 @@ const _$GetNotificationTypeProductStatusEnumMap = {
   GetNotificationTypeProductStatus.loading: 'loading',
   GetNotificationTypeProductStatus.success: 'success',
   GetNotificationTypeProductStatus.failure: 'failure',
+};
+
+const _$GetCoutryBoundaryByIsoStatusEnumMap = {
+  GetCoutryBoundaryByIsoStatus.init: 'init',
+  GetCoutryBoundaryByIsoStatus.loading: 'loading',
+  GetCoutryBoundaryByIsoStatus.success: 'success',
+  GetCoutryBoundaryByIsoStatus.failure: 'failure',
 };
 
 const _$GetFirebaseSettingForNotificationStatusEnumMap = {

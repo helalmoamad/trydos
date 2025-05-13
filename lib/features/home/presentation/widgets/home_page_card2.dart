@@ -110,7 +110,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                   banner: widget.boutique.banners,
                   withSlidingImages: widget.withSlidingImages,
                   boutiqueSlug: widget.boutique.slug!,
-                  boutiqueDescription: widget.boutique.description,
+                  boutiqueName: widget.boutique.name,
                   boutiqueFirstBanner: widget.boutique.banners![0].filePath!,
                   boutiqueIcon: widget.boutique.icon?.filePath ?? "",
                 ),
@@ -438,8 +438,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                   withSlidingImages: widget.withSlidingImages,
                                   boutiqueSlug: widget.boutique.slug!,
                                   category: null,
-                                  boutiqueDescription:
-                                      widget.boutique.description!,
+                                  boutiqueName: widget.boutique.name,
                                   boutiqueFirstBanner:
                                       widget.boutique.banners![0].filePath!,
                                   boutiqueIcon: widget.boutique.icon!.filePath!,
@@ -675,8 +674,8 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                                           .childCategoriesForProductIds![
                                                               index]
                                                           .categorySlug,
-                                                  boutiqueDescription: widget
-                                                      .boutique.description,
+                                                  boutiqueName:
+                                                      widget.boutique.name,
                                                   boutiqueFirstBanner: widget
                                                       .boutique
                                                       .banners![0]

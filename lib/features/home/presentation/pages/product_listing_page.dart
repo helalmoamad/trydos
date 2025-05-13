@@ -79,7 +79,7 @@ class ProductListingPage extends StatefulWidget {
   final String boutiqueSlug;
   final String? category;
   final String? boutiqueIcon;
-  final String? boutiqueDescription;
+  final String? boutiqueName;
   final String? boutiqueFirstBanner;
   final bool withSlidingImages;
   final bool? fromNotificationCategory;
@@ -96,7 +96,7 @@ class ProductListingPage extends StatefulWidget {
     required this.boutiqueSlug,
     this.fromBackground = false,
     this.getProductFiltersModel,
-    this.boutiqueDescription,
+    this.boutiqueName,
     this.isShowPanelForVerified,
     this.controllerFormSearchPage,
     this.fromNotificationCategory,
@@ -743,7 +743,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                           false;
 
                                   return CustomScrollView(
-                                      cacheExtent: 600,
+                                      //  cacheExtent: 600,
                                       key: TestVariables.kTestMode
                                           ? Key(WidgetsKeys
                                               .productListingScrollKey)
@@ -1422,12 +1422,11 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                             SizedBox(
                                                                               height: 5,
                                                                             ),
-                                                                            Html(key: htmlDescriptionKey, shrinkWrap: true, data: widget.boutiqueDescription ?? '', style: {
-                                                                              "body": Style(margin: Margins.all(0)),
-                                                                              "p": Style(
-                                                                                margin: Margins.all(0),
-                                                                              ),
-                                                                            }),
+                                                                            Text(
+                                                                              widget.boutiqueName ?? '',
+                                                                              textAlign: TextAlign.center,
+                                                                              style: context.textTheme.bodyMedium?.rr.copyWith(color: const Color(0xff505050), letterSpacing: 0.18, fontSize: 12, height: 1),
+                                                                            ),
                                                                             SizedBox(
                                                                               height: 5,
                                                                             ),

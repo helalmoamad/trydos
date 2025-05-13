@@ -392,7 +392,7 @@ class HandlingMarketNotifications {
                 fromBackground: fromBackground,
                 boutiqueSlug: data["boutique_slug"] ?? "",
                 banner: boutiqueBannerList,
-                boutiqueDescription: data["description"] ?? "",
+                boutiqueName: data["name"] ?? "",
                 boutiqueFirstBanner: boutiqueBannerList[0].filePath ?? "",
                 boutiqueIcon: boutiqueIcon?["file_path"] ?? "",
               ),

@@ -140,7 +140,8 @@ class HelperFunctions {
     List<Contact> contacts = [];
 
     if (permissionStatus == PermissionStatus.granted) {
-      contacts = await FlutterContacts.getContacts(withThumbnail: false);
+      contacts = await FlutterContacts.getContacts(
+          withThumbnail: false, withPhoto: true, withProperties: true);
     }
     List<Contact> myContacts = [];
     for (Contact contact in contacts) {

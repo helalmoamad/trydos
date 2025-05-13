@@ -161,6 +161,8 @@ import '../../features/home/domain/use_cases/get_colors_sizes_for_search_usecase
     as _i247;
 import '../../features/home/domain/use_cases/get_count_view_of_product_usecase.dart'
     as _i922;
+import '../../features/home/domain/use_cases/get_country_boundary_usecase.dart'
+    as _i164;
 import '../../features/home/domain/use_cases/get_currency_for_country_usecase.dart'
     as _i762;
 import '../../features/home/domain/use_cases/get_customer_addresses_usecase.dart'
@@ -393,6 +395,8 @@ Future<_i174.GetIt> $initGetIt(
       () => _i675.GetCartOverviewUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i247.GetColorsAndSizesForSearchUseCase>(
       () => _i247.GetColorsAndSizesForSearchUseCase(gh<_i0.HomeRepository>()));
+  gh.factory<_i164.CountryBoundaryByIsoUseCase>(
+      () => _i164.CountryBoundaryByIsoUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i922.GetAndAddCountViewOfProductUsecase>(
       () => _i922.GetAndAddCountViewOfProductUsecase(gh<_i0.HomeRepository>()));
   gh.factory<_i762.GetCurrencyForCountryUseCase>(
@@ -483,48 +487,6 @@ Future<_i174.GetIt> $initGetIt(
       ));
   gh.lazySingleton<_i702.CommonUseRepository>(() =>
       _i77.CommonUseRepositoryImpl(gh<_i672.CommonUseRemoteDataSource>()));
-  gh.lazySingleton<_i903.HomeBloc>(() => _i903.HomeBloc(
-        gh<_i533.GetStoryForProductUseCase>(),
-        gh<_i687.RemoveItemToCartUseCase>(),
-        gh<_i190.ConvertItemFromOldcartToCartUsecase>(),
-        gh<_i307.GetCartItemUseCase>(),
-        gh<_i318.GetOldCartItemUseCase>(),
-        gh<_i366.StoreFcmTokenOfMarketUseCase>(),
-        gh<_i878.DeleteLikeOfProductUsecase>(),
-        gh<_i33.AddLikeToProductUsecase>(),
-        gh<_i802.UpdateItemInCartUseCase>(),
-        gh<_i1035.AddItemToCartUseCase>(),
-        gh<_i939.GetCommentForProductUseCase>(),
-        gh<_i749.GetProductsListInCartUseCase>(),
-        gh<_i315.UpdateProfileUseCase>(),
-        gh<_i318.GetAllowedCountryUseCase>(),
-        gh<_i929.GetNotificationTypeProductUseCase>(),
-        gh<_i912.GetWidthAndHeightUseCase>(),
-        gh<_i171.GetMyFirebaseSettingsUseCase>(),
-        gh<_i750.UpdateEmailNotificationUseCase>(),
-        gh<_i741.UpdateFirebaseNotificationUseCase>(),
-        gh<_i432.UpdateNotificationFrequencyUseCase>(),
-        gh<_i744.UpdateWhatsappNotificationUseCase>(),
-        gh<_i814.ChangeCountryLanguageFornotificationUseCase>(),
-        gh<_i687.SubscribeTopicFornotificationUseCase>(),
-        gh<_i424.UnSubscribeTopicFornotificationUseCase>(),
-        gh<_i347.GetProductDetailWithoutRelatedProductsUseCase>(),
-        gh<_i815.GetStartingSettingsUseCase>(),
-        gh<_i963.GetPopularSearchItemUseCase>(),
-        gh<_i651.UpdateUserPhotoUseCase>(),
-        gh<_i762.GetCurrencyForCountryUseCase>(),
-        gh<_i104.HideItemsInOldCartUseCase>(),
-        gh<_i149.GetFullProductDetailsUseCase>(),
-        gh<_i922.GetAndAddCountViewOfProductUsecase>(),
-        gh<_i78.SendErrorToMobileErrorLogUseCase>(),
-        gh<_i397.GetProductsWithoutFiltersUseCase>(),
-        gh<_i247.GetColorsAndSizesForSearchUseCase>(),
-        gh<_i68.AddCommentUseCase>(),
-        gh<_i715.RequestForNotificationWhenProductBecameAvailableUseCase>(),
-        gh<_i812.CheckAvailabilityProductCartUsecase>(),
-        gh<_i675.GetCartOverviewUseCase>(),
-        gh<_i1021.GetUserNotificationUseCase>(),
-      ));
   gh.lazySingleton<_i1032.CallsRepository>(
       () => _i722.CallsRepositoryImpl(gh<_i1061.CallsRemoteDataSource>()));
   gh.lazySingleton<_i420.ChatRepository>(
@@ -611,6 +573,49 @@ Future<_i174.GetIt> $initGetIt(
       () => _i711.RejectCallUseCase(gh<_i1032.CallsRepository>()));
   gh.factory<_i961.WatchMissedCallUseCase>(
       () => _i961.WatchMissedCallUseCase(gh<_i1032.CallsRepository>()));
+  gh.lazySingleton<_i903.HomeBloc>(() => _i903.HomeBloc(
+        gh<_i533.GetStoryForProductUseCase>(),
+        gh<_i687.RemoveItemToCartUseCase>(),
+        gh<_i190.ConvertItemFromOldcartToCartUsecase>(),
+        gh<_i307.GetCartItemUseCase>(),
+        gh<_i318.GetOldCartItemUseCase>(),
+        gh<_i366.StoreFcmTokenOfMarketUseCase>(),
+        gh<_i878.DeleteLikeOfProductUsecase>(),
+        gh<_i33.AddLikeToProductUsecase>(),
+        gh<_i802.UpdateItemInCartUseCase>(),
+        gh<_i1035.AddItemToCartUseCase>(),
+        gh<_i939.GetCommentForProductUseCase>(),
+        gh<_i749.GetProductsListInCartUseCase>(),
+        gh<_i315.UpdateProfileUseCase>(),
+        gh<_i318.GetAllowedCountryUseCase>(),
+        gh<_i929.GetNotificationTypeProductUseCase>(),
+        gh<_i912.GetWidthAndHeightUseCase>(),
+        gh<_i171.GetMyFirebaseSettingsUseCase>(),
+        gh<_i750.UpdateEmailNotificationUseCase>(),
+        gh<_i741.UpdateFirebaseNotificationUseCase>(),
+        gh<_i432.UpdateNotificationFrequencyUseCase>(),
+        gh<_i744.UpdateWhatsappNotificationUseCase>(),
+        gh<_i814.ChangeCountryLanguageFornotificationUseCase>(),
+        gh<_i687.SubscribeTopicFornotificationUseCase>(),
+        gh<_i424.UnSubscribeTopicFornotificationUseCase>(),
+        gh<_i347.GetProductDetailWithoutRelatedProductsUseCase>(),
+        gh<_i815.GetStartingSettingsUseCase>(),
+        gh<_i963.GetPopularSearchItemUseCase>(),
+        gh<_i651.UpdateUserPhotoUseCase>(),
+        gh<_i762.GetCurrencyForCountryUseCase>(),
+        gh<_i104.HideItemsInOldCartUseCase>(),
+        gh<_i149.GetFullProductDetailsUseCase>(),
+        gh<_i164.CountryBoundaryByIsoUseCase>(),
+        gh<_i922.GetAndAddCountViewOfProductUsecase>(),
+        gh<_i78.SendErrorToMobileErrorLogUseCase>(),
+        gh<_i397.GetProductsWithoutFiltersUseCase>(),
+        gh<_i247.GetColorsAndSizesForSearchUseCase>(),
+        gh<_i68.AddCommentUseCase>(),
+        gh<_i715.RequestForNotificationWhenProductBecameAvailableUseCase>(),
+        gh<_i812.CheckAvailabilityProductCartUsecase>(),
+        gh<_i675.GetCartOverviewUseCase>(),
+        gh<_i1021.GetUserNotificationUseCase>(),
+      ));
   gh.lazySingleton<_i536.StoryBloc>(() => _i536.StoryBloc(
         gh<_i1043.UploadFileCloudinaryUseCase>(),
         gh<_i804.GetStoryUseCase>(),

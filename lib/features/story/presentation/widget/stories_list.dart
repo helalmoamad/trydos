@@ -284,6 +284,18 @@ class _StoriesListState extends State<StoriesList> {
                                           initialStory = storiesCollections[
                                                   index]
                                               .stories![indexOfInitialStory];
+                                          print(
+                                              "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+
+                                          print(
+                                              "EEEEEEEEE${initialStory.photoPath}EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+                                          storiesCollections[0]
+                                              .stories
+                                              ?.forEach((element) => print(
+                                                  "EEEEEEEEEEEEEEEEEEEE${element.photoPath}${element.userId}${storiesCollections[0].name}${storiesCollections[0].mobilePhone}EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"));
+                                          print(
+                                              "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+
                                           String? imageOfVideoUrl;
                                           if (initialStory.isPhoto != 1) {
                                             int index = initialStory

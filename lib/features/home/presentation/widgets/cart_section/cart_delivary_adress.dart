@@ -72,6 +72,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
   void initState() {
     // homeBloc = BlocProvider.of<HomeBloc>(context);
     orderBloc = BlocProvider.of<OrderBloc>(context);
+    homeBloc = BlocProvider.of<HomeBloc>(context);
 
     ////////////////////
 
@@ -79,6 +80,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
     orderBloc.add(GetProvincesByIsoEvent());
     orderBloc.add(GetCustomerWalletEvent(limit: 10, offset: 1));
 
+    homeBloc.add(GetCoutryBoundaryByIsoEvent());
     couponKey.text = prefsRepository.getOrderCoupon();
 
     if (prefsRepository.getOrderCoupon().isNotEmpty) {

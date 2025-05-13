@@ -1,4 +1,6 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:get_it/get_it.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 
 extension ScopeApi on String {
   String get _api => 'api';
@@ -24,6 +26,9 @@ abstract class ElasticEndPoints {
   static final getHomeBoutiquesEP = "boutiques".homeScope();
   static final getAddressByTextEP = "get-address-by-text".addressesScope();
   static final getProvincesByIsoEP = "get-provinces-by-iso".addressesScope();
+  static final countryBoundaryByIsoEP =
+      "CountryBoundaryByIso/${GetIt.I<PrefsRepository>().userCountryIsAvailable == 1 ? GetIt.I<PrefsRepository>().userChoosedCountryIso : GetIt.I<PrefsRepository>().countryIso}"
+          .addressesScope();
   static final getAddressByCoordinatesEP =
       "get-address-by-coordinates".addressesScope();
 }

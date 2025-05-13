@@ -17,6 +17,14 @@ class GetStartingSettingsEvent extends HomeEvent {
   List<Object?> get props => [];
 }
 
+class GetCoutryBoundaryByIsoEvent extends HomeEvent {
+  const GetCoutryBoundaryByIsoEvent();
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+}
+
 class AddCurrentSelectedColorEvent extends HomeEvent {
   final int currentSelectedColor;
   final String productSlug;

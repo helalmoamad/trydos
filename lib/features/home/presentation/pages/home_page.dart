@@ -549,7 +549,7 @@ class _HomePageState extends State<HomePage> {
 
             ///////////////////////////
             CustomScrollView(
-              cacheExtent: 1600,
+              //cacheExtent: 1600,
               key: TestVariables.kTestMode
                   ? Key(WidgetsKeys.homepageScrollKey)
                   : null,

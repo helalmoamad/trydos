@@ -15,7 +15,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/app_elvated_button.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
-
+import 'package:geodesy/geodesy.dart' as geod;
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_comment_for_product_model.dart';
@@ -38,6 +38,7 @@ import 'package:trydos/features/home/domain/use_cases/get_allowed_country_usecas
 import 'package:trydos/features/home/domain/use_cases/get_cart_item_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_colors_sizes_for_search_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_count_view_of_product_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/get_country_boundary_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_currency_for_country_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_full_product_details_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_my_firebase_settings_usecase.dart';
@@ -134,6 +135,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.getCurrencyForCountryUseCase,
     this.hideItemsInOldCartUseCase,
     this.getFullProductDetailsUseCase,
+    this.countryBoundaryByIsoUseCase,
     //this.getCustomerInfoUseCase,
     this.getAndAddCountViewOfProductUsecase,
     this.sendErrorToMobileErrorLogUseCase,
@@ -165,6 +167,10 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
     on<UpdateProfileEvent>(
       _onUpdateProfileEvent,
+    );
+
+    on<GetCoutryBoundaryByIsoEvent>(
+      _onGetCoutryBoundaryByIsoEvent,
     );
 
     on<UploadUserPhotoCloudinaryEvent>(_onUploadUserPhptoCloudinaryEvent);
@@ -354,6 +360,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final ConvertItemFromOldcartToCartUsecase convertItemFromOldcartToCartUsecase;
   final GetAndAddCountViewOfProductUsecase getAndAddCountViewOfProductUsecase;
   final AddCommentUseCase addCommentUseCase;
+  final CountryBoundaryByIsoUseCase countryBoundaryByIsoUseCase;
   final GetProductsListInCartUseCase getProductsListInCartUseCase;
   final SendErrorToMobileErrorLogUseCase sendErrorToMobileErrorLogUseCase;
   final StoreFcmTokenOfMarketUseCase storeFcmTokenOfMarketUseCase;
@@ -419,6 +426,32 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       emit(state.copyWith(
           startingSetting: r.data!.startingSetting,
           getStartingSettingsStatus: GetStartingSettingsStatus.success));
+    });
+  }
+
+  FutureOr<void> _onGetCoutryBoundaryByIsoEvent(
+      GetCoutryBoundaryByIsoEvent event, Emitter<HomeState> emit) async {
+    //  if (apisMustNotToRequest.contains('GetStartingSettingsEvent')) return;
+    emit(state.copyWith(
+        getCoutryBoundaryByIsoStatus: GetCoutryBoundaryByIsoStatus.loading));
+    final response = await countryBoundaryByIsoUseCase(NoParams());
+
+    response.fold((l) {
+      if (!isFailedTheFirstTime.contains('GetCoutryBoundaryByIsoEvent')) {
+        add(GetCoutryBoundaryByIsoEvent());
+        isFailedTheFirstTime.add('GetCoutryBoundaryByIsoEvent');
+      }
+      emit(state.copyWith(
+          getCoutryBoundaryByIsoStatus: GetCoutryBoundaryByIsoStatus.failure));
+    }, (r) {
+      isFailedTheFirstTime.remove('GetCoutryBoundaryByIsoEvent');
+      List<geod.LatLng>? countryCoordinatesBorders = [];
+      r.country?.boundary?.coordinates?[0].forEach((element) =>
+          countryCoordinatesBorders
+              .add(geod.LatLng(element.lat ?? 0, element.lon ?? 0)));
+      emit(state.copyWith(
+          countryCoordinatesBorders: countryCoordinatesBorders,
+          getCoutryBoundaryByIsoStatus: GetCoutryBoundaryByIsoStatus.success));
     });
   }
 

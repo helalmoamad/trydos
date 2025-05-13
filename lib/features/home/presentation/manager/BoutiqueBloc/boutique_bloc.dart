@@ -971,25 +971,28 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
               page: 1,
               paginationStatus: PaginationStatus.loading)
         });
-
+        if ((getProductListingWithFiltersModel.products ?? []).length > 0) {
+          await Future.delayed(Duration(seconds: 3));
+        }
         emit(state.copyWith(
             getProductListingWithFiltersPaginationModels:
                 getProductListingWithFiltersPaginationModels));
       } catch (e) {}
+    } else {
+      Map<String, bool> boutiquesThatDidPrefetch =
+          Map.of(state.boutiquesThatDidPrefetch);
+      if (boutiquesThatDidPrefetch[key] == true &&
+          event.boutiqueSlug != "*featured*") {
+        return;
+      }
+      if (boutiquesThatDidPrefetch[key] == null) {
+        boutiquesThatDidPrefetch.addAll({key: false});
+      }
+      boutiquesThatDidPrefetch[key] = true;
+
+      emit(state.copyWith(boutiquesThatDidPrefetch: boutiquesThatDidPrefetch));
     }
 
-    Map<String, bool> boutiquesThatDidPrefetch =
-        Map.of(state.boutiquesThatDidPrefetch);
-    if (boutiquesThatDidPrefetch[key] == true &&
-        event.boutiqueSlug != "*featured*") {
-      return;
-    }
-    if (boutiquesThatDidPrefetch[key] == null) {
-      boutiquesThatDidPrefetch.addAll({key: false});
-    }
-    boutiquesThatDidPrefetch[key] = true;
-
-    emit(state.copyWith(boutiquesThatDidPrefetch: boutiquesThatDidPrefetch));
     await prefechBoutiques.acquire();
     final response = event.boutiqueSlug == "*featured*"
         ? await getFeaturedProductsUseCase(GetFeaturedProductsParams(

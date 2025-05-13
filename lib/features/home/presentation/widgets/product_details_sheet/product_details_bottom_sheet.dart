@@ -191,11 +191,13 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
         Future.delayed(
           Duration(milliseconds: 50),
           () {
-            gallery3dControllerForCircles?.animateTo(
-                state.currentSelectedColorForEveryProduct[
-                        widget.productItem.slug] ??
-                    0,
-                true);
+            try {
+              gallery3dControllerForCircles?.animateTo(
+                  state.currentSelectedColorForEveryProduct[
+                          widget.productItem.slug] ??
+                      0,
+                  true);
+            } catch (e) {}
 
             sizeIsNotAvailableNotifier.value = null;
             colorIsNotAvailableNotifier.value = null;

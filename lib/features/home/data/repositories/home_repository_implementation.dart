@@ -11,6 +11,7 @@ import 'package:trydos/features/home/data/models/get_address_by_coordinates_mode
 import 'package:trydos/features/home/data/models/get_address_by_text_model.dart';
 
 import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
+import 'package:trydos/features/home/data/models/get_boundary_cordinates_by_iso_model.dart';
 
 import 'package:trydos/features/home/data/models/get_cart_item_model.dart';
 import 'package:trydos/features/home/data/models/get_colors_and_sizes_model.dart';
@@ -72,6 +73,12 @@ class HomeRepositoryImpl extends HomeRepository with HandlingExceptionRequest {
       Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.getMainCategories(params));
+  }
+
+  @override
+  Future<Either<Failure, CountryBoundaryByIsoModel>> getCountryBoundaryByIso() {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.getCountryBoundaryByIso());
   }
 
   @override

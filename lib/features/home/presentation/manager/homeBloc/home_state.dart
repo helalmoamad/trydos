@@ -12,7 +12,7 @@ import 'package:trydos/features/home/data/models/get_currency_for_country_model.
 import 'package:trydos/features/home/data/models/get_list_of_customer_addresses_model.dart';
 import 'package:trydos/features/home/data/models/get_old_cart_model.dart'
     as oldCart;
-
+import 'package:geodesy/geodesy.dart' as geod;
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
@@ -33,6 +33,8 @@ import '../../../data/models/starting_settings_response_model.dart';
 part 'home_state.g.dart';
 
 enum GetStartingSettingsStatus { init, loading, success, failure }
+
+enum GetCoutryBoundaryByIsoStatus { init, loading, success, failure }
 
 enum GetProductDetailWithoutSimilarRelatedProductsStatus {
   init,
@@ -146,6 +148,7 @@ class HomeState extends Equatable {
       this.enableAddToCardAfterChangeVariantZero,
       this.getOldCartItemsStatus = GetOLdCartItemsStatus.init,
       this.getOldCartModel,
+      this.countryCoordinatesBorders = const [],
       this.getUserNotificationModel,
       this.checkAvailabilityProductCartModel,
       this.currentPage = 0,
@@ -191,6 +194,7 @@ class HomeState extends Equatable {
       this.getNotificationTypeProductStatus,
       this.geColorsAndSizesForSearchModel,
       this.currentIndexForUpdateCart,
+      this.getCoutryBoundaryByIsoStatus,
       this.userInfo,
       this.listOfErrorSendedToMobileErrorLog = const [],
       this.cachedProductWithoutRelatedProductsModel = const {},
@@ -199,6 +203,7 @@ class HomeState extends Equatable {
 
   final GetFirebaseSettingForNotificationStatus?
       getFirebaseSettingForNotificationStatus;
+  final GetCoutryBoundaryByIsoStatus? getCoutryBoundaryByIsoStatus;
   final FirebaseSettingForNotificationModel?
       firebaseSettingForNotificationModel;
   final UpdateProfileStatus? updateProfileStatus;
@@ -249,7 +254,7 @@ class HomeState extends Equatable {
 
   final int? selectedCollection;
   final int currentPage;
-
+  final List<geod.LatLng> countryCoordinatesBorders;
   // String? idForRequest;
   final List<String>? searchHistory;
   final List<String> listOfErrorSendedToMobileErrorLog;
@@ -392,8 +397,9 @@ class HomeState extends Equatable {
 
         isChangedvariationWhenQtyZero,
         getFirebaseSettingForNotificationStatus,
-
+        getCoutryBoundaryByIsoStatus,
         currentQuantityForCart,
+        countryCoordinatesBorders,
         firebaseSettingForNotificationModel,
         cachedProductWithoutRelatedProductsModel,
         addOrRemoveLikeOfProductStatus,
@@ -404,9 +410,11 @@ class HomeState extends Equatable {
       {final GetStartingSettingsStatus? getStartingSettingsStatus,
       final GetFirebaseSettingForNotificationStatus?
           getFirebaseSettingForNotificationStatus,
+      final GetCoutryBoundaryByIsoStatus? getCoutryBoundaryByIsoStatus,
       final FirebaseSettingForNotificationModel?
           firebaseSettingForNotificationModel,
       final bool? isChangedvariationWhenQtyZero,
+      final List<geod.LatLng>? countryCoordinatesBorders,
       final EnableAddToCardAfterChangeVariantZero?
           enableAddToCardAfterChangeVariantZero,
       final UpdateProfileStatus? updateProfileStatus,
@@ -507,7 +515,10 @@ class HomeState extends Equatable {
       uploadUserPhotoCloudinaryStatus: uploadUserPhotoCloudinaryStatus ??
           this.uploadUserPhotoCloudinaryStatus,
       userInfo: userInfo ?? this.userInfo,
-
+      getCoutryBoundaryByIsoStatus:
+          getCoutryBoundaryByIsoStatus ?? this.getCoutryBoundaryByIsoStatus,
+      countryCoordinatesBorders:
+          countryCoordinatesBorders ?? this.countryCoordinatesBorders,
       hideItemInOldCartStatus:
           hideItemInOldCartStatus ?? this.hideItemInOldCartStatus,
       geColorsAndSizesForSearchModel:

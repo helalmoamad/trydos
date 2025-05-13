@@ -127,6 +127,7 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
         HelperFunctions.urlToFile(r.secureUrl!).then((value) {
           add(
             AddStoryToOurServerEvent(
+                path: r.secureUrl!,
                 file: value,
                 isVideo: isVideoFile ? 1 : 0,
                 width: r.width,
@@ -259,7 +260,8 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
     }
   }
 
-  Future<void> _onGetStoryEvent(GetStoryEvent, Emitter<StoryState> emit) async {
+  Future<void> _onGetStoryEvent(
+      GetStoryEvent event, Emitter<StoryState> emit) async {
     /*if (apisMustNotToRequest.contains('GetStoryEvent')) {
       return;
     }*/
@@ -276,7 +278,7 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
       } else {
         isFailedTheFirstTime.insert(
             isFailedTheFirstTime.length, 'GetStoryEvent');
-        GetIt.I<StoryBloc>().add(GetStoryEvent);
+        GetIt.I<StoryBloc>().add(GetStoryEvent());
       }
     }, (r) {
       apisMustNotToRequest.add('GetStoryEvent');
@@ -293,6 +295,7 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
         if (myStoriesIndex != -1) {
           CollectionStoryModel collectionStoryModel =
               collections.removeAt(myStoriesIndex);
+
           collections.insert(
               (r.data!.collections!.length), collectionStoryModel);
         }
@@ -309,12 +312,8 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
     final response =
         await uploadStoryUseCase.call(UploadStoryParams(file: event.file));
     response.fold((l) {
-      print(
-          "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDWEE");
       emit(state.copyWith(
           uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.success));
-      print(
-          "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD${state.uploadStoryCloudinaryStatus}DDDDDDDDDDDDDDDDDDDDDDDDWEE");
 
       showMessage("Faild To Add Your Story",
           foreGroundColor: Colors.white,
@@ -327,6 +326,7 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
         isFailedTheFirstTime.insert(
             isFailedTheFirstTime.length, 'AddStoryToOurServerEvent');
         add(AddStoryToOurServerEvent(
+            path: event.path,
             file: event.file,
             isVideo: event.isVideo,
             width: event.width,
@@ -335,7 +335,7 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
     }, (r) {
       add(GetStoryEvent());
       isFailedTheFirstTime.remove('AddStoryToOurServerEvent');
-      String fileName = event.file.path.split('/').last;
+      String fileName = event.path.split('/').last;
       String mimeType = mime(fileName) ?? '';
       String mimee = mimeType.split('/')[0];
       bool isVideoFile;
@@ -351,20 +351,25 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
           width: event.width,
           isVideo: isVideoFile ? 1 : 0,
           isPhoto: !isVideoFile ? 1 : 0,
-          photoPath: !isVideoFile ? event.file.path : null,
-          fullVideoPath: isVideoFile ? event.file.path : null);
+          photoPath: !isVideoFile ? event.path : null,
+          fullVideoPath: isVideoFile ? event.path : null);
       r.fold((id) {
-        if (state.storiesCollections.first.stories?[0].id !=
+        if (state.storiesCollections.first.stories?[0].userId !=
             GetIt.I<PrefsRepository>().myStoriesId) {
+          print(
+              "FFFFFFFFFFFFFFFFFFFFFFFFFFFFWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWs2222222222222222222ssssssssssssssssssssssss");
+
           state.storiesCollections.insert(
               0,
               CollectionStoryModel(
                   id: GetIt.I<PrefsRepository>().myStoriesId,
                   name: GetIt.I<PrefsRepository>().myStoriesName,
                   username: GetIt.I<PrefsRepository>().myStoriesName,
-                  photoPath: event.file.path,
                   stories: [story.copyWith(id: id)]));
         } else {
+          print(
+              "FFFFFFFFFFFFFFFFFFFFFFFFFFFFWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW33333333333333333333sssssssssssss");
+
           List<Story> currentUserStories =
               List.of(state.storiesCollections.first.stories ?? []);
           currentUserStories.insert(
@@ -372,6 +377,9 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
           state.storiesCollections.first.stories = currentUserStories;
         }
       }, (collection) {
+        print(
+            "FFFFFFFFFFFFFFFFFFFFFFFFFFFFWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW11111111111111111111111ssssssssssssssssssss");
+
         state.storiesCollections.insert(0, collection);
       });
       // if (GetIt.I<PrefsRepository>().myStoriesId ==

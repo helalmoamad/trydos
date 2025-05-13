@@ -101,8 +101,6 @@ class ProductDetailsSheetCommentsContent extends StatelessWidget {
                                 textInputAction: cupertino.TextInputAction.done,
                                 onFieldSubmitted: (val) {
                                   if (addCommentController.text.isEmpty) {
-                                    showMessage(
-                                        LocaleKeys.error_empty_comment.tr());
                                     return;
                                   }
                                   BlocProvider.of<HomeBloc>(context).add(
@@ -131,12 +129,7 @@ class ProductDetailsSheetCommentsContent extends StatelessWidget {
                                       right: 20.0, top: 15, bottom: 15),
                                   child: InkWell(
                                     onTap: () {
-                                      cupertino.FocusScope.of(context)
-                                          .unfocus();
                                       if (addCommentController.text.isEmpty) {
-                                        showMessage(LocaleKeys
-                                            .error_empty_comment
-                                            .tr());
                                         return;
                                       }
                                       BlocProvider.of<HomeBloc>(context).add(
@@ -148,6 +141,9 @@ class ProductDetailsSheetCommentsContent extends StatelessWidget {
                                               comment:
                                                   addCommentController.text));
                                       addCommentController.clear();
+                                      cupertino.FocusScope.of(context)
+                                          .unfocus();
+
                                       addCommentButtonToggleNotifier.value =
                                           false;
                                       //////////////////////////////////////////////////////////

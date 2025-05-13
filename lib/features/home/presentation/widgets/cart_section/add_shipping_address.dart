@@ -109,19 +109,22 @@ class _AddShippingAdressState extends State<AddShippingAdress>
         _currentLocation =
             LatLng(currentLocation.latitude!, currentLocation.longitude!);
       }
-      bool inside = geodesy.isGeoPointInPolygon(
-          geod.LatLng(_currentLocation!.latitude, _currentLocation!.longitude),
-          syriaBorders);
-      if (!inside) {
-        // عرض رسالة
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              duration: Duration(seconds: 2),
-              content: Text('${LocaleKeys.outside_available_area.tr()}')),
-        );
-        _currentLocation = null;
-        loadingToGoCurrentLoacation.value = false;
-        return;
+      if (countryBorders.isNotEmpty) {
+        bool inside = geodesy.isGeoPointInPolygon(
+            geod.LatLng(
+                _currentLocation!.latitude, _currentLocation!.longitude),
+            countryBorders);
+        if (!inside) {
+          // عرض رسالة
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                duration: Duration(seconds: 2),
+                content: Text('${LocaleKeys.outside_available_area.tr()}')),
+          );
+          _currentLocation = null;
+          loadingToGoCurrentLoacation.value = false;
+          return;
+        }
       }
 
       await Future.delayed(Duration(seconds: 2), () {
@@ -153,42 +156,8 @@ class _AddShippingAdressState extends State<AddShippingAdress>
     }
   }
 
-  final List<geod.LatLng> syriaBorders = [
-    // شمالاً (الحدود مع تركيا)
-    geod.LatLng(37.2300, 36.0000),
-    geod.LatLng(37.1000, 36.2000),
-    geod.LatLng(36.9000, 36.4000),
-    geod.LatLng(36.7000, 36.6000),
-    geod.LatLng(36.5000, 36.8000),
+  List<geod.LatLng> countryBorders = [];
 
-    // شرقاً (الحدود مع العراق)
-    geod.LatLng(36.3000, 37.0000),
-    geod.LatLng(35.9000, 37.2000),
-    geod.LatLng(35.5000, 37.4000),
-    geod.LatLng(35.2000, 37.6000),
-
-    // جنوباً (الحدود مع الأردن)
-    geod.LatLng(32.9000, 37.2000),
-    geod.LatLng(32.7000, 36.9000),
-    geod.LatLng(32.5000, 36.7000),
-
-    // جنوب غرب (الحدود مع فلسطين المحتلة - إسرائيل)
-    geod.LatLng(32.9000, 35.7000),
-    geod.LatLng(33.1000, 35.5000),
-
-    // غرباً (الحدود مع لبنان والبحر الأبيض المتوسط)
-    geod.LatLng(34.9000, 35.6000),
-    geod.LatLng(35.2000, 35.8000),
-    geod.LatLng(35.5000, 35.9000),
-    geod.LatLng(35.8000, 36.0000),
-
-    // الساحل على البحر الأبيض المتوسط
-    geod.LatLng(35.9000, 36.1000),
-    geod.LatLng(36.2000, 36.2000),
-    geod.LatLng(36.5000, 36.3000),
-    // شمال غرب سوريا (الحدود مع لبنان)
-  ];
-  // مستطيل يغطي العالم تقريباً
   final List<LatLng> worldRect = [
     LatLng(20, 20),
     LatLng(50, 20),
@@ -196,7 +165,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
     LatLng(20, 50),
     LatLng(20, 20),
   ];
-  Set<Polygon>? polygons;
+  Set<Polygon> polygons = {};
 
   LatLng convertToLatLng(geod.LatLng point) {
     return LatLng(point.latitude, point.longitude);
@@ -207,24 +176,30 @@ class _AddShippingAdressState extends State<AddShippingAdress>
   List<LatLng> mapSyriaBorders = [];
   @override
   void initState() {
-    mapSyriaBorders = syriaBorders.map((p) => convertToLatLng(p)).toList();
-    polygons = {
-      Polygon(
-        polygonId: PolygonId('mask'),
-        points: worldRect,
-        holes: [mapSyriaBorders],
-        fillColor: Colors.black.withOpacity(0.3), // تظليل أسود مع شفافية
-        strokeWidth: 0,
-      ),
-      Polygon(
-        polygonId: PolygonId('border'),
-        points: mapSyriaBorders,
+    homeBloc = BlocProvider.of<HomeBloc>(context);
+    countryBorders = homeBloc.state.countryCoordinatesBorders;
 
-        fillColor: Colors.transparent,
-        strokeColor: Colors.red, // لون الحدود
-        strokeWidth: 2,
-      ),
-    };
+    if (countryBorders.isNotEmpty) {
+      mapSyriaBorders = countryBorders.map((p) => convertToLatLng(p)).toList();
+      polygons = {
+        Polygon(
+          polygonId: PolygonId('mask'),
+          points: worldRect,
+          holes: [mapSyriaBorders],
+          fillColor: Colors.black.withOpacity(0.3), // تظليل أسود مع شفافية
+          strokeWidth: 0,
+        ),
+        Polygon(
+          polygonId: PolygonId('border'),
+          points: mapSyriaBorders,
+
+          fillColor: Colors.transparent,
+          strokeColor: Colors.red, // لون الحدود
+          strokeWidth: 2,
+        ),
+      };
+    }
+
     fromEditeTodenychangeDetailAddress = widget.fromEdid ?? false;
     homeBloc = BlocProvider.of<HomeBloc>(context);
     orderBloc = BlocProvider.of<OrderBloc>(context);
@@ -1486,14 +1461,15 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                             onTap:
                                                                                 (argument) {
                                                                               _markers = [];
-
-                                                                              bool inside = geodesy.isGeoPointInPolygon(geod.LatLng(argument.latitude, argument.longitude), syriaBorders);
-                                                                              if (!inside) {
-                                                                                // عرض رسالة
-                                                                                ScaffoldMessenger.of(context).showSnackBar(
-                                                                                  SnackBar(duration: Duration(seconds: 2), content: Text("${LocaleKeys.outside_available_area.tr()}")),
-                                                                                );
-                                                                                return;
+                                                                              if (countryBorders.isNotEmpty) {
+                                                                                bool inside = geodesy.isGeoPointInPolygon(geod.LatLng(argument.latitude, argument.longitude), countryBorders);
+                                                                                if (!inside) {
+                                                                                  // عرض رسالة
+                                                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                                                    SnackBar(duration: Duration(seconds: 2), content: Text("${LocaleKeys.outside_available_area.tr()}")),
+                                                                                  );
+                                                                                  return;
+                                                                                }
                                                                               }
 
                                                                               _markers.add(Marker(markerId: MarkerId('current_location'), position: LatLng(argument.latitude, argument.longitude)));
