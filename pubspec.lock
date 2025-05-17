@@ -812,7 +812,7 @@ packages:
     source: hosted
     version: "3.0.0-beta.2"
   flutter_image_compress:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: flutter_image_compress
       sha256: "37f1b26399098e5f97b74c1483f534855e7dff68ead6ddaccf747029fb03f29f"
@@ -886,10 +886,11 @@ packages:
   flutter_inset_box_shadow:
     dependency: "direct main"
     description:
-      name: flutter_inset_box_shadow
-      sha256: "0b1930ed5f4ad84b11b41dda907fbc5d4c12929a4c51455c626e5937b47ffb93"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: "7f2114f8b9dd3f155c40d50bcf1cff06ff2953cd"
+      url: "https://gitlab.com/trydos_app/flutter_inset_box_shadow-1.0.8.git"
+    source: git
     version: "1.0.8"
   flutter_launcher_icons:
     dependency: "direct main"
@@ -1633,7 +1634,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "51e6029dd511f1268490f4c1f22d4f6012bf2e70"
+      resolved-ref: af085368b4b1af2d4b8497b3bc3ff5e2327574d5
       url: "https://gitlab.com/trydos_app/trydos-app-trydos-overscroll_pop-0.1.0.git"
     source: git
     version: "0.1.0"

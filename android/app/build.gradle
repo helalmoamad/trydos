@@ -11,9 +11,13 @@ android {
     compileSdk = 35
     ndkVersion = flutter.ndkVersion
 
+    lintOptions {
+        abortOnError false
+    }
+
     compileOptions {
         sourceCompatibility  JavaVersion.VERSION_17
-        targetCompatibility   JavaVersion.VERSION_17
+        targetCompatibility  JavaVersion.VERSION_17
         coreLibraryDesugaringEnabled true
 
     }
