@@ -35,8 +35,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
       widget.order.shippingAddressData?.city,
       widget.order.shippingAddressData?.town,
       widget.order.shippingAddressData?.street,
-      // widget.order.shippingAddressData?.building,
-      'null',
+      widget.order.shippingAddressData?.building,
     ];
 
     super.initState();
@@ -147,11 +146,14 @@ class _OrderDetails1State extends State<OrderDetails1> {
                 ),
                 ///////////////////
                 SizedBox(
-                  height: 74,
+                  height: 85,
                   child: buildSecondSection(
                     context: context,
                     expectedDeliveryDate: 'Monday 2.Jun | 3 Work Days',
                     orderStatus: widget.order.orderGroupStatus?.label ?? '',
+                    deliverdTo:
+                        widget.order.shippingAddressData?.contactPersonName ??
+                            '',
                   ),
                 ),
                 ///////////////////
@@ -241,7 +243,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SvgPicture.asset(
-                      AppAssets.orderBag2Svg,
+                      AppAssets.preparingBagSvg,
                       width: 13,
                     ),
                     //////////////////////////
@@ -512,6 +514,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
     required BuildContext context,
     required String expectedDeliveryDate,
     required String orderStatus,
+    String deliverdTo = '',
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -536,6 +539,8 @@ class _OrderDetails1State extends State<OrderDetails1> {
               ),
               title: LocaleKeys.expected_delivery_date.tr(),
               value: expectedDeliveryDate,
+              titleIcons: SizedBox.shrink(),
+              valueIcons: SizedBox.shrink(),
               amount: '',
               isTextSpan: false,
               currency: '',
@@ -553,40 +558,231 @@ class _OrderDetails1State extends State<OrderDetails1> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  SvgPicture.asset(
-                    AppAssets.orderBag2Svg,
-                    width: 20,
-                  ),
+                  orderStatus == 'Pending'
+                      ? SvgPicture.asset(
+                          AppAssets.pendingBagSvg,
+                          width: 20,
+                        )
+                      : SvgPicture.asset(
+                          AppAssets.pendeingBlackCheck,
+                          width: 15,
+                        ),
                   ////////////////////
                   const SizedBox(
                     width: 3,
                   ),
                   ///////////////////
-                  SvgPicture.asset(
-                    AppAssets.orderBag3Svg,
-                    width: 15,
-                  ),
+                  orderStatus == 'Pending'
+                      ? SvgPicture.asset(
+                          AppAssets.whiteBagSvg,
+                          width: 15,
+                        )
+                      : orderStatus == 'Preparing'
+                          ? SvgPicture.asset(
+                              AppAssets.preparingBagSvg,
+                              width: 20,
+                            )
+                          : SvgPicture.asset(
+                              AppAssets.preparingBagSvg,
+                              width: 15,
+                            ),
                   ////////////////////
                   const SizedBox(
                     width: 3,
                   ),
                   ///////////////////
-                  SvgPicture.asset(
-                    AppAssets.orderBag3Svg,
-                    width: 15,
+                  orderStatus == 'Pending'
+                      ? SvgPicture.asset(
+                          AppAssets.whiteBagSvg,
+                          width: 15,
+                        )
+                      : orderStatus == 'Preparing'
+                          ? SvgPicture.asset(
+                              AppAssets.whiteBagSvg,
+                              width: 15,
+                            )
+                          : orderStatus == 'Shipped'
+                              ? SvgPicture.asset(
+                                  AppAssets.shippedAndOutOfDeliveryBagSvg,
+                                  width: 20,
+                                )
+                              : SvgPicture.asset(
+                                  AppAssets.shippedAndOutOfDeliveryBagSvg,
+                                  width: 15,
+                                ),
+                  ////////////////////
+                  const SizedBox(
+                    width: 3,
                   ),
+                  ///////////////////
+                  orderStatus == 'Pending'
+                      ? SvgPicture.asset(
+                          AppAssets.whiteBagSvg,
+                          width: 15,
+                        )
+                      : orderStatus == 'Preparing'
+                          ? SvgPicture.asset(
+                              AppAssets.whiteBagSvg,
+                              width: 15,
+                            )
+                          : orderStatus == 'Shipped'
+                              ? SvgPicture.asset(
+                                  AppAssets.whiteBagSvg,
+                                  width: 15,
+                                )
+                              : orderStatus == 'Delivered'
+                                  ? SvgPicture.asset(
+                                      AppAssets.delivered_bagSvg,
+                                      width: 20,
+                                    )
+                                  : SvgPicture.asset(
+                                      AppAssets.delivered_bagSvg,
+                                      width: 15,
+                                    ),
                 ],
               ),
               title: LocaleKeys.order_status.tr(),
-              value: orderStatus,
+              value: orderStatus == 'Delivered'
+                  ? '$orderStatus ${LocaleKeys.to.tr()} $deliverdTo'
+                  : LocaleKeys.order_status.tr(),
               amount: '',
               isTextSpan: false,
+              titleIcons: buildTitleIcons(status: orderStatus),
+              valueIcons: buildValueIcons(status: orderStatus),
               currency: '',
             ),
           ),
         ],
       ),
     );
+  }
+
+  Widget buildTitleIcons({
+    required String status,
+  }) {
+    if (status == 'Pending')
+      return Row(
+        children: [
+          SizedBox(
+            width: 5,
+          ),
+          //////////////////////////
+          SvgPicture.asset(
+            AppAssets.pendingBlueCheckSvg,
+            width: 15,
+          ),
+        ],
+      );
+    else if (status == 'Preparing')
+      return Row(
+        children: [
+          SizedBox(
+            width: 5,
+          ),
+          //////////////////////////
+          SvgPicture.asset(
+            AppAssets.preparingBlueSvg,
+            width: 15,
+          ),
+        ],
+      );
+    else
+      return SizedBox.shrink();
+  }
+
+  Widget buildValueIcons({
+    required String status,
+  }) {
+    if (status == 'Pending')
+      return Row(
+        children: [
+          SizedBox(
+            width: 5,
+          ),
+          //////////////////////////
+          SvgPicture.asset(
+            AppAssets.pendeingBlackCheck,
+            width: 15,
+          ),
+        ],
+      );
+    else if (status == 'Preparing')
+      return Row(
+        children: [
+          SizedBox(
+            width: 5,
+          ),
+          //////////////////////////
+          SvgPicture.asset(
+            AppAssets.preparingBlackSvg,
+            width: 15,
+          ),
+          /////////////////////////////
+          SizedBox(
+            width: 5,
+          ),
+          //////////////////////////
+          SvgPicture.asset(
+            AppAssets.preparingGreySvg,
+            width: 15,
+          ),
+          /////////////////////////////
+          SizedBox(
+            width: 5,
+          ),
+          //////////////////////////
+          SvgPicture.asset(
+            AppAssets.preparingGrey2Svg,
+            width: 15,
+          ),
+        ],
+      );
+    else if (status == 'Shipped')
+      return Row(
+        children: [
+          SizedBox(
+            width: 5,
+          ),
+          //////////////////////////
+          SvgPicture.asset(
+            AppAssets.shippedBlackSvg,
+            width: 15,
+          ),
+          /////////////////////////////
+          SizedBox(
+            width: 5,
+          ),
+          //////////////////////////
+          SvgPicture.asset(
+            AppAssets.shippedGreySvg,
+            width: 15,
+          ),
+          /////////////////////////////
+          SizedBox(
+            width: 5,
+          ),
+          //////////////////////////
+          SvgPicture.asset(
+            AppAssets.shippedGrey_2Svg,
+            width: 15,
+          ),
+        ],
+      );
+    if (status == 'Delivered')
+      return Row(
+        children: [
+          SizedBox(
+            width: 5,
+          ),
+          //////////////////////////
+          SvgPicture.asset(
+            AppAssets.deliveredBlackSvg,
+            width: 15,
+          ),
+        ],
+      );
+    else
+      return SizedBox.shrink();
   }
 
   Widget buildFirstSection({
@@ -611,6 +807,8 @@ class _OrderDetails1State extends State<OrderDetails1> {
               value: orderNumber,
               amount: '',
               isTextSpan: false,
+              titleIcons: SizedBox.shrink(),
+              valueIcons: SizedBox.shrink(),
               currency: '',
             ),
           ),
@@ -630,6 +828,8 @@ class _OrderDetails1State extends State<OrderDetails1> {
               value: orderDate,
               amount: '',
               isTextSpan: false,
+              titleIcons: SizedBox.shrink(),
+              valueIcons: SizedBox.shrink(),
               currency: '',
             ),
           ),
@@ -657,6 +857,8 @@ class _OrderDetails1State extends State<OrderDetails1> {
               title: LocaleKeys.order_invoice.tr(),
               amount: orderAmount,
               isTextSpan: true,
+              titleIcons: SizedBox.shrink(),
+              valueIcons: SizedBox.shrink(),
               currency: orderCurrency,
               value: '',
             ),
@@ -670,6 +872,8 @@ class _OrderDetails1State extends State<OrderDetails1> {
   Widget buildDetailsMainInfoWidget({
     required BuildContext context,
     required Widget firstItem,
+    required Widget titleIcons,
+    required Widget valueIcons,
     required String title,
     required String value,
     required bool isTextSpan,
@@ -688,18 +892,24 @@ class _OrderDetails1State extends State<OrderDetails1> {
         children: [
           firstItem,
           ///////////////////
-          Flexible(
-            fit: FlexFit.loose,
-            child: Text(
-              title,
-              overflow: TextOverflow.ellipsis,
-              style: context.textTheme.bodyMedium?.rq.copyWith(
-                color: const Color(0xff8D8D8D),
-                letterSpacing: 0.18,
-                fontSize: 10,
-                height: 1.3,
+          Row(
+            children: [
+              Flexible(
+                fit: FlexFit.loose,
+                child: Text(
+                  title,
+                  overflow: TextOverflow.ellipsis,
+                  style: context.textTheme.bodyMedium?.rq.copyWith(
+                    color: const Color(0xff8D8D8D),
+                    letterSpacing: 0.18,
+                    fontSize: 10,
+                    height: 1.3,
+                  ),
+                ),
               ),
-            ),
+              ///////////////
+              titleIcons,
+            ],
           ),
           ///////////////////
           isTextSpan
@@ -729,19 +939,24 @@ class _OrderDetails1State extends State<OrderDetails1> {
                     ),
                   ),
                 )
-              : Flexible(
-                  fit: FlexFit.loose,
-                  child: Text(
-                    value,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: context.textTheme.bodyMedium?.bq.copyWith(
-                      color: const Color(0xff1D1D1D),
-                      letterSpacing: 0.18,
-                      fontSize: 12,
-                      height: 1.3,
+              : Row(
+                  children: [
+                    Flexible(
+                      fit: FlexFit.loose,
+                      child: Text(
+                        value,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: context.textTheme.bodyMedium?.bq.copyWith(
+                          color: const Color(0xff1D1D1D),
+                          letterSpacing: 0.18,
+                          fontSize: 12,
+                          height: 1.3,
+                        ),
+                      ),
                     ),
-                  ),
+                    valueIcons,
+                  ],
                 ),
         ],
       ),

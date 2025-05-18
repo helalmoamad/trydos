@@ -1634,7 +1634,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: af085368b4b1af2d4b8497b3bc3ff5e2327574d5
+      resolved-ref: "51e6029dd511f1268490f4c1f22d4f6012bf2e70"
       url: "https://gitlab.com/trydos_app/trydos-app-trydos-overscroll_pop-0.1.0.git"
     source: git
     version: "0.1.0"

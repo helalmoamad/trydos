@@ -242,7 +242,7 @@ class OrderDetails2 extends StatelessWidget {
                                             CrossAxisAlignment.end,
                                         children: [
                                           SvgPicture.asset(
-                                            AppAssets.orderBag2Svg,
+                                            AppAssets.preparingBagSvg,
                                             width: 20,
                                           ),
                                           ////////////////////
@@ -251,7 +251,7 @@ class OrderDetails2 extends StatelessWidget {
                                           ),
                                           ///////////////////
                                           SvgPicture.asset(
-                                            AppAssets.orderBag3Svg,
+                                            AppAssets.whiteBagSvg,
                                             width: 15,
                                           ),
                                           ////////////////////
@@ -260,7 +260,7 @@ class OrderDetails2 extends StatelessWidget {
                                           ),
                                           ///////////////////
                                           SvgPicture.asset(
-                                            AppAssets.orderBag3Svg,
+                                            AppAssets.whiteBagSvg,
                                             width: 15,
                                           ),
                                           ///////////////////////

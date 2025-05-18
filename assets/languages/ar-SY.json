@@ -424,5 +424,6 @@
   "profile_language": "الملف الشخصي | اللغة",
   "you_dont_have_enough_credit_in_the_wallet": "ليس لديك رصيد كافي بالمحفظة",
   "feature_product": "المنتجات المميزة",
-  "outside_available_area": "غير ممكن خارج المنطقة المتاحة"
+  "outside_available_area": "غير ممكن خارج المنطقة المتاحة",
+   "there_are_no_orders": "لا يوجد منتجات"
 }

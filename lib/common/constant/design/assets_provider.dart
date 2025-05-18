@@ -269,8 +269,6 @@ abstract class AppAssets {
 
   static String get orderAddressSvg => 'order_address'.order_svg;
   static String get orderBag1Svg => 'order_bag1'.order_svg;
-  static String get orderBag2Svg => 'order_bag2'.order_svg;
-  static String get orderBag3Svg => 'order_bag3'.order_svg;
   static String get orderClockSvg => 'order_clock'.order_svg;
   static String get orderDeliveryDateSvg => 'order_delivery_date'.order_svg;
   static String get orderInvoice2Svg => 'order_invoice'.order_svg;
@@ -278,6 +276,25 @@ abstract class AppAssets {
   static String get orderPreparingSvg => 'order_preparing'.order_svg;
   static String get orderStatusFilterSvg => 'order_status_filter'.order_svg;
   static String get orderWalletSvg => 'order_wallet'.order_svg;
+  static String get pendingBagSvg => 'pending_bag'.order_svg;
+  static String get pendeingBlackCheck => 'pendeing_black_check'.order_svg;
+  static String get pendingBlueCheckSvg => 'pending_blue_check'.order_svg;
+  static String get preparingBagSvg => 'preparing_bag'.order_svg;
+  static String get preparingBlackSvg => 'Preparing_black'.order_svg;
+  static String get preparingBlueSvg => 'preparing_blue'.order_svg;
+  static String get preparingGreySvg => 'Preparing_grey'.order_svg;
+  static String get preparingGrey2Svg => 'Preparing_grey_2'.order_svg;
+  static String get shippedAndOutOfDeliveryBagSvg =>
+      'shipped_and_out_of_delivery__bag'.order_svg;
+  static String get shippedBlackSvg => 'Shipped_black'.order_svg;
+  static String get shippedGreySvg => 'Shipped_grey'.order_svg;
+  static String get shippedGrey_2Svg => 'Shipped_grey_2'.order_svg;
+  static String get outOfDeliveryBlueSvg => 'out_of_delivery_blue'.order_svg;
+  static String get delivered_bagSvg => 'delivered_bag'.order_svg;
+  static String get deliveredBlackSvg => 'delivered_black'.order_svg;
+  static String get rateGoldSvg => 'rate_gold'.order_svg;
+  static String get rateBlueSvg => 'rate_blue'.order_svg;
+  static String get whiteBagSvg => 'white_bag'.order_svg;
 
   ///endregion
 

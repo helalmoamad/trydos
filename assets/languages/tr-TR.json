@@ -423,5 +423,6 @@
   "profile_language": "Profil | Dil",
   "you_dont_have_enough_credit_in_the_wallet": "Cüzdanınızda yeterli kredi yok",
   "feature_product": "Öne Çıkan Ürünler",
-  "outside_available_area": "Mevcut alanın dışında mümkün değil"
+  "outside_available_area": "Mevcut alanın dışında mümkün değil",
+  "there_are_no_orders": "Hiçbir emir yok"
 }

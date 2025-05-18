@@ -472,4 +472,5 @@ abstract class LocaleKeys {
   static const feature_product = 'feature_product';
   static const outside_available_area = 'outside_available_area';
   static const other = 'other';
+  static const there_are_no_orders = 'there_are_no_orders';
 }

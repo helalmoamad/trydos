@@ -423,5 +423,6 @@
   "profile_language": "Profile | Language",
   "you_dont_have_enough_credit_in_the_wallet": "You dont have enough credit in the wallet",
   "feature_product": "Featured Products",
-  "outside_available_area": "Not possible outside the available area"
+  "outside_available_area": "Not possible outside the available area",
+  "there_are_no_orders": "There are no orders"
 }

@@ -166,67 +166,80 @@ class _OrdersPageState extends State<OrdersPage> {
                       ? Center(
                           child: TrydosLoader(),
                         )
-                      : Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.only(bottom: 10.h),
-                            child: ListView.separated(
-                              controller: ordersScrollController,
-                              itemCount: itemsCount + 1,
-                              itemBuilder: (context, index) {
-                                if (index < itemsCount) {
-                                  return InkWell(
-                                    onTap: () {
-                                      HelperFunctions.slidingNavigation(
-                                        context,
-                                        OrderDetails1(
-                                          order: items[index],
+                      : items.isEmpty
+                          ? Text(
+                              LocaleKeys.there_are_no_orders.tr(),
+                              overflow: TextOverflow.ellipsis,
+                              style: context.textTheme.bodyMedium?.rq.copyWith(
+                                color: const Color(0xff1D1D1D),
+                                letterSpacing: 0.18,
+                                fontSize: 12,
+                                height: 1.3,
+                              ),
+                            )
+                          : Expanded(
+                              child: Padding(
+                                padding: EdgeInsets.only(bottom: 10.h),
+                                child: ListView.separated(
+                                  controller: ordersScrollController,
+                                  itemCount: itemsCount + 1,
+                                  itemBuilder: (context, index) {
+                                    if (index < itemsCount) {
+                                      return InkWell(
+                                        onTap: () {
+                                          HelperFunctions.slidingNavigation(
+                                            context,
+                                            OrderDetails1(
+                                              order: items[index],
+                                            ),
+                                          );
+                                        },
+                                        child: buildOrderItemWidget(
+                                          context: context,
+                                          item: items[index],
                                         ),
                                       );
-                                    },
-                                    child: buildOrderItemWidget(
-                                      context: context,
-                                      item: items[index],
-                                    ),
-                                  );
-                                } else {
-                                  if (itemsCount > 4) {
-                                    return Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 10),
-                                      child: state
-                                              .getOrdersModel[
-                                                  currentStatus.value]!
-                                              .hasReachedMax
-                                          ? Center(
-                                              child: Text(
-                                                LocaleKeys.no_orders_found.tr(),
-                                                overflow: TextOverflow.ellipsis,
-                                                style: context
-                                                    .textTheme.bodyMedium?.bq
-                                                    .copyWith(
-                                                  color:
-                                                      const Color(0xff8D8D8D),
-                                                  letterSpacing: 0.18,
-                                                  fontSize: 15,
-                                                  height: 1.3,
-                                                ),
-                                              ),
-                                            )
-                                          : Center(child: TrydosLoader()),
+                                    } else {
+                                      if (itemsCount > 4) {
+                                        return Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 10),
+                                          child: state
+                                                  .getOrdersModel[
+                                                      currentStatus.value]!
+                                                  .hasReachedMax
+                                              ? Center(
+                                                  child: Text(
+                                                    LocaleKeys.no_orders_found
+                                                        .tr(),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: context.textTheme
+                                                        .bodyMedium?.bq
+                                                        .copyWith(
+                                                      color: const Color(
+                                                          0xff8D8D8D),
+                                                      letterSpacing: 0.18,
+                                                      fontSize: 15,
+                                                      height: 1.3,
+                                                    ),
+                                                  ),
+                                                )
+                                              : Center(child: TrydosLoader()),
+                                        );
+                                      } else {
+                                        return Container();
+                                      }
+                                    }
+                                  },
+                                  separatorBuilder: (context, index) {
+                                    return SizedBox(
+                                      height: 10.h,
                                     );
-                                  } else {
-                                    return Container();
-                                  }
-                                }
-                              },
-                              separatorBuilder: (context, index) {
-                                return SizedBox(
-                                  height: 10.h,
-                                );
-                              },
-                            ),
-                          ),
-                        );
+                                  },
+                                ),
+                              ),
+                            );
                 },
               ),
             ],
@@ -287,7 +300,7 @@ class _OrdersPageState extends State<OrdersPage> {
                   isTextSpan: true,
                   text1: item.orderGroupStatus!.label ?? '',
                   text2: '',
-                  svgIcon1: AppAssets.orderBag2Svg,
+                  svgIcon1: AppAssets.preparingBagSvg,
                   svgIcon2: AppAssets.orderInvoice2Svg,
                   secondInfoSvgIcon: AppAssets.orderPreparingSvg,
                   amount: orderAmount.toString(),
