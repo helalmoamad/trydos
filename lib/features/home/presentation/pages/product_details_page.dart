@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -109,11 +110,15 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   bool? changeVariationIfQtyZero;
   bool showDialogToResetSession = true;
+  bool getAllDataForProductForFirst = true;
 
   int currentSelectedColor = -1;
   int currentSelectedColorAfterChangeVariant = -1;
   @override
   void initState() {
+    print(
+        "FFFFFFFFFF8888888888888888888888888888FFFFFFF${widget.productItem?.syncColorImages}");
+
     changeVariationIfQtyZero = true;
     if (widget.productItem != null) {
       productItem = widget.productItem!;
@@ -370,13 +375,14 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                 },
                               );
                             }
-                            int qtyItemsInCart = 0;
-                            state.cartCollection?.forEach(
+                            int qtyItemsInCart =
+                                state.cartCollection?.length ?? 0;
+                            /* state.cartCollection?.forEach(
                               (element) {
                                 qtyItemsInCart =
                                     qtyItemsInCart + (element.quantity ?? 0);
                               },
-                            );
+                            );*/
                             (productItem?.syncColorImages?.length ?? 0) ~/ 2;
                             return Container(
                               alignment: Alignment.center,
@@ -513,6 +519,87 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         p.cachedProductWithoutRelatedProductsModel !=
                             c.cachedProductWithoutRelatedProductsModel,
                     builder: (context, state) {
+                      if (state.getProductDetailWithoutSimilarRelatedProductsStatus ==
+                              GetProductDetailWithoutSimilarRelatedProductsStatus
+                                  .success &&
+                          getAllDataForProductForFirst) {
+                        if (state.cachedProductWithoutRelatedProductsModel[
+                                productItem?.productId.toString()] !=
+                            null) {
+                          if (state
+                                  .cachedProductWithoutRelatedProductsModel[
+                                      productItem?.productId.toString()]!
+                                  .product !=
+                              null) {
+                            if (productItem != null) {
+                              List<String> syncColorNames = [];
+                              List<productListingModel.SyncColorImage>
+                                  syncColorImagesFromListing =
+                                  widget.productItem?.syncColorImages ?? [];
+
+                              for (var i = 0;
+                                  i <
+                                      (widget.productItem?.syncColorImages
+                                              ?.length ??
+                                          0);
+                                  i++) {
+                                syncColorNames.add(widget.productItem
+                                        ?.syncColorImages?[i].colorName ??
+                                    "");
+                              }
+                              state
+                                  .cachedProductWithoutRelatedProductsModel[
+                                      productItem?.productId.toString()]!
+                                  .product
+                                  ?.syncColorImages
+                                  ?.forEach(
+                                (element) {
+                                  if (!syncColorNames
+                                      .contains(element.colorName)) {
+                                    syncColorImagesFromListing.add(element);
+                                  }
+                                },
+                              );
+                              List<productListingModel.Color>?
+                                  colorsFromListing =
+                                  widget.productItem?.colors ?? [];
+                              state
+                                  .cachedProductWithoutRelatedProductsModel[
+                                      productItem?.productId.toString()]!
+                                  .product
+                                  ?.colors
+                                  ?.forEach(
+                                (element) {
+                                  if (!(syncColorNames
+                                      .contains(element.name))) {
+                                    colorsFromListing.add(element);
+                                  }
+                                },
+                              );
+                              productItem = productItem!.copyWith(
+                                availableQuantity: state
+                                    .cachedProductWithoutRelatedProductsModel[
+                                        productItem?.productId.toString()]!
+                                    .product
+                                    ?.availableQuantity,
+                                choiceOptions: state
+                                    .cachedProductWithoutRelatedProductsModel[
+                                        productItem?.productId.toString()]!
+                                    .product
+                                    ?.choiceOptions,
+                                colors: colorsFromListing,
+                                images: state
+                                    .cachedProductWithoutRelatedProductsModel[
+                                        productItem?.productId.toString()]!
+                                    .product
+                                    ?.images,
+                                syncColorImages: syncColorImagesFromListing,
+                              );
+                              getAllDataForProductForFirst = false;
+                            }
+                          }
+                        }
+                      }
                       if ((state.getProductDetailWithoutSimilarRelatedProductsStatus ==
                               GetProductDetailWithoutSimilarRelatedProductsStatus
                                   .success &&
@@ -637,8 +724,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           (productItem?.syncColorImages?.length ?? 0)) {
                         currentSelectedColor = 0;
                       }
-                      print(
-                          "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR${currentSelectedColor}");
                       Future.delayed(
                         Duration(milliseconds: 600),
                         () {
@@ -1223,6 +1308,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             current.currentColorSizeForCart?["size"];
                   },
                   builder: (context, state) {
+                    /* if (state
+                            .getProductDetailWithoutSimilarRelatedProductsStatus !=
+                        GetProductDetailWithoutSimilarRelatedProductsStatus
+                            .success) {
+                      return SizedBox.shrink();
+                    }*/
                     currentSelectedColor = state
                             .currentSelectedColorForEveryProduct[productSlug] ??
                         (productItem?.syncColorImages?.length ?? 0) ~/ 2;
@@ -1278,7 +1369,66 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         },
                       );
                     }
+                    List<String> syncColorNames = [];
+                    List<productListingModel.Color>? colorsFromListing =
+                        widget.productItem?.colors ?? [];
+                    List<productListingModel.SyncColorImage>
+                        syncColorImagesFromListing =
+                        widget.productItem?.syncColorImages ?? [];
 
+                    if (state
+                            .getProductDetailWithoutSimilarRelatedProductsStatus ==
+                        GetProductDetailWithoutSimilarRelatedProductsStatus
+                            .success) {
+                      for (var i = 0;
+                          i <
+                              (widget.productItem?.syncColorImages?.length ??
+                                  0);
+                          i++) {
+                        syncColorNames.add(
+                            widget.productItem?.syncColorImages?[i].colorName ??
+                                "");
+                      }
+                      state
+                          .cachedProductWithoutRelatedProductsModel[
+                              productItem?.productId.toString()]!
+                          .product
+                          ?.syncColorImages
+                          ?.forEach(
+                        (element) {
+                          if (!syncColorNames.contains(element.colorName)) {
+                            syncColorImagesFromListing.add(element);
+                          }
+                        },
+                      );
+
+                      state
+                          .cachedProductWithoutRelatedProductsModel[
+                              productItem?.productId.toString()]!
+                          .product
+                          ?.colors
+                          ?.forEach(
+                        (element) {
+                          if (!(syncColorNames.contains(element.name))) {
+                            colorsFromListing.add(element);
+                          }
+                        },
+                      );
+                    }
+                    if (state
+                            .getProductDetailWithoutSimilarRelatedProductsStatus ==
+                        GetProductDetailWithoutSimilarRelatedProductsStatus
+                            .loading) {
+                      return Shimmer.fromColors(
+                          baseColor: Colors.grey.shade200,
+                          highlightColor: Colors.grey.shade50,
+                          enabled: true,
+                          child: Container(
+                            color: Colors.grey.shade50,
+                            width: 1.sw,
+                            height: 100.h,
+                          ));
+                    }
                     return ProductDetailsBottomSheet(
                       isGetFullProductDetails: widget.productItem == null,
                       currentSelectedColorAfterChangeVariant:
@@ -1395,21 +1545,36 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           : productItem!.colors![currentSelectedColor].name ??
                               "",
                       productItem: productItem!.copyWith(
+                          availableQuantity:
+                              state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()] == null
+                                  ? 0
+                                  : state
+                                      .cachedProductWithoutRelatedProductsModel[
+                                          productItem?.productId.toString()]!
+                                      .product
+                                      ?.availableQuantity,
+                          choiceOptions:
+                              state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()] == null
+                                  ? []
+                                  : state
+                                      .cachedProductWithoutRelatedProductsModel[
+                                          productItem?.productId.toString()]!
+                                      .product
+                                      ?.choiceOptions,
+                          colors: colorsFromListing,
+                          images: state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()] == null
+                              ? []
+                              : state
+                                  .cachedProductWithoutRelatedProductsModel[
+                                      productItem?.productId.toString()]!
+                                  .product
+                                  ?.images,
+                          syncColorImages: syncColorImagesFromListing,
                           productId: int.tryParse(productId),
-                          price: currentVariation?.price != null
-                              ? currentVariation?.price
-                              : productItem!.price,
-                          offerPrice: currentVariation?.offerPrice != null
-                              ? currentVariation?.offerPrice
-                              : productItem!.offerPrice,
-                          priceFormatted:
-                              currentVariation?.priceFormated != null
-                                  ? currentVariation?.priceFormated
-                                  : productItem!.priceFormatted,
-                          offerPriceFormatted:
-                              currentVariation?.offerPriceFormated != null
-                                  ? currentVariation?.offerPriceFormated
-                                  : productItem!.offerPriceFormatted),
+                          price: currentVariation?.price != null ? currentVariation?.price : productItem!.price,
+                          offerPrice: currentVariation?.offerPrice != null ? currentVariation?.offerPrice : productItem!.offerPrice,
+                          priceFormatted: currentVariation?.priceFormated != null ? currentVariation?.priceFormated : productItem!.priceFormatted,
+                          offerPriceFormatted: currentVariation?.offerPriceFormated != null ? currentVariation?.offerPriceFormated : productItem!.offerPriceFormatted),
                       currentColor: currentSelectedColor,
                       maxAllowedToAddCart: state
                               .cachedProductWithoutRelatedProductsModel[
@@ -1450,8 +1615,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                 (element.type!.split("-").toList()[0] ==
                     currentVariation?.type!.split("-").toList()[0]),
             orElse: () =>
-                product.variation
-                    ?.firstWhere((element) => (element.qty ?? 0) > 0) ??
+                product.variation?.firstWhere(
+                    (element) => (element.qty ?? 0) > 0,
+                    orElse: () => currentVariation!) ??
                 currentVariation!);
         int index = productItem?.syncColorImages?.indexWhere((element) =>
                 element.colorName ==
@@ -1474,8 +1640,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
             (element) => ((element.qty ?? 0) > 0 &&
                 element.type == currentVariation?.type),
             orElse: () =>
-                product.variation
-                    ?.firstWhere((element) => (element.qty ?? 0) > 0) ??
+                product.variation?.firstWhere(
+                    (element) => (element.qty ?? 0) > 0,
+                    orElse: () => currentVariation!) ??
                 currentVariation!);
         int index = productItem?.syncColorImages?.indexWhere(
                 (element) => element.colorName == (currentVariation!.type)) ??
@@ -1512,6 +1679,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
 
       currentSelectedColorAfterChangeVariant = currentSelectedColor;
     }
+    print(
+        "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD22222222222222222222EEEEEEEEEE!!");
+
     await Future.delayed(
         Duration(seconds: 1),
         () => homeBloc.add(IsChangedVariationWhenQtyZeroEvent(

@@ -19,9 +19,10 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               const {},
       addItemInCartStatus: $enumDecodeNullable(
           _$AddItemInCartStatusEnumMap, json['addItemInCartStatus']),
-      convertItemFromOldcartToCartStatus: $enumDecodeNullable(
-          _$ConvertItemFromOldcartToCartStatusEnumMap,
-          json['convertItemFromOldcartToCartStatus']),
+      convertItemFromcartToOldCartStatus: $enumDecodeNullable(
+              _$ConvertItemFromcartToOldCartStatusEnumMap,
+              json['convertItemFromcartToOldCartStatus']) ??
+          ConvertItemFromcartToOldCartStatus.init,
       hideItemInOldCartStatus: $enumDecodeNullable(
           _$HideItemInOldCartStatusEnumMap, json['hideItemInOldCartStatus']),
       updateEmailappNotificationStatus: $enumDecodeNullable(
@@ -296,9 +297,9 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
               json['geColorsAndSizesForSearchModel'] as Map<String, dynamic>),
       currentIndexForUpdateCart:
           (json['currentIndexForUpdateCart'] as num?)?.toInt(),
-      getCoutryBoundaryByIsoStatus: $enumDecodeNullable(
-          _$GetCoutryBoundaryByIsoStatusEnumMap,
-          json['getCoutryBoundaryByIsoStatus']),
+      getCountryBoundaryByIsoStatus: $enumDecodeNullable(
+          _$GetCountryBoundaryByIsoStatusEnumMap,
+          json['getCountryBoundaryByIsoStatus']),
       userInfo: json['userInfo'] == null
           ? null
           : User.fromJson(json['userInfo'] as Map<String, dynamic>),
@@ -332,8 +333,8 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
       'getFirebaseSettingForNotificationStatus':
           _$GetFirebaseSettingForNotificationStatusEnumMap[
               instance.getFirebaseSettingForNotificationStatus],
-      'getCoutryBoundaryByIsoStatus': _$GetCoutryBoundaryByIsoStatusEnumMap[
-          instance.getCoutryBoundaryByIsoStatus],
+      'getCountryBoundaryByIsoStatus': _$GetCountryBoundaryByIsoStatusEnumMap[
+          instance.getCountryBoundaryByIsoStatus],
       'firebaseSettingForNotificationModel':
           instance.firebaseSettingForNotificationModel?.toJson(),
       'updateProfileStatus':
@@ -358,9 +359,9 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
               instance.enableAddToCardAfterChangeVariantZero],
       'isChangedvariationWhenQtyZero': instance.isChangedvariationWhenQtyZero,
       'isChangedColorBeforeOpenPanel': instance.isChangedColorBeforeOpenPanel,
-      'convertItemFromOldcartToCartStatus':
-          _$ConvertItemFromOldcartToCartStatusEnumMap[
-              instance.convertItemFromOldcartToCartStatus],
+      'convertItemFromcartToOldCartStatus':
+          _$ConvertItemFromcartToOldCartStatusEnumMap[
+              instance.convertItemFromcartToOldCartStatus]!,
       'getNotificationTypeProductStatus':
           _$GetNotificationTypeProductStatusEnumMap[
               instance.getNotificationTypeProductStatus],
@@ -492,11 +493,11 @@ const _$AddItemInCartStatusEnumMap = {
   AddItemInCartStatus.failure: 'failure',
 };
 
-const _$ConvertItemFromOldcartToCartStatusEnumMap = {
-  ConvertItemFromOldcartToCartStatus.init: 'init',
-  ConvertItemFromOldcartToCartStatus.loading: 'loading',
-  ConvertItemFromOldcartToCartStatus.success: 'success',
-  ConvertItemFromOldcartToCartStatus.failure: 'failure',
+const _$ConvertItemFromcartToOldCartStatusEnumMap = {
+  ConvertItemFromcartToOldCartStatus.init: 'init',
+  ConvertItemFromcartToOldCartStatus.loading: 'loading',
+  ConvertItemFromcartToOldCartStatus.success: 'success',
+  ConvertItemFromcartToOldCartStatus.failure: 'failure',
 };
 
 const _$HideItemInOldCartStatusEnumMap = {
@@ -677,11 +678,11 @@ const _$GetNotificationTypeProductStatusEnumMap = {
   GetNotificationTypeProductStatus.failure: 'failure',
 };
 
-const _$GetCoutryBoundaryByIsoStatusEnumMap = {
-  GetCoutryBoundaryByIsoStatus.init: 'init',
-  GetCoutryBoundaryByIsoStatus.loading: 'loading',
-  GetCoutryBoundaryByIsoStatus.success: 'success',
-  GetCoutryBoundaryByIsoStatus.failure: 'failure',
+const _$GetCountryBoundaryByIsoStatusEnumMap = {
+  GetCountryBoundaryByIsoStatus.init: 'init',
+  GetCountryBoundaryByIsoStatus.loading: 'loading',
+  GetCountryBoundaryByIsoStatus.success: 'success',
+  GetCountryBoundaryByIsoStatus.failure: 'failure',
 };
 
 const _$GetFirebaseSettingForNotificationStatusEnumMap = {

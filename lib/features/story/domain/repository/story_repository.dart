@@ -6,7 +6,8 @@ import '../../data/models/image_detail.dart';
 import '../../data/models/get_stories_model.dart';
 
 abstract class StoryRepository {
-  Future<Either<Failure, GetStoriesModel>> getStories();
+  Future<Either<Failure, GetStoriesModel>> getStories(
+      Map<String, dynamic> params);
   Future<Either<Failure, Either<int, CollectionStoryModel>>>
       addStoryToOurServer(Map<String, dynamic> params);
   Future<Either<Failure, bool>> increaseViewers(Map<String, dynamic> params);

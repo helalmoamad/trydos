@@ -185,13 +185,14 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                               current.getCartItemsStatus;
                     },
                     builder: (context, stateHome) {
-                      int qtyItemsInCart = 0;
-                      stateHome.cartCollection?.forEach(
+                      int qtyItemsInCart =
+                          stateHome.cartCollection?.length ?? 0;
+                      /*  stateHome.cartCollection?.forEach(
                         (element) {
                           qtyItemsInCart =
                               qtyItemsInCart + (element.quantity ?? 0);
                         },
-                      );
+                      );*/
                       return Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -254,73 +255,87 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                 ),
               ),
               Expanded(
-                child: InkWell(
-                  key: TestVariables.kTestMode
-                      ? Key(WidgetsKeys.chatNavBarKey)
-                      : null,
-                  onTap: () async {
-                    print(
-                        "@@@@@@@@@@@@@@@@@@!!!!!!!!!!${prefsRepository.isVerifiedPhone}${prefsRepository.isLogInToChat}${prefsRepository.chatToken?.length ?? 0}");
-                    if (prefsRepository.isVerifiedPhone != true ||
-                        (prefsRepository.isLogInToChat ?? false) != true ||
-                        (prefsRepository.chatToken?.length ?? 0) < 7) {
-                      widget.isShowPanelForVerified.value = true;
-                    } else if ((prefsRepository.myMarketName?.length ?? 0) <
-                        3) {
-                      showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (context) {
-                            return UpdateUserNameWidget();
-                          });
-                    } else {
-                      NotificationSettings settings = await FirebaseMessaging
-                          .instance
-                          .getNotificationSettings();
-                      if (settings.authorizationStatus ==
-                          AuthorizationStatus.denied) {
-                        openAppSettings();
-                        showMessage(LocaleKeys
-                            .please_enable_send_notification_for_this_app
-                            .tr());
-                      } else {
-                        if (context.canPop()) {
-                          Navigator.of(context).pop();
+                child: BlocBuilder<AuthBloc, AuthState>(
+                  buildWhen: (previous, current) =>
+                      previous.loginToChatStatus != current.loginToChatStatus,
+                  builder: (context, authState) {
+                    return InkWell(
+                      key: TestVariables.kTestMode
+                          ? Key(WidgetsKeys.chatNavBarKey)
+                          : null,
+                      onTap: () async {
+                        if (authState.loginToChatStatus ==
+                            LoginToChatStatus.loading) {
+                          return;
                         }
-                        appBloc.add(ChangeBasePage(2));
-                      }
-                    }
-                    /////////////////////////
-                    FirebaseAnalyticsService.logEventForSession(
-                      eventName: AnalyticsEventsConst.buttonClicked,
-                      executedEventName:
-                          AnalyticsExecutedEventNameConst.chatNavBarButton,
+                        if (prefsRepository.isVerifiedPhone != true ||
+                            (prefsRepository.isLogInToChat ?? false) != true ||
+                            (prefsRepository.chatToken?.length ?? 0) < 7) {
+                          widget.isShowPanelForVerified.value = true;
+                        } else if ((prefsRepository.myMarketName?.length ?? 0) <
+                            3) {
+                          showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (context) {
+                                return UpdateUserNameWidget();
+                              });
+                        } else {
+                          NotificationSettings settings =
+                              await FirebaseMessaging.instance
+                                  .getNotificationSettings();
+                          if (settings.authorizationStatus ==
+                              AuthorizationStatus.denied) {
+                            openAppSettings();
+                            showMessage(LocaleKeys
+                                .please_enable_send_notification_for_this_app
+                                .tr());
+                          } else {
+                            if (context.canPop()) {
+                              Navigator.of(context).pop();
+                            }
+                            appBloc.add(ChangeBasePage(2));
+                          }
+                        }
+                        /////////////////////////
+                        FirebaseAnalyticsService.logEventForSession(
+                          eventName: AnalyticsEventsConst.buttonClicked,
+                          executedEventName:
+                              AnalyticsExecutedEventNameConst.chatNavBarButton,
+                        );
+                      },
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          authState.loginToChatStatus ==
+                                  LoginToChatStatus.loading
+                              ? Container(
+                                  height: 30.h,
+                                  width: 30.h,
+                                  child: TrydosLoader(size: 15))
+                              : state.currentIndex == 2
+                                  ? SvgPicture.asset(
+                                      AppAssets.activeChatSvg,
+                                      height: 30.h,
+                                    )
+                                  : SvgPicture.asset(
+                                      AppAssets.chatSvg,
+                                      height: 30.h,
+                                    ),
+                          10.verticalSpace,
+                          MyTextWidget(
+                            LocaleKeys.chat.tr(),
+                            maxLines: 1,
+                            style: textTheme.titleSmall?.lr.copyWith(
+                                letterSpacing: 0.28,
+                                color: state.currentIndex != 2
+                                    ? colorScheme.grey200
+                                    : colorScheme.black),
+                          ),
+                        ],
+                      ),
                     );
                   },
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      state.currentIndex == 2
-                          ? SvgPicture.asset(
-                              AppAssets.activeChatSvg,
-                              height: 30.h,
-                            )
-                          : SvgPicture.asset(
-                              AppAssets.chatSvg,
-                              height: 30.h,
-                            ),
-                      10.verticalSpace,
-                      MyTextWidget(
-                        LocaleKeys.chat.tr(),
-                        maxLines: 1,
-                        style: textTheme.titleSmall?.lr.copyWith(
-                            letterSpacing: 0.28,
-                            color: state.currentIndex != 2
-                                ? colorScheme.grey200
-                                : colorScheme.black),
-                      ),
-                    ],
-                  ),
                 ),
               ),
               Expanded(

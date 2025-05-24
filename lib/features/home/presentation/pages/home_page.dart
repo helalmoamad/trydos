@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
@@ -91,7 +92,7 @@ class _HomePageState extends State<HomePage> {
   int isVisWhatsApp = 0;
   late AuthBloc authBloc;
   bool changeAppearSizeForProduct = true;
-
+  Timer? debounce;
   /*getInitialForNotification() async {
     RemoteMessage? initialMessage =
         await FirebaseMessaging.instance.getInitialMessage();
@@ -110,22 +111,32 @@ class _HomePageState extends State<HomePage> {
     }
   }*/
   void listenToScroll() {
-    int lastIndexSeenByUser = (scrollController.position.pixels +
-            scrollController.position.viewportDimension +
-            235) ~/
-        235;
-    int currentSelectedMainCategoryTab = appBloc.state.tabIndex;
-
-    if (currentSelectedMainCategoryTab == -1) {
-      selectedCategorySlug = "Empty";
-    } else {
-      selectedCategorySlug = categoryBloc.state.mainCategoriesResponseModel
-              ?.data?.mainCategories?[currentSelectedMainCategoryTab].slug ??
-          '';
+    if (debounce?.isActive ?? false) {
+      debounce!.cancel();
     }
+    debounce = Timer(
+      Duration(milliseconds: 600),
+      () {
+        int lastIndexSeenByUser = (scrollController.position.pixels +
+                scrollController.position.viewportDimension +
+                235) ~/
+            235;
+        int currentSelectedMainCategoryTab = appBloc.state.tabIndex;
 
-    if (selectedCategorySlug == '') return;
-    /*  if (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
+        if (currentSelectedMainCategoryTab == -1) {
+          selectedCategorySlug = "Empty";
+        } else {
+          selectedCategorySlug = categoryBloc
+                  .state
+                  .mainCategoriesResponseModel
+                  ?.data
+                  ?.mainCategories?[currentSelectedMainCategoryTab]
+                  .slug ??
+              '';
+        }
+
+        if (selectedCategorySlug == '') return;
+        /*  if (lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
               selectedCategorySlug] ==
           null) {
         lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
@@ -138,30 +149,32 @@ class _HomePageState extends State<HomePage> {
         lastIndexRequestedInEachMainCategoryForPrefetchBoutiques[
             selectedCategorySlug] = lastIndexSeenByUser;
       }*/
-    if (scrollController.offset >=
-        (scrollController.position.maxScrollExtent * 0.6)) {
-      categoryBloc.add(GetHomeBoutiqesEvent(
-          getWithPrefetchToStoreInMemory: false,
-          getWithOutPrefetchForEachBoutiques: false,
-          categorySlug: selectedCategorySlug,
-          offset: categoryBloc
-                  .state
-                  .getHomeBoutiquesPaginationObjectByMainCategory[
-                      selectedCategorySlug]!
-                  .offset ??
-              "",
-          context: context,
-          getWithPagination: true));
-    }
-    if (scrollController.position.pixels <= 80) {
-      debugPrint(scrollController.position.pixels.toString());
-      appBloc.add(ShowOrHideBars(true));
-    }
-    if (scrollController.offset >=
-        (scrollController.position.maxScrollExtent * 0.4)) {
-      categoryBloc.prefetchBoutiques(
-          selectedCategorySlug, context, lastIndexSeenByUser);
-    }
+        if (scrollController.offset >=
+            (scrollController.position.maxScrollExtent * 0.6)) {
+          categoryBloc.add(GetHomeBoutiqesEvent(
+              getWithPrefetchToStoreInMemory: false,
+              getWithOutPrefetchForEachBoutiques: false,
+              categorySlug: selectedCategorySlug,
+              offset: categoryBloc
+                      .state
+                      .getHomeBoutiquesPaginationObjectByMainCategory[
+                          selectedCategorySlug]!
+                      .offset ??
+                  "",
+              context: context,
+              getWithPagination: true));
+        }
+        if (scrollController.position.pixels <= 80) {
+          debugPrint(scrollController.position.pixels.toString());
+          appBloc.add(ShowOrHideBars(true));
+        }
+        if (scrollController.offset >=
+            (scrollController.position.maxScrollExtent * 0.4)) {
+          categoryBloc.prefetchBoutiques(
+              selectedCategorySlug, context, lastIndexSeenByUser);
+        }
+      },
+    );
   }
 
   @override
@@ -207,8 +220,10 @@ class _HomePageState extends State<HomePage> {
             "";
 
     if (notificationTypesOfMarketFromTerminated != "") {
-      Map data = jsonDecode(notificationTypesOfMarketFromTerminated);
-      HandlingMarketNotifications.dealWithNotificationFromMarket(data, true);
+      try {
+        Map data = jsonDecode(notificationTypesOfMarketFromTerminated);
+        HandlingMarketNotifications.dealWithNotificationFromMarket(data, true);
+      } catch (e) {}
     }
     //  getInitialForNotification();
   }
@@ -310,7 +325,8 @@ class _HomePageState extends State<HomePage> {
           boutiqueSlug: "*featured*",
           getWithPagination: false,
           offset: 1));
-      BlocProvider.of<StoryBloc>(context).add(GetStoryEvent());
+      BlocProvider.of<StoryBloc>(context)
+          .add(GetStoryEvent(withPaginition: false));
       categoryBloc.add(GetMainCategoriesEvent(
         getWithPrefech: false,
         context: context,
@@ -549,13 +565,14 @@ class _HomePageState extends State<HomePage> {
 
             ///////////////////////////
             CustomScrollView(
-              //cacheExtent: 1600,
+              cacheExtent: 600,
               key: TestVariables.kTestMode
                   ? Key(WidgetsKeys.homepageScrollKey)
                   : null,
               controller: scrollController,
-              physics: const ClampingScrollPhysics(),
-              scrollBehavior: const MaterialScrollBehavior(),
+              //  physics: const ClampingScrollPhysics(),
+              scrollBehavior:
+                  const ScrollBehavior().copyWith(overscroll: false),
               slivers: [
                 SliverToBoxAdapter(
                   child: _isLoading
@@ -564,10 +581,7 @@ class _HomePageState extends State<HomePage> {
                               CircularProgressIndicator()) // إظهار مؤشر التحميل
                       : SizedBox.shrink(),
                 ),
-                SliverToBoxAdapter(child: 50.verticalSpace),
-                SliverToBoxAdapter(
-                  child: 40.verticalSpace,
-                ),
+                SliverToBoxAdapter(child: 70.verticalSpace),
                 SliverToBoxAdapter(
                   child: storySection(currentLocale, context),
                 ),
@@ -835,7 +849,7 @@ class _HomePageState extends State<HomePage> {
                               controller: panelController,
                               onPanelClosed: () {
                                 Future.delayed(
-                                    Duration(milliseconds: 100),
+                                    Duration(milliseconds: 300),
                                     () => widget.isShowPanelForVerified.value =
                                         false);
                               },
@@ -862,7 +876,10 @@ class _HomePageState extends State<HomePage> {
                                                     navigateToAddName: () {},
                                                     navigateTocartOrProfile:
                                                         () {
-                                                      panelController.close();
+                                                      Future.delayed(
+                                                          Duration(seconds: 1),
+                                                          () => panelController
+                                                              .close());
                                                     },
                                                     fromLogin: false,
                                                     onLoginFailed: () {
@@ -950,7 +967,10 @@ class _HomePageState extends State<HomePage> {
                                                     navigateToAddName: () {},
                                                     navigateTocartOrProfile:
                                                         () {
-                                                      panelController.close();
+                                                      Future.delayed(
+                                                          Duration(seconds: 1),
+                                                          () => panelController
+                                                              .close());
                                                     },
                                                     fromLogin: false,
                                                     onLoginFailed: () {
@@ -1096,6 +1116,66 @@ class _HomePageState extends State<HomePage> {
                                                 products[tapIndex]
                                                     .slug
                                                     .toString();
+                                            List<String> syncColorNames = [];
+                                            List<filter.SyncColorImage>
+                                                syncColorImagesFromListing =
+                                                products[tapIndex]
+                                                        .syncColorImages ??
+                                                    [];
+                                            List<filter.Color>?
+                                                colorsFromListing =
+                                                products[tapIndex].colors ?? [];
+                                            if (state
+                                                    .getProductDetailWithoutSimilarRelatedProductsStatus ==
+                                                GetProductDetailWithoutSimilarRelatedProductsStatus
+                                                    .success) {
+                                              for (var i = 0;
+                                                  i <
+                                                      (products[tapIndex]
+                                                              .syncColorImages
+                                                              ?.length ??
+                                                          0);
+                                                  i++) {
+                                                syncColorNames.add(
+                                                    products[tapIndex]
+                                                            .syncColorImages?[i]
+                                                            .colorName ??
+                                                        "");
+                                              }
+                                              state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                                      products[tapIndex]
+                                                          .productId
+                                                          .toString()]!
+                                                  .product
+                                                  ?.syncColorImages
+                                                  ?.forEach(
+                                                (element) {
+                                                  if (!syncColorNames.contains(
+                                                      element.colorName)) {
+                                                    syncColorImagesFromListing
+                                                        .add(element);
+                                                  }
+                                                },
+                                              );
+
+                                              state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                                      products[tapIndex]
+                                                          .productId
+                                                          .toString()]!
+                                                  .product
+                                                  ?.colors
+                                                  ?.forEach(
+                                                (element) {
+                                                  if (!(syncColorNames.contains(
+                                                      element.name))) {
+                                                    colorsFromListing
+                                                        .add(element);
+                                                  }
+                                                },
+                                              );
+                                            }
 
                                             currentSelectedColor =
                                                 state.currentSelectedColorForEveryProduct[
@@ -1479,7 +1559,57 @@ class _HomePageState extends State<HomePage> {
                                                                 .name ??
                                                             "",
                                                     productItem:
-                                                        products[tapIndex],
+                                                        products[tapIndex]
+                                                            .copyWith(
+                                                      availableQuantity: state
+                                                                  .cachedProductWithoutRelatedProductsModel[products[
+                                                                      tapIndex]
+                                                                  .productId
+                                                                  .toString()] ==
+                                                              null
+                                                          ? 0
+                                                          : state
+                                                              .cachedProductWithoutRelatedProductsModel[
+                                                                  products[
+                                                                          tapIndex]
+                                                                      .productId
+                                                                      .toString()]!
+                                                              .product
+                                                              ?.availableQuantity,
+                                                      choiceOptions: state
+                                                                  .cachedProductWithoutRelatedProductsModel[products[
+                                                                      tapIndex]
+                                                                  .productId
+                                                                  .toString()] ==
+                                                              null
+                                                          ? []
+                                                          : state
+                                                              .cachedProductWithoutRelatedProductsModel[
+                                                                  products[
+                                                                          tapIndex]
+                                                                      .productId
+                                                                      .toString()]!
+                                                              .product
+                                                              ?.choiceOptions,
+                                                      colors: colorsFromListing,
+                                                      images: state.cachedProductWithoutRelatedProductsModel[
+                                                                  products[
+                                                                          tapIndex]
+                                                                      .productId
+                                                                      .toString()] ==
+                                                              null
+                                                          ? []
+                                                          : state
+                                                              .cachedProductWithoutRelatedProductsModel[
+                                                                  products[
+                                                                          tapIndex]
+                                                                      .productId
+                                                                      .toString()]!
+                                                              .product
+                                                              ?.images,
+                                                      syncColorImages:
+                                                          syncColorImagesFromListing,
+                                                    ),
                                                     currentColor:
                                                         currentSelectedColor,
                                                     maxAllowedToAddCart: state
@@ -1511,10 +1641,11 @@ class _HomePageState extends State<HomePage> {
         ), // height 220
         Positioned(
           top: 0,
-          right: currentLocale.languageCode == "ar" ? 30 : null,
-          left: currentLocale.languageCode == "ar" ? null : 30,
+          right: currentLocale.languageCode == "ar" ? 10 : null,
+          left: currentLocale.languageCode == "ar" ? null : 10,
           child: Row(
             mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               SvgPicture.asset(
                 AppAssets.storyFilmSvg,

@@ -86,7 +86,7 @@ class Country {
 
 class Boundary {
   final String? type;
-  final List<List<Coordinate>>? coordinates;
+  final List<Coordinate>? coordinates;
 
   Boundary({
     this.type,
@@ -95,7 +95,7 @@ class Boundary {
 
   Boundary copyWith({
     String? type,
-    List<List<Coordinate>>? coordinates,
+    List<Coordinate>? coordinates,
   }) =>
       Boundary(
         type: type ?? this.type,
@@ -106,44 +106,43 @@ class Boundary {
         type: json["type"],
         coordinates: json["coordinates"] == null
             ? []
-            : List<List<Coordinate>>.from(json["coordinates"]!.map((x) =>
-                List<Coordinate>.from(x.map((x) => Coordinate.fromJson(x))))),
+            : List<Coordinate>.from(
+                json["coordinates"]!.map((x) => Coordinate.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
         "type": type,
         "coordinates": coordinates == null
             ? []
-            : List<dynamic>.from(coordinates!
-                .map((x) => List<dynamic>.from(x.map((x) => x.toJson())))),
+            : List<dynamic>.from(coordinates!.map((x) => x.toJson())),
       };
 }
 
 class Coordinate {
-  final double? lon;
   final double? lat;
+  final double? lon;
 
   Coordinate({
-    this.lon,
     this.lat,
+    this.lon,
   });
 
   Coordinate copyWith({
-    double? lon,
     double? lat,
+    double? lon,
   }) =>
       Coordinate(
-        lon: lon ?? this.lon,
         lat: lat ?? this.lat,
+        lon: lon ?? this.lon,
       );
 
   factory Coordinate.fromJson(Map<String, dynamic> json) => Coordinate(
-        lon: json["lon"]?.toDouble(),
         lat: json["lat"]?.toDouble(),
+        lon: json["lon"]?.toDouble(),
       );
 
   Map<String, dynamic> toJson() => {
-        "lon": lon,
         "lat": lat,
+        "lon": lon,
       };
 }

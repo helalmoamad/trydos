@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
+
 GetProductDetailWithoutRelatedProductsModel
     getProductDetailWithoutRelatedProductsModelFromJson(String str) =>
         GetProductDetailWithoutRelatedProductsModel.fromJson(json.decode(str));
@@ -74,7 +76,9 @@ class Product {
   final int? shippingDays;
   final bool isProductNotifiedForUser;
   final bool? countryIsRestricted;
-
+  final List<Thumbnail>? images;
+  final List<SyncColorImage>? syncColorImages;
+  final List<Color>? colors;
   Product({
     this.id,
     this.description,
@@ -82,6 +86,9 @@ class Product {
     this.isActive,
     this.collectedAfterOrdering,
     this.countOfPieces,
+    this.colors,
+    this.syncColorImages,
+    this.images,
     this.variation,
     this.isLiked,
     this.slug,
@@ -110,6 +117,9 @@ class Product {
     dynamic features,
     String? slug,
     bool? isActive,
+    List<Color>? colors,
+    List<Thumbnail>? images,
+    List<SyncColorImage>? syncColorImages,
     List<Variation>? variation,
     List<ChoiceOption>? choiceOptions,
     bool? hasDiscount,
@@ -153,6 +163,9 @@ class Product {
         maxAllowedQty: maxAllowedQty ?? this.maxAllowedQty,
         deliveryAt: deliveryAt ?? this.deliveryAt,
         shippingDays: shippingDays ?? this.shippingDays,
+        colors: colors ?? this.colors,
+        syncColorImages: syncColorImages ?? this.syncColorImages,
+        images: images ?? this.images,
         availableQuantity: availableQuantity ?? this.availableQuantity,
         leftStock: leftStock ?? this.leftStock,
         isLiked: isLiked ?? this.isLiked,
@@ -181,6 +194,17 @@ class Product {
       shippingCostMultiplyWithQuantity:
           json["shipping_cost_multiply_with_quantity"],
       shippingCost: double.tryParse(json["shipping_cost"].toString()),
+      colors: json["colors"] == null
+          ? []
+          : List<Color>.from(json["colors"]!.map((x) => Color.fromJson(x))),
+      syncColorImages: json["sync_color_images"] == null
+          ? []
+          : List<SyncColorImage>.from(json["sync_color_images"]!
+              .map((x) => SyncColorImage.fromJson(x))),
+      images: json["images"] == null
+          ? []
+          : List<Thumbnail>.from(
+              json["images"]!.map((x) => Thumbnail.fromJson(x))),
       boutique: json["boutique"] == null
           ? null
           : BoutiqueForCart.fromJson(json["boutique"]),
@@ -237,6 +261,15 @@ class Product {
         "available_quantity": availableQuantity,
         "count_of_pieces": countOfPieces,
         "Left_stock": leftStock,
+        "colors": colors == null
+            ? []
+            : List<dynamic>.from(colors!.map((x) => x.toJson())),
+        "sync_color_images": syncColorImages == null
+            ? []
+            : List<dynamic>.from(syncColorImages!.map((x) => x.toJson())),
+        "images": images == null
+            ? []
+            : List<dynamic>.from(images!.map((x) => x.toJson())),
         "shipping_cost_multiply_with_quantity":
             shippingCostMultiplyWithQuantity,
 

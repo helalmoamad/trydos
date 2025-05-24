@@ -947,10 +947,19 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       GetProductWithFiltersWithoutCancelingPreviousEvents event,
       Emitter<BoutiqueState> emit) async {
     String key = event.boutiqueSlug + (event.category ?? '');
+    if (event.boutiqueSlug != "*featured*" &&
+        ((prefsRepository
+                    .getPrefechOfProductsForEachBoutiqueInHomePage(key)
+                    ?.length ??
+                0) >
+            10)) {
+      return;
+    }
     if (event.boutiqueSlug == "*featured*") {
       try {
         Map<String, PaginationModel<product.Products>?>
-            getProductListingWithFiltersPaginationModels = {};
+            getProductListingWithFiltersPaginationModels =
+            Map.of(state.getProductListingWithFiltersPaginationModels);
         Map<String, dynamic> responseFromSharedPrefrence = jsonDecode(
             prefsRepository
                     .getPrefechOfProductsForEachBoutiqueInHomePage(key) ??
@@ -961,19 +970,33 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                 ? DataGetProductListingWithFiltersModel()
                 : DataGetProductListingWithFiltersModel.fromJson(
                     responseFromSharedPrefrence);
-
-        getProductListingWithFiltersPaginationModels.addAll({
-          "*featured*withoutFilter": PaginationModel<product.Products>(
-              hasReachedMax:
-                  (getProductListingWithFiltersModel.products?.length ?? 0) <
-                      10,
-              items: getProductListingWithFiltersModel.products ?? [],
-              page: 1,
-              paginationStatus: PaginationStatus.loading)
-        });
-        if ((getProductListingWithFiltersModel.products ?? []).length > 0) {
-          await Future.delayed(Duration(seconds: 3));
+        if (getProductListingWithFiltersPaginationModels
+            .containsKey("*featured*withoutFilter")) {
+          getProductListingWithFiltersPaginationModels[
+                  "*featured*withoutFilter"] =
+              PaginationModel<product.Products>(
+                  hasReachedMax:
+                      (getProductListingWithFiltersModel.products?.length ??
+                              0) <
+                          10,
+                  items: getProductListingWithFiltersModel.products ?? [],
+                  page: 1,
+                  paginationStatus: PaginationStatus.loading);
+        } else {
+          getProductListingWithFiltersPaginationModels.addAll({
+            "*featured*withoutFilter": PaginationModel<product.Products>(
+                hasReachedMax:
+                    (getProductListingWithFiltersModel.products?.length ?? 0) <
+                        10,
+                items: getProductListingWithFiltersModel.products ?? [],
+                page: 1,
+                paginationStatus: PaginationStatus.loading)
+          });
         }
+
+        /* if ((getProductListingWithFiltersModel.products ?? []).length > 0) {
+          await Future.delayed(Duration(seconds: 3));
+        }*/
         emit(state.copyWith(
             getProductListingWithFiltersPaginationModels:
                 getProductListingWithFiltersPaginationModels));
@@ -1022,15 +1045,28 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       if (event.boutiqueSlug == "*featured*") {
         Map<String, PaginationModel<product.Products>?>
             getProductListingWithFiltersPaginationModels =
-            <String, PaginationModel<product.Products>?>{};
-        getProductListingWithFiltersPaginationModels.addAll({
-          "*featured*withoutFilter": PaginationModel<product.Products>(
-              offset: "${r.data?.offset}",
-              paginationStatus: PaginationStatus.success,
-              page: 1,
-              hasReachedMax: false,
-              items: r.data?.products ?? [])
-        });
+            Map.of(state.getProductListingWithFiltersPaginationModels);
+        if (getProductListingWithFiltersPaginationModels
+            .containsKey("*featured*withoutFilter")) {
+          getProductListingWithFiltersPaginationModels[
+                  "*featured*withoutFilter"] =
+              PaginationModel<product.Products>(
+                  offset: "${r.data?.offset}",
+                  paginationStatus: PaginationStatus.success,
+                  page: 1,
+                  hasReachedMax: false,
+                  items: r.data?.products ?? []);
+        } else {
+          getProductListingWithFiltersPaginationModels.addAll({
+            "*featured*withoutFilter": PaginationModel<product.Products>(
+                offset: "${r.data?.offset}",
+                paginationStatus: PaginationStatus.success,
+                page: 1,
+                hasReachedMax: false,
+                items: r.data?.products ?? [])
+          });
+        }
+
         emit(state.copyWith(
             getProductListingWithFiltersPaginationModels:
                 getProductListingWithFiltersPaginationModels));
@@ -1469,7 +1505,6 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     } else {
       getProductFiltersStatus[key] = GetProductFiltersStatus.loading;
     }
-
     emit(state.copyWith(
       getProductFiltersModel: Map.of(data),
       getProductFiltersStatus: getProductFiltersStatus,
@@ -1698,7 +1733,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             categorySlug: event.category);
       }
       List<Products>? productsResult = r.data?.products ?? [];
-      if ((filters.colors?.length ?? 0) > 0 ||
+      if (!(event.fromSearch ?? false) && (filters.colors?.length ?? 0) > 0 ||
           ((state.sizeAndColorFilterinTextToSearch["color"]?.length ?? 0) >
               0)) {
         productsResult = [];
@@ -1755,13 +1790,32 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
           paginationStatus: PaginationStatus.success,
           hasReachedMax: (r.data?.products?.length ?? 0) < kPageSize,
         );
-        getProductListingWithFiltersPaginationModels.addAll({key: value});
+        getProductListingWithFiltersPaginationModels
+            .addAll({keyWithoutFilter: value});
       } else {
+        getProductListingWithFiltersPaginationModels.addAll({
+          keyWithoutFilter: PaginationModel<Products>(
+              page: 1,
+              offset: "${r.data?.offset}",
+              hasReachedMax: (r.data?.products?.length ?? 0) < kPageSize,
+              items: event.getWithPagination
+                  ? [
+                      ...List.of((state
+                              .getProductListingWithFiltersPaginationModels[
+                                  keyWithoutFilter]
+                              ?.items) ??
+                          []),
+                      ...productsResult
+                    ]
+                  : productsResult,
+              paginationStatus: PaginationStatus.success)
+        });
+
         state.getProductListingWithFiltersPaginationModels
-            .forEach((key, value) {
-          if (key == keyWithoutFilter) {
-            getProductListingWithFiltersPaginationModels.addAll({
-              key: value!.copyWith(
+            .forEach((keys, value) {
+          if (keys == keyWithoutFilter) {
+            /*getProductListingWithFiltersPaginationModels.addAll({
+              keys: value!.copyWith(
                   offset: "${r.data?.offset}",
                   paginationStatus: PaginationStatus.success,
                   page: event.getWithPagination ? value.page + 1 : 2,
@@ -1769,11 +1823,10 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                   items: event.getWithPagination
                       ? [...List.of(value.items), ...productsResult ?? []]
                       : productsResult)
-            });
-
-            return;
+            });*/
+          } else {
+            getProductListingWithFiltersPaginationModels.addAll({keys: value});
           }
-          getProductListingWithFiltersPaginationModels.addAll({key: value});
         });
       }
       Map<String, GetProductFiltersStatus>? getProductFiltersStatus =

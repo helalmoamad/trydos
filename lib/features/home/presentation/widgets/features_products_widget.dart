@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:trydos/common/constant/design/assets_provider.dart';
 
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
@@ -69,15 +71,24 @@ class FeatureProductsWidget extends StatelessWidget {
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    /*  Container(
+                    Container(
                       padding: EdgeInsets.symmetric(horizontal: 10),
                       width: 250,
-                      height: 25,
-                      child: MyTextWidget(
-                        "${LocaleKeys.feature_product.tr()}",
-                        style: TextStyle(color: Colors.black, fontSize: 14),
+                      height: 20,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SvgPicture.asset(
+                            AppAssets.productFeaturesSvg,
+                            height: 18,
+                          ),
+                          MyTextWidget(
+                            " ${LocaleKeys.feature_product.tr()}",
+                            style: TextStyle(color: Colors.black, fontSize: 14),
+                          ),
+                        ],
                       ),
-                    ),*/
+                    ),
                     Container(
                       margin: EdgeInsets.only(bottom: 5),
                       width: 1.sw,

@@ -107,8 +107,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
   late AutoScrollController autoScrollController;
 
   void _scrollToBottom() {
-    print(
-        "##################################################################################################33");
     autoScrollController.jumpTo(0);
   }
 
@@ -361,8 +359,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                     ],
                                   ),
                                   child: MyCachedNetworkImage(
-                                    imageUrl: ChatUrls.baseUrl +
-                                        widget.receiverPhoto!,
+                                    imageUrl: widget.receiverPhoto!,
                                     imageFit: BoxFit.cover,
                                     progressIndicatorBuilderWidget:
                                         TrydosLoader(),

@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart'
     as inset_shadow;
@@ -88,7 +90,7 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage>
 
   @override
   Widget build(BuildContext context) {
-    int pixelRatio = MediaQuery.of(context).devicePixelRatio.round();
+    //   int pixelRatio = MediaQuery.of(context).devicePixelRatio.round();
     super.build(context);
     String url = addSuitableWidthAndHeightToImage(
       imageUrl: currentUrl,
@@ -117,17 +119,30 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage>
       ),
       child: Center(
         child: CachedNetworkImage(
+          httpHeaders: {
+            'User-Agent': (kDebugMode ? "developer" : "users") +
+                'device OS:' +
+                (Platform.isAndroid ? 'Android' : 'IOS') +
+                ' '
+                    ', application version: 1.0.0',
+            "Referer": (kDebugMode ? "developer" : "users") +
+                'device OS:' +
+                (Platform.isAndroid ? 'Android' : 'IOS')
+          },
           imageUrl: url,
           fit: widget.imageFit,
           width: widget.width,
           color: widget.imageColor,
           useOldImageOnUrlChange: true,
+          cacheManager: CustomCacheManagers(),
           height: widget.height,
-          memCacheHeight: widget.height.round() * pixelRatio,
-          memCacheWidth: widget.width.round() * pixelRatio,
+          //   memCacheHeight: widget.height.round() * pixelRatio,
+          //  memCacheWidth: widget.width.round() * pixelRatio,
           fadeInDuration: Duration(milliseconds: 0),
           fadeOutDuration: Duration(milliseconds: 0),
           progressIndicatorBuilder: (context, _, progress) {
+            print(
+                "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH${url}");
             widget.callWhenLoadingImage?.call();
 
             if ((widget.progressIndicatorBuilderWidget != null)) {

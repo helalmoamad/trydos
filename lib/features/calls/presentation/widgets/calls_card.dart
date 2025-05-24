@@ -266,7 +266,7 @@ class _CallsCardState extends ThemeState<CallsCard> {
                             ],
                           ),
                           child: MyCachedNetworkImage(
-                            imageUrl: ChatUrls.baseUrl + widget.photoPath,
+                            imageUrl: widget.photoPath,
                             imageFit: BoxFit.cover,
                             progressIndicatorBuilderWidget: TrydosLoader(),
                             height: 40,

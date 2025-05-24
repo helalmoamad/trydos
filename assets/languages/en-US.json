@@ -423,5 +423,9 @@
   "profile_language": "Profile | Language",
   "you_dont_have_enough_credit_in_the_wallet": "You dont have enough credit in the wallet",
   "feature_product": "Featured Products",
-  "outside_available_area": "Not possible outside the available area"
+  "outside_available_area": "Not possible outside the available area",
+  "add_link_to_story": "add link to story",
+  "you_must_zoom_on_map_dd_location": "You must zoom in on the map to add the location.",
+  "delay": "delay",
+  "shipping_cost": "Shipping cost"
 }

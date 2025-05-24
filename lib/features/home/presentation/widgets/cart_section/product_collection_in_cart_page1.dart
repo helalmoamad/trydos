@@ -84,10 +84,10 @@ class _ProductCollectionInCartPage1State
           previous.addItemInCartStatus != current.addItemInCartStatus ||
           previous.updateItemInCartStatus != current.updateItemInCartStatus ||
           previous.checkAvailabilityProductCartStatus !=
-              current.checkAvailabilityProductCartStatus,
+              current.checkAvailabilityProductCartStatus ||
+          previous.convertItemFromcartToOldCartStatus !=
+              current.convertItemFromcartToOldCartStatus,
       builder: (context, state) {
-        print(
-            "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##########################################${(state.updateItemInCartStatus == UpdateItemInCartStatus.loading)}");
         return Container(
           padding: EdgeInsets.all(1),
           child: ListView.builder(
@@ -1021,7 +1021,7 @@ class _ProductCollectionInCartPage1State
                                             ),
                                     ),
                                     SizedBox(
-                                      width: 30.w,
+                                      width: 15.w,
                                     ),
                                     Container(
                                       margin:
@@ -1200,6 +1200,87 @@ class _ProductCollectionInCartPage1State
                               LanguageService.languageCode != "ar" ? 5 : null,
                           left: LanguageService.languageCode != "ar" ? null : 5,
                         ),
+                        isOldCart
+                            ? SizedBox.shrink()
+                            : Positioned(
+                                child: InkWell(
+                                  onTap: () {
+                                    homeBloc.add(
+                                        ChangeCurrentIndexForUpdatCartEvent(
+                                            index: index));
+                                    if (index ==
+                                                (state.currentIndexForUpdateCart ??
+                                                    0) &&
+                                            (state.convertItemFromcartToOldCartStatus ==
+                                                ConvertItemFromcartToOldCartStatus
+                                                    .loading) ||
+                                        isOldCart) {
+                                      return;
+                                    }
+
+                                    homeBloc.add(
+                                        ConvertItemFromCartToOldCartEvent(
+                                            cartId: cartCollection![index]
+                                                .id
+                                                .toString()));
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      color: Colors.amber,
+                                    ),
+                                    alignment: Alignment.center,
+                                    width: isOldCart ? 0 : 50,
+                                    height: isOldCart ? 0 : 30,
+                                    child: (index ==
+                                                (state.currentIndexForUpdateCart ??
+                                                    0) &&
+                                            (state.convertItemFromcartToOldCartStatus ==
+                                                ConvertItemFromcartToOldCartStatus
+                                                    .loading))
+                                        ? TrydosLoader(
+                                            size: 20,
+                                          )
+                                        : Row(
+                                            children: [
+                                              Text(" ${LocaleKeys.delay.tr()} ",
+                                                  style: context
+                                                      .textTheme.bodyMedium?.ba
+                                                      .copyWith(
+                                                    fontSize: 12,
+                                                    color: Color.fromARGB(
+                                                        255, 42, 39, 228),
+                                                  )),
+                                              SvgPicture.asset(
+                                                AppAssets.orderClockSvg,
+                                                width: 15,
+                                                height: 15,
+                                                color: Color.fromARGB(
+                                                    255, 42, 39, 228),
+                                              ),
+                                            ],
+                                          ),
+                                  ),
+                                ),
+                                bottom: (state.cartCollection.isNullOrEmpty)
+                                    ? 0
+                                    : (state.cartCollection?[index] == null)
+                                        ? 0
+                                        : (state.cartCollection?[index]
+                                                        .haveHurryUpNotifyTimeLeft ??
+                                                    false) ||
+                                                (state.cartCollection?[index]
+                                                        .haveHurryUpNotifyQty ??
+                                                    false)
+                                            ? 45
+                                            : 10,
+                                right: LanguageService.languageCode != "ar"
+                                    ? 5
+                                    : null,
+                                left: LanguageService.languageCode != "ar"
+                                    ? null
+                                    : 5,
+                              ),
 
                         //////////////////////
                         Positioned(
@@ -1465,7 +1546,7 @@ class _ProductCollectionInCartPage1State
                                                       color: Color(0xffA28E5B),
                                                     )),
                                                 Text(
-                                                    " ${state.cartCollection?[index].timeLeftInMinutes}:00",
+                                                    " ${(state.cartCollection?[index].timeLeftInMinutes ?? 0) ~/ 60}:${(state.cartCollection?[index].timeLeftInMinutes ?? 0) % 60}:00",
                                                     style: context.textTheme
                                                         .bodyMedium?.ba
                                                         .copyWith(
@@ -1488,8 +1569,8 @@ class _ProductCollectionInCartPage1State
                         ///////////////////////
                         !isOldCart &&
                                 (cartCollection![index].isActive == false ||
-                                    cartCollection[index].checkAvailability ==
-                                        false ||
+                                    (cartCollection[index].checkAvailability ==
+                                        false) ||
                                     cartCollection[index].isCountryRestricted ==
                                         true)
                             ? Positioned(

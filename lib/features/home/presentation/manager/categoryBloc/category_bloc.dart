@@ -83,6 +83,16 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
             ? {}
             : Map.of(state.getHomeBoutiquesPaginationObjectByMainCategory);
 
+    if (event.getWithPrefetchToStoreInMemory) {
+      if ((prefsRepository
+                  .getPrefechOfBoutiquesForEachMainCategoryInHomePage(
+                      event.categorySlug)
+                  ?.length ??
+              0) >
+          10) {
+        return;
+      }
+    }
     if (!event.getWithPrefetchToStoreInMemory) {
       if (!event.getWithPagination) {
         getHomeBoutiquesPaginationObjectByMainCategory = {};

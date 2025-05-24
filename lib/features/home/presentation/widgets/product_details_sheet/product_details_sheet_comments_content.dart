@@ -42,8 +42,8 @@ class ProductDetailsSheetCommentsContent extends StatelessWidget {
   final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   final ScrollController? scrollController;
   final TextEditingController addCommentController = TextEditingController();
-  final ValueNotifier<bool> addCommentButtonToggleNotifier =
-      ValueNotifier(false);
+//  final ValueNotifier<bool> addCommentButtonToggleNotifier =
+  //     ValueNotifier(false);
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
@@ -110,8 +110,7 @@ class ProductDetailsSheetCommentsContent extends StatelessWidget {
                                           productSlug: productSlug,
                                           productId: productId,
                                           comment: addCommentController.text));
-                                  addCommentController.clear();
-                                  addCommentButtonToggleNotifier.value = false;
+
                                   //////////////////////////////////////////////////////////
                                   FirebaseAnalyticsService.logEventForSession(
                                     eventName:
@@ -120,6 +119,10 @@ class ProductDetailsSheetCommentsContent extends StatelessWidget {
                                         AnalyticsExecutedEventNameConst
                                             .confirmCommentButton,
                                   );
+
+                                  //   addCommentButtonToggleNotifier.value = false;
+
+                                  addCommentController.clear();
                                   cupertino.FocusScope.of(context).unfocus();
                                 },
                                 hintText: LocaleKeys.add_comment.tr(),
@@ -127,11 +130,19 @@ class ProductDetailsSheetCommentsContent extends StatelessWidget {
                                 suffixIcon: Padding(
                                   padding: HWEdgeInsets.only(
                                       right: 20.0, top: 15, bottom: 15),
-                                  child: InkWell(
-                                    onTap: () {
-                                      if (addCommentController.text.isEmpty) {
+                                  child: IconButton(
+                                    icon: (state.addCommentStatus ==
+                                            AddCommentStatus.loading)
+                                        ? Icon(Icons.hourglass_bottom_rounded,
+                                            color: Colors.blue)
+                                        : Icon(
+                                            Icons.send,
+                                            color: Colors.blue,
+                                          ),
+                                    onPressed: () {
+                                      /*    if (addCommentController.text.isEmpty) {
                                         return;
-                                      }
+                                      }*/
                                       BlocProvider.of<HomeBloc>(context).add(
                                           AddCommentEvent(
                                               productSlugForTopic:
@@ -140,12 +151,7 @@ class ProductDetailsSheetCommentsContent extends StatelessWidget {
                                               productId: productId,
                                               comment:
                                                   addCommentController.text));
-                                      addCommentController.clear();
-                                      cupertino.FocusScope.of(context)
-                                          .unfocus();
 
-                                      addCommentButtonToggleNotifier.value =
-                                          false;
                                       //////////////////////////////////////////////////////////
                                       FirebaseAnalyticsService
                                           .logEventForSession(
@@ -155,8 +161,16 @@ class ProductDetailsSheetCommentsContent extends StatelessWidget {
                                             AnalyticsExecutedEventNameConst
                                                 .confirmCommentButton,
                                       );
+                                      Future.delayed(Duration(seconds: 2), () {
+                                        addCommentController.clear();
+                                        cupertino.FocusScope.of(context)
+                                            .unfocus();
+                                      });
+
+                                      //     addCommentButtonToggleNotifier.value =
+                                      //          false;
                                     },
-                                    child: (state.addCommentStatus ==
+                                    /* child: (state.addCommentStatus ==
                                             AddCommentStatus.loading)
                                         ? cupertino.Container(
                                             width: 25,
@@ -169,7 +183,7 @@ class ProductDetailsSheetCommentsContent extends StatelessWidget {
                                             AppAssets.submitArrowSvg,
                                             width: 10,
                                             height: 10,
-                                          ),
+                                          ),*/
                                   ),
                                 ),
                               ),

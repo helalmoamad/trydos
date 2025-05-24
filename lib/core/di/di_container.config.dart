@@ -141,8 +141,8 @@ import '../../features/home/domain/use_cases/change_country_language_for_notific
     as _i814;
 import '../../features/home/domain/use_cases/check_availability_product_cart_usecase.dart'
     as _i812;
-import '../../features/home/domain/use_cases/convert_item_from_oldCart_to_Cart_usecase.dart'
-    as _i190;
+import '../../features/home/domain/use_cases/convert_item_from_Cart_to_oldCart_usecase.dart'
+    as _i94;
 import '../../features/home/domain/use_cases/delete_customer_address_usecase.dart'
     as _i71;
 import '../../features/home/domain/use_cases/delete_like_of_product_usecase.dart'
@@ -375,8 +375,6 @@ Future<_i174.GetIt> $initGetIt(
           gh<_i0.HomeRepository>()));
   gh.factory<_i812.CheckAvailabilityProductCartUsecase>(() =>
       _i812.CheckAvailabilityProductCartUsecase(gh<_i0.HomeRepository>()));
-  gh.factory<_i190.ConvertItemFromOldcartToCartUsecase>(() =>
-      _i190.ConvertItemFromOldcartToCartUsecase(gh<_i0.HomeRepository>()));
   gh.factory<_i71.DeleteCustomerAddressUseCase>(
       () => _i71.DeleteCustomerAddressUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i878.DeleteLikeOfProductUsecase>(
@@ -481,6 +479,8 @@ Future<_i174.GetIt> $initGetIt(
       () => _i744.UpdateWhatsappNotificationUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i651.UpdateUserPhotoUseCase>(
       () => _i651.UpdateUserPhotoUseCase(gh<_i0.HomeRepository>()));
+  gh.factory<_i94.ConvertItemFromcartToOldCartUsecase>(
+      () => _i94.ConvertItemFromcartToOldCartUsecase(gh<_i0.HomeRepository>()));
   gh.lazySingleton<_i944.CategoryBloc>(() => _i944.CategoryBloc(
         gh<_i158.GetMainCategoriesUseCase>(),
         gh<_i518.GetHomeBoutiqesUseCase>(),
@@ -576,7 +576,7 @@ Future<_i174.GetIt> $initGetIt(
   gh.lazySingleton<_i903.HomeBloc>(() => _i903.HomeBloc(
         gh<_i533.GetStoryForProductUseCase>(),
         gh<_i687.RemoveItemToCartUseCase>(),
-        gh<_i190.ConvertItemFromOldcartToCartUsecase>(),
+        gh<_i94.ConvertItemFromcartToOldCartUsecase>(),
         gh<_i307.GetCartItemUseCase>(),
         gh<_i318.GetOldCartItemUseCase>(),
         gh<_i366.StoreFcmTokenOfMarketUseCase>(),

@@ -31,6 +31,11 @@ StoryState _$StoryStateFromJson(Map<String, dynamic> json) => StoryState(
                   .toList() ??
               const [],
       currentPage: (json['currentPage'] as num?)?.toInt() ?? 0,
+      storyLink: json['storyLink'] as String?,
+      finishGetAllStory: json['finishGetAllStory'] as bool? ?? false,
+      storyOffset: (json['storyOffset'] as num?)?.toInt() ?? 0,
+      getStoryWithPagintionStatusLoading:
+          json['getStoryWithPagintionStatusLoading'] as bool? ?? false,
       currentStoryInEachCollection:
           (json['currentStoryInEachCollection'] as Map<String, dynamic>?)?.map(
                 (k, e) => MapEntry(int.parse(k), (e as num?)?.toInt()),
@@ -51,6 +56,11 @@ Map<String, dynamic> _$StoryStateToJson(StoryState instance) =>
       'storiesCollections':
           instance.storiesCollections.map((e) => e.toJson()).toList(),
       'currentPage': instance.currentPage,
+      'storyOffset': instance.storyOffset,
+      'getStoryWithPagintionStatusLoading':
+          instance.getStoryWithPagintionStatusLoading,
+      'finishGetAllStory': instance.finishGetAllStory,
+      'storyLink': instance.storyLink,
       'selectedCollection': instance.selectedCollection,
       'currentStoryInEachCollection': instance.currentStoryInEachCollection
           .map((k, e) => MapEntry(k.toString(), e)),

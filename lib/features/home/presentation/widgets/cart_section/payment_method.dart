@@ -504,7 +504,30 @@ class _PaymentMethodState extends State<PaymentMethod> {
   }
 
   Widget buildCodWidget({required bool fromSuccessOrder}) {
-    return fromSuccessOrder ? buildOrderTotal() : SizedBox.shrink();
+    return fromSuccessOrder
+        ? buildOrderTotal()
+        : Row(
+            children: [
+              Text(
+                "${LocaleKeys.shipping_cost.tr()}  ",
+                style: context.textTheme.bodyMedium?.rr.copyWith(
+                    color: const Color(0xffD3D3D3),
+                    letterSpacing: 0.18,
+                    fontSize: 12,
+                    height: 1.33),
+              ),
+              Text(
+                '${((GetIt.I<HomeBloc>().state.getCartShippingItemsModel?.data?.codCost ?? 0) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel?.data?.currency?.exchangeRate ?? 1)).toStringAsFixed(GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 2)} ${widget.currencySymbol}',
+                style: context.textTheme.bodyMedium?.sbt.copyWith(
+                  color: const Color(0xff1D1D1D),
+                  letterSpacing: 0.18,
+                  fontSize: 12,
+                  height: 1.33,
+                ),
+              ),
+            ],
+          );
+    ;
   }
 
   Widget buildCryptoWidget({required bool fromSuccessOrder}) {

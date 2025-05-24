@@ -23,12 +23,15 @@ abstract class BaseApi<T> with HandlingExceptionRequest {
         ..['country'] = GetIt.I<PrefsRepository>().userCountryIsAvailable == 1
             ? GetIt.I<PrefsRepository>().userChoosedCountryIso
             : GetIt.I<PrefsRepository>().countryIso;
+      if (serverName == ServerName.elastic) {
+        headers = client.options.headers
+          ..['original_user_id'] = GetIt.I<PrefsRepository>().myMarketId;
+      }
       headers = client.options.headers
         ..['lang'] = LanguageService.languageCode == 'ar'
             ? 'ar'
             : LanguageService.languageCode;
-      headers = client.options.headers
-        ..['original_user_id'] = GetIt.I<PrefsRepository>().myMarketId;
+
       headers.addAll({
         'User-Agent': 'device OS:' +
             (Platform.isAndroid ? 'Android' : 'IOS') +

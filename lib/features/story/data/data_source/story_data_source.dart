@@ -53,7 +53,7 @@ class StoriesDataSource {
     return completer.future;
   }
 
-  Future<GetStoriesModel> getStories() {
+  Future<GetStoriesModel> getStories(Map<String, dynamic> params) {
     ///// for test /////
     TestVariables.getStoriesFlag = true;
     TestVariables.getStoriesRequestCountFlag++;
@@ -62,6 +62,7 @@ class StoriesDataSource {
       serverName: ServerName.stories,
       requestPrams: RequestConfig<GetStoriesModel>(
         endpoint: StoriesEndPoints.getStoriesEP,
+        queryParameters: params,
         response: ResponseValue<GetStoriesModel>(
             fromJson: (response) => GetStoriesModel.fromJson(response)),
       ),

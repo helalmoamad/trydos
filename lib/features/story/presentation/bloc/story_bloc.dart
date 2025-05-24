@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:dartz/dartz.dart';
 
 import 'package:equatable/equatable.dart';
 
@@ -58,8 +59,13 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
       this.addStoryToOurServerUseCase)
       : super(StoryState()) {
     on<UploadStoryEvent>(_uploadStoryEvent);
+    on<SetStoryLinkEvent>(_setStoryLinkEvent);
     on<AddStoryToOurServerEvent>(_AddStoryToOurServerEvent);
     on<IncreaseViewersEvent>(_IncreaseViewersEvent);
+    on<ChangeStatusUploadToFailureEvent>(
+      _onChangeStatusUploadToFailureEvent,
+    );
+
     on<UpdateNameForUserInCollectionIfExistEvent>(
         _onUpdateNameForUserInCollectionIfExistEvent);
     on<StoryEvent>((event, emit) {});
@@ -79,12 +85,20 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
     on<StorySelectedEvent>(_onStorySelectedEvent);
     on<UploadStoryCloudinaryEvent>(_uploadStoryCloudinaryEvent);
   }
+  _onChangeStatusUploadToFailureEvent(
+      ChangeStatusUploadToFailureEvent event, Emitter emit) async {
+    emit(state.copyWith(
+        uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.failure));
+  }
+
+  _setStoryLinkEvent(SetStoryLinkEvent event, Emitter emit) async {
+    emit(state.copyWith(storyLink: event.link));
+  }
 
   _uploadStoryCloudinaryEvent(
       UploadStoryCloudinaryEvent event, Emitter emit) async {
     emit(state.copyWith(
         uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.loading));
-    print("GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG${event.file.path}");
     final response = await uploadFileCloudinaryUseCase(
         UploadFileCloudinaryParams(
             file: event.file,
@@ -124,16 +138,16 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
         } else {
           isVideoFile = true;
         }
-        HelperFunctions.urlToFile(r.secureUrl!).then((value) {
-          add(
-            AddStoryToOurServerEvent(
-                path: r.secureUrl!,
-                file: value,
-                isVideo: isVideoFile ? 1 : 0,
-                width: r.width,
-                height: r.height),
-          );
-        });
+        //   HelperFunctions.urlToFile(r.secureUrl!).then((value) {
+        add(
+          AddStoryToOurServerEvent(
+              path: r.secureUrl!,
+              //   file: value,
+              isVideo: isVideoFile ? 1 : 0,
+              width: r.width,
+              height: r.height),
+        );
+        // });
 
         ///////////////////////////
         FirebaseAnalyticsService.logEventForSession(
@@ -262,55 +276,80 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
 
   Future<void> _onGetStoryEvent(
       GetStoryEvent event, Emitter<StoryState> emit) async {
-    /*if (apisMustNotToRequest.contains('GetStoryEvent')) {
+    if ((state.finishGetAllStory && event.withPaginition) ||
+        (state.getStoryWithPagintionStatusLoading && event.withPaginition)) {
       return;
-    }*/
+    }
     emit(state.copyWith(
+        getStoryWithPagintionStatusLoading: true,
+        finishGetAllStory:
+            event.withPaginition ? state.finishGetAllStory : false,
+        currentPage: event.withPaginition ? state.currentPage + 1 : 1,
         getStoriesStatus: state.getStoriesStatus == GetStoriesStatus.success
             ? state.getStoriesStatus
             : GetStoriesStatus.loading));
-    final response = await getStoryUseCase(NoParams());
+    final response = await getStoryUseCase(
+        StoryRepositoryParams(page: state.currentPage.toString()));
 
     response.fold((l) {
       if (isFailedTheFirstTime.contains('GetStoryEvent')) {
         isFailedTheFirstTime.remove('GetStoryEvent');
-        emit(state.copyWith(getStoriesStatus: GetStoriesStatus.failure));
+        emit(state.copyWith(
+            getStoriesStatus: GetStoriesStatus.failure,
+            getStoryWithPagintionStatusLoading: false));
       } else {
         isFailedTheFirstTime.insert(
             isFailedTheFirstTime.length, 'GetStoryEvent');
-        GetIt.I<StoryBloc>().add(GetStoryEvent());
+        GetIt.I<StoryBloc>()
+            .add(GetStoryEvent(withPaginition: event.withPaginition));
       }
     }, (r) {
       apisMustNotToRequest.add('GetStoryEvent');
       Map<int, int> currentStoryInEachCollection = {};
       int i = 0;
+      List<CollectionStoryModel>? collections = r.data!.collections;
+      /*  if (!(event.withPaginition)) {
+        if ((collections?.length ?? 0) > 1) {
+          int myStoriesIndex = collections!.indexWhere((element) =>
+              GetIt.I<PrefsRepository>().myStoriesId ==
+              element.stories![0].userId);
+          if (myStoriesIndex != -1) {
+            CollectionStoryModel collectionStoryModel =
+                collections.removeAt(myStoriesIndex);
+
+            collections.insert(
+                (r.data!.collections!.length), collectionStoryModel);
+          }
+        }
+      }*/
       r.data?.collections?.forEach((element) {
         currentStoryInEachCollection[i++] = 0;
       });
-      List<CollectionStoryModel>? collections = r.data!.collections;
-      if ((collections?.length ?? 0) > 1) {
-        int myStoriesIndex = collections!.indexWhere((element) =>
-            GetIt.I<PrefsRepository>().myStoriesId ==
-            element.stories![0].userId);
-        if (myStoriesIndex != -1) {
-          CollectionStoryModel collectionStoryModel =
-              collections.removeAt(myStoriesIndex);
-
-          collections.insert(
-              (r.data!.collections!.length), collectionStoryModel);
-        }
+      if (event.withPaginition) {
+        int i = (state.storiesCollections).length;
+        r.data?.collections?.forEach((element) {
+          currentStoryInEachCollection[i++] = 0;
+        });
       }
+
       emit(state.copyWith(
+          getStoryWithPagintionStatusLoading: false,
+          finishGetAllStory: (r.data?.collections?.length ?? 0) < 10,
           getStoriesStatus: GetStoriesStatus.success,
-          storiesCollections: collections?.reversed.toList(),
+          storiesCollections: event.withPaginition
+              ? [...(state.storiesCollections), ...(collections ?? [])]
+              : collections,
           currentStoryInEachCollection: currentStoryInEachCollection));
     });
   }
 
   FutureOr<void> _AddStoryToOurServerEvent(
       AddStoryToOurServerEvent event, Emitter<StoryState> emit) async {
-    final response =
-        await uploadStoryUseCase.call(UploadStoryParams(file: event.file));
+    final response = await addStoryToOurServerUseCase.call(
+        (AddStoryToOurServerParams(
+            filePath: event.path,
+            isVideo: event.isVideo,
+            link: state.storyLink)));
     response.fold((l) {
       emit(state.copyWith(
           uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.success));
@@ -321,19 +360,16 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
           showInRelease: true,
           timeShowing: Toast.LENGTH_LONG);
       if (isFailedTheFirstTime.contains('AddStoryToOurServerEvent')) {
-        isFailedTheFirstTime.remove('AddStoryToOurServerEvent');
       } else {
-        isFailedTheFirstTime.insert(
-            isFailedTheFirstTime.length, 'AddStoryToOurServerEvent');
+        isFailedTheFirstTime.insert(0, 'AddStoryToOurServerEvent');
         add(AddStoryToOurServerEvent(
             path: event.path,
-            file: event.file,
             isVideo: event.isVideo,
             width: event.width,
             height: event.height));
       }
     }, (r) {
-      add(GetStoryEvent());
+      add(GetStoryEvent(withPaginition: false));
       isFailedTheFirstTime.remove('AddStoryToOurServerEvent');
       String fileName = event.path.split('/').last;
       String mimeType = mime(fileName) ?? '';
@@ -349,6 +385,7 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
           userId: GetIt.I<PrefsRepository>().myStoriesId,
           height: event.height,
           width: event.width,
+          oneLink: state.storyLink,
           isVideo: isVideoFile ? 1 : 0,
           isPhoto: !isVideoFile ? 1 : 0,
           photoPath: !isVideoFile ? event.path : null,
@@ -356,9 +393,6 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
       r.fold((id) {
         if (state.storiesCollections.first.stories?[0].userId !=
             GetIt.I<PrefsRepository>().myStoriesId) {
-          print(
-              "FFFFFFFFFFFFFFFFFFFFFFFFFFFFWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWs2222222222222222222ssssssssssssssssssssssss");
-
           state.storiesCollections.insert(
               0,
               CollectionStoryModel(
@@ -367,9 +401,6 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
                   username: GetIt.I<PrefsRepository>().myStoriesName,
                   stories: [story.copyWith(id: id)]));
         } else {
-          print(
-              "FFFFFFFFFFFFFFFFFFFFFFFFFFFFWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW33333333333333333333sssssssssssss");
-
           List<Story> currentUserStories =
               List.of(state.storiesCollections.first.stories ?? []);
           currentUserStories.insert(
@@ -423,11 +454,10 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
 
   FutureOr<void> _IncreaseViewersEvent(
       IncreaseViewersEvent event, Emitter<StoryState> emit) async {
-    /*
     if (state.currentStoryToMakeItViewedInEachCollection
-        .contains(Tuple2(event.collectionId, event.storyId))) return;
-    List<Tuple2<String, String>>
-        currentStoryToMakeItViewedInEachCollection =
+            .contains(Tuple2(event.collectionId, event.storyId)) ||
+        GetIt.I<PrefsRepository>().isVerifiedPhone == false) return;
+    List<Tuple2<String, String>> currentStoryToMakeItViewedInEachCollection =
         List.of(state.currentStoryToMakeItViewedInEachCollection);
     currentStoryToMakeItViewedInEachCollection
         .add(Tuple2(event.collectionId, event.storyId));
@@ -460,7 +490,6 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
             return e;
           }).toList()));
     });
-  */
   }
 
   FutureOr<void> _onUpdateNameForUserInCollectionIfExistEvent(

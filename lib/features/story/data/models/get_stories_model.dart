@@ -239,9 +239,8 @@ class CollectionStoryModel {
         email: json["email"],
         stories: json["stories"] == null
             ? []
-            : List<Story>.from((json["stories"])!.map((x) => Story.fromJson(x)))
-                .reversed
-                .toList(),
+            : List<Story>.from(
+                (json["stories"])!.map((x) => Story.fromJson(x))),
         media: json["media"] == null
             ? []
             : List<dynamic>.from(json["media"]!.map((x) => x)),

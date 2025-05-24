@@ -79,7 +79,7 @@ class HelperFunctions {
     final documentDirectory = await getTemporaryDirectory();
 
     // إنشاء ملف مؤقت باسم فريد
-    final file = File('${documentDirectory.path}/temp_image.png');
+    final file = File('${documentDirectory.path}/${imageUrl.split("/").last}');
 
     // كتابة بيانات الصورة إلى الملف
     file.writeAsBytesSync(response.bodyBytes);
@@ -141,7 +141,7 @@ class HelperFunctions {
 
     if (permissionStatus == PermissionStatus.granted) {
       contacts = await FlutterContacts.getContacts(
-          withThumbnail: false, withPhoto: true, withProperties: true);
+          withThumbnail: false, withProperties: true);
     }
     List<Contact> myContacts = [];
     for (Contact contact in contacts) {
@@ -504,11 +504,11 @@ class HelperFunctions {
   }
 
   static String formatNumber({required double number}) {
-    String iso = (_prefsRepository.userCountryIsAvailable == 1
+    /*  String iso = (_prefsRepository.userCountryIsAvailable == 1
             ? _prefsRepository.userChoosedCountryIso
             : _prefsRepository.countryIso) ??
         "";
-    iso = iso.toUpperCase();
+    iso = iso.toUpperCase();*/
 
     // if (number >= 1e9) {
     //   String bilion = LanguageService.languageCode != "ar" ? 'B' : 'بليون';
@@ -526,36 +526,36 @@ class HelperFunctions {
     //   return '$result$milion';
     // } else
 
-    if (iso == 'SY' || iso == 'LB') {
-      String thousand = LanguageService.languageCode != "ar" ? 'K' : 'ألف';
-      String million = LanguageService.languageCode != "ar" ? 'M' : 'مليون';
-      if (iso == 'SY') {
-        if (number >= 1e3 && number < 1e6) {
-          String result = (((number + 999) ~/ 1000)).toStringAsFixed(
-              GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ??
-                  2);
-          ;
+    //if (iso == 'SY' || iso == 'LB') {
 
-          return '$result$thousand';
-        } else if (number == 0) {
-          return '0.0';
-        } else if (number < 1e3) {
-          return '1$thousand';
-        } else {
-          String result = (((number + 999) ~/ 1000) / 1000).toStringAsFixed(
-              (GetIt.I<HomeBloc>()
-                          .state
-                          .startingSetting
-                          ?.decimalPointSettings ??
-                      2) +
-                  3);
+    String thousand = LanguageService.languageCode != "ar" ? 'K' : 'K';
+    String million = LanguageService.languageCode != "ar" ? 'M' : 'مليون';
+    //if (iso == 'SY') {
+    if (number >= 1e4 && number < 1e6) {
+      String result = (((number + 999) ~/ 1000)).toStringAsFixed(
+          GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 2);
 
-          if ((result.lastIndexOf(RegExp(r'.000'))) != -1) {
-            result = result.substring(0, (result.lastIndexOf(RegExp(r'.000'))));
-          }
-          return '$result$million';
-        }
-      } else if (iso == 'LB') {
+      return '$result$thousand';
+    } else if (number == 0) {
+      return '0.0';
+    } else if (number < 1e5) {
+      return number.toStringAsFixed(
+          GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 2);
+
+      //'1$thousand';
+    } else {
+      String result = (((number + 999) ~/ 1000) / 1000).toStringAsFixed(
+          (GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ??
+                  2) +
+              3);
+
+      if ((result.lastIndexOf(RegExp(r'.000'))) != -1) {
+        result = result.substring(0, (result.lastIndexOf(RegExp(r'.000'))));
+      }
+      return '$result$million';
+    }
+    // }
+    /*else if (iso == 'LB') {
         if (number >= 1e4 && number < 1e6) {
           String result = (((number + 9999) ~/ 10000) * 10).toStringAsFixed(
               GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ??
@@ -586,13 +586,14 @@ class HelperFunctions {
                 2);
 
         return result;
-      }
-    } else {
+      }*/
+    //}
+    /*else {
       String result = number.toStringAsFixed(
           GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 2);
 
       return result;
-    }
+    }*/
   }
 
   static String orderFormatDate(DateTime dateTime) {

@@ -27,16 +27,15 @@ class UploadStoryUseCase
 }
 
 class UploadStoryParams {
-  UploadStoryParams({required this.file});
+  UploadStoryParams({required this.file, required this.link});
   File file;
-
+  String? link;
   Future<Map<String, dynamic>> map() async {
     String fileName = file.path.split('/').last;
     String mimeType = mime(fileName) ?? '';
     String mimee = mimeType.split('/')[0];
     int checkWitherVideoOrNot = mimee == 'image' ? 0 : 1;
     String type = mimeType.split('/')[1];
-
     return {
       'data': FormData.fromMap({
         "file": await MultipartFile.fromFile(
@@ -44,7 +43,8 @@ class UploadStoryParams {
           filename: fileName,
           contentType: MediaType(mimee, type),
         ),
-        "is_video": checkWitherVideoOrNot
+        "is_video": checkWitherVideoOrNot,
+        "link": link
       })
     };
   }

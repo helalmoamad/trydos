@@ -185,8 +185,8 @@ class _CartPageState extends State<CartPage> {
                         current.deleteItemInCartStatus ||
                     previous.getOldCartItemsStatus !=
                         current.getOldCartItemsStatus ||
-                    previous.convertItemFromOldcartToCartStatus !=
-                        current.convertItemFromOldcartToCartStatus ||
+                    previous.convertItemFromcartToOldCartStatus !=
+                        current.convertItemFromcartToOldCartStatus ||
                     previous.getListOfProductsFoundedInCartStatus !=
                         current.getListOfProductsFoundedInCartStatus ||
                     previous.hideItemInOldCartStatus !=
@@ -370,7 +370,9 @@ class _CartPageState extends State<CartPage> {
                         "";
 
                 state.cartCollection?.forEach((element) {
-                  totlalQuantity = totlalQuantity + (element.quantity ?? 0);
+                  totlalQuantity =
+                      (state.cartCollection?.length ?? 0).toDouble();
+                  // totlalQuantity + (element.quantity ?? 0);
 
                   //   totlalOfferPrice =
                   //       totlalOfferPrice + element.offerPrice! * element.quantity!;

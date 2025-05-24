@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:trydos/common/helper/add_lint_to_photo.dart';
+import 'package:trydos/common/helper/camera_screen_story.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../../common/helper/camera_screen.dart';
@@ -13,8 +15,10 @@ import '../../../service/firebase_analytics_service/firebase_analytics_service.d
 import '../my_text_widget.dart';
 
 class GalleryAndCameraDialogWidget extends StatelessWidget {
-  const GalleryAndCameraDialogWidget(
+  final bool? fromStory;
+  GalleryAndCameraDialogWidget(
       {super.key,
+      this.fromStory,
       required this.onChooseFileFromGalleryAction,
       required this.onChooseFileFromCameraAction});
 
@@ -23,6 +27,7 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    File? selectedFile;
     return AlertDialog(
 //    title: MyTextWidget('choose'),
       content: MyTextWidget(
@@ -35,11 +40,20 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
               onPressed: () async {
                 List<CameraDescription> cameras = [];
                 cameras = await availableCameras();
-                File? selectedFile = await Navigator.push<File>(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => CameraScreen(cameras)),
-                );
+                if (fromStory ?? false) {
+                  selectedFile = await Navigator.push<File>(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => CameraScreenStory(cameras)),
+                  );
+                } else {
+                  selectedFile = await Navigator.push<File>(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => CameraScreen(cameras)),
+                  );
+                }
+
                 onChooseFileFromCameraAction.call(selectedFile);
                 Navigator.of(context).pop();
                 /////////////////////////////////
@@ -64,10 +78,27 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
                           'Video length must not be longer than 59 seconds',
                           showInRelease: true);
                     } else {
-                      onChooseFileFromGalleryAction.call(assetEntity);
+                      if (fromStory ?? false) {
+                        File? gallaryFile = await assetEntity.file;
+                        Navigator.of(context).pushReplacement(PageRouteBuilder(
+                            pageBuilder: (context, animation,
+                                    secondaryAnimation) =>
+                                AddLinkToStory(
+                                    assetEntity?.type == AssetType.video
+                                        ? null
+                                        : gallaryFile,
+                                    assetEntity,
+                                    assetEntity?.type != AssetType.video
+                                        ? null
+                                        : gallaryFile,
+                                    onChooseFileFromGalleryAction)));
+                      } else {
+                        onChooseFileFromGalleryAction.call(assetEntity);
+                        Navigator.of(context).pop();
+                      }
                     }
                   }
-                  Navigator.of(context).pop();
+                  //    Navigator.of(context).pop();
                   /////////////////////////////////
                   FirebaseAnalyticsService.logEventForSession(
                     eventName: AnalyticsEventsConst.buttonClicked,

@@ -90,6 +90,8 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget build(BuildContext context) {
+    print(
+        "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF${widget.receiverPhoto}");
     FlutterError.onError = (FlutterErrorDetails error) {
       chatBloc.add(SendErrorChatToServerEvent(
           error: error.toString(), lastPage: " Profile_Page "));
@@ -132,8 +134,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               ],
                             ),
                             child: MyCachedNetworkImage(
-                              imageUrl:
-                                  ChatUrls.baseUrl + widget.receiverPhoto!,
+                              imageUrl: widget.receiverPhoto!,
                               imageFit: BoxFit.cover,
                               progressIndicatorBuilderWidget: TrydosLoader(),
                               height: 150.h,

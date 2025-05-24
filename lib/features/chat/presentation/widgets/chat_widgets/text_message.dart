@@ -448,7 +448,7 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                         ),
                                         widget.userMessagePhoto != null
                                             ? MyCachedNetworkImage(
-                                                imageUrl: ChatUrls.baseUrl +
+                                                imageUrl:
                                                     widget.userMessagePhoto!,
                                                 imageFit: BoxFit.cover,
                                                 radius: 8,

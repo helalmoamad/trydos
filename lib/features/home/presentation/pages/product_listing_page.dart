@@ -154,7 +154,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
   SpeechToText _speechToText = SpeechToText();
 
   final ValueNotifier<bool> isRecordeForSearchWithMic = ValueNotifier(false);
-
+  Timer? debounce;
   bool itExpendForFirst = true;
   String key = '';
   String keyWithoutFilter = '';
@@ -163,44 +163,49 @@ class _ProductListingPageState extends State<ProductListingPage> {
   Key gridViewKeyForRendering = UniqueKey();
   bool _speechEnabled = false;
   void _listenToScroll() {
-    if (boutiqueBloc.state.isExpandedForListingPage ?? false) return;
-    // if (scrollController.position.pixels <= 80) {
-    //   debugPrint(scrollController.position.pixels.toString());
-    //   appBloc.add(ShowOrHideBars(true));
-    // }
-    // else if(filterPageExpanded.value){
-    //   scrollController.jumpTo(80);
-    // }
-    if (setThisEnabledNotifier.value.item1 != -1) {
-      setThisEnabledNotifier.value = Tuple2(-1, -1);
+    if (debounce?.isActive ?? false) {
+      debounce!.cancel();
     }
-    if (scrollController.offset >=
-        (scrollController.position.maxScrollExtent * 0.6)) {
-      if (boutiqueBloc.state.isGettingProductListingWithPagination) return;
-
-      if (boutiqueBloc
-          .state
-          .getProductListingWithFiltersPaginationModels[
-              '${widget.boutiqueSlug}' +
-                  ((boutiqueBloc.state.cashedOrginalBoutique)
-                      ? 'withoutFilter'
-                      : "") +
-                  '${(widget.category ?? '')}']!
-          .hasReachedMax) {
-        return;
+    debounce = Timer(Duration(milliseconds: 300), () {
+      if (boutiqueBloc.state.isExpandedForListingPage ?? false) return;
+      // if (scrollController.position.pixels <= 80) {
+      //   debugPrint(scrollController.position.pixels.toString());
+      //   appBloc.add(ShowOrHideBars(true));
+      // }
+      // else if(filterPageExpanded.value){
+      //   scrollController.jumpTo(80);
+      // }
+      if (setThisEnabledNotifier.value.item1 != -1) {
+        setThisEnabledNotifier.value = Tuple2(-1, -1);
       }
-      boutiqueBloc.add(GetProductsWithFiltersEvent(
-          context: context,
-          fromNotification: widget.fromNotificationCategory,
-          limit: 10,
-          cashedOrginalBoutique: !widget.fromSearch,
-          boutiqueSlug: widget.boutiqueSlug,
-          getWithPagination: true,
-          fromSearch: widget.fromSearch,
-          category: widget.category,
-          searchText: controller.text,
-          offset: 2));
-    }
+      if (scrollController.offset >=
+          (scrollController.position.maxScrollExtent * 0.6)) {
+        if (boutiqueBloc.state.isGettingProductListingWithPagination) return;
+
+        if (boutiqueBloc
+            .state
+            .getProductListingWithFiltersPaginationModels[
+                '${widget.boutiqueSlug}' +
+                    ((boutiqueBloc.state.cashedOrginalBoutique)
+                        ? 'withoutFilter'
+                        : "") +
+                    '${(widget.category ?? '')}']!
+            .hasReachedMax) {
+          return;
+        }
+        boutiqueBloc.add(GetProductsWithFiltersEvent(
+            context: context,
+            fromNotification: widget.fromNotificationCategory,
+            limit: 10,
+            cashedOrginalBoutique: !widget.fromSearch,
+            boutiqueSlug: widget.boutiqueSlug,
+            getWithPagination: true,
+            fromSearch: widget.fromSearch,
+            category: widget.category,
+            searchText: controller.text,
+            offset: 2));
+      }
+    });
   }
 
   List<filter_products.Products> products = [];
@@ -318,6 +323,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
     super.initState();
     print("%%%%%%%%%${GetIt.I<PrefsRepository>().marketToken}0*");
     print("%%%%%%%%%${GetIt.I<PrefsRepository>().getFcmTokens}*");
+    print(
+        "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS${widget.boutiqueFirstBanner}dddddddddddddd${widget.withSlidingImages}");
     Future.delayed(Duration(seconds: 3), () {
       displayImageColors = true;
       delayDisplay = false;
@@ -743,7 +750,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                           false;
 
                                   return CustomScrollView(
-                                      //  cacheExtent: 600,
+                                      scrollBehavior: const ScrollBehavior()
+                                          .copyWith(overscroll: false),
+                                      cacheExtent: 500,
                                       key: TestVariables.kTestMode
                                           ? Key(WidgetsKeys
                                               .productListingScrollKey)
@@ -757,7 +766,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                   0 &&
                                               isExpanded
                                           ? NeverScrollableScrollPhysics()
-                                          : ClampingScrollPhysics(),
+                                          : null,
                                       slivers: [
                                         ValueListenableBuilder<int>(
                                             valueListenable:
@@ -797,12 +806,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                               child: BlocBuilder<HomeBloc, HomeState>(
                                                                                 buildWhen: (previous, current) => previous.getProductDetailWithoutSimilarRelatedProductsStatus != current.getProductDetailWithoutSimilarRelatedProductsStatus || previous.updateItemInCartStatus != current.updateItemInCartStatus || previous.addItemInCartStatus != current.addItemInCartStatus || previous.deleteItemInCartStatus != current.deleteItemInCartStatus || previous.getCartItemsStatus != current.getCartItemsStatus,
                                                                                 builder: (context, state) {
-                                                                                  int qtyItemsInCart = 0;
-                                                                                  state.cartCollection?.forEach(
+                                                                                  int qtyItemsInCart = state.cartCollection?.length ?? 0;
+                                                                                  /* state.cartCollection?.forEach(
                                                                                     (element) {
                                                                                       qtyItemsInCart = qtyItemsInCart + (element.quantity ?? 0);
                                                                                     },
-                                                                                  );
+                                                                                  );*/
 
                                                                                   return Container(
                                                                                     alignment: Alignment.center,
@@ -1481,7 +1490,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                     child: Stack(
                                                                                       children: [
                                                                                         Container(
-                                                                                          height: htmlHeight == 0 ? 0 : 135,
+                                                                                          height: 135,
                                                                                           width: 1.sw,
                                                                                           decoration: BoxDecoration(
                                                                                             borderRadius: BorderRadius.circular(15.0),
@@ -2149,8 +2158,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                   .isNullOrEmpty) &&
                                                           !state
                                                               .isGettingProductListingWithPagination) {
-                                                    print(
-                                                        "...............###################################################");
                                                     return ProductListingLoading();
                                                   }
                                                   if ((state
@@ -2241,7 +2248,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                           state
                                                                   .getProductListingWithFiltersPaginationModels[
                                                                       '${widget.boutiqueSlug}' +
-                                                                          '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}}'
+                                                                          '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
                                                                               '${(widget.category ?? '')}']
                                                                   ?.paginationStatus !=
                                                               PaginationStatus
@@ -2276,9 +2283,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                       .loading) &&
                                                           !state
                                                               .isGettingProductListingWithPagination) {
-                                                    print(
-                                                        "......${state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${(widget.category ?? '')}']?.paginationStatus == PaginationStatus.loading}222.##################################################");
-
+                                                    print("DDDDDDDDDDDDDDDDDDDDDDDDDDDD${'${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
+                                                        '${(widget.category ?? '')}'}DDDDDDDDDDDDDDDDDDDDD${state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
+                                                        '${(widget.category ?? '')}']?.paginationStatus}");
                                                     return ProductListingLoading(
                                                       key: TestVariables
                                                               .kTestMode
@@ -2592,6 +2599,70 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               previous.cartCollection !=
                                                   current.cartCollection,
                                           builder: (context, state) {
+                                            List<String> syncColorNames = [];
+                                            List<
+                                                    productListingModel
+                                                    .SyncColorImage>
+                                                syncColorImagesFromListing =
+                                                products[tapIndex]
+                                                        .syncColorImages ??
+                                                    [];
+                                            List<productListingModel.Color>?
+                                                colorsFromListing =
+                                                products[tapIndex].colors ?? [];
+
+                                            if (state
+                                                    .getProductDetailWithoutSimilarRelatedProductsStatus ==
+                                                GetProductDetailWithoutSimilarRelatedProductsStatus
+                                                    .success) {
+                                              for (var i = 0;
+                                                  i <
+                                                      (products[tapIndex]
+                                                              .syncColorImages
+                                                              ?.length ??
+                                                          0);
+                                                  i++) {
+                                                syncColorNames.add(
+                                                    products[tapIndex]
+                                                            .syncColorImages?[i]
+                                                            .colorName ??
+                                                        "");
+                                              }
+                                              state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                                      products[tapIndex]
+                                                          .productId
+                                                          .toString()]!
+                                                  .product
+                                                  ?.syncColorImages
+                                                  ?.forEach(
+                                                (element) {
+                                                  if (!syncColorNames.contains(
+                                                      element.colorName)) {
+                                                    syncColorImagesFromListing
+                                                        .add(element);
+                                                  }
+                                                },
+                                              );
+
+                                              state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                                      products[tapIndex]
+                                                          .productId
+                                                          .toString()]!
+                                                  .product
+                                                  ?.colors
+                                                  ?.forEach(
+                                                (element) {
+                                                  if (!(syncColorNames.contains(
+                                                      element.name))) {
+                                                    colorsFromListing
+                                                        .add(element);
+                                                  }
+                                                },
+                                              );
+                                            }
+
                                             String productId =
                                                 products[tapIndex]
                                                     .productId
@@ -3029,8 +3100,34 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                     currentSelectedColor]
                                                                 .name ??
                                                             "",
-                                                    productItem:
-                                                        products[tapIndex],
+                                                    productItem: products[tapIndex].copyWith(
+                                                        availableQuantity: state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()] == null
+                                                            ? 0
+                                                            : state
+                                                                .cachedProductWithoutRelatedProductsModel[
+                                                                    products[tapIndex]
+                                                                        .productId
+                                                                        .toString()]!
+                                                                .product
+                                                                ?.availableQuantity,
+                                                        choiceOptions: state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()] == null
+                                                            ? []
+                                                            : state
+                                                                .cachedProductWithoutRelatedProductsModel[
+                                                                    products[tapIndex]
+                                                                        .productId
+                                                                        .toString()]!
+                                                                .product
+                                                                ?.choiceOptions,
+                                                        colors:
+                                                            colorsFromListing,
+                                                        images: state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()] == null
+                                                            ? []
+                                                            : state
+                                                                .cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!
+                                                                .product
+                                                                ?.images,
+                                                        syncColorImages: syncColorImagesFromListing),
                                                     currentColor:
                                                         currentSelectedColor,
                                                     maxAllowedToAddCart: state

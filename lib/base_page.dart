@@ -367,6 +367,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 
   @override
   void initState() {
+    // GetIt.I<PrefsRepository>().remove()
     pages = [
       HomePage(isShowPanelForVerified: isShowPanelForVerified),
       const CartPage(),
@@ -436,6 +437,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 
   void onMessage() {
     FirebaseMessaging.onMessage.listen((event) {
+      print("NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN${event.data}");
       if (HandlingMarketNotifications.checkIfTheNotificationIsNotRelatedToChat(
           event)) {
         LocalNotificationService()
@@ -578,7 +580,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
         Message message = Message.fromJson(remoteMessage['message']);
         String prevMessageId = remoteMessage['prev_message_id'].toString();
         print(
-            "######222222222222222222222222222222222222222#############11111111111111111111111111111111111111111111#################################################${message.senderUserId}###################${message.receiverUserId}");
+            "######222222222222222222222222222222222222222#######${event.data['data']}######11111111111111111111111111111111111111111111#################################################${message.senderUserId}###################${message.receiverUserId}");
         chatBloc.add(AddChannelToChannels(message: message));
         chatBloc.add(ReceiveMessageEvent(
             message: message, prevMessageId: prevMessageId));
@@ -877,15 +879,16 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                                         (context,
                                                                             state) {
                                                                       int qtyItemsInCart =
-                                                                          0;
-                                                                      state
+                                                                          state.cartCollection?.length ??
+                                                                              0;
+                                                                      /*   state
                                                                           .cartCollection
                                                                           ?.forEach(
                                                                         (element) {
                                                                           qtyItemsInCart =
                                                                               qtyItemsInCart + (element.quantity ?? 0);
                                                                         },
-                                                                      );
+                                                                      );*/
 
                                                                       return Container(
                                                                         alignment:

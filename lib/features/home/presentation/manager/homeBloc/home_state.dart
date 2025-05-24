@@ -34,7 +34,7 @@ part 'home_state.g.dart';
 
 enum GetStartingSettingsStatus { init, loading, success, failure }
 
-enum GetCoutryBoundaryByIsoStatus { init, loading, success, failure }
+enum GetCountryBoundaryByIsoStatus { init, loading, success, failure }
 
 enum GetProductDetailWithoutSimilarRelatedProductsStatus {
   init,
@@ -62,7 +62,7 @@ enum CheckWithGetCartStatus {
 
 enum GetOLdCartItemsStatus { init, loading, success, failure }
 
-enum ConvertItemFromOldcartToCartStatus { init, loading, success, failure }
+enum ConvertItemFromcartToOldCartStatus { init, loading, success, failure }
 
 enum GetStoriesForProductStatus { init, loading, success, failure }
 
@@ -120,7 +120,8 @@ class HomeState extends Equatable {
       {this.storiesForProduct,
       this.getAndAddCountViewOfProductStatus = const {},
       this.addItemInCartStatus,
-      this.convertItemFromOldcartToCartStatus,
+      this.convertItemFromcartToOldCartStatus =
+          ConvertItemFromcartToOldCartStatus.init,
       this.hideItemInOldCartStatus,
       this.updateEmailappNotificationStatus,
       this.updateWhatsappNotificationStatus,
@@ -194,7 +195,7 @@ class HomeState extends Equatable {
       this.getNotificationTypeProductStatus,
       this.geColorsAndSizesForSearchModel,
       this.currentIndexForUpdateCart,
-      this.getCoutryBoundaryByIsoStatus,
+      this.getCountryBoundaryByIsoStatus,
       this.userInfo,
       this.listOfErrorSendedToMobileErrorLog = const [],
       this.cachedProductWithoutRelatedProductsModel = const {},
@@ -203,7 +204,7 @@ class HomeState extends Equatable {
 
   final GetFirebaseSettingForNotificationStatus?
       getFirebaseSettingForNotificationStatus;
-  final GetCoutryBoundaryByIsoStatus? getCoutryBoundaryByIsoStatus;
+  final GetCountryBoundaryByIsoStatus? getCountryBoundaryByIsoStatus;
   final FirebaseSettingForNotificationModel?
       firebaseSettingForNotificationModel;
   final UpdateProfileStatus? updateProfileStatus;
@@ -221,7 +222,7 @@ class HomeState extends Equatable {
       enableAddToCardAfterChangeVariantZero;
   final bool isChangedvariationWhenQtyZero;
   final bool? isChangedColorBeforeOpenPanel;
-  final ConvertItemFromOldcartToCartStatus? convertItemFromOldcartToCartStatus;
+  final ConvertItemFromcartToOldCartStatus convertItemFromcartToOldCartStatus;
 
   final GetNotificationTypeProductStatus? getNotificationTypeProductStatus;
   final HideItemInOldCartStatus? hideItemInOldCartStatus;
@@ -321,7 +322,7 @@ class HomeState extends Equatable {
         getCommentForProductStatus,
         productITemForCart,
         oldcartCollection,
-        convertItemFromOldcartToCartStatus,
+        convertItemFromcartToOldCartStatus,
         getOldCartModel,
         getOldCartItemsStatus,
         notificationTypeForProductModel,
@@ -397,7 +398,7 @@ class HomeState extends Equatable {
 
         isChangedvariationWhenQtyZero,
         getFirebaseSettingForNotificationStatus,
-        getCoutryBoundaryByIsoStatus,
+        getCountryBoundaryByIsoStatus,
         currentQuantityForCart,
         countryCoordinatesBorders,
         firebaseSettingForNotificationModel,
@@ -410,7 +411,7 @@ class HomeState extends Equatable {
       {final GetStartingSettingsStatus? getStartingSettingsStatus,
       final GetFirebaseSettingForNotificationStatus?
           getFirebaseSettingForNotificationStatus,
-      final GetCoutryBoundaryByIsoStatus? getCoutryBoundaryByIsoStatus,
+      final GetCountryBoundaryByIsoStatus? getCoutryBoundaryByIsoStatus,
       final FirebaseSettingForNotificationModel?
           firebaseSettingForNotificationModel,
       final bool? isChangedvariationWhenQtyZero,
@@ -433,8 +434,8 @@ class HomeState extends Equatable {
           checkAvailabilityProductCartStatus,
       final AddItemInCartStatus? addItemInCartStatus,
       final HideItemInOldCartStatus? hideItemInOldCartStatus,
-      final ConvertItemFromOldcartToCartStatus?
-          convertItemFromOldcartToCartStatus,
+      final ConvertItemFromcartToOldCartStatus?
+          convertItemFromcartToOldCartStatus,
       final GetNotificationTypeProductStatus? getNotificationTypeProductStatus,
       // final bool? moveUrlFromElasticToMarketServer,
       final UpdateItemInCartStatus? updateItemInCartStatus,
@@ -515,8 +516,8 @@ class HomeState extends Equatable {
       uploadUserPhotoCloudinaryStatus: uploadUserPhotoCloudinaryStatus ??
           this.uploadUserPhotoCloudinaryStatus,
       userInfo: userInfo ?? this.userInfo,
-      getCoutryBoundaryByIsoStatus:
-          getCoutryBoundaryByIsoStatus ?? this.getCoutryBoundaryByIsoStatus,
+      getCountryBoundaryByIsoStatus:
+          getCoutryBoundaryByIsoStatus ?? this.getCountryBoundaryByIsoStatus,
       countryCoordinatesBorders:
           countryCoordinatesBorders ?? this.countryCoordinatesBorders,
       hideItemInOldCartStatus:
@@ -567,8 +568,8 @@ class HomeState extends Equatable {
 
       addOrRemoveLikeOfProductStatus:
           addOrRemoveLikeOfProductStatus ?? this.addOrRemoveLikeOfProductStatus,
-      convertItemFromOldcartToCartStatus: convertItemFromOldcartToCartStatus ??
-          this.convertItemFromOldcartToCartStatus,
+      convertItemFromcartToOldCartStatus: convertItemFromcartToOldCartStatus ??
+          this.convertItemFromcartToOldCartStatus,
       popularSearchTerm: popularSearchTerm ?? this.popularSearchTerm,
       listOfErrorSendedToMobileErrorLog: listOfErrorSendedToMobileErrorLog ??
           this.listOfErrorSendedToMobileErrorLog,

@@ -343,6 +343,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                     .stories![state
                                         .currentStoryInEachCollection[
                                     widget.collectionIndex]!];
+
                                 if (!(story.isSeen ?? false)) {
                                   GetIt.I<StoryBloc>().add(IncreaseViewersEvent(
                                       collectionId: state

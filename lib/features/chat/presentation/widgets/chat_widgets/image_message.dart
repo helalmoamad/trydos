@@ -443,8 +443,7 @@ class _ImageMessageState extends State<ImageMessage> {
                                     ),
                                     widget.userMessagePhoto != null
                                         ? MyCachedNetworkImage(
-                                            imageUrl: ChatUrls.baseUrl +
-                                                widget.userMessagePhoto!,
+                                            imageUrl: widget.userMessagePhoto!,
                                             imageFit: BoxFit.fitWidth,
                                             progressIndicatorBuilderWidget:
                                                 TrydosLoader(),

@@ -293,7 +293,7 @@ void main() async {
     storageDirectory: await getApplicationDocumentsDirectory(),
   );
   isHydratedStorageInitialized = true;
-  PaintingBinding.instance.imageCache.maximumSizeBytes = 500 * 1024 * 1024;
+  // PaintingBinding.instance.imageCache.maximumSizeBytes = 400 * 1024 * 1024;
   HttpOverrides.global = MyHttpOverrides();
   await Future.wait([
     EasyLocalization.ensureInitialized(),
@@ -342,7 +342,13 @@ void main() async {
   await SentryFlutter.init(
     (options) {
       options.dsn = dotenv.env['SENTRY_DNS'];
-      options.tracesSampleRate = 1.0;
+      options.tracesSampleRate = 0.1;
+      options.beforeBreadcrumb = (bread, hint) {
+        if (bread?.category == "ui.scroll") {
+          return null;
+        }
+        return bread;
+      };
     },
     appRunner: () => runApp(DevicePreview(
         enabled: false // !kReleaseMode,

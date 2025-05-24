@@ -181,8 +181,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                 10.horizontalSpace,
                                 widget.senderUserImage != null
                                     ? MyCachedNetworkImage(
-                                        imageUrl: ChatUrls.baseUrl +
-                                            widget.senderUserImage!,
+                                        imageUrl: widget.senderUserImage!,
                                         imageFit: BoxFit.cover,
                                         progressIndicatorBuilderWidget:
                                             TrydosLoader(),
@@ -278,8 +277,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                     const Spacer(),
                                     widget.senderUserImage != null
                                         ? MyCachedNetworkImage(
-                                            imageUrl: ChatUrls.baseUrl +
-                                                widget.senderUserImage!,
+                                            imageUrl: widget.senderUserImage!,
                                             imageFit: BoxFit.cover,
                                             progressIndicatorBuilderWidget:
                                                 TrydosLoader(),
@@ -351,7 +349,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         const Spacer(),
                                         widget.senderUserImage != null
                                             ? MyCachedNetworkImage(
-                                                imageUrl: ChatUrls.baseUrl +
+                                                imageUrl:
                                                     widget.senderUserImage!,
                                                 imageFit: BoxFit.cover,
                                                 progressIndicatorBuilderWidget:
@@ -426,7 +424,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             const Spacer(),
                                             widget.senderUserImage != null
                                                 ? MyCachedNetworkImage(
-                                                    imageUrl: ChatUrls.baseUrl +
+                                                    imageUrl:
                                                         widget.senderUserImage!,
                                                     imageFit: BoxFit.cover,
                                                     withImageShadow: true,
@@ -498,7 +496,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             const Spacer(),
                                             widget.senderUserImage != null
                                                 ? MyCachedNetworkImage(
-                                                    imageUrl: ChatUrls.baseUrl +
+                                                    imageUrl:
                                                         widget.senderUserImage!,
                                                     imageFit: BoxFit.cover,
                                                     radius: 8,

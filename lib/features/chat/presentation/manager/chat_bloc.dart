@@ -119,8 +119,9 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     on<SaveContactsEvent>(
       _onSaveContactsEvent,
     );
-    on<GetChatsEvent>(_onGetChatsEvent,
-        transformer: throttleDroppable(throttleDuration));
+    on<GetChatsEvent>(
+      _onGetChatsEvent,
+    );
     on<ReceiveMissCallEvent>(
       _onReceiveMissCallEvent,
     );
@@ -627,17 +628,19 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       (r) {
         try {
           enableRequestGetChats = false;
-          if (r.data!.missedFcmToken) {
+          /* if (r.data!.missedFcmToken) {
             GetIt.I<AuthBloc>().add(StoreFcmTokenEvent(
                 userId: _prefsRepository.myChatId!,
                 serverName: ServerName.chat,
                 fcmToken: NotificationProcess.myFcmToken!));
-          }
+          }*/
+
           isFailedTheFirstTime.remove('GetChatsEvent');
           int unReadMessagesFromAllChats = 0;
           r.data!.chats!.forEach((element) {
             unReadMessagesFromAllChats += element.totalUnreadMessageCount!;
           });
+
           r.data!.pinnedChats!.forEach((element) {
             unReadMessagesFromAllChats += element.totalUnreadMessageCount!;
           });

@@ -187,6 +187,7 @@ abstract class LocaleKeys {
   static const click_to_show_all_discount = 'click_to_show_all_discount';
   static const back_to_home = 'back_to_home';
   static const confirm = 'confirm';
+  static const other = 'other';
   static const you_must_wait_for_some_seconds_before_try_again =
       'you_must_wait_for_some_seconds_before_try_again';
   static const it_has_been_along_time_since_your_account =
@@ -471,5 +472,9 @@ abstract class LocaleKeys {
       'you_dont_have_enough_credit_in_the_wallet';
   static const feature_product = 'feature_product';
   static const outside_available_area = 'outside_available_area';
-  static const other = 'other';
+  static const add_link_to_story = 'add_link_to_story';
+  static const you_must_zoom_on_map_dd_location =
+      'you_must_zoom_on_map_dd_location';
+  static const delay = 'delay';
+  static const shipping_cost = 'shipping_cost';
 }

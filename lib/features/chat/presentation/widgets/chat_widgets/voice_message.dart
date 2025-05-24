@@ -672,7 +672,7 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                         ),
                                         widget.userMessagePhoto != null
                                             ? MyCachedNetworkImage(
-                                                imageUrl: ChatUrls.baseUrl +
+                                                imageUrl:
                                                     widget.userMessagePhoto!,
                                                 progressIndicatorBuilderWidget:
                                                     TrydosLoader(),

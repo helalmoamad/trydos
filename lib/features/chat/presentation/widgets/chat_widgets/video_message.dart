@@ -353,8 +353,7 @@ class _VideoMessageState extends State<VideoMessage> {
                                     ),
                                     widget.userMessagePhoto != null
                                         ? MyCachedNetworkImage(
-                                            imageUrl: ChatUrls.baseUrl +
-                                                widget.userMessagePhoto!,
+                                            imageUrl: widget.userMessagePhoto!,
                                             imageFit: BoxFit.cover,
                                             progressIndicatorBuilderWidget:
                                                 TrydosLoader(),

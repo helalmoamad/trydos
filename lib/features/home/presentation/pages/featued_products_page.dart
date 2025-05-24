@@ -169,13 +169,14 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                               previous.getCartItemsStatus !=
                                   current.getCartItemsStatus,
                           builder: (context, state) {
-                            int qtyItemsInCart = 0;
-                            state.cartCollection?.forEach(
+                            int qtyItemsInCart =
+                                state.cartCollection?.length ?? 0;
+                            /*  state.cartCollection?.forEach(
                               (element) {
                                 qtyItemsInCart =
                                     qtyItemsInCart + (element.quantity ?? 0);
                               },
-                            );
+                            );*/
 
                             return Container(
                               alignment: Alignment.center,
@@ -486,7 +487,65 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                             .toString();
                                         String productSlug =
                                             products[tapIndex].slug.toString();
+                                        List<String> syncColorNames = [];
+                                        List<filter.SyncColorImage>
+                                            syncColorImagesFromListing =
+                                            products[tapIndex]
+                                                    .syncColorImages ??
+                                                [];
+                                        List<filter.Color>? colorsFromListing =
+                                            products[tapIndex].colors ?? [];
 
+                                        if (state
+                                                .getProductDetailWithoutSimilarRelatedProductsStatus ==
+                                            GetProductDetailWithoutSimilarRelatedProductsStatus
+                                                .success) {
+                                          for (var i = 0;
+                                              i <
+                                                  (products[tapIndex]
+                                                          .syncColorImages
+                                                          ?.length ??
+                                                      0);
+                                              i++) {
+                                            syncColorNames.add(
+                                                products[tapIndex]
+                                                        .syncColorImages?[i]
+                                                        .colorName ??
+                                                    "");
+                                          }
+                                          state
+                                              .cachedProductWithoutRelatedProductsModel[
+                                                  products[tapIndex]
+                                                      .productId
+                                                      .toString()]!
+                                              .product
+                                              ?.syncColorImages
+                                              ?.forEach(
+                                            (element) {
+                                              if (!syncColorNames.contains(
+                                                  element.colorName)) {
+                                                syncColorImagesFromListing
+                                                    .add(element);
+                                              }
+                                            },
+                                          );
+
+                                          state
+                                              .cachedProductWithoutRelatedProductsModel[
+                                                  products[tapIndex]
+                                                      .productId
+                                                      .toString()]!
+                                              .product
+                                              ?.colors
+                                              ?.forEach(
+                                            (element) {
+                                              if (!(syncColorNames
+                                                  .contains(element.name))) {
+                                                colorsFromListing.add(element);
+                                              }
+                                            },
+                                          );
+                                        }
                                         currentSelectedColor =
                                             state.currentSelectedColorForEveryProduct[
                                                     productSlug] ??
@@ -856,7 +915,53 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                                                 currentSelectedColor]
                                                             .name ??
                                                         "",
-                                                productItem: products[tapIndex],
+                                                productItem:
+                                                    products[tapIndex].copyWith(
+                                                  availableQuantity: state
+                                                                  .cachedProductWithoutRelatedProductsModel[
+                                                              products[tapIndex]
+                                                                  .productId
+                                                                  .toString()] ==
+                                                          null
+                                                      ? 0
+                                                      : state
+                                                          .cachedProductWithoutRelatedProductsModel[
+                                                              products[tapIndex]
+                                                                  .productId
+                                                                  .toString()]!
+                                                          .product
+                                                          ?.availableQuantity,
+                                                  choiceOptions: state
+                                                                  .cachedProductWithoutRelatedProductsModel[
+                                                              products[tapIndex]
+                                                                  .productId
+                                                                  .toString()] ==
+                                                          null
+                                                      ? []
+                                                      : state
+                                                          .cachedProductWithoutRelatedProductsModel[
+                                                              products[tapIndex]
+                                                                  .productId
+                                                                  .toString()]!
+                                                          .product
+                                                          ?.choiceOptions,
+                                                  colors: colorsFromListing,
+                                                  images: state.cachedProductWithoutRelatedProductsModel[
+                                                              products[tapIndex]
+                                                                  .productId
+                                                                  .toString()] ==
+                                                          null
+                                                      ? []
+                                                      : state
+                                                          .cachedProductWithoutRelatedProductsModel[
+                                                              products[tapIndex]
+                                                                  .productId
+                                                                  .toString()]!
+                                                          .product
+                                                          ?.images,
+                                                  syncColorImages:
+                                                      syncColorImagesFromListing,
+                                                ),
                                                 currentColor:
                                                     currentSelectedColor,
                                                 maxAllowedToAddCart: state

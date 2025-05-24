@@ -41,11 +41,10 @@ class CallMessage extends StatelessWidget {
         ),
         child: Row(
           mainAxisAlignment:
-          isSent ? MainAxisAlignment.end : MainAxisAlignment.start,
+              isSent ? MainAxisAlignment.end : MainAxisAlignment.start,
           children: [
             Stack(
-              alignment: isSent ? Alignment.centerRight : Alignment
-            .centerLeft,
+              alignment: isSent ? Alignment.centerRight : Alignment.centerLeft,
               children: [
                 Container(
                   constraints: const BoxConstraints(minHeight: 50),
@@ -59,7 +58,8 @@ class CallMessage extends StatelessWidget {
                             blurRadius: 6)
                       ]),
                   child: Padding(
-                    padding: HWEdgeInsets.only(left: isSent ? 20.w : 40.w,
+                    padding: HWEdgeInsets.only(
+                        left: isSent ? 20.w : 40.w,
                         right: isSent ? 40.w : 20.w),
                     child: Center(
                       child: Directionality(
@@ -102,7 +102,7 @@ class CallMessage extends StatelessWidget {
                       ),
                       userMessagePhoto != null
                           ? MyCachedNetworkImage(
-                              imageUrl: ChatUrls.baseUrl + userMessagePhoto!,
+                              imageUrl: userMessagePhoto!,
                               progressIndicatorBuilderWidget: TrydosLoader(),
                               imageFit: BoxFit.cover,
                               radius: 8,
@@ -112,10 +112,11 @@ class CallMessage extends StatelessWidget {
                           : NoImageWidget(
                               width: 30.w,
                               height: 30,
-                              textStyle: context.textTheme.titleMedium?.br.copyWith(
-                                  color: const Color(0xff6638FF),
-                                  letterSpacing: 0.18,
-                                  height: 1.33),
+                              textStyle: context.textTheme.titleMedium?.br
+                                  .copyWith(
+                                      color: const Color(0xff6638FF),
+                                      letterSpacing: 0.18,
+                                      height: 1.33),
                               radius: 8,
                               name: userMessageName)
                     ],

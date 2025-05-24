@@ -116,8 +116,7 @@ class _AnswerCallState extends State<AnswerCall> {
                                 ],
                               ),
                               child: MyCachedNetworkImage(
-                                  imageUrl:
-                                      ChatUrls.baseUrl + widget.callerPhoto!,
+                                  imageUrl: widget.callerPhoto!,
                                   imageFit: BoxFit.cover,
                                   progressIndicatorBuilderWidget:
                                       TrydosLoader(),

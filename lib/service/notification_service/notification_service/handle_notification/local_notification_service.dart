@@ -50,15 +50,17 @@ class LocalNotificationService {
       android: androidInitializationSettings,
       iOS: iosInitializationSettings,
     );
-    await _localNotificationPlugin
-        .getNotificationAppLaunchDetails()
-        .then((value) {
-      if ((value?.notificationResponse?.payload?.split(",,,").length ?? 0) >
-          0) {
-        GetIt.I<PrefsRepository>().setNotificationTypesOfMarketFromTerminated(
-            value?.notificationResponse?.payload?.split(',,,')[0] ?? "");
-      }
-    });
+    try {
+      await _localNotificationPlugin
+          .getNotificationAppLaunchDetails()
+          .then((value) {
+        if ((value?.notificationResponse?.payload?.split(",,,").length ?? 0) >
+            0) {
+          GetIt.I<PrefsRepository>().setNotificationTypesOfMarketFromTerminated(
+              value?.notificationResponse?.payload?.split(',,,')[0] ?? "");
+        }
+      });
+    } catch (e) {}
     await _localNotificationPlugin
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()

@@ -99,6 +99,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                 (element) => element.userId != _prefsRepository.myChatId)
             .user
         : null;
+
     String receiverName = HelperFunctions.getTheFirstTwoLettersOfName(
             widget.chat.channelName ?? LocaleKeys.no_channal_name.tr()),
         fullReceiverName =
@@ -338,8 +339,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                             BorderRadius.circular(12.0),
                                       ),
                                       child: MyCachedNetworkImage(
-                                          imageUrl: ChatUrls.baseUrl +
-                                              receiver?.photoPath,
+                                          imageUrl: receiver?.photoPath,
                                           imageFit: BoxFit.cover,
                                           height: 80.h,
                                           width: 60.w),

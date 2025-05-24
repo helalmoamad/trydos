@@ -239,82 +239,101 @@ class _SearchResultState extends ThemeState<SearchResult> {
                   shrinkWrap: true,
                   physics: ClampingScrollPhysics(),
                   padding: EdgeInsets.symmetric(horizontal: 10),
-                  itemBuilder: (ctx, index) => Stack(
-                    alignment: Alignment.centerLeft,
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          BlocProvider.of<HomeBloc>(context).add(
-                              AddSearchTextToHistoryEvent(
-                                  searchTitle: widget.controller.text));
-                          HelperFunctions.slidingNavigation(
-                              context,
-                              ProductDetailsPage(
-                                productItem: state
+                  itemBuilder: (ctx, index) {
+                    String filePath = ((state
                                     .getProductListingWithFiltersPaginationModels[
                                         key]!
-                                    .items[index],
-                              ));
-                        },
-                        child: Container(
-                            height: 50,
-                            width: 1.sw,
-                            padding: EdgeInsets.symmetric(horizontal: 10),
-                            decoration: BoxDecoration(
-                                color: Color(0xffF8F8F8),
-                                borderRadius: BorderRadius.circular(15)),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SizedBox(
-                                  width: 35,
-                                ),
-                                Flexible(
-                                  child: MyTextWidget(
-                                    state
-                                        .getProductListingWithFiltersPaginationModels[
-                                            key]!
-                                        .items[index]
-                                        .name!,
-                                    textAlign: TextAlign.start,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                    style: context.textTheme.titleLarge?.lq
-                                        .copyWith(
-                                            height: 15 / 12,
-                                            color: Color(0xffC4C2C2)),
-                                  ),
-                                ),
-                                SizedBox(width: 8),
-                              ],
-                            )),
-                      ),
-                      Container(
-                        height: 50,
-                        width: 35,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(
-                                color: Color(0xff388CFF), width: 0.3),
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(15),
-                              topRight: Radius.circular(5),
-                              bottomLeft: Radius.circular(15),
-                              bottomRight: Radius.circular(5),
-                            ),
-                            image: DecorationImage(
-                                fit: BoxFit.contain,
-                                image: NetworkImage(
-                                  state
+                                    .items[index]
+                                    .syncColorImages
+                                    ?.length ??
+                                0) >
+                            0)
+                        ? (state
+                                .getProductListingWithFiltersPaginationModels[
+                                    key]!
+                                .items[index]
+                                .syncColorImages?[0]
+                                .images?[0]
+                                .filePath) ??
+                            ""
+                        : state
+                            .getProductListingWithFiltersPaginationModels[key]!
+                            .items[index]
+                            .images![0]
+                            .filePath!;
+
+                    return Stack(
+                      alignment: Alignment.centerLeft,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            BlocProvider.of<HomeBloc>(context).add(
+                                AddSearchTextToHistoryEvent(
+                                    searchTitle: widget.controller.text));
+                            HelperFunctions.slidingNavigation(
+                                context,
+                                ProductDetailsPage(
+                                  productItem: state
                                       .getProductListingWithFiltersPaginationModels[
                                           key]!
-                                      .items[index]
-                                      .images![0]
-                                      .filePath!,
-                                ))),
-                      )
-                    ],
-                  ),
+                                      .items[index],
+                                ));
+                          },
+                          child: Container(
+                              height: 50,
+                              width: 1.sw,
+                              padding: EdgeInsets.symmetric(horizontal: 10),
+                              decoration: BoxDecoration(
+                                  color: Color(0xffF8F8F8),
+                                  borderRadius: BorderRadius.circular(15)),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SizedBox(
+                                    width: 35,
+                                  ),
+                                  Flexible(
+                                    child: MyTextWidget(
+                                      state
+                                          .getProductListingWithFiltersPaginationModels[
+                                              key]!
+                                          .items[index]
+                                          .name!,
+                                      textAlign: TextAlign.start,
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                      style: context.textTheme.titleLarge?.lq
+                                          .copyWith(
+                                              height: 15 / 12,
+                                              color: Color(0xffC4C2C2)),
+                                    ),
+                                  ),
+                                  SizedBox(width: 8),
+                                ],
+                              )),
+                        ),
+                        Container(
+                          height: 50,
+                          width: 35,
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border.all(
+                                  color: Color(0xff388CFF), width: 0.3),
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(15),
+                                topRight: Radius.circular(5),
+                                bottomLeft: Radius.circular(15),
+                                bottomRight: Radius.circular(5),
+                              ),
+                              image: DecorationImage(
+                                  fit: BoxFit.contain,
+                                  image: NetworkImage(
+                                    filePath,
+                                  ))),
+                        )
+                      ],
+                    );
+                  },
                   itemCount: state
                       .getProductListingWithFiltersPaginationModels[key]!
                       .items

@@ -38,7 +38,8 @@ class _SplashPageState extends State<SplashPage> {
 
     appBloc.add(ChangeTab(-1));
     GetIt.I<HomeBloc>().add(GetAllowedCountriesEvent());
-    BlocProvider.of<StoryBloc>(context).add(GetStoryEvent());
+    BlocProvider.of<StoryBloc>(context)
+        .add(GetStoryEvent(withPaginition: false));
 
     checkAndNavigationCallingPage(context, fromTerminated: true,
         whereToNavigationAfterCheck: () {

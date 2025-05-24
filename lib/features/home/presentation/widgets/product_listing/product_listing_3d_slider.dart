@@ -125,7 +125,9 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
           ? (syncColorImageList ?? [])
           : [])
     ];
-
+    if (widget.fromHomePage) {
+      syncColorImageList = [];
+    }
     Map<int, int> indicatorValues = {0: 0};
     for (int i = 1; i < syncColorImageList!.length; i++) {
       indicatorValues[i] = 0;

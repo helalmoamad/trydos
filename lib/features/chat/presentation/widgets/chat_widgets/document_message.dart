@@ -427,8 +427,7 @@ class _DocumentMessageState extends State<DocumentMessage> {
                                     ),
                                     widget.userMessagePhoto != null
                                         ? MyCachedNetworkImage(
-                                            imageUrl: ChatUrls.baseUrl +
-                                                widget.userMessagePhoto!,
+                                            imageUrl: widget.userMessagePhoto!,
                                             progressIndicatorBuilderWidget:
                                                 TrydosLoader(),
                                             imageFit: BoxFit.cover,

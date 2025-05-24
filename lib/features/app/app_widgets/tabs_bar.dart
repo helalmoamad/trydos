@@ -877,7 +877,13 @@ class _TabsBarState extends State<TabsBar> {
                                 if (state.currentIndex != 4) {
                                   return Container(
                                     padding: EdgeInsets.only(
-                                      left: 15,
+                                      left: LanguageService.languageCode == "ar"
+                                          ? 15
+                                          : 0,
+                                      right:
+                                          LanguageService.languageCode != "ar"
+                                              ? 15
+                                              : 0,
                                     ),
                                     width: 1.sw - 40,
                                     height: 80,
@@ -909,7 +915,7 @@ class _TabsBarState extends State<TabsBar> {
                                                 : null,
                                             padding:
                                                 HWEdgeInsetsDirectional.only(
-                                                    end: 6),
+                                                    end: 15),
                                             child: InkWell(
                                               onTap: () {
                                                 if (BlocProvider.of<AppBloc>(
@@ -991,7 +997,7 @@ class _TabsBarState extends State<TabsBar> {
                                                                 .flatPhotoPath!
                                                                 .filePath
                                                                 .toString(),
-                                                            height: 20,
+                                                            height: 24,
                                                             // color: state.tabIndex ==
                                                             //         index
                                                             //     ? Colors.black
@@ -1024,7 +1030,7 @@ class _TabsBarState extends State<TabsBar> {
                                                       );
                                                     },
                                                   ),
-                                                  4.verticalSpace,
+                                                  2.verticalSpace,
                                                   MyTextWidget(
                                                     mainCategory.name
                                                         .toString(),

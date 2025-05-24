@@ -113,8 +113,7 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
                                         ],
                                       ),
                                       child: MyCachedNetworkImage(
-                                          imageUrl: ChatUrls.baseUrl +
-                                              widget.receiverPhoto!,
+                                          imageUrl: widget.receiverPhoto!,
                                           imageFit: BoxFit.cover,
                                           progressIndicatorBuilderWidget:
                                               TrydosLoader(),
@@ -124,7 +123,8 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
                                   : NoImageWidget(
                                       width: 60.w,
                                       height: 80.h,
-                                      textStyle: context.textTheme.bodyMedium?.br
+                                      textStyle: context
+                                          .textTheme.bodyMedium?.br
                                           .copyWith(
                                               color: const Color(0xff6638FF),
                                               letterSpacing: 0.18,
