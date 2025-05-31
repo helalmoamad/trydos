@@ -27,8 +27,8 @@ class AuthRemoteDatasource {
         endpoint: ChatEndPoints.loginEP,
         data: params,
         response: ResponseValue<LoginToChatResponseModel>(
-            fromJson: (response) =>
-                LoginToChatResponseModel.fromJson(response)),
+          fromJson: (response) => LoginToChatResponseModel.fromJson(response),
+        ),
       ),
     );
     return loginToChat();

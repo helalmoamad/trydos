@@ -143,15 +143,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   FutureOr<void> _onLoginToChatEvent(
-      LoginToChatEvent event, Emitter<AuthState> emit) async {
+    LoginToChatEvent event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(state.copyWith(loginToChatStatus: LoginToChatStatus.loading));
 
     final response = await loginToChatUseCase(
       LoginToChatParams(
-          mobilePhone: event.mobilePhone,
-          otpIdToken: event.otpIdToken,
-          name: event.name,
-          originalUserId: event.originalUserId),
+        mobilePhone: event.mobilePhone,
+        otpIdToken: event.otpIdToken,
+        name: event.name,
+        originalUserId: event.originalUserId,
+      ),
     );
     response.fold(
       (l) {
@@ -187,12 +190,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           _prefsRepository.setMyChatName(name ?? 'No Name');
           _prefsRepository.setMyChatPhoto(photo);
         }
-        print(
-            "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd${checkToken}8888${token}.");
-        add(StoreFcmTokenEvent(
+
+        print("ddddddddddddd ${checkToken}8888 ${token}.");
+
+        add(
+          StoreFcmTokenEvent(
             userId: id!,
             fcmToken: event.fcmToken,
-            serverName: ServerName.chat));
+            serverName: ServerName.chat,
+          ),
+        );
+
         apisMustNotToRequest.remove('GetChatsEvent');
         GetIt.I<ChatBloc>().add(GetChatsEvent(limit: 10));
       },
