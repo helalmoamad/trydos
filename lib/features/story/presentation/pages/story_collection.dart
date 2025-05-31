@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:trydos/base_page.dart';
@@ -573,64 +574,86 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                     ),
                     Align(
                       alignment: Alignment.topLeft,
-                      child: Row(mainAxisSize: MainAxisSize.min, children: [
-                        IconButton(
-                          icon: const Icon(
-                            Icons.arrow_back,
-                            size: 30.0,
-                            color: Colors.white,
-                          ),
-                          onPressed: () => Navigator.of(context).pop(),
-                        ),
-                        Container(
-                          width: 40,
-                          height: 40,
-                          clipBehavior: Clip.hardEdge,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20)),
-                          child: state.storiesCollections[widget.collectionIndex].photoPath == null
-                              ? NoImageWidget(
-                                  height: 40,
-                                  width: 40,
-                                  textStyle: context.textTheme.bodyMedium?.br
-                                      .copyWith(
-                                          color: const Color(0xff6638FF),
-                                          letterSpacing: 0.18,
-                                          height: 1.33),
-                                  name: state
+                      child: Column(
+                        children: [
+                          Row(mainAxisSize: MainAxisSize.min, children: [
+                            IconButton(
+                              icon: const Icon(
+                                Icons.arrow_back,
+                                size: 30.0,
+                                color: Colors.white,
+                              ),
+                              onPressed: () => Navigator.of(context).pop(),
+                            ),
+                            Container(
+                              width: 40,
+                              height: 40,
+                              clipBehavior: Clip.hardEdge,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20)),
+                              child: state.storiesCollections[widget.collectionIndex].photoPath == null
+                                  ? NoImageWidget(
+                                      height: 40,
+                                      width: 40,
+                                      textStyle: context
+                                          .textTheme.bodyMedium?.br
+                                          .copyWith(
+                                              color: const Color(0xff6638FF),
+                                              letterSpacing: 0.18,
+                                              height: 1.33),
+                                      name: state.storiesCollections[widget.collectionIndex].name == null
+                                          ? LocaleKeys.uk.tr()
+                                          : HelperFunctions.getTheFirstTwoLettersOfName(
+                                              state
+                                                  .storiesCollections[
+                                                      widget.collectionIndex]
+                                                  .name!))
+                                  : MyCachedNetworkImage(
+                                      width: 40,
+                                      height: 40,
+                                      imageFit: BoxFit.cover,
+                                      imageUrl: ((state
+                                                  .storiesCollections[widget.collectionIndex]
+                                                  .photoPath
+                                                  .toString()
+                                                  .contains("cloudinary"))
+                                              ? ""
+                                              : "${dotenv.env['Profile_Images_Url']}") +
+                                          state.storiesCollections[widget.collectionIndex].photoPath),
+                            ),
+                            Padding(
+                              padding: EdgeInsetsDirectional.only(start: 10),
+                              child: MyTextWidget(
+                                  style: textTheme.bodyLarge?.rr
+                                      .copyWith(color: Colors.white),
+                                  state
                                               .storiesCollections[
                                                   widget.collectionIndex]
                                               .name ==
                                           null
                                       ? LocaleKeys.uk.tr()
-                                      : HelperFunctions.getTheFirstTwoLettersOfName(
-                                          state
-                                              .storiesCollections[
-                                                  widget.collectionIndex]
-                                              .name!))
-                              : MyCachedNetworkImage(
-                                  width: 40,
-                                  height: 40,
-                                  imageFit: BoxFit.cover,
-                                  imageUrl: state
-                                      .storiesCollections[widget.collectionIndex]
-                                      .photoPath),
-                        ),
-                        Padding(
-                          padding: EdgeInsetsDirectional.only(start: 10),
-                          child: MyTextWidget(
-                              style: textTheme.bodyLarge?.rr
-                                  .copyWith(color: Colors.white),
-                              state.storiesCollections[widget.collectionIndex]
-                                          .name ==
-                                      null
-                                  ? LocaleKeys.uk.tr()
-                                  : state
-                                      .storiesCollections[
-                                          widget.collectionIndex]
-                                      .name!),
-                        )
-                      ]),
+                                      : state
+                                          .storiesCollections[
+                                              widget.collectionIndex]
+                                          .name!),
+                            )
+                          ]),
+                          Container(
+                            width: 200,
+                            height: 20,
+                            child: Text(
+                              "${(HelperFunctions.getZonedDateWithoutUtcForm(state.storiesCollections[widget.collectionIndex].stories![state.currentStoryInEachCollection[widget.collectionIndex]!].createdAt ?? "")).toString().split(".").first}",
+                              textAlign: TextAlign.center,
+                              maxLines: 1,
+                              style: context.textTheme.bodyMedium?.ba.copyWith(
+                                fontSize: 12,
+                                color: Colors.blue,
+                                letterSpacing: 0.18,
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ])),
             ],

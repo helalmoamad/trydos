@@ -97,6 +97,7 @@ class StartingSetting {
   final List<Language>? languages;
   final int? androidMinVersion;
   final int? iosMinVersion;
+  final int? shippingDay;
   final int? shippingCost;
   final List<OrderStatusModel>? orderGroupStatuses;
   final List<OrderStatusModel>? orderStatuses;
@@ -105,6 +106,7 @@ class StartingSetting {
     this.notificationTypes,
     this.decimalPointSettings,
     this.languages,
+    this.shippingDay,
     this.androidMinVersion,
     this.iosMinVersion,
     this.shippingCost,
@@ -119,6 +121,7 @@ class StartingSetting {
     int? androidMinVersion,
     int? iosMinVersion,
     int? shippingCost,
+    int? shippingDay,
     List<OrderStatusModel>? orderGroupStatuses,
     List<OrderStatusModel>? orderStatuses,
   }) =>
@@ -129,6 +132,7 @@ class StartingSetting {
         androidMinVersion: androidMinVersion ?? this.androidMinVersion,
         iosMinVersion: iosMinVersion ?? this.iosMinVersion,
         shippingCost: shippingCost ?? this.shippingCost,
+        shippingDay: shippingDay ?? this.shippingDay,
         orderGroupStatuses: orderGroupStatuses ?? this.orderGroupStatuses,
         orderStatuses: orderStatuses ?? this.orderStatuses,
       );
@@ -147,6 +151,7 @@ class StartingSetting {
         androidMinVersion: json["android_min_version"],
         iosMinVersion: json["ios_min_version"],
         shippingCost: json["shipping_cost"],
+        shippingDay: json["shipping_day"],
         orderGroupStatuses: json["order_group_statuses"] == null
             ? []
             : List<OrderStatusModel>.from(json["order_group_statuses"]!
@@ -168,6 +173,7 @@ class StartingSetting {
         "android_min_version": androidMinVersion,
         "ios_min_version": iosMinVersion,
         "shipping_cost": shippingCost,
+        "shipping_day": shippingDay,
         "order_group_statuses": orderGroupStatuses == null
             ? []
             : List<dynamic>.from(orderGroupStatuses!.map((x) => x.toJson())),

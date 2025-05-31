@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -57,9 +58,6 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
       print(error.toString());
     };
     return BlocBuilder<StoryBloc, StoryState>(builder: (context, state) {
-      print("${state.storiesCollections[widget.index].name}" +
-          "11111111111111111111111111111111111555555555555555555555555555555555555555555555555555555");
-
       bool isLastStoryShowed =
           state.storiesCollections[widget.index].stories!.length ==
               (firstWhereNotShowedStoryCollection(
@@ -246,8 +244,7 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
                                                                 letterSpacing:
                                                                     0.18,
                                                                 height: 1.33),
-                                                        name: state.storiesCollections[widget.index].name ==
-                                                                null
+                                                        name: state.storiesCollections[widget.index].name == null
                                                             ? LocaleKeys.uk.tr()
                                                             : HelperFunctions.getTheFirstTwoLettersOfName(state
                                                                 .storiesCollections[
@@ -256,10 +253,21 @@ class _StoryItemWidgetState extends ThemeState<StoryItemWidget> {
                                                     : MyCachedNetworkImage(
                                                         height: 28,
                                                         width: 28,
-                                                        imageUrl: state
-                                                            .storiesCollections[
-                                                                widget.index]
-                                                            .photoPath,
+                                                        imageUrl: (state
+                                                                    .storiesCollections[
+                                                                        widget
+                                                                            .index]
+                                                                    .photoPath
+                                                                    .toString()
+                                                                    .contains(
+                                                                        "cloudinary")
+                                                                ? ""
+                                                                : "${dotenv.env['Profile_Images_Url']}") +
+                                                            state
+                                                                .storiesCollections[
+                                                                    widget
+                                                                        .index]
+                                                                .photoPath,
                                                         imageFit: BoxFit.cover,
                                                       ),
                                               ),

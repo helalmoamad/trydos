@@ -909,7 +909,7 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                                         .flatPhotoPath!
                                                         .filePath
                                                         .toString(),
-                                                    width: 10,
+                                                    // width: 10,
                                                     height: 10)
                                                 : SizedBox.shrink()),
                                   ),

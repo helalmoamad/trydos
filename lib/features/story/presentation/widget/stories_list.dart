@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:dartz/dartz.dart' as dartz;
 import 'package:easy_localization/easy_localization.dart';
@@ -12,6 +13,7 @@ import 'package:overscroll_pop/overscroll_pop.dart';
 import 'package:shimmer/shimmer.dart';
 
 import 'package:trydos/common/test_utils/test_var.dart';
+import 'package:trydos/core/utils/extensions/string.dart';
 import 'package:trydos/features/app/app_widgets/gallery_and_camera_dialog_widget.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/app_widgets/update_user_name_widget.dart';
@@ -49,32 +51,37 @@ class _StoriesListState extends State<StoriesList> {
       ValueNotifier(dartz.Tuple2(-1, -1));
 
   double _lastScrollPosition = 0;
-
+  Timer? debounce;
   @override
   void initState() {
     listViewController.addListener(
       () {
-        if (listViewController.offset >=
-            (listViewController.position.maxScrollExtent * 0.6)) {
-          BlocProvider.of<StoryBloc>(context)
-              .add(GetStoryEvent(withPaginition: true));
+        if (debounce?.isActive ?? false) {
+          debounce!.cancel();
         }
-        if (resizeStories.value.value1 != -1 ||
-            resizeStories.value.value2 != -1) {
-          disableResizing();
-        }
+        debounce = Timer(Duration(milliseconds: 600), () {
+          if (listViewController.offset >=
+              (listViewController.position.maxScrollExtent * 0.6)) {
+            BlocProvider.of<StoryBloc>(context)
+                .add(GetStoryEvent(withPaginition: true));
+          }
+          if (resizeStories.value.value1 != -1 ||
+              resizeStories.value.value2 != -1) {
+            disableResizing();
+          }
 
-        double currentPosition = listViewController.position.pixels;
-        if ((currentPosition - _lastScrollPosition).abs() >= 20) {
-          debugPrint(listViewController.position.pixels.toString());
-          _lastScrollPosition = currentPosition;
-          /////////////////////////////
-          FirebaseAnalyticsService.logEventForSession(
-            eventName: AnalyticsEventsConst.buttonClicked,
-            executedEventName:
-                AnalyticsExecutedEventNameConst.scrollStoriesInHomeEvent,
-          );
-        }
+          double currentPosition = listViewController.position.pixels;
+          if ((currentPosition - _lastScrollPosition).abs() >= 20) {
+            debugPrint(listViewController.position.pixels.toString());
+            _lastScrollPosition = currentPosition;
+            /////////////////////////////
+            FirebaseAnalyticsService.logEventForSession(
+              eventName: AnalyticsEventsConst.buttonClicked,
+              executedEventName:
+                  AnalyticsExecutedEventNameConst.scrollStoriesInHomeEvent,
+            );
+          }
+        });
       },
     );
     super.initState();
@@ -238,9 +245,11 @@ class _StoriesListState extends State<StoriesList> {
                                                                         return;
                                                                       }
                                                                       disableResizing();
-                                                                      if (GetIt.I<PrefsRepository>()
-                                                                              .isVerifiedPhone ==
-                                                                          false) {
+                                                                      if (GetIt.I<PrefsRepository>().isVerifiedPhone ==
+                                                                              false ||
+                                                                          GetIt.I<PrefsRepository>()
+                                                                              .storiesToken
+                                                                              .isNullOrEmpty) {
                                                                         widget
                                                                             .isShowPanelForVerified
                                                                             .value = true;

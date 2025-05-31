@@ -24,15 +24,21 @@ class ProductDetailsSheetHeader extends StatefulWidget {
   final String offerPrice;
   final String priceSymbol;
   final int decimalPoint;
+  final ValueNotifier<int> currentActiveTab;
+  final String initPrice;
+  final String initOfferPrice;
   final double shippingCost;
   const ProductDetailsSheetHeader({
     super.key,
     required this.shippingCost,
     required this.addToBagButtonShapeNotifier,
     required this.offerPrice,
+    required this.currentActiveTab,
+    required this.price,
+    required this.initOfferPrice,
+    required this.initPrice,
     required this.decimalPoint,
     required this.priceSymbol,
-    required this.price,
   });
 
   final ValueNotifier<int> addToBagButtonShapeNotifier;
@@ -122,156 +128,166 @@ class _ProductDetailsSheetHeaderState extends State<ProductDetailsSheetHeader> {
           null, null, null, null, null, null, null,
           error: error.toString());
     };
-    return Container(
-      decoration: BoxDecoration(
-          color: colorScheme.white,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(30))),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 0, top: 15),
+    return ValueListenableBuilder<int>(
+        valueListenable: widget.currentActiveTab,
+        builder: (context, currentTab, _) {
+          return Container(
+            decoration: BoxDecoration(
+                color: colorScheme.white,
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(30))),
             child: Column(
               children: [
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 10),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                Padding(
+                  padding: const EdgeInsets.only(left: 0, top: 15),
+                  child: Column(
                     children: [
-                      MyTextWidget(
-                        HelperFunctions.formatNumber(
-                            number: double.parse(widget.price)),
-                        //  .toStringAsFixed(widget.decimalPoint),
-                        style: textTheme.headlineMedium?.rq.copyWith(
-                          color: Color(0xffC4C2C2),
-                          fontSize: 24.sp,
-                          decoration: TextDecoration.lineThrough,
-                          height: 0,
+                      Container(
+                        margin: EdgeInsets.symmetric(horizontal: 10),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            MyTextWidget(
+                              HelperFunctions.formatNumber(
+                                  number: double.parse(currentTab == 3
+                                      ? widget.price
+                                      : widget.initPrice)),
+                              //  .toStringAsFixed(widget.decimalPoint),
+                              style: textTheme.headlineMedium?.rq.copyWith(
+                                color: Color(0xffC4C2C2),
+                                fontSize: 24.sp,
+                                decoration: TextDecoration.lineThrough,
+                                height: 0,
+                              ),
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            MyTextWidget(
+                              HelperFunctions.formatNumber(
+                                  number: double.parse(currentTab == 3
+                                      ? widget.offerPrice
+                                      : widget.initOfferPrice)),
+                              //      .toStringAsFixed(widget.decimalPoint),
+                              style: textTheme.headlineMedium?.bq.copyWith(
+                                fontSize: 24.sp,
+                                color: Color(0xff505050),
+                                height: 0,
+                              ),
+                            ),
+                            SizedBox(
+                              width: 4,
+                            ),
+                            MyTextWidget(
+                              widget.priceSymbol,
+                              style: textTheme.titleMedium?.rq.copyWith(
+                                fontSize: 18.sp,
+                                color: Color(0xffC4C2C2),
+                                height: 0,
+                              ),
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            /*    ValueListenableBuilder<int>(
+                              valueListenable: widget.addToBagButtonShapeNotifier,
+                              builder: (context, itemCount, _) {
+                                return itemCount > 1
+                                    ? Row(
+                                        children: [
+                                          MyTextWidget(
+                                            'x$itemCount = ${itemCount * 70} ',
+                                            style:
+                                                textTheme.titleMedium?.bq.copyWith(
+                                              color: Color(0xff505050),
+                                              height: 0,
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          // MyTextWidget(
+                                          //   widget.price.split(" ").toList()[1],
+                                          //   style: textTheme.titleMedium?.rq.copyWith(
+                                          //     color: Color(0xffC4C2C2),
+                                          //     height: 0,
+                                          //   ),
+                                          // ),
+                                        ],
+                                      )
+                                    : const SizedBox.shrink();
+                              }),
+                          SvgPicture.asset(
+                            AppAssets.registerInfoSvg,
+                            height: 12,
+                            color: Color(0xff8E8E8E),
+                          )*/
+                          ],
                         ),
                       ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      MyTextWidget(
-                        HelperFunctions.formatNumber(
-                            number: double.parse(widget.offerPrice)),
-                        //      .toStringAsFixed(widget.decimalPoint),
-                        style: textTheme.headlineMedium?.bq.copyWith(
-                          fontSize: 24.sp,
-                          color: Color(0xff505050),
-                          height: 0,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 4,
-                      ),
-                      MyTextWidget(
-                        widget.priceSymbol,
-                        style: textTheme.titleMedium?.rq.copyWith(
-                          fontSize: 18.sp,
-                          color: Color(0xffC4C2C2),
-                          height: 0,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      /*    ValueListenableBuilder<int>(
-                          valueListenable: widget.addToBagButtonShapeNotifier,
-                          builder: (context, itemCount, _) {
-                            return itemCount > 1
-                                ? Row(
-                                    children: [
-                                      MyTextWidget(
-                                        'x$itemCount = ${itemCount * 70} ',
-                                        style:
-                                            textTheme.titleMedium?.bq.copyWith(
-                                          color: Color(0xff505050),
-                                          height: 0,
+                      Container(
+                        margin: EdgeInsets.symmetric(horizontal: 10),
+                        child: Row(
+                          children: [
+                            Padding(
+                              padding: HWEdgeInsets.only(bottom: 8),
+                              child: MyTextWidget(
+                                '${LocaleKeys.all_inclusive_without_additions.tr()}',
+                                style: textTheme.titleMedium?.rq.copyWith(
+                                  color: Color(0xff8D8D8D),
+                                  height: 0,
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 11,
+                            ),
+                            Flexible(
+                              child: SizedBox(
+                                height: 15 + 12.h,
+                                child: ListView.builder(
+                                  controller: _scrollController,
+                                  padding: HWEdgeInsets.only(bottom: 12),
+                                  itemBuilder: (
+                                    BuildContext context,
+                                    int index,
+                                  ) {
+                                    return Row(
+                                      children: [
+                                        SvgPicture.asset(
+                                          svg[index],
+                                          height: 15,
                                         ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      // MyTextWidget(
-                                      //   widget.price.split(" ").toList()[1],
-                                      //   style: textTheme.titleMedium?.rq.copyWith(
-                                      //     color: Color(0xffC4C2C2),
-                                      //     height: 0,
-                                      //   ),
-                                      // ),
-                                    ],
-                                  )
-                                : const SizedBox.shrink();
-                          }),
-                      SvgPicture.asset(
-                        AppAssets.registerInfoSvg,
-                        height: 12,
-                        color: Color(0xff8E8E8E),
-                      )*/
-                    ],
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 10),
-                  child: Row(
-                    children: [
-                      Padding(
-                        padding: HWEdgeInsets.only(bottom: 8),
-                        child: MyTextWidget(
-                          '${LocaleKeys.all_inclusive_without_additions.tr()}',
-                          style: textTheme.titleMedium?.rq.copyWith(
-                            color: Color(0xff8D8D8D),
-                            height: 0,
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 11,
-                      ),
-                      Flexible(
-                        child: SizedBox(
-                          height: 15 + 12.h,
-                          child: ListView.builder(
-                            controller: _scrollController,
-                            padding: HWEdgeInsets.only(bottom: 12),
-                            itemBuilder: (
-                              BuildContext context,
-                              int index,
-                            ) {
-                              return Row(
-                                children: [
-                                  SvgPicture.asset(
-                                    svg[index],
-                                    height: 15,
-                                  ),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  MyTextWidget(
-                                    texts[index],
-                                    style: textTheme.titleMedium?.rq.copyWith(
-                                      color: Color(0xff8D8D8D),
-                                      height: 0,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 5,
-                                  )
-                                ],
-                              );
-                            },
-                            scrollDirection: Axis.horizontal,
-                            itemCount: svg.length,
-                          ),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        MyTextWidget(
+                                          texts[index],
+                                          style: textTheme.titleMedium?.rq
+                                              .copyWith(
+                                            color: Color(0xff8D8D8D),
+                                            height: 0,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 5,
+                                        )
+                                      ],
+                                    );
+                                  },
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: svg.length,
+                                ),
+                              ),
+                            )
+                          ],
                         ),
                       )
                     ],
                   ),
-                )
+                ),
               ],
             ),
-          ),
-        ],
-      ),
-    );
+          );
+        });
   }
 }

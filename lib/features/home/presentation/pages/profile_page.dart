@@ -282,6 +282,15 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                         navigateToAddName: () {},
                         navigateTocartOrProfile: () {
                           isVerified.value = true;
+                          orderBloc.add(
+                            GetCustomerWalletEvent(limit: 10, offset: 1),
+                          );
+                          orderBloc.add(
+                            GetOrdersEvent(
+                              status: "",
+                              getWithPagination: false,
+                            ),
+                          );
                         },
                         fromLogin: false,
                         onLoginFailed: () {

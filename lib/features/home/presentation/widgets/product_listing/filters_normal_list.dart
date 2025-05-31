@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -54,22 +56,28 @@ class FiltersNormalList<T> extends StatefulWidget {
 
 class _FiltersNormalListState extends State<FiltersNormalList> {
   String key = '';
+  Timer? debounce;
   final ScrollController scrollController = ScrollController();
   @override
   void initState() {
     scrollController.addListener(() {
       print("FFFFFFFFFFFFF");
       try {
-        if (scrollController.offset >=
-            (scrollController.position.maxScrollExtent * 0.6)) {
-          BlocProvider.of<BoutiqueBloc>(context)
-              .add(GetFiltersWithPaginatioEvent(
-            fromHomePageSearch: true,
-            searchText: widget.searchText,
-            category: widget.category,
-            boutiqueSlug: widget.boutiqueSlug,
-          ));
+        if (debounce?.isActive ?? false) {
+          debounce!.cancel();
         }
+        debounce = Timer(Duration(milliseconds: 600), () {
+          if (scrollController.offset >=
+              (scrollController.position.maxScrollExtent * 0.6)) {
+            BlocProvider.of<BoutiqueBloc>(context)
+                .add(GetFiltersWithPaginatioEvent(
+              fromHomePageSearch: true,
+              searchText: widget.searchText,
+              category: widget.category,
+              boutiqueSlug: widget.boutiqueSlug,
+            ));
+          }
+        });
       } catch (e) {}
     });
     key = widget.boutiqueSlug + (widget.category ?? '');
@@ -312,6 +320,8 @@ class _FiltersNormalListState extends State<FiltersNormalList> {
                                                   padding: EdgeInsets.symmetric(
                                                       horizontal: 5.0),
                                                   child: SvgNetworkWidget(
+                                                    //  width: 70,
+                                                    width: 70,
                                                     svgUrl: widget
                                                         .filters[index]
                                                         .icon!

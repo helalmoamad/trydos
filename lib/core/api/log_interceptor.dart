@@ -143,16 +143,29 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
         } catch (e) {}
       }
       if ((err.requestOptions.path.toString().contains("market")) &&
-          jsonDecode(err.response.toString())["code"].toString() == "500") {
-        print(
-            "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIILLLLLLLLLL${err.requestOptions.path.toString()}LLLLLLLLLLLLLLLLOOOOOOOOOOOOOOOOOOOOOOO${jsonDecode(err.response.toString())["code"].toString()}c");
+          jsonDecode(err.response.toString())["code"].toString() == "500") {}
+      if ((jsonDecode(err.response.toString())["message"]
+                  .toString()
+                  .contains("Unauth") ||
+              jsonDecode(err.response.toString())["code"].toString() ==
+                  "401") &&
+          (err.requestOptions.path.contains("stories"))) {
+        _prefsRepository.setStoriesToken("");
       }
       if ((jsonDecode(err.response.toString())["message"]
                   .toString()
                   .contains("Unauth") ||
               jsonDecode(err.response.toString())["code"].toString() ==
                   "401") &&
-          !(err.requestOptions.path.contains("stories/increase_viewers")) &&
+          (err.requestOptions.path.contains("chating"))) {
+        _prefsRepository.setChatToken("");
+      }
+      if ((jsonDecode(err.response.toString())["message"]
+                  .toString()
+                  .contains("Unauth") ||
+              jsonDecode(err.response.toString())["code"].toString() ==
+                  "401") &&
+          (err.requestOptions.path.contains("market")) &&
           !(_prefsRepository.isTokenExpired ?? false)) {
         _prefsRepository.setVerifiedPhonePeforeExpiredToken(
             _prefsRepository.isVerifiedPhone ?? false);

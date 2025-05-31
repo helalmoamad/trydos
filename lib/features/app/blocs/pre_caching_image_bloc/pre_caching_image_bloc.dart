@@ -193,6 +193,9 @@ class PreCachingImageBloc
     CacheImageEvent event,
     Emitter<PreCachingImageState> emit,
   ) async {
+    if (!event.imageUrl.contains("cloudinary")) {
+      return;
+    }
     // final updatedCachedImages = Map<String, bool>.from(state.cachedImages);
     // updatedCachedImages[event.imageUrl] = false;
 

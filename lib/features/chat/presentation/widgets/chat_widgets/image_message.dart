@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:full_screen_image_null_safe/full_screen_image_null_safe.dart';
@@ -443,7 +444,12 @@ class _ImageMessageState extends State<ImageMessage> {
                                     ),
                                     widget.userMessagePhoto != null
                                         ? MyCachedNetworkImage(
-                                            imageUrl: widget.userMessagePhoto!,
+                                            imageUrl: (widget.userMessagePhoto
+                                                        .toString()
+                                                        .contains("cloudinary")
+                                                    ? ""
+                                                    : "${dotenv.env['Profile_Images_Url']}") +
+                                                widget.userMessagePhoto!,
                                             imageFit: BoxFit.fitWidth,
                                             progressIndicatorBuilderWidget:
                                                 TrydosLoader(),

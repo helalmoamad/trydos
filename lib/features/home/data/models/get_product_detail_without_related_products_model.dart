@@ -64,7 +64,10 @@ class Product {
   final bool? shippingCostMultiplyWithQuantity;
   final double? shippingCost;
   final BoutiqueForCart? boutique;
-
+  final double? price;
+  final String? priceFormatted;
+  final double? offerPrice;
+  final String? offerPriceFormatted;
   final bool? isLiked;
   final int? countOfLikes;
   final int? collectedAfterOrdering;
@@ -97,6 +100,10 @@ class Product {
     this.countOfLikes,
     this.choiceOptions,
     this.hasDiscount,
+    this.price,
+    this.priceFormatted,
+    this.offerPrice,
+    this.offerPriceFormatted,
     this.maxAllowedQty,
     this.deliveryAt,
     this.boutique,
@@ -124,6 +131,10 @@ class Product {
     List<ChoiceOption>? choiceOptions,
     bool? hasDiscount,
     bool? hasTax,
+    String? priceFormatted,
+    double? price,
+    double? offerPrice,
+    String? offerPriceFormatted,
     String? deliveryAt,
     int? collectedAfterOrdering,
     String? tax,
@@ -172,6 +183,10 @@ class Product {
         shippingCostMultiplyWithQuantity: shippingCostMultiplyWithQuantity ??
             this.shippingCostMultiplyWithQuantity,
         shippingCost: shippingCost ?? this.shippingCost,
+        price: price ?? this.price,
+        priceFormatted: priceFormatted ?? this.priceFormatted,
+        offerPrice: offerPrice ?? this.offerPrice,
+        offerPriceFormatted: offerPriceFormatted ?? this.offerPriceFormatted,
         collectedAfterOrdering:
             collectedAfterOrdering ?? this.collectedAfterOrdering,
         countOfLikes: countOfLikes ?? this.countOfLikes,
@@ -209,6 +224,10 @@ class Product {
           ? null
           : BoutiqueForCart.fromJson(json["boutique"]),
       collectedAfterOrdering: json["collected_after_ordering"],
+      price: (json["price"] ?? 0).toDouble(),
+      priceFormatted: json["price_formatted"] ?? "",
+      offerPriceFormatted: json["offer_price_formatted"] ?? "",
+      offerPrice: (json["offer_price"] ?? 0).toDouble(),
       maxAllowedQty: json["max_allowed_qty"].toString(),
       countryIsRestricted: json["is_country_restricted"],
       isActive: json["is_active"],
@@ -260,6 +279,10 @@ class Product {
         "count_of_likes": countOfLikes,
         "available_quantity": availableQuantity,
         "count_of_pieces": countOfPieces,
+        "price": price,
+        "price_formatted": priceFormatted,
+        "offer_price_formatted": offerPriceFormatted,
+        "offer_price": offerPrice,
         "Left_stock": leftStock,
         "colors": colors == null
             ? []

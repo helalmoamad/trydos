@@ -63,7 +63,8 @@ class ProductDetailsBottomSheet extends StatefulWidget {
   final int countOfPieces;
   final bool? isGetFullProductDetails;
   final bool? fromListingPage;
-
+  final String initPrice;
+  final String initOfferPrice;
   final bool collectedAfterOrdering;
 
   final String maxAllowedToAddCart;
@@ -91,6 +92,8 @@ class ProductDetailsBottomSheet extends StatefulWidget {
       required this.maxAllowedToAddCart,
       required this.countOfPieces,
       required this.currentColornum,
+      required this.initOfferPrice,
+      required this.initPrice,
       required this.boutiqueId,
       required this.currentColor,
       required this.currentColorName});
@@ -823,6 +826,11 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                     .getProductDetailWithoutSimilarRelatedProductsStatus,
                                         builder: (context, state) {
                                           return ProductDetailsSheetHeader(
+                                            currentActiveTab:
+                                                widget.currentActiveTab,
+                                            initOfferPrice:
+                                                widget.initOfferPrice,
+                                            initPrice: widget.initPrice,
                                             shippingCost: widget
                                                     .productItem.shippingCost ??
                                                 0,

@@ -99,6 +99,8 @@ import '../../features/chat/domain/use_cases/get_messages_for_chat_usecase.dart'
     as _i304;
 import '../../features/chat/domain/use_cases/get_my_chats_usecase.dart'
     as _i675;
+import '../../features/chat/domain/use_cases/get_order_recipient_id_usecase.dart'
+    as _i1039;
 import '../../features/chat/domain/use_cases/get_shared_product_count_usecase.dart'
     as _i538;
 import '../../features/chat/domain/use_cases/read_all_messages_usecase.dart'
@@ -557,6 +559,8 @@ Future<_i174.GetIt> $initGetIt(
       () => _i750.UpdateProfileInChatUseCase(gh<_i420.ChatRepository>()));
   gh.factory<_i897.UploadFileUseCase>(
       () => _i897.UploadFileUseCase(gh<_i420.ChatRepository>()));
+  gh.factory<_i1039.GetOrderRecipientIdUseCase>(
+      () => _i1039.GetOrderRecipientIdUseCase(gh<_i420.ChatRepository>()));
   gh.factory<_i661.AnswerCallUseCase>(
       () => _i661.AnswerCallUseCase(gh<_i1032.CallsRepository>()));
   gh.factory<_i95.DeleteMessageUseCase>(
@@ -642,6 +646,7 @@ Future<_i174.GetIt> $initGetIt(
         gh<_i703.SendMessageUseCase>(),
         gh<_i538.GetSharedProductCountUseCase>(),
         gh<_i912.GetMessagesBetweenUseCase>(),
+        gh<_i1039.GetOrderRecipientIdUseCase>(),
         gh<_i1043.UploadFileCloudinaryUseCase>(),
         gh<_i304.GetMessagesForChatUseCase>(),
         gh<_i361.DeleteChatUseCase>(),

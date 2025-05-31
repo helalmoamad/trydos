@@ -8,6 +8,7 @@ import 'package:trydos/core/api/methods/detect_server.dart';
 import 'package:trydos/core/api/methods/put.dart';
 import 'package:trydos/features/authentication/data/models/create_user_response_model.dart';
 import 'package:trydos/features/chat/data/models/change_chat_property_model.dart';
+import 'package:trydos/features/chat/data/models/get_order_recipient_id_model.dart';
 import 'package:trydos/features/chat/data/models/my_contacts_response_model.dart';
 import 'package:trydos/features/chat/data/models/result_of_search_text_in_chat_model.dart';
 import 'package:trydos/features/chat/data/models/shared_product_count_model.dart';
@@ -49,8 +50,6 @@ class ChatRemoteDataSource {
   }
 
   Future<bool> updateProfileInChat(Map<String, dynamic> params) {
-    print(
-        "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD${params['id'].toString()}");
     Map<String, dynamic> data = Map.of(params);
     data.removeWhere((key, value) => key == "id");
     PutClient<bool> updateProfileInChat = PutClient<bool>(
@@ -101,6 +100,23 @@ class ChatRemoteDataSource {
       ),
     );
     return getChats();
+  }
+
+  Future<GetOrderRecipientIdModel> getOrderRecipientId(
+      Map<String, dynamic> params) {
+    PostClient<GetOrderRecipientIdModel> getOrderRecipientId =
+        PostClient<GetOrderRecipientIdModel>(
+      serverName: ServerName.chat,
+      requestPrams: RequestConfig<GetOrderRecipientIdModel>(
+        endpoint: ChatEndPoints.getOrderRecipientIdEP,
+        queryParameters: params,
+        response: ResponseValue<GetOrderRecipientIdModel>(fromJson: (response) {
+          return GetOrderRecipientIdModel.fromJson(response);
+//return MyChatsResponseModel();
+        }),
+      ),
+    );
+    return getOrderRecipientId();
   }
 
   Future<ChangeChatPropertyModel> changeChatProperty(

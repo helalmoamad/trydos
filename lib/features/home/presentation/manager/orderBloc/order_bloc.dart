@@ -87,7 +87,6 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     );
     on<GetOrdersEvent>(
       _onGetOrdersEvent,
-      transformer: restartable(),
     );
     on<SetCustomerAddressDefaultEvent>(
       _onSetCustomerAddressDefaultEvent,
@@ -379,7 +378,6 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
       getOrdersModel[event.status] =
           const PaginationModel<OrderListModel>.init(page: 1);
     }
-    ///////////////////////////////////////
     if (event.getWithPagination &&
         (getOrdersModel[event.status]!.hasReachedMax ||
             getOrdersModel[event.status]!.paginationStatus ==
@@ -434,8 +432,6 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
         );
       },
       (r) {
-        debugPrint('GetOrdersEvent success');
-
         getOrdersModel = state.getOrdersModel;
 
         isFailedTheFirstTime.remove('GetOrdersEvent');
@@ -446,7 +442,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           orders = List.of(getOrdersModel[event.status]!.items);
         }
 
-        List<OrderListModel> ordersFromApi = r.data?.orders ?? [];
+        List<OrderListModel> ordersFromApi = List.of(r.data?.orders ?? []);
 
         final seen = <String>{};
         final List<String> duplicatesOrderGroupIds = [];
@@ -463,6 +459,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
               return element.orderGroupId == duplicateId;
             },
           ).toList();
+
           ///////////////////////////
           OrderListModel firstOrder = ordersWithSameId[0];
           ////////////////////
@@ -470,20 +467,22 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           ////////////////////////////////
           List<OrderListDetailModel> aggregatedDetails =
               firstOrder.details ?? [];
-
+          bool? statusIsOutForDelivary =
+              firstOrder.orderStatus?.value == "out_for_delivery";
           double firstOrderAmount = firstOrder.orderAmount ?? 0;
           double firstOrderShippingCost = firstOrder.shippingCost ?? 0;
 
           double aggregatedAmount = firstOrderAmount;
           double aggregatedshippingCost = firstOrderShippingCost;
-
           for (var order in ordersWithSameId) {
             double orderAmount = order.orderAmount ?? 0;
             double shippingCost = order.shippingCost ?? 0;
 
             aggregatedAmount = aggregatedAmount + orderAmount;
             aggregatedshippingCost = aggregatedshippingCost + shippingCost;
-
+            if (order.orderStatus?.value == "out_for_delivery") {
+              statusIsOutForDelivary = true;
+            }
             for (var detail in order.details ?? []) {
               aggregatedDetails.add(detail);
             }
@@ -491,6 +490,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
 
           OrderListModel aggregatedOrder = firstOrder.copyWith(
             orderAmount: aggregatedAmount,
+            statusIsOutForDelivary: statusIsOutForDelivary,
             shippingCost: aggregatedshippingCost,
             details: aggregatedDetails,
           );
@@ -500,6 +500,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           );
           ordersFromApi.add(aggregatedOrder);
         }
+
         ////////////////////////////
         emit(
           state.copyWith(

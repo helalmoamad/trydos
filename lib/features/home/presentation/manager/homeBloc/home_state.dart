@@ -518,6 +518,7 @@ class HomeState extends Equatable {
       userInfo: userInfo ?? this.userInfo,
       getCountryBoundaryByIsoStatus:
           getCoutryBoundaryByIsoStatus ?? this.getCountryBoundaryByIsoStatus,
+
       countryCoordinatesBorders:
           countryCoordinatesBorders ?? this.countryCoordinatesBorders,
       hideItemInOldCartStatus:

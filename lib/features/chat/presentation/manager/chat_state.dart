@@ -14,6 +14,8 @@ enum LoadImageWidthAndHeight { init, loading, success, failure }
 
 enum GetContactsStatus { init, loading, success, failure }
 
+enum GetOrderRecipientIdStatus { init, loading, success, failure }
+
 enum GetChatsStatus { init, loading, success, failure }
 
 //enum SearchTextInChatStatus { init, loading, success, failure }
@@ -76,12 +78,12 @@ class ChatState {
   final String? messageType;
   final String userConnectedStatuse;
   final String? messageContent;
-
+  final GetOrderRecipientIdStatus getOrderRecipientIdStatus;
   final String? firstMessageId;
   final String? secondMessageId;
   final String? slopMessageId;
   final int unReadMessagesFromAllChats;
-
+  final String? recipientUserId;
   final String currentChannelReceivedMessage;
   final bool scrollToParentMessage;
   final Chat? chatToNavigateFromTerminated;
@@ -105,6 +107,7 @@ class ChatState {
     this.getSharedProductCountStatus,
     this.currentRequestIdForAvoidPreRequest = "",
     this.fileCountInEachChat = 0,
+    this.recipientUserId,
     this.getSharedProductCount,
     this.videoCountInEachChat = 0,
     //this.searchTextInChatStatus = SearchTextInChatStatus.init,
@@ -122,6 +125,7 @@ class ChatState {
     this.deleteChatStatus = DeleteChatStatus.init,
     this.notifyThatIReceivedMessageStatus =
         NotifyThatIReceivedMessageStatus.init,
+    this.getOrderRecipientIdStatus = GetOrderRecipientIdStatus.init,
     this.receiveMessageStatus = ReceiveMessageStatus.init,
     this.getChatsStatus = GetChatsStatus.init,
     this.channelId = '-1',
@@ -155,9 +159,11 @@ class ChatState {
     Map<String, List<Message>>? newSortedChatsByDate,
     final GetChatsStatus? getChatsStatus,
     final Duration? duration,
+    final GetOrderRecipientIdStatus? getOrderRecipientIdStatus,
     final bool? firstRequestForGetChats,
     final ResendMessageStatus? resendMessageStatus,
     final SendMessageStatus? sendMessageStatus,
+    final String? recipientUserId,
     final ReceiveMessageStatus? receiveMessageStatus,
     final PaginationModel<String>? resultOfSearchTextInChat,
     final ChangeChatPropertyStatus? changeChatPropertyStatus,
@@ -210,6 +216,9 @@ class ChatState {
       videoCountInEachChat: videoCountInEachChat ?? this.videoCountInEachChat,
       loadImageWidthAndHeight:
           loadImageWidthAndHeight ?? this.loadImageWidthAndHeight,
+      getOrderRecipientIdStatus:
+          getOrderRecipientIdStatus ?? this.getOrderRecipientIdStatus,
+      recipientUserId: recipientUserId ?? this.recipientUserId,
       resultOfSearchTextInChat:
           resultOfSearchTextInChat ?? this.resultOfSearchTextInChat,
       newSortedChatsByDate: newSortedChatsByDate ?? this.newSortedChatsByDate,

@@ -103,6 +103,7 @@ class OrderListModel {
   final int? customerId;
   final String? paymentStatus;
   final OrderStatus? orderStatus;
+  final bool? statusIsOutForDelivary;
   final OrderStatus? orderGroupStatus;
   final OrderStatus? paymentMethod;
   final String? transactionRef;
@@ -152,6 +153,7 @@ class OrderListModel {
     this.orderGroupId,
     this.verificationCode,
     this.orderNote,
+    this.statusIsOutForDelivary,
     this.sellerId,
     this.createdAt,
     this.orderCanReturn,
@@ -175,6 +177,7 @@ class OrderListModel {
     double? partialPaymentByWallet,
     double? discountAmount,
     double? shippingCost,
+    bool? statusIsOutForDelivary,
     int? shippingAddress,
     ShippingAddressData? shippingAddressData,
     dynamic billingAddress,
@@ -214,6 +217,8 @@ class OrderListModel {
         billingAddressData: billingAddressData ?? this.billingAddressData,
         discountType: discountType ?? this.discountType,
         couponCode: couponCode ?? this.couponCode,
+        statusIsOutForDelivary:
+            statusIsOutForDelivary ?? this.statusIsOutForDelivary,
         shippingMethodId: shippingMethodId ?? this.shippingMethodId,
         orderGroupId: orderGroupId ?? this.orderGroupId,
         verificationCode: verificationCode ?? this.verificationCode,
@@ -325,7 +330,7 @@ class OrderListDetailModel {
   final OrderProductDetailsModel? productDetails;
   final double? qty;
   final double? price;
-  final int? countOfPieces;
+
   final double? discount;
   final double? priceAfterDiscount;
   final double? tax;
@@ -350,7 +355,6 @@ class OrderListDetailModel {
     this.productId,
     this.productDetails,
     this.qty,
-    this.countOfPieces,
     this.price,
     this.discount,
     this.priceAfterDiscount,
@@ -375,7 +379,6 @@ class OrderListDetailModel {
     int? id,
     int? orderId,
     int? productId,
-    int? countOfPieces,
     OrderProductDetailsModel? productDetails,
     double? qty,
     double? price,
@@ -403,7 +406,6 @@ class OrderListDetailModel {
         productId: productId ?? this.productId,
         productDetails: productDetails ?? this.productDetails,
         qty: qty ?? this.qty,
-        countOfPieces: countOfPieces ?? this.countOfPieces,
         price: price ?? this.price,
         discount: discount ?? this.discount,
         priceAfterDiscount: priceAfterDiscount ?? this.priceAfterDiscount,
@@ -425,42 +427,41 @@ class OrderListDetailModel {
         image: image ?? this.image,
       );
 
-  factory OrderListDetailModel.fromJson(Map<String, dynamic> json) =>
-      OrderListDetailModel(
-        id: json["id"],
-        orderId: json["order_id"],
-        productId: json["product_id"],
-        productDetails: json["product_details"] == null
-            ? null
-            : OrderProductDetailsModel.fromJson(json["product_details"]),
-        qty: json["qty"] == null ? 0 : double.parse(json["qty"].toString()),
-        countOfPieces: json["count_of_pieces"] ?? 0,
-        price:
-            json["price"] == null ? 0 : double.parse(json["price"].toString()),
-        discount: json["discount"] == null
-            ? 0
-            : double.parse(json["discount"].toString()),
-        priceAfterDiscount: json["price_after_discount"] == null
-            ? 0
-            : double.parse(json["price_after_discount"].toString()),
-        tax: json["tax"] == null ? 0 : double.parse(json["tax"].toString()),
-        deliveryStatus: json["delivery_status"],
-        paymentStatus: json["payment_status"],
-        shippingMethodId: json["shipping_method_id"],
-        variant: json["variant"],
-        collectProductAfterOrdering: json["collect_product_after_ordering"],
-        variation: json["variation"] == null
-            ? null
-            : GetOrderVariationModel.fromJson(json["variation"]),
-        discountType: json["discount_type"],
-        isStockDecreased: json["is_stock_decreased"],
-        refundRequest: json["refund_request"],
-        refundRequestStatus: json["refund_request_status"],
-        isOdooProduct: json["is_odoo_product"],
-        odooId: json["odoo_id"],
-        odooOrderId: json["odoo_order_id"],
-        image: json["image"],
-      );
+  factory OrderListDetailModel.fromJson(Map<String, dynamic> json) {
+    return OrderListDetailModel(
+      id: json["id"],
+      orderId: json["order_id"],
+      productId: json["product_id"],
+      productDetails: json["product_details"] == null
+          ? null
+          : OrderProductDetailsModel.fromJson(json["product_details"]),
+      qty: json["qty"] == null ? 0 : double.parse(json["qty"].toString()),
+      price: json["price"] == null ? 0 : double.parse(json["price"].toString()),
+      discount: json["discount"] == null
+          ? 0
+          : double.parse(json["discount"].toString()),
+      priceAfterDiscount: json["price_after_discount"] == null
+          ? 0
+          : double.parse(json["price_after_discount"].toString()),
+      tax: json["tax"] == null ? 0 : double.parse(json["tax"].toString()),
+      deliveryStatus: json["delivery_status"],
+      paymentStatus: json["payment_status"],
+      shippingMethodId: json["shipping_method_id"],
+      variant: json["variant"],
+      collectProductAfterOrdering: json["collect_product_after_ordering"],
+      variation: json["variation"] == null
+          ? null
+          : GetOrderVariationModel.fromJson(json["variation"]),
+      discountType: json["discount_type"],
+      isStockDecreased: json["is_stock_decreased"],
+      refundRequest: json["refund_request"],
+      refundRequestStatus: json["refund_request_status"],
+      isOdooProduct: json["is_odoo_product"],
+      odooId: json["odoo_id"],
+      odooOrderId: json["odoo_order_id"],
+      image: json["image"],
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         "id": id,
@@ -468,7 +469,6 @@ class OrderListDetailModel {
         "product_id": productId,
         "product_details": productDetails?.toJson(),
         "qty": qty,
-        "count_of_pieces": countOfPieces,
         "price": price,
         "discount": discount,
         "price_after_discount": priceAfterDiscount,
@@ -496,6 +496,7 @@ class OrderProductDetailsModel {
   final String? slug;
   final String? shareLink;
   final String? details;
+  final int? countOfPieces;
   final String? thumbnail;
   final List<String>? images;
   final double? price;
@@ -513,6 +514,7 @@ class OrderProductDetailsModel {
     this.thumbnail,
     this.images,
     this.price,
+    this.countOfPieces,
     this.offerPrice,
     this.isFavourite,
     this.inStock,
@@ -523,6 +525,7 @@ class OrderProductDetailsModel {
     int? id,
     String? name,
     String? slug,
+    int? countOfPieces,
     String? shareLink,
     String? details,
     String? thumbnail,
@@ -545,6 +548,7 @@ class OrderProductDetailsModel {
         offerPrice: offerPrice ?? this.offerPrice,
         isFavourite: isFavourite ?? this.isFavourite,
         inStock: inStock ?? this.inStock,
+        countOfPieces: countOfPieces ?? this.countOfPieces,
         rating: rating ?? this.rating,
       );
 
@@ -556,6 +560,7 @@ class OrderProductDetailsModel {
         shareLink: json["share_link"],
         details: json["details"],
         thumbnail: json["thumbnail"],
+        countOfPieces: json["count_of_pieces"] ?? 0,
         images: json["images"] == null
             ? []
             : List<String>.from(json["images"]!.map((x) => x)),
@@ -578,6 +583,7 @@ class OrderProductDetailsModel {
         "share_link": shareLink,
         "details": details,
         "thumbnail": thumbnail,
+        "count_of_pieces": countOfPieces,
         "images":
             images == null ? [] : List<dynamic>.from(images!.map((x) => x)),
         "price": price,

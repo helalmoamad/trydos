@@ -87,7 +87,9 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCq5Gi3oBlQv5qbaX2w_piuYmXpGHVwxnM"/>
  
-    
+        <meta-data
+            android:name="io.flutter.embedding.android.EnableImpeller"
+            android:value="false"/>
 <!--           <service android:name="io.wazo.callkeep.VoiceConnectionService"-->
 <!--               android:label="Wazo"-->
 <!--               android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE">-->

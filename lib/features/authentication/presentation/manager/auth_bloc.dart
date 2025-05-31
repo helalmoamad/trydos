@@ -543,7 +543,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       _prefsRepository.setMarketToken(r.data!.token!);
       _prefsRepository
           .setMyProfilePhoto((r.data?.user?.image ?? "").toString());
-      _prefsRepository.setMyMarketName("guest");
+      _prefsRepository.setMyMarketName(r.data!.user!.name ?? "guest");
+
+      GetIt.I<HomeBloc>()
+          .add(SaveUserInfoFromAuthEvent(userInfo: r.data!.user!));
       _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
       GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
       GetIt.I<HomeBloc>().add(GetCartItemEvent());

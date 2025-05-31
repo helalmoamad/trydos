@@ -70,13 +70,16 @@ class ContactCard extends StatelessWidget {
                 chat = chats.firstWhere((element) => element.channelMembers!
                     .any((element) => element.userId == contact.contactUserId));
                 final preferences = GetIt.I<PrefsRepository>();
+                print(
+                    "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF${chat.id}");
                 receiver = chat.channelMembers
                     ?.firstWhere(
-                        (element) => element.userId != preferences.myChatId,
-                        orElse: () =>ChannelMember(
-                            userId: contact.contactUserId,
-                            user: User(
-                                id: contact.contactUserId, name: contact.name)),)
+                      (element) => element.userId != preferences.myChatId,
+                      orElse: () => ChannelMember(
+                          userId: contact.contactUserId,
+                          user: User(
+                              id: contact.contactUserId, name: contact.name)),
+                    )
                     .user;
                 context.go(GRouter
                         .config.applicationRoutes.kSinglePageChatPagePath +

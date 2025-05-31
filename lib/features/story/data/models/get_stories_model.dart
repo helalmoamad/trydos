@@ -277,6 +277,7 @@ class Story {
   String? oneLink;
   dynamic file;
   bool? isSeen;
+  String? createdAt;
   int? viewersCount;
   List<dynamic>? media;
   bool isInitialStory;
@@ -290,6 +291,7 @@ class Story {
     this.oneLink,
     this.fullVideoName,
     this.fullVideoPath,
+    this.createdAt,
     this.storageVideoPath,
     this.userId,
     this.isPhoto,
@@ -318,6 +320,7 @@ class Story {
     String? photoPath,
     dynamic file,
     bool? isSeen,
+    String? createdAt,
     int? viewersCount,
     List<dynamic>? media,
   }) =>
@@ -328,6 +331,7 @@ class Story {
         id: id ?? this.id,
         cutVideoName: cutVideoName ?? this.cutVideoName,
         cutVideoPath: cutVideoPath ?? this.cutVideoPath,
+        createdAt: createdAt ?? this.createdAt,
         fullVideoName: fullVideoName ?? this.fullVideoName,
         fullVideoPath: fullVideoPath ?? this.fullVideoPath,
         storageVideoPath: storageVideoPath ?? this.storageVideoPath,
@@ -356,6 +360,7 @@ class Story {
         photoPath: json["photo_path"],
         file: json["file"],
         isSeen: json["is_seen"],
+        createdAt: json["created_at"] == null ? null : json["created_at"],
         viewersCount: json["viewers_count"],
         media: json["media"] == null
             ? []
@@ -366,6 +371,7 @@ class Story {
         "id": id,
         "cut_video_name": cutVideoName,
         "cut_video_path": cutVideoPath,
+        "created_at": createdAt,
         "link": oneLink,
         "full_video_name": fullVideoName,
         "full_video_path": fullVideoPath,

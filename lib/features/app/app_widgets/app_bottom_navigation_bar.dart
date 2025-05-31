@@ -475,6 +475,11 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                             .add(
                                                                 ClearAllAppCashEvent());
                                                         BlocProvider.of<
+                                                                    AppBloc>(
+                                                                context)
+                                                            .add(ChangeBasePage(
+                                                                0));
+                                                        BlocProvider.of<
                                                                     HomeBloc>(
                                                                 context)
                                                             .add(

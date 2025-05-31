@@ -85,6 +85,17 @@ class ReadAllMessagesEvent extends ChatEvent {
   List<Object?> get props => [channelId];
 }
 
+class GetOrderRecipientIdEvent extends ChatEvent {
+  final String originalUserId;
+  final String orderId;
+  const GetOrderRecipientIdEvent(
+      {required this.originalUserId, required this.orderId});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [originalUserId, orderId];
+}
+
 class UpdateProfileInChatEvent extends ChatEvent {
   final String userId;
   final String phone;
@@ -106,10 +117,12 @@ class GetChatsEvent extends ChatEvent {
   final Chat? chatToNavigateFromTerminated;
   final DateTime? timeStamp;
   final int? limit;
+  final bool? getWithPagination;
   final int? messagesLimit;
   const GetChatsEvent(
       {this.chatToNavigateFromTerminated,
       this.timeStamp,
+      this.getWithPagination,
       this.limit,
       this.messagesLimit});
   @override

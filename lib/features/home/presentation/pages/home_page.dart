@@ -10,6 +10,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:trydos/base_page.dart';
 import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
@@ -27,6 +28,8 @@ import 'package:trydos/features/authentication/presentation/manager/auth_bloc.da
 import 'package:trydos/features/authentication/presentation/widgets/insert_phone_tab.dart';
 import 'package:trydos/features/authentication/presentation/widgets/verification_methods.dart';
 import 'package:trydos/features/authentication/presentation/widgets/verify_otp.dart';
+import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
+import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
@@ -212,17 +215,37 @@ class _HomePageState extends State<HomePage> {
       boutiqueSlug: 'search',
       filtersChoosedByUser: null,
     ));
-
     scrollController.addListener(listenToScroll);
 
     String notificationTypesOfMarketFromTerminated =
-        GetIt.I<PrefsRepository>().getNotificationTypeOfMarketFromTerminated ??
-            "";
+        GetIt.I<PrefsRepository>().getNotificationTypeFromTerminated ?? "";
+    print(
+        'ddddddddddddddddddddddddddddddddddddddddddd${notificationTypesOfMarketFromTerminated}');
+    print(
+        'dddddddddddddddddd11111111111ddddddddddddddddddddddddd${notificationTypesOfMarketFromTerminated.split("chatNotification").first}');
+    print(
+        'dddddddddddddddddddd00000000000ddddddddddddddddddddddd${notificationTypesOfMarketFromTerminated.split("chatNotification").last}');
 
     if (notificationTypesOfMarketFromTerminated != "") {
+      GetIt.I<PrefsRepository>().setNotificationTypesFromTerminated("");
       try {
-        Map data = jsonDecode(notificationTypesOfMarketFromTerminated);
-        HandlingMarketNotifications.dealWithNotificationFromMarket(data, true);
+        if (notificationTypesOfMarketFromTerminated
+            .contains("chatNotification")) {
+          Message myMessage = Message.fromJson(jsonDecode(
+              notificationTypesOfMarketFromTerminated
+                  .split("chatNotification")
+                  .first));
+          String prevMessageId = notificationTypesOfMarketFromTerminated
+              .split("chatNotification")
+              .last;
+
+          handleOpenChatPageFromNotificationInBackground(prevMessageId,
+              message: myMessage);
+        } else {
+          Map data = jsonDecode(notificationTypesOfMarketFromTerminated);
+          HandlingMarketNotifications.dealWithNotificationFromMarket(
+              data, true);
+        }
       } catch (e) {}
     }
     //  getInitialForNotification();
@@ -282,6 +305,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
+    debounce?.cancel();
     scrollController.removeListener(listenToScroll);
     scrollController.dispose();
     super.dispose();
@@ -300,7 +324,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     Locale currentLocale = Localizations.localeOf(context);
 
-    /* FlutterError.onError = (FlutterErrorDetails error) {
+    FlutterError.onError = (FlutterErrorDetails error) {
       try {
         BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
             errorExption: error.exceptionAsString().toString(),
@@ -311,7 +335,7 @@ class _HomePageState extends State<HomePage> {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: error.toString());
-    };*/
+    };
     bool _isLoading = false;
 
     Future<void> _refreshData() async {
@@ -1116,6 +1140,48 @@ class _HomePageState extends State<HomePage> {
                                                 products[tapIndex]
                                                     .slug
                                                     .toString();
+                                            currentSelectedColor =
+                                                state.currentSelectedColorForEveryProduct[
+                                                        productSlug] ??
+                                                    (products[tapIndex]
+                                                                .syncColorImages
+                                                                ?.length ??
+                                                            0) ~/
+                                                        2;
+                                            String currentSelectedColorName =
+                                                ((products[tapIndex]
+                                                                .colors
+                                                                ?.length ??
+                                                            0) >
+                                                        0)
+                                                    ? products[tapIndex]
+                                                            .colors![
+                                                                currentSelectedColor]
+                                                            .name ??
+                                                        ""
+                                                    : "";
+
+                                            String currentVariantType =
+                                                "${currentSelectedColorName != "" ? currentSelectedColorName : ""}" +
+                                                    "${(state.currentColorSizeForCart?["size"] != null && (state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]?.product?.choiceOptions?.isNullOrEmpty ?? false) && state.currentColorSizeForCart?["size"] != "") && (currentSelectedColorName != "") ? "-" : ""}" +
+                                                    "${(state.currentColorSizeForCart?["size"] != null && (state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]?.product?.choiceOptions?.isNullOrEmpty ?? false) && state.currentColorSizeForCart?["size"] != "") ? "${state.currentColorSizeForCart?["size"]}" : ""}";
+
+                                            Variation? currentVariation = state
+                                                .cachedProductWithoutRelatedProductsModel[
+                                                    products[tapIndex]
+                                                        .productId
+                                                        .toString()]
+                                                ?.product
+                                                ?.variation
+                                                ?.firstWhere(
+                                              (element) => element.type!
+                                                  .contains(currentVariantType),
+                                              orElse: () {
+                                                return Variation(
+                                                    variantNotifyForUser:
+                                                        false);
+                                              },
+                                            );
                                             List<String> syncColorNames = [];
                                             List<filter.SyncColorImage>
                                                 syncColorImagesFromListing =
@@ -1378,18 +1444,27 @@ class _HomePageState extends State<HomePage> {
                                               Future.delayed(
                                                   Duration(milliseconds: 600),
                                                   () {
-                                                panelControllerForCart.open();
-                                                changeAppearSizeForProduct =
-                                                    false;
+                                                WidgetsBinding.instance
+                                                    .addPostFrameCallback((_) {
+                                                  panelControllerForCart.open();
+                                                  changeAppearSizeForProduct =
+                                                      false;
+                                                });
                                               });
                                             }
 
-                                            return state.getProductDetailWithoutSimilarRelatedProductsStatus ==
+                                            return state
+                                                            .getProductDetailWithoutSimilarRelatedProductsStatus ==
                                                         GetProductDetailWithoutSimilarRelatedProductsStatus
                                                             .loading ||
                                                     state.enableAddToCardAfterChangeVariantZero !=
                                                         EnableAddToCardAfterChangeVariantZero
-                                                            .success
+                                                            .success ||
+                                                    state.cachedProductWithoutRelatedProductsModel[
+                                                            products[tapIndex]
+                                                                .productId
+                                                                .toString()] ==
+                                                        null
                                                 ? Container(
                                                     width: 1.sw,
                                                     height: 1.sh,
@@ -1400,6 +1475,16 @@ class _HomePageState extends State<HomePage> {
                                                     ),
                                                   )
                                                 : ProductDetailsBottomSheet(
+                                                    initOfferPrice: (products[
+                                                                    tapIndex]
+                                                                .offerPrice ??
+                                                            0)
+                                                        .toString(),
+                                                    initPrice:
+                                                        (products[tapIndex]
+                                                                    .price ??
+                                                                0)
+                                                            .toString(),
                                                     isGetFullProductDetails:
                                                         false,
                                                     productNotAvailableNotifier:
@@ -1561,6 +1646,57 @@ class _HomePageState extends State<HomePage> {
                                                     productItem:
                                                         products[tapIndex]
                                                             .copyWith(
+                                                      price: currentVariation
+                                                                  ?.price !=
+                                                              null
+                                                          ? currentVariation
+                                                              ?.price
+                                                          : state
+                                                              .cachedProductWithoutRelatedProductsModel[
+                                                                  products[
+                                                                          tapIndex]
+                                                                      .productId
+                                                                      .toString()]!
+                                                              .product
+                                                              ?.price,
+                                                      offerPrice: currentVariation
+                                                                  ?.offerPrice !=
+                                                              null
+                                                          ? currentVariation
+                                                              ?.offerPrice
+                                                          : state
+                                                              .cachedProductWithoutRelatedProductsModel[
+                                                                  products[
+                                                                          tapIndex]
+                                                                      .productId
+                                                                      .toString()]!
+                                                              .product
+                                                              ?.offerPrice,
+                                                      priceFormatted: currentVariation
+                                                                  ?.priceFormated !=
+                                                              null
+                                                          ? currentVariation
+                                                              ?.priceFormated
+                                                          : state
+                                                              .cachedProductWithoutRelatedProductsModel[
+                                                                  products[
+                                                                          tapIndex]
+                                                                      .productId
+                                                                      .toString()]!
+                                                              .product
+                                                              ?.priceFormatted,
+                                                      offerPriceFormatted: currentVariation?.offerPriceFormated !=
+                                                              null
+                                                          ? currentVariation
+                                                              ?.offerPriceFormated
+                                                          : state
+                                                              .cachedProductWithoutRelatedProductsModel[
+                                                                  products[
+                                                                          tapIndex]
+                                                                      .productId
+                                                                      .toString()]!
+                                                              .product
+                                                              ?.offerPriceFormatted,
                                                       availableQuantity: state
                                                                   .cachedProductWithoutRelatedProductsModel[products[
                                                                       tapIndex]

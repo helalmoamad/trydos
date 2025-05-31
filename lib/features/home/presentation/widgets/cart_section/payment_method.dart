@@ -145,7 +145,8 @@ class _PaymentMethodState extends State<PaymentMethod> {
                           onTap: () {
                             if (widget.fromPalceOrder ||
                                 widget.fromSuccessOrder ||
-                                widget.amount < widget.totalPrice) {
+                                (widget.amount < widget.totalPrice &&
+                                    widget.amount == 0)) {
                               if (widget.amount < widget.totalPrice &&
                                   !(widget.fromPalceOrder ||
                                       widget.fromSuccessOrder)) {

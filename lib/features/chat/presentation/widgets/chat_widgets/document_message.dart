@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
@@ -427,7 +428,12 @@ class _DocumentMessageState extends State<DocumentMessage> {
                                     ),
                                     widget.userMessagePhoto != null
                                         ? MyCachedNetworkImage(
-                                            imageUrl: widget.userMessagePhoto!,
+                                            imageUrl: (widget.userMessagePhoto
+                                                        .toString()
+                                                        .contains("cloudinary")
+                                                    ? ""
+                                                    : "${dotenv.env['Profile_Images_Url']}") +
+                                                widget.userMessagePhoto!,
                                             progressIndicatorBuilderWidget:
                                                 TrydosLoader(),
                                             imageFit: BoxFit.cover,

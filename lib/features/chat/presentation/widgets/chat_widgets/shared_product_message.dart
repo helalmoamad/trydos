@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -258,7 +259,7 @@ class _SharedProductMessageState extends State<SharedProductMessage> {
                                     width: 1.sw - 100,
                                     height: 400,
                                     child: MyCachedNetworkImage(
-                                      imageUrl: widget.imageUrl ?? "",
+                                      imageUrl: (widget.imageUrl ?? ""),
                                       imageFit: BoxFit.contain,
                                       progressIndicatorBuilderWidget:
                                           TrydosLoader(),
@@ -456,7 +457,13 @@ class _SharedProductMessageState extends State<SharedProductMessage> {
                                           ),
                                           widget.userMessagePhoto != null
                                               ? MyCachedNetworkImage(
-                                                  imageUrl:
+                                                  imageUrl: (widget
+                                                              .userMessagePhoto
+                                                              .toString()
+                                                              .contains(
+                                                                  "cloudinary")
+                                                          ? ""
+                                                          : "${dotenv.env['Profile_Images_Url']}") +
                                                       widget.userMessagePhoto!,
                                                   imageFit: BoxFit.fitWidth,
                                                   progressIndicatorBuilderWidget:

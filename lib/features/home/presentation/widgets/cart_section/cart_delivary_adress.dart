@@ -39,9 +39,11 @@ import '../../manager/orderBloc/order_state.dart';
 class CartDelivaryAddress extends StatefulWidget {
   final List<Map<String, String>> cartImages;
   final String currencySympole;
+  final String maxShippingDay;
   final String cartGroupId;
   const CartDelivaryAddress({
     required this.cartImages,
+    required this.maxShippingDay,
     required this.currencySympole,
     Key? key,
     required this.cartGroupId,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trydos/common/constant/constant.dart';
@@ -102,7 +103,12 @@ class CallMessage extends StatelessWidget {
                       ),
                       userMessagePhoto != null
                           ? MyCachedNetworkImage(
-                              imageUrl: userMessagePhoto!,
+                              imageUrl: (userMessagePhoto
+                                          .toString()
+                                          .contains("cloudinary")
+                                      ? ""
+                                      : "${dotenv.env['Profile_Images_Url']}") +
+                                  userMessagePhoto!,
                               progressIndicatorBuilderWidget: TrydosLoader(),
                               imageFit: BoxFit.cover,
                               radius: 8,

@@ -463,6 +463,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     GetFiltersWithPaginatioEvent event,
     Emitter<BoutiqueState> emit,
   ) async {
+    print(
+        "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF#####wwwwwwwwwwwwwwwwwwwwwwwwwwwwt");
     String key = event.boutiqueSlug + (event.category ?? '');
     /* if (event.getProductsFilterPreFetch &&
         !event.fromHomePageSearch &&
@@ -777,6 +779,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     Emitter<BoutiqueState> emit,
   ) async {
     String key = event.boutiqueSlug + (event.category ?? '');
+    print(
+        "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF################################${key}");
     /* if (event.getProductsFilterPreFetch &&
         !event.fromHomePageSearch &&
         event.cashedOrginalBoutique &&
@@ -1244,12 +1248,18 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         '${(event.category ?? '')}';
 
     String key = '${event.boutiqueSlug}' + '${(event.category ?? '')}';
+    print(
+        "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF66666666666666666666666666666666666666666FFFFFFF${event.boutiqueSlug}");
+
     if (event.cashedOrginalBoutique &&
         !(event.fromSearch ?? false) &&
         !(event.getWithPagination)) {
       List<String> keyForFirstFiveFilterList =
           prefsRepository.getFiveFilterForEachBoutiqueHasPrefechInHomePage() ??
               [];
+      print(
+          "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF66666666666666666666666666666666666666666FFFFFFF444444444444444444444${event.boutiqueSlug}");
+
       keyForFirstFiveFilterList
           .removeWhere((element) => !element.contains(event.boutiqueSlug));
 
@@ -1296,6 +1306,9 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             getProductListingWithFiltersForFirstFiveFilterModel
                     .prices?.priceRanges ??
                 [];
+        print(
+            "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF66666666666666666666666666666666666666666FF5555555555555555555555555555FFFF${event.boutiqueSlug}");
+
         ranges.removeWhere((element) => element.count == 0);
         dataForFirstFiveFilter[keyForFirstFiveFilter] =
             filters_model.GetProductFiltersModel(
@@ -1321,6 +1334,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         getProductListingWithFiltersPaginationWithPrefetchModels:
             Map.of(getProductListingWithFiltersForFirstFiveFilter),
       ));
+      print(
+          "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF66666666666666666699999999999988888888888888888666666666FFFFFFF${event.boutiqueSlug}");
 
       if (!data.containsValue(key)) {
         data.addAll({key: filters_model.GetProductFiltersModel()});
@@ -1359,6 +1374,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                           0)
                   ? PaginationStatus.success
                   : PaginationStatus.loading);
+      print(
+          "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF6666666666666660000000000000000000000000000666FFFFFFF${event.boutiqueSlug}");
 
       List<filters_model.PriceRange> ranges =
           getProductListingWithFiltersModel.prices?.priceRanges ?? [];
@@ -1376,6 +1393,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         categories: getProductListingWithFiltersModel.categories,
       ));
     }
+    print(
+        "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF77777777777777777777777777777777666666666666666666666666FFFFFFF${event.boutiqueSlug}");
 
     Map<String, filters_model.GetProductFiltersModel?> prevAppliedFiltersByUser,
         prevChoosedFiltersByUser;
@@ -1395,6 +1414,9 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       getProductListingWithFiltersPaginationModels
           .addAll({keyWithoutFilter: PaginationModel.init()});
     }
+    print(
+        "FFFFFFFFFFFFFFFFFFFFFFFFFFFFF88888888888888888888888888888866666666666666666666FFFFFFF${event.boutiqueSlug}");
+
     if (!((event.cashedOrginalBoutique && !(event.fromSearch ?? false)) &&
         !(event.getWithPagination) &&
         getProductListingWithFiltersPaginationModels[keyWithoutFilter]
@@ -1497,6 +1519,9 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         );
       }
     }
+    print(
+        "FFFFFFFFFFFFFFFFFFFFFFFFFFFF99999999999999999999999999999666666666666FFFFFFF${event.boutiqueSlug}");
+
     Map<String, GetProductFiltersStatus>? getProductFiltersStatus = Map.of(
       state.getProductFiltersStatus,
     );
@@ -1520,7 +1545,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       choosedFiltersByUser: Map.of(choosedFilters),
       appliedFiltersByUser: Map.of(appliedFilters),
     ));
-    print("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF${event.boutiqueSlug}");
+    print(
+        "FFFFFFFFFFFFFFFFFFFFFFFFFFFFF3333333333333333333333333333333333333333333666666666FFFFFFF${event.boutiqueSlug}");
     final response = event.boutiqueSlug == "*featured*"
         ? await getFeaturedProductsUseCase(GetFeaturedProductsParams(
             limit: 10,

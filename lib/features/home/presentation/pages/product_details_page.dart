@@ -26,6 +26,7 @@ import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
 
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
+import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
 
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
@@ -577,6 +578,71 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                 },
                               );
                               productItem = productItem!.copyWith(
+                                collectedAfterOrdering: state
+                                    .cachedProductWithoutRelatedProductsModel[
+                                        productItem?.productId.toString()]!
+                                    .product
+                                    ?.collectedAfterOrdering,
+                                countOfPieces: state
+                                    .cachedProductWithoutRelatedProductsModel[
+                                        productItem?.productId.toString()]!
+                                    .product
+                                    ?.countOfPieces,
+                                countOfLikes: state
+                                    .cachedProductWithoutRelatedProductsModel[
+                                        productItem?.productId.toString()]!
+                                    .product
+                                    ?.countOfLikes,
+                                deliveryAt: state
+                                    .cachedProductWithoutRelatedProductsModel[
+                                        productItem?.productId.toString()]!
+                                    .product
+                                    ?.deliveryAt,
+                                countryIsRestricted: state
+                                    .cachedProductWithoutRelatedProductsModel[
+                                        productItem?.productId.toString()]!
+                                    .product
+                                    ?.countryIsRestricted,
+                                isActive: state
+                                    .cachedProductWithoutRelatedProductsModel[
+                                        productItem?.productId.toString()]!
+                                    .product
+                                    ?.isActive,
+                                isLiked: state
+                                    .cachedProductWithoutRelatedProductsModel[
+                                        productItem?.productId.toString()]!
+                                    .product
+                                    ?.isLiked,
+                                leftStock: state
+                                    .cachedProductWithoutRelatedProductsModel[
+                                        productItem?.productId.toString()]!
+                                    .product
+                                    ?.leftStock,
+                                isProductNotifiedForUser: state
+                                    .cachedProductWithoutRelatedProductsModel[
+                                        productItem?.productId.toString()]!
+                                    .product
+                                    ?.isProductNotifiedForUser,
+                                price: state
+                                    .cachedProductWithoutRelatedProductsModel[
+                                        productItem?.productId.toString()]!
+                                    .product
+                                    ?.price,
+                                offerPrice: state
+                                    .cachedProductWithoutRelatedProductsModel[
+                                        productItem?.productId.toString()]!
+                                    .product
+                                    ?.offerPrice,
+                                offerPriceFormatted: state
+                                    .cachedProductWithoutRelatedProductsModel[
+                                        productItem?.productId.toString()]!
+                                    .product
+                                    ?.offerPriceFormatted,
+                                priceFormatted: state
+                                    .cachedProductWithoutRelatedProductsModel[
+                                        productItem?.productId.toString()]!
+                                    .product
+                                    ?.priceFormatted,
                                 availableQuantity: state
                                     .cachedProductWithoutRelatedProductsModel[
                                         productItem?.productId.toString()]!
@@ -1147,6 +1213,17 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             // ProductStoriesCard(),
                             ProductStoriesCard(),
                             ProductShippingAndDelivery(
+                              countryName: state
+                                      .getAllowedCountriesModel?.data?.countries
+                                      ?.firstWhere(
+                                          (element) =>
+                                              '${GetIt.I<PrefsRepository>().userCountryIsAvailable == 1 ? GetIt.I<PrefsRepository>().userChoosedCountryIso : GetIt.I<PrefsRepository>().countryIso?.toLowerCase()}'
+                                                  .startsWith(element.iso!
+                                                      .toLowerCase()),
+                                          orElse: () =>
+                                              Country(id: 0, iso: "", name: ""))
+                                      .name ??
+                                  "",
                               shippingCost: (state
                                               .cachedProductWithoutRelatedProductsModel[
                                           productItem!.productId.toString()] !=
@@ -1167,25 +1244,29 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                       : 0
                                   : 0),
                               shippingDay:
-                                  (state.cachedProductWithoutRelatedProductsModel[
-                                                  productItem!.productId
-                                                      .toString()] !=
-                                              null
-                                          ? state
-                                                      .cachedProductWithoutRelatedProductsModel[
-                                                          productItem!.productId
-                                                              .toString()]!
-                                                      .product !=
+                                  ((state.cachedProductWithoutRelatedProductsModel[
+                                                      productItem!.productId
+                                                          .toString()] !=
                                                   null
                                               ? state
-                                                      .cachedProductWithoutRelatedProductsModel[
-                                                          productItem!.productId
-                                                              .toString()]!
-                                                      .product!
-                                                      .shippingDays ??
-                                                  0
-                                              : 0
-                                          : 0)
+                                                          .cachedProductWithoutRelatedProductsModel[
+                                                              productItem!
+                                                                  .productId
+                                                                  .toString()]!
+                                                          .product !=
+                                                      null
+                                                  ? state
+                                                          .cachedProductWithoutRelatedProductsModel[
+                                                              productItem!
+                                                                  .productId
+                                                                  .toString()]!
+                                                          .product!
+                                                          .shippingDays ??
+                                                      0
+                                                  : 0
+                                              : 0) +
+                                          (state.startingSetting?.shippingDay ??
+                                              0))
                                       .toString(),
                             ),
                             SizedBox(
@@ -1430,6 +1511,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           ));
                     }
                     return ProductDetailsBottomSheet(
+                      initOfferPrice: (productItem?.offerPrice ?? 0).toString(),
+                      initPrice: (productItem?.price ?? 0).toString(),
                       isGetFullProductDetails: widget.productItem == null,
                       currentSelectedColorAfterChangeVariant:
                           currentSelectedColorAfterChangeVariant,
@@ -1571,10 +1654,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                   ?.images,
                           syncColorImages: syncColorImagesFromListing,
                           productId: int.tryParse(productId),
-                          price: currentVariation?.price != null ? currentVariation?.price : productItem!.price,
-                          offerPrice: currentVariation?.offerPrice != null ? currentVariation?.offerPrice : productItem!.offerPrice,
-                          priceFormatted: currentVariation?.priceFormated != null ? currentVariation?.priceFormated : productItem!.priceFormatted,
-                          offerPriceFormatted: currentVariation?.offerPriceFormated != null ? currentVariation?.offerPriceFormated : productItem!.offerPriceFormatted),
+                          price: (currentVariation?.price != null) ? currentVariation?.price : state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]?.product?.price,
+                          offerPrice: currentVariation?.offerPrice != null ? currentVariation?.offerPrice : state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]?.product?.offerPrice,
+                          priceFormatted: currentVariation?.priceFormated != null ? currentVariation?.priceFormated : state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]?.product?.priceFormatted,
+                          offerPriceFormatted: currentVariation?.offerPriceFormated != null ? currentVariation?.offerPriceFormated : state.cachedProductWithoutRelatedProductsModel[productItem?.productId.toString()]?.product?.offerPriceFormatted),
                       currentColor: currentSelectedColor,
                       maxAllowedToAddCart: state
                               .cachedProductWithoutRelatedProductsModel[

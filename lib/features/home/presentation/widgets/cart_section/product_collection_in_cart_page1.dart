@@ -629,9 +629,12 @@ class _ProductCollectionInCartPage1State
                                               0
                                       ? SizedBox()
                                       : !isOldCart &&
-                                              (state.cartCollection?[index]
-                                                          .shippingDays ??
-                                                      0) ==
+                                              ((state.cartCollection?[index]
+                                                              .shippingDays ??
+                                                          0) +
+                                                      (state.startingSetting
+                                                              ?.shippingDay ??
+                                                          0)) ==
                                                   0
                                           ? SizedBox()
                                           : Container(
@@ -672,8 +675,8 @@ class _ProductCollectionInCartPage1State
                                                   ),
                                                   Text(
                                                     isOldCart
-                                                        ? "${state.oldcartCollection?[index].shippingDays ?? 0} ${LocaleKeys.day.tr()} "
-                                                        : "${state.cartCollection?[index].shippingDays ?? 0} ${LocaleKeys.day.tr()} ",
+                                                        ? "${((state.oldcartCollection?[index].shippingDays ?? 0) + (state.startingSetting?.shippingDay ?? 0))} ${LocaleKeys.day.tr()} "
+                                                        : "${((state.cartCollection?[index].shippingDays ?? 0) + (state.startingSetting?.shippingDay ?? 0))} ${LocaleKeys.day.tr()} ",
                                                     style: context.textTheme
                                                         .bodyMedium?.mr
                                                         .copyWith(
@@ -1272,8 +1275,8 @@ class _ProductCollectionInCartPage1State
                                                 (state.cartCollection?[index]
                                                         .haveHurryUpNotifyQty ??
                                                     false)
-                                            ? 45
-                                            : 10,
+                                            ? 65
+                                            : 30,
                                 right: LanguageService.languageCode != "ar"
                                     ? 5
                                     : null,

@@ -197,6 +197,30 @@ class HelperFunctions {
     );
   }
 
+  static DateTime parseToUtc(String dateTimeString) {
+    // نقسم النص إلى تاريخ ووقت
+    final parts = dateTimeString.split(' ');
+    if (parts.length != 2) {
+      throw FormatException('صيغة التاريخ غير صحيحة');
+    }
+
+    final dateParts = parts[0].split('-');
+    final timeParts = parts[1].split(':');
+
+    if (dateParts.length != 3 || timeParts.length != 3) {
+      throw FormatException('صيغة التاريخ أو الوقت غير صحيحة');
+    }
+
+    return DateTime.utc(
+      int.parse(dateParts[0]), // السنة
+      int.parse(dateParts[1]), // الشهر
+      int.parse(dateParts[2]), // اليوم
+      int.parse(timeParts[0]), // الساعة
+      int.parse(timeParts[1]), // الدقيقة
+      int.parse(timeParts[2]), // الثانية
+    );
+  }
+
   static String getTheFirstTwoLettersOfName(String name) {
     return name.split(' ').length == 2
         ? name.split(' ')[0][0] + name.split(' ')[1][0]
@@ -248,6 +272,10 @@ class HelperFunctions {
 
   static DateTime getZonedDate(DateTime date) {
     return date.toLocal();
+  }
+
+  static DateTime getZonedDateWithoutUtcForm(String date) {
+    return parseToUtc(date).toLocal();
   }
 
   static String getTimeInFormat(Duration duration) {

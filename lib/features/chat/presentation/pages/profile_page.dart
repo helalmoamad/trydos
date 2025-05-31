@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:full_screen_image_null_safe/full_screen_image_null_safe.dart';
@@ -134,7 +135,12 @@ class _ProfilePageState extends State<ProfilePage> {
                               ],
                             ),
                             child: MyCachedNetworkImage(
-                              imageUrl: widget.receiverPhoto!,
+                              imageUrl: (widget.receiverPhoto
+                                          .toString()
+                                          .contains("cloudinary")
+                                      ? ""
+                                      : "${dotenv.env['Profile_Images_Url']}") +
+                                  widget.receiverPhoto!,
                               imageFit: BoxFit.cover,
                               progressIndicatorBuilderWidget: TrydosLoader(),
                               height: 150.h,

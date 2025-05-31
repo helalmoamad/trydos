@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui' as ui;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
 import 'package:overscroll_pop/overscroll_pop.dart';
@@ -99,7 +100,12 @@ class StoryCard extends StatelessWidget {
                               : MyCachedNetworkImage(
                                   height: 60.r,
                                   width: 60.r,
-                                  imageUrl: collectionStoryModel.photoPath,
+                                  imageUrl: (collectionStoryModel.photoPath
+                                              .toString()
+                                              .contains("cloudinary")
+                                          ? ""
+                                          : "${dotenv.env['Profile_Images_Url']}") +
+                                      collectionStoryModel.photoPath,
                                   imageFit: BoxFit.cover,
                                 ),
                         ),

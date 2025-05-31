@@ -293,7 +293,7 @@ void main() async {
     storageDirectory: await getApplicationDocumentsDirectory(),
   );
   isHydratedStorageInitialized = true;
-  // PaintingBinding.instance.imageCache.maximumSizeBytes = 400 * 1024 * 1024;
+  PaintingBinding.instance.imageCache.maximumSizeBytes = 300 * 1024 * 1024;
   HttpOverrides.global = MyHttpOverrides();
   await Future.wait([
     EasyLocalization.ensureInitialized(),
