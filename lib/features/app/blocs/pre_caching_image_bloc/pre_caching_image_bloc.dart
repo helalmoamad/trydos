@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
 
@@ -191,6 +193,9 @@ class PreCachingImageBloc
     CacheImageEvent event,
     Emitter<PreCachingImageState> emit,
   ) async {
+    if (!event.imageUrl.contains("cloudinary")) {
+      return;
+    }
     // final updatedCachedImages = Map<String, bool>.from(state.cachedImages);
     // updatedCachedImages[event.imageUrl] = false;
 
@@ -215,6 +220,16 @@ class PreCachingImageBloc
 
       precacheImage(
         CachedNetworkImageProvider(event.imageUrl,
+            headers: {
+              'User-Agent': (kDebugMode ? "developer" : "users") +
+                  'device OS:' +
+                  (Platform.isAndroid ? 'Android' : 'IOS') +
+                  ' '
+                      ', application version: 1.0.0',
+              "Referer": (kDebugMode ? "developer" : "users") +
+                  'device OS:' +
+                  (Platform.isAndroid ? 'Android' : 'IOS')
+            },
             cacheManager: CustomCacheManagers()),
         event.context,
       ).whenComplete(() => semaphore.release());

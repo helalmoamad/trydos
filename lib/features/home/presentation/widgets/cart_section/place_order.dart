@@ -537,7 +537,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              '${widget.cartImages.length} ',
+                              '${homeState.cartCollection?.length} ',
                               style: context.textTheme.bodyMedium?.br.copyWith(
                                   color: const Color(0xffFEFEFE),
                                   letterSpacing: 0.18,
@@ -635,7 +635,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                '${widget.cartImages.length} ',
+                                '${homeState.cartCollection?.length} ',
                                 style: context.textTheme.bodyMedium?.br
                                     .copyWith(
                                         color: const Color(0xffFEFEFE),

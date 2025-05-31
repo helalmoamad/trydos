@@ -180,7 +180,8 @@ handleOpenChatPageFromNotificationInBackground(String? prevMessageId,
   DealWithRemovedMessageStoredFromBackground();
   DealWithMessageReceivedStatusStoredFromBackground();
   DealWithMessageWatchStatusStoredFromBackground();
-  navigationToSinglePageChat(message.channel!);
+  Future.delayed(Duration(milliseconds: 600),
+      () => navigationToSinglePageChat(message.channel!));
 }
 
 navigationToProductDetailsPage(String productId) {}
@@ -367,6 +368,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 
   @override
   void initState() {
+    // GetIt.I<PrefsRepository>().remove()
     pages = [
       HomePage(isShowPanelForVerified: isShowPanelForVerified),
       const CartPage(),
@@ -436,6 +438,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 
   void onMessage() {
     FirebaseMessaging.onMessage.listen((event) {
+      print("NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN${event.data}");
       if (HandlingMarketNotifications.checkIfTheNotificationIsNotRelatedToChat(
           event)) {
         LocalNotificationService()
@@ -578,7 +581,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
         Message message = Message.fromJson(remoteMessage['message']);
         String prevMessageId = remoteMessage['prev_message_id'].toString();
         print(
-            "######222222222222222222222222222222222222222#############11111111111111111111111111111111111111111111#################################################${message.senderUserId}###################${message.receiverUserId}");
+            "######222222222222222222222222222222222222222#######${event.data['data']}######11111111111111111111111111111111111111111111#################################################${message.senderUserId}###################${message.receiverUserId}");
         chatBloc.add(AddChannelToChannels(message: message));
         chatBloc.add(ReceiveMessageEvent(
             message: message, prevMessageId: prevMessageId));
@@ -608,6 +611,17 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
+      try {
+        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
+            errorExption: error.exceptionAsString().toString(),
+            errorPath: error.stack.toString().split("#")[1],
+            urlBackend: "Front Error",
+            messageFromeBackend: "Front Error")));
+      } catch (e) {}
+      GetIt.I<PrefsRepository>().saveRequestsData(
+          null, null, null, null, null, null, null,
+          error: error.toString());
+
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
           error: error.toString());
@@ -675,10 +689,10 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                               p.getCustomerCountryStatus !=
                               c.getCustomerCountryStatus,
                           builder: (context, authstate) {
-                            if (homestate.getAllowedCountriesModel == null ||
-                                //    _prefsRepository.countryIso == null ||
-                                homestate.getAllowedCountriesModel!.data!
-                                    .countries.isNullOrEmpty) {
+                            if ((homestate.getAllowedCountriesModel?.data
+                                        ?.countries?.length ??
+                                    0) ==
+                                0) {
                               return Center(
                                 child: TrydosLoader(),
                               );
@@ -687,7 +701,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                     .getAllowedCountriesModel!.data!.countries!
                                     .any((element) {
                                   return element.iso ==
-                                      _prefsRepository.countryIso!;
+                                      (_prefsRepository.countryIso ?? "");
                                 }) ||
                                 _prefsRepository.userCountryIsAvailable == 1);
                             return ValueListenableBuilder<bool>(
@@ -877,15 +891,16 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                                         (context,
                                                                             state) {
                                                                       int qtyItemsInCart =
-                                                                          0;
-                                                                      state
+                                                                          state.cartCollection?.length ??
+                                                                              0;
+                                                                      /*   state
                                                                           .cartCollection
                                                                           ?.forEach(
                                                                         (element) {
                                                                           qtyItemsInCart =
                                                                               qtyItemsInCart + (element.quantity ?? 0);
                                                                         },
-                                                                      );
+                                                                      );*/
 
                                                                       return Container(
                                                                         alignment:

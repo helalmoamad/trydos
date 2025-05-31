@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 import 'package:speech_to_text/speech_to_text.dart';
@@ -64,6 +65,7 @@ class _TabsBarState extends State<TabsBar> {
   late AppBloc appBloc;
   late BoutiqueBloc boutiqueBloc;
   late HomeBloc homeBloc;
+  Timer? debounce;
   late CategoryBloc categoryBloc;
   late final geminis.Gemini gemini;
   SpeechToText _speechToText = SpeechToText();
@@ -178,7 +180,7 @@ class _TabsBarState extends State<TabsBar> {
   }
 
   final ScrollController scrollController = ScrollController();
-
+  Timer? categoryDebounce;
   @override
   void initState() {
     categoryBloc = BlocProvider.of<CategoryBloc>(context);
@@ -203,37 +205,43 @@ class _TabsBarState extends State<TabsBar> {
         categorySlugs.add(element.slug!);
       },
     );
-    scrollController.addListener(() {
-      if (categorySlugs.isEmpty) {
-        categoryBloc.state.mainCategoriesResponseModel?.data?.mainCategories
-            ?.forEach(
-          (element) {
-            categorySlugs.add(element.slug!);
-          },
-        );
-        if (categorySlugs.isEmpty) return;
-      }
-      int lastIndexSeenByUser = max(
-          0,
-          (scrollController.position.pixels +
-                  scrollController.position.viewportDimension -
-                  55) ~/
-              40);
-      lastIndexSeenByUser = min(categorySlugs.length - 1, lastIndexSeenByUser);
-      for (int i = 0; i <= lastIndexSeenByUser; i++) {
-        if (categoryBloc.state.boutiquesForEveryMainCategoryThatDidPrefetch[
-                categorySlugs[i]] !=
-            true) {
-          categoryBloc.add(GetHomeBoutiqesEvent(
-            withSemaphore: true,
-            getWithPrefetchToStoreInMemory: true,
-            getWithOutPrefetchForEachBoutiques: false,
-            context: context,
-            categorySlug: categorySlugs[i],
-            offset: "1",
-          ));
+    if (categoryDebounce?.isActive ?? false) {
+      categoryDebounce!.cancel();
+    }
+    categoryDebounce = Timer(Duration(milliseconds: 600), () {
+      scrollController.addListener(() {
+        if (categorySlugs.isEmpty) {
+          categoryBloc.state.mainCategoriesResponseModel?.data?.mainCategories
+              ?.forEach(
+            (element) {
+              categorySlugs.add(element.slug!);
+            },
+          );
+          if (categorySlugs.isEmpty) return;
         }
-      }
+        int lastIndexSeenByUser = max(
+            0,
+            (scrollController.position.pixels +
+                    scrollController.position.viewportDimension -
+                    55) ~/
+                40);
+        lastIndexSeenByUser =
+            min(categorySlugs.length - 1, lastIndexSeenByUser);
+        for (int i = 0; i <= lastIndexSeenByUser; i++) {
+          if (categoryBloc.state.boutiquesForEveryMainCategoryThatDidPrefetch[
+                  categorySlugs[i]] !=
+              true) {
+            categoryBloc.add(GetHomeBoutiqesEvent(
+              withSemaphore: true,
+              getWithPrefetchToStoreInMemory: true,
+              getWithOutPrefetchForEachBoutiques: false,
+              context: context,
+              categorySlug: categorySlugs[i],
+              offset: "1",
+            ));
+          }
+        }
+      });
     });
 
     widget.appearTrendingAndHistory.value = true;
@@ -715,157 +723,167 @@ class _TabsBarState extends State<TabsBar> {
                                     ?.copyWith(color: context.colorScheme.hint),
                               ),
                               onChanged: (String text) {
-                                List<String>? colorsFilter = [];
-                                List<String> listSearchTextWithoutConstWord =
-                                    text.split(" ").toList();
-                                String searchText = "";
-                                List<String>? sizesFilter = [];
-
-                                if (text.length > 2) {
-                                  List<String> listOfSearchText =
+                                if (debounce?.isActive ?? false) {
+                                  debounce!.cancel();
+                                }
+                                debounce = Timer(Duration(seconds: 1), () {
+                                  List<String>? colorsFilter = [];
+                                  List<String> listSearchTextWithoutConstWord =
                                       text.split(" ").toList();
-                                  for (var i = 0;
-                                      i < colorsNameForSearch.length;
-                                      i++) {
-                                    if (listOfSearchText
-                                        .contains(colorsNameForSearch[i])) {
-                                      colorsFilter.add(colorsCodeForSearch[i]);
-                                      listSearchTextWithoutConstWord
-                                          .remove(colorsNameForSearch[i]);
-                                    }
-                                  }
+                                  String searchText = "";
+                                  List<String>? sizesFilter = [];
 
-                                  for (var i = 0;
-                                      i < sizesForSearch.length;
-                                      i++) {
-                                    if (listOfSearchText
-                                        .contains(sizesForSearch[i])) {
-                                      sizesFilter.add(sizesForSearch[i]);
-                                      listSearchTextWithoutConstWord
-                                          .remove(sizesForSearch[i]);
+                                  if (text.length > 2) {
+                                    List<String> listOfSearchText =
+                                        text.split(" ").toList();
+                                    for (var i = 0;
+                                        i < colorsNameForSearch.length;
+                                        i++) {
+                                      if (listOfSearchText
+                                          .contains(colorsNameForSearch[i])) {
+                                        colorsFilter
+                                            .add(colorsCodeForSearch[i]);
+                                        listSearchTextWithoutConstWord
+                                            .remove(colorsNameForSearch[i]);
+                                      }
                                     }
-                                  }
-                                  for (var i = 0;
-                                      i < constWordToRemoveItFromSearch.length;
-                                      i++) {
-                                    listSearchTextWithoutConstWord.remove(
-                                        constWordToRemoveItFromSearch[i]);
-                                  }
-                                  listSearchTextWithoutConstWord.forEach(
-                                      (element) => searchText =
-                                          searchText + " " + element);
 
-                                  resetSearchAfterSearchingWhileRemoveSearch =
-                                      true;
-                                  Filter filters = boutiqueBloc
-                                          .state
-                                          .choosedFiltersByUser['search']
-                                          ?.filters ??
-                                      Filter();
-                                  print(sizesFilter.isEmpty);
-                                  boutiqueBloc.add(ChangeSelectedFiltersEvent(
-                                    boutiqueSlug: 'search',
-                                    requestToUpdateFilters: true,
-                                    fromHomePageSearch: true,
-                                    filtersChoosedByUser:
-                                        GetProductFiltersModel(
-                                            filters:
-                                                filters.copyWithSaveOtherField(
-                                      attributes: sizesFilter.isEmpty
-                                          ? []
-                                          : [
-                                              Attribute(
-                                                  name: "Size",
-                                                  options: sizesFilter)
-                                            ],
-                                      colors: colorsFilter,
-                                      prices: filters.prices,
-                                      searchText: searchText,
-                                    )),
-                                  ));
-                                  boutiqueBloc.add(GetProductsWithFiltersEvent(
-                                      fromChoosed: true,
-                                      offset: 1,
+                                    for (var i = 0;
+                                        i < sizesForSearch.length;
+                                        i++) {
+                                      if (listOfSearchText
+                                          .contains(sizesForSearch[i])) {
+                                        sizesFilter.add(sizesForSearch[i]);
+                                        listSearchTextWithoutConstWord
+                                            .remove(sizesForSearch[i]);
+                                      }
+                                    }
+                                    for (var i = 0;
+                                        i <
+                                            constWordToRemoveItFromSearch
+                                                .length;
+                                        i++) {
+                                      listSearchTextWithoutConstWord.remove(
+                                          constWordToRemoveItFromSearch[i]);
+                                    }
+                                    listSearchTextWithoutConstWord.forEach(
+                                        (element) => searchText =
+                                            searchText + " " + element);
+
+                                    resetSearchAfterSearchingWhileRemoveSearch =
+                                        true;
+                                    Filter filters = boutiqueBloc
+                                            .state
+                                            .choosedFiltersByUser['search']
+                                            ?.filters ??
+                                        Filter();
+                                    print(sizesFilter.isEmpty);
+                                    boutiqueBloc.add(ChangeSelectedFiltersEvent(
                                       boutiqueSlug: 'search',
-                                      resetChoosedFilters: false,
-                                      fromSearch: true,
-                                      searchText: searchText));
-                                  print(
-                                      "**222222222222222-------------------------------${text}");
+                                      requestToUpdateFilters: true,
+                                      fromHomePageSearch: true,
+                                      filtersChoosedByUser:
+                                          GetProductFiltersModel(
+                                              filters: filters
+                                                  .copyWithSaveOtherField(
+                                        attributes: sizesFilter.isEmpty
+                                            ? []
+                                            : [
+                                                Attribute(
+                                                    name: "Size",
+                                                    options: sizesFilter)
+                                              ],
+                                        colors: colorsFilter,
+                                        prices: filters.prices,
+                                        searchText: searchText,
+                                      )),
+                                    ));
+                                    boutiqueBloc.add(
+                                        GetProductsWithFiltersEvent(
+                                            fromChoosed: true,
+                                            offset: 1,
+                                            boutiqueSlug: 'search',
+                                            resetChoosedFilters: false,
+                                            fromSearch: true,
+                                            searchText: searchText));
+                                    print(
+                                        "**222222222222222-------------------------------${text}");
 
-                                  widget.buildSearchResult.value = text.length;
-                                }
-                                if (text.length < 3) {
-                                  categoryBloc.add(ReplyFromGeminiEvent(
-                                      fromSearch: true,
-                                      resetTheReply: true,
-                                      theReplyFromGemini: ""));
-                                  Filter filters = boutiqueBloc
-                                          .state
-                                          .choosedFiltersByUser['search']
-                                          ?.filters ??
-                                      Filter();
+                                    widget.buildSearchResult.value =
+                                        text.length;
+                                  }
+                                  if (text.length < 3) {
+                                    categoryBloc.add(ReplyFromGeminiEvent(
+                                        fromSearch: true,
+                                        resetTheReply: true,
+                                        theReplyFromGemini: ""));
+                                    Filter filters = boutiqueBloc
+                                            .state
+                                            .choosedFiltersByUser['search']
+                                            ?.filters ??
+                                        Filter();
 
-                                  boutiqueBloc.add(ChangeSelectedFiltersEvent(
-                                    boutiqueSlug: 'search',
-                                    requestToUpdateFilters: false,
-                                    fromHomePageSearch: true,
-                                    filtersChoosedByUser:
-                                        GetProductFiltersModel(
-                                            filters:
-                                                filters.copyWithSaveOtherField(
-                                      prices: filters.prices,
-                                      searchText: null,
-                                    )),
-                                  ));
-                                }
-                                if (text.length < 3 &&
-                                    resetSearchAfterSearchingWhileRemoveSearch) {
-                                  resetSearchAfterSearchingWhileRemoveSearch =
-                                      false;
-                                  Filter filters = boutiqueBloc
-                                          .state
-                                          .choosedFiltersByUser['search']
-                                          ?.filters ??
-                                      Filter();
-                                  Filter appliedFilters = boutiqueBloc
-                                          .state
-                                          .appliedFiltersByUser['search']
-                                          ?.filters ??
-                                      Filter();
-                                  boutiqueBloc.add(ChangeAppliedFiltersEvent(
-                                    boutiqueSlug: 'search',
-                                    filtersAppliedByUser:
-                                        GetProductFiltersModel(
-                                            filters: appliedFilters
-                                                .copyWithSaveOtherField(
-                                      prices: appliedFilters.prices,
-                                      colors: [],
-                                      attributes: [],
-                                      searchText: null,
-                                    )),
-                                  ));
-                                  boutiqueBloc.add(ChangeSelectedFiltersEvent(
-                                    boutiqueSlug: 'search',
-                                    requestToUpdateFilters: true,
-                                    fromHomePageSearch: true,
-                                    filtersChoosedByUser:
-                                        GetProductFiltersModel(
-                                            filters:
-                                                filters.copyWithSaveOtherField(
-                                      attributes: sizesFilter.isEmpty
-                                          ? []
-                                          : [
-                                              Attribute(
-                                                  name: "Size",
-                                                  options: sizesFilter)
-                                            ],
-                                      colors: colorsFilter,
-                                      prices: filters.prices,
-                                      searchText: null,
-                                    )),
-                                  ));
-                                }
+                                    boutiqueBloc.add(ChangeSelectedFiltersEvent(
+                                      boutiqueSlug: 'search',
+                                      requestToUpdateFilters: false,
+                                      fromHomePageSearch: true,
+                                      filtersChoosedByUser:
+                                          GetProductFiltersModel(
+                                              filters: filters
+                                                  .copyWithSaveOtherField(
+                                        prices: filters.prices,
+                                        searchText: null,
+                                      )),
+                                    ));
+                                  }
+                                  if (text.length < 3 &&
+                                      resetSearchAfterSearchingWhileRemoveSearch) {
+                                    resetSearchAfterSearchingWhileRemoveSearch =
+                                        false;
+                                    Filter filters = boutiqueBloc
+                                            .state
+                                            .choosedFiltersByUser['search']
+                                            ?.filters ??
+                                        Filter();
+                                    Filter appliedFilters = boutiqueBloc
+                                            .state
+                                            .appliedFiltersByUser['search']
+                                            ?.filters ??
+                                        Filter();
+                                    boutiqueBloc.add(ChangeAppliedFiltersEvent(
+                                      boutiqueSlug: 'search',
+                                      filtersAppliedByUser:
+                                          GetProductFiltersModel(
+                                              filters: appliedFilters
+                                                  .copyWithSaveOtherField(
+                                        prices: appliedFilters.prices,
+                                        colors: [],
+                                        attributes: [],
+                                        searchText: null,
+                                      )),
+                                    ));
+                                    boutiqueBloc.add(ChangeSelectedFiltersEvent(
+                                      boutiqueSlug: 'search',
+                                      requestToUpdateFilters: true,
+                                      fromHomePageSearch: true,
+                                      filtersChoosedByUser:
+                                          GetProductFiltersModel(
+                                              filters: filters
+                                                  .copyWithSaveOtherField(
+                                        attributes: sizesFilter.isEmpty
+                                            ? []
+                                            : [
+                                                Attribute(
+                                                    name: "Size",
+                                                    options: sizesFilter)
+                                              ],
+                                        colors: colorsFilter,
+                                        prices: filters.prices,
+                                        searchText: null,
+                                      )),
+                                    ));
+                                  }
+                                });
                               },
                               hideTrendingAndHistory:
                                   widget.appearTrendingAndHistory,
@@ -877,7 +895,13 @@ class _TabsBarState extends State<TabsBar> {
                                 if (state.currentIndex != 4) {
                                   return Container(
                                     padding: EdgeInsets.only(
-                                      left: 15,
+                                      left: LanguageService.languageCode == "ar"
+                                          ? 15
+                                          : 0,
+                                      right:
+                                          LanguageService.languageCode != "ar"
+                                              ? 15
+                                              : 0,
                                     ),
                                     width: 1.sw - 40,
                                     height: 80,
@@ -909,7 +933,7 @@ class _TabsBarState extends State<TabsBar> {
                                                 : null,
                                             padding:
                                                 HWEdgeInsetsDirectional.only(
-                                                    end: 6),
+                                                    end: 15),
                                             child: InkWell(
                                               onTap: () {
                                                 if (BlocProvider.of<AppBloc>(
@@ -991,7 +1015,7 @@ class _TabsBarState extends State<TabsBar> {
                                                                 .flatPhotoPath!
                                                                 .filePath
                                                                 .toString(),
-                                                            height: 20,
+                                                            height: 24,
                                                             // color: state.tabIndex ==
                                                             //         index
                                                             //     ? Colors.black
@@ -1024,7 +1048,7 @@ class _TabsBarState extends State<TabsBar> {
                                                       );
                                                     },
                                                   ),
-                                                  4.verticalSpace,
+                                                  2.verticalSpace,
                                                   MyTextWidget(
                                                     mainCategory.name
                                                         .toString(),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
@@ -95,7 +97,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
   bool isExpanded = false;
 
   String key = '';
-
+  Timer? debounce;
   @override
   void initState() {
     key = widget.boutiqueSlug + (widget.category ?? '');
@@ -104,15 +106,20 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
     autoScrollController = AutoScrollController();
     autoScrollController.addListener(() {
       try {
-        if (autoScrollController.offset >=
-            (autoScrollController.position.maxScrollExtent * 0.6)) {
-          boutiqueBloc.add(GetFiltersWithPaginatioEvent(
-            fromHomePageSearch: true,
-            searchText: widget.searchText,
-            category: widget.category,
-            boutiqueSlug: widget.boutiqueSlug,
-          ));
+        if (debounce?.isActive ?? false) {
+          debounce!.cancel();
         }
+        debounce = Timer(Duration(milliseconds: 600), () {
+          if (autoScrollController.offset >=
+              (autoScrollController.position.maxScrollExtent * 0.6)) {
+            boutiqueBloc.add(GetFiltersWithPaginatioEvent(
+              fromHomePageSearch: true,
+              searchText: widget.searchText,
+              category: widget.category,
+              boutiqueSlug: widget.boutiqueSlug,
+            ));
+          }
+        });
       } catch (e) {}
     });
     super.initState();
@@ -2563,7 +2570,11 @@ class FilterImage extends StatelessWidget {
           child: Stack(
             children: [
               isSvg
-                  ? SvgNetworkWidget(svgUrl: imageUrl)
+                  ? SvgNetworkWidget(
+                      svgUrl: imageUrl,
+                      //height: height,
+                      width: width,
+                    )
                   : imageUrl.contains('assets')
                       ? Image.asset(imageUrl,
                           width: width, fit: BoxFit.cover, height: height)

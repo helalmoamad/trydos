@@ -63,6 +63,8 @@ class ProductDetailsBottomSheet extends StatefulWidget {
   final int countOfPieces;
   final bool? isGetFullProductDetails;
   final bool? fromListingPage;
+  final String initPrice;
+  final String initOfferPrice;
   final bool collectedAfterOrdering;
 
   final String maxAllowedToAddCart;
@@ -90,6 +92,8 @@ class ProductDetailsBottomSheet extends StatefulWidget {
       required this.maxAllowedToAddCart,
       required this.countOfPieces,
       required this.currentColornum,
+      required this.initOfferPrice,
+      required this.initPrice,
       required this.boutiqueId,
       required this.currentColor,
       required this.currentColorName});
@@ -239,8 +243,6 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
             previous.currentSelectedColorForEveryProductStatus !=
                 current.currentSelectedColorForEveryProductStatus,
         builder: (context, state) {
-          print("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSss");
-
           if (state.isChangedvariationWhenQtyZero &&
               (widget.fromListingPage ?? false)) {
             homeBloc.add(IsChangedVariationWhenQtyZeroEvent(
@@ -270,6 +272,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                     widget.productItem.slug.toString()] ??
                 0;
           }
+
           if (state.isChangedvariationWhenQtyZero &&
               widget.currentSelectedColorAfterChangeVariant != -1 &&
               !(widget.fromListingPage ?? false)) {
@@ -303,6 +306,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
               state.colorsQuantitiesForEachProduct ?? [];
           colorsForEachProduct = state.colorsForEachProduct ?? [];
           sizesForEachProduct = state.sizesForEachColor ?? [];
+
           return Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.end,
@@ -822,6 +826,11 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                                     .getProductDetailWithoutSimilarRelatedProductsStatus,
                                         builder: (context, state) {
                                           return ProductDetailsSheetHeader(
+                                            currentActiveTab:
+                                                widget.currentActiveTab,
+                                            initOfferPrice:
+                                                widget.initOfferPrice,
+                                            initPrice: widget.initPrice,
                                             shippingCost: widget
                                                     .productItem.shippingCost ??
                                                 0,
@@ -1079,7 +1088,7 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                           ""
                                       : widget
                                               .productItem
-                                              .images![widget.currentColor]
+                                              .images?[widget.currentColor]
                                               .filePath ??
                                           "",
                                   onFinishBuying: (quantity) {

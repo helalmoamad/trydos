@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
+
 GetProductDetailWithoutRelatedProductsModel
     getProductDetailWithoutRelatedProductsModelFromJson(String str) =>
         GetProductDetailWithoutRelatedProductsModel.fromJson(json.decode(str));
@@ -62,7 +64,10 @@ class Product {
   final bool? shippingCostMultiplyWithQuantity;
   final double? shippingCost;
   final BoutiqueForCart? boutique;
-
+  final double? price;
+  final String? priceFormatted;
+  final double? offerPrice;
+  final String? offerPriceFormatted;
   final bool? isLiked;
   final int? countOfLikes;
   final int? collectedAfterOrdering;
@@ -74,7 +79,9 @@ class Product {
   final int? shippingDays;
   final bool isProductNotifiedForUser;
   final bool? countryIsRestricted;
-
+  final List<Thumbnail>? images;
+  final List<SyncColorImage>? syncColorImages;
+  final List<Color>? colors;
   Product({
     this.id,
     this.description,
@@ -82,6 +89,9 @@ class Product {
     this.isActive,
     this.collectedAfterOrdering,
     this.countOfPieces,
+    this.colors,
+    this.syncColorImages,
+    this.images,
     this.variation,
     this.isLiked,
     this.slug,
@@ -90,6 +100,10 @@ class Product {
     this.countOfLikes,
     this.choiceOptions,
     this.hasDiscount,
+    this.price,
+    this.priceFormatted,
+    this.offerPrice,
+    this.offerPriceFormatted,
     this.maxAllowedQty,
     this.deliveryAt,
     this.boutique,
@@ -110,10 +124,17 @@ class Product {
     dynamic features,
     String? slug,
     bool? isActive,
+    List<Color>? colors,
+    List<Thumbnail>? images,
+    List<SyncColorImage>? syncColorImages,
     List<Variation>? variation,
     List<ChoiceOption>? choiceOptions,
     bool? hasDiscount,
     bool? hasTax,
+    String? priceFormatted,
+    double? price,
+    double? offerPrice,
+    String? offerPriceFormatted,
     String? deliveryAt,
     int? collectedAfterOrdering,
     String? tax,
@@ -153,12 +174,19 @@ class Product {
         maxAllowedQty: maxAllowedQty ?? this.maxAllowedQty,
         deliveryAt: deliveryAt ?? this.deliveryAt,
         shippingDays: shippingDays ?? this.shippingDays,
+        colors: colors ?? this.colors,
+        syncColorImages: syncColorImages ?? this.syncColorImages,
+        images: images ?? this.images,
         availableQuantity: availableQuantity ?? this.availableQuantity,
         leftStock: leftStock ?? this.leftStock,
         isLiked: isLiked ?? this.isLiked,
         shippingCostMultiplyWithQuantity: shippingCostMultiplyWithQuantity ??
             this.shippingCostMultiplyWithQuantity,
         shippingCost: shippingCost ?? this.shippingCost,
+        price: price ?? this.price,
+        priceFormatted: priceFormatted ?? this.priceFormatted,
+        offerPrice: offerPrice ?? this.offerPrice,
+        offerPriceFormatted: offerPriceFormatted ?? this.offerPriceFormatted,
         collectedAfterOrdering:
             collectedAfterOrdering ?? this.collectedAfterOrdering,
         countOfLikes: countOfLikes ?? this.countOfLikes,
@@ -181,10 +209,25 @@ class Product {
       shippingCostMultiplyWithQuantity:
           json["shipping_cost_multiply_with_quantity"],
       shippingCost: double.tryParse(json["shipping_cost"].toString()),
+      colors: json["colors"] == null
+          ? []
+          : List<Color>.from(json["colors"]!.map((x) => Color.fromJson(x))),
+      syncColorImages: json["sync_color_images"] == null
+          ? []
+          : List<SyncColorImage>.from(json["sync_color_images"]!
+              .map((x) => SyncColorImage.fromJson(x))),
+      images: json["images"] == null
+          ? []
+          : List<Thumbnail>.from(
+              json["images"]!.map((x) => Thumbnail.fromJson(x))),
       boutique: json["boutique"] == null
           ? null
           : BoutiqueForCart.fromJson(json["boutique"]),
       collectedAfterOrdering: json["collected_after_ordering"],
+      price: (json["price"] ?? 0).toDouble(),
+      priceFormatted: json["price_formatted"] ?? "",
+      offerPriceFormatted: json["offer_price_formatted"] ?? "",
+      offerPrice: (json["offer_price"] ?? 0).toDouble(),
       maxAllowedQty: json["max_allowed_qty"].toString(),
       countryIsRestricted: json["is_country_restricted"],
       isActive: json["is_active"],
@@ -236,7 +279,20 @@ class Product {
         "count_of_likes": countOfLikes,
         "available_quantity": availableQuantity,
         "count_of_pieces": countOfPieces,
+        "price": price,
+        "price_formatted": priceFormatted,
+        "offer_price_formatted": offerPriceFormatted,
+        "offer_price": offerPrice,
         "Left_stock": leftStock,
+        "colors": colors == null
+            ? []
+            : List<dynamic>.from(colors!.map((x) => x.toJson())),
+        "sync_color_images": syncColorImages == null
+            ? []
+            : List<dynamic>.from(syncColorImages!.map((x) => x.toJson())),
+        "images": images == null
+            ? []
+            : List<dynamic>.from(images!.map((x) => x.toJson())),
         "shipping_cost_multiply_with_quantity":
             shippingCostMultiplyWithQuantity,
 

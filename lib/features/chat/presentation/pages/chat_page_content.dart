@@ -173,7 +173,9 @@ class ChatPageContentState extends State<ChatPageContent> {
                           color: colorScheme.white,
                           child:
                               state.getChatsStatus != GetChatsStatus.success &&
-                                      state.firstRequestForGetChats
+                                      state.firstRequestForGetChats &&
+                                      state.chats.isEmpty &&
+                                      state.pinnedChats.isEmpty
                                   ? TrydosLoader()
                                   : const SizedBox.shrink())),
                   ValueListenableBuilder<List<Chat>>(

@@ -50,15 +50,34 @@ class LocalNotificationService {
       android: androidInitializationSettings,
       iOS: iosInitializationSettings,
     );
-    await _localNotificationPlugin
-        .getNotificationAppLaunchDetails()
-        .then((value) {
-      if ((value?.notificationResponse?.payload?.split(",,,").length ?? 0) >
-          0) {
-        GetIt.I<PrefsRepository>().setNotificationTypesOfMarketFromTerminated(
-            value?.notificationResponse?.payload?.split(',,,')[0] ?? "");
-      }
-    });
+    try {
+      print("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF}");
+
+      await _localNotificationPlugin
+          .getNotificationAppLaunchDetails()
+          .then((value) {
+        print("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF}");
+
+        if ((value?.notificationResponse?.payload?.split("###").length ?? 0) >
+            0) {
+          GetIt.I<PrefsRepository>().setNotificationTypesFromTerminated(
+              value?.notificationResponse?.payload?.split('###')[0] ?? "");
+        } else if ((value?.notificationResponse?.payload?.split("##").length ??
+                0) >
+            0) {
+          print(
+              "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF.............${value?.notificationResponse?.payload?.split('##').length}.......................}");
+
+          print(
+              "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF${(value?.notificationResponse?.payload?.split('##').toList()[1] ?? "")}FFFFFFFFFFFFFFFFFFFFFFFFFFF}");
+          GetIt.I<PrefsRepository>().setNotificationTypesFromTerminated(
+              ((value?.notificationResponse?.payload?.split('##')[0] ?? "") +
+                  ("chatNotification") +
+                  (value?.notificationResponse?.payload?.split('##')[1] ??
+                      "")));
+        }
+      });
+    } catch (e) {}
     await _localNotificationPlugin
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
@@ -165,14 +184,21 @@ class LocalNotificationService {
       print("##################################${notificationId}");
       await _localNotificationPlugin.show(
           notificationId, title, body, _notificationDetails(pngImage),
-          payload: '${message.data["body"] ?? ""},,,${fromBackGround}');
+          payload: '${message.data["body"] ?? ""}###${fromBackGround}');
 
       return;
     }
     Map RemoteMessage = convert.jsonDecode(message.data['data']);
     chat.Message myMessage = chat.Message.fromJson(RemoteMessage["message"]);
+    print(
+        "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF..................................+++++.");
+
     String prevMessageId = RemoteMessage['prev_message_id'].toString();
     String type = myMessage.messageType!.name.toString();
+
+    print(
+        "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF..................................+++++.${prevMessageId}.}");
+
     await _localNotificationPlugin.show(
         notificationId,
         myMessage.channel?.channelName ?? 'No Channel Name',
@@ -187,7 +213,7 @@ class LocalNotificationService {
                         : 'File',
         _notificationDetails(null),
         payload:
-            '${convert.jsonEncode(RemoteMessage['message'])},,${prevMessageId}');
+            '${convert.jsonEncode(RemoteMessage['message'])}##${prevMessageId}');
   }
 
   static void sendIReceivedTheMessage(String channelId) async {
@@ -250,15 +276,15 @@ class LocalNotificationService {
 
   @pragma('vm:entry-point')
   static void _onSelectNotification(NotificationResponse notificationResponse) {
-    if (notificationResponse.payload!.split(",,,").toList().length > 1) {
+    if (notificationResponse.payload!.split("###").toList().length > 1) {
       HandlingMarketNotifications.dealWithNotificationFromMarket(
-          convert.jsonDecode(notificationResponse.payload!.split(',,,')[0]),
-          notificationResponse.payload!.split(',,,')[1] == "1");
+          convert.jsonDecode(notificationResponse.payload!.split('###')[0]),
+          notificationResponse.payload!.split('###')[1] == "1");
       return;
     }
     chat.Message myMessage = chat.Message.fromJson(
-        convert.jsonDecode(notificationResponse.payload!.split(',,')[0]));
-    String prevMessageId = notificationResponse.payload!.split(',,')[1];
+        convert.jsonDecode(notificationResponse.payload!.split('##')[0]));
+    String prevMessageId = notificationResponse.payload!.split('##')[1];
 
     handleOpenChatPageFromNotificationInBackground(prevMessageId,
         message: myMessage);

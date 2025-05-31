@@ -237,9 +237,9 @@ class Message {
               : json["message_type"]["name"] == "TextMessage" ||
                       json["message_type"]["name"] == "ShareProduct"
                   ? null
-                  : json["message_content"] == null
+                  : json["message_files"] == null
                       ? []
-                      : List<MediaMessageContent>.from(json["message_content"]!
+                      : List<MediaMessageContent>.from(json["message_files"]!
                           .map((x) => MediaMessageContent.fromJson(x))),
       messageContent: json['auth_message_status'] != null &&
               json['auth_message_status']['is_deleted'] == 1
@@ -295,15 +295,15 @@ class Message {
             ? null
             : messageType!.name == "TextMessage"
                 ? messageContent?.toJson()
-                : mediaMessageContent == null
-                    ? []
-                    : List<Map<String, dynamic>>.from(
-                        mediaMessageContent!.map((x) => x.toJson())),
+                : null,
         "message_status": messageStatus == null
             ? []
             : List<dynamic>.from(messageStatus!.map((x) => x.toJson())),
         "channel": channel?.toJson(),
         "parent_message": parentMessage,
+        "message_files": mediaMessageContent == null
+            ? []
+            : List<dynamic>.from(mediaMessageContent!.map((x) => x.toJson())),
       };
 }
 
@@ -437,7 +437,7 @@ class ShareProductContent {
 }
 
 class MediaMessageContent {
-  final int? id;
+  final String? id;
   final String? filePath;
   final String? fileName;
   final String? messageId;
@@ -453,7 +453,7 @@ class MediaMessageContent {
 
   factory MediaMessageContent.fromJson(Map<String, dynamic> json) =>
       MediaMessageContent(
-        id: json["id"],
+        id: json["id"].toString(),
         filePath: json["file_path"],
         fileName: json["file_name"],
         messageId: json["message_id"].toString(),
@@ -461,7 +461,7 @@ class MediaMessageContent {
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
+        "id": id.toString(),
         "file_path": filePath,
         "file_name": fileName,
         "message_id": messageId,

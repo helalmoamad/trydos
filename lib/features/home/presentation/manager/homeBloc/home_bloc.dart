@@ -32,7 +32,7 @@ import 'package:trydos/features/home/domain/use_cases/GetCommentForProductUseCas
 import 'package:trydos/features/home/domain/use_cases/add_comment_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/add_like_to_product_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/change_country_language_for_notification_usecase.dart';
-import 'package:trydos/features/home/domain/use_cases/convert_item_from_oldCart_to_Cart_usecase.dart';
+import 'package:trydos/features/home/domain/use_cases/convert_item_from_Cart_to_oldCart_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/delete_like_of_product_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_allowed_country_usecase.dart';
 import 'package:trydos/features/home/domain/use_cases/get_cart_item_usecase.dart';
@@ -104,7 +104,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     //  this.getHomeSectionsUseCase,
     this.getStoryUseCase,
     this.removeItemToCartUseCase,
-    this.convertItemFromOldcartToCartUsecase,
+    this.convertItemFromcartToOldCartUsecase,
     this.getCartItemUseCase,
     this.getOldCartItemUseCase,
     this.storeFcmTokenOfMarketUseCase,
@@ -357,7 +357,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final GetCartOverviewUseCase getCartOverviewUseCase;
   final GetOldCartItemUseCase getOldCartItemUseCase;
   final GetNotificationTypeProductUseCase getNotificationTypeProductUseCase;
-  final ConvertItemFromOldcartToCartUsecase convertItemFromOldcartToCartUsecase;
+  final ConvertItemFromcartToOldCartUsecase convertItemFromcartToOldCartUsecase;
   final GetAndAddCountViewOfProductUsecase getAndAddCountViewOfProductUsecase;
   final AddCommentUseCase addCommentUseCase;
   final CountryBoundaryByIsoUseCase countryBoundaryByIsoUseCase;
@@ -433,7 +433,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       GetCoutryBoundaryByIsoEvent event, Emitter<HomeState> emit) async {
     //  if (apisMustNotToRequest.contains('GetStartingSettingsEvent')) return;
     emit(state.copyWith(
-        getCoutryBoundaryByIsoStatus: GetCoutryBoundaryByIsoStatus.loading));
+        getCoutryBoundaryByIsoStatus: GetCountryBoundaryByIsoStatus.loading));
     final response = await countryBoundaryByIsoUseCase(NoParams());
 
     response.fold((l) {
@@ -442,16 +442,16 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         isFailedTheFirstTime.add('GetCoutryBoundaryByIsoEvent');
       }
       emit(state.copyWith(
-          getCoutryBoundaryByIsoStatus: GetCoutryBoundaryByIsoStatus.failure));
+          getCoutryBoundaryByIsoStatus: GetCountryBoundaryByIsoStatus.failure));
     }, (r) {
       isFailedTheFirstTime.remove('GetCoutryBoundaryByIsoEvent');
       List<geod.LatLng>? countryCoordinatesBorders = [];
-      r.country?.boundary?.coordinates?[0].forEach((element) =>
+      r.country?.boundary?.coordinates?.forEach((element) =>
           countryCoordinatesBorders
               .add(geod.LatLng(element.lat ?? 0, element.lon ?? 0)));
       emit(state.copyWith(
           countryCoordinatesBorders: countryCoordinatesBorders,
-          getCoutryBoundaryByIsoStatus: GetCoutryBoundaryByIsoStatus.success));
+          getCoutryBoundaryByIsoStatus: GetCountryBoundaryByIsoStatus.success));
     });
   }
 
@@ -828,6 +828,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       getStartingSettingsStatus: GetStartingSettingsStatus.init,
       getListOfProductsFoundedInCartStatus:
           GetListOfProductsFoundedInCartStatus.init,
+      convertItemFromcartToOldCartStatus:
+          ConvertItemFromcartToOldCartStatus.init,
       cachedProductWithoutRelatedProductsModel: {},
       productITemForCart: {},
       cartCollection: [],
@@ -1429,8 +1431,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       Map<String, Map<String, String>> addVariationToCartId = {};
       r.data?.cart?.forEach((element) => addVariationToCartId.addAll({
             element.id.toString(): {
-              "size": "${element.variations?[0].size ?? ""}",
-              "color": "${element.variations?[0].color ?? ""}"
+              "size": element.variations.isNullOrEmpty
+                  ? ""
+                  : "${element.variations?[0].size ?? ""}",
+              "color": element.variations.isNullOrEmpty
+                  ? ""
+                  : "${element.variations?[0].color ?? ""}"
             }
           }));
       emit(state.copyWith(currentQuantityForCart: {}));
@@ -2759,39 +2765,75 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   FutureOr<void> _onConvertItemFromCartToOldCartEvent(
       ConvertItemFromCartToOldCartEvent event, Emitter<HomeState> emit) async {
-    List<oldCart.OldCart>? oldcartCollection =
-        List.of(state.oldcartCollection ?? []);
-    List<Cart>? cartCollection = List.of(state.cartCollection ?? []);
-    Cart cart = cartCollection.firstWhere(
-      (element) => element.id.toString() == event.cartId,
-      orElse: () => Cart(id: -1),
-    );
-    if (cart.id != -1) {
-      cartCollection.removeWhere(
-        (element) => element.id.toString() == event.cartId,
-      );
-
-      oldcartCollection.add(oldCart.OldCart(
-          availableQuantity: cart.availableQuantity?.round(),
-          boutique: cart.boutique,
-          brand: oldCart.Brand(image: cart.brand?.image, name: cart.name),
-          image: cart.image,
-          cartGroupId: cart.cartGroupId,
-          countOfPieces: cart.countOfPieces,
-          discount: cart.discount,
-          maxAllowedQty: cart.maxAllowedQty,
-          productId: cart.productId,
-          variations: cart.variations,
-          shippingDays: cart.shippingDays,
-          quantity: cart.quantity,
-          thumbnail: cart.thumbnail,
-          id: cart.id,
-          variant: cart.variant,
-          priceOfVariant: cart.price,
-          choices: [oldCart.Choice(choice1: cart.choices?[0].choice1)]));
-    }
     emit(state.copyWith(
-        oldCartCollection: oldcartCollection, cartCollection: cartCollection));
+      convertItemFromcartToOldCartStatus:
+          ConvertItemFromcartToOldCartStatus.loading,
+    ));
+    final response = await convertItemFromcartToOldCartUsecase(
+        ConvertItemFromcartToOldCartParams(CartId: event.cartId));
+    response.fold((l) {
+      showMessage(l.message,
+          foreGroundColor: Colors.white,
+          backGroundColor: Colors.black,
+          showInRelease: true,
+          timeShowing: Toast.LENGTH_LONG);
+      emit(state.copyWith(
+          convertItemFromcartToOldCartStatus:
+              ConvertItemFromcartToOldCartStatus.failure));
+      if (!isFailedTheFirstTime.contains('ConvertItemFromCartToOldCartEvent')) {
+        add(ConvertItemFromCartToOldCartEvent(cartId: event.cartId));
+        isFailedTheFirstTime.add('ConvertItemFromCartToOldCartEvent');
+      }
+    }, (r) {
+      add(GetCartItemEvent());
+      List<oldCart.OldCart>? oldcartCollection =
+          List.of(state.oldcartCollection ?? []);
+      List<Cart>? cartCollection = List.of(state.cartCollection ?? []);
+      Cart cart = cartCollection.firstWhere(
+        (element) => element.id.toString() == event.cartId,
+        orElse: () => Cart(id: -1),
+      );
+      if (cart.id != -1) {
+        cartCollection.removeWhere(
+          (element) => element.id.toString() == event.cartId,
+        );
+        oldcartCollection.add(oldCart.OldCart(
+            availableQuantity: cart.availableQuantity?.round(),
+            boutique: cart.boutique,
+            brand: oldCart.Brand(image: cart.brand?.image, name: cart.name),
+            image: cart.image,
+            cartGroupId: cart.cartGroupId,
+            countOfPieces: cart.countOfPieces,
+            discount: cart.discount,
+            maxAllowedQty: cart.maxAllowedQty,
+            productId: cart.productId,
+            variations: cart.variations,
+            shippingDays: cart.shippingDays,
+            quantity: cart.quantity,
+            thumbnail: cart.thumbnail,
+            id: cart.id,
+            variant: cart.variant,
+            priceOfVariant: cart.price,
+            choices: [
+              oldCart.Choice(
+                  choice1: ((cart.choices?.isNullOrEmpty) ?? true)
+                      ? ""
+                      : cart.choices?[0].choice1)
+            ]));
+      }
+      isFailedTheFirstTime.remove('ConvertItemFromCartToOldCartEvent');
+
+      emit(state.copyWith(
+          convertItemFromcartToOldCartStatus:
+              ConvertItemFromcartToOldCartStatus.success,
+          oldCartCollection: oldcartCollection,
+          cartCollection: cartCollection));
+      showMessage(r.message ?? "",
+          foreGroundColor: Colors.white,
+          backGroundColor: Colors.black,
+          showInRelease: true,
+          timeShowing: Toast.LENGTH_LONG);
+    });
   }
 
   FutureOr<void> _onGetPopularSearchItemEvent(
@@ -3294,6 +3336,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   FutureOr<void> _onAddCommentEvent(
       AddCommentEvent event, Emitter<HomeState> emit) async {
+    if (event.comment.length == 0) {
+      return;
+    }
     emit(state.copyWith(addCommentStatus: AddCommentStatus.loading));
     final response = await addCommentUseCase(
         AddCommentParams(productId: event.productId, comment: event.comment));

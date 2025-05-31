@@ -117,7 +117,7 @@ class NotificationProcess {
     if (details != null) {
       if (details.didNotificationLaunchApp) {
         Message myMessage = Message.fromJson(convert
-            .jsonDecode(details.notificationResponse!.payload!.split(',,')[0]));
+            .jsonDecode(details.notificationResponse!.payload!.split('##')[0]));
         print(myMessage.messageContent?.content);
         GetIt.I<ChatBloc>().add(GetChatsEvent(
             chatToNavigateFromTerminated: myMessage.channel, limit: 10));

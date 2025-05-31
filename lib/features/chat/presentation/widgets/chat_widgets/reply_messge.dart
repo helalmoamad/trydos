@@ -210,8 +210,11 @@ class _ReplayMessageState extends State<ReplayMessage> {
                                   documentFile: widget.answeredFile,
                                   channelId: widget.channalId,
                                   receivedAt: widget.receivedAt,
-                                  fileName:
-                                      widget.answeredFile!.path.split('/').last,
+                                  fileName: widget.answeredFile == null
+                                      ? ""
+                                      : widget.answeredFile!.path
+                                          .split('/')
+                                          .last,
                                   documentFileUrl: widget.answeredFilePath,
                                   messageId: widget.messageId.toString(),
                                   senderId:

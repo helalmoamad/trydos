@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
@@ -672,7 +673,13 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                         ),
                                         widget.userMessagePhoto != null
                                             ? MyCachedNetworkImage(
-                                                imageUrl: ChatUrls.baseUrl +
+                                                imageUrl: (widget
+                                                            .userMessagePhoto
+                                                            .toString()
+                                                            .contains(
+                                                                "cloudinary")
+                                                        ? ""
+                                                        : "${dotenv.env['Profile_Images_Url']}") +
                                                     widget.userMessagePhoto!,
                                                 progressIndicatorBuilderWidget:
                                                     TrydosLoader(),

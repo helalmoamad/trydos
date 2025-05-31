@@ -2,10 +2,10 @@ import 'dart:io';
 
 import 'package:dartz/dartz.dart';
 import 'package:trydos/features/authentication/data/models/create_user_response_model.dart';
+import 'package:trydos/features/chat/data/models/get_order_recipient_id_model.dart';
 import 'package:trydos/features/chat/data/models/my_contacts_response_model.dart';
 import 'package:trydos/features/chat/data/models/result_of_search_text_in_chat_model.dart';
 import 'package:trydos/features/chat/data/models/shared_product_count_model.dart';
-import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
 
 import '../../../../core/error/failures.dart';
 import '../../data/models/ImageDetail.dart';
@@ -22,6 +22,8 @@ abstract class ChatRepository {
   Future<Either<Failure, UploadFileResponseModel>> uploadFile(
       Map<String, dynamic> params);
   Future<Either<Failure, GetSharedProductCountModel>> getSharedProductCount(
+      Map<String, dynamic> params);
+  Future<Either<Failure, GetOrderRecipientIdModel>> getOrderRecipientId(
       Map<String, dynamic> params);
   Future<Either<Failure, bool>> updateProfileInChat(
       Map<String, dynamic> params);

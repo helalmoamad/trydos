@@ -22,7 +22,7 @@ abstract class PrefsRepository {
   List<String>? get getTheChatsIdsToRemoveFromBackground;
   List<String>? get getNotificationIdsToRemoveAfterplaceOrder;
   List<String>? get getImageUrlHasPrefeched;
-  String? get getNotificationTypeOfMarketFromTerminated;
+  String? get getNotificationTypeFromTerminated;
   List<Map>? get getTheRemovedMessageFromBackground;
   List<Map>? get getTheMessageWatchStatusFromBackground;
   List<Map>? get getTheMessageReceivedStatusFromBackground;
@@ -91,7 +91,7 @@ abstract class PrefsRepository {
   Future<bool> setTimerForOtpRunning(bool isRunning);
   Future<bool> setDuration(int duration);
   Future<bool> setLanguage(String? language);
-  Future<bool> setNotificationTypesOfMarketFromTerminated(
+  Future<bool> setNotificationTypesFromTerminated(
       String? notificationTypeFromTerminated);
   Future<bool> setCountryIso(String? countryIso);
   Future<bool> setImageUrlHasPrefeched(String? url);

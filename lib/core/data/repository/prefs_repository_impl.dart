@@ -573,11 +573,11 @@ class PrefsRepositoryImpl extends PrefsRepository {
   }
 
   @override
-  String? get getNotificationTypeOfMarketFromTerminated =>
+  String? get getNotificationTypeFromTerminated =>
       _preferences.getString(PrefsKey.notificationTypeFromTerminated);
 
   @override
-  Future<bool> setNotificationTypesOfMarketFromTerminated(
+  Future<bool> setNotificationTypesFromTerminated(
       String? notificationTypeFromTerminated) async {
     return await _preferences.setString(PrefsKey.notificationTypeFromTerminated,
         notificationTypeFromTerminated ?? "");

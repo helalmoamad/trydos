@@ -11,6 +11,7 @@ import 'package:trydos/common/helper/show_message.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
+import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../enums/status_code_type.dart';
 import '../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
@@ -111,7 +112,10 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
       //       showInRelease: true,
       //       timeShowing: Toast.LENGTH_LONG);
       // }
-
+      if (err.requestOptions.path.contains("stories/upload_story") ||
+          err.requestOptions.path.contains("/djooohujg/upload")) {
+        GetIt.I<StoryBloc>().add(ChangeStatusUploadToFailureEvent());
+      }
       if (err.requestOptions.path.contains("storage/storage-upload")) {
         GetIt.I<HomeBloc>()
             .add(UploadUserPhotoCloudinaryEvent(File("path"), true));
@@ -138,12 +142,30 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
               timeShowing: Toast.LENGTH_LONG);
         } catch (e) {}
       }
-
+      if ((err.requestOptions.path.toString().contains("market")) &&
+          jsonDecode(err.response.toString())["code"].toString() == "500") {}
       if ((jsonDecode(err.response.toString())["message"]
                   .toString()
                   .contains("Unauth") ||
               jsonDecode(err.response.toString())["code"].toString() ==
                   "401") &&
+          (err.requestOptions.path.contains("stories"))) {
+        _prefsRepository.setStoriesToken("");
+      }
+      if ((jsonDecode(err.response.toString())["message"]
+                  .toString()
+                  .contains("Unauth") ||
+              jsonDecode(err.response.toString())["code"].toString() ==
+                  "401") &&
+          (err.requestOptions.path.contains("chating"))) {
+        _prefsRepository.setChatToken("");
+      }
+      if ((jsonDecode(err.response.toString())["message"]
+                  .toString()
+                  .contains("Unauth") ||
+              jsonDecode(err.response.toString())["code"].toString() ==
+                  "401") &&
+          (err.requestOptions.path.contains("market")) &&
           !(_prefsRepository.isTokenExpired ?? false)) {
         _prefsRepository.setVerifiedPhonePeforeExpiredToken(
             _prefsRepository.isVerifiedPhone ?? false);

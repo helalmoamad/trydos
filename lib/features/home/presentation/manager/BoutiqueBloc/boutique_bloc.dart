@@ -463,6 +463,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     GetFiltersWithPaginatioEvent event,
     Emitter<BoutiqueState> emit,
   ) async {
+    print(
+        "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF#####wwwwwwwwwwwwwwwwwwwwwwwwwwwwt");
     String key = event.boutiqueSlug + (event.category ?? '');
     /* if (event.getProductsFilterPreFetch &&
         !event.fromHomePageSearch &&
@@ -777,6 +779,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     Emitter<BoutiqueState> emit,
   ) async {
     String key = event.boutiqueSlug + (event.category ?? '');
+    print(
+        "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF################################${key}");
     /* if (event.getProductsFilterPreFetch &&
         !event.fromHomePageSearch &&
         event.cashedOrginalBoutique &&
@@ -947,10 +951,19 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       GetProductWithFiltersWithoutCancelingPreviousEvents event,
       Emitter<BoutiqueState> emit) async {
     String key = event.boutiqueSlug + (event.category ?? '');
+    if (event.boutiqueSlug != "*featured*" &&
+        ((prefsRepository
+                    .getPrefechOfProductsForEachBoutiqueInHomePage(key)
+                    ?.length ??
+                0) >
+            10)) {
+      return;
+    }
     if (event.boutiqueSlug == "*featured*") {
       try {
         Map<String, PaginationModel<product.Products>?>
-            getProductListingWithFiltersPaginationModels = {};
+            getProductListingWithFiltersPaginationModels =
+            Map.of(state.getProductListingWithFiltersPaginationModels);
         Map<String, dynamic> responseFromSharedPrefrence = jsonDecode(
             prefsRepository
                     .getPrefechOfProductsForEachBoutiqueInHomePage(key) ??
@@ -961,19 +974,33 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                 ? DataGetProductListingWithFiltersModel()
                 : DataGetProductListingWithFiltersModel.fromJson(
                     responseFromSharedPrefrence);
-
-        getProductListingWithFiltersPaginationModels.addAll({
-          "*featured*withoutFilter": PaginationModel<product.Products>(
-              hasReachedMax:
-                  (getProductListingWithFiltersModel.products?.length ?? 0) <
-                      10,
-              items: getProductListingWithFiltersModel.products ?? [],
-              page: 1,
-              paginationStatus: PaginationStatus.loading)
-        });
-        if ((getProductListingWithFiltersModel.products ?? []).length > 0) {
-          await Future.delayed(Duration(seconds: 3));
+        if (getProductListingWithFiltersPaginationModels
+            .containsKey("*featured*withoutFilter")) {
+          getProductListingWithFiltersPaginationModels[
+                  "*featured*withoutFilter"] =
+              PaginationModel<product.Products>(
+                  hasReachedMax:
+                      (getProductListingWithFiltersModel.products?.length ??
+                              0) <
+                          10,
+                  items: getProductListingWithFiltersModel.products ?? [],
+                  page: 1,
+                  paginationStatus: PaginationStatus.loading);
+        } else {
+          getProductListingWithFiltersPaginationModels.addAll({
+            "*featured*withoutFilter": PaginationModel<product.Products>(
+                hasReachedMax:
+                    (getProductListingWithFiltersModel.products?.length ?? 0) <
+                        10,
+                items: getProductListingWithFiltersModel.products ?? [],
+                page: 1,
+                paginationStatus: PaginationStatus.loading)
+          });
         }
+
+        /* if ((getProductListingWithFiltersModel.products ?? []).length > 0) {
+          await Future.delayed(Duration(seconds: 3));
+        }*/
         emit(state.copyWith(
             getProductListingWithFiltersPaginationModels:
                 getProductListingWithFiltersPaginationModels));
@@ -1022,15 +1049,28 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       if (event.boutiqueSlug == "*featured*") {
         Map<String, PaginationModel<product.Products>?>
             getProductListingWithFiltersPaginationModels =
-            <String, PaginationModel<product.Products>?>{};
-        getProductListingWithFiltersPaginationModels.addAll({
-          "*featured*withoutFilter": PaginationModel<product.Products>(
-              offset: "${r.data?.offset}",
-              paginationStatus: PaginationStatus.success,
-              page: 1,
-              hasReachedMax: false,
-              items: r.data?.products ?? [])
-        });
+            Map.of(state.getProductListingWithFiltersPaginationModels);
+        if (getProductListingWithFiltersPaginationModels
+            .containsKey("*featured*withoutFilter")) {
+          getProductListingWithFiltersPaginationModels[
+                  "*featured*withoutFilter"] =
+              PaginationModel<product.Products>(
+                  offset: "${r.data?.offset}",
+                  paginationStatus: PaginationStatus.success,
+                  page: 1,
+                  hasReachedMax: false,
+                  items: r.data?.products ?? []);
+        } else {
+          getProductListingWithFiltersPaginationModels.addAll({
+            "*featured*withoutFilter": PaginationModel<product.Products>(
+                offset: "${r.data?.offset}",
+                paginationStatus: PaginationStatus.success,
+                page: 1,
+                hasReachedMax: false,
+                items: r.data?.products ?? [])
+          });
+        }
+
         emit(state.copyWith(
             getProductListingWithFiltersPaginationModels:
                 getProductListingWithFiltersPaginationModels));
@@ -1208,12 +1248,18 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         '${(event.category ?? '')}';
 
     String key = '${event.boutiqueSlug}' + '${(event.category ?? '')}';
+    print(
+        "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF66666666666666666666666666666666666666666FFFFFFF${event.boutiqueSlug}");
+
     if (event.cashedOrginalBoutique &&
         !(event.fromSearch ?? false) &&
         !(event.getWithPagination)) {
       List<String> keyForFirstFiveFilterList =
           prefsRepository.getFiveFilterForEachBoutiqueHasPrefechInHomePage() ??
               [];
+      print(
+          "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF66666666666666666666666666666666666666666FFFFFFF444444444444444444444${event.boutiqueSlug}");
+
       keyForFirstFiveFilterList
           .removeWhere((element) => !element.contains(event.boutiqueSlug));
 
@@ -1260,6 +1306,9 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             getProductListingWithFiltersForFirstFiveFilterModel
                     .prices?.priceRanges ??
                 [];
+        print(
+            "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF66666666666666666666666666666666666666666FF5555555555555555555555555555FFFF${event.boutiqueSlug}");
+
         ranges.removeWhere((element) => element.count == 0);
         dataForFirstFiveFilter[keyForFirstFiveFilter] =
             filters_model.GetProductFiltersModel(
@@ -1285,6 +1334,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         getProductListingWithFiltersPaginationWithPrefetchModels:
             Map.of(getProductListingWithFiltersForFirstFiveFilter),
       ));
+      print(
+          "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF66666666666666666699999999999988888888888888888666666666FFFFFFF${event.boutiqueSlug}");
 
       if (!data.containsValue(key)) {
         data.addAll({key: filters_model.GetProductFiltersModel()});
@@ -1323,6 +1374,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                           0)
                   ? PaginationStatus.success
                   : PaginationStatus.loading);
+      print(
+          "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF6666666666666660000000000000000000000000000666FFFFFFF${event.boutiqueSlug}");
 
       List<filters_model.PriceRange> ranges =
           getProductListingWithFiltersModel.prices?.priceRanges ?? [];
@@ -1340,6 +1393,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         categories: getProductListingWithFiltersModel.categories,
       ));
     }
+    print(
+        "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF77777777777777777777777777777777666666666666666666666666FFFFFFF${event.boutiqueSlug}");
 
     Map<String, filters_model.GetProductFiltersModel?> prevAppliedFiltersByUser,
         prevChoosedFiltersByUser;
@@ -1359,6 +1414,9 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       getProductListingWithFiltersPaginationModels
           .addAll({keyWithoutFilter: PaginationModel.init()});
     }
+    print(
+        "FFFFFFFFFFFFFFFFFFFFFFFFFFFFF88888888888888888888888888888866666666666666666666FFFFFFF${event.boutiqueSlug}");
+
     if (!((event.cashedOrginalBoutique && !(event.fromSearch ?? false)) &&
         !(event.getWithPagination) &&
         getProductListingWithFiltersPaginationModels[keyWithoutFilter]
@@ -1461,6 +1519,9 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         );
       }
     }
+    print(
+        "FFFFFFFFFFFFFFFFFFFFFFFFFFFF99999999999999999999999999999666666666666FFFFFFF${event.boutiqueSlug}");
+
     Map<String, GetProductFiltersStatus>? getProductFiltersStatus = Map.of(
       state.getProductFiltersStatus,
     );
@@ -1469,7 +1530,6 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
     } else {
       getProductFiltersStatus[key] = GetProductFiltersStatus.loading;
     }
-
     emit(state.copyWith(
       getProductFiltersModel: Map.of(data),
       getProductFiltersStatus: getProductFiltersStatus,
@@ -1485,7 +1545,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       choosedFiltersByUser: Map.of(choosedFilters),
       appliedFiltersByUser: Map.of(appliedFilters),
     ));
-    print("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF${event.boutiqueSlug}");
+    print(
+        "FFFFFFFFFFFFFFFFFFFFFFFFFFFFF3333333333333333333333333333333333333333333666666666FFFFFFF${event.boutiqueSlug}");
     final response = event.boutiqueSlug == "*featured*"
         ? await getFeaturedProductsUseCase(GetFeaturedProductsParams(
             limit: 10,
@@ -1698,7 +1759,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
             categorySlug: event.category);
       }
       List<Products>? productsResult = r.data?.products ?? [];
-      if ((filters.colors?.length ?? 0) > 0 ||
+      if (!(event.fromSearch ?? false) && (filters.colors?.length ?? 0) > 0 ||
           ((state.sizeAndColorFilterinTextToSearch["color"]?.length ?? 0) >
               0)) {
         productsResult = [];
@@ -1755,13 +1816,32 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
           paginationStatus: PaginationStatus.success,
           hasReachedMax: (r.data?.products?.length ?? 0) < kPageSize,
         );
-        getProductListingWithFiltersPaginationModels.addAll({key: value});
+        getProductListingWithFiltersPaginationModels
+            .addAll({keyWithoutFilter: value});
       } else {
+        getProductListingWithFiltersPaginationModels.addAll({
+          keyWithoutFilter: PaginationModel<Products>(
+              page: 1,
+              offset: "${r.data?.offset}",
+              hasReachedMax: (r.data?.products?.length ?? 0) < kPageSize,
+              items: event.getWithPagination
+                  ? [
+                      ...List.of((state
+                              .getProductListingWithFiltersPaginationModels[
+                                  keyWithoutFilter]
+                              ?.items) ??
+                          []),
+                      ...productsResult
+                    ]
+                  : productsResult,
+              paginationStatus: PaginationStatus.success)
+        });
+
         state.getProductListingWithFiltersPaginationModels
-            .forEach((key, value) {
-          if (key == keyWithoutFilter) {
-            getProductListingWithFiltersPaginationModels.addAll({
-              key: value!.copyWith(
+            .forEach((keys, value) {
+          if (keys == keyWithoutFilter) {
+            /*getProductListingWithFiltersPaginationModels.addAll({
+              keys: value!.copyWith(
                   offset: "${r.data?.offset}",
                   paginationStatus: PaginationStatus.success,
                   page: event.getWithPagination ? value.page + 1 : 2,
@@ -1769,11 +1849,10 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
                   items: event.getWithPagination
                       ? [...List.of(value.items), ...productsResult ?? []]
                       : productsResult)
-            });
-
-            return;
+            });*/
+          } else {
+            getProductListingWithFiltersPaginationModels.addAll({keys: value});
           }
-          getProductListingWithFiltersPaginationModels.addAll({key: value});
         });
       }
       Map<String, GetProductFiltersStatus>? getProductFiltersStatus =

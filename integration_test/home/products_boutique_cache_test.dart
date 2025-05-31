@@ -291,12 +291,12 @@ void main() {
               .dateNow!
               .toString();
 
-          print('productBoutDateNow : $productBoutDateNow ,,, ');
+          print('productBoutDateNow : $productBoutDateNow ### ');
 
           DateTime dateNew = DateTime.parse(productBoutDateNow);
           DateTime dateOld = DateTime.parse(oldCacheDate[productIndex1]);
 
-          print('dateOld : $dateOld ,,, dateNew : $dateNew');
+          print('dateOld : $dateOld ### dateNew : $dateNew');
 
           expect(productBoutId, equals(boutiqueId1.toString()));
           expect(dateOld.isBefore(dateNew), true);

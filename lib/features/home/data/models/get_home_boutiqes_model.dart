@@ -204,8 +204,10 @@ class BunnerBoutique {
 
   factory BunnerBoutique.fromJson(Map<String, dynamic> json) => BunnerBoutique(
         filePath: json["file_path"],
-        originalWidth: json["original_width"],
-        originalHeight: json["original_height"],
+        originalWidth:
+            json["original_width"].replaceAll(RegExp(r'[^0-9.]'), ''),
+        originalHeight:
+            json["original_height"].replaceAll(RegExp(r'[^0-9.]'), ''),
       );
 
   Map<String, dynamic> toJson() => {

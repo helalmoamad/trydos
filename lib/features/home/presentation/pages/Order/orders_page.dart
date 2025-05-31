@@ -1,13 +1,24 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.dart';
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
+import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
+import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
+import 'package:trydos/routes/router.dart';
 import '../../../../../common/constant/constant.dart';
 import '../../../../../common/helper/helper_functions.dart';
 import '../../../../../core/data/model/pagination_model.dart';
@@ -34,26 +45,40 @@ class OrdersPage extends StatefulWidget {
 
 class _OrdersPageState extends State<OrdersPage> {
   late OrderBloc orderBloc;
-
+  late ChatBloc chatBloc;
+  Timer? debounce;
   final ScrollController ordersScrollController = ScrollController();
-
+  int tapIndex = 0;
   final ValueNotifier<String> currentStatus = ValueNotifier('');
 
   @override
   void initState() {
     orderBloc = BlocProvider.of<OrderBloc>(context);
-
-    ordersScrollController.addListener(() async {
-      if (ordersScrollController.position.maxScrollExtent ==
-          ordersScrollController.offset) {
-        debugPrint('scrollController');
-        orderBloc.add(
-          GetOrdersEvent(
-            status: currentStatus.value,
-            getWithPagination: true,
-          ),
-        );
+    chatBloc = BlocProvider.of<ChatBloc>(context);
+    if (widget.fromNotification ?? false) {
+      orderBloc.add(
+        GetOrdersEvent(
+          status: "",
+          getWithPagination: false,
+        ),
+      );
+    }
+    ordersScrollController.addListener(() {
+      if (debounce?.isActive ?? false) {
+        debounce!.cancel();
       }
+      debounce = Timer(Duration(milliseconds: 600), () {
+        if (ordersScrollController.offset >=
+            (ordersScrollController.position.maxScrollExtent * 0.6)) {
+          debugPrint('scrollController');
+          orderBloc.add(
+            GetOrdersEvent(
+              status: currentStatus.value,
+              getWithPagination: true,
+            ),
+          );
+        }
+      });
     });
 
     super.initState();
@@ -185,8 +210,21 @@ class _OrdersPageState extends State<OrdersPage> {
                                   itemCount: itemsCount + 1,
                                   itemBuilder: (context, index) {
                                     if (index < itemsCount) {
-                                      return InkWell(
-                                        onTap: () {
+                                      return GestureDetector(
+                                        onTapUp: (details) {
+                                          tapIndex = index;
+                                          final double dy =
+                                              details.localPosition.dy;
+                                          if (dy < 80 &&
+                                              ((items[index]
+                                                          .statusIsOutForDelivary ??
+                                                      false) ||
+                                                  items[index]
+                                                          .orderStatus
+                                                          ?.value ==
+                                                      "out_for_delivery")) {
+                                            return;
+                                          }
                                           HelperFunctions.slidingNavigation(
                                             context,
                                             OrderDetails1(
@@ -195,6 +233,8 @@ class _OrdersPageState extends State<OrdersPage> {
                                           );
                                         },
                                         child: buildOrderItemWidget(
+                                          tapIndex: tapIndex,
+                                          index: index,
                                           context: context,
                                           item: items[index],
                                         ),
@@ -252,6 +292,8 @@ class _OrdersPageState extends State<OrdersPage> {
   Widget buildOrderItemWidget({
     required BuildContext context,
     required OrderListModel item,
+    required int index,
+    required int tapIndex,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -264,7 +306,13 @@ class _OrdersPageState extends State<OrdersPage> {
         child: Column(
           children: [
             buildInfoWidget(
+              index: index,
+              tapIndex: tapIndex,
               isSecondInfo: false,
+              orderId: item.id.toString(),
+              statusIsOutForDelivary: item.statusIsOutForDelivary ??
+                  false || item.orderStatus?.value == "out_for_delivery",
+              orderStatus: item.orderStatus?.value ?? "",
               isTextSpan: false,
               context: context,
               text1: HelperFunctions.orderFormatDate(
@@ -290,13 +338,21 @@ class _OrdersPageState extends State<OrdersPage> {
                 String currencySymbol =
                     state.getCurrencyForCountryModel!.data!.currency!.symbol ??
                         "";
-                double orderAmount = item.orderAmount! *
-                    state.getCurrencyForCountryModel!.data!.currency!
-                        .exchangeRate!;
+                String orderAmount = (item.orderAmount! *
+                        state.getCurrencyForCountryModel!.data!.currency!
+                            .exchangeRate!)
+                    .toStringAsFixed(
+                        state.startingSetting?.decimalPointSettings ?? 0);
                 ;
                 return buildInfoWidget(
+                  index: index,
+                  tapIndex: tapIndex,
                   isSecondInfo: true,
+                  orderId: item.id.toString(),
+                  statusIsOutForDelivary: item.statusIsOutForDelivary ??
+                      false || item.orderStatus?.value == "out_for_delivery",
                   context: context,
+                  orderStatus: item.orderStatus?.value ?? "",
                   isTextSpan: true,
                   text1: item.orderGroupStatus!.label ?? '',
                   text2: '',
@@ -349,14 +405,19 @@ class _OrdersPageState extends State<OrdersPage> {
   }
 
   Widget buildInfoWidget({
+    required int index,
+    required int tapIndex,
     required bool isSecondInfo,
     required BuildContext context,
     required String svgIcon1,
     required String svgIcon2,
     String? secondInfoSvgIcon,
+    required String orderStatus,
+    required String orderId,
     required String text1,
     required String text2,
     required bool isTextSpan,
+    required bool statusIsOutForDelivary,
     required String itemsCount,
     required String amount,
     required String currency,
@@ -403,6 +464,89 @@ class _OrdersPageState extends State<OrdersPage> {
                         secondInfoSvgIcon ?? '',
                         width: 15,
                       )
+                    : const SizedBox.shrink(),
+                const SizedBox(
+                  width: 2,
+                ),
+                isSecondInfo && statusIsOutForDelivary
+                    ? BlocListener<ChatBloc, ChatState>(
+                        listenWhen: (previous, current) =>
+                            previous.getOrderRecipientIdStatus !=
+                            current.getOrderRecipientIdStatus,
+                        listener: (context, state) {
+                          if (state.getOrderRecipientIdStatus ==
+                              GetOrderRecipientIdStatus.success) {
+                            String receiverName = "recipient";
+                            String fullReceiverName = "recipient";
+                            String? recipientUserId = state.recipientUserId;
+                            if (recipientUserId == null) {
+                              return;
+                            }
+                            Chat? chat;
+                            User? receiver;
+                            List<Chat> chats =
+                                List.of(GetIt.I<ChatBloc>().state.chats);
+                            debugPrint(chats.toString());
+                            chats.addAll(GetIt.I<ChatBloc>().state.pinnedChats);
+                            chat = chats.firstWhere((element) =>
+                                element.channelMembers!.any((element) {
+                                  return element.userId.toString() ==
+                                      recipientUserId;
+                                }));
+                            final preferences = GetIt.I<PrefsRepository>();
+                            receiver = chat.channelMembers
+                                ?.firstWhere(
+                                  (element) =>
+                                      element.userId != preferences.myChatId,
+                                  orElse: () => ChannelMember(
+                                      userId: int.tryParse(recipientUserId),
+                                      user: User(
+                                          id: int.tryParse(recipientUserId),
+                                          name: receiverName)),
+                                )
+                                .user;
+                            context.go(GRouter.config.applicationRoutes
+                                    .kSinglePageChatPagePath +
+                                '?chatId=${chat.id!.toString()}&receiverName=$receiverName&fullReceiverName=${fullReceiverName}&receiverPhone=${receiver?.mobilePhone ?? 'Uo Number'}&senderName=${HelperFunctions.getTheFirstTwoLettersOfName(GetIt.I<PrefsRepository>().myChatName!)}');
+                          }
+                          // TODO: implement listener
+                        },
+                        child: BlocBuilder<ChatBloc, ChatState>(
+                          buildWhen: (previous, current) =>
+                              previous.getOrderRecipientIdStatus !=
+                              current.getOrderRecipientIdStatus,
+                          builder: (context, state) {
+                            if (state.getOrderRecipientIdStatus ==
+                                    GetOrderRecipientIdStatus.loading &&
+                                index == tapIndex) {
+                              return Container(
+                                width: 30,
+                                height: 30,
+                                child: TrydosLoader(
+                                  size: 16,
+                                ),
+                              );
+                            }
+                            return Container(
+                              alignment: Alignment.center,
+                              width: 30,
+                              height: 30,
+                              child: InkWell(
+                                onTap: () {
+                                  chatBloc.add(GetOrderRecipientIdEvent(
+                                      originalUserId: GetIt.I<PrefsRepository>()
+                                          .myChatId
+                                          .toString(),
+                                      orderId: orderId));
+                                },
+                                child: SvgPicture.asset(
+                                  AppAssets.chatMarkActiveSvg,
+                                  width: 20,
+                                ),
+                              ),
+                            );
+                          },
+                        ))
                     : const SizedBox.shrink(),
               ],
             ),

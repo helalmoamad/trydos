@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
 
 import 'package:flutter/material.dart';
@@ -19,6 +21,7 @@ import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dar
 
 import 'package:trydos/features/app/my_text_widget.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
+import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
@@ -79,37 +82,42 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
   final FocusNode focusNode = FocusNode();
   String phoneNumber = '';
   int isVisWhatsApp = 0;
-
+  Timer? debounce;
   bool changeAppearSizeForProduct = true;
   void _listenToScroll() {
-    if (setThisEnabledNotifier.value.item1 != -1) {
-      setThisEnabledNotifier.value = Tuple2(-1, -1);
+    if (debounce?.isActive ?? false) {
+      debounce!.cancel();
     }
-    if (scrollController.offset >=
-        (scrollController.position.maxScrollExtent * 0.6)) {
-      if (boutiqueBloc.state.isGettingProductListingWithPagination) return;
-      if (boutiqueBloc.state.getProductListingWithFiltersPaginationModels[
-              "*featured*withoutFilter"] ==
-          null) {
-        return;
+    debounce = Timer(Duration(milliseconds: 600), () {
+      if (setThisEnabledNotifier.value.item1 != -1) {
+        setThisEnabledNotifier.value = Tuple2(-1, -1);
       }
-      if (boutiqueBloc
-          .state
-          .getProductListingWithFiltersPaginationModels[
-              "*featured*withoutFilter"]!
-          .hasReachedMax) {
-        return;
-      }
+      if (scrollController.offset >=
+          (scrollController.position.maxScrollExtent * 0.6)) {
+        if (boutiqueBloc.state.isGettingProductListingWithPagination) return;
+        if (boutiqueBloc.state.getProductListingWithFiltersPaginationModels[
+                "*featured*withoutFilter"] ==
+            null) {
+          return;
+        }
+        if (boutiqueBloc
+            .state
+            .getProductListingWithFiltersPaginationModels[
+                "*featured*withoutFilter"]!
+            .hasReachedMax) {
+          return;
+        }
 
-      boutiqueBloc.add(GetProductsWithFiltersEvent(
-          context: context,
-          fromNotification: false,
-          limit: 10,
-          cashedOrginalBoutique: true,
-          boutiqueSlug: "*featured*",
-          getWithPagination: true,
-          offset: 2));
-    }
+        boutiqueBloc.add(GetProductsWithFiltersEvent(
+            context: context,
+            fromNotification: false,
+            limit: 10,
+            cashedOrginalBoutique: true,
+            boutiqueSlug: "*featured*",
+            getWithPagination: true,
+            offset: 2));
+      }
+    });
   }
 
   @override
@@ -169,13 +177,14 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                               previous.getCartItemsStatus !=
                                   current.getCartItemsStatus,
                           builder: (context, state) {
-                            int qtyItemsInCart = 0;
-                            state.cartCollection?.forEach(
+                            int qtyItemsInCart =
+                                state.cartCollection?.length ?? 0;
+                            /*  state.cartCollection?.forEach(
                               (element) {
                                 qtyItemsInCart =
                                     qtyItemsInCart + (element.quantity ?? 0);
                               },
-                            );
+                            );*/
 
                             return Container(
                               alignment: Alignment.center,
@@ -313,78 +322,83 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                                     crossAxisCount;
                                             final double itemHeight = 375;
 
-                                            return Container(
-                                              width: constraints.maxWidth,
-                                              height:
-                                                  constraints.maxHeight - 110,
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: spacing / 2),
-                                              child: GridView.builder(
-                                                controller: scrollController,
-                                                gridDelegate:
-                                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                                  crossAxisCount:
-                                                      crossAxisCount,
-                                                  mainAxisSpacing: spacing,
-                                                  crossAxisSpacing: spacing,
-                                                  childAspectRatio:
-                                                      itemWidth / itemHeight,
-                                                ),
-                                                itemCount: products.length,
-                                                physics:
-                                                    const ClampingScrollPhysics(),
-                                                itemBuilder: (context, index) {
-                                                  return InkWell(
-                                                    onTap: () {
-                                                      GetIt.I<HomeBloc>().add(
-                                                          ChangeStatusOFGetProductsDetailsToSuccessEvent(
-                                                              isStatusInitaial:
-                                                                  true));
-
-                                                      Future.delayed(
-                                                          Duration(
-                                                              milliseconds:
-                                                                  300),
-                                                          () => Navigator.of(
-                                                                      context)
-                                                                  .push(
-                                                                MaterialPageRoute(
-                                                                  builder: (ctx) =>
-                                                                      ProductDetailsPage(
-                                                                    productItem:
-                                                                        products[
-                                                                            index],
-                                                                  ),
-                                                                ),
-                                                              ));
-                                                    },
-                                                    child: ProductItem(
-                                                      fromHomePage: false,
-                                                      displayImageColors: true,
-                                                      tapIndexToAddProductToCart:
-                                                          tapIndexToAddProductToCart,
-                                                      key: TestVariables
-                                                              .kTestMode
-                                                          ? Key(
-                                                              '"featuresPtoduct"$index')
-                                                          : null,
-                                                      slidingModeItem:
-                                                          slidingMode,
-                                                      productItem:
-                                                          products[index],
-                                                      itemIndex: index,
-                                                      setThisEnabled:
-                                                          (int index,
-                                                              int slideMode) {
-                                                        setThisEnabledNotifier
-                                                                .value =
-                                                            Tuple2(index,
-                                                                slideMode);
-                                                      },
+                                            return Column(
+                                              children: [
+                                                Expanded(
+                                                  child: GridView.builder(
+                                                    shrinkWrap: true,
+                                                    controller:
+                                                        scrollController,
+                                                    gridDelegate:
+                                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                                      crossAxisCount:
+                                                          crossAxisCount,
+                                                      mainAxisSpacing: spacing,
+                                                      crossAxisSpacing: spacing,
+                                                      childAspectRatio:
+                                                          itemWidth /
+                                                              itemHeight,
                                                     ),
-                                                  );
-                                                },
-                                              ),
+                                                    itemCount: products.length,
+                                                    physics:
+                                                        const ClampingScrollPhysics(),
+                                                    itemBuilder:
+                                                        (context, index) {
+                                                      return InkWell(
+                                                        onTap: () {
+                                                          GetIt.I<HomeBloc>().add(
+                                                              ChangeStatusOFGetProductsDetailsToSuccessEvent(
+                                                                  isStatusInitaial:
+                                                                      true));
+
+                                                          Future.delayed(
+                                                              Duration(
+                                                                  milliseconds:
+                                                                      300),
+                                                              () =>
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .push(
+                                                                    MaterialPageRoute(
+                                                                      builder:
+                                                                          (ctx) =>
+                                                                              ProductDetailsPage(
+                                                                        productItem:
+                                                                            products[index],
+                                                                      ),
+                                                                    ),
+                                                                  ));
+                                                        },
+                                                        child: ProductItem(
+                                                          fromHomePage: false,
+                                                          displayImageColors:
+                                                              true,
+                                                          tapIndexToAddProductToCart:
+                                                              tapIndexToAddProductToCart,
+                                                          key: TestVariables
+                                                                  .kTestMode
+                                                              ? Key(
+                                                                  '"featuresPtoduct"$index')
+                                                              : null,
+                                                          slidingModeItem:
+                                                              slidingMode,
+                                                          productItem:
+                                                              products[index],
+                                                          itemIndex: index,
+                                                          setThisEnabled: (int
+                                                                  index,
+                                                              int slideMode) {
+                                                            setThisEnabledNotifier
+                                                                    .value =
+                                                                Tuple2(index,
+                                                                    slideMode);
+                                                          },
+                                                        ),
+                                                      );
+                                                    },
+                                                  ),
+                                                ),
+                                              ],
                                             );
                                           },
                                         ),
@@ -486,7 +500,107 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                             .toString();
                                         String productSlug =
                                             products[tapIndex].slug.toString();
+                                        List<String> syncColorNames = [];
+                                        List<filter.SyncColorImage>
+                                            syncColorImagesFromListing =
+                                            products[tapIndex]
+                                                    .syncColorImages ??
+                                                [];
+                                        List<filter.Color>? colorsFromListing =
+                                            products[tapIndex].colors ?? [];
 
+                                        currentSelectedColor =
+                                            state.currentSelectedColorForEveryProduct[
+                                                    productSlug] ??
+                                                (products[tapIndex]
+                                                            .syncColorImages
+                                                            ?.length ??
+                                                        0) ~/
+                                                    2;
+                                        String currentSelectedColorName =
+                                            ((products[tapIndex]
+                                                            .colors
+                                                            ?.length ??
+                                                        0) >
+                                                    0)
+                                                ? products[tapIndex]
+                                                        .colors![
+                                                            currentSelectedColor]
+                                                        .name ??
+                                                    ""
+                                                : "";
+
+                                        String currentVariantType =
+                                            "${currentSelectedColorName != "" ? currentSelectedColorName : ""}" +
+                                                "${(state.currentColorSizeForCart?["size"] != null && (state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]?.product?.choiceOptions?.isNullOrEmpty ?? false) && state.currentColorSizeForCart?["size"] != "") && (currentSelectedColorName != "") ? "-" : ""}" +
+                                                "${(state.currentColorSizeForCart?["size"] != null && (state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]?.product?.choiceOptions?.isNullOrEmpty ?? false) && state.currentColorSizeForCart?["size"] != "") ? "${state.currentColorSizeForCart?["size"]}" : ""}";
+
+                                        Variation? currentVariation = state
+                                            .cachedProductWithoutRelatedProductsModel[
+                                                products[tapIndex]
+                                                    .productId
+                                                    .toString()]
+                                            ?.product
+                                            ?.variation
+                                            ?.firstWhere(
+                                          (element) => element.type!
+                                              .contains(currentVariantType),
+                                          orElse: () {
+                                            return Variation(
+                                                variantNotifyForUser: false);
+                                          },
+                                        );
+
+                                        if (state
+                                                .getProductDetailWithoutSimilarRelatedProductsStatus ==
+                                            GetProductDetailWithoutSimilarRelatedProductsStatus
+                                                .success) {
+                                          for (var i = 0;
+                                              i <
+                                                  (products[tapIndex]
+                                                          .syncColorImages
+                                                          ?.length ??
+                                                      0);
+                                              i++) {
+                                            syncColorNames.add(
+                                                products[tapIndex]
+                                                        .syncColorImages?[i]
+                                                        .colorName ??
+                                                    "");
+                                          }
+                                          state
+                                              .cachedProductWithoutRelatedProductsModel[
+                                                  products[tapIndex]
+                                                      .productId
+                                                      .toString()]!
+                                              .product
+                                              ?.syncColorImages
+                                              ?.forEach(
+                                            (element) {
+                                              if (!syncColorNames.contains(
+                                                  element.colorName)) {
+                                                syncColorImagesFromListing
+                                                    .add(element);
+                                              }
+                                            },
+                                          );
+
+                                          state
+                                              .cachedProductWithoutRelatedProductsModel[
+                                                  products[tapIndex]
+                                                      .productId
+                                                      .toString()]!
+                                              .product
+                                              ?.colors
+                                              ?.forEach(
+                                            (element) {
+                                              if (!(syncColorNames
+                                                  .contains(element.name))) {
+                                                colorsFromListing.add(element);
+                                              }
+                                            },
+                                          );
+                                        }
                                         currentSelectedColor =
                                             state.currentSelectedColorForEveryProduct[
                                                     productSlug] ??
@@ -683,17 +797,27 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                           currentActiveTab.value = 3;
                                           Future.delayed(
                                               Duration(milliseconds: 600), () {
-                                            panelControllerForCart.open();
-                                            changeAppearSizeForProduct = false;
+                                            WidgetsBinding.instance
+                                                .addPostFrameCallback((_) {
+                                              panelControllerForCart.open();
+                                              changeAppearSizeForProduct =
+                                                  false;
+                                            });
                                           });
                                         }
 
-                                        return state.getProductDetailWithoutSimilarRelatedProductsStatus ==
+                                        return state
+                                                        .getProductDetailWithoutSimilarRelatedProductsStatus ==
                                                     GetProductDetailWithoutSimilarRelatedProductsStatus
                                                         .loading ||
                                                 state.enableAddToCardAfterChangeVariantZero !=
                                                     EnableAddToCardAfterChangeVariantZero
-                                                        .success
+                                                        .success ||
+                                                state.cachedProductWithoutRelatedProductsModel[
+                                                        products[tapIndex]
+                                                            .productId
+                                                            .toString()] ==
+                                                    null
                                             ? Container(
                                                 width: 1.sw,
                                                 height: 1.sh - 150,
@@ -704,6 +828,15 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                                 ),
                                               )
                                             : ProductDetailsBottomSheet(
+                                                initOfferPrice:
+                                                    (products[tapIndex]
+                                                                .offerPrice ??
+                                                            0)
+                                                        .toString(),
+                                                initPrice:
+                                                    (products[tapIndex].price ??
+                                                            0)
+                                                        .toString(),
                                                 isGetFullProductDetails: false,
                                                 productNotAvailableNotifier:
                                                     productNotAvailableNotifier,
@@ -856,7 +989,100 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                                                 currentSelectedColor]
                                                             .name ??
                                                         "",
-                                                productItem: products[tapIndex],
+                                                productItem:
+                                                    products[tapIndex].copyWith(
+                                                  price: currentVariation
+                                                              ?.price !=
+                                                          null
+                                                      ? currentVariation?.price
+                                                      : state
+                                                          .cachedProductWithoutRelatedProductsModel[
+                                                              products[tapIndex]
+                                                                  .productId
+                                                                  .toString()]!
+                                                          .product
+                                                          ?.price,
+                                                  offerPrice: currentVariation
+                                                              ?.offerPrice !=
+                                                          null
+                                                      ? currentVariation
+                                                          ?.offerPrice
+                                                      : state
+                                                          .cachedProductWithoutRelatedProductsModel[
+                                                              products[tapIndex]
+                                                                  .productId
+                                                                  .toString()]!
+                                                          .product
+                                                          ?.offerPrice,
+                                                  priceFormatted: currentVariation
+                                                              ?.priceFormated !=
+                                                          null
+                                                      ? currentVariation
+                                                          ?.priceFormated
+                                                      : state
+                                                          .cachedProductWithoutRelatedProductsModel[
+                                                              products[tapIndex]
+                                                                  .productId
+                                                                  .toString()]!
+                                                          .product
+                                                          ?.priceFormatted,
+                                                  offerPriceFormatted: currentVariation
+                                                              ?.offerPriceFormated !=
+                                                          null
+                                                      ? currentVariation
+                                                          ?.offerPriceFormated
+                                                      : state
+                                                          .cachedProductWithoutRelatedProductsModel[
+                                                              products[tapIndex]
+                                                                  .productId
+                                                                  .toString()]!
+                                                          .product
+                                                          ?.offerPriceFormatted,
+                                                  availableQuantity: state
+                                                                  .cachedProductWithoutRelatedProductsModel[
+                                                              products[tapIndex]
+                                                                  .productId
+                                                                  .toString()] ==
+                                                          null
+                                                      ? 0
+                                                      : state
+                                                          .cachedProductWithoutRelatedProductsModel[
+                                                              products[tapIndex]
+                                                                  .productId
+                                                                  .toString()]!
+                                                          .product
+                                                          ?.availableQuantity,
+                                                  choiceOptions: state
+                                                                  .cachedProductWithoutRelatedProductsModel[
+                                                              products[tapIndex]
+                                                                  .productId
+                                                                  .toString()] ==
+                                                          null
+                                                      ? []
+                                                      : state
+                                                          .cachedProductWithoutRelatedProductsModel[
+                                                              products[tapIndex]
+                                                                  .productId
+                                                                  .toString()]!
+                                                          .product
+                                                          ?.choiceOptions,
+                                                  colors: colorsFromListing,
+                                                  images: state.cachedProductWithoutRelatedProductsModel[
+                                                              products[tapIndex]
+                                                                  .productId
+                                                                  .toString()] ==
+                                                          null
+                                                      ? []
+                                                      : state
+                                                          .cachedProductWithoutRelatedProductsModel[
+                                                              products[tapIndex]
+                                                                  .productId
+                                                                  .toString()]!
+                                                          .product
+                                                          ?.images,
+                                                  syncColorImages:
+                                                      syncColorImagesFromListing,
+                                                ),
                                                 currentColor:
                                                     currentSelectedColor,
                                                 maxAllowedToAddCart: state

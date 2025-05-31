@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
-import 'package:trydos/features/home/data/models/convert_item_from_oldCart_to_cart_model.dart';
+import 'package:trydos/features/home/data/models/convert_item_from_cart_to_oldCart_model.dart';
 import 'package:trydos/features/home/data/models/firebase_setting_for_notification_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_coordinates_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_text_model.dart';
@@ -81,7 +81,8 @@ abstract class HomeRepository {
       subscribeTopicFornotification(Map<String, dynamic> params);
   Future<Either<Failure, FirebaseSettingForNotificationModel>>
       getMyFirebaseSettings();
-  Future<Either<Failure, CountryBoundaryByIsoModel>> getCountryBoundaryByIso();
+  Future<Either<Failure, CountryBoundaryByIsoModel>> getCountryBoundaryByIso(
+      String iso);
   Future<Either<Failure, NotificationTypeForProductModel>>
       getNotificationTypeForProduct();
 
@@ -134,8 +135,8 @@ abstract class HomeRepository {
   Future<Either<Failure, bool>> hideItemsInOldCart(Map<String, dynamic> params);
   Future<Either<Failure, bool>> setCustomerAddressDefault(
       Map<String, dynamic> params);
-  Future<Either<Failure, ConvertItemFromOldCartToCartModel>>
-      convertItemInOldCartToCart(Map<String, dynamic> params);
+  Future<Either<Failure, ConvertItemFromCartToOldCartModel>>
+      convertItemInCartToOldCart(Map<String, dynamic> params);
   Future<Either<Failure, bool>> removeItemToCart(Map<String, dynamic> params);
   Future<Either<Failure, Comment>> addComment(Map<String, dynamic> params);
   Future<Either<Failure, ReadOnlyMessageFromApiModel>>

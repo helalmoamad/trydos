@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -60,7 +62,7 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
   late CallsBloc callsBloc;
   final ScrollController scrollController = ScrollController();
   late ChatBloc chatBloc;
-
+  Timer? debounce;
   List<Widget> chatPages = [
     const CallsPageContent(),
     const StoriesForChatPageContent(),
@@ -79,16 +81,22 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
 
   @override
   void initState() {
+    print(
+        "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
     scrollController.addListener(_getChatsPaginationListener);
     chatBloc = BlocProvider.of<ChatBloc>(context);
     callsBloc = BlocProvider.of<CallsBloc>(context);
     callsBloc.add(GetMissedCallCountEvent());
     callsBloc.add(GetMyCallsEvent());
+    print(
+        "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFsssssssssssssWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
+
+    chatBloc.add(GetChatsEvent(limit: 10));
     chatPages.insert(
       0,
       ChatPageContent(onSendForwardMessage: widget.onSendForwardMessage),
     );
-    chatBloc.add(GetChatsEvent(limit: 10));
+
     if (widget.hideCallsAndStories) {
       BlocProvider.of<AppBloc>(context).add(ChangeTabInChat(0));
     }
@@ -97,11 +105,16 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
   }
 
   void _getChatsPaginationListener() {
-    if ((scrollController.offset >=
-            scrollController.position.maxScrollExtent - 100) &&
-        BlocProvider.of<AppBloc>(context).state.tabIndexInChat == 0) {
-      chatBloc.add(GetChatsEvent(limit: 10));
+    if (debounce?.isActive ?? false) {
+      debounce!.cancel();
     }
+    debounce = Timer(Duration(milliseconds: 600), () {
+      if ((scrollController.offset >=
+              scrollController.position.maxScrollExtent * 0.7) &&
+          BlocProvider.of<AppBloc>(context).state.tabIndexInChat == 0) {
+        chatBloc.add(GetChatsEvent(limit: 10, getWithPagination: true));
+      }
+    });
   }
 
   @override

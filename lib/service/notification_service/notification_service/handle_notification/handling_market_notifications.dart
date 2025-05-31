@@ -113,7 +113,6 @@ class HandlingMarketNotifications {
 
   // هنا حسب نوع الاشعار نحدد إلى أي صفحة سننتقل او ماذا سنفعل
   static dealWithNotificationFromMarket(Map data, bool fromBackground) async {
-    GetIt.I<PrefsRepository>().setNotificationTypesOfMarketFromTerminated("");
     //    BlocProvider.of<AppBloc>(context).add(ChangeBasePage(1));
     if (data["type"] ==
             typeOfNotificationForMarket[

@@ -23,10 +23,13 @@ class StoryState {
   SelectedVideoStatus selectedVideoStatus;
   List<CollectionStoryModel> storiesCollections;
   int currentPage;
+  int storyOffset;
+  bool getStoryWithPagintionStatusLoading;
+  bool finishGetAllStory;
+  String? storyLink;
   int? selectedCollection;
-  Map<int , int?> currentStoryInEachCollection;
-  List<Tuple2<String , String>> currentStoryToMakeItViewedInEachCollection;
-
+  Map<int, int?> currentStoryInEachCollection;
+  List<Tuple2<String, String>> currentStoryToMakeItViewedInEachCollection;
 
   StoryState(
       {this.uploadStoryCloudinaryStatus = UploadStoryCloudinaryStatus.init,
@@ -36,6 +39,10 @@ class StoryState {
       this.storiesCollections = const [],
       this.currentStoryToMakeItViewedInEachCollection = const [],
       this.currentPage = 0,
+      this.storyLink,
+      this.finishGetAllStory = false,
+      this.storyOffset = 0,
+      this.getStoryWithPagintionStatusLoading = false,
       this.currentStoryInEachCollection = const {},
       this.selectedCollection});
 
@@ -43,10 +50,13 @@ class StoryState {
       {UploadStoryCloudinaryStatus? uploadStoryCloudinaryStatus,
       UploadStoryStatus? uploadStoryStatus,
       SelectedVideoStatus? selectedVideoStatus,
-      List<Tuple2<String, String>>?
-          currentStoryToMakeItViewedInEachCollection,
+      List<Tuple2<String, String>>? currentStoryToMakeItViewedInEachCollection,
       GetStoriesStatus? getStoriesStatus,
       List<CollectionStoryModel>? storiesCollections,
+      String? storyLink,
+      int? storyOffset,
+      bool? finishGetAllStory,
+      bool? getStoryWithPagintionStatusLoading,
       Map<int, int?>? currentStoryInEachCollection,
       int? selectedCollection,
       int? currentPage,
@@ -60,8 +70,14 @@ class StoryState {
         uploadStoryStatus: uploadStoryStatus ?? this.uploadStoryStatus,
         selectedVideoStatus: selectedVideoStatus ?? this.selectedVideoStatus,
         getStoriesStatus: getStoriesStatus ?? this.getStoriesStatus,
+        storyLink: storyLink ?? this.storyLink,
         storiesCollections: storiesCollections ?? this.storiesCollections,
         currentPage: currentPage ?? this.currentPage,
+        storyOffset: storyOffset ?? this.storyOffset,
+        finishGetAllStory: finishGetAllStory ?? this.finishGetAllStory,
+        getStoryWithPagintionStatusLoading:
+            getStoryWithPagintionStatusLoading ??
+                this.getStoryWithPagintionStatusLoading,
         currentStoryInEachCollection:
             currentStoryInEachCollection ?? this.currentStoryInEachCollection,
         selectedCollection: selectedCollection ?? this.selectedCollection);
@@ -73,19 +89,19 @@ class StoryState {
   Map<String, dynamic> toJson() => _$StoryStateToJson(this);
 }
 
-
-class EntryConverter implements JsonConverter<Tuple2<String , String>, List<dynamic>> {
+class EntryConverter
+    implements JsonConverter<Tuple2<String, String>, List<dynamic>> {
   static const instance = EntryConverter();
 
   const EntryConverter();
 
   @override
-  Tuple2<String , String> fromJson(dynamic json) {
+  Tuple2<String, String> fromJson(dynamic json) {
     return Tuple2(json[0], json[1]);
   }
 
   @override
-  List<dynamic> toJson(Tuple2<String , String> entry) {
+  List<dynamic> toJson(Tuple2<String, String> entry) {
     return [entry.value1, entry.value2];
   }
 }

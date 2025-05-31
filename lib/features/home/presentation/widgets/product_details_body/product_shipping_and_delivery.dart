@@ -26,8 +26,12 @@ import '../../../../authentication/presentation/manager/auth_bloc.dart';
 class ProductShippingAndDelivery extends StatelessWidget {
   final String shippingDay;
   final double shippingCost;
+  final String countryName;
   ProductShippingAndDelivery(
-      {super.key, required this.shippingDay, required this.shippingCost});
+      {super.key,
+      required this.shippingDay,
+      required this.shippingCost,
+      required this.countryName});
 
   final ValueNotifier<bool> isExpanded = ValueNotifier(false);
 
@@ -174,7 +178,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                             padding: EdgeInsets.symmetric(vertical: 8),
                             margin: EdgeInsets.symmetric(horizontal: 30),
                             child: Center(
-                              child: BlocBuilder<AuthBloc, AuthState>(
+                                child: /* BlocBuilder<AuthBloc, AuthState>(
                                 buildWhen: (p, c) =>
                                     p.getCustomerCountryStatus !=
                                     c.getCustomerCountryStatus,
@@ -195,57 +199,50 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                               color: Color(0xff8D8D8D)),
                                     );
                                   }
-                                  return RichText(
-                                    text: TextSpan(
-                                      children: [
-                                        TextSpan(
-                                          text:
-                                              '${LocaleKeys.at_your_address_in.tr()} ',
-                                          style: context
-                                              .textTheme.titleMedium?.lq
-                                              .copyWith(
-                                            color: const Color(0xff8d8d8d),
-                                            height: 14 / 11,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: state.countryName,
-                                          style: context
-                                              .textTheme.titleMedium?.mq
-                                              .copyWith(
-                                            color: const Color(0xff8d8d8d),
-                                            height: 14 / 11,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text:
-                                              ' ${LocaleKeys.expected_within.tr()} ',
-                                          style: context
-                                              .textTheme.titleMedium?.rq
-                                              .copyWith(
-                                            color: const Color(0xff8d8d8d),
-                                            height: 14 / 11,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text:
-                                              '$shippingDay ${LocaleKeys.day.tr()}',
-                                          style: context
-                                              .textTheme.titleMedium?.mq
-                                              .copyWith(
-                                            color: const Color(0xff8d8d8d),
-                                            height: 14 / 11,
-                                          ),
-                                        ),
-                                      ],
+                                  return*/
+                                    RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text:
+                                        '${LocaleKeys.at_your_address_in.tr()} ',
+                                    style: context.textTheme.titleMedium?.lq
+                                        .copyWith(
+                                      color: const Color(0xff8d8d8d),
+                                      height: 14 / 11,
                                     ),
-                                    textHeightBehavior: TextHeightBehavior(
-                                        applyHeightToFirstAscent: false),
-                                    textAlign: TextAlign.start,
-                                  );
-                                },
+                                  ),
+                                  TextSpan(
+                                    text: countryName,
+                                    style: context.textTheme.titleMedium?.mq
+                                        .copyWith(
+                                      color: const Color(0xff8d8d8d),
+                                      height: 14 / 11,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text:
+                                        ' ${LocaleKeys.expected_within.tr()} ',
+                                    style: context.textTheme.titleMedium?.rq
+                                        .copyWith(
+                                      color: const Color(0xff8d8d8d),
+                                      height: 14 / 11,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: '$shippingDay ${LocaleKeys.day.tr()}',
+                                    style: context.textTheme.titleMedium?.mq
+                                        .copyWith(
+                                      color: const Color(0xff8d8d8d),
+                                      height: 14 / 11,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
+                              textHeightBehavior: TextHeightBehavior(
+                                  applyHeightToFirstAscent: false),
+                              textAlign: TextAlign.start,
+                            )),
                           ),
                         ),
                         SizedBox(
@@ -343,7 +340,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                 mainAxisSize: MainAxisSize.min,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  BlocBuilder<AuthBloc, AuthState>(
+                                  /*  BlocBuilder<AuthBloc, AuthState>(
                                     buildWhen: (p, c) =>
                                         p.getCustomerCountryStatus !=
                                         c.getCustomerCountryStatus,
@@ -365,14 +362,13 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                                   color: Color(0xff8D8D8D)),
                                         );
                                       }
-                                      return MyTextWidget(
-                                        '12. Jun. In ${state.countryName}',
-                                        style: context.textTheme.titleMedium?.rq
-                                            .copyWith(
-                                                height: 14 / 11,
-                                                color: Color(0xff388CFF)),
-                                      );
-                                    },
+                                      return */
+                                  MyTextWidget(
+                                    '12. Jun. In ${countryName}',
+                                    style: context.textTheme.titleMedium?.rq
+                                        .copyWith(
+                                            height: 14 / 11,
+                                            color: Color(0xff388CFF)),
                                   ),
                                   Flexible(
                                     child: RichText(

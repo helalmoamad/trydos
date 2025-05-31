@@ -340,8 +340,7 @@ class ChatCardForShare extends StatelessWidget {
                                                 height: 1.33),
                                         name: receiverName)
                                     : MyCachedNetworkImage(
-                                        imageUrl: ChatUrls.baseUrl +
-                                            channelMember.user?.photoPath,
+                                        imageUrl: channelMember.user?.photoPath,
                                         imageFit: BoxFit.cover,
                                         width: 70.w - (selected ? 2 : 0),
                                         height: 80 - (selected ? 2 : 0),

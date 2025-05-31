@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -254,7 +255,7 @@ class _CallsCardState extends ThemeState<CallsCard> {
                   ),
                   child: widget.photoPath != ""
                       ? Container(
-                          decoration: BoxDecoration(
+                          /* decoration: BoxDecoration(
                             border: Border.all(
                                 width: 1.0, color: const Color(0xff388cff)),
                             boxShadow: const [
@@ -264,13 +265,18 @@ class _CallsCardState extends ThemeState<CallsCard> {
                                 blurRadius: 6,
                               ),
                             ],
-                          ),
+                          ),*/
                           child: MyCachedNetworkImage(
-                            imageUrl: ChatUrls.baseUrl + widget.photoPath,
+                            imageUrl: (widget.photoPath
+                                        .toString()
+                                        .contains("cloudinary")
+                                    ? ""
+                                    : "${dotenv.env['Profile_Images_Url']}") +
+                                widget.photoPath,
                             imageFit: BoxFit.cover,
                             progressIndicatorBuilderWidget: TrydosLoader(),
-                            height: 40,
-                            width: 40.w,
+                            height: 55,
+                            width: 55.w,
                           ),
                         )
                       : NoImageWidget(

@@ -6,6 +6,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:eraser/eraser.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -107,8 +108,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
   late AutoScrollController autoScrollController;
 
   void _scrollToBottom() {
-    print(
-        "##################################################################################################33");
     autoScrollController.jumpTo(0);
   }
 
@@ -361,7 +360,11 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                     ],
                                   ),
                                   child: MyCachedNetworkImage(
-                                    imageUrl: ChatUrls.baseUrl +
+                                    imageUrl: (widget.receiverPhoto
+                                                .toString()
+                                                .contains("cloudinary")
+                                            ? ""
+                                            : "${dotenv.env['Profile_Images_Url']}") +
                                         widget.receiverPhoto!,
                                     imageFit: BoxFit.cover,
                                     progressIndicatorBuilderWidget:
@@ -859,7 +862,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                           orElse: () => chatState.pinnedChats.firstWhere(
                               (element) =>
                                   element.id.toString() == widget.chatId ||
-                                  element.localId.toString() == widget.chatId));
+                                  element.localId.toString() == widget.chatId,
+                              orElse: () => Chat()));
 
                       return GestureDetector(
                           onTap: () {
@@ -1538,7 +1542,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                   builder: (context, state) {
 //                flutterToast.s
                     return ChatInputField(
-                      channelId: chat.id!,
+                      channelId: chat.id ?? "",
                       senderName: widget.senderName,
                       senderUserImage: widget.senderPhoto,
                       onSendFile: (File file, String customPathType) {
@@ -1598,7 +1602,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                         String id = const Uuid().v4();
                         ChannelMember? member =
                             !chat.channelMembers.isNullOrEmpty
-                                ? chat.channelMembers!.firstWhere((element) =>
+                                ? chat.channelMembers?.firstWhere((element) =>
                                     element.userId != _prefsRepository.myChatId)
                                 : null;
 

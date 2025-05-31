@@ -341,6 +341,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             state.copyWith(loginToStoriesStatus: LoginToStoriesStatus.failure));
       },
       (r) {
+        emit(
+            state.copyWith(loginToStoriesStatus: LoginToStoriesStatus.success));
         isFailedTheFirstTime.remove('LoginToStoriesEvent');
 
         final id = r.data!.id;
@@ -353,7 +355,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           _prefsRepository.setMyStoriesName(name ?? 'No Name');
         }
         apisMustNotToRequest.remove('GetStoryEvent');
-        GetIt.I<StoryBloc>().add(GetStoryEvent());
+        GetIt.I<StoryBloc>().add(GetStoryEvent(withPaginition: false));
       },
     );
   }
@@ -549,7 +551,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       _prefsRepository.setMarketToken(r.data!.token!);
       _prefsRepository
           .setMyProfilePhoto((r.data?.user?.image ?? "").toString());
-      _prefsRepository.setMyMarketName("guest");
+      _prefsRepository.setMyMarketName(r.data!.user!.name ?? "guest");
+
+      GetIt.I<HomeBloc>()
+          .add(SaveUserInfoFromAuthEvent(userInfo: r.data!.user!));
       _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
       GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
       GetIt.I<HomeBloc>().add(GetCartItemEvent());
@@ -686,7 +691,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         updateStoriesUserStatus: UpdateStoriesUserStatus.failure,
       ));
     }, (r) {
-      GetIt.I<StoryBloc>().add(GetStoryEvent());
+      GetIt.I<StoryBloc>().add(GetStoryEvent(withPaginition: false));
       isFailedTheFirstTime.remove('UpdateStoriesUserEvent');
       _prefsRepository.setMyStoriesName(event.name ?? "");
       _prefsRepository.setMyMarketName(event.name ?? "");

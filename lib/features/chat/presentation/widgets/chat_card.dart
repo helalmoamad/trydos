@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -99,6 +100,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                 (element) => element.userId != _prefsRepository.myChatId)
             .user
         : null;
+
     String receiverName = HelperFunctions.getTheFirstTwoLettersOfName(
             widget.chat.channelName ?? LocaleKeys.no_channal_name.tr()),
         fullReceiverName =
@@ -338,7 +340,11 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                             BorderRadius.circular(12.0),
                                       ),
                                       child: MyCachedNetworkImage(
-                                          imageUrl: ChatUrls.baseUrl +
+                                          imageUrl: ((receiver?.photoPath ?? "")
+                                                      .toString()
+                                                      .contains("cloudinary")
+                                                  ? ""
+                                                  : "${dotenv.env['Profile_Images_Url']}") +
                                               receiver?.photoPath,
                                           imageFit: BoxFit.cover,
                                           height: 80.h,

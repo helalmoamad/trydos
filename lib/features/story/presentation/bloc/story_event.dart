@@ -5,11 +5,12 @@ abstract class StoryEvent extends Equatable {
 }
 
 class GetStoryEvent extends StoryEvent {
-  const GetStoryEvent();
+  final bool withPaginition;
+  const GetStoryEvent({required this.withPaginition});
 
   @override
   // TODO: implement props
-  List<Object?> get props => [];
+  List<Object?> get props => [withPaginition];
 }
 
 class LoadFailureEvent extends StoryEvent {
@@ -48,27 +49,44 @@ class UploadStoryEvent extends StoryEvent {
 }
 
 class AddStoryToOurServerEvent extends StoryEvent {
-  final File file;
+  // final File file;
   final int isVideo;
   final int? width;
   final int? height;
   final String path;
 
   const AddStoryToOurServerEvent(
-      {required this.file,
+      { //required this.file,
       required this.path,
       required this.isVideo,
       this.width,
       this.height});
 
   @override
-  List<Object?> get props => [file, isVideo, width, height];
+  List<Object?> get props => [isVideo, width, height];
 }
 
 class UploadStoryCloudinaryEvent extends StoryEvent {
   final File file;
 
   const UploadStoryCloudinaryEvent(this.file);
+
+  @override
+  List<Object?> get props => [];
+}
+
+class ChangeStatusUploadToFailureEvent extends StoryEvent {
+  const ChangeStatusUploadToFailureEvent();
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+}
+
+class SetStoryLinkEvent extends StoryEvent {
+  final String link;
+
+  const SetStoryLinkEvent(this.link);
 
   @override
   List<Object?> get props => [];

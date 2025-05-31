@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
@@ -94,8 +95,7 @@ class _CallsPageContentState extends ThemeState<CallsPageContent> {
                   fullReceiverName: state
                       .callRegister![index].channel!.channelName
                       .toString(),
-                  photoPath:
-                      state.callRegister![index].channel!.photoPath ?? "",
+                  photoPath: state.callRegister![index].channel!.photoPath,
                   chatId: state.callRegister![index].channelId.toString(),
                   duration: state.callRegister![index].durationInSeconds == null
                       ? 0

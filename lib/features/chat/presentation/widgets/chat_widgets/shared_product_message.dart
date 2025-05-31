@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -82,7 +83,7 @@ class _SharedProductMessageState extends State<SharedProductMessage> {
   bool timer = false;
   int? height;
   late ChatBloc chatBloc;
-  final ValueNotifier<int> _loadingImage = ValueNotifier(0);
+  // final ValueNotifier<int> _loadingImage = ValueNotifier(0);
 
   @override
   void initState() {
@@ -203,7 +204,7 @@ class _SharedProductMessageState extends State<SharedProductMessage> {
                                 ? Alignment.centerRight
                                 : Alignment.centerLeft,
                             children: [
-                              if (widget.imageFile == null) ...{
+                              /* if (widget.imageFile == null) ...{
                                 Container(
                                     width: 1.sw - 100,
                                     height: 464,
@@ -243,40 +244,49 @@ class _SharedProductMessageState extends State<SharedProductMessage> {
                                                 color: const Color(0xff388CFF),
                                               );
                                             }))),
-                              } else ...{
-                                // FutureBuilder(
-                                //   future: loadWidthAndHeightForImage(
-                                //       ImageFile: widget.imageFile!),
-                                //   builder: (context, snapshot) {
-                                //     if (snapshot.connectionState ==
-                                //         ConnectionState.done)
-                                //       return
-                                Stack(
-                                  alignment: Alignment.bottomCenter,
-                                  children: [
-                                    Container(
+                              } else ...{*/
+                              // FutureBuilder(
+                              //   future: loadWidthAndHeightForImage(
+                              //       ImageFile: widget.imageFile!),
+                              //   builder: (context, snapshot) {
+                              //     if (snapshot.connectionState ==
+                              //         ConnectionState.done)
+                              //       return
+                              Stack(
+                                alignment: Alignment.bottomCenter,
+                                children: [
+                                  Container(
+                                    width: 1.sw - 100,
+                                    height: 400,
+                                    child: MyCachedNetworkImage(
+                                      imageUrl: (widget.imageUrl ?? ""),
+                                      imageFit: BoxFit.contain,
+                                      progressIndicatorBuilderWidget:
+                                          TrydosLoader(),
+                                      radius: 8,
                                       width: 1.sw - 100,
-                                      height: 464,
-                                      // (snapshot.data!.width.w < 200.w)
-                                      //     ? snapshot.data!.width.toDouble()
-                                      //     : 200.w
+                                      height: 400,
+                                    ),
+                                    // (snapshot.data!.width.w < 200.w)
+                                    //     ? snapshot.data!.width.toDouble()
+                                    //     : 200.w
 
-                                      // (snapshot.data!.width.w / 3 >
-                                      //             200.w)
-                                      //         ? 200.w.toDouble()
-                                      //         : snapshot.data!.width / 3
-                                      // (snapshot.data!.height.h <
-                                      //         200.h)
-                                      //     ? snapshot.data!.height.toDouble()
-                                      //     : 200.h
+                                    // (snapshot.data!.width.w / 3 >
+                                    //             200.w)
+                                    //         ? 200.w.toDouble()
+                                    //         : snapshot.data!.width / 3
+                                    // (snapshot.data!.height.h <
+                                    //         200.h)
+                                    //     ? snapshot.data!.height.toDouble()
+                                    //     : 200.h
 
-                                      // snapshot.data!.height / 3
+                                    // snapshot.data!.height / 3
 
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
+                                    /*    decoration: BoxDecoration(
+                                       /* image: DecorationImage(
                                           image: FileImage(widget.imageFile!),
                                           fit: BoxFit.fill,
-                                        ),
+                                        ),*/
                                         borderRadius:
                                             BorderRadius.circular(12.0),
                                         border: Border.all(
@@ -285,132 +295,131 @@ class _SharedProductMessageState extends State<SharedProductMessage> {
                                               ? const Color(0xffFFF9B4)
                                               : const Color(0xffB4FFD9),
                                         ),
-                                      ),
-                                    ),
-                                    Transform.translate(
-                                      offset: const Offset(0, -3),
-                                      child: Container(
-                                        height: 40.h,
-                                        width: 1.sw - 100,
-                                        // (snapshot.data!.width.w < 200.w)
-                                        //     ? snapshot.data!.width.toDouble()
-                                        //     : 200.w,
-                                        decoration: BoxDecoration(
-                                          gradient: const LinearGradient(
-                                            begin: Alignment(0.0, 0),
-                                            end: Alignment(0.0, 1.0),
-                                            colors: [
-                                              Color(0x00000000),
-                                              Color(0xb2000000)
-                                            ],
-                                            stops: [0.0, 1.0],
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(12.0),
+                                      ),*/
+                                  ),
+                                  Transform.translate(
+                                    offset: const Offset(0, -3),
+                                    child: Container(
+                                      height: 40.h,
+                                      width: 1.sw - 100,
+                                      // (snapshot.data!.width.w < 200.w)
+                                      //     ? snapshot.data!.width.toDouble()
+                                      //     : 200.w,
+                                      decoration: BoxDecoration(
+                                        gradient: const LinearGradient(
+                                          begin: Alignment(0.0, 0),
+                                          end: Alignment(0.0, 1.0),
+                                          colors: [
+                                            Color(0x00000000),
+                                            Color(0xb2000000)
+                                          ],
+                                          stops: [0.0, 1.0],
                                         ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 5, horizontal: 20),
-                                          child: Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.end,
-                                            children: [
-                                              MyTextWidget(
-                                                !widget.createAt!.isUtc
-                                                    ? HelperFunctions
-                                                        .getDateInFormat(
-                                                            widget.createAt!)
-                                                    : HelperFunctions
-                                                        .getZonedDateInFormat(
-                                                            widget.createAt!),
-                                                style: context
-                                                    .textTheme.titleSmall?.rr
-                                                    .copyWith(
-                                                        color: context
-                                                            .colorScheme.white),
-                                              ),
-                                              if (widget.isSent) ...{
-                                                10.horizontalSpace,
-                                                (state.currentFailedMessage
-                                                        .contains(
-                                                            widget.messageId))
-                                                    ? Row(
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        children: [
-                                                          InkWell(
-                                                              onTap: () {
-                                                                chatBloc.add(ResendMessageEvent(
-                                                                    messageType:
-                                                                        "image",
-                                                                    channelId:
-                                                                        widget
-                                                                            .channelId,
-                                                                    messageId:
-                                                                        widget
-                                                                            .messageId));
-                                                              },
-                                                              child: Icon(
-                                                                Icons.refresh,
-                                                                size: 27.w,
-                                                              )),
-                                                          Container(
-                                                            margin:
-                                                                EdgeInsets.only(
-                                                                    left: 5.w),
-                                                            child: SvgPicture
-                                                                .asset(
-                                                              AppAssets
-                                                                  .messageFailedSvg,
-                                                              width: 10.sp,
-                                                              height: 10.sp,
-                                                            ),
+                                        borderRadius:
+                                            BorderRadius.circular(12.0),
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 5, horizontal: 20),
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
+                                          children: [
+                                            MyTextWidget(
+                                              !widget.createAt!.isUtc
+                                                  ? HelperFunctions
+                                                      .getDateInFormat(
+                                                          widget.createAt!)
+                                                  : HelperFunctions
+                                                      .getZonedDateInFormat(
+                                                          widget.createAt!),
+                                              style: context
+                                                  .textTheme.titleSmall?.rr
+                                                  .copyWith(
+                                                      color: context
+                                                          .colorScheme.white),
+                                            ),
+                                            if (widget.isSent) ...{
+                                              10.horizontalSpace,
+                                              (state.currentFailedMessage
+                                                      .contains(
+                                                          widget.messageId))
+                                                  ? Row(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        InkWell(
+                                                            onTap: () {
+                                                              chatBloc.add(ResendMessageEvent(
+                                                                  messageType:
+                                                                      "image",
+                                                                  channelId: widget
+                                                                      .channelId,
+                                                                  messageId: widget
+                                                                      .messageId));
+                                                            },
+                                                            child: Icon(
+                                                              Icons.refresh,
+                                                              size: 27.w,
+                                                            )),
+                                                        Container(
+                                                          margin:
+                                                              EdgeInsets.only(
+                                                                  left: 5.w),
+                                                          child:
+                                                              SvgPicture.asset(
+                                                            AppAssets
+                                                                .messageFailedSvg,
+                                                            width: 10.sp,
+                                                            height: 10.sp,
                                                           ),
-                                                        ],
-                                                      )
-                                                    : SvgPicture.asset(
-                                                        widget.isRead
-                                                            ? AppAssets
-                                                                .messageReadArrowSvg
-                                                            : widget.isReceived
-                                                                ? AppAssets
-                                                                    .messageDeliveredArrowSvg
-                                                                : (state.currentMessage
-                                                                        .contains(widget
-                                                                            .messageId))
-                                                                    ? timer
-                                                                        ? (state.currentMessage.contains(widget
-                                                                                .messageId))
-                                                                            ? AppAssets
-                                                                                .sandClockSvg
-                                                                            : AppAssets
-                                                                                .messageSentArrowSvg
-                                                                        : ""
-                                                                    : AppAssets
-                                                                        .messageSentArrowSvg,
-                                                        width: 10.sp,
-                                                        height: 10.sp,
-                                                      )
-                                              },
-                                              if (widget.isForwarded) ...{
-                                                10.horizontalSpace,
-                                                SvgPicture.asset(
-                                                  AppAssets.forwardedSvg,
-                                                  width: 10.sp,
-                                                  height: 10.sp,
-                                                )
-                                              }
-                                            ],
-                                          ),
+                                                        ),
+                                                      ],
+                                                    )
+                                                  : SvgPicture.asset(
+                                                      widget.isRead
+                                                          ? AppAssets
+                                                              .messageReadArrowSvg
+                                                          : widget.isReceived
+                                                              ? AppAssets
+                                                                  .messageDeliveredArrowSvg
+                                                              : (state.currentMessage
+                                                                      .contains(
+                                                                          widget
+                                                                              .messageId))
+                                                                  ? timer
+                                                                      ? (state.currentMessage.contains(widget
+                                                                              .messageId))
+                                                                          ? AppAssets
+                                                                              .sandClockSvg
+                                                                          : AppAssets
+                                                                              .messageSentArrowSvg
+                                                                      : ""
+                                                                  : AppAssets
+                                                                      .messageSentArrowSvg,
+                                                      width: 10.sp,
+                                                      height: 10.sp,
+                                                    )
+                                            },
+                                            if (widget.isForwarded) ...{
+                                              10.horizontalSpace,
+                                              SvgPicture.asset(
+                                                AppAssets.forwardedSvg,
+                                                width: 10.sp,
+                                                height: 10.sp,
+                                              )
+                                            }
+                                          ],
                                         ),
                                       ),
                                     ),
-                                  ],
-                                  //     );
-                                  //   return CircularProgressIndicator();
-                                  // },
-                                ),
-                              },
+                                  ),
+                                ],
+                                //     );
+                                //   return CircularProgressIndicator();
+                                // },
+                              ),
+                              //  },
                               //todo until i solve the translate
                               widget.isFirstMessage
                                   ? Transform.translate(
@@ -448,7 +457,13 @@ class _SharedProductMessageState extends State<SharedProductMessage> {
                                           ),
                                           widget.userMessagePhoto != null
                                               ? MyCachedNetworkImage(
-                                                  imageUrl: ChatUrls.baseUrl +
+                                                  imageUrl: (widget
+                                                              .userMessagePhoto
+                                                              .toString()
+                                                              .contains(
+                                                                  "cloudinary")
+                                                          ? ""
+                                                          : "${dotenv.env['Profile_Images_Url']}") +
                                                       widget.userMessagePhoto!,
                                                   imageFit: BoxFit.fitWidth,
                                                   progressIndicatorBuilderWidget:

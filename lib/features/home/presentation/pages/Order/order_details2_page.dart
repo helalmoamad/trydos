@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/config/theme/typography.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
@@ -128,10 +129,13 @@ class OrderDetails2 extends StatelessWidget {
                                       .currency!
                                       .symbol ??
                                   "";
-                              double orderAmount = order.orderAmount! *
-                                  state.getCurrencyForCountryModel!.data!
-                                      .currency!.exchangeRate!;
-                              ;
+                              String orderAmount = (order.orderAmount! *
+                                      state.getCurrencyForCountryModel!.data!
+                                          .currency!.exchangeRate!)
+                                  .toStringAsFixed(state.startingSetting
+                                          ?.decimalPointSettings ??
+                                      0);
+
                               return RichText(
                                 overflow: TextOverflow.ellipsis,
                                 text: TextSpan(
@@ -550,7 +554,7 @@ class OrderDetails2 extends StatelessWidget {
                                                           ////////////////////////////
                                                           TextSpan(
                                                             text:
-                                                                '${order.details?[index].countOfPieces} ${LocaleKeys.piece.tr()}',
+                                                                '${order.details?[index].productDetails?.countOfPieces} ${LocaleKeys.piece.tr()}',
                                                             style: context
                                                                 .textTheme
                                                                 .bodyMedium
@@ -704,7 +708,7 @@ class OrderDetails2 extends StatelessWidget {
                                                     children: [
                                                       TextSpan(
                                                         text:
-                                                            '${order.details?[index].price}',
+                                                            '${((order.details?[index].productDetails?.price ?? 0) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)).toStringAsFixed(GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 0)}',
                                                         style: context.textTheme
                                                             .bodyMedium?.rq
                                                             .copyWith(
@@ -721,7 +725,7 @@ class OrderDetails2 extends StatelessWidget {
                                                       ////////////////////////////
                                                       TextSpan(
                                                         text:
-                                                            ' ${order.details?[index].priceAfterDiscount}',
+                                                            ' ${((order.details?[index].productDetails?.offerPrice ?? 0) * (GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.exchangeRate!)).toStringAsFixed(GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 0)}',
                                                         style: context.textTheme
                                                             .bodyMedium?.bq
                                                             .copyWith(
@@ -734,7 +738,8 @@ class OrderDetails2 extends StatelessWidget {
                                                       ),
                                                       /////////////
                                                       TextSpan(
-                                                        text: ' currency',
+                                                        text:
+                                                            ' ${(GetIt.I<HomeBloc>().state.getCurrencyForCountryModel!.data!.currency!.symbol!)}',
                                                         style: context.textTheme
                                                             .bodyMedium?.lq
                                                             .copyWith(
@@ -778,7 +783,7 @@ class OrderDetails2 extends StatelessWidget {
                                                   ),
                                                 ),
                                               ),
-                                            )
+                                            ),
                                           ],
                                         ),
                                       ),

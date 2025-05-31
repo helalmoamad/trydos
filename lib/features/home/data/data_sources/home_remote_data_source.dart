@@ -3,7 +3,7 @@ import 'package:trydos/common/constant/configuration/elastic_url_routes.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/core/api/methods/get.dart';
 import 'package:trydos/features/home/data/models/add_item_to_cart_model.dart';
-import 'package:trydos/features/home/data/models/convert_item_from_oldCart_to_cart_model.dart';
+import 'package:trydos/features/home/data/models/convert_item_from_cart_to_oldCart_model.dart';
 import 'package:trydos/features/home/data/models/firebase_setting_for_notification_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_coordinates_model.dart';
 import 'package:trydos/features/home/data/models/get_address_by_text_model.dart';
@@ -84,12 +84,12 @@ class HomeRemoteDatasource {
     return getProvincesByIso();
   }
 
-  Future<CountryBoundaryByIsoModel> getCountryBoundaryByIso() {
+  Future<CountryBoundaryByIsoModel> getCountryBoundaryByIso(String iso) {
     GetClient<CountryBoundaryByIsoModel> getCountryBoundaryByIso =
         GetClient<CountryBoundaryByIsoModel>(
       serverName: ServerName.elastic,
       requestPrams: RequestConfig<CountryBoundaryByIsoModel>(
-        endpoint: ElasticEndPoints.countryBoundaryByIsoEP,
+        endpoint: ElasticEndPoints.countryBoundaryByIsoEP(iso),
         response: ResponseValue<CountryBoundaryByIsoModel>(
           fromJson: (response) => CountryBoundaryByIsoModel.fromJson(response),
         ),
@@ -688,20 +688,20 @@ class HomeRemoteDatasource {
     return hideItemsInOldCart();
   }
 
-  Future<ConvertItemFromOldCartToCartModel> convertItemInOldCartToCart(
+  Future<ConvertItemFromCartToOldCartModel> convertItemInCartToOldCart(
       Map<String, dynamic> params) {
-    PostClient<ConvertItemFromOldCartToCartModel> convertItemInOldCartToCart =
-        PostClient<ConvertItemFromOldCartToCartModel>(
+    PostClient<ConvertItemFromCartToOldCartModel> convertItemInCartToOldCart =
+        PostClient<ConvertItemFromCartToOldCartModel>(
       serverName: ServerName.market,
-      requestPrams: RequestConfig<ConvertItemFromOldCartToCartModel>(
-        endpoint: MarketEndPoints.convertItemInOldCartToCartEP,
+      requestPrams: RequestConfig<ConvertItemFromCartToOldCartModel>(
+        endpoint: MarketEndPoints.convertItemInCartToOldCartEP,
         data: params,
-        response: ResponseValue<ConvertItemFromOldCartToCartModel>(
+        response: ResponseValue<ConvertItemFromCartToOldCartModel>(
             fromJson: (response) =>
-                ConvertItemFromOldCartToCartModel.fromJson(response)),
+                ConvertItemFromCartToOldCartModel.fromJson(response)),
       ),
     );
-    return convertItemInOldCartToCart();
+    return convertItemInCartToOldCart();
   }
 
   Future<bool> removeItemToCart(Map<String, dynamic> params) {

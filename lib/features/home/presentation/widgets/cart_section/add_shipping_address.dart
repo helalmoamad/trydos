@@ -82,7 +82,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
       TextEditingController();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   late GoogleMapController mapController;
-
+  double currentZoom = 14;
   late CameraPosition _kinitialPosition;
   bool removeMyLocation = false;
   counttry.Country? country;
@@ -235,7 +235,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
             double.tryParse(
                 widget.addressInfoClassToEdid!.location!.longitude!)!);
         _kinitialPosition = CameraPosition(
-            bearing: 0, target: _currentLocation!, tilt: 0, zoom: 8);
+            bearing: 0, target: _currentLocation!, tilt: 0, zoom: 14);
         _goToCurrentLocation(latlng: _currentLocation);
       } else {
         _kinitialPosition = CameraPosition(
@@ -243,7 +243,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
             target: LatLng(double.tryParse(country?.latitude ?? "0") ?? 0,
                 double.tryParse(country?.longitude ?? "0") ?? 0),
             tilt: 0,
-            zoom: 6);
+            zoom: 14);
       }
 
       if ((widget.addressInfoClassToEdid?.location?.latitude != null &&
@@ -320,7 +320,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
             double.tryParse(orderBloc
                 .state.lastAdressInfoClassToSave!.location!.longitude!)!);
         _kinitialPosition = CameraPosition(
-            bearing: 0, target: _currentLocation!, tilt: 0, zoom: 8);
+            bearing: 0, target: _currentLocation!, tilt: 0, zoom: 14);
         _goToCurrentLocation(latlng: _currentLocation);
       } else {
         _kinitialPosition = CameraPosition(
@@ -328,7 +328,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
             target: LatLng(double.tryParse(country?.latitude ?? "0") ?? 0,
                 double.tryParse(country?.longitude ?? "0") ?? 0),
             tilt: 0,
-            zoom: 6);
+            zoom: 14);
       }
 
       if ((orderBloc.state.lastAdressInfoClassToSave?.location?.latitude !=
@@ -1442,6 +1442,10 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                               border: Border.all(color: Color(0xffD3D3D3))),
                                                                           child:
                                                                               GoogleMap(
+                                                                            onCameraMove:
+                                                                                (position) {
+                                                                              currentZoom = position.zoom;
+                                                                            },
                                                                             cameraTargetBounds:
                                                                                 CameraTargetBounds(bounds),
                                                                             minMaxZoomPreference:
@@ -1461,6 +1465,7 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                             onTap:
                                                                                 (argument) {
                                                                               _markers = [];
+
                                                                               if (countryBorders.isNotEmpty) {
                                                                                 bool inside = geodesy.isGeoPointInPolygon(geod.LatLng(argument.latitude, argument.longitude), countryBorders);
                                                                                 if (!inside) {
@@ -1470,6 +1475,12 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                                   );
                                                                                   return;
                                                                                 }
+                                                                              }
+                                                                              if (currentZoom < 14) {
+                                                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                                                  SnackBar(duration: Duration(seconds: 2), content: Text("${LocaleKeys.you_must_zoom_on_map_dd_location.tr()}")),
+                                                                                );
+                                                                                return;
                                                                               }
 
                                                                               _markers.add(Marker(markerId: MarkerId('current_location'), position: LatLng(argument.latitude, argument.longitude)));

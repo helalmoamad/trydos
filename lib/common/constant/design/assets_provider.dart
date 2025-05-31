@@ -38,6 +38,7 @@ abstract class AppAssets {
   static String get personalInfoSvg => 'personal_info'.svg;
   static String get settingSvg => 'setting'.svg;
   static String get shareAppSvg => 'share_app'.svg;
+  static String get checkBoxSvg => 'check_box'.svg;
   static String get sizeLineSvg => 'size_line'.svg;
   static String get takphotoSvg => 'take_photo'.svg;
   static String get termSvg => 'term'.svg;
@@ -70,6 +71,7 @@ abstract class AppAssets {
   static String get addShippingAddressSvg => 'add_shipping_address'.svg;
   static String get addShippingAddressWhiteSvg =>
       'add_shipping_address_white'.svg;
+  static String get productFeaturesSvg => 'product_features'.svg;
   static String get deliveryAddressSvg => 'delivery_address'.svg;
   static String get deliveryGuranteeSvg => 'delivery_gurantee'.svg;
   static String get earnMoneySvg => 'earn_money'.svg;

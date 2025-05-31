@@ -91,6 +91,10 @@ ChatState _$ChatStateFromJson(Map<String, dynamic> json) => ChatState(
               _$NotifyThatIReceivedMessageStatusEnumMap,
               json['notifyThatIReceivedMessageStatus']) ??
           NotifyThatIReceivedMessageStatus.init,
+      getOrderRecipientIdStatus: $enumDecodeNullable(
+              _$GetOrderRecipientIdStatusEnumMap,
+              json['getOrderRecipientIdStatus']) ??
+          GetOrderRecipientIdStatus.init,
       receiveMessageStatus: $enumDecodeNullable(
               _$ReceiveMessageStatusEnumMap, json['receiveMessageStatus']) ??
           ReceiveMessageStatus.init,
@@ -187,6 +191,8 @@ Map<String, dynamic> _$ChatStateToJson(ChatState instance) => <String, dynamic>{
       'messageType': instance.messageType,
       'userConnectedStatuse': instance.userConnectedStatuse,
       'messageContent': instance.messageContent,
+      'getOrderRecipientIdStatus': _$GetOrderRecipientIdStatusEnumMap[
+          instance.getOrderRecipientIdStatus]!,
       'firstMessageId': instance.firstMessageId,
       'secondMessageId': instance.secondMessageId,
       'slopMessageId': instance.slopMessageId,
@@ -291,6 +297,13 @@ const _$NotifyThatIReceivedMessageStatusEnumMap = {
   NotifyThatIReceivedMessageStatus.loading: 'loading',
   NotifyThatIReceivedMessageStatus.success: 'success',
   NotifyThatIReceivedMessageStatus.failure: 'failure',
+};
+
+const _$GetOrderRecipientIdStatusEnumMap = {
+  GetOrderRecipientIdStatus.init: 'init',
+  GetOrderRecipientIdStatus.loading: 'loading',
+  GetOrderRecipientIdStatus.success: 'success',
+  GetOrderRecipientIdStatus.failure: 'failure',
 };
 
 const _$ReceiveMessageStatusEnumMap = {

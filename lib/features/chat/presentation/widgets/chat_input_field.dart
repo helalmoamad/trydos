@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -181,7 +182,11 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                 10.horizontalSpace,
                                 widget.senderUserImage != null
                                     ? MyCachedNetworkImage(
-                                        imageUrl: ChatUrls.baseUrl +
+                                        imageUrl: (widget.senderUserImage
+                                                    .toString()
+                                                    .contains("cloudinary")
+                                                ? ""
+                                                : "${dotenv.env['Profile_Images_Url']}") +
                                             widget.senderUserImage!,
                                         imageFit: BoxFit.cover,
                                         progressIndicatorBuilderWidget:
@@ -278,7 +283,11 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                     const Spacer(),
                                     widget.senderUserImage != null
                                         ? MyCachedNetworkImage(
-                                            imageUrl: ChatUrls.baseUrl +
+                                            imageUrl: (widget.senderUserImage
+                                                        .toString()
+                                                        .contains("cloudinary")
+                                                    ? ""
+                                                    : "${dotenv.env['Profile_Images_Url']}") +
                                                 widget.senderUserImage!,
                                             imageFit: BoxFit.cover,
                                             progressIndicatorBuilderWidget:
@@ -351,7 +360,13 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         const Spacer(),
                                         widget.senderUserImage != null
                                             ? MyCachedNetworkImage(
-                                                imageUrl: ChatUrls.baseUrl +
+                                                imageUrl: (widget
+                                                            .senderUserImage
+                                                            .toString()
+                                                            .contains(
+                                                                "cloudinary")
+                                                        ? ""
+                                                        : "${dotenv.env['Profile_Images_Url']}") +
                                                     widget.senderUserImage!,
                                                 imageFit: BoxFit.cover,
                                                 progressIndicatorBuilderWidget:
@@ -426,7 +441,13 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             const Spacer(),
                                             widget.senderUserImage != null
                                                 ? MyCachedNetworkImage(
-                                                    imageUrl: ChatUrls.baseUrl +
+                                                    imageUrl: (widget
+                                                                .senderUserImage
+                                                                .toString()
+                                                                .contains(
+                                                                    "cloudinary")
+                                                            ? ""
+                                                            : "${dotenv.env['Profile_Images_Url']}") +
                                                         widget.senderUserImage!,
                                                     imageFit: BoxFit.cover,
                                                     withImageShadow: true,
@@ -498,7 +519,13 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             const Spacer(),
                                             widget.senderUserImage != null
                                                 ? MyCachedNetworkImage(
-                                                    imageUrl: ChatUrls.baseUrl +
+                                                    imageUrl: (widget
+                                                                .senderUserImage
+                                                                .toString()
+                                                                .contains(
+                                                                    "cloudinary")
+                                                            ? ""
+                                                            : "${dotenv.env['Profile_Images_Url']}") +
                                                         widget.senderUserImage!,
                                                     imageFit: BoxFit.cover,
                                                     radius: 8,

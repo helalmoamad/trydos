@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:camera/camera.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:trydos/common/helper/show_message.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
 
 import '../../features/app/my_text_widget.dart';
 
@@ -81,7 +83,7 @@ class _CameraScreenState extends State<CameraScreen>
     animatedController.reset();
     animatedController.duration = const Duration(seconds: 60);
     animatedController.addListener(() {
-      if(animatedController.status == AnimationStatus.completed){
+      if (animatedController.status == AnimationStatus.completed) {
         _isRecordingInProgress = false;
         onRecordVideoFinished(lengthMoreThan60: true);
       }
@@ -91,7 +93,7 @@ class _CameraScreenState extends State<CameraScreen>
   }
 
 //todo timer for recording video
-   Timer? _timer;
+  Timer? _timer;
   int _seconds = 0;
   bool _isVideoCameraSelected = false;
   bool _isRecordingInProgress = false;
@@ -427,7 +429,7 @@ class _CameraScreenState extends State<CameraScreen>
                         width: 90,
                         height: 40,
                         child: Center(
-                          child: MyTextWidget('IMAGE',
+                          child: MyTextWidget('${LocaleKeys.photo.tr()}',
                               style: TextStyle(
                                   color: _isVideoCameraSelected
                                       ? Colors.grey
@@ -458,7 +460,7 @@ class _CameraScreenState extends State<CameraScreen>
                           height: 40,
                           child: Center(
                             child: MyTextWidget(
-                              'VIDEO',
+                              '${LocaleKeys.vvideo.tr()}',
                               style: TextStyle(
                                   color: _isVideoCameraSelected
                                       ? Colors.white
@@ -608,16 +610,15 @@ class _CameraScreenState extends State<CameraScreen>
     }
   }
 
-  void onRecordVideoFinished({bool lengthMoreThan60 = false}) async{
+  void onRecordVideoFinished({bool lengthMoreThan60 = false}) async {
     animatedController.stop();
     _timer?.cancel();
     // _resetTimer();
     XFile? rawVideo = await stopVideoRecording();
     File videoFile = File(rawVideo!.path);
     Navigator.pop(context, !lengthMoreThan60 ? videoFile : null);
-    if(lengthMoreThan60){
-      showMessage(
-          'Video length must not be longer than 59 seconds',
+    if (lengthMoreThan60) {
+      showMessage('Video length must not be longer than 59 seconds',
           showInRelease: true);
     }
   }

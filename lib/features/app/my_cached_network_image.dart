@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart'
     as inset_shadow;
@@ -88,7 +90,7 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage>
 
   @override
   Widget build(BuildContext context) {
-    int pixelRatio = MediaQuery.of(context).devicePixelRatio.round();
+    //   int pixelRatio = MediaQuery.of(context).devicePixelRatio.round();
     super.build(context);
     String url = addSuitableWidthAndHeightToImage(
       imageUrl: currentUrl,
@@ -97,7 +99,12 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage>
       height: (widget.imageHeight ?? widget.height),
       width: (widget.imageWidth ?? widget.width),
     );
-
+    if (!url.contains("cloudinary")) {
+      return Center(
+        child: Icon(Icons.refresh,
+            color: const Color(0xffff5f61), size: min(25, widget.height)),
+      );
+    }
     return Container(
       key: ValueKey(url),
       alignment: Alignment.center,
@@ -117,17 +124,30 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage>
       ),
       child: Center(
         child: CachedNetworkImage(
+          httpHeaders: {
+            'User-Agent': (kDebugMode ? "developer" : "users") +
+                'device OS:' +
+                (Platform.isAndroid ? 'Android' : 'IOS') +
+                ' '
+                    ', application version: 1.0.0',
+            "Referer": (kDebugMode ? "developer" : "users") +
+                'device OS:' +
+                (Platform.isAndroid ? 'Android' : 'IOS')
+          },
           imageUrl: url,
           fit: widget.imageFit,
           width: widget.width,
           color: widget.imageColor,
           useOldImageOnUrlChange: true,
+          //  cacheManager: CustomCacheManagers(),
           height: widget.height,
-          memCacheHeight: widget.height.round() * pixelRatio,
-          memCacheWidth: widget.width.round() * pixelRatio,
+          //   memCacheHeight: widget.height.round() * pixelRatio,
+          //  memCacheWidth: widget.width.round() * pixelRatio,
           fadeInDuration: Duration(milliseconds: 0),
           fadeOutDuration: Duration(milliseconds: 0),
           progressIndicatorBuilder: (context, _, progress) {
+            print(
+                "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH${url}");
             widget.callWhenLoadingImage?.call();
 
             if ((widget.progressIndicatorBuilderWidget != null)) {
@@ -231,7 +251,7 @@ class CustomCacheManagers extends CacheManager {
 
   CustomCacheManagers._internal()
       : super(Config(key,
-            maxNrOfCacheObjects: 300, stalePeriod: const Duration(days: 3)));
+            maxNrOfCacheObjects: 300, stalePeriod: const Duration(days: 7)));
 }
 
 /*class CustomCacheManagers extends DefaultCacheManager {
@@ -253,6 +273,9 @@ String addSuitableWidthAndHeightToImage({
   required double width,
   required double height,
 }) {
+  if (!imageUrl.contains("cloudinary")) {
+    return "";
+  }
   int fHeight = 0;
   int fWidth = 0;
   if (height > 200 && width > 200) {
@@ -274,10 +297,16 @@ String addSuitableWidthAndHeightToImage({
       ordinalHeight != 0 &&
       ordinalWidth != 0) {
     url = ordinalWidth >= ordinalHeight
-        ? list[0] + 'upload/c_scale,h_${fHeight}' + list[1]
-        : list[0] + 'upload/c_scale,w_${fWidth}' + list[1];
+        ? list[0] +
+            'upload/f_auto,q_auto,c_scale,h_${fHeight != 0 ? fHeight : fWidth}' +
+            list[1]
+        : list[0] +
+            'upload/f_auto,q_auto,c_scale,w_${fWidth != 0 ? fWidth : fHeight}' +
+            list[1];
   } else {
-    url = list[0] + 'upload/f_auto,q_auto,c_scale,h_${fHeight}' + list[1];
+    url = list[0] +
+        'upload/f_auto,q_auto,c_scale,h_${fHeight != 0 ? fHeight : fWidth}' +
+        list[1];
   }
   return url;
 }

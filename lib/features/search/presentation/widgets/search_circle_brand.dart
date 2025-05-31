@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -42,18 +44,23 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
   late BoutiqueBloc boutiqueBloc;
 
   List<String> selectedBrandSlugs = [];
-
+  Timer? debounce;
   @override
   void initState() {
     scrollController.addListener(() {
-      if (scrollController.offset >=
-          (scrollController.position.maxScrollExtent * 0.6)) {
-        boutiqueBloc.add(GetFiltersWithPaginatioEvent(
-          fromHomePageSearch: true,
-          searchText: widget.controller.text,
-          boutiqueSlug: "search",
-        ));
+      if (debounce?.isActive ?? false) {
+        debounce!.cancel();
       }
+      debounce = Timer(Duration(milliseconds: 600), () {
+        if (scrollController.offset >=
+            (scrollController.position.maxScrollExtent * 0.6)) {
+          boutiqueBloc.add(GetFiltersWithPaginatioEvent(
+            fromHomePageSearch: true,
+            searchText: widget.controller.text,
+            boutiqueSlug: "search",
+          ));
+        }
+      });
     });
     boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
 
@@ -235,7 +242,7 @@ class _SearchChipBrandState extends State<SearchChipBrand> {
                                                             .brands![index]
                                                             .icon!
                                                             .filePath!,
-                                                        height: 20,
+                                                        width: 40,
                                                       )
                                                     : SizedBox.shrink()
                                                 : SizedBox.shrink(),

@@ -22,6 +22,7 @@ import 'package:trydos/features/chat/domain/use_cases/get_media_count_usecase.da
 import 'package:trydos/features/chat/domain/use_cases/get_messages_between_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/get_messages_for_chat_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/get_my_chats_usecase.dart';
+import 'package:trydos/features/chat/domain/use_cases/get_order_recipient_id_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/get_shared_product_count_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/read_all_messages_usecase.dart';
 import 'package:trydos/features/chat/domain/use_cases/receive_message_usecase.dart';
@@ -67,6 +68,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       this.sendMessageUseCase,
       this.getSharedProductCountUseCase,
       this.getMessagesBetweenUseCase,
+      this.getOrderRecipientIdUseCase,
       this.uploadFileCloudinaryUseCase,
       this.getMessagesForChatUseCase,
       this.deleteChatUseCase,
@@ -119,8 +121,13 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     on<SaveContactsEvent>(
       _onSaveContactsEvent,
     );
-    on<GetChatsEvent>(_onGetChatsEvent,
-        transformer: throttleDroppable(throttleDuration));
+    on<GetChatsEvent>(
+      _onGetChatsEvent,
+    );
+    on<GetOrderRecipientIdEvent>(
+      _onGetOrderRecipientIdEvent,
+    );
+
     on<ReceiveMissCallEvent>(
       _onReceiveMissCallEvent,
     );
@@ -142,6 +149,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
   final GetSharedProductCountUseCase getSharedProductCountUseCase;
   final GetDateTimeUseCase getDateTimeUseCase;
   final GetMyChatsUseCase getMyChatsUseCase;
+  final GetOrderRecipientIdUseCase getOrderRecipientIdUseCase;
   final SendErrorToServerUseCase sendErrorToServerUseCase;
   final UploadFileCloudinaryUseCase uploadFileCloudinaryUseCase;
   final UploadFileUseCase uploadFileUseCase;
@@ -601,14 +609,16 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
   FutureOr<void> _onGetChatsEvent(
       GetChatsEvent event, Emitter<ChatState> emit) async {
     if (state.getChatsStatus == GetChatsStatus.loading ||
-        !enableRequestGetChats) {
+        (_prefsRepository.chatToken?.length ?? 0) < 10) {
       return;
     }
-    emit(state.copyWith(getChatsStatus: GetChatsStatus.loading));
+    emit(state.copyWith(
+        getChatsStatus: GetChatsStatus.loading,
+        firstRequestForGetChats: !(event.getWithPagination ?? false)));
     final response = await getMyChatsUseCase(GetMyChatsParams(
         limit: event.limit,
         messagesLimit: event.messagesLimit,
-        timeStamp: state.firstRequestForGetChats
+        timeStamp: !(event.getWithPagination ?? false)
             ? null
             : state.chats.isNotEmpty
                 ? state.chats[state.chats.length - 1].updatedAt
@@ -627,18 +637,20 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       (r) {
         try {
           enableRequestGetChats = false;
-          if (r.data!.missedFcmToken) {
+          /* if (r.data!.missedFcmToken) {
             GetIt.I<AuthBloc>().add(StoreFcmTokenEvent(
                 userId: _prefsRepository.myChatId!,
                 serverName: ServerName.chat,
                 fcmToken: NotificationProcess.myFcmToken!));
-          }
+          }*/
+
           isFailedTheFirstTime.remove('GetChatsEvent');
           int unReadMessagesFromAllChats = 0;
-          r.data!.chats!.forEach((element) {
+          r.data?.chats?.forEach((element) {
             unReadMessagesFromAllChats += element.totalUnreadMessageCount!;
           });
-          r.data!.pinnedChats!.forEach((element) {
+
+          r.data?.pinnedChats?.forEach((element) {
             unReadMessagesFromAllChats += element.totalUnreadMessageCount!;
           });
           // List<Chat> newChats = List.of(state.chats.isEmpty
@@ -650,16 +662,23 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           //     : MergeOldMessageWithNew(
           //         newChats: r.data!.pinnedChats!,
           //         previousChats: state.pinnedChats));
-          List<Chat> newChats = mergeChatsFromPagination(
-              newChats: List.of(r.data!.chats!),
-              previousChats: List.of(state.chats));
-          List<Chat> newPinnedChats = mergeChatsFromPagination(
-              newChats: List.of(r.data!.pinnedChats!),
-              previousChats: List.of(state.pinnedChats));
+          List<Chat> newChats = [];
+          List<Chat> newPinnedChats = [];
+          if (event.getWithPagination ?? false) {
+            newChats = mergeChatsFromPagination(
+                newChats: List.of(r.data?.chats ?? []),
+                previousChats: List.of(state.chats));
+            newPinnedChats = mergeChatsFromPagination(
+                newChats: List.of(r.data?.pinnedChats ?? []),
+                previousChats: List.of(state.pinnedChats));
+          } else {
+            newChats = List.of(r.data?.chats ?? []);
+            newPinnedChats = List.of(r.data?.pinnedChats ?? []);
+          }
+
           emit(
             state.copyWith(
                 getChatsStatus: GetChatsStatus.success,
-                firstRequestForGetChats: false,
                 chatToNavigateFromTerminated:
                     event.chatToNavigateFromTerminated,
                 chats: newChats,
@@ -750,6 +769,80 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
               ]),
               getContactsStatus: GetContactsStatus.success,
               contacts: r.contacts),
+        );
+      },
+    );
+  }
+
+  FutureOr<void> _onGetOrderRecipientIdEvent(
+      GetOrderRecipientIdEvent event, Emitter<ChatState> emit) async {
+    emit(state.copyWith(
+      getOrderRecipientIdStatus: GetOrderRecipientIdStatus.loading,
+    ));
+    final response = await getOrderRecipientIdUseCase(GetOrderRecipientIdParams(
+        orderId: event.orderId, originalUserId: event.originalUserId));
+    response.fold(
+      (l) {
+        if (!isFailedTheFirstTime.contains('GetOrderRecipientIdEvent')) {
+          add(GetOrderRecipientIdEvent(
+              orderId: event.orderId, originalUserId: event.originalUserId));
+          isFailedTheFirstTime.add('GetOrderRecipientIdEvent');
+        }
+        emit(state.copyWith(
+            getOrderRecipientIdStatus: GetOrderRecipientIdStatus.failure));
+      },
+      (r) {
+        isFailedTheFirstTime.remove('GetOrderRecipientIdEvent');
+        List<Chat> newChats = List.of(state.chats);
+        bool changed = false;
+        List<Chat> chats = List.of(state.chats);
+        chats.addAll(state.pinnedChats);
+//        debugPrint('long : ${r.contacts?.length}');
+
+        int index = chats.indexWhere((element) =>
+            element.channelMembers
+                ?.firstWhere(
+                    (element) =>
+                        element.userId == r.data?.recipient?.id.toString(),
+                    orElse: () => ChannelMember(userId: -1))
+                .userId !=
+            -1);
+        debugPrint('index : $index');
+        if (index == -1) {
+          debugPrint('new chat');
+          changed = true;
+          String uuid = const Uuid().v4();
+          newChats.insert(
+              0,
+              Chat(
+                  id: uuid,
+                  localId: uuid,
+                  messages: [],
+                  paginationStatus: PaginationStatus.initial,
+                  channelName: "recipient",
+                  channelMembers: [
+                    ChannelMember(
+                        userId: r.data?.recipient?.id,
+                        user:
+                            User(id: r.data?.recipient?.id, name: "recipient")),
+                    ChannelMember(
+                        userId: _prefsRepository.myChatId,
+                        user: User(
+                            id: _prefsRepository.myChatId,
+                            name: _prefsRepository.myChatName)),
+                  ]));
+        }
+
+        emit(
+          state.copyWith(
+            recipientUserId: r.data?.recipient?.id.toString(),
+            chats: changed ? newChats : state.chats,
+            newSortedChatsByDate: groupReceivedMessageOnDays(chats: [
+              ...(changed ? newChats : state.chats),
+              ...state.pinnedChats
+            ]),
+            getOrderRecipientIdStatus: GetOrderRecipientIdStatus.success,
+          ),
         );
       },
     );
@@ -976,15 +1069,22 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
 
   FutureOr<void> _onReadAllMessagesEvent(
       ReadAllMessagesEvent event, Emitter<ChatState> emit) async {
-    String id = [...state.chats, ...state.pinnedChats]
-        .firstWhere((element) =>
-            element.localId == event.channelId || element.id == event.channelId)
-        .id
-        .toString();
-    if (int.tryParse(id) == null) return;
+    String? id;
+
+    try {
+      id = [...state.chats, ...state.pinnedChats]
+          .firstWhere(
+            (element) =>
+                element.localId == event.channelId ||
+                element.id == event.channelId,
+          )
+          .id
+          .toString();
+    } catch (e) {}
+    if (int.tryParse(id ?? "") == null) return;
     emit(state.copyWith(readMessagesStatus: ResetReadMessagesStatus.loading));
-    final response =
-        await readAllMessagesUseCase(ReadAllMessagesParams(channelId: id));
+    final response = await readAllMessagesUseCase(
+        ReadAllMessagesParams(channelId: id ?? ""));
     response.fold((l) {
       showMessage('This Channel was deleted', showInRelease: true);
       if (!isFailedTheFirstTime.contains('ReadAllMessagesEvent')) {
@@ -2005,7 +2105,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
 
   FutureOr<void> _onGetDateTimeEvent(
       GetDateTimeEvent event, Emitter<ChatState> emit) async {
-    if (_prefsRepository.chatToken == null) return;
+    if ((_prefsRepository.chatToken?.length ?? 0) < 10) return;
     final response = await getDateTimeUseCase(NoParams());
     response.fold((l) => " ", (r) {
       DateTime? dateServer = DateTime.tryParse(r);

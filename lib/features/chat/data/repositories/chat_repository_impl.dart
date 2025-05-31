@@ -1,12 +1,13 @@
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+
 import 'package:injectable/injectable.dart';
 import 'package:trydos/core/error/failures.dart';
 import 'package:trydos/features/chat/data/data_sources/chat_remote_datasource.dart';
 import 'package:trydos/features/authentication/data/models/create_user_response_model.dart';
 import 'package:trydos/features/chat/data/models/change_chat_property_model.dart';
+import 'package:trydos/features/chat/data/models/get_order_recipient_id_model.dart';
 import 'package:trydos/features/chat/data/models/my_contacts_response_model.dart';
 import 'package:trydos/features/chat/data/models/result_of_search_text_in_chat_model.dart';
 import 'package:trydos/features/chat/data/models/shared_product_count_model.dart';
@@ -58,6 +59,13 @@ class ChatRepositoryImpl extends ChatRepository with HandlingExceptionRequest {
       Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.updateProfileInChat(params));
+  }
+
+  @override
+  Future<Either<Failure, GetOrderRecipientIdModel>> getOrderRecipientId(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.getOrderRecipientId(params));
   }
 
   @override

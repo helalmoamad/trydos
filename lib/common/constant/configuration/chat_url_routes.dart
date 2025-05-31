@@ -25,6 +25,9 @@ extension ScopeApi on String {
   String messagesScope({bool current = false}) =>
       '$_api/${current ? _currentVersion : _previousVersion}/messages/$this';
 
+  String oederScope({bool current = false}) =>
+      '$_api/${current ? _currentVersion : _previousVersion}/order-chat-participants/$this';
+
   String firebaseTokensScope({bool current = false}) =>
       '$_api/${current ? _currentVersion : _previousVersion}/firebase_tokens${this != '' ? '/$this' : ''}';
 
@@ -43,6 +46,7 @@ abstract class ChatEndPoints {
       '${userId}'.usersScope();
   static final saveContactsEP = 'save_contacts'.usersScope();
   static final myCallReg = 'my_calls'.channelsScope();
+  static final getOrderRecipientIdEP = "get-recipient".oederScope();
 
   ///! ----< No scope >----
   static final createUserEP = 'create_user'.noScope();

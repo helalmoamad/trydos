@@ -120,9 +120,11 @@ class _OrderDetails1State extends State<OrderDetails1> {
                     String currencySymbol = state.getCurrencyForCountryModel!
                             .data!.currency!.symbol ??
                         "";
-                    double orderAmount = widget.order.orderAmount! *
-                        state.getCurrencyForCountryModel!.data!.currency!
-                            .exchangeRate!;
+                    String orderAmount = (widget.order.orderAmount! *
+                            state.getCurrencyForCountryModel!.data!.currency!
+                                .exchangeRate!)
+                        .toStringAsFixed(
+                            state.startingSetting?.decimalPointSettings ?? 0);
                     ;
 
                     return SizedBox(

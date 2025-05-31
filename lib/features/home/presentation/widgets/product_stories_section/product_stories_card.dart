@@ -43,9 +43,6 @@ class ProductStoriesCard extends StatelessWidget {
         buildWhen: (p, c) =>
             p.getStoriesForProductStatus != c.getStoriesForProductStatus,
         builder: (context, state) {
-          if (state.storiesForProduct == null) {
-            return SizedBox.shrink();
-          }
           if (state.storiesForProduct.isNullOrEmpty) {
             return SizedBox.shrink();
           }

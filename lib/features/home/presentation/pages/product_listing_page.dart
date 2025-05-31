@@ -27,6 +27,8 @@ import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/features/app/animated_search_bar/animated_search_bar.dart';
+import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart'
+    as product;
 
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
@@ -135,7 +137,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
   final ValueNotifier<int> addToBagButtonShapeNotifier = ValueNotifier(0);
   final ValueNotifier<Tuple2<int, int>> setThisEnabledNotifier =
       ValueNotifier(Tuple2(-1, -1));
-
+  Timer? debounce;
   final ValueNotifier<String?> showTitleForFilterList = ValueNotifier(null);
   final ValueNotifier<bool> displayBoutiqueIconInAppBar = ValueNotifier(false);
   final ValueNotifier<bool> fromSearchListing = ValueNotifier(false);
@@ -154,7 +156,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
   SpeechToText _speechToText = SpeechToText();
 
   final ValueNotifier<bool> isRecordeForSearchWithMic = ValueNotifier(false);
-
+  Timer? searchDebounce;
   bool itExpendForFirst = true;
   String key = '';
   String keyWithoutFilter = '';
@@ -163,44 +165,49 @@ class _ProductListingPageState extends State<ProductListingPage> {
   Key gridViewKeyForRendering = UniqueKey();
   bool _speechEnabled = false;
   void _listenToScroll() {
-    if (boutiqueBloc.state.isExpandedForListingPage ?? false) return;
-    // if (scrollController.position.pixels <= 80) {
-    //   debugPrint(scrollController.position.pixels.toString());
-    //   appBloc.add(ShowOrHideBars(true));
-    // }
-    // else if(filterPageExpanded.value){
-    //   scrollController.jumpTo(80);
-    // }
-    if (setThisEnabledNotifier.value.item1 != -1) {
-      setThisEnabledNotifier.value = Tuple2(-1, -1);
+    if (debounce?.isActive ?? false) {
+      debounce!.cancel();
     }
-    if (scrollController.offset >=
-        (scrollController.position.maxScrollExtent * 0.6)) {
-      if (boutiqueBloc.state.isGettingProductListingWithPagination) return;
-
-      if (boutiqueBloc
-          .state
-          .getProductListingWithFiltersPaginationModels[
-              '${widget.boutiqueSlug}' +
-                  ((boutiqueBloc.state.cashedOrginalBoutique)
-                      ? 'withoutFilter'
-                      : "") +
-                  '${(widget.category ?? '')}']!
-          .hasReachedMax) {
-        return;
+    debounce = Timer(Duration(milliseconds: 600), () {
+      if (boutiqueBloc.state.isExpandedForListingPage ?? false) return;
+      // if (scrollController.position.pixels <= 80) {
+      //   debugPrint(scrollController.position.pixels.toString());
+      //   appBloc.add(ShowOrHideBars(true));
+      // }
+      // else if(filterPageExpanded.value){
+      //   scrollController.jumpTo(80);
+      // }
+      if (setThisEnabledNotifier.value.item1 != -1) {
+        setThisEnabledNotifier.value = Tuple2(-1, -1);
       }
-      boutiqueBloc.add(GetProductsWithFiltersEvent(
-          context: context,
-          fromNotification: widget.fromNotificationCategory,
-          limit: 10,
-          cashedOrginalBoutique: !widget.fromSearch,
-          boutiqueSlug: widget.boutiqueSlug,
-          getWithPagination: true,
-          fromSearch: widget.fromSearch,
-          category: widget.category,
-          searchText: controller.text,
-          offset: 2));
-    }
+      if (scrollController.offset >=
+          (scrollController.position.maxScrollExtent * 0.6)) {
+        if (boutiqueBloc.state.isGettingProductListingWithPagination) return;
+
+        if (boutiqueBloc
+            .state
+            .getProductListingWithFiltersPaginationModels[
+                '${widget.boutiqueSlug}' +
+                    ((boutiqueBloc.state.cashedOrginalBoutique)
+                        ? 'withoutFilter'
+                        : "") +
+                    '${(widget.category ?? '')}']!
+            .hasReachedMax) {
+          return;
+        }
+        boutiqueBloc.add(GetProductsWithFiltersEvent(
+            context: context,
+            fromNotification: widget.fromNotificationCategory,
+            limit: 10,
+            cashedOrginalBoutique: !widget.fromSearch,
+            boutiqueSlug: widget.boutiqueSlug,
+            getWithPagination: true,
+            fromSearch: widget.fromSearch,
+            category: widget.category,
+            searchText: controller.text,
+            offset: 2));
+      }
+    });
   }
 
   List<filter_products.Products> products = [];
@@ -318,6 +325,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
     super.initState();
     print("%%%%%%%%%${GetIt.I<PrefsRepository>().marketToken}0*");
     print("%%%%%%%%%${GetIt.I<PrefsRepository>().getFcmTokens}*");
+    print(
+        "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS${widget.boutiqueFirstBanner}dddddddddddddd${widget.withSlidingImages}");
     Future.delayed(Duration(seconds: 3), () {
       displayImageColors = true;
       delayDisplay = false;
@@ -743,7 +752,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                           false;
 
                                   return CustomScrollView(
-                                      //  cacheExtent: 600,
+                                      scrollBehavior: const ScrollBehavior()
+                                          .copyWith(overscroll: false),
+                                      cacheExtent: 500,
                                       key: TestVariables.kTestMode
                                           ? Key(WidgetsKeys
                                               .productListingScrollKey)
@@ -757,7 +768,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                   0 &&
                                               isExpanded
                                           ? NeverScrollableScrollPhysics()
-                                          : ClampingScrollPhysics(),
+                                          : null,
                                       slivers: [
                                         ValueListenableBuilder<int>(
                                             valueListenable:
@@ -797,12 +808,12 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                               child: BlocBuilder<HomeBloc, HomeState>(
                                                                                 buildWhen: (previous, current) => previous.getProductDetailWithoutSimilarRelatedProductsStatus != current.getProductDetailWithoutSimilarRelatedProductsStatus || previous.updateItemInCartStatus != current.updateItemInCartStatus || previous.addItemInCartStatus != current.addItemInCartStatus || previous.deleteItemInCartStatus != current.deleteItemInCartStatus || previous.getCartItemsStatus != current.getCartItemsStatus,
                                                                                 builder: (context, state) {
-                                                                                  int qtyItemsInCart = 0;
-                                                                                  state.cartCollection?.forEach(
+                                                                                  int qtyItemsInCart = state.cartCollection?.length ?? 0;
+                                                                                  /* state.cartCollection?.forEach(
                                                                                     (element) {
                                                                                       qtyItemsInCart = qtyItemsInCart + (element.quantity ?? 0);
                                                                                     },
-                                                                                  );
+                                                                                  );*/
 
                                                                                   return Container(
                                                                                     alignment: Alignment.center,
@@ -1116,13 +1127,45 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                   labelStyle: context.textTheme.titleLarge?.copyWith(color: context.colorScheme.hint),
                                                                                 ),
                                                                                 onChanged: (String text) {
-                                                                                  List<String>? colorsFilter = [];
-                                                                                  List<String> listSearchTextWithoutConstWord = text.split(" ").toList();
-                                                                                  String searchText = "";
-                                                                                  List<String>? sizesFilter = [];
+                                                                                  if (searchDebounce?.isActive ?? false) {
+                                                                                    searchDebounce!.cancel();
+                                                                                  }
+                                                                                  searchDebounce = Timer(Duration(seconds: 1), () {
+                                                                                    List<String>? colorsFilter = [];
+                                                                                    List<String> listSearchTextWithoutConstWord = text.split(" ").toList();
+                                                                                    String searchText = "";
+                                                                                    List<String>? sizesFilter = [];
 
-                                                                                  if (isExpanded) {
-                                                                                    Filter filters = boutiqueBloc.state.choosedFiltersByUser[key]?.filters ?? Filter();
+                                                                                    if (isExpanded) {
+                                                                                      Filter filters = boutiqueBloc.state.choosedFiltersByUser[key]?.filters ?? Filter();
+                                                                                      if (text.length > 2) {
+                                                                                        List<String> listOfSearchText = text.split(" ").toList();
+                                                                                        for (var i = 0; i < colorsNameForSearch.length; i++) {
+                                                                                          if (listOfSearchText.contains(colorsNameForSearch[i])) {
+                                                                                            colorsFilter.add(colorsCodeForSearch[i]);
+                                                                                            listSearchTextWithoutConstWord.remove(colorsNameForSearch[i]);
+                                                                                          }
+                                                                                        }
+
+                                                                                        for (var i = 0; i < sizesForSearch.length; i++) {
+                                                                                          if (listOfSearchText.contains(sizesForSearch[i])) {
+                                                                                            sizesFilter.add(sizesForSearch[i]);
+                                                                                            listSearchTextWithoutConstWord.remove(sizesForSearch[i]);
+                                                                                          }
+                                                                                        }
+                                                                                        for (var i = 0; i < constWordToRemoveItFromSearch.length; i++) {
+                                                                                          listSearchTextWithoutConstWord.remove(constWordToRemoveItFromSearch[i]);
+                                                                                        }
+                                                                                        listSearchTextWithoutConstWord.forEach((element) => searchText = searchText + " " + element);
+                                                                                        resetSearchAfterSearchingWhileRemoveSearch = true;
+                                                                                        boutiqueBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, filtersChoosedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices, searchText: searchText))));
+                                                                                      }
+                                                                                      if (text.length < 3 && resetSearchAfterSearchingWhileRemoveSearch) {
+                                                                                        resetSearchAfterSearchingWhileRemoveSearch = false;
+                                                                                        boutiqueBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, filtersChoosedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices, searchText: null))));
+                                                                                      }
+                                                                                      return;
+                                                                                    }
                                                                                     if (text.length > 2) {
                                                                                       List<String> listOfSearchText = text.split(" ").toList();
                                                                                       for (var i = 0; i < colorsNameForSearch.length; i++) {
@@ -1143,85 +1186,58 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                       }
                                                                                       listSearchTextWithoutConstWord.forEach((element) => searchText = searchText + " " + element);
                                                                                       resetSearchAfterSearchingWhileRemoveSearch = true;
-                                                                                      boutiqueBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, filtersChoosedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices, searchText: searchText))));
+                                                                                      Filter filters = boutiqueBloc.state.appliedFiltersByUser[key]?.filters ?? Filter();
+
+                                                                                      boutiqueBloc.add(ChangeAppliedFiltersEvent(
+                                                                                        category: widget.category,
+                                                                                        boutiqueSlug: widget.boutiqueSlug,
+                                                                                        filtersAppliedByUser: GetProductFiltersModel(
+                                                                                            filters: filters.copyWithSaveOtherField(
+                                                                                          prices: filters.prices,
+                                                                                          searchText: searchText,
+                                                                                        )),
+                                                                                      ));
+                                                                                      boutiqueBloc.add(AddSizeAndColorFilterinTextToSearchEvent(sizeAndColorFilterinTextToSearch: {
+                                                                                        "size": sizesFilter,
+                                                                                        "color": colorsFilter
+                                                                                      }));
+                                                                                      boutiqueBloc.add(GetProductsWithFiltersEvent(
+                                                                                        offset: 1,
+                                                                                        searchText: searchText,
+                                                                                        fromSearch: fromSearch,
+                                                                                        category: widget.category,
+                                                                                        boutiqueSlug: widget.boutiqueSlug,
+                                                                                      ));
                                                                                     }
                                                                                     if (text.length < 3 && resetSearchAfterSearchingWhileRemoveSearch) {
+                                                                                      boutiqueBloc.add(AddSizeAndColorFilterinTextToSearchEvent(sizeAndColorFilterinTextToSearch: {}));
                                                                                       resetSearchAfterSearchingWhileRemoveSearch = false;
-                                                                                      boutiqueBloc.add(ChangeSelectedFiltersEvent(fromHomePageSearch: widget.fromSearch, boutiqueSlug: widget.boutiqueSlug, filtersChoosedByUser: GetProductFiltersModel(filters: filters.copyWithSaveOtherField(prices: filters.prices, searchText: null))));
-                                                                                    }
-                                                                                    return;
-                                                                                  }
-                                                                                  if (text.length > 2) {
-                                                                                    List<String> listOfSearchText = text.split(" ").toList();
-                                                                                    for (var i = 0; i < colorsNameForSearch.length; i++) {
-                                                                                      if (listOfSearchText.contains(colorsNameForSearch[i])) {
-                                                                                        colorsFilter.add(colorsCodeForSearch[i]);
-                                                                                        listSearchTextWithoutConstWord.remove(colorsNameForSearch[i]);
-                                                                                      }
-                                                                                    }
+                                                                                      Filter filters = boutiqueBloc.state.appliedFiltersByUser[key]?.filters ?? Filter();
 
-                                                                                    for (var i = 0; i < sizesForSearch.length; i++) {
-                                                                                      if (listOfSearchText.contains(sizesForSearch[i])) {
-                                                                                        sizesFilter.add(sizesForSearch[i]);
-                                                                                        listSearchTextWithoutConstWord.remove(sizesForSearch[i]);
-                                                                                      }
-                                                                                    }
-                                                                                    for (var i = 0; i < constWordToRemoveItFromSearch.length; i++) {
-                                                                                      listSearchTextWithoutConstWord.remove(constWordToRemoveItFromSearch[i]);
-                                                                                    }
-                                                                                    listSearchTextWithoutConstWord.forEach((element) => searchText = searchText + " " + element);
-                                                                                    resetSearchAfterSearchingWhileRemoveSearch = true;
-                                                                                    Filter filters = boutiqueBloc.state.appliedFiltersByUser[key]?.filters ?? Filter();
-
-                                                                                    boutiqueBloc.add(ChangeAppliedFiltersEvent(
-                                                                                      category: widget.category,
-                                                                                      boutiqueSlug: widget.boutiqueSlug,
-                                                                                      filtersAppliedByUser: GetProductFiltersModel(
-                                                                                          filters: filters.copyWithSaveOtherField(
-                                                                                        prices: filters.prices,
-                                                                                        searchText: searchText,
-                                                                                      )),
-                                                                                    ));
-                                                                                    boutiqueBloc.add(AddSizeAndColorFilterinTextToSearchEvent(sizeAndColorFilterinTextToSearch: {
-                                                                                      "size": sizesFilter,
-                                                                                      "color": colorsFilter
-                                                                                    }));
-                                                                                    boutiqueBloc.add(GetProductsWithFiltersEvent(
-                                                                                      offset: 1,
-                                                                                      searchText: searchText,
-                                                                                      fromSearch: fromSearch,
-                                                                                      category: widget.category,
-                                                                                      boutiqueSlug: widget.boutiqueSlug,
-                                                                                    ));
-                                                                                  }
-                                                                                  if (text.length < 3 && resetSearchAfterSearchingWhileRemoveSearch) {
-                                                                                    boutiqueBloc.add(AddSizeAndColorFilterinTextToSearchEvent(sizeAndColorFilterinTextToSearch: {}));
-                                                                                    resetSearchAfterSearchingWhileRemoveSearch = false;
-                                                                                    Filter filters = boutiqueBloc.state.appliedFiltersByUser[key]?.filters ?? Filter();
-
-                                                                                    boutiqueBloc.add(ChangeAppliedFiltersEvent(
-                                                                                      category: widget.category,
-                                                                                      boutiqueSlug: widget.boutiqueSlug,
-                                                                                      filtersAppliedByUser: GetProductFiltersModel(
-                                                                                          filters: filters.copyWithSaveOtherField(
-                                                                                        prices: filters.prices,
+                                                                                      boutiqueBloc.add(ChangeAppliedFiltersEvent(
+                                                                                        category: widget.category,
+                                                                                        boutiqueSlug: widget.boutiqueSlug,
+                                                                                        filtersAppliedByUser: GetProductFiltersModel(
+                                                                                            filters: filters.copyWithSaveOtherField(
+                                                                                          prices: filters.prices,
+                                                                                          searchText: null,
+                                                                                        )),
+                                                                                      ));
+                                                                                      boutiqueBloc.add(GetFiltersEvent(
+                                                                                        fromHomePageSearch: widget.fromSearch,
                                                                                         searchText: null,
-                                                                                      )),
-                                                                                    ));
-                                                                                    boutiqueBloc.add(GetFiltersEvent(
-                                                                                      fromHomePageSearch: widget.fromSearch,
-                                                                                      searchText: null,
-                                                                                      category: widget.category,
-                                                                                      boutiqueSlug: widget.boutiqueSlug,
-                                                                                    ));
-                                                                                    boutiqueBloc.add(GetProductsWithFiltersEvent(
-                                                                                      offset: 1,
-                                                                                      searchText: null,
-                                                                                      fromSearch: fromSearch,
-                                                                                      category: widget.category,
-                                                                                      boutiqueSlug: widget.boutiqueSlug,
-                                                                                    ));
-                                                                                  }
+                                                                                        category: widget.category,
+                                                                                        boutiqueSlug: widget.boutiqueSlug,
+                                                                                      ));
+                                                                                      boutiqueBloc.add(GetProductsWithFiltersEvent(
+                                                                                        offset: 1,
+                                                                                        searchText: null,
+                                                                                        fromSearch: fromSearch,
+                                                                                        category: widget.category,
+                                                                                        boutiqueSlug: widget.boutiqueSlug,
+                                                                                      ));
+                                                                                    }
+                                                                                  });
                                                                                 },
                                                                               ),
                                                                             ),
@@ -1481,7 +1497,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                     child: Stack(
                                                                                       children: [
                                                                                         Container(
-                                                                                          height: htmlHeight == 0 ? 0 : 135,
+                                                                                          height: 135,
                                                                                           width: 1.sw,
                                                                                           decoration: BoxDecoration(
                                                                                             borderRadius: BorderRadius.circular(15.0),
@@ -2149,8 +2165,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                   .isNullOrEmpty) &&
                                                           !state
                                                               .isGettingProductListingWithPagination) {
-                                                    print(
-                                                        "...............###################################################");
                                                     return ProductListingLoading();
                                                   }
                                                   if ((state
@@ -2241,7 +2255,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                           state
                                                                   .getProductListingWithFiltersPaginationModels[
                                                                       '${widget.boutiqueSlug}' +
-                                                                          '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}}'
+                                                                          '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
                                                                               '${(widget.category ?? '')}']
                                                                   ?.paginationStatus !=
                                                               PaginationStatus
@@ -2276,9 +2290,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                       .loading) &&
                                                           !state
                                                               .isGettingProductListingWithPagination) {
-                                                    print(
-                                                        "......${state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${(widget.category ?? '')}']?.paginationStatus == PaginationStatus.loading}222.##################################################");
-
+                                                    print("DDDDDDDDDDDDDDDDDDDDDDDDDDDD${'${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
+                                                        '${(widget.category ?? '')}'}DDDDDDDDDDDDDDDDDDDDD${state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
+                                                        '${(widget.category ?? '')}']?.paginationStatus}");
                                                     return ProductListingLoading(
                                                       key: TestVariables
                                                               .kTestMode
@@ -2592,6 +2606,114 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               previous.cartCollection !=
                                                   current.cartCollection,
                                           builder: (context, state) {
+                                            List<String> syncColorNames = [];
+                                            List<
+                                                    productListingModel
+                                                    .SyncColorImage>
+                                                syncColorImagesFromListing =
+                                                products[tapIndex]
+                                                        .syncColorImages ??
+                                                    [];
+                                            List<productListingModel.Color>?
+                                                colorsFromListing =
+                                                products[tapIndex].colors ?? [];
+                                            currentSelectedColor =
+                                                state.currentSelectedColorForEveryProduct[
+                                                        products[tapIndex]
+                                                            .slug] ??
+                                                    (products[tapIndex]
+                                                                .syncColorImages
+                                                                ?.length ??
+                                                            0) ~/
+                                                        2;
+                                            String currentSelectedColorName =
+                                                ((products[tapIndex]
+                                                                .colors
+                                                                ?.length ??
+                                                            0) >
+                                                        0)
+                                                    ? products[tapIndex]
+                                                            .colors![
+                                                                currentSelectedColor]
+                                                            .name ??
+                                                        ""
+                                                    : "";
+
+                                            String currentVariantType =
+                                                "${currentSelectedColorName != "" ? currentSelectedColorName : ""}" +
+                                                    "${(state.currentColorSizeForCart?["size"] != null && (state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]?.product?.choiceOptions?.isNullOrEmpty ?? false) && state.currentColorSizeForCart?["size"] != "") && (currentSelectedColorName != "") ? "-" : ""}" +
+                                                    "${(state.currentColorSizeForCart?["size"] != null && (state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]?.product?.choiceOptions?.isNullOrEmpty ?? false) && state.currentColorSizeForCart?["size"] != "") ? "${state.currentColorSizeForCart?["size"]}" : ""}";
+
+                                            product.Variation?
+                                                currentVariation = state
+                                                    .cachedProductWithoutRelatedProductsModel[
+                                                        products[tapIndex]
+                                                            .productId
+                                                            .toString()]
+                                                    ?.product
+                                                    ?.variation
+                                                    ?.firstWhere(
+                                              (element) => element.type!
+                                                  .contains(currentVariantType),
+                                              orElse: () {
+                                                return product.Variation(
+                                                    variantNotifyForUser:
+                                                        false);
+                                              },
+                                            );
+
+                                            if (state
+                                                    .getProductDetailWithoutSimilarRelatedProductsStatus ==
+                                                GetProductDetailWithoutSimilarRelatedProductsStatus
+                                                    .success) {
+                                              for (var i = 0;
+                                                  i <
+                                                      (products[tapIndex]
+                                                              .syncColorImages
+                                                              ?.length ??
+                                                          0);
+                                                  i++) {
+                                                syncColorNames.add(
+                                                    products[tapIndex]
+                                                            .syncColorImages?[i]
+                                                            .colorName ??
+                                                        "");
+                                              }
+                                              state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                                      products[tapIndex]
+                                                          .productId
+                                                          .toString()]!
+                                                  .product
+                                                  ?.syncColorImages
+                                                  ?.forEach(
+                                                (element) {
+                                                  if (!syncColorNames.contains(
+                                                      element.colorName)) {
+                                                    syncColorImagesFromListing
+                                                        .add(element);
+                                                  }
+                                                },
+                                              );
+
+                                              state
+                                                  .cachedProductWithoutRelatedProductsModel[
+                                                      products[tapIndex]
+                                                          .productId
+                                                          .toString()]!
+                                                  .product
+                                                  ?.colors
+                                                  ?.forEach(
+                                                (element) {
+                                                  if (!(syncColorNames.contains(
+                                                      element.name))) {
+                                                    colorsFromListing
+                                                        .add(element);
+                                                  }
+                                                },
+                                              );
+                                            }
+
                                             String productId =
                                                 products[tapIndex]
                                                     .productId
@@ -2849,18 +2971,27 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               Future.delayed(
                                                   Duration(milliseconds: 600),
                                                   () {
-                                                panelControllerForCart.open();
-                                                changeAppearSizeForProduct =
-                                                    false;
+                                                WidgetsBinding.instance
+                                                    .addPostFrameCallback((_) {
+                                                  panelControllerForCart.open();
+                                                  changeAppearSizeForProduct =
+                                                      false;
+                                                });
                                               });
                                             }
 
-                                            return state.getProductDetailWithoutSimilarRelatedProductsStatus ==
+                                            return state
+                                                            .getProductDetailWithoutSimilarRelatedProductsStatus ==
                                                         GetProductDetailWithoutSimilarRelatedProductsStatus
                                                             .loading ||
                                                     state.enableAddToCardAfterChangeVariantZero !=
                                                         EnableAddToCardAfterChangeVariantZero
-                                                            .success
+                                                            .success ||
+                                                    state.cachedProductWithoutRelatedProductsModel[
+                                                            products[tapIndex]
+                                                                .productId
+                                                                .toString()] ==
+                                                        null
                                                 ? Container(
                                                     width: 1.sw,
                                                     height: 1.sh,
@@ -2871,6 +3002,16 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                     ),
                                                   )
                                                 : ProductDetailsBottomSheet(
+                                                    initOfferPrice: (products[
+                                                                    tapIndex]
+                                                                .offerPrice ??
+                                                            0)
+                                                        .toString(),
+                                                    initPrice:
+                                                        (products[tapIndex]
+                                                                    .price ??
+                                                                0)
+                                                            .toString(),
                                                     isGetFullProductDetails:
                                                         false,
                                                     productNotAvailableNotifier:
@@ -3029,8 +3170,42 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                     currentSelectedColor]
                                                                 .name ??
                                                             "",
-                                                    productItem:
-                                                        products[tapIndex],
+                                                    productItem: products[tapIndex].copyWith(
+                                                        price: currentVariation?.price != null
+                                                            ? currentVariation
+                                                                ?.price
+                                                            : state
+                                                                .cachedProductWithoutRelatedProductsModel[
+                                                                    products[tapIndex]
+                                                                        .productId
+                                                                        .toString()]!
+                                                                .product
+                                                                ?.price,
+                                                        offerPrice: currentVariation?.offerPrice != null
+                                                            ? currentVariation
+                                                                ?.offerPrice
+                                                            : state
+                                                                .cachedProductWithoutRelatedProductsModel[
+                                                                    products[tapIndex]
+                                                                        .productId
+                                                                        .toString()]!
+                                                                .product
+                                                                ?.offerPrice,
+                                                        priceFormatted: currentVariation
+                                                                    ?.priceFormated !=
+                                                                null
+                                                            ? currentVariation
+                                                                ?.priceFormated
+                                                            : state
+                                                                .cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!
+                                                                .product
+                                                                ?.priceFormatted,
+                                                        offerPriceFormatted: currentVariation?.offerPriceFormated != null ? currentVariation?.offerPriceFormated : state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!.product?.offerPriceFormatted,
+                                                        availableQuantity: state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()] == null ? 0 : state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!.product?.availableQuantity,
+                                                        choiceOptions: state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()] == null ? [] : state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!.product?.choiceOptions,
+                                                        colors: colorsFromListing,
+                                                        images: state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()] == null ? [] : state.cachedProductWithoutRelatedProductsModel[products[tapIndex].productId.toString()]!.product?.images,
+                                                        syncColorImages: syncColorImagesFromListing),
                                                     currentColor:
                                                         currentSelectedColor,
                                                     maxAllowedToAddCart: state

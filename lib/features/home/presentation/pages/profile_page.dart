@@ -282,6 +282,15 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                         navigateToAddName: () {},
                         navigateTocartOrProfile: () {
                           isVerified.value = true;
+                          orderBloc.add(
+                            GetCustomerWalletEvent(limit: 10, offset: 1),
+                          );
+                          orderBloc.add(
+                            GetOrdersEvent(
+                              status: "",
+                              getWithPagination: false,
+                            ),
+                          );
                         },
                         fromLogin: false,
                         onLoginFailed: () {
@@ -601,7 +610,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                       ),
                     )
                   : Text(
-                      '${LocaleKeys.your_balance.tr()} ${HelperFunctions.formatNumber(number: walletBalance)} ${symbole}',
+                      '${LocaleKeys.your_balance.tr()} ${(walletBalance).toStringAsFixed(GetIt.I<HomeBloc>().state.startingSetting?.decimalPointSettings ?? 2)} ${symbole}',
                       style: context.textTheme.bodyMedium?.rr.copyWith(
                           color: const Color(0xff8D8D8D),
                           letterSpacing: 0.18,

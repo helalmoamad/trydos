@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -50,22 +52,28 @@ class ColorsListFilter extends StatefulWidget {
 }
 
 class _ColorsListFilterState extends State<ColorsListFilter> {
+  Timer? debounce;
   String key = '';
   final ScrollController scrollController = ScrollController();
   @override
   void initState() {
     scrollController.addListener(() {
       try {
-        if (scrollController.offset >=
-            (scrollController.position.maxScrollExtent * 0.6)) {
-          BlocProvider.of<BoutiqueBloc>(context)
-              .add(GetFiltersWithPaginatioEvent(
-            fromHomePageSearch: true,
-            searchText: widget.searchText,
-            category: widget.category,
-            boutiqueSlug: widget.boutiqueSlug,
-          ));
+        if (debounce?.isActive ?? false) {
+          debounce!.cancel();
         }
+        debounce = Timer(Duration(milliseconds: 600), () {
+          if (scrollController.offset >=
+              (scrollController.position.maxScrollExtent * 0.6)) {
+            BlocProvider.of<BoutiqueBloc>(context)
+                .add(GetFiltersWithPaginatioEvent(
+              fromHomePageSearch: true,
+              searchText: widget.searchText,
+              category: widget.category,
+              boutiqueSlug: widget.boutiqueSlug,
+            ));
+          }
+        });
       } catch (e) {}
     });
     key = widget.boutiqueSlug + (widget.category ?? '');

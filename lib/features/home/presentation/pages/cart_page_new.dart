@@ -67,7 +67,7 @@ class _CartPageState extends State<CartPage> {
   final ValueNotifier<bool> isVerified = ValueNotifier(true);
   final ValueNotifier<bool> moreInfo = ValueNotifier(false);
   final PanelController panelController = PanelController();
-
+  int maxShippingDay = 0;
   bool? fromForGroundNotification;
 
   @override
@@ -157,6 +157,7 @@ class _CartPageState extends State<CartPage> {
                     HelperFunctions.slidingNavigation(
                       context,
                       CartDelivaryAddress(
+                        maxShippingDay: maxShippingDay.toString(),
                         cartImages: cartImages,
                         cartGroupId: cartGroupId,
                         currencySympole: priceSymbol,
@@ -185,8 +186,8 @@ class _CartPageState extends State<CartPage> {
                         current.deleteItemInCartStatus ||
                     previous.getOldCartItemsStatus !=
                         current.getOldCartItemsStatus ||
-                    previous.convertItemFromOldcartToCartStatus !=
-                        current.convertItemFromOldcartToCartStatus ||
+                    previous.convertItemFromcartToOldCartStatus !=
+                        current.convertItemFromcartToOldCartStatus ||
                     previous.getListOfProductsFoundedInCartStatus !=
                         current.getListOfProductsFoundedInCartStatus ||
                     previous.hideItemInOldCartStatus !=
@@ -348,6 +349,7 @@ class _CartPageState extends State<CartPage> {
                 double totlalQuantity = 0;
                 double totlalPriceWithoutShipping = 0;
                 double totlalDiscount = 0;
+                maxShippingDay = 0;
 
                 totlalPrice =
                     (state.getCartShippingItemsModel?.data?.total ?? 0) *
@@ -370,7 +372,12 @@ class _CartPageState extends State<CartPage> {
                         "";
 
                 state.cartCollection?.forEach((element) {
-                  totlalQuantity = totlalQuantity + (element.quantity ?? 0);
+                  if ((element.shippingDays ?? 0) > maxShippingDay) {
+                    maxShippingDay = element.shippingDays ?? 0;
+                  }
+                  totlalQuantity =
+                      (state.cartCollection?.length ?? 0).toDouble();
+                  // totlalQuantity + (element.quantity ?? 0);
 
                   //   totlalOfferPrice =
                   //       totlalOfferPrice + element.offerPrice! * element.quantity!;
@@ -378,6 +385,8 @@ class _CartPageState extends State<CartPage> {
                   //   totlalDiscount = totlalDiscount +
                   //       (element.price! - element.offerPrice!) * element.quantity!;
                 });
+                maxShippingDay =
+                    maxShippingDay + (state.startingSetting?.shippingDay ?? 0);
                 //  totlalOfferPrice = totlalOfferPrice *
                 //     state.getCurrencyForCountryModel!.data!.currency!
                 //         .exchangeRate!;

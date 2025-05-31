@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:flutter_svg_image/flutter_svg_image.dart';
+import 'package:trydos/features/app/my_cached_network_image.dart';
 
 class SvgNetworkWidget extends StatefulWidget {
   final double? width;
@@ -50,16 +52,26 @@ class _SvgNetworkWidgetState extends State<SvgNetworkWidget>
       );
     }
 
-    return SizedBox(
-      height: widget.height,
-      child: Image(
-        fit: BoxFit.cover,
-        image: SvgImage.cachedNetwork(currentUrl),
-        errorBuilder: (context, error, stackTrace) {
-          return const Icon(Icons.error, color: Colors.red);
-        },
-      ),
-    );
+    try {
+      return SizedBox(
+        height: widget.height,
+        child: Image(
+          fit: BoxFit.cover,
+          image: SvgImage.cachedNetwork(currentUrl,
+              width: widget.width, height: widget.height),
+          errorBuilder: (context, error, stackTrace) {
+            return const Icon(Icons.error, color: Colors.red);
+          },
+        ),
+      );
+    } catch (e) {
+      return SizedBox(
+        height: widget.height,
+        child: SvgPicture.network(currentUrl,
+            width: widget.width, height: widget.height),
+      );
+    }
+    ;
   }
 
   @override

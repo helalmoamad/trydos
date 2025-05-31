@@ -127,6 +127,8 @@ class _SearchChipCategoryState extends State<SearchChipCategory> {
   }
 }*/
 
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -167,20 +169,25 @@ class SearchChipCategory extends StatefulWidget {
 class _SearchChipCategoryState extends State<SearchChipCategory> {
   final ScrollController scrollController = ScrollController();
   late BoutiqueBloc boutiqueBloc;
-
+  Timer? debounce;
   List<String> selectedCaregorySlugs = [];
   @override
   void initState() {
     scrollController.addListener(() {
       try {
-        if (scrollController.offset >=
-            (scrollController.position.maxScrollExtent * 0.6)) {
-          boutiqueBloc.add(GetFiltersWithPaginatioEvent(
-            fromHomePageSearch: true,
-            searchText: widget.controller.text,
-            boutiqueSlug: "search",
-          ));
+        if (debounce?.isActive ?? false) {
+          debounce!.cancel();
         }
+        debounce = Timer(Duration(milliseconds: 600), () {
+          if (scrollController.offset >=
+              (scrollController.position.maxScrollExtent * 0.6)) {
+            boutiqueBloc.add(GetFiltersWithPaginatioEvent(
+              fromHomePageSearch: true,
+              searchText: widget.controller.text,
+              boutiqueSlug: "search",
+            ));
+          }
+        });
       } catch (e) {}
     });
     boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);

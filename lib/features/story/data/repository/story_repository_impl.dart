@@ -20,8 +20,10 @@ class StoryRepositoryImpl extends StoryRepository
   StoryRepositoryImpl(this.storyDataSource);
 
   @override
-  Future<Either<Failure, GetStoriesModel>> getStories() {
-    return handlingExceptionRequest(tryCall: storyDataSource.getStories);
+  Future<Either<Failure, GetStoriesModel>> getStories(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => storyDataSource.getStories(params));
   }
 
   @override
