@@ -163,6 +163,9 @@ class _PaymentMethodState extends State<PaymentMethod> {
                             ///////////////////////////
                             if (_paymentMethods
                                 .contains(PaymentMethods.trydosWallet)) {
+                              if (_paymentMethods.length > 1) {
+                                return;
+                              }
                               _removeItemFromPaymentMethods(
                                 widget.paymentMethods,
                                 PaymentMethods.trydosWallet,
@@ -258,6 +261,19 @@ class _PaymentMethodState extends State<PaymentMethod> {
                                     PaymentMethods.card,
                                   );
                                 } else {
+                                  if (widget.amount == 0) {
+                                    widget.paymentMethods.value =
+                                        List.from(widget.paymentMethods.value)
+                                          ..clear();
+                                    ////////////////
+                                    _addItemToPaymentMethods(
+                                      widget.paymentMethods,
+                                      PaymentMethods.card,
+                                    );
+                                  }
+                                }
+                              } else {
+                                if (widget.amount == 0) {
                                   widget.paymentMethods.value =
                                       List.from(widget.paymentMethods.value)
                                         ..clear();
@@ -267,15 +283,6 @@ class _PaymentMethodState extends State<PaymentMethod> {
                                     PaymentMethods.card,
                                   );
                                 }
-                              } else {
-                                widget.paymentMethods.value =
-                                    List.from(widget.paymentMethods.value)
-                                      ..clear();
-                                ////////////////
-                                _addItemToPaymentMethods(
-                                  widget.paymentMethods,
-                                  PaymentMethods.card,
-                                );
                               }
                             }
                           },
@@ -348,6 +355,19 @@ class _PaymentMethodState extends State<PaymentMethod> {
                                     PaymentMethods.crypto,
                                   );
                                 } else {
+                                  if (widget.amount == 0) {
+                                    widget.paymentMethods.value =
+                                        List.from(widget.paymentMethods.value)
+                                          ..clear();
+                                    ////////////////
+                                    _addItemToPaymentMethods(
+                                      widget.paymentMethods,
+                                      PaymentMethods.crypto,
+                                    );
+                                  }
+                                }
+                              } else {
+                                if (widget.amount == 0) {
                                   widget.paymentMethods.value =
                                       List.from(widget.paymentMethods.value)
                                         ..clear();
@@ -357,15 +377,6 @@ class _PaymentMethodState extends State<PaymentMethod> {
                                     PaymentMethods.crypto,
                                   );
                                 }
-                              } else {
-                                widget.paymentMethods.value =
-                                    List.from(widget.paymentMethods.value)
-                                      ..clear();
-                                ////////////////
-                                _addItemToPaymentMethods(
-                                  widget.paymentMethods,
-                                  PaymentMethods.crypto,
-                                );
                               }
                             }
                           },

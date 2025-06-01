@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -462,6 +461,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
 
           ///////////////////////////
           OrderListModel firstOrder = ordersWithSameId[0];
+          int firstOrderIndex = ordersFromApi.indexOf(firstOrder);
           ////////////////////
           ordersWithSameId.remove(firstOrder);
           ////////////////////////////////
@@ -503,7 +503,9 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           ordersFromApi.removeWhere(
             (element) => element.orderGroupId == duplicateId,
           );
-          ordersFromApi.add(aggregatedOrder);
+          // ordersFromApi.add(aggregatedOrder);
+
+          ordersFromApi.insert(firstOrderIndex, aggregatedOrder);
         }
 
         ////////////////////////////
