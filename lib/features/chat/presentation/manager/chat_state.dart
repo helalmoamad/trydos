@@ -82,6 +82,7 @@ class ChatState {
   final String? firstMessageId;
   final String? secondMessageId;
   final String? slopMessageId;
+  final bool? getAllChat;
   final int unReadMessagesFromAllChats;
   final String? recipientUserId;
   final String currentChannelReceivedMessage;
@@ -104,6 +105,7 @@ class ChatState {
     this.firstRequestForGetChats = true,
     this.height = 0,
     this.imageCountInEachChat = 0,
+    this.getAllChat = false,
     this.getSharedProductCountStatus,
     this.currentRequestIdForAvoidPreRequest = "",
     this.fileCountInEachChat = 0,
@@ -186,6 +188,7 @@ class ChatState {
     final String? currentChannelReceivedMessage,
     final List<Chat>? chats,
     final bool? createAnewChat,
+    final bool? getAllChat,
     final String? currentRequestIdForAvoidPreRequest,
     final List<String>? currentMessage,
     final List<String>? currentFailedMessage,
@@ -233,6 +236,7 @@ class ChatState {
           chatToNavigateFromTerminated ?? this.chatToNavigateFromTerminated,
       contacts: contacts ?? this.contacts,
       chats: chats ?? this.chats,
+      getAllChat: getAllChat ?? this.getAllChat,
       currentRequestIdForAvoidPreRequest: currentRequestIdForAvoidPreRequest ??
           this.currentRequestIdForAvoidPreRequest,
       currentOpenedChatId: currentOpenedChatId ?? this.currentOpenedChatId,

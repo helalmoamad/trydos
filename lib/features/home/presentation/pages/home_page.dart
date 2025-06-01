@@ -19,6 +19,7 @@ import 'package:trydos/core/data/model/pagination_model.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
+import 'package:trydos/core/utils/extensions/string.dart';
 import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
@@ -29,6 +30,7 @@ import 'package:trydos/features/authentication/presentation/widgets/insert_phone
 import 'package:trydos/features/authentication/presentation/widgets/verification_methods.dart';
 import 'package:trydos/features/authentication/presentation/widgets/verify_otp.dart';
 import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
+import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
@@ -93,6 +95,7 @@ class _HomePageState extends State<HomePage> {
   final FocusNode focusNode = FocusNode();
   String phoneNumber = '';
   int isVisWhatsApp = 0;
+  late ChatBloc chatBloc;
   late AuthBloc authBloc;
   bool changeAppearSizeForProduct = true;
   Timer? debounce;
@@ -194,10 +197,24 @@ class _HomePageState extends State<HomePage> {
 
     homeBloc = BlocProvider.of<HomeBloc>(context);
     boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
+    chatBloc = BlocProvider.of<ChatBloc>(context);
 
     appBloc.add(ChangeIndexForSearch(0));
 
-    Future.delayed(Duration(seconds: 5), () {});
+    Future.delayed(Duration(seconds: 10), () {
+      if ((prefsRepository.chatToken?.length ?? 0) > 10 &&
+          (prefsRepository.myChatName != prefsRepository.myMarketName &&
+              !(prefsRepository.myMarketName.isNullOrEmpty))) {
+        authBloc.add(
+            UpdateChatUserNameEvent(name: prefsRepository.myMarketName ?? ""));
+      }
+      if ((prefsRepository.storiesToken?.length ?? 0) > 10 &&
+          (prefsRepository.myStoriesName != prefsRepository.myMarketName &&
+              !(prefsRepository.myMarketName.isNullOrEmpty))) {
+        authBloc.add(
+            UpdateStoriesUserEvent(name: prefsRepository.myMarketName ?? ""));
+      }
+    });
     boutiqueBloc.add(GetProductsWithFiltersEvent(
         boutiqueSlug: "search",
         cashedOrginalBoutique: true,
@@ -219,12 +236,6 @@ class _HomePageState extends State<HomePage> {
 
     String notificationTypesOfMarketFromTerminated =
         GetIt.I<PrefsRepository>().getNotificationTypeFromTerminated ?? "";
-    print(
-        'ddddddddddddddddddddddddddddddddddddddddddd${notificationTypesOfMarketFromTerminated}');
-    print(
-        'dddddddddddddddddd11111111111ddddddddddddddddddddddddd${notificationTypesOfMarketFromTerminated.split("chatNotification").first}');
-    print(
-        'dddddddddddddddddddd00000000000ddddddddddddddddddddddd${notificationTypesOfMarketFromTerminated.split("chatNotification").last}');
 
     if (notificationTypesOfMarketFromTerminated != "") {
       GetIt.I<PrefsRepository>().setNotificationTypesFromTerminated("");
@@ -901,7 +912,7 @@ class _HomePageState extends State<HomePage> {
                                                     navigateTocartOrProfile:
                                                         () {
                                                       Future.delayed(
-                                                          Duration(seconds: 1),
+                                                          Duration(seconds: 3),
                                                           () => panelController
                                                               .close());
                                                     },
@@ -991,10 +1002,16 @@ class _HomePageState extends State<HomePage> {
                                                     navigateToAddName: () {},
                                                     navigateTocartOrProfile:
                                                         () {
-                                                      Future.delayed(
-                                                          Duration(seconds: 1),
-                                                          () => panelController
-                                                              .close());
+                                                      WidgetsBinding.instance
+                                                          .addPostFrameCallback(
+                                                              (_) {
+                                                        Future.delayed(
+                                                            Duration(
+                                                                seconds: 3),
+                                                            () =>
+                                                                panelController
+                                                                    .close());
+                                                      });
                                                     },
                                                     fromLogin: false,
                                                     onLoginFailed: () {

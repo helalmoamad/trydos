@@ -80,11 +80,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<UpdateChatUserNameEvent>(_onUpdateChatUserNameEvent,
         transformer: throttleDroppable(throttleDuration));
     on<LoginToChatEvent>(_onLoginToChatEvent,
-        transformer: throttleDroppable(throttleDuration));
+        transformer: throttleDroppable(Duration(seconds: 10)));
     on<LoginToStoriesEvent>(_onLoginToStoriesEvent,
-        transformer: throttleDroppable(throttleDuration));
+        transformer: throttleDroppable(Duration(seconds: 10)));
     on<StoreFcmTokenEvent>(_onStoreFcmTokenEvent,
-        transformer: throttleDroppable(throttleDuration));
+        transformer: throttleDroppable(Duration(seconds: 10)));
     on<SendOtpEvent>(_onSendOtpEvent);
     on<VerifyOtpSignInEvent>(_onVerifyOtpSignInEvent);
     on<VerifyOtpInProfileEvent>(_onVerifyOtpInProfileEvent);
@@ -93,7 +93,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       _onVerifyGuestPhoneEvent,
     );
     on<RegisterGuestEvent>(_onRegisterGuestEvent,
-        transformer: throttleDroppable(throttleDuration));
+        transformer: throttleDroppable(Duration(seconds: 5)));
     on<UpdateNameEvent>(_onUpdateNameEvent,
         transformer: throttleDroppable(throttleDuration));
     on<GetCustomerInfoEvent>(_onGetCustomerInfoEvent,
@@ -146,6 +146,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     LoginToChatEvent event,
     Emitter<AuthState> emit,
   ) async {
+    print(
+        "llllllllllllllllllllllllllooooooooooooooooooooooooooooooooooooooooooooooooooooootiovvhhhhhhhhhhat");
     emit(state.copyWith(loginToChatStatus: LoginToChatStatus.loading));
 
     final response = await loginToChatUseCase(
@@ -176,6 +178,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         _prefsRepository.setLogInToChat(false);
       },
       (r) {
+        emit(state.copyWith(loginToChatStatus: LoginToChatStatus.success));
         _prefsRepository.setLogInToChat(true);
         isFailedTheFirstTime.remove('LoginToChatEvent');
         final id = r.data!.id;

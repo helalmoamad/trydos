@@ -700,6 +700,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
     // استخراج وتحليل المعاملات
     final categories = parseListParam(uri.queryParameters['categories']);
     final brands = parseListParam(uri.queryParameters['brands']);
+    final tagsNames = parseListParam(uri.queryParameters['tags_names']);
     final sizes = parseListParam(uri.queryParameters['sizes']);
     final colors = parseListParam(uri.queryParameters['colors']);
     final boutiques = parseListParam(uri.queryParameters['boutiques']);
@@ -720,6 +721,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
     print('الفئات: $categories');
     print('العلامات: $brands');
     print('المقاسات: $sizes');
+    print('تاغات: $tagsNames');
     print('الألوان: $colors');
     print('البوتيكات: $boutiques');
     if (!(url.contains("boutique/listing")) && (url.contains("boutique"))) {
@@ -730,6 +732,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
       BlocProvider.of<BoutiqueBloc>(context)
           .add(GetFiltersForNavigatorFromLinkToListingPageEvent(
               fromHomePageSearch: false,
+              //    tagsNames: tagsNames,
               boutiqueSlug: boutiueSlug,
               filtersChoosedByUser: GetProductFiltersModel(
                   filters: Filter(
@@ -744,6 +747,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
       BlocProvider.of<BoutiqueBloc>(context)
           .add(GetFiltersForNavigatorFromLinkToListingPageEvent(
               fromHomePageSearch: true,
+              //  tagsNames: tagsNames,
               boutiqueSlug: "search",
               filtersChoosedByUser: GetProductFiltersModel(
                   filters: Filter(
@@ -906,7 +910,8 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                 onTap: () {
                   _videoController?.pause();
                   widget.animatedController.stop();
-                  tapOnUrl(url);
+                  tapOnUrl(
+                      "https://trydos-front-git-alaa-dev-trydos-front-team.vercel.app/tr-en/boutique/listing?tags_names=[%22clothes%22]");
                 },
                 child: Center(
                   child: boutiqueState

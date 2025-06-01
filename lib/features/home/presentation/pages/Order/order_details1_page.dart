@@ -646,7 +646,7 @@ class _OrderDetails1State extends State<OrderDetails1> {
               title: LocaleKeys.order_status.tr(),
               value: orderStatus == 'Delivered'
                   ? '$orderStatus ${LocaleKeys.to.tr()} $deliverdTo'
-                  : LocaleKeys.order_status.tr(),
+                  : orderStatus,
               amount: '',
               isTextSpan: false,
               titleIcons: buildTitleIcons(status: orderStatus),

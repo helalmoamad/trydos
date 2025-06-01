@@ -330,7 +330,7 @@ class OrderListDetailModel {
   final OrderProductDetailsModel? productDetails;
   final double? qty;
   final double? price;
-
+  final OrderStatus? orderProductStatus;
   final double? discount;
   final double? priceAfterDiscount;
   final double? tax;
@@ -359,6 +359,7 @@ class OrderListDetailModel {
     this.discount,
     this.priceAfterDiscount,
     this.tax,
+    this.orderProductStatus,
     this.deliveryStatus,
     this.paymentStatus,
     this.shippingMethodId,
@@ -383,6 +384,7 @@ class OrderListDetailModel {
     double? qty,
     double? price,
     double? discount,
+    OrderStatus? orderProductStatus,
     double? priceAfterDiscount,
     double? tax,
     String? deliveryStatus,
@@ -423,6 +425,7 @@ class OrderListDetailModel {
         refundRequestStatus: refundRequestStatus ?? this.refundRequestStatus,
         isOdooProduct: isOdooProduct ?? this.isOdooProduct,
         odooId: odooId ?? this.odooId,
+        orderProductStatus: orderProductStatus ?? this.orderProductStatus,
         odooOrderId: odooOrderId ?? this.odooOrderId,
         image: image ?? this.image,
       );

@@ -609,7 +609,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
   FutureOr<void> _onGetChatsEvent(
       GetChatsEvent event, Emitter<ChatState> emit) async {
     if (state.getChatsStatus == GetChatsStatus.loading ||
-        (_prefsRepository.chatToken?.length ?? 0) < 10) {
+        (_prefsRepository.chatToken?.length ?? 0) < 10 ||
+        ((event.getWithPagination ?? false) && (state.getAllChat ?? false))) {
       return;
     }
     emit(state.copyWith(
@@ -682,6 +683,9 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
                 chatToNavigateFromTerminated:
                     event.chatToNavigateFromTerminated,
                 chats: newChats,
+                getAllChat: (event.getWithPagination ?? false) &&
+                    (r.data?.chats?.length == 0 &&
+                        r.data?.pinnedChats?.length == 0),
                 pinnedChats: newPinnedChats,
                 newSortedChatsByDate: groupReceivedMessageOnDays(
                     chats: [...newChats, ...newPinnedChats]),

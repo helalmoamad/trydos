@@ -296,7 +296,7 @@ class OrderDetails2 extends StatelessWidget {
                                             MainAxisAlignment.end,
                                         children: [
                                           Text(
-                                            order.orderStatus?.label ?? '',
+                                            order.orderGroupStatus?.label ?? '',
                                             overflow: TextOverflow.ellipsis,
                                             style: context
                                                 .textTheme.bodyMedium?.rq
@@ -656,9 +656,14 @@ class OrderDetails2 extends StatelessWidget {
                                                             ////////////////////////////
                                                             TextSpan(
                                                               text: order
-                                                                      .orderGroupStatus
+                                                                      .details?[
+                                                                          index]
+                                                                      .orderProductStatus
                                                                       ?.label ??
-                                                                  '',
+                                                                  order
+                                                                      .orderStatus
+                                                                      ?.label ??
+                                                                  "",
                                                               style: context
                                                                   .textTheme
                                                                   .bodyMedium

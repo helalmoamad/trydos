@@ -505,42 +505,77 @@ class IconCart {
 
 class CartBrand {
   final int? id;
-  final String? name;
   final String? slug;
-  final String? image;
+  final String? name;
+  final CartIcon? icon;
 
   CartBrand({
     this.id,
-    this.name,
     this.slug,
-    this.image,
+    this.name,
+    this.icon,
   });
 
   CartBrand copyWith({
     int? id,
-    String? name,
     String? slug,
-    String? image,
+    String? name,
+    CartIcon? icon,
   }) =>
       CartBrand(
         id: id ?? this.id,
-        name: name ?? this.name,
         slug: slug ?? this.slug,
-        image: image ?? this.image,
+        name: name ?? this.name,
+        icon: icon ?? this.icon,
       );
 
   factory CartBrand.fromJson(Map<String, dynamic> json) => CartBrand(
         id: json["id"],
-        name: json["name"],
         slug: json["slug"],
-        image: json["image"],
+        name: json["name"],
+        icon: json["icon"] == null ? null : CartIcon.fromJson(json["icon"]),
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
-        "name": name,
         "slug": slug,
-        "image": image,
+        "name": name,
+        "icon": icon?.toJson(),
+      };
+}
+
+class CartIcon {
+  final String? filePath;
+  final String? originalWidth;
+  final String? originalHeight;
+
+  CartIcon({
+    this.filePath,
+    this.originalWidth,
+    this.originalHeight,
+  });
+
+  CartIcon copyWith({
+    String? filePath,
+    String? originalWidth,
+    String? originalHeight,
+  }) =>
+      CartIcon(
+        filePath: filePath ?? this.filePath,
+        originalWidth: originalWidth ?? this.originalWidth,
+        originalHeight: originalHeight ?? this.originalHeight,
+      );
+
+  factory CartIcon.fromJson(Map<String, dynamic> json) => CartIcon(
+        filePath: json["file_path"],
+        originalWidth: json["original_width"],
+        originalHeight: json["original_height"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "file_path": filePath,
+        "original_width": originalWidth,
+        "original_height": originalHeight,
       };
 }
 

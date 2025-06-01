@@ -1800,11 +1800,14 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     }
 
     CartBrand brand = CartBrand(
-        image: event.products.brand != null
-            ? event.products.brand!.icon != null
-                ? event.products.brand!.icon!.filePath
-                : ""
-            : "");
+        icon: CartIcon(
+            originalHeight: "50",
+            filePath: event.products.brand != null
+                ? event.products.brand!.icon != null
+                    ? event.products.brand!.icon!.filePath
+                    : ""
+                : "",
+            originalWidth: "50"));
     VariationCart variation =
         VariationCart(color: event.colorName, size: event.choice_1);
     String currentUuid = const Uuid().v4();
@@ -2797,10 +2800,16 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         cartCollection.removeWhere(
           (element) => element.id.toString() == event.cartId,
         );
+
         oldcartCollection.add(oldCart.OldCart(
             availableQuantity: cart.availableQuantity?.round(),
             boutique: cart.boutique,
-            brand: oldCart.Brand(image: cart.brand?.image, name: cart.name),
+            brand: oldCart.Brand(
+                icon: oldCart.Icon(
+                    filePath: cart.brand?.icon?.filePath,
+                    originalHeight: cart.brand?.icon?.originalHeight,
+                    originalWidth: cart.brand?.icon?.originalWidth),
+                name: cart.name),
             image: cart.image,
             cartGroupId: cart.cartGroupId,
             countOfPieces: cart.countOfPieces,

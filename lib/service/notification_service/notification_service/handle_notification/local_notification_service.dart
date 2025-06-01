@@ -51,25 +51,14 @@ class LocalNotificationService {
       iOS: iosInitializationSettings,
     );
     try {
-      print("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF}");
-
       await _localNotificationPlugin
           .getNotificationAppLaunchDetails()
           .then((value) {
-        print("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF}");
-
-        if ((value?.notificationResponse?.payload?.split("###").length ?? 0) >
-            0) {
+        if (value?.notificationResponse?.payload?.contains("###") ?? false) {
           GetIt.I<PrefsRepository>().setNotificationTypesFromTerminated(
               value?.notificationResponse?.payload?.split('###')[0] ?? "");
-        } else if ((value?.notificationResponse?.payload?.split("##").length ??
-                0) >
-            0) {
-          print(
-              "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF.............${value?.notificationResponse?.payload?.split('##').length}.......................}");
-
-          print(
-              "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF${(value?.notificationResponse?.payload?.split('##').toList()[1] ?? "")}FFFFFFFFFFFFFFFFFFFFFFFFFFF}");
+        } else if (value?.notificationResponse?.payload?.contains("##") ??
+            false) {
           GetIt.I<PrefsRepository>().setNotificationTypesFromTerminated(
               ((value?.notificationResponse?.payload?.split('##')[0] ?? "") +
                   ("chatNotification") +
@@ -190,14 +179,8 @@ class LocalNotificationService {
     }
     Map RemoteMessage = convert.jsonDecode(message.data['data']);
     chat.Message myMessage = chat.Message.fromJson(RemoteMessage["message"]);
-    print(
-        "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF..................................+++++.");
-
     String prevMessageId = RemoteMessage['prev_message_id'].toString();
     String type = myMessage.messageType!.name.toString();
-
-    print(
-        "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF..................................+++++.${prevMessageId}.}");
 
     await _localNotificationPlugin.show(
         notificationId,

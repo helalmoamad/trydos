@@ -467,6 +467,10 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           ////////////////////////////////
           List<OrderListDetailModel> aggregatedDetails =
               firstOrder.details ?? [];
+          for (var i = 0; i < aggregatedDetails.length; i++) {
+            aggregatedDetails[i] = aggregatedDetails[i]
+                .copyWith(orderProductStatus: firstOrder.orderStatus);
+          }
           bool? statusIsOutForDelivary =
               firstOrder.orderStatus?.value == "out_for_delivery";
           double firstOrderAmount = firstOrder.orderAmount ?? 0;
@@ -483,8 +487,9 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
             if (order.orderStatus?.value == "out_for_delivery") {
               statusIsOutForDelivary = true;
             }
-            for (var detail in order.details ?? []) {
-              aggregatedDetails.add(detail);
+            for (OrderListDetailModel detail in order.details ?? []) {
+              aggregatedDetails
+                  .add(detail.copyWith(orderProductStatus: order.orderStatus));
             }
           }
 

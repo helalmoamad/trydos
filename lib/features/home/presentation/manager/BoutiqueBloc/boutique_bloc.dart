@@ -692,6 +692,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       offsetFilter: "1",
       limit: 10,
       scroll_id: null,
+      // tagsNames: event.tagsNames?.map((e) => '"${e}"').toList(),
       searchText: null,
       brandSlugs: event.filtersChoosedByUser?.filters?.brands
           ?.map((e) => '"${e.slug.toString()}"')
@@ -740,14 +741,19 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
           i++) {
         brands.add(r.filters!.brands![i]);
       }
-
+      List<filters_model.Boutique>? boutiques = [];
+      for (var i = 0;
+          i < (event.filtersChoosedByUser?.filters?.boutiques?.length ?? 0);
+          i++) {
+        boutiques.add(r.filters!.boutiques![i]);
+      }
       final Map<String, filters_model.GetProductFiltersModel?>
           appliedFiltersByUser = state.appliedFiltersByUser;
       if (appliedFiltersByUser["link"] == null) {
         appliedFiltersByUser.addAll({
           "link": filters_model.GetProductFiltersModel(
               filters: filters_model.Filter(
-            boutiques: r.filters?.boutiques,
+            boutiques: boutiques,
             categories: categories,
             brands: brands,
             colors: event.filtersChoosedByUser?.filters?.colors,
@@ -757,7 +763,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       } else {
         appliedFiltersByUser["link"] = filters_model.GetProductFiltersModel(
             filters: filters_model.Filter(
-          boutiques: r.filters?.boutiques,
+          boutiques: boutiques,
           categories: categories,
           brands: brands,
           colors: event.filtersChoosedByUser?.filters?.colors,
@@ -1557,6 +1563,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         : await getProductsWithFiltersUseCase(
             GetProductsWithFiltersParams(
               scroll_id: null,
+              // tagsNames: event.tagsNames?.map((e) => '"${e}"').toList(),
               brandSlugs:
                   filters.brands?.map((e) => '"${e.slug.toString()}"').toList(),
               categorySlugs: (event.category != null && event.category != "")

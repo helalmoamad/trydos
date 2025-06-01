@@ -36,12 +36,14 @@ class GetProductsFiltersParams {
   final String? boutiqueSlug;
   final List<String>? boutiqueSlugs;
   final List<String>? categorySlugs;
+  final List<String>? tagsNames;
   final List<String>? brandSlugs;
   GetProductsFiltersParams(
       {this.prices,
       this.brands,
       this.boutiqueSlugs,
       this.attributes,
+      this.tagsNames,
       this.offsetFilter,
       this.colors,
       this.boutiqueSlug,
@@ -58,8 +60,10 @@ class GetProductsFiltersParams {
         "category": category,
         "price": prices.toString(),
         "brands": brands.toString(),
+        "tags_names": tagsNames.toString(),
         "filters_offset": offsetFilter,
         "attributes": attributes.toString(),
+
         "colors": colors.toString(),
         "search_text":
             searchText == "" || searchText == null ? null : '"${searchText}"',

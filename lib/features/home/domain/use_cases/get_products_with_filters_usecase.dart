@@ -37,6 +37,7 @@ class GetProductsWithFiltersParams {
   final String? scroll_id;
   final String? boutiqueSlug;
   final List<String>? boutiqueSlugs;
+  final List<String>? tagsNames;
   final List<String>? categorySlugs;
   final List<String>? brandSlugs;
   GetProductsWithFiltersParams(
@@ -45,6 +46,7 @@ class GetProductsWithFiltersParams {
       this.boutiqueSlugs,
       this.attributes,
       this.categories,
+      this.tagsNames,
       this.colors,
       this.scroll_id,
       //required this.fromMarket,
@@ -62,6 +64,7 @@ class GetProductsWithFiltersParams {
         "price": prices.toString(),
         "brands": brands.toString(),
         "attributes": "${attributes}",
+        "tags_names": tagsNames.toString(),
         "filters_offset": offsetFilter,
         "categories": categories.toString(),
         "colors": colors.toString(),

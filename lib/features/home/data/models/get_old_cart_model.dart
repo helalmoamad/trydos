@@ -412,42 +412,42 @@ class Icon {
 
 class Brand {
   final int? id;
-  final String? name;
   final String? slug;
-  final String? image;
+  final String? name;
+  final Icon? icon;
 
   Brand({
     this.id,
-    this.name,
     this.slug,
-    this.image,
+    this.name,
+    this.icon,
   });
 
   Brand copyWith({
     int? id,
-    String? name,
     String? slug,
-    String? image,
+    String? name,
+    Icon? icon,
   }) =>
       Brand(
         id: id ?? this.id,
-        name: name ?? this.name,
         slug: slug ?? this.slug,
-        image: image ?? this.image,
+        name: name ?? this.name,
+        icon: icon ?? this.icon,
       );
 
   factory Brand.fromJson(Map<String, dynamic> json) => Brand(
         id: json["id"],
-        name: json["name"],
         slug: json["slug"],
-        image: json["image"],
+        name: json["name"],
+        icon: json["icon"] == null ? null : Icon.fromJson(json["icon"]),
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
-        "name": name,
         "slug": slug,
-        "image": image,
+        "name": name,
+        "icon": icon?.toJson(),
       };
 }
 

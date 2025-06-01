@@ -212,7 +212,6 @@ class _OrdersPageState extends State<OrdersPage> {
                                     if (index < itemsCount) {
                                       return GestureDetector(
                                         onTapUp: (details) {
-                                          tapIndex = index;
                                           final double dy =
                                               details.localPosition.dy;
                                           if (dy < 80 &&
@@ -309,7 +308,7 @@ class _OrdersPageState extends State<OrdersPage> {
               index: index,
               tapIndex: tapIndex,
               isSecondInfo: false,
-              orderId: item.id.toString(),
+              orderGroupId: item.orderGroupId.toString(),
               statusIsOutForDelivary: item.statusIsOutForDelivary ??
                   false || item.orderStatus?.value == "out_for_delivery",
               orderStatus: item.orderStatus?.value ?? "",
@@ -348,7 +347,7 @@ class _OrdersPageState extends State<OrdersPage> {
                   index: index,
                   tapIndex: tapIndex,
                   isSecondInfo: true,
-                  orderId: item.id.toString(),
+                  orderGroupId: item.orderGroupId.toString(),
                   statusIsOutForDelivary: item.statusIsOutForDelivary ??
                       false || item.orderStatus?.value == "out_for_delivery",
                   context: context,
@@ -413,7 +412,7 @@ class _OrdersPageState extends State<OrdersPage> {
     required String svgIcon2,
     String? secondInfoSvgIcon,
     required String orderStatus,
-    required String orderId,
+    required String orderGroupId,
     required String text1,
     required String text2,
     required bool isTextSpan,
@@ -533,11 +532,12 @@ class _OrdersPageState extends State<OrdersPage> {
                               height: 30,
                               child: InkWell(
                                 onTap: () {
+                                  tapIndex = index;
                                   chatBloc.add(GetOrderRecipientIdEvent(
                                       originalUserId: GetIt.I<PrefsRepository>()
                                           .myChatId
                                           .toString(),
-                                      orderId: orderId));
+                                      orderId: orderGroupId));
                                 },
                                 child: SvgPicture.asset(
                                   AppAssets.chatMarkActiveSvg,

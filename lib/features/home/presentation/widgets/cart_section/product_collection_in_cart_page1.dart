@@ -287,14 +287,20 @@ class _ProductCollectionInCartPage1State
                                     ? oldCartCollection![index].brand != null
                                         ? SvgPicture.network(
                                             oldCartCollection[index]
-                                                .brand!
-                                                .image!,
+                                                    .brand!
+                                                    .icon
+                                                    ?.filePath ??
+                                                "",
                                             fit: BoxFit.contain,
                                           )
                                         : SizedBox.shrink()
                                     : cartCollection![index].brand != null
                                         ? SvgPicture.network(
-                                            cartCollection[index].brand!.image!,
+                                            cartCollection[index]
+                                                    .brand!
+                                                    .icon
+                                                    ?.filePath ??
+                                                "",
                                             fit: BoxFit.contain,
                                           )
                                         : SizedBox.shrink()),

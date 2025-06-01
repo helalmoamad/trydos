@@ -512,6 +512,12 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                             .setMyMarketName(
                                                                 "");
                                                         prefsRepository
+                                                            .setMyChatName("");
+                                                        prefsRepository
+                                                            .setMyStoriesName(
+                                                                "");
+
+                                                        prefsRepository
                                                             .setMyProfilePhoto(
                                                                 "");
                                                         Future.delayed(

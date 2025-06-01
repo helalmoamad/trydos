@@ -142,8 +142,17 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
               timeShowing: Toast.LENGTH_LONG);
         } catch (e) {}
       }
-      if ((err.requestOptions.path.toString().contains("market")) &&
-          jsonDecode(err.response.toString())["code"].toString() == "500") {}
+
+      if ((err.requestOptions.path.toString().contains("register-guest")) &&
+          jsonDecode(err.response.toString())["message"] ==
+              "The user does not exist.") {
+        String? deviceId = await HelperFunctions.getDeviceId();
+        Future.delayed(
+            Duration(seconds: 5),
+            () => GetIt.I<AuthBloc>().add(RegisterGuestEvent(
+                deviceId: deviceId ?? "", oldGuestUserId: null)));
+      }
+
       if ((jsonDecode(err.response.toString())["message"]
                   .toString()
                   .contains("Unauth") ||

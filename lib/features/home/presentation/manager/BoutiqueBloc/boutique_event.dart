@@ -192,6 +192,7 @@ class GetProductsWithFiltersEvent extends BoutiqueEvent {
   final bool? fromNotification;
   final bool? fromChoosed;
   final bool resetChoosedFilters;
+
   final bool getWithPagination;
 
   GetProductsWithFiltersEvent(

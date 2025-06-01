@@ -641,7 +641,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                                                                           : messageType == 'VideoCall'
                                                                                               ? LocaleKeys.video_call.tr()
                                                                                               : LocaleKeys.voice.tr())
-                                                                          : widget.chat.messages!.firstWhere((element) => element.authMessageStatus!.isDeleted == 0).shareProductContent!.productName ?? ""
+                                                                          : widget.chat.messages?.firstWhere((element) => element.authMessageStatus?.isDeleted == 0).shareProductContent?.productName ?? ""
                                                                       : widget.chat.messages!.firstWhere((element) => element.authMessageStatus!.isDeleted == 0).messageContent!.content.toString(),
                                                               maxLines: widget
                                                                       .thereActivity
