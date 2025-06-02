@@ -22,6 +22,7 @@ abstract class PrefsRepository {
   List<String>? get getTheChatsIdsToRemoveFromBackground;
   List<String>? get getNotificationIdsToRemoveAfterplaceOrder;
   List<String>? get getImageUrlHasPrefeched;
+  List<String>? get getTagsInUrlToFilter;
   String? get getNotificationTypeFromTerminated;
   List<Map>? get getTheRemovedMessageFromBackground;
   List<Map>? get getTheMessageWatchStatusFromBackground;
@@ -155,6 +156,7 @@ abstract class PrefsRepository {
   Future<bool> removeNotificationIdsToRemoveAfterplaceOrder();
   List<String> topicThatAlreadySubsecribed();
   Future<bool> setViewedBoutiques(String boutiqueId);
+  Future<bool> setTagsInUrlToFilter(List<String> tags);
   List<String> getviewedProductsBoutiques();
   Future<bool> removeViewedBoutiques();
 

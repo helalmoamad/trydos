@@ -724,6 +724,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
     print('تاغات: $tagsNames');
     print('الألوان: $colors');
     print('البوتيكات: $boutiques');
+    prefsRepository.setTagsInUrlToFilter(tagsNames);
     if (!(url.contains("boutique/listing")) && (url.contains("boutique"))) {
       String boutiueSlug = "";
       boutiueSlug = url.split("/").toList().last;
@@ -910,8 +911,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                 onTap: () {
                   _videoController?.pause();
                   widget.animatedController.stop();
-                  tapOnUrl(
-                      "https://trydos-front-git-alaa-dev-trydos-front-team.vercel.app/tr-en/boutique/listing?tags_names=[%22clothes%22]");
+                  tapOnUrl(url);
                 },
                 child: Center(
                   child: boutiqueState

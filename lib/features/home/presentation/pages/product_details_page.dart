@@ -1215,14 +1215,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             ProductShippingAndDelivery(
                               countryName: state
                                       .getAllowedCountriesModel?.data?.countries
-                                      ?.firstWhere(
-                                          (element) =>
-                                              '${GetIt.I<PrefsRepository>().userCountryIsAvailable == 1 ? GetIt.I<PrefsRepository>().userChoosedCountryIso : GetIt.I<PrefsRepository>().countryIso?.toLowerCase()}'
-                                                  .startsWith(element.iso!
-                                                      .toLowerCase()),
-                                          orElse: () =>
-                                              Country(id: 0, iso: "", name: ""))
-                                      .name ??
+                                      ?.firstWhere((element) {
+                                    return element.iso!.toLowerCase().contains(
+                                        '${GetIt.I<PrefsRepository>().userCountryIsAvailable == 1 ? GetIt.I<PrefsRepository>().userChoosedCountryIso?.toLowerCase() : GetIt.I<PrefsRepository>().countryIso?.toLowerCase()}');
+                                  },
+                                          orElse: () => Country(
+                                              id: 0, iso: "", name: "")).name ??
                                   "",
                               shippingCost: (state
                                               .cachedProductWithoutRelatedProductsModel[

@@ -151,7 +151,7 @@ class StartingSetting {
         androidMinVersion: json["android_min_version"],
         iosMinVersion: json["ios_min_version"],
         shippingCost: json["shipping_cost"],
-        shippingDay: json["shipping_day"],
+        shippingDay: json["shipping_duration_days"],
         orderGroupStatuses: json["order_group_statuses"] == null
             ? []
             : List<OrderStatusModel>.from(json["order_group_statuses"]!
@@ -173,7 +173,7 @@ class StartingSetting {
         "android_min_version": androidMinVersion,
         "ios_min_version": iosMinVersion,
         "shipping_cost": shippingCost,
-        "shipping_day": shippingDay,
+        "shipping_duration_days": shippingDay,
         "order_group_statuses": orderGroupStatuses == null
             ? []
             : List<dynamic>.from(orderGroupStatuses!.map((x) => x.toJson())),

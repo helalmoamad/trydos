@@ -1,5 +1,8 @@
 import 'package:dartz/dartz.dart';
+import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+import 'package:trydos/core/utils/extensions/list.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/use_case/use_case.dart';
 import '../../data/models/get_product_listing_with_filters_model.dart';
@@ -37,7 +40,7 @@ class GetProductsWithFiltersParams {
   final String? scroll_id;
   final String? boutiqueSlug;
   final List<String>? boutiqueSlugs;
-  final List<String>? tagsNames;
+
   final List<String>? categorySlugs;
   final List<String>? brandSlugs;
   GetProductsWithFiltersParams(
@@ -46,7 +49,6 @@ class GetProductsWithFiltersParams {
       this.boutiqueSlugs,
       this.attributes,
       this.categories,
-      this.tagsNames,
       this.colors,
       this.scroll_id,
       //required this.fromMarket,
@@ -64,7 +66,14 @@ class GetProductsWithFiltersParams {
         "price": prices.toString(),
         "brands": brands.toString(),
         "attributes": "${attributes}",
-        "tags_names": tagsNames.toString(),
+        "tags_names":
+            ((GetIt.I<PrefsRepository>().getTagsInUrlToFilter.isNullOrEmpty)
+                ? null
+                : (GetIt.I<PrefsRepository>()
+                        .getTagsInUrlToFilter!
+                        .map((e) => '"${e}"')
+                        .toList())
+                    .toString()),
         "filters_offset": offsetFilter,
         "categories": categories.toString(),
         "colors": colors.toString(),

@@ -74,4 +74,5 @@ abstract class PrefsKey {
   static const idToken = r'__$__IdToken__$__';
   static const imagesUrls = r'__$__imagesUrls_$__';
   static const coupon = r'__$__coupon__$__';
+  static const tagsFilters = r'__$tagsFilters$__';
 }

@@ -998,6 +998,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                   },
                   child: addressInfoWithContactInfoCart(
                     cartChoosed: false,
+                    shippingDays: widget.maxShippingDay,
                     isDelete: false,
                     customerAddressesInfo:
                         state.listOfAddressInfoClassToSave![index],
@@ -1157,6 +1158,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           child: addressInfoWithContactInfoCart(
                             cartChoosed: true,
+                            shippingDays: widget.maxShippingDay,
                             isDelete: false,
                             customerAddressesInfo: (state
                                             .listOfAddressInfoClassToSave
@@ -1531,6 +1533,7 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
               cartChoosed: false,
               context: context,
               isDelete: true,
+              shippingDays: widget.maxShippingDay,
               indexTap: 0,
               index: 1,
               customerAddressesInfo:
@@ -1680,6 +1683,7 @@ Widget addressInfoWithContactInfoCart({
   bool? placeOrder,
   bool? successfulOrder,
   required bool cartChoosed,
+  String? shippingDays,
   required BuildContext context,
   required void Function()? onTapEdit,
   required void Function()? onTapDelete,
@@ -1945,7 +1949,7 @@ Widget addressInfoWithContactInfoCart({
                             height: 1.3),
                       ),
                       Text(
-                        ' Sunday, 03.Jun.21. ',
+                        ' ${HelperFunctions.getDateInFormatForShippingDays(int.tryParse(shippingDays ?? "0") ?? 0)}. ',
                         style: context.textTheme.bodyMedium?.rr.copyWith(
                             color: const Color(0xff1D1D1D),
                             letterSpacing: 0.18,

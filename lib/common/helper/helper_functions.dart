@@ -245,6 +245,13 @@ class HelperFunctions {
     return formattedDate;
   }
 
+  static String getDateInFormatForShippingDays(int shippingDays) {
+    DateTime date = DateTime.now().add(Duration(days: shippingDays));
+    String formattedDate = DateFormat('EEEE, d MMM yy', 'ar').format(date);
+
+    return formattedDate;
+  }
+
   static String gettimesInFormat(DateTime time) {
     String formattedDate = DateFormat("jm").format(time.toLocal());
     return formattedDate;

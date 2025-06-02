@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 
 import 'package:trydos/core/data/model/pagination_model.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
+import 'package:trydos/core/utils/extensions/string.dart';
 import 'package:trydos/features/app/blocs/pre_caching_image_bloc/pre_caching_image_bloc.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart'
@@ -692,7 +693,6 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       offsetFilter: "1",
       limit: 10,
       scroll_id: null,
-      // tagsNames: event.tagsNames?.map((e) => '"${e}"').toList(),
       searchText: null,
       brandSlugs: event.filtersChoosedByUser?.filters?.brands
           ?.map((e) => '"${e.slug.toString()}"')
@@ -1254,17 +1254,35 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         '${(event.category ?? '')}';
 
     String key = '${event.boutiqueSlug}' + '${(event.category ?? '')}';
-    print(
-        "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF66666666666666666666666666666666666666666FFFFFFF${event.boutiqueSlug}");
-
+    filters_model.Prices? prePrice =
+        state.appliedFiltersByUser[key]?.filters?.prices;
+    filters_model.Filter filters = event.fromChoosed ?? false
+        ? state.choosedFiltersByUser[key]?.filters
+                ?.copyWithSaveOtherField(searchText: event.searchText) ??
+            filters_model.Filter()
+        : state.appliedFiltersByUser[key]?.filters?.copyWithSaveOtherField(
+                searchText: event.searchText, prices: prePrice) ??
+            filters_model.Filter();
+    if ((filters.brands.isNullOrEmpty) &&
+        (filters.categories.isNullOrEmpty) &&
+        ((event.searchText?.length ?? 0) < 3) &&
+        ((filters.searchText?.length ?? 0) < 3) &&
+        (filters.prices?.minPrice == null ||
+            filters.prices?.maxPrice == null) &&
+        (filters.colors.isNullOrEmpty) &&
+        (filters.boutiques.isNullOrEmpty) &&
+        (filters.attributes.isNullOrEmpty) &&
+        GetIt.I<PrefsRepository>().getTagsInUrlToFilter.isNullOrEmpty) {
+      keyWithoutFilter = '${event.boutiqueSlug}' +
+          'withoutFilter' +
+          '${(event.category ?? '')}';
+    }
     if (event.cashedOrginalBoutique &&
         !(event.fromSearch ?? false) &&
         !(event.getWithPagination)) {
       List<String> keyForFirstFiveFilterList =
           prefsRepository.getFiveFilterForEachBoutiqueHasPrefechInHomePage() ??
               [];
-      print(
-          "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF66666666666666666666666666666666666666666FFFFFFF444444444444444444444${event.boutiqueSlug}");
 
       keyForFirstFiveFilterList
           .removeWhere((element) => !element.contains(event.boutiqueSlug));
@@ -1406,15 +1424,7 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         prevChoosedFiltersByUser;
     prevChoosedFiltersByUser = Map.of(state.choosedFiltersByUser);
     prevAppliedFiltersByUser = Map.of(state.appliedFiltersByUser);
-    filters_model.Prices? prePrice =
-        state.appliedFiltersByUser[key]?.filters?.prices;
-    filters_model.Filter filters = event.fromChoosed ?? false
-        ? state.choosedFiltersByUser[key]?.filters
-                ?.copyWithSaveOtherField(searchText: event.searchText) ??
-            filters_model.Filter()
-        : state.appliedFiltersByUser[key]?.filters?.copyWithSaveOtherField(
-                searchText: event.searchText, prices: prePrice) ??
-            filters_model.Filter();
+
     if (getProductListingWithFiltersPaginationModels[keyWithoutFilter] ==
         null) {
       getProductListingWithFiltersPaginationModels
@@ -1563,7 +1573,6 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         : await getProductsWithFiltersUseCase(
             GetProductsWithFiltersParams(
               scroll_id: null,
-              // tagsNames: event.tagsNames?.map((e) => '"${e}"').toList(),
               brandSlugs:
                   filters.brands?.map((e) => '"${e.slug.toString()}"').toList(),
               categorySlugs: (event.category != null && event.category != "")
@@ -1865,6 +1874,8 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
       Map<String, GetProductFiltersStatus>? getProductFiltersStatus =
           Map.of(state.getProductFiltersStatus);
       getProductFiltersStatus[key] = GetProductFiltersStatus.success;
+      print(
+          "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF66666666666666666666666666666666666666666FF555${keyWithoutFilter}////#${event.cashedOrginalBoutique}");
       emit(state.copyWith(
         getProductFiltersStatus: getProductFiltersStatus,
         searchWithFilterOffset: searchWithFilterOffset,
