@@ -899,6 +899,16 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
     return _preferences.setStringList(PrefsKey.imagesUrls, list);
   }
+
+  @override
+  // TODO: implement getTagsInUrlToFilter
+  List<String>? get getTagsInUrlToFilter =>
+      _preferences.getStringList(PrefsKey.tagsFilters);
+
+  @override
+  Future<bool> setTagsInUrlToFilter(List<String> tags) {
+    return _preferences.setStringList(PrefsKey.tagsFilters, tags);
+  }
 // @override
 
 // List<Map<String,dynamic>> get localMessages {

@@ -7,12 +7,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:inview_notifier_list/inview_notifier_list.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/data/model/pagination_model.dart';
+import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
@@ -966,8 +968,7 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                       top: (state.appliedFiltersByUser[key]?.filters?.attributes
                                       ?.isNullOrEmpty ??
                                   true) &&
-                              (state.appliedFiltersByUser[key]?.filters?.colors
-                                      ?.isNullOrEmpty ??
+                              (state.appliedFiltersByUser[key]?.filters?.colors?.isNullOrEmpty ??
                                   true) &&
                               (state.appliedFiltersByUser[key]?.filters?.brands
                                       ?.isNullOrEmpty ??
@@ -978,8 +979,12 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                               (state.appliedFiltersByUser[key]?.filters
                                       ?.categories?.isNullOrEmpty ??
                                   true) &&
-                              ((state.appliedFiltersByUser[key]?.filters?.searchText?.isEmpty ??
+                              ((state.appliedFiltersByUser[key]?.filters
+                                          ?.searchText?.isEmpty ??
                                       true) ||
+                                  (GetIt.I<PrefsRepository>()
+                                      .getTagsInUrlToFilter
+                                      .isNullOrEmpty) ||
                                   (state.appliedFiltersByUser[key]?.filters?.searchText?.length ?? 0) < 2) &&
                               (state.appliedFiltersByUser[key]?.filters?.prices?.maxPrice == null) &&
                               (state.appliedFiltersByUser[key]?.filters?.prices?.minPrice == null)
@@ -1010,12 +1015,12 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                             ?.searchText?.length ??
                                         0) <
                                     2) &&
-                            (state.appliedFiltersByUser[key]?.filters?.prices
-                                    ?.maxPrice ==
+                            (GetIt.I<PrefsRepository>()
+                                .getTagsInUrlToFilter
+                                .isNullOrEmpty) &&
+                            (state.appliedFiltersByUser[key]?.filters?.prices?.maxPrice ==
                                 null) &&
-                            (state.appliedFiltersByUser[key]?.filters?.prices
-                                    ?.minPrice ==
-                                null)
+                            (state.appliedFiltersByUser[key]?.filters?.prices?.minPrice == null)
                         ? 0
                         : 30,
                     margin: EdgeInsets.symmetric(horizontal: 10),
@@ -1135,10 +1140,12 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                 (state.choosedFiltersByUser[key]
                                                         ?.filters?.prices?.minPrice ==
                                                     null)) ||
+                                            !(GetIt.I<PrefsRepository>()
+                                                .getTagsInUrlToFilter
+                                                .isNullOrEmpty) ||
                                             (lowerAndUpperPrices != null &&
                                                 (lowerAndUpperPrices!.value.item1 > minPrice! ||
-                                                    lowerAndUpperPrices!.value.item2 <
-                                                        maxPrice!)))
+                                                    lowerAndUpperPrices!.value.item2 < maxPrice!)))
                                         ? 30
                                         : 0,
                                     padding: EdgeInsets.only(left: 10),
@@ -1605,7 +1612,9 @@ Widget choosedOrAppliedFiltersWidget({
               ?.currency
               ?.symbol ??
           '\$';
-      if (filters == null && (!fromSearch && lowerAndUpperPrices == null)) {
+      if (filters == null &&
+          (!fromSearch && lowerAndUpperPrices == null) &&
+          GetIt.I<PrefsRepository>().getTagsInUrlToFilter.isNullOrEmpty) {
         return SizedBox.shrink();
       }
       if ((filters?.brands.isNullOrEmpty ?? true) &&
@@ -1614,7 +1623,8 @@ Widget choosedOrAppliedFiltersWidget({
           (controller?.value == null && choosedFilter && fromSearch) &&
           (filters?.colors.isNullOrEmpty ?? true) &&
           (filters?.boutiques.isNullOrEmpty ?? true) &&
-          (filters?.attributes.isNullOrEmpty ?? true)) {
+          (filters?.attributes.isNullOrEmpty ?? true) &&
+          GetIt.I<PrefsRepository>().getTagsInUrlToFilter.isNullOrEmpty) {
         if ((!fromSearch && lowerAndUpperPrices == null && choosedFilter))
           return SizedBox.shrink();
       }
@@ -1625,7 +1635,8 @@ Widget choosedOrAppliedFiltersWidget({
           (controller!.text.length < 3) &&
           (filters?.colors.isNullOrEmpty ?? true) &&
           (filters?.boutiques.isNullOrEmpty ?? true) &&
-          (filters?.attributes.isNullOrEmpty ?? true)) {
+          (filters?.attributes.isNullOrEmpty ?? true) &&
+          GetIt.I<PrefsRepository>().getTagsInUrlToFilter.isNullOrEmpty) {
         return SizedBox.shrink();
       }
       double exchangeRate = BlocProvider.of<HomeBloc>(context)
@@ -1652,6 +1663,8 @@ Widget choosedOrAppliedFiltersWidget({
                       ? null
                       : Key(WidgetsKeys.appliedFiltersProductListingCloseKey),
                   onTap: () {
+                    GetIt.I<PrefsRepository>().setTagsInUrlToFilter([]);
+
                     controller?.clear();
                     boutiqueBloc.add(AddPrefAppliedFilterForExtendFilterEvent(
                         prefAppliedFilter: Filter()));
@@ -1716,6 +1729,7 @@ Widget choosedOrAppliedFiltersWidget({
                       ? null
                       : Key(WidgetsKeys.appliedFiltersProductListingCloseKey),
                   onTap: () {
+                    GetIt.I<PrefsRepository>().setTagsInUrlToFilter([]);
                     controller?.clear();
                     boutiqueBloc.add(ChangeAppliedFiltersEvent(
                       category: category,
@@ -1875,6 +1889,73 @@ Widget choosedOrAppliedFiltersWidget({
                   width: 15,
                 ),
               },
+              if (!(GetIt.I<PrefsRepository>()
+                  .getTagsInUrlToFilter
+                  .isNullOrEmpty)) ...{
+                SizedBox(
+                    height: 28,
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: GetIt.I<PrefsRepository>()
+                          .getTagsInUrlToFilter
+                          ?.length,
+                      itemBuilder: (ctx, index) {
+                        return Center(
+                          child: InkWell(
+                            onTap: () {
+                              GetIt.I<PrefsRepository>()
+                                  .setTagsInUrlToFilter([]);
+                              filter_model.GetProductFiltersModel
+                                  newGetProductFiltersModel =
+                                  filter_model.GetProductFiltersModel(
+                                      filters: filters);
+                              if (choosedFilter) {
+                                BlocProvider.of<BoutiqueBloc>(context)
+                                    .add(ChangeSelectedFiltersEvent(
+                                  fromHomePageSearch: fromSearch,
+                                  category: category,
+                                  requestToUpdateFilters: true,
+                                  boutiqueSlug: boutiqueSlug,
+                                  filtersChoosedByUser:
+                                      newGetProductFiltersModel,
+                                ));
+
+                                return;
+                              }
+
+                              boutiqueBloc.add(ChangeAppliedFiltersEvent(
+                                  category: category,
+                                  boutiqueSlug: boutiqueSlug,
+                                  filtersAppliedByUser:
+                                      newGetProductFiltersModel));
+                              BlocProvider.of<BoutiqueBloc>(context)
+                                  .add(GetProductsWithFiltersEvent(
+                                searchText: controller?.text,
+                                fromSearch: fromSearch,
+                                boutiqueSlug: boutiqueSlug,
+                                category: category,
+                                offset: 1,
+                              ));
+                            },
+                            child: MyTextWidget(
+                              " # ${GetIt.I<PrefsRepository>().getTagsInUrlToFilter?[index]}",
+                              maxLines: 1,
+                              textAlign: TextAlign.center,
+                              style: context.textTheme.titleMedium?.rq.copyWith(
+                                  color: Color.fromARGB(255, 86, 60, 201),
+                                  letterSpacing: 0,
+                                  height: 1.25),
+                            ),
+                          ),
+                        );
+                      },
+                    )),
+              },
+              SizedBox(
+                width: 15,
+              ),
               if (!(filters?.boutiques.isNullOrEmpty ?? true)) ...{
                 Center(child: FilterSelectedMark(width: 15, height: 15)),
                 SizedBox(
@@ -2390,10 +2471,10 @@ Widget choosedOrAppliedFiltersWidget({
                   : SizedBox.shrink()*/
             ]),
       );
-      if (fromSearch || !fromSearch) {
-        return widget;
-      }
-      return Container(
+
+      return widget;
+
+      /* return Container(
           padding: EdgeInsets.all(8),
           margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           decoration: BoxDecoration(
@@ -2401,7 +2482,7 @@ Widget choosedOrAppliedFiltersWidget({
               color: Colors.grey.shade300),
           height: 30,
           width: 1.sw,
-          child: widget);
+          child: widget);*/
     },
   );
 }

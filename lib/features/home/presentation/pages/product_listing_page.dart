@@ -473,6 +473,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
     };*/
     return WillPopScope(
       onWillPop: () async {
+        prefsRepository.setTagsInUrlToFilter([]);
         try {
           if (panelControllerForCart.isPanelOpen) {
             panelControllerForCart.close();
@@ -872,6 +873,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                   : TrydosAppBar(
                                                                       appBarParams: AppBarParams(
                                                                           onBack: () {
+                                                                            prefsRepository.setTagsInUrlToFilter([]);
                                                                             FocusScope.of(context).unfocus();
                                                                             try {
                                                                               if (panelControllerForCart.isPanelOpen) {
@@ -1894,20 +1896,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                       ?.prices
                                                                       ?.minPrice ==
                                                                   null)) ||
-                                                      ((appliedFiltersByUser?.filters?.categories?.length ?? 0) +
-                                                                  (appliedFiltersByUser
-                                                                          ?.filters
-                                                                          ?.brands
-                                                                          ?.length ??
-                                                                      0) +
-                                                                  (appliedFiltersByUser
-                                                                          ?.filters
-                                                                          ?.colors
-                                                                          ?.length ??
-                                                                      0) +
-                                                                  (((appliedFiltersByUser?.filters?.attributes?.isNullOrEmpty ?? false) ? 0 : appliedFiltersByUser?.filters?.attributes?[0].options?.length) ??
-                                                                      0) ==
-                                                              0 &&
+                                                      ((appliedFiltersByUser?.filters?.categories?.length ?? 0) + (appliedFiltersByUser?.filters?.brands?.length ?? 0) + (appliedFiltersByUser?.filters?.colors?.length ?? 0) + (((appliedFiltersByUser?.filters?.attributes?.isNullOrEmpty ?? false) ? 0 : appliedFiltersByUser?.filters?.attributes?[0].options?.length) ?? 0) == 0 &&
                                                           !widget.fromSearch &&
                                                           !isExpanded &&
                                                           (appliedFiltersByUser
@@ -1983,9 +1972,20 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                           "null";
                                                     }
                                                   } else if ((!isExpanded &&
-                                                      !state.isGettingProductListingWithPaginationForAppearProduct &&
-                                                      (widget.fromSearch && ((appliedFiltersByUser?.filters?.boutiques?.length ?? 0) == 0)) &&
-                                                      (appliedFiltersByUser?.filters?.searchText?.length ?? 0) < 3 &&
+                                                      !state
+                                                          .isGettingProductListingWithPaginationForAppearProduct &&
+                                                      (widget.fromSearch &&
+                                                          ((appliedFiltersByUser
+                                                                      ?.filters
+                                                                      ?.boutiques
+                                                                      ?.length ??
+                                                                  0) ==
+                                                              0) &&
+                                                          prefsRepository
+                                                              .getTagsInUrlToFilter
+                                                              .isNullOrEmpty) &&
+                                                      (appliedFiltersByUser?.filters?.searchText?.length ?? 0) <
+                                                          3 &&
                                                       controller.text.length < 3 &&
                                                       ((appliedFiltersByUser?.filters?.categories?.length ?? 0) + (appliedFiltersByUser?.filters?.brands?.length ?? 0) + (appliedFiltersByUser?.filters?.colors?.length ?? 0) + (((appliedFiltersByUser?.filters?.attributes?.isNullOrEmpty ?? false) ? 0 : appliedFiltersByUser?.filters?.attributes?[0].options?.length) ?? 0) == 0 && (appliedFiltersByUser?.filters?.prices?.minPrice == null)))) {
                                                     currentAppliedFilterSllug =
@@ -2290,7 +2290,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                       .loading) &&
                                                           !state
                                                               .isGettingProductListingWithPagination) {
-                                                    print("DDDDDDDDDDDDDDDDDDDDDDDDDDDD${'${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
+                                                    print("DDDDDDDDDDDDDDDDDDDDDDDDD${(((state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}'] == null || state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}' + '${(widget.category ?? '')}']!.items.isNullOrEmpty) && state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
+                                                        '${(widget.category ?? '')}']?.paginationStatus != PaginationStatus.success)) || (state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${(widget.category ?? '')}']?.paginationStatus == PaginationStatus.loading && currentAppliedFilterSllug == "null" && !state.cashedOrginalBoutique)}DDD${'${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
                                                         '${(widget.category ?? '')}'}DDDDDDDDDDDDDDDDDDDDD${state.getProductListingWithFiltersPaginationModels['${widget.boutiqueSlug}' + '${state.cashedOrginalBoutique ? 'withoutFilter' : ""}'
                                                         '${(widget.category ?? '')}']?.paginationStatus}");
                                                     return ProductListingLoading(

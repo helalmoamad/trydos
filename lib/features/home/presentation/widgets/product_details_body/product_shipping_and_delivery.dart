@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/common/constant/constant.dart';
 import 'package:trydos/common/constant/countries.dart';
+import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
@@ -364,7 +365,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                       }
                                       return */
                                   MyTextWidget(
-                                    '12. Jun. In ${countryName}',
+                                    '${HelperFunctions.getDateInFormatForShippingDays(int.tryParse(shippingDay) ?? 0)} ${countryName}',
                                     style: context.textTheme.titleMedium?.rq
                                         .copyWith(
                                             height: 14 / 11,
@@ -376,7 +377,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                         children: [
                                           TextSpan(
                                             text:
-                                                '${LocaleKeys.time_is_expected_it_may_tak_more_or_less_than.tr()} 2 ${LocaleKeys.day.tr()}',
+                                                '${LocaleKeys.time_is_expected_it_may_tak_more_or_less_than.tr()} ${shippingDay} ${LocaleKeys.day.tr()}',
                                             style: context
                                                 .textTheme.titleMedium?.lq
                                                 .copyWith(
@@ -417,7 +418,8 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                       text: TextSpan(
                                         children: [
                                           TextSpan(
-                                            text: '14. Jun. ',
+                                            text:
+                                                '${HelperFunctions.getDateInFormatForShippingDays(int.tryParse(shippingDay) ?? 0)} ',
                                             style: context
                                                 .textTheme.titleMedium?.mq
                                                 .copyWith(
@@ -561,7 +563,7 @@ class ProductShippingAndDelivery extends StatelessWidget {
                                 ),
                               ),
                               TextSpan(
-                                text: '3 ${LocaleKeys.day.tr()}',
+                                text: '${shippingDay} ${LocaleKeys.day.tr()}',
                                 style:
                                     context.textTheme.titleMedium?.mq.copyWith(
                                   color: const Color(0xff8d8d8d),

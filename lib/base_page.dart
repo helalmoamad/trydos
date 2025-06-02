@@ -368,6 +368,7 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
 
   @override
   void initState() {
+    GetIt.I<PrefsRepository>()..setTagsInUrlToFilter([]);
     // GetIt.I<PrefsRepository>().remove()
     pages = [
       HomePage(isShowPanelForVerified: isShowPanelForVerified),
