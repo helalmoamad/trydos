@@ -315,8 +315,8 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                                                                   '',
                                                           paymentMethods:
                                                               paymentMethods,
-                                                          totalPrice: 99999999,
-                                                          // totalPrice,
+                                                          totalPrice:
+                                                              totalPrice,
                                                           decimalPointSetting: homeState
                                                                   .startingSetting
                                                                   ?.decimalPointSettings ??

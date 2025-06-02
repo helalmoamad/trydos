@@ -47,6 +47,14 @@ PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
 class _PaymentMethodState extends State<PaymentMethod> {
   @override
   void initState() {
+    if (widget.amount > 0 &&
+        !widget.paymentMethods.value.contains(PaymentMethods.trydosWallet)) {
+      _addItemToPaymentMethods(
+        widget.paymentMethods,
+        PaymentMethods.trydosWallet,
+      );
+    }
+
     super.initState();
   }
 
@@ -144,51 +152,66 @@ class _PaymentMethodState extends State<PaymentMethod> {
                       : InkWell(
                           onTap: () {
                             if (widget.fromPalceOrder ||
-                                widget.fromSuccessOrder ||
-                                (widget.amount < widget.totalPrice &&
-                                    widget.amount == 0)) {
-                              if (widget.amount < widget.totalPrice &&
-                                  !(widget.fromPalceOrder ||
-                                      widget.fromSuccessOrder)) {
-                                showMessage(
-                                  " ${LocaleKeys.you_dont_have_enough_credit_in_the_wallet.tr()}",
-                                  foreGroundColor: Colors.white,
-                                  backGroundColor: Colors.black,
-                                  showInRelease: true,
-                                  timeShowing: Toast.LENGTH_LONG,
-                                );
-                              }
+                                widget.fromSuccessOrder) {
                               return;
                             }
-                            ///////////////////////////
-                            if (_paymentMethods
-                                .contains(PaymentMethods.trydosWallet)) {
-                              if (_paymentMethods.length > 1) {
-                                return;
-                              }
-                              _removeItemFromPaymentMethods(
-                                widget.paymentMethods,
-                                PaymentMethods.trydosWallet,
+                            if (widget.amount == 0) {
+                              showMessage(
+                                " ${LocaleKeys.you_dont_have_enough_credit_in_the_wallet.tr()}",
+                                foreGroundColor: Colors.white,
+                                backGroundColor: Colors.black,
+                                showInRelease: true,
+                                timeShowing: Toast.LENGTH_LONG,
                               );
-                            } else {
-                              if (widget.amount > 0) {
-                                if (widget.paymentMethods.value.isNotEmpty) {
-                                  widget.paymentMethods.value =
-                                      List.from(widget.paymentMethods.value)
-                                        ..clear();
-                                  //////////////////////
-                                  _addItemToPaymentMethods(
-                                    widget.paymentMethods,
-                                    PaymentMethods.trydosWallet,
-                                  );
-                                } else {
-                                  _addItemToPaymentMethods(
-                                    widget.paymentMethods,
-                                    PaymentMethods.trydosWallet,
-                                  );
-                                }
-                              }
+                              return;
                             }
+
+                            // if (widget.fromPalceOrder ||
+                            //     widget.fromSuccessOrder ||
+                            //     (widget.amount < widget.totalPrice &&
+                            //         widget.amount == 0)) {
+                            //   if (widget.amount < widget.totalPrice &&
+                            //       !(widget.fromPalceOrder ||
+                            //           widget.fromSuccessOrder)) {
+                            //     showMessage(
+                            //       " ${LocaleKeys.you_dont_have_enough_credit_in_the_wallet.tr()}",
+                            //       foreGroundColor: Colors.white,
+                            //       backGroundColor: Colors.black,
+                            //       showInRelease: true,
+                            //       timeShowing: Toast.LENGTH_LONG,
+                            //     );
+                            //   }
+                            //   return;
+                            // }
+                            // ///////////////////////////
+                            // if (_paymentMethods
+                            //     .contains(PaymentMethods.trydosWallet)) {
+                            //   if (_paymentMethods.length > 1) {
+                            //     return;
+                            //   }
+                            //   _removeItemFromPaymentMethods(
+                            //     widget.paymentMethods,
+                            //     PaymentMethods.trydosWallet,
+                            //   );
+                            // } else {
+                            //   if (widget.amount > 0) {
+                            //     if (widget.paymentMethods.value.isNotEmpty) {
+                            //       widget.paymentMethods.value =
+                            //           List.from(widget.paymentMethods.value)
+                            //             ..clear();
+                            //       //////////////////////
+                            //       _addItemToPaymentMethods(
+                            //         widget.paymentMethods,
+                            //         PaymentMethods.trydosWallet,
+                            //       );
+                            //     } else {
+                            //       _addItemToPaymentMethods(
+                            //         widget.paymentMethods,
+                            //         PaymentMethods.trydosWallet,
+                            //       );
+                            //     }
+                            //   }
+                            // }
                           },
                           child: PaymentMethodCard(
                             paymentMethod: _paymentMethods,
@@ -223,68 +246,103 @@ class _PaymentMethodState extends State<PaymentMethod> {
                       : InkWell(
                           onTap: () {
                             if (widget.fromPalceOrder ||
-                                widget.fromSuccessOrder ||
-                                widget.amount >= widget.totalPrice) {
-                              if (widget.amount >= widget.totalPrice &&
-                                  !(widget.fromPalceOrder ||
-                                      widget.fromSuccessOrder)) {
-                                showMessage(
-                                  " ${LocaleKeys.the_payment_is_allowed_throw_trydos_wallet_only.tr()}",
-                                  foreGroundColor: Colors.white,
-                                  backGroundColor: Colors.black,
-                                  showInRelease: true,
-                                  timeShowing: Toast.LENGTH_LONG,
-                                );
-                              }
+                                widget.fromSuccessOrder) {
                               return;
                             }
-                            /////////////////////
-                            if (_paymentMethods.contains(PaymentMethods.card)) {
-                              _removeItemFromPaymentMethods(
-                                widget.paymentMethods,
-                                PaymentMethods.card,
+                            if (widget.amount >= widget.totalPrice) {
+                              showMessage(
+                                " ${LocaleKeys.the_payment_is_allowed_throw_trydos_wallet_only.tr()}",
+                                foreGroundColor: Colors.white,
+                                backGroundColor: Colors.black,
+                                showInRelease: true,
+                                timeShowing: Toast.LENGTH_LONG,
                               );
-                            } else {
-                              if (widget.paymentMethods.value
-                                  .contains(PaymentMethods.trydosWallet)) {
-                                if (widget.amount < widget.totalPrice) {
-                                  widget.paymentMethods.value =
-                                      List.from(widget.paymentMethods.value)
-                                        ..removeWhere(
-                                          (element) =>
-                                              element !=
-                                              PaymentMethods.trydosWallet,
-                                        );
-                                  ///////////////
-                                  _addItemToPaymentMethods(
-                                    widget.paymentMethods,
-                                    PaymentMethods.card,
-                                  );
-                                } else {
-                                  if (widget.amount == 0) {
-                                    widget.paymentMethods.value =
-                                        List.from(widget.paymentMethods.value)
-                                          ..clear();
-                                    ////////////////
-                                    _addItemToPaymentMethods(
-                                      widget.paymentMethods,
-                                      PaymentMethods.card,
-                                    );
-                                  }
-                                }
+                              return;
+                            }
+                            if (widget.amount < widget.totalPrice) {
+                              if (_paymentMethods
+                                  .contains(PaymentMethods.card)) {
+                                _removeItemFromPaymentMethods(
+                                  widget.paymentMethods,
+                                  PaymentMethods.card,
+                                );
                               } else {
-                                if (widget.amount == 0) {
-                                  widget.paymentMethods.value =
-                                      List.from(widget.paymentMethods.value)
-                                        ..clear();
-                                  ////////////////
-                                  _addItemToPaymentMethods(
-                                    widget.paymentMethods,
-                                    PaymentMethods.card,
+                                widget.paymentMethods.value = List.from(
+                                    widget.paymentMethods.value)
+                                  ..removeWhere(
+                                    (element) =>
+                                        element != PaymentMethods.trydosWallet,
                                   );
-                                }
+                                ///////////////
+                                _addItemToPaymentMethods(
+                                  widget.paymentMethods,
+                                  PaymentMethods.card,
+                                );
                               }
                             }
+                            // if (widget.fromPalceOrder ||
+                            //     widget.fromSuccessOrder ||
+                            //     widget.amount >= widget.totalPrice) {
+                            //   if (widget.amount >= widget.totalPrice &&
+                            //       !(widget.fromPalceOrder ||
+                            //           widget.fromSuccessOrder)) {
+                            //     showMessage(
+                            //       " ${LocaleKeys.the_payment_is_allowed_throw_trydos_wallet_only.tr()}",
+                            //       foreGroundColor: Colors.white,
+                            //       backGroundColor: Colors.black,
+                            //       showInRelease: true,
+                            //       timeShowing: Toast.LENGTH_LONG,
+                            //     );
+                            //   }
+                            //   return;
+                            // }
+                            // /////////////////////
+                            // if (_paymentMethods.contains(PaymentMethods.card)) {
+                            //   _removeItemFromPaymentMethods(
+                            //     widget.paymentMethods,
+                            //     PaymentMethods.card,
+                            //   );
+                            // } else {
+                            //   if (widget.paymentMethods.value
+                            //       .contains(PaymentMethods.trydosWallet)) {
+                            //     if (widget.amount < widget.totalPrice) {
+                            //       widget.paymentMethods.value =
+                            //           List.from(widget.paymentMethods.value)
+                            //             ..removeWhere(
+                            //               (element) =>
+                            //                   element !=
+                            //                   PaymentMethods.trydosWallet,
+                            //             );
+                            //       ///////////////
+                            //       _addItemToPaymentMethods(
+                            //         widget.paymentMethods,
+                            //         PaymentMethods.card,
+                            //       );
+                            //     } else {
+                            //       if (widget.amount == 0) {
+                            //         widget.paymentMethods.value =
+                            //             List.from(widget.paymentMethods.value)
+                            //               ..clear();
+                            //         ////////////////
+                            //         _addItemToPaymentMethods(
+                            //           widget.paymentMethods,
+                            //           PaymentMethods.card,
+                            //         );
+                            //       }
+                            //     }
+                            //   } else {
+                            //     if (widget.amount == 0) {
+                            //       widget.paymentMethods.value =
+                            //           List.from(widget.paymentMethods.value)
+                            //             ..clear();
+                            //       ////////////////
+                            //       _addItemToPaymentMethods(
+                            //         widget.paymentMethods,
+                            //         PaymentMethods.card,
+                            //       );
+                            //     }
+                            //   }
+                            // }
                           },
                           child: PaymentMethodCard(
                             fromPalceOrder: widget.fromPalceOrder,
@@ -315,70 +373,105 @@ class _PaymentMethodState extends State<PaymentMethod> {
                       : InkWell(
                           onTap: () {
                             if (widget.fromPalceOrder ||
-                                widget.fromSuccessOrder ||
-                                widget.amount >= widget.totalPrice) {
-                              if (widget.amount >= widget.totalPrice &&
-                                  !(widget.fromPalceOrder ||
-                                      widget.fromSuccessOrder)) {
-                                showMessage(
-                                  " ${LocaleKeys.the_payment_is_allowed_throw_trydos_wallet_only.tr()}",
-                                  foreGroundColor: Colors.white,
-                                  backGroundColor: Colors.black,
-                                  showInRelease: true,
-                                  timeShowing: Toast.LENGTH_LONG,
-                                );
-                              }
+                                widget.fromSuccessOrder) {
                               return;
                             }
-                            //////////////////////////
-                            if (_paymentMethods
-                                .contains(PaymentMethods.crypto)) {
-                              _removeItemFromPaymentMethods(
-                                widget.paymentMethods,
-                                PaymentMethods.crypto,
+                            if (widget.amount >= widget.totalPrice) {
+                              showMessage(
+                                " ${LocaleKeys.the_payment_is_allowed_throw_trydos_wallet_only.tr()}",
+                                foreGroundColor: Colors.white,
+                                backGroundColor: Colors.black,
+                                showInRelease: true,
+                                timeShowing: Toast.LENGTH_LONG,
                               );
-                              ///////////////////
-                            } else {
-                              if (widget.paymentMethods.value
-                                  .contains(PaymentMethods.trydosWallet)) {
-                                if (widget.amount < widget.totalPrice) {
-                                  widget.paymentMethods.value =
-                                      List.from(widget.paymentMethods.value)
-                                        ..removeWhere(
-                                          (element) =>
-                                              element !=
-                                              PaymentMethods.trydosWallet,
-                                        );
-                                  ///////////////
-                                  _addItemToPaymentMethods(
-                                    widget.paymentMethods,
-                                    PaymentMethods.crypto,
-                                  );
-                                } else {
-                                  if (widget.amount == 0) {
-                                    widget.paymentMethods.value =
-                                        List.from(widget.paymentMethods.value)
-                                          ..clear();
-                                    ////////////////
-                                    _addItemToPaymentMethods(
-                                      widget.paymentMethods,
-                                      PaymentMethods.crypto,
-                                    );
-                                  }
-                                }
+                              return;
+                            }
+                            if (widget.amount < widget.totalPrice) {
+                              if (_paymentMethods
+                                  .contains(PaymentMethods.crypto)) {
+                                _removeItemFromPaymentMethods(
+                                  widget.paymentMethods,
+                                  PaymentMethods.crypto,
+                                );
                               } else {
-                                if (widget.amount == 0) {
-                                  widget.paymentMethods.value =
-                                      List.from(widget.paymentMethods.value)
-                                        ..clear();
-                                  ////////////////
-                                  _addItemToPaymentMethods(
-                                    widget.paymentMethods,
-                                    PaymentMethods.crypto,
+                                widget.paymentMethods.value = List.from(
+                                    widget.paymentMethods.value)
+                                  ..removeWhere(
+                                    (element) =>
+                                        element != PaymentMethods.trydosWallet,
                                   );
-                                }
+                                ///////////////
+                                _addItemToPaymentMethods(
+                                  widget.paymentMethods,
+                                  PaymentMethods.crypto,
+                                );
                               }
                             }
+                            // if (widget.fromPalceOrder ||
+                            //     widget.fromSuccessOrder ||
+                            //     widget.amount >= widget.totalPrice) {
+                            //   if (widget.amount >= widget.totalPrice &&
+                            //       !(widget.fromPalceOrder ||
+                            //           widget.fromSuccessOrder)) {
+                            //     showMessage(
+                            //       " ${LocaleKeys.the_payment_is_allowed_throw_trydos_wallet_only.tr()}",
+                            //       foreGroundColor: Colors.white,
+                            //       backGroundColor: Colors.black,
+                            //       showInRelease: true,
+                            //       timeShowing: Toast.LENGTH_LONG,
+                            //     );
+                            //   }
+                            //   return;
+                            // }
+                            // //////////////////////////
+                            // if (_paymentMethods
+                            //     .contains(PaymentMethods.crypto)) {
+                            //   _removeItemFromPaymentMethods(
+                            //     widget.paymentMethods,
+                            //     PaymentMethods.crypto,
+                            //   );
+                            //   ///////////////////
+                            // } else {
+                            //   if (widget.paymentMethods.value
+                            //       .contains(PaymentMethods.trydosWallet)) {
+                            //     if (widget.amount < widget.totalPrice) {
+                            //       widget.paymentMethods.value =
+                            //           List.from(widget.paymentMethods.value)
+                            //             ..removeWhere(
+                            //               (element) =>
+                            //                   element !=
+                            //                   PaymentMethods.trydosWallet,
+                            //             );
+                            //       ///////////////
+                            //       _addItemToPaymentMethods(
+                            //         widget.paymentMethods,
+                            //         PaymentMethods.crypto,
+                            //       );
+                            //     } else {
+                            //       if (widget.amount == 0) {
+                            //         widget.paymentMethods.value =
+                            //             List.from(widget.paymentMethods.value)
+                            //               ..clear();
+                            //         ////////////////
+                            //         _addItemToPaymentMethods(
+                            //           widget.paymentMethods,
+                            //           PaymentMethods.crypto,
+                            //         );
+                            //       }
+                            //     }
+                            //   } else {
+                            //     if (widget.amount == 0) {
+                            //       widget.paymentMethods.value =
+                            //           List.from(widget.paymentMethods.value)
+                            //             ..clear();
+                            //       ////////////////
+                            //       _addItemToPaymentMethods(
+                            //         widget.paymentMethods,
+                            //         PaymentMethods.crypto,
+                            //       );
+                            //     }
+                            //   }
+                            // }
                           },
                           child: PaymentMethodCard(
                             fromPalceOrder: widget.fromPalceOrder,
@@ -409,63 +502,98 @@ class _PaymentMethodState extends State<PaymentMethod> {
                       : InkWell(
                           onTap: () {
                             if (widget.fromPalceOrder ||
-                                widget.fromSuccessOrder ||
-                                widget.amount >= widget.totalPrice) {
-                              if (widget.amount >= widget.totalPrice &&
-                                  !(widget.fromPalceOrder ||
-                                      widget.fromSuccessOrder)) {
-                                showMessage(
-                                  " ${LocaleKeys.the_payment_is_allowed_throw_trydos_wallet_only.tr()}",
-                                  foreGroundColor: Colors.white,
-                                  backGroundColor: Colors.black,
-                                  showInRelease: true,
-                                  timeShowing: Toast.LENGTH_LONG,
-                                );
-                              }
+                                widget.fromSuccessOrder) {
                               return;
                             }
-                            if (_paymentMethods.contains(PaymentMethods.cod)) {
-                              _removeItemFromPaymentMethods(
-                                widget.paymentMethods,
-                                PaymentMethods.cod,
+                            if (widget.amount >= widget.totalPrice) {
+                              showMessage(
+                                " ${LocaleKeys.the_payment_is_allowed_throw_trydos_wallet_only.tr()}",
+                                foreGroundColor: Colors.white,
+                                backGroundColor: Colors.black,
+                                showInRelease: true,
+                                timeShowing: Toast.LENGTH_LONG,
                               );
-                            } else {
-                              if (widget.paymentMethods.value
-                                  .contains(PaymentMethods.trydosWallet)) {
-                                if (widget.amount < widget.totalPrice) {
-                                  widget.paymentMethods.value =
-                                      List.from(widget.paymentMethods.value)
-                                        ..removeWhere(
-                                          (element) =>
-                                              element !=
-                                              PaymentMethods.trydosWallet,
-                                        );
-                                  ///////////////
-                                  _addItemToPaymentMethods(
-                                    widget.paymentMethods,
-                                    PaymentMethods.cod,
-                                  );
-                                } else {
-                                  widget.paymentMethods.value =
-                                      List.from(widget.paymentMethods.value)
-                                        ..clear();
-                                  ////////////////
-                                  _addItemToPaymentMethods(
-                                    widget.paymentMethods,
-                                    PaymentMethods.cod,
-                                  );
-                                }
+                              return;
+                            }
+                            if (widget.amount < widget.totalPrice) {
+                              if (_paymentMethods
+                                  .contains(PaymentMethods.cod)) {
+                                _removeItemFromPaymentMethods(
+                                  widget.paymentMethods,
+                                  PaymentMethods.cod,
+                                );
                               } else {
-                                widget.paymentMethods.value =
-                                    List.from(widget.paymentMethods.value)
-                                      ..clear();
-                                ////////////////
+                                widget.paymentMethods.value = List.from(
+                                    widget.paymentMethods.value)
+                                  ..removeWhere(
+                                    (element) =>
+                                        element != PaymentMethods.trydosWallet,
+                                  );
+                                ///////////////
                                 _addItemToPaymentMethods(
                                   widget.paymentMethods,
                                   PaymentMethods.cod,
                                 );
                               }
                             }
+                            // if (widget.fromPalceOrder ||
+                            //     widget.fromSuccessOrder ||
+                            //     widget.amount >= widget.totalPrice) {
+                            //   if (widget.amount >= widget.totalPrice &&
+                            //       !(widget.fromPalceOrder ||
+                            //           widget.fromSuccessOrder)) {
+                            //     showMessage(
+                            //       " ${LocaleKeys.the_payment_is_allowed_throw_trydos_wallet_only.tr()}",
+                            //       foreGroundColor: Colors.white,
+                            //       backGroundColor: Colors.black,
+                            //       showInRelease: true,
+                            //       timeShowing: Toast.LENGTH_LONG,
+                            //     );
+                            //   }
+                            //   return;
+                            // }
+                            // if (_paymentMethods.contains(PaymentMethods.cod)) {
+                            //   _removeItemFromPaymentMethods(
+                            //     widget.paymentMethods,
+                            //     PaymentMethods.cod,
+                            //   );
+                            // } else {
+                            //   if (widget.paymentMethods.value
+                            //       .contains(PaymentMethods.trydosWallet)) {
+                            //     if (widget.amount < widget.totalPrice) {
+                            //       widget.paymentMethods.value =
+                            //           List.from(widget.paymentMethods.value)
+                            //             ..removeWhere(
+                            //               (element) =>
+                            //                   element !=
+                            //                   PaymentMethods.trydosWallet,
+                            //             );
+                            //       ///////////////
+                            //       _addItemToPaymentMethods(
+                            //         widget.paymentMethods,
+                            //         PaymentMethods.cod,
+                            //       );
+                            //     } else {
+                            //       widget.paymentMethods.value =
+                            //           List.from(widget.paymentMethods.value)
+                            //             ..clear();
+                            //       ////////////////
+                            //       _addItemToPaymentMethods(
+                            //         widget.paymentMethods,
+                            //         PaymentMethods.cod,
+                            //       );
+                            //     }
+                            //   } else {
+                            //     widget.paymentMethods.value =
+                            //         List.from(widget.paymentMethods.value)
+                            //           ..clear();
+                            //     ////////////////
+                            //     _addItemToPaymentMethods(
+                            //       widget.paymentMethods,
+                            //       PaymentMethods.cod,
+                            //     );
+                            //   }
+                            // }
                           },
                           child: PaymentMethodCard(
                             fromPalceOrder: widget.fromPalceOrder,
@@ -539,7 +667,6 @@ class _PaymentMethodState extends State<PaymentMethod> {
               ),
             ],
           );
-    ;
   }
 
   Widget buildCryptoWidget({required bool fromSuccessOrder}) {
