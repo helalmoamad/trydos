@@ -813,17 +813,16 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                   children: [
                                     BlocBuilder<HomeBloc, HomeState>(
                                         buildWhen: (previous, current) =>
-                                            previous.getCurrencyForCountryModel != current.getCurrencyForCountryModel ||
+                                            previous.getCurrencyForCountryModel !=
+                                                current
+                                                    .getCurrencyForCountryModel ||
                                             previous.currentColorSizeForCart?[
                                                     "size"] !=
                                                 current.currentColorSizeForCart?[
                                                     "size"] ||
                                             previous.currentSelectedColorForEveryProduct !=
                                                 current
-                                                    .currentSelectedColorForEveryProduct ||
-                                            previous.getProductDetailWithoutSimilarRelatedProductsStatus !=
-                                                current
-                                                    .getProductDetailWithoutSimilarRelatedProductsStatus,
+                                                    .currentSelectedColorForEveryProduct,
                                         builder: (context, state) {
                                           return ProductDetailsSheetHeader(
                                             currentActiveTab:

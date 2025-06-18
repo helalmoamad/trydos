@@ -252,8 +252,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
     on<GetCartItemEvent>(_onGetCartItemEvent, transformer: restartable());
 
-    on<GetAllowedCountriesEvent>(_onGetAllowedCountriesEvent,
-        transformer: throttleDroppable(throttleDuration));
+    on<GetAllowedCountriesEvent>(
+      _onGetAllowedCountriesEvent,
+    );
 
     on<GetStartingSettingsEvent>(
       _onGetStartingSettingsEvent,
@@ -2977,8 +2978,12 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   FutureOr<void> _onGetAllowedCountriesEvent(
       GetAllowedCountriesEvent event, Emitter<HomeState> emit) async {
+    emit(state.copyWith(
+        getAllowedCountriesStatus: GetAllowedCountriesStatus.loading));
     final response = await getAllowedCountryUseCase(NoParams());
     response.fold((l) {
+      emit(state.copyWith(
+          getAllowedCountriesStatus: GetAllowedCountriesStatus.failure));
       if (!isFailedTheFirstTime.contains('GetAllowCountryEvent')) {
         add(GetAllowedCountriesEvent());
         isFailedTheFirstTime.add('GetAllowCountryEvent');
@@ -2987,8 +2992,8 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       isFailedTheFirstTime.remove('GetAllowCountryEvent');
 
       emit(state.copyWith(
-        getAllowedCountriesModel: r,
-      ));
+          getAllowedCountriesModel: r,
+          getAllowedCountriesStatus: GetAllowedCountriesStatus.success));
     });
   }
 

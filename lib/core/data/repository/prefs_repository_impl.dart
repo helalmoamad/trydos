@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import '../../../../common/constant/configuration/prefs_key.dart';
@@ -836,7 +837,19 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   // TODO: implement myProfilePhoto
-  String? get myProfilePhoto => _preferences.getString(PrefsKey.profilePhoto);
+  String? get myProfilePhoto {
+    if (_preferences.getString(PrefsKey.profilePhoto) == "" ||
+        _preferences.getString(PrefsKey.profilePhoto) == null) {
+      return null;
+    }
+    String photo = "";
+    photo = _preferences.getString(PrefsKey.profilePhoto) ?? "";
+    photo = (photo.contains("cloudinary")
+        ? photo
+        : ("${dotenv.env['Profile_Images_Url']}" + photo));
+    print(photo);
+    return photo;
+  }
 
   @override
   Future<bool> setMyProfilePhoto(String? photo) =>

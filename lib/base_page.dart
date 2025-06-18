@@ -19,10 +19,13 @@ import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
+import 'package:trydos/features/home/presentation/pages/Order/orders_page.dart';
 
 import 'package:trydos/features/home/presentation/pages/cart_page_new.dart';
 import 'package:trydos/features/home/presentation/pages/profile_page.dart';
 import 'package:trydos/features/search/presentation/pages/search_page.dart';
+import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
+import 'package:trydos/features/story/presentation/widget/try_again.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
 import 'package:trydos/service/language_service.dart';
@@ -172,7 +175,8 @@ class BasePage extends StatefulWidget {
   State<BasePage> createState() => _BasePageState();
 }
 
-handleOpenChatPageFromNotificationInBackground(String? prevMessageId,
+handleOpenChatPageFromNotificationInBackground(
+    String? prevMessageId, String? orderId, String? orderGroupID,
     {required Message message}) async {
   DealWithMessagesStoredFromBackground();
   DealWithChatsToDeleteFromBackground();
@@ -180,8 +184,13 @@ handleOpenChatPageFromNotificationInBackground(String? prevMessageId,
   DealWithRemovedMessageStoredFromBackground();
   DealWithMessageReceivedStatusStoredFromBackground();
   DealWithMessageWatchStatusStoredFromBackground();
-  Future.delayed(Duration(milliseconds: 600),
-      () => navigationToSinglePageChat(message.channel!));
+  if (orderId != "" && orderGroupID != "") {
+    Future.delayed(Duration(milliseconds: 600),
+        () => navigationToOrderPageForChat(orderGroupID!, orderId!));
+  } else {
+    Future.delayed(Duration(milliseconds: 600),
+        () => navigationToSinglePageChat(message.channel!));
+  }
 }
 
 navigationToProductDetailsPage(String productId) {}
@@ -210,6 +219,14 @@ navigationToSinglePageChat(Chat chat) {
           .config.applicationRoutes.kSinglePageChatPagePath +
       '?chatId=${chat.id!.toString()}&receiverName=$receiverName&fullReceiverName=${fullReceiverName}&receiverPhone=${receiver?.mobilePhone ?? 'Uo Number'}&senderName=${senderName}');
   //});
+}
+
+navigationToOrderPageForChat(String orderGroupId, String orderId) {
+  Navigator.of(navigatorKey.currentState!.context).push(PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => OrdersPage(
+          fromNotification: true,
+          groupId: orderGroupId,
+          orderIdFormNotification: orderId)));
 }
 
 void DealWithMessagesStoredFromBackground() async {
@@ -683,7 +700,9 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                 body: BlocBuilder<HomeBloc, HomeState>(
                     buildWhen: (p, c) =>
                         p.getAllowedCountriesModel !=
-                        c.getAllowedCountriesModel,
+                            c.getAllowedCountriesModel ||
+                        p.getAllowedCountriesStatus !=
+                            c.getAllowedCountriesStatus,
                     builder: (context, homestate) {
                       return BlocBuilder<AuthBloc, AuthState>(
                           buildWhen: (p, c) =>
@@ -694,6 +713,24 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                         ?.countries?.length ??
                                     0) ==
                                 0) {
+                              if (homestate.getAllowedCountriesStatus ==
+                                  GetAllowedCountriesStatus.failure) {
+                                return Center(
+                                  child: Container(
+                                    width: 200,
+                                    height: 200,
+                                    child: TryAgainWidget(tryAgain: () {
+                                      homeBloc.add(GetAllowedCountriesEvent());
+                                      GetIt.I<StoryBloc>().add(
+                                          GetStoryEvent(withPaginition: false));
+                                      GetIt.I<AuthBloc>()
+                                          .add(GetUserCountryEvent());
+                                      Future.delayed(Duration(seconds: 3),
+                                          () => context.go("/"));
+                                    }),
+                                  ),
+                                );
+                              }
                               return Center(
                                 child: TrydosLoader(),
                               );

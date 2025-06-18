@@ -105,6 +105,8 @@ class NotificationProcess {
       Map remoteMessage = convert.jsonDecode(event.data['data']);
       handleOpenChatPageFromNotificationInBackground(
           remoteMessage['prev_message_id'],
+          remoteMessage['order_id'] ?? "",
+          remoteMessage['order_group_id'] ?? "",
           message: Message.fromJson(remoteMessage['message']));
     });
   }

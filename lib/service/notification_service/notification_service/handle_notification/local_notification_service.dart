@@ -57,13 +57,17 @@ class LocalNotificationService {
         if (value?.notificationResponse?.payload?.contains("###") ?? false) {
           GetIt.I<PrefsRepository>().setNotificationTypesFromTerminated(
               value?.notificationResponse?.payload?.split('###')[0] ?? "");
-        } else if (value?.notificationResponse?.payload?.contains("##") ??
+        } else if (value?.notificationResponse?.payload
+                ?.contains("#prevMessageId#") ??
             false) {
-          GetIt.I<PrefsRepository>().setNotificationTypesFromTerminated(
-              ((value?.notificationResponse?.payload?.split('##')[0] ?? "") +
-                  ("chatNotification") +
-                  (value?.notificationResponse?.payload?.split('##')[1] ??
-                      "")));
+          GetIt.I<PrefsRepository>().setNotificationTypesFromTerminated(((value
+                      ?.notificationResponse?.payload
+                      ?.split('#prevMessageId#')[0] ??
+                  "") +
+              ("chatNotification") +
+              (value?.notificationResponse?.payload
+                      ?.split('#prevMessageId#')[1] ??
+                  "")));
         }
       });
     } catch (e) {}
@@ -172,14 +176,16 @@ class LocalNotificationService {
       String body = "${data?["description"]}";
       print("##################################${notificationId}");
       await _localNotificationPlugin.show(
-          notificationId, title, body, _notificationDetails(pngImage),
+          notificationId, title, body, _notificationDetails(pngImage, null),
           payload: '${message.data["body"] ?? ""}###${fromBackGround}');
 
       return;
     }
     Map RemoteMessage = convert.jsonDecode(message.data['data']);
     chat.Message myMessage = chat.Message.fromJson(RemoteMessage["message"]);
-    String prevMessageId = RemoteMessage['prev_message_id'].toString();
+    String prevMessageId = (RemoteMessage['prev_message_id'] ?? "").toString();
+    String orderId = (RemoteMessage['order_id'] ?? "").toString();
+    String orderGroupId = (RemoteMessage['order_group_id'] ?? "").toString();
     String type = myMessage.messageType!.name.toString();
 
     await _localNotificationPlugin.show(
@@ -194,9 +200,9 @@ class LocalNotificationService {
                     : type == 'VideoMessage'
                         ? 'Video'
                         : 'File',
-        _notificationDetails(null),
+        _notificationDetails(null, myMessage.channel?.id),
         payload:
-            '${convert.jsonEncode(RemoteMessage['message'])}##${prevMessageId}');
+            '${convert.jsonEncode(RemoteMessage['message'])}#prevMessageId#${prevMessageId}#orderId#${orderId}#groupeOrderId#${orderGroupId}');
   }
 
   static void sendIReceivedTheMessage(String channelId) async {
@@ -265,15 +271,20 @@ class LocalNotificationService {
           notificationResponse.payload!.split('###')[1] == "1");
       return;
     }
-    chat.Message myMessage = chat.Message.fromJson(
-        convert.jsonDecode(notificationResponse.payload!.split('##')[0]));
-    String prevMessageId = notificationResponse.payload!.split('##')[1];
+    chat.Message myMessage = chat.Message.fromJson(convert
+        .jsonDecode(notificationResponse.payload!.split('#prevMessageId#')[0]));
+    String info = notificationResponse.payload!.split('#prevMessageId#')[1];
+    String prevMessageId = info.split('#orderId#')[0];
+    String orderInfo = info.split('#orderId#')[1];
+    String orderId = orderInfo.split('#groupeOrderId#')[0];
+    String orderGroupId = orderInfo.split('#groupeOrderId#')[1];
 
-    handleOpenChatPageFromNotificationInBackground(prevMessageId,
+    handleOpenChatPageFromNotificationInBackground(
+        prevMessageId, orderId, orderGroupId,
         message: myMessage);
   }
 
-  _notificationDetails(Uint8List? pngImage) {
+  _notificationDetails(Uint8List? pngImage, String? tag) {
     final channel = LocalNotificationService().getAndroidChannel;
 
     AndroidNotificationDetails androidNotificationDetails =
@@ -281,6 +292,7 @@ class LocalNotificationService {
             channelDescription: channel.description,
             ticker: 'ticker',
             importance: Importance.high,
+            tag: tag,
             priority: Priority.high,
             playSound: channel.playSound,
             enableVibration: channel.enableVibration,

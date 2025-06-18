@@ -472,10 +472,65 @@ abstract class LocaleKeys {
       'you_dont_have_enough_credit_in_the_wallet';
   static const feature_product = 'feature_product';
   static const outside_available_area = 'outside_available_area';
+  static const there_are_no_orders = 'there_are_no_orders';
   static const add_link_to_story = 'add_link_to_story';
   static const you_must_zoom_on_map_dd_location =
       'you_must_zoom_on_map_dd_location';
   static const delay = 'delay';
   static const shipping_cost = 'shipping_cost';
-  static const there_are_no_orders = 'there_are_no_orders';
+  static const manage_your_order = 'manage_your_order';
+  static const change_delivery_address = 'change_delivery_address';
+  static const modify_order = 'modify_order';
+  static const information_about_order_modify_or_cancel =
+      'information_about_order_modify_or_cancel';
+  static const cancel_order = 'cancel_order';
+  static const you_can_cancel_back_money = 'you_can_cancel_back_money';
+  static const you_can_easily_change_shipping_addres_delivery_notes =
+      'you_can_easily_change_shipping_addres_delivery_notes';
+  static const change_close = 'change_close';
+  static const change_below_address = 'change_below_address';
+  static const to_new_address = 'to_new_address';
+  static const change_addres_terms = 'change_addres_terms';
+  static const we_will_ignore_first_address_send_order_new_address =
+      'we_will_ignore_first_address_send_order_new_address';
+  static const yes_agree = 'yes_agree';
+  static const you_can_modify_order_within_specific_period =
+      'you_can_modify_order_within_specific_period';
+  static const cancel_the_order_any_time_get_full_refund =
+      'cancel_the_order_any_time_get_full_refund';
+  static const cancel_this_product = 'cancel_this_product';
+  static const change = 'change';
+  static const change_below_color = 'change_below_color';
+  static const to_new_color = 'to_new_color';
+  static const change_color_terms = 'change_color_terms';
+  static const we_will_ignore_first_color = 'we_will_ignore_first_color';
+  static const and_send_you_color = 'and_send_you_color';
+  static const change_below_size = 'change_below_size';
+  static const to_new_size = 'to_new_size';
+  static const change_size_terms = 'change_size_terms';
+  static const we_will_ignore_size = 'we_will_ignore_size';
+  static const and_send_you_size = 'and_send_you_size';
+  static const why_was_order_cancelled = 'why_was_order_cancelled';
+  static const learn_more_tips = 'learn_more_tips';
+  static const i_changed_mind = 'i_changed_mind';
+  static const i_fear_quality = 'i_fear_quality';
+  static const i_fear_delivery_time = 'i_fear_delivery_time';
+  static const i_am_afraid_sizes = 'i_am_afraid_sizes';
+  static const i_saw_better_price = 'i_saw_better_price';
+  static const we_have_other_solutions_instead_cancellation =
+      'we_have_other_solutions_instead_cancellation';
+  static const cancel_my_order = 'cancel_my_order';
+  static const clarification = 'clarification';
+  static const about_cancel_order = 'about_cancel_order';
+  static const you_will_not_charged_fees = 'you_will_not_charged_fees';
+  static const you_will_receive_your_refund_within =
+      'you_will_receive_your_refund_within';
+  static const hours = 'hours';
+  static const repeated_cancellations_affect_rating =
+      'repeated_cancellations_affect_rating';
+  static const terms_of_cancellation_term = 'terms_of_cancellation_term';
+  static const cancellation_term = 'cancellation_term';
+  static const i_agree_cancel = 'i_agree_cancel';
+  static const i_disagree = 'i_disagree';
+  static const modify_close = 'modify_close';
 }

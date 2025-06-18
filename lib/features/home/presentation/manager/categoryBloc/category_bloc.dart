@@ -503,7 +503,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   void requestAPIAfterHome() {
     if (prefsRepository.marketToken != null &&
         prefsRepository.marketToken != "") {
-      Future.delayed(Duration(seconds: 15),
+      Future.delayed(Duration(seconds: 3),
           () => GetIt.I<AuthBloc>().add(GetCustomerInfoEvent()));
     }
     GetIt.I<HomeBloc>().add(GetStartingSettingsEvent());

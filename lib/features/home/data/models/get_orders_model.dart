@@ -330,7 +330,7 @@ class OrderListDetailModel {
   final OrderProductDetailsModel? productDetails;
   final double? qty;
   final double? price;
-  final OrderStatus? orderProductStatus;
+  OrderStatus? orderProductStatus;
   final double? discount;
   final double? priceAfterDiscount;
   final double? tax;
@@ -342,7 +342,7 @@ class OrderListDetailModel {
   final GetOrderVariationModel? variation;
   final String? discountType;
   final int? isStockDecreased;
-  final int? refundRequest;
+  final String? refundRequest;
   final dynamic refundRequestStatus;
   final int? isOdooProduct;
   final int? odooId;
@@ -395,7 +395,7 @@ class OrderListDetailModel {
     GetOrderVariationModel? variation,
     String? discountType,
     int? isStockDecreased,
-    int? refundRequest,
+    String? refundRequest,
     dynamic refundRequestStatus,
     int? isOdooProduct,
     int? odooId,
@@ -457,7 +457,7 @@ class OrderListDetailModel {
           : GetOrderVariationModel.fromJson(json["variation"]),
       discountType: json["discount_type"],
       isStockDecreased: json["is_stock_decreased"],
-      refundRequest: json["refund_request"],
+      refundRequest: json["refund_request"].toString(),
       refundRequestStatus: json["refund_request_status"],
       isOdooProduct: json["is_odoo_product"],
       odooId: json["odoo_id"],
@@ -484,7 +484,7 @@ class OrderListDetailModel {
         "variation": variation?.toJson(),
         "discount_type": discountType,
         "is_stock_decreased": isStockDecreased,
-        "refund_request": refundRequest,
+        "refund_request": refundRequest.toString(),
         "refund_request_status": refundRequestStatus,
         "is_odoo_product": isOdooProduct,
         "odoo_id": odooId,

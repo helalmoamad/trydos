@@ -219,6 +219,9 @@ class _ProductCollectionInCartPage1State
                                             ));
 
                               if (indexess != -1) {
+                                GetIt.I<HomeBloc>().add(
+                                    ChangeStatusOFGetProductsDetailsToSuccessEvent(
+                                        isStatusInitaial: true));
                                 BlocProvider.of<HomeBloc>(context).add(
                                     AddCurrentSelectedColorEvent(
                                         currentSelectedColor: indexess,
@@ -230,20 +233,23 @@ class _ProductCollectionInCartPage1State
                                                 .slug
                                                 .toString()));
                               }
-                              HelperFunctions.slidingNavigation(
-                                  context,
-                                  ProductDetailsPage(
-                                    fromCart: true,
-                                    productItem: isOldCart
-                                        ? state.productITemForCart[
-                                            oldCartCollection![index]
-                                                .productId
-                                                .toString()]!
-                                        : state.productITemForCart[
-                                            cartCollection![index]
-                                                .productId
-                                                .toString()]!,
-                                  ));
+                              Future.delayed(
+                                Duration(milliseconds: 300),
+                                () => HelperFunctions.slidingNavigation(
+                                    context,
+                                    ProductDetailsPage(
+                                      fromCart: true,
+                                      productItem: isOldCart
+                                          ? state.productITemForCart[
+                                              oldCartCollection![index]
+                                                  .productId
+                                                  .toString()]!
+                                          : state.productITemForCart[
+                                              cartCollection![index]
+                                                  .productId
+                                                  .toString()]!,
+                                    )),
+                              );
                             },
                             child: Container(
                               margin: EdgeInsets.only(top: 10),
@@ -812,6 +818,10 @@ class _ProductCollectionInCartPage1State
                                                             ? -1
                                                             : state.productITemForCart[cartCollection[index].productId.toString()]!.syncColorImages!.indexOf(state.productITemForCart[cartCollection[index].productId.toString()]!.syncColorImages!.firstWhere((element) => element.colorName == (!cartCollection![index].variations.isNullOrEmpty ? cartCollection[index].variations![0].color ?? "" : ""), orElse: () => color.SyncColorImage(colorName: "null", images: [], colorTrend: false)));
                                                     if (indexess != -1) {
+                                                      GetIt.I<HomeBloc>().add(
+                                                          ChangeStatusOFGetProductsDetailsToSuccessEvent(
+                                                              isStatusInitaial:
+                                                                  true));
                                                       BlocProvider.of<HomeBloc>(
                                                               context)
                                                           .add(AddCurrentSelectedColorEvent(
@@ -827,23 +837,27 @@ class _ProductCollectionInCartPage1State
                                                                       .slug
                                                                       .toString()));
                                                     }
-                                                    HelperFunctions
-                                                        .slidingNavigation(
-                                                            context,
-                                                            ProductDetailsPage(
-                                                              fromCart: true,
-                                                              productItem: isOldCart
-                                                                  ? state
-                                                                      .productITemForCart[oldCartCollection![
-                                                                          index]
-                                                                      .productId
-                                                                      .toString()]!
-                                                                  : state
-                                                                      .productITemForCart[cartCollection![
-                                                                          index]
-                                                                      .productId
-                                                                      .toString()]!,
-                                                            ));
+                                                    Future.delayed(
+                                                        Duration(
+                                                            milliseconds: 300),
+                                                        () => HelperFunctions
+                                                            .slidingNavigation(
+                                                                context,
+                                                                ProductDetailsPage(
+                                                                  fromCart:
+                                                                      true,
+                                                                  productItem: isOldCart
+                                                                      ? state
+                                                                          .productITemForCart[oldCartCollection![
+                                                                              index]
+                                                                          .productId
+                                                                          .toString()]!
+                                                                      : state
+                                                                          .productITemForCart[cartCollection![
+                                                                              index]
+                                                                          .productId
+                                                                          .toString()]!,
+                                                                )));
                                                   },
                                                   child: Container(
                                                     height: 60,
@@ -1373,6 +1387,9 @@ class _ProductCollectionInCartPage1State
                                                         .syncColorImages!
                                                         .indexOf(state.productITemForCart[cartCollection[index].productId.toString()]!.syncColorImages!.firstWhere((element) => element.colorName == (!cartCollection![index].variations.isNullOrEmpty ? cartCollection[index].variations![0].color ?? "" : ""), orElse: () => color.SyncColorImage(colorName: "null", images: [], colorTrend: false)));
                                             if (indexess != -1) {
+                                              GetIt.I<HomeBloc>().add(
+                                                  ChangeStatusOFGetProductsDetailsToSuccessEvent(
+                                                      isStatusInitaial: true));
                                               BlocProvider.of<HomeBloc>(context)
                                                   .add(AddCurrentSelectedColorEvent(
                                                       currentSelectedColor:
@@ -1387,21 +1404,25 @@ class _ProductCollectionInCartPage1State
                                                               .slug
                                                               .toString()));
                                             }
-                                            HelperFunctions.slidingNavigation(
-                                                context,
-                                                ProductDetailsPage(
-                                                  fromCart: true,
-                                                  productItem: isOldCart
-                                                      ? state.productITemForCart[
-                                                          oldCartCollection![
-                                                                  index]
-                                                              .productId
-                                                              .toString()]!
-                                                      : state.productITemForCart[
-                                                          cartCollection![index]
-                                                              .productId
-                                                              .toString()]!,
-                                                ));
+                                            Future.delayed(
+                                                Duration(milliseconds: 300),
+                                                () => HelperFunctions
+                                                    .slidingNavigation(
+                                                        context,
+                                                        ProductDetailsPage(
+                                                          fromCart: true,
+                                                          productItem: isOldCart
+                                                              ? state.productITemForCart[
+                                                                  oldCartCollection![
+                                                                          index]
+                                                                      .productId
+                                                                      .toString()]!
+                                                              : state.productITemForCart[
+                                                                  cartCollection![
+                                                                          index]
+                                                                      .productId
+                                                                      .toString()]!,
+                                                        )));
                                           },
                                           child: Text(
                                               " | ${LocaleKeys.add_again.tr()}",

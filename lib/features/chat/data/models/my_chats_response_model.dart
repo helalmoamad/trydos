@@ -318,12 +318,13 @@ class Chat {
   final PaginationStatus paginationStatus;
   final DateTime? updatedAt;
   final bool hasReachedMax;
-
+  final bool? isPrivate;
   Chat({
     this.id,
     this.localId,
     this.photoPath,
     this.channelName,
+    this.isPrivate = false,
     this.totalUnreadMessageCount,
     this.channelMembers,
     this.messages,
@@ -339,6 +340,7 @@ class Chat {
     dynamic channelName,
     final PaginationStatus? paginationStatus,
     final bool? hasReachedMax,
+    final bool? isPrivate,
     int? totalUnreadMessageCount,
     final DateTime? updatedAt,
     List<ChannelMember>? channelMembers,
@@ -348,6 +350,7 @@ class Chat {
         id: id ?? this.id,
         localId: localId ?? this.localId,
         photoPath: photoPath ?? this.photoPath,
+        isPrivate: isPrivate ?? this.isPrivate,
         channelName: channelName ?? this.channelName,
         totalUnreadMessageCount:
             totalUnreadMessageCount ?? this.totalUnreadMessageCount,

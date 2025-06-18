@@ -377,6 +377,8 @@ Future<_i174.GetIt> $initGetIt(
           gh<_i0.HomeRepository>()));
   gh.factory<_i812.CheckAvailabilityProductCartUsecase>(() =>
       _i812.CheckAvailabilityProductCartUsecase(gh<_i0.HomeRepository>()));
+  gh.factory<_i94.ConvertItemFromcartToOldCartUsecase>(
+      () => _i94.ConvertItemFromcartToOldCartUsecase(gh<_i0.HomeRepository>()));
   gh.factory<_i71.DeleteCustomerAddressUseCase>(
       () => _i71.DeleteCustomerAddressUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i878.DeleteLikeOfProductUsecase>(
@@ -481,8 +483,6 @@ Future<_i174.GetIt> $initGetIt(
       () => _i744.UpdateWhatsappNotificationUseCase(gh<_i0.HomeRepository>()));
   gh.factory<_i651.UpdateUserPhotoUseCase>(
       () => _i651.UpdateUserPhotoUseCase(gh<_i0.HomeRepository>()));
-  gh.factory<_i94.ConvertItemFromcartToOldCartUsecase>(
-      () => _i94.ConvertItemFromcartToOldCartUsecase(gh<_i0.HomeRepository>()));
   gh.lazySingleton<_i944.CategoryBloc>(() => _i944.CategoryBloc(
         gh<_i158.GetMainCategoriesUseCase>(),
         gh<_i518.GetHomeBoutiqesUseCase>(),
@@ -536,6 +536,8 @@ Future<_i174.GetIt> $initGetIt(
       () => _i304.GetMessagesForChatUseCase(gh<_i420.ChatRepository>()));
   gh.factory<_i675.GetMyChatsUseCase>(
       () => _i675.GetMyChatsUseCase(gh<_i420.ChatRepository>()));
+  gh.factory<_i1039.GetOrderRecipientIdUseCase>(
+      () => _i1039.GetOrderRecipientIdUseCase(gh<_i420.ChatRepository>()));
   gh.factory<_i538.GetSharedProductCountUseCase>(
       () => _i538.GetSharedProductCountUseCase(gh<_i420.ChatRepository>()));
   gh.factory<_i314.ReadAllMessagesUseCase>(
@@ -559,8 +561,6 @@ Future<_i174.GetIt> $initGetIt(
       () => _i750.UpdateProfileInChatUseCase(gh<_i420.ChatRepository>()));
   gh.factory<_i897.UploadFileUseCase>(
       () => _i897.UploadFileUseCase(gh<_i420.ChatRepository>()));
-  gh.factory<_i1039.GetOrderRecipientIdUseCase>(
-      () => _i1039.GetOrderRecipientIdUseCase(gh<_i420.ChatRepository>()));
   gh.factory<_i661.AnswerCallUseCase>(
       () => _i661.AnswerCallUseCase(gh<_i1032.CallsRepository>()));
   gh.factory<_i95.DeleteMessageUseCase>(

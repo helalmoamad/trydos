@@ -36,8 +36,12 @@ import 'order_details1_page.dart';
 class OrdersPage extends StatefulWidget {
   bool? fromNotification;
   final String? groupId;
-
-  OrdersPage({super.key, this.groupId, this.fromNotification});
+  final String? orderIdFormNotification;
+  OrdersPage(
+      {super.key,
+      this.groupId,
+      this.orderIdFormNotification,
+      this.fromNotification});
 
   @override
   State<OrdersPage> createState() => _OrdersPageState();
@@ -45,22 +49,23 @@ class OrdersPage extends StatefulWidget {
 
 class _OrdersPageState extends State<OrdersPage> {
   late OrderBloc orderBloc;
-  late ChatBloc chatBloc;
+
   Timer? debounce;
   final ScrollController ordersScrollController = ScrollController();
-  int tapIndex = 0;
+
   final ValueNotifier<String> currentStatus = ValueNotifier('');
 
   @override
   void initState() {
     orderBloc = BlocProvider.of<OrderBloc>(context);
-    chatBloc = BlocProvider.of<ChatBloc>(context);
+
     if (widget.fromNotification ?? false) {
       orderBloc.add(
-        GetOrdersEvent(
-          status: "",
-          getWithPagination: false,
-        ),
+        GetOrdersEvent(getWithPagination: false, status: ""),
+      );
+
+      orderBloc.add(
+        GetOrdersByOrderGroupIDEvent(orderGroupId: widget.groupId ?? ""),
       );
     }
     ordersScrollController.addListener(() {
@@ -143,143 +148,162 @@ class _OrdersPageState extends State<OrdersPage> {
                 height: 50.h,
               ),
               ///////////////////
-              BlocBuilder<OrderBloc, OrderState>(
-                buildWhen: (p, c) =>
-                    p.getOrdersModel[currentStatus.value]?.paginationStatus !=
-                    c.getOrdersModel[currentStatus.value]?.paginationStatus,
-                builder: (context, state) {
+              BlocListener<OrderBloc, OrderState>(
+                listenWhen: (p, c) =>
+                    p.getOrdersByOrderGroupIDStatus !=
+                    c.getOrdersByOrderGroupIDStatus,
+                listener: (context, state) {
                   if ((widget.fromNotification ?? false) &&
-                      state.getOrdersModel[currentStatus.value]
-                              ?.paginationStatus ==
-                          PaginationStatus.success &&
-                      state.getOrdersModel[currentStatus.value] != null) {
+                      state.getOrdersByOrderGroupIDStatus ==
+                          GetOrdersByOrderGroupIDStatus.success) {
                     widget.fromNotification = false;
-                    int index = state.getOrdersModel[currentStatus.value]!.items
-                        .indexWhere((element) =>
-                            element.orderGroupId == widget.groupId);
-                    if (index != -1) {
+
+                    if (state.getOrdersByOrderGroupIDModel?.orders?.first !=
+                        null) {
+                      OrderListModel order =
+                          state.getOrdersByOrderGroupIDModel!.orders!.first;
+                      order.details?.forEach((element) => element.copyWith(
+                            orderProductStatus: order.orderStatus,
+                          ));
+                      order = order.copyWith(
+                          statusIsOutForDelivary:
+                              order.orderStatus?.value == "out_for_delivery");
                       Future.delayed(
                           Duration(milliseconds: 50),
                           () => Navigator.of(context).push(PageRouteBuilder(
-                              pageBuilder: (context, animation,
-                                      secondaryAnimation) =>
-                                  OrderDetails1(
-                                      order: state
-                                          .getOrdersModel[currentStatus.value]!
-                                          .items[index]))));
+                              pageBuilder:
+                                  (context, animation, secondaryAnimation) =>
+                                      OrderDetails1(
+                                          orderIdFormNotification:
+                                              widget.orderIdFormNotification,
+                                          fromNotification: true,
+                                          order: order))));
                     }
                   }
-                  int itemsCount = state.getOrdersModel[currentStatus.value] ==
-                          null
-                      ? 0
-                      : state.getOrdersModel[currentStatus.value]!.items.length;
-                  List<OrderListModel> items =
-                      state.getOrdersModel[currentStatus.value]?.items ?? [];
-                  return (state.getOrdersModel[currentStatus.value] == null ||
-                          state.getOrdersModel[currentStatus.value]
-                                  ?.paginationStatus ==
-                              PaginationStatus.failure ||
-                          ((state.getOrdersModel[currentStatus.value]
-                                          ?.paginationStatus ==
-                                      PaginationStatus.loading ||
-                                  state.getOrdersModel[currentStatus.value]
-                                          ?.paginationStatus ==
-                                      PaginationStatus.initial) &&
-                              state.getOrdersModel[currentStatus.value]?.items
-                                      .length ==
-                                  0))
-                      ? Center(
-                          child: TrydosLoader(),
-                        )
-                      : items.isEmpty
-                          ? Text(
-                              LocaleKeys.there_are_no_orders.tr(),
-                              overflow: TextOverflow.ellipsis,
-                              style: context.textTheme.bodyMedium?.rq.copyWith(
-                                color: const Color(0xff1D1D1D),
-                                letterSpacing: 0.18,
-                                fontSize: 12,
-                                height: 1.3,
-                              ),
-                            )
-                          : Expanded(
-                              child: Padding(
-                                padding: EdgeInsets.only(bottom: 10.h),
-                                child: ListView.separated(
-                                  controller: ordersScrollController,
-                                  itemCount: itemsCount + 1,
-                                  itemBuilder: (context, index) {
-                                    if (index < itemsCount) {
-                                      return GestureDetector(
-                                        onTapUp: (details) {
-                                          final double dy =
-                                              details.localPosition.dy;
-                                          if (dy < 80 &&
-                                              ((items[index]
-                                                          .statusIsOutForDelivary ??
-                                                      false) ||
-                                                  items[index]
-                                                          .orderStatus
-                                                          ?.value ==
-                                                      "out_for_delivery")) {
-                                            return;
-                                          }
-                                          HelperFunctions.slidingNavigation(
-                                            context,
-                                            OrderDetails1(
-                                              order: items[index],
-                                            ),
-                                          );
-                                        },
-                                        child: buildOrderItemWidget(
-                                          tapIndex: tapIndex,
-                                          index: index,
-                                          context: context,
-                                          item: items[index],
-                                        ),
-                                      );
-                                    } else {
-                                      if (itemsCount > 4) {
-                                        return Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 10),
-                                          child: state
-                                                  .getOrdersModel[
-                                                      currentStatus.value]!
-                                                  .hasReachedMax
-                                              ? Center(
-                                                  child: Text(
-                                                    LocaleKeys.no_orders_found
-                                                        .tr(),
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    style: context.textTheme
-                                                        .bodyMedium?.bq
-                                                        .copyWith(
-                                                      color: const Color(
-                                                          0xff8D8D8D),
-                                                      letterSpacing: 0.18,
-                                                      fontSize: 15,
-                                                      height: 1.3,
-                                                    ),
-                                                  ),
-                                                )
-                                              : Center(child: TrydosLoader()),
+                },
+                child: BlocBuilder<OrderBloc, OrderState>(
+                  buildWhen: (p, c) =>
+                      p.getOrdersModel[currentStatus.value]?.paginationStatus !=
+                          c.getOrdersModel[currentStatus.value]
+                              ?.paginationStatus ||
+                      p.getOrdersByOrderGroupIDStatus !=
+                          c.getOrdersByOrderGroupIDStatus,
+                  builder: (context, state) {
+                    int itemsCount =
+                        state.getOrdersModel[currentStatus.value] == null
+                            ? 0
+                            : state.getOrdersModel[currentStatus.value]!.items
+                                .length;
+                    List<OrderListModel> items =
+                        state.getOrdersModel[currentStatus.value]?.items ?? [];
+                    return (state.getOrdersModel[currentStatus.value] == null ||
+                            state.getOrdersByCartGroupIDStatus ==
+                                GetOrdersByOrderGroupIDStatus.loading ||
+                            state.getOrdersModel[currentStatus.value]
+                                    ?.paginationStatus ==
+                                PaginationStatus.failure ||
+                            ((state.getOrdersModel[currentStatus.value]
+                                            ?.paginationStatus ==
+                                        PaginationStatus.loading ||
+                                    state.getOrdersModel[currentStatus.value]
+                                            ?.paginationStatus ==
+                                        PaginationStatus.initial) &&
+                                state.getOrdersModel[currentStatus.value]?.items
+                                        .length ==
+                                    0))
+                        ? Center(
+                            child: TrydosLoader(),
+                          )
+                        : items.isEmpty
+                            ? Text(
+                                LocaleKeys.there_are_no_orders.tr(),
+                                overflow: TextOverflow.ellipsis,
+                                style:
+                                    context.textTheme.bodyMedium?.rq.copyWith(
+                                  color: const Color(0xff1D1D1D),
+                                  letterSpacing: 0.18,
+                                  fontSize: 12,
+                                  height: 1.3,
+                                ),
+                              )
+                            : Expanded(
+                                child: Padding(
+                                  padding: EdgeInsets.only(bottom: 10.h),
+                                  child: ListView.separated(
+                                    controller: ordersScrollController,
+                                    itemCount: itemsCount + 1,
+                                    itemBuilder: (context, index) {
+                                      if (index < itemsCount) {
+                                        return InkWell(
+                                          onTap: () {
+                                            /*  final double dy =
+                                                            details.localPosition.dy;
+                                                        if (dy < 80 &&
+                                                            ((items[index]
+                                                                        .statusIsOutForDelivary ??
+                                                                    false) ||
+                                                                items[index]
+                                                                        .orderStatus
+                                                                        ?.value ==
+                                                                    "out_for_delivery")) {
+                                                          return;
+                                                        }*/
+                                            HelperFunctions.slidingNavigation(
+                                              context,
+                                              OrderDetails1(
+                                                order: items[index],
+                                              ),
+                                            );
+                                          },
+                                          child: buildOrderItemWidget(
+                                            index: index,
+                                            context: context,
+                                            item: items[index],
+                                          ),
                                         );
                                       } else {
-                                        return Container();
+                                        if (itemsCount > 4) {
+                                          return Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 10),
+                                            child: state
+                                                    .getOrdersModel[
+                                                        currentStatus.value]!
+                                                    .hasReachedMax
+                                                ? Center(
+                                                    child: Text(
+                                                      LocaleKeys.no_orders_found
+                                                          .tr(),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      style: context.textTheme
+                                                          .bodyMedium?.bq
+                                                          .copyWith(
+                                                        color: const Color(
+                                                            0xff8D8D8D),
+                                                        letterSpacing: 0.18,
+                                                        fontSize: 15,
+                                                        height: 1.3,
+                                                      ),
+                                                    ),
+                                                  )
+                                                : Center(child: TrydosLoader()),
+                                          );
+                                        } else {
+                                          return Container();
+                                        }
                                       }
-                                    }
-                                  },
-                                  separatorBuilder: (context, index) {
-                                    return SizedBox(
-                                      height: 10.h,
-                                    );
-                                  },
+                                    },
+                                    separatorBuilder: (context, index) {
+                                      return SizedBox(
+                                        height: 10.h,
+                                      );
+                                    },
+                                  ),
                                 ),
-                              ),
-                            );
-                },
+                              );
+                  },
+                ),
               ),
             ],
           ),
@@ -292,7 +316,6 @@ class _OrdersPageState extends State<OrdersPage> {
     required BuildContext context,
     required OrderListModel item,
     required int index,
-    required int tapIndex,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -305,13 +328,8 @@ class _OrdersPageState extends State<OrdersPage> {
         child: Column(
           children: [
             buildInfoWidget(
-              index: index,
-              tapIndex: tapIndex,
               isSecondInfo: false,
               orderGroupId: item.orderGroupId.toString(),
-              statusIsOutForDelivary: item.statusIsOutForDelivary ??
-                  false || item.orderStatus?.value == "out_for_delivery",
-              orderStatus: item.orderStatus?.value ?? "",
               isTextSpan: false,
               context: context,
               text1: HelperFunctions.orderFormatDate(
@@ -344,20 +362,21 @@ class _OrdersPageState extends State<OrdersPage> {
                         state.startingSetting?.decimalPointSettings ?? 0);
                 ;
                 return buildInfoWidget(
-                  index: index,
-                  tapIndex: tapIndex,
                   isSecondInfo: true,
                   orderGroupId: item.orderGroupId.toString(),
-                  statusIsOutForDelivary: item.statusIsOutForDelivary ??
-                      false || item.orderStatus?.value == "out_for_delivery",
                   context: context,
-                  orderStatus: item.orderStatus?.value ?? "",
                   isTextSpan: true,
                   text1: item.orderGroupStatus!.label ?? '',
                   text2: '',
                   svgIcon1: AppAssets.preparingBagSvg,
                   svgIcon2: AppAssets.orderInvoice2Svg,
-                  secondInfoSvgIcon: AppAssets.orderPreparingSvg,
+                  secondInfoSvgIcon: item.orderGroupStatus?.label == 'Shipped'
+                      ? AppAssets.shippedBlackSvg
+                      : item.orderGroupStatus?.label == 'Delivered'
+                          ? AppAssets.deliveredBlackSvg
+                          : item.orderGroupStatus?.label == 'Pending'
+                              ? AppAssets.pendeingBlackCheck
+                              : AppAssets.orderPreparingSvg,
                   amount: orderAmount.toString(),
                   currency: currencySymbol,
                   itemsCount: item.details?.length.toString() ?? '0',
@@ -404,19 +423,15 @@ class _OrdersPageState extends State<OrdersPage> {
   }
 
   Widget buildInfoWidget({
-    required int index,
-    required int tapIndex,
     required bool isSecondInfo,
     required BuildContext context,
     required String svgIcon1,
     required String svgIcon2,
     String? secondInfoSvgIcon,
-    required String orderStatus,
     required String orderGroupId,
     required String text1,
     required String text2,
     required bool isTextSpan,
-    required bool statusIsOutForDelivary,
     required String itemsCount,
     required String amount,
     required String currency,
@@ -463,90 +478,6 @@ class _OrdersPageState extends State<OrdersPage> {
                         secondInfoSvgIcon ?? '',
                         width: 15,
                       )
-                    : const SizedBox.shrink(),
-                const SizedBox(
-                  width: 2,
-                ),
-                isSecondInfo && statusIsOutForDelivary
-                    ? BlocListener<ChatBloc, ChatState>(
-                        listenWhen: (previous, current) =>
-                            previous.getOrderRecipientIdStatus !=
-                            current.getOrderRecipientIdStatus,
-                        listener: (context, state) {
-                          if (state.getOrderRecipientIdStatus ==
-                              GetOrderRecipientIdStatus.success) {
-                            String receiverName = "recipient";
-                            String fullReceiverName = "recipient";
-                            String? recipientUserId = state.recipientUserId;
-                            if (recipientUserId == null) {
-                              return;
-                            }
-                            Chat? chat;
-                            User? receiver;
-                            List<Chat> chats =
-                                List.of(GetIt.I<ChatBloc>().state.chats);
-                            debugPrint(chats.toString());
-                            chats.addAll(GetIt.I<ChatBloc>().state.pinnedChats);
-                            chat = chats.firstWhere((element) =>
-                                element.channelMembers!.any((element) {
-                                  return element.userId.toString() ==
-                                      recipientUserId;
-                                }));
-                            final preferences = GetIt.I<PrefsRepository>();
-                            receiver = chat.channelMembers
-                                ?.firstWhere(
-                                  (element) =>
-                                      element.userId != preferences.myChatId,
-                                  orElse: () => ChannelMember(
-                                      userId: int.tryParse(recipientUserId),
-                                      user: User(
-                                          id: int.tryParse(recipientUserId),
-                                          name: receiverName)),
-                                )
-                                .user;
-                            context.go(GRouter.config.applicationRoutes
-                                    .kSinglePageChatPagePath +
-                                '?chatId=${chat.id!.toString()}&receiverName=$receiverName&fullReceiverName=${fullReceiverName}&receiverPhone=${receiver?.mobilePhone ?? 'Uo Number'}&senderName=${HelperFunctions.getTheFirstTwoLettersOfName(GetIt.I<PrefsRepository>().myChatName!)}');
-                          }
-                          // TODO: implement listener
-                        },
-                        child: BlocBuilder<ChatBloc, ChatState>(
-                          buildWhen: (previous, current) =>
-                              previous.getOrderRecipientIdStatus !=
-                              current.getOrderRecipientIdStatus,
-                          builder: (context, state) {
-                            if (state.getOrderRecipientIdStatus ==
-                                    GetOrderRecipientIdStatus.loading &&
-                                index == tapIndex) {
-                              return Container(
-                                width: 30,
-                                height: 30,
-                                child: TrydosLoader(
-                                  size: 16,
-                                ),
-                              );
-                            }
-                            return Container(
-                              alignment: Alignment.center,
-                              width: 30,
-                              height: 30,
-                              child: InkWell(
-                                onTap: () {
-                                  tapIndex = index;
-                                  chatBloc.add(GetOrderRecipientIdEvent(
-                                      originalUserId: GetIt.I<PrefsRepository>()
-                                          .myChatId
-                                          .toString(),
-                                      orderId: orderGroupId));
-                                },
-                                child: SvgPicture.asset(
-                                  AppAssets.chatMarkActiveSvg,
-                                  width: 20,
-                                ),
-                              ),
-                            );
-                          },
-                        ))
                     : const SizedBox.shrink(),
               ],
             ),

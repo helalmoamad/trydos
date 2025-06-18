@@ -251,7 +251,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   }
 }
 
-bool isDependencyInitialized = false;
 bool isHydratedStorageInitialized = false;
 final Semaphore imageBanner = Semaphore(5);
 final Semaphore imageCategoryBoutiques = Semaphore(2);
@@ -265,6 +264,7 @@ final Semaphore prefechMainCategory = Semaphore(3);
 final Semaphore prefechBoutiques = Semaphore(3);
 final Semaphore prefechFiveFilter = Semaphore(3);
 bool isLoadDotenvFile = false;
+bool isDependencyInitialized = false;
 Timer? timer;
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 bool notificationClicked = false;

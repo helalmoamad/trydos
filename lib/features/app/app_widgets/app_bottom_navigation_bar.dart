@@ -155,10 +155,6 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
               ),
               Expanded(
                 child: InkWell(
-                  onLongPress: () {
-                    context.go(GRouter
-                        .config.applicationRoutes.kSharedPreferencePagePath);
-                  },
                   onTap: () {
                     if (context.canPop()) {
                       try {

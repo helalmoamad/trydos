@@ -246,11 +246,16 @@ class _HomePageState extends State<HomePage> {
               notificationTypesOfMarketFromTerminated
                   .split("chatNotification")
                   .first));
-          String prevMessageId = notificationTypesOfMarketFromTerminated
+
+          String info = notificationTypesOfMarketFromTerminated
               .split("chatNotification")
               .last;
-
-          handleOpenChatPageFromNotificationInBackground(prevMessageId,
+          String prevMessageId = info.split('#orderId#')[0];
+          String orderInfo = info.split('#orderId#')[1];
+          String orderId = orderInfo.split('#groupeOrderId#')[0];
+          String orderGroupId = orderInfo.split('#groupeOrderId#')[1];
+          handleOpenChatPageFromNotificationInBackground(
+              prevMessageId, orderId, orderGroupId,
               message: myMessage);
         } else {
           Map data = jsonDecode(notificationTypesOfMarketFromTerminated);

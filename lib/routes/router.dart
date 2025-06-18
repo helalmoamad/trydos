@@ -144,6 +144,7 @@ class GRouter {
                     fullReceiverName:
                         state.uri.queryParameters['fullReceiverName']!,
                     receiverName: state.uri.queryParameters['receiverName']!,
+                    fromOrder: state.uri.queryParameters['fromOrder'],
                     receiverPhone: state.uri.queryParameters['receiverPhone']!,
                     senderName: state.uri.queryParameters['senderName']!,
                     receiverPhoto:

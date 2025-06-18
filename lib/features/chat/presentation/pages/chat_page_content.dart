@@ -134,7 +134,8 @@ class ChatPageContentState extends State<ChatPageContent> {
             ),
           ));
         }
-        if (state.getChatsStatus == GetChatsStatus.failure) {
+        if (state.getChatsStatus == GetChatsStatus.failure &&
+            searchChats.value.isEmpty) {
           return SliverToBoxAdapter(
             child: Center(
               child: ElevatedButton(
@@ -192,6 +193,9 @@ class ChatPageContentState extends State<ChatPageContent> {
                                       int.parse(
                                           searchedChats[index].id.toString()))
                                   : false;
+                              if (searchedChats[index].isPrivate == true) {
+                                return SizedBox.shrink();
+                              }
                               return ChatCard(
                                 key: TestVariables.kTestMode
                                     ? Key(

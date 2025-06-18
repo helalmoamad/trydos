@@ -87,6 +87,10 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     on<GetOrdersEvent>(
       _onGetOrdersEvent,
     );
+    on<ChangeOrderByGroupStatus>(
+      _onChangeOrderByGroupStatus,
+    );
+
     on<SetCustomerAddressDefaultEvent>(
       _onSetCustomerAddressDefaultEvent,
       transformer: restartable(),
@@ -191,6 +195,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     ///////////////////////////
     emit(
       state.copyWith(
+        getOrdersByOrderGroupIDModel: null,
         getOrdersByOrderGroupIDStatus: GetOrdersByOrderGroupIDStatus.loading,
       ),
     );
@@ -366,6 +371,21 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     );
   }
 
+  FutureOr<void> _onChangeOrderByGroupStatus(
+    ChangeOrderByGroupStatus event,
+    Emitter<OrderState> emit,
+  ) async {
+    ///////////////////////////
+    emit(
+      state.copyWith(
+        getOrdersByOrderGroupIDModel: null,
+        getOrdersByOrderGroupIDStatus: event.loading
+            ? GetOrdersByOrderGroupIDStatus.loading
+            : GetOrdersByOrderGroupIDStatus.init,
+      ),
+    );
+  }
+
   FutureOr<void> _onGetOrdersEvent(
     GetOrdersEvent event,
     Emitter<OrderState> emit,
@@ -442,7 +462,8 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
         }
 
         List<OrderListModel> ordersFromApi = List.of(r.data?.orders ?? []);
-
+        ordersFromApi.forEach((elements) => elements.details?.forEach(
+            (element) => element.orderProductStatus = elements.orderStatus));
         final seen = <String>{};
         final List<String> duplicatesOrderGroupIds = [];
 

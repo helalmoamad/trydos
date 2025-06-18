@@ -637,6 +637,10 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       },
       (r) {
         try {
+          if (state.sendMessageStatus == SendMessageStatus.loading ||
+              state.receiveMessageStatus == ReceiveMessageStatus.loading) {
+            return;
+          }
           enableRequestGetChats = false;
           /* if (r.data!.missedFcmToken) {
             GetIt.I<AuthBloc>().add(StoreFcmTokenEvent(
@@ -674,6 +678,9 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
                 previousChats: List.of(state.pinnedChats));
           } else {
             newChats = List.of(r.data?.chats ?? []);
+            newChats.addAll(List.of((state.chats
+                .where((element) => element.isPrivate ?? false)
+                .toList())));
             newPinnedChats = List.of(r.data?.pinnedChats ?? []);
           }
 
@@ -798,8 +805,9 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       (r) {
         isFailedTheFirstTime.remove('GetOrderRecipientIdEvent');
         List<Chat> newChats = List.of(state.chats);
-        bool changed = false;
-        List<Chat> chats = List.of(state.chats);
+        newChats.removeWhere((element) => element.isPrivate ?? false);
+        //bool changed = false;
+        /*  List<Chat> chats = List.of(state.chats);
         chats.addAll(state.pinnedChats);
 //        debugPrint('long : ${r.contacts?.length}');
 
@@ -811,38 +819,41 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
                     orElse: () => ChannelMember(userId: -1))
                 .userId !=
             -1);
-        debugPrint('index : $index');
-        if (index == -1) {
-          debugPrint('new chat');
-          changed = true;
-          String uuid = const Uuid().v4();
-          newChats.insert(
-              0,
-              Chat(
-                  id: uuid,
-                  localId: uuid,
-                  messages: [],
-                  paginationStatus: PaginationStatus.initial,
-                  channelName: "recipient",
-                  channelMembers: [
-                    ChannelMember(
-                        userId: r.data?.recipient?.id,
-                        user:
-                            User(id: r.data?.recipient?.id, name: "recipient")),
-                    ChannelMember(
-                        userId: _prefsRepository.myChatId,
-                        user: User(
-                            id: _prefsRepository.myChatId,
-                            name: _prefsRepository.myChatName)),
-                  ]));
-        }
+        debugPrint('index : $index');*/
+        // if (index == -1) {
+        //   debugPrint('new chat');
+        //  changed = true;
+        String uuid = const Uuid().v4();
+        newChats.insert(
+            0,
+            r.data?.chat != null
+                ? r.data!.chat!.copyWith(isPrivate: true)
+                : Chat(
+                    isPrivate: true,
+                    id: uuid,
+                    localId: uuid,
+                    messages: [],
+                    paginationStatus: PaginationStatus.initial,
+                    channelName: "recipient",
+                    channelMembers: [
+                      ChannelMember(
+                          userId: r.data?.recipient?.id,
+                          user: User(
+                              id: r.data?.recipient?.id, name: "recipient")),
+                      ChannelMember(
+                          userId: _prefsRepository.myChatId,
+                          user: User(
+                              id: _prefsRepository.myChatId,
+                              name: _prefsRepository.myChatName)),
+                    ]));
+        //}
 
         emit(
           state.copyWith(
             recipientUserId: r.data?.recipient?.id.toString(),
-            chats: changed ? newChats : state.chats,
+            chats: newChats, // changed ? newChats : state.chats,
             newSortedChatsByDate: groupReceivedMessageOnDays(chats: [
-              ...(changed ? newChats : state.chats),
+              ...(/*changed ?*/ newChats /*: state.chats*/),
               ...state.pinnedChats
             ]),
             getOrderRecipientIdStatus: GetOrderRecipientIdStatus.success,

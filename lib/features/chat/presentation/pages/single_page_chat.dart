@@ -76,6 +76,7 @@ class SinglePageChat extends StatefulWidget {
       required this.fullReceiverName,
       required this.senderName,
       this.fromSearch = false,
+      this.fromOrder = "false",
       this.senderPhoto,
       this.receiverPhoto})
       : super(key: key);
@@ -83,6 +84,7 @@ class SinglePageChat extends StatefulWidget {
   final String chatId;
   final String receiverName;
   final bool? fromSearch;
+  final String? fromOrder;
   final String fullReceiverName;
   final String receiverPhone;
   final String senderName;
@@ -140,9 +142,16 @@ class _SinglePageChatState extends State<SinglePageChat> {
   void initState() {
     print("%%%%%%%%%${GetIt.I<PrefsRepository>().chatToken}*");
     rebuildMessage.value = -2;
-    Eraser.clearAllAppNotifications();
+    if (widget.fromOrder == "true") {
+      Eraser.clearAppNotificationsByTag(widget.chatId);
+    } else {
+      Eraser.clearAllAppNotifications();
+    }
+
     callsBloc = BlocProvider.of<CallsBloc>(context);
     chatBloc = BlocProvider.of<ChatBloc>(context);
+    chatBloc.add(
+        ChangeGlobalUsedVariablesInBloc(currentOpenedChatId: widget.chatId));
     autoScrollController = AutoScrollController();
     callsBloc.add(GetMissedCallCountEvent());
     chatBloc.add(ReadAllMessagesEvent(widget.chatId.toString()));
@@ -254,95 +263,101 @@ class _SinglePageChatState extends State<SinglePageChat> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          ValueListenableBuilder<bool>(
-                              valueListenable: clickBackButton,
-                              builder: (context, clicked, _) {
-                                return InkWell(
-                                  key: TestVariables.kTestMode
-                                      ? Key(WidgetsKeys.backFromChatKey)
-                                      : null,
-                                  onTap: () {
-                                    BlocProvider.of<AppBloc>(context).add(
-                                        RefreshChatInputField(
-                                            false, 'null', false));
-                                    chatBloc.add(
-                                        ChangeGlobalUsedVariablesInBloc(
-                                            currentOpenedChatId: null));
-                                    clickBackButton.value = true;
-                                    Future.delayed(
-                                      Duration(milliseconds: 100),
-                                      () {
-                                        clickBackButton.value = false;
-                                        GoRouter.of(context).pop();
+                          widget.fromOrder == "true"
+                              ? SizedBox.shrink()
+                              : ValueListenableBuilder<bool>(
+                                  valueListenable: clickBackButton,
+                                  builder: (context, clicked, _) {
+                                    return InkWell(
+                                      key: TestVariables.kTestMode
+                                          ? Key(WidgetsKeys.backFromChatKey)
+                                          : null,
+                                      onTap: () {
+                                        BlocProvider.of<AppBloc>(context).add(
+                                            RefreshChatInputField(
+                                                false, 'null', false));
+                                        chatBloc.add(
+                                            ChangeGlobalUsedVariablesInBloc(
+                                                currentOpenedChatId: null));
+                                        clickBackButton.value = true;
+                                        Future.delayed(
+                                          Duration(milliseconds: 100),
+                                          () {
+                                            clickBackButton.value = false;
+                                            GoRouter.of(context).pop();
+                                          },
+                                        );
                                       },
+                                      child: Container(
+                                        color: clicked
+                                            ? Colors.grey.shade100
+                                            : Colors.transparent,
+                                        padding:
+                                            HWEdgeInsetsDirectional.fromSTEB(
+                                                20.w, 15, 10, 15),
+                                        child: SvgPicture.asset(
+                                          !LanguageService.rtl
+                                              ? AppAssets.backFromCallSvg
+                                              : AppAssets.backArrowArabic,
+                                          width: 8.w,
+                                          color: const Color(0xff388CFF),
+                                        ),
+                                        //                              )
+                                        //                              ,
+                                      ),
                                     );
-                                  },
-                                  child: Container(
-                                    color: clicked
-                                        ? Colors.grey.shade100
-                                        : Colors.transparent,
-                                    padding: HWEdgeInsetsDirectional.fromSTEB(
-                                        20.w, 15, 10, 15),
-                                    child: SvgPicture.asset(
-                                      !LanguageService.rtl
-                                          ? AppAssets.backFromCallSvg
-                                          : AppAssets.backArrowArabic,
-                                      width: 8.w,
-                                      color: const Color(0xff388CFF),
-                                    ),
-                                    //                              )
-                                    //                              ,
-                                  ),
-                                );
-                              }),
-                          BlocListener<ChatBloc, ChatState>(
-                              listenWhen: (p, c) =>
-                                  p.currentOpenedChatId !=
-                                  c.currentOpenedChatId,
-                              listener: (context, state) {
-                                chat = state.chats.firstWhere(
-                                    (element) =>
-                                        element.id.toString() ==
-                                            widget.chatId ||
-                                        element.localId.toString() ==
-                                            widget.chatId,
-                                    orElse: () => state.pinnedChats.firstWhere(
+                                  }),
+                          widget.fromOrder == "true"
+                              ? SizedBox.shrink()
+                              : BlocListener<ChatBloc, ChatState>(
+                                  listenWhen: (p, c) =>
+                                      p.currentOpenedChatId !=
+                                      c.currentOpenedChatId,
+                                  listener: (context, state) {
+                                    chat = state.chats.firstWhere(
                                         (element) =>
                                             element.id.toString() ==
                                                 widget.chatId ||
                                             element.localId.toString() ==
-                                                widget.chatId));
+                                                widget.chatId,
+                                        orElse: () => state.pinnedChats
+                                            .firstWhere((element) =>
+                                                element.id.toString() ==
+                                                    widget.chatId ||
+                                                element.localId.toString() ==
+                                                    widget.chatId));
 
-                                member = !chat.channelMembers.isNullOrEmpty
-                                    ? chat.channelMembers!.firstWhere(
-                                        (element) =>
-                                            element.userId !=
-                                            _prefsRepository.myChatId)
-                                    : null;
-                                FirebasePresence.listeningToConnectStatus(
-                                    chatId: widget.chatId,
-                                    friendId: member!.userId!);
-                              },
-                              child: BlocBuilder<ChatBloc, ChatState>(
-                                  builder: (context, state) {
-                                if ((state.unReadMessagesFromAllChats -
-                                        countMessagesReceivedToMeNow) >
-                                    0) {
-                                  return Row(
-                                    children: [
-                                      MyTextWidget(
-                                        (state.unReadMessagesFromAllChats -
-                                                countMessagesReceivedToMeNow)
-                                            .toString(),
-                                        style: textTheme.bodyMedium?.rr
-                                            .copyWith(
-                                                color: const Color(0xff388CFF)),
-                                      ),
-                                    ],
-                                  );
-                                }
-                                return const SizedBox.shrink();
-                              })),
+                                    member = !chat.channelMembers.isNullOrEmpty
+                                        ? chat.channelMembers!.firstWhere(
+                                            (element) =>
+                                                element.userId !=
+                                                _prefsRepository.myChatId)
+                                        : null;
+                                    FirebasePresence.listeningToConnectStatus(
+                                        chatId: widget.chatId,
+                                        friendId: member!.userId!);
+                                  },
+                                  child: BlocBuilder<ChatBloc, ChatState>(
+                                      builder: (context, state) {
+                                    if ((state.unReadMessagesFromAllChats -
+                                            countMessagesReceivedToMeNow) >
+                                        0) {
+                                      return Row(
+                                        children: [
+                                          MyTextWidget(
+                                            (state.unReadMessagesFromAllChats -
+                                                    countMessagesReceivedToMeNow)
+                                                .toString(),
+                                            style: textTheme.bodyMedium?.rr
+                                                .copyWith(
+                                                    color: const Color(
+                                                        0xff388CFF)),
+                                          ),
+                                        ],
+                                      );
+                                    }
+                                    return const SizedBox.shrink();
+                                  })),
 
                           20.horizontalSpace,
                           widget.receiverPhoto != null
@@ -394,24 +409,28 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                       ? Key(WidgetsKeys.goToProfileButtonKey)
                                       : null,
                                   onTap: () {
-                                    Navigator.of(context)
-                                        .push(MaterialPageRoute(
-                                            builder: (_) => ProfilePage(
-                                                  receiverName:
-                                                      widget.receiverName,
-                                                  dataLength:
-                                                      widget.dataLength ?? 0,
-                                                  receiverPhoto:
-                                                      widget.receiverPhoto,
-                                                  senderName: widget.senderName,
-                                                  senderPhoto:
-                                                      widget.senderPhoto,
-                                                  fullReceiverName:
-                                                      widget.fullReceiverName,
-                                                  receiverPhone:
-                                                      widget.receiverPhone,
-                                                  chatId: widget.chatId,
-                                                )));
+                                    widget.fromOrder == "true"
+                                        ? () {}
+                                        : Navigator.of(context)
+                                            .push(MaterialPageRoute(
+                                                builder: (_) => ProfilePage(
+                                                      receiverName:
+                                                          widget.receiverName,
+                                                      dataLength:
+                                                          widget.dataLength ??
+                                                              0,
+                                                      receiverPhoto:
+                                                          widget.receiverPhoto,
+                                                      senderName:
+                                                          widget.senderName,
+                                                      senderPhoto:
+                                                          widget.senderPhoto,
+                                                      fullReceiverName: widget
+                                                          .fullReceiverName,
+                                                      receiverPhone:
+                                                          widget.receiverPhone,
+                                                      chatId: widget.chatId,
+                                                    )));
                                   },
                                   child: MyTextWidget(
                                     widget.fullReceiverName,
@@ -528,116 +547,130 @@ class _SinglePageChatState extends State<SinglePageChat> {
                               ],
                             ),
                           ),
-                          BlocBuilder<CallsBloc, CallsState>(
-                            builder: (context, state) => InkWell(
-                              onTap: () async {
-                                List<Map<String, dynamic>> info =
-                                    callerInfo(channelId: widget.chatId);
-                                PermissionStatus microphone =
-                                    await Permission.microphone.request();
-                                var status2 =
-                                    await Permission.mediaLibrary.request();
-                                PermissionStatus camera =
-                                    await Permission.camera.request();
-                                if (microphone.isGranted &&
-                                    status2.isGranted &&
-                                    camera.isGranted) {
-                                  if (info[0].containsKey('currentReceiver')) {
-                                    GetIt.I<CallsBloc>().add(MakeCallEvent(
-                                        receiverUserId: info[0]
-                                                ['currentReceiver']
-                                            .toString(),
-                                        receiverCallName:
-                                            widget.fullReceiverName,
-                                        chatId: info[1]['channelId'],
-                                        isVideo: true,
-                                        payload: info[1]));
-                                  } else {
-                                    GetIt.I<CallsBloc>().add(MakeCallEvent(
-                                        isVideo: true,
-                                        receiverCallName:
-                                            widget.fullReceiverName,
-                                        chatId: info[0]['channelId'],
-                                        payload: info[0]));
-                                    //todo we have the id of the chat so we can move to the call immediately
-                                  }
-                                } else if (microphone.isDenied ||
-                                    status2.isDenied ||
-                                    camera.isDenied) {
-                                  showMessage(
-                                      LocaleKeys.permission_denied.tr());
-                                  openAppSettings();
-                                }
-                              },
-                              child: SvgPicture.asset(
-                                AppAssets.makeVideoCallSvg,
-                                width: 34.w,
-                                height: 25,
-                              ),
-                            ),
-                          ),
+                          widget.fromOrder == "true"
+                              ? SizedBox.shrink()
+                              : BlocBuilder<CallsBloc, CallsState>(
+                                  builder: (context, state) => InkWell(
+                                    onTap: () async {
+                                      List<Map<String, dynamic>> info =
+                                          callerInfo(channelId: widget.chatId);
+                                      PermissionStatus microphone =
+                                          await Permission.microphone.request();
+                                      var status2 = await Permission
+                                          .mediaLibrary
+                                          .request();
+                                      PermissionStatus camera =
+                                          await Permission.camera.request();
+                                      if (microphone.isGranted &&
+                                          status2.isGranted &&
+                                          camera.isGranted) {
+                                        if (info[0]
+                                            .containsKey('currentReceiver')) {
+                                          GetIt.I<CallsBloc>().add(
+                                              MakeCallEvent(
+                                                  receiverUserId: info[0]
+                                                          ['currentReceiver']
+                                                      .toString(),
+                                                  receiverCallName:
+                                                      widget.fullReceiverName,
+                                                  chatId: info[1]['channelId'],
+                                                  isVideo: true,
+                                                  payload: info[1]));
+                                        } else {
+                                          GetIt.I<CallsBloc>().add(
+                                              MakeCallEvent(
+                                                  isVideo: true,
+                                                  receiverCallName:
+                                                      widget.fullReceiverName,
+                                                  chatId: info[0]['channelId'],
+                                                  payload: info[0]));
+                                          //todo we have the id of the chat so we can move to the call immediately
+                                        }
+                                      } else if (microphone.isDenied ||
+                                          status2.isDenied ||
+                                          camera.isDenied) {
+                                        showMessage(
+                                            LocaleKeys.permission_denied.tr());
+                                        openAppSettings();
+                                      }
+                                    },
+                                    child: SvgPicture.asset(
+                                      AppAssets.makeVideoCallSvg,
+                                      width: 34.w,
+                                      height: 25,
+                                    ),
+                                  ),
+                                ),
                           30.horizontalSpace,
                           // todo CreateCallPage
-                          InkWell(
-                            onTap: () async {
-                              try {
-                                List<Map<String, dynamic>> info =
-                                    callerInfo(channelId: widget.chatId);
-                                PermissionStatus microphone =
-                                    await Permission.microphone.request();
-                                var status2 =
-                                    await Permission.mediaLibrary.request();
-                                if (microphone.isGranted && status2.isGranted) {
-                                  //todo we have the receiver id so the chat dose not exist
-                                  if (info[0].containsKey('currentReceiver')) {
-                                    debugPrint(
-                                        'currentReceiver${info[0]['currentReceiver']}');
+                          widget.fromOrder == "true"
+                              ? SizedBox.shrink()
+                              : InkWell(
+                                  onTap: () async {
+                                    try {
+                                      List<Map<String, dynamic>> info =
+                                          callerInfo(channelId: widget.chatId);
+                                      PermissionStatus microphone =
+                                          await Permission.microphone.request();
+                                      var status2 = await Permission
+                                          .mediaLibrary
+                                          .request();
+                                      if (microphone.isGranted &&
+                                          status2.isGranted) {
+                                        //todo we have the receiver id so the chat dose not exist
+                                        if (info[0]
+                                            .containsKey('currentReceiver')) {
+                                          debugPrint(
+                                              'currentReceiver${info[0]['currentReceiver']}');
 
-                                    GetIt.I<CallsBloc>().add(MakeCallEvent(
-                                        receiverUserId: info[0]
-                                                ['currentReceiver']
-                                            .toString(),
-                                        receiverCallName:
-                                            widget.fullReceiverName,
-                                        chatId: info[1]['channelId'],
-                                        isVideo: false,
-                                        payload: info[1]));
+                                          GetIt.I<CallsBloc>().add(
+                                              MakeCallEvent(
+                                                  receiverUserId: info[0]
+                                                          ['currentReceiver']
+                                                      .toString(),
+                                                  receiverCallName:
+                                                      widget.fullReceiverName,
+                                                  chatId: info[1]['channelId'],
+                                                  isVideo: false,
+                                                  payload: info[1]));
 
-                                    // GetIt.I<CallsBloc>().add(VideoCallEvent(
-                                    //     receiverUserId: info[0]['currentReceiver'],
-                                    //     payload: info[1]));
-                                    //todo we need to wait the response to get the new chat id and join the video call so the navigation will be in the listener
-                                  }
-                                  //todo else the chat already exist so we don't have the receiver id just the chat id
-                                  else {
-                                    debugPrint('widget.chatId${widget.chatId}');
-                                    debugPrint('info[0]${info[0]}');
+                                          // GetIt.I<CallsBloc>().add(VideoCallEvent(
+                                          //     receiverUserId: info[0]['currentReceiver'],
+                                          //     payload: info[1]));
+                                          //todo we need to wait the response to get the new chat id and join the video call so the navigation will be in the listener
+                                        }
+                                        //todo else the chat already exist so we don't have the receiver id just the chat id
+                                        else {
+                                          debugPrint(
+                                              'widget.chatId${widget.chatId}');
+                                          debugPrint('info[0]${info[0]}');
 
-                                    GetIt.I<CallsBloc>().add(MakeCallEvent(
-                                        isVideo: false,
-                                        receiverCallName:
-                                            widget.fullReceiverName,
-                                        chatId: info[0]['channelId'],
-                                        payload: info[0]));
-                                    //todo we have the id of the chat so we can move to the call immediately
-                                  }
-                                } else if (microphone.isDenied ||
-                                    status2.isDenied) {
-                                  showMessage(
-                                      LocaleKeys.permission_denied.tr());
-                                  openAppSettings();
-                                }
-                              } catch (e, st) {
-                                print(e);
-                                print(st);
-                              }
-                            },
-                            child: SvgPicture.asset(
-                              AppAssets.makeCallSvg,
-                              width: 25.w,
-                              height: 25,
-                            ),
-                          ),
+                                          GetIt.I<CallsBloc>().add(
+                                              MakeCallEvent(
+                                                  isVideo: false,
+                                                  receiverCallName:
+                                                      widget.fullReceiverName,
+                                                  chatId: info[0]['channelId'],
+                                                  payload: info[0]));
+                                          //todo we have the id of the chat so we can move to the call immediately
+                                        }
+                                      } else if (microphone.isDenied ||
+                                          status2.isDenied) {
+                                        showMessage(
+                                            LocaleKeys.permission_denied.tr());
+                                        openAppSettings();
+                                      }
+                                    } catch (e, st) {
+                                      print(e);
+                                      print(st);
+                                    }
+                                  },
+                                  child: SvgPicture.asset(
+                                    AppAssets.makeCallSvg,
+                                    width: 25.w,
+                                    height: 25,
+                                  ),
+                                ),
                           20.horizontalSpace
                         ],
                       ),

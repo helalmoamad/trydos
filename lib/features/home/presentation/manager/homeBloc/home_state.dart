@@ -62,6 +62,8 @@ enum CheckWithGetCartStatus {
 
 enum GetOLdCartItemsStatus { init, loading, success, failure }
 
+enum GetAllowedCountriesStatus { init, loading, success, failure }
+
 enum ConvertItemFromcartToOldCartStatus { init, loading, success, failure }
 
 enum GetStoriesForProductStatus { init, loading, success, failure }
@@ -130,6 +132,7 @@ class HomeState extends Equatable {
       this.searchWithOutFilterOffset,
       this.isChangedColorBeforeOpenPanel,
       this.updateProfileStatus,
+      this.getAllowedCountriesStatus,
       this.getProductDetailWithoutSimilarRelatedProductsStatus =
           GetProductDetailWithoutSimilarRelatedProductsStatus.init,
       this.getStartingSettingsStatus = GetStartingSettingsStatus.init,
@@ -208,7 +211,7 @@ class HomeState extends Equatable {
   final FirebaseSettingForNotificationModel?
       firebaseSettingForNotificationModel;
   final UpdateProfileStatus? updateProfileStatus;
-
+  final GetAllowedCountriesStatus? getAllowedCountriesStatus;
   final GetStartingSettingsStatus getStartingSettingsStatus;
   final Map<String, int> currentSelectedColorForEveryProduct;
   final GetCommentForProductStatus getCommentForProductStatus;
@@ -404,6 +407,7 @@ class HomeState extends Equatable {
         firebaseSettingForNotificationModel,
         cachedProductWithoutRelatedProductsModel,
         addOrRemoveLikeOfProductStatus,
+        getAllowedCountriesStatus,
         geColorsAndSizesForSearchModel
       ];
 
@@ -411,6 +415,7 @@ class HomeState extends Equatable {
       {final GetStartingSettingsStatus? getStartingSettingsStatus,
       final GetFirebaseSettingForNotificationStatus?
           getFirebaseSettingForNotificationStatus,
+      final GetAllowedCountriesStatus? getAllowedCountriesStatus,
       final GetCountryBoundaryByIsoStatus? getCoutryBoundaryByIsoStatus,
       final FirebaseSettingForNotificationModel?
           firebaseSettingForNotificationModel,
@@ -523,6 +528,8 @@ class HomeState extends Equatable {
           countryCoordinatesBorders ?? this.countryCoordinatesBorders,
       hideItemInOldCartStatus:
           hideItemInOldCartStatus ?? this.hideItemInOldCartStatus,
+      getAllowedCountriesStatus:
+          getAllowedCountriesStatus ?? this.getAllowedCountriesStatus,
       geColorsAndSizesForSearchModel:
           geColorsAndSizesForSearchModel ?? this.geColorsAndSizesForSearchModel,
       getCommentForProductModel:

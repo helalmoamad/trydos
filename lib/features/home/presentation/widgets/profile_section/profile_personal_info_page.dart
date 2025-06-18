@@ -75,7 +75,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
     fullNameController.text = homeBloc.state.userInfo?.name ?? "";
 
     homeBloc.state.userInfo?.alternativePhone ?? "";
-    if ((homeBloc.state.userInfo?.phone?.length ?? 0) > 0) {
+    if ((homeBloc.state.userInfo?.phone?.length ?? 0) > 4) {
       if (homeBloc.state.userInfo!.phone!.startsWith("+")) {
         phoneController.text =
             homeBloc.state.userInfo!.phone!.split("+").toList()[1];
@@ -88,7 +88,7 @@ class _ProfilePersonalInfoPageState extends State<ProfilePersonalInfoPage>
         phoneController.text, _getCountryCodeFromNumber(phoneController.text));
     phoneController.text = formattedPhone;
 
-    if ((homeBloc.state.userInfo?.alternativePhone?.length ?? 0) > 0) {
+    if ((homeBloc.state.userInfo?.alternativePhone?.length ?? 0) > 4) {
       if (homeBloc.state.userInfo!.alternativePhone!.startsWith("+")) {
         alternativePhoneController.text =
             homeBloc.state.userInfo!.alternativePhone!.split("+").toList()[1];

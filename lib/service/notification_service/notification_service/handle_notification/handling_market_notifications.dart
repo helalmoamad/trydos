@@ -11,6 +11,7 @@ import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
+import 'package:trydos/features/home/presentation/manager/orderBloc/order_event.dart';
 import 'package:trydos/features/home/presentation/pages/Order/orders_page.dart';
 import 'package:trydos/features/home/presentation/pages/cart_page_new.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
@@ -18,7 +19,6 @@ import 'package:trydos/features/home/presentation/pages/product_listing_page.dar
 import 'package:trydos/main.dart';
 
 import '../../../../features/home/presentation/manager/orderBloc/order_bloc.dart';
-import '../../../../features/home/presentation/manager/orderBloc/order_event.dart';
 
 enum TypeOfNotificationForMarketEnum {
   product_cart_expiration,
@@ -138,6 +138,7 @@ class HandlingMarketNotifications {
       if (data["type"] ==
           typeOfNotificationForMarket[
               TypeOfNotificationForMarketEnum.order_placed]) {
+        GetIt.I<OrderBloc>().add(ChangeOrderByGroupStatus(loading: true));
         //      homeBloc.add(RemoveItemsFromCartAfterOrderSuccessEvent());
         GetIt.I<HomeBloc>().add(GetCartItemEvent());
       }

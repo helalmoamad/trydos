@@ -34,12 +34,14 @@ ChatState _$ChatStateFromJson(Map<String, dynamic> json) => ChatState(
       height: (json['height'] as num?)?.toInt() ?? 0,
       imageCountInEachChat:
           (json['imageCountInEachChat'] as num?)?.toInt() ?? 0,
+      getAllChat: json['getAllChat'] as bool? ?? false,
       getSharedProductCountStatus: $enumDecodeNullable(
           _$GetSharedProductCountStatusEnumMap,
           json['getSharedProductCountStatus']),
       currentRequestIdForAvoidPreRequest:
           json['currentRequestIdForAvoidPreRequest'] as String? ?? "",
       fileCountInEachChat: (json['fileCountInEachChat'] as num?)?.toInt() ?? 0,
+      recipientUserId: json['recipientUserId'] as String?,
       getSharedProductCount:
           (json['getSharedProductCount'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
@@ -196,7 +198,9 @@ Map<String, dynamic> _$ChatStateToJson(ChatState instance) => <String, dynamic>{
       'firstMessageId': instance.firstMessageId,
       'secondMessageId': instance.secondMessageId,
       'slopMessageId': instance.slopMessageId,
+      'getAllChat': instance.getAllChat,
       'unReadMessagesFromAllChats': instance.unReadMessagesFromAllChats,
+      'recipientUserId': instance.recipientUserId,
       'currentChannelReceivedMessage': instance.currentChannelReceivedMessage,
       'scrollToParentMessage': instance.scrollToParentMessage,
       'chatToNavigateFromTerminated':

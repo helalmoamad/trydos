@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
+
 GetOrderRecipientIdModel getOrderRecipientIdModelFromJson(String str) =>
     GetOrderRecipientIdModel.fromJson(json.decode(str));
 
@@ -67,17 +69,21 @@ class GetOrderRecipientIdModel {
 class Data {
   final Recipient? recipient;
   final ChatParticipant? chatParticipant;
+  final Chat? chat;
 
   Data({
     this.recipient,
+    this.chat,
     this.chatParticipant,
   });
 
   Data copyWith({
     Recipient? recipient,
+    Chat? chat,
     ChatParticipant? chatParticipant,
   }) =>
       Data(
+        chat: chat ?? this.chat,
         recipient: recipient ?? this.recipient,
         chatParticipant: chatParticipant ?? this.chatParticipant,
       );
@@ -89,11 +95,15 @@ class Data {
         chatParticipant: json["chat_participant"] == null
             ? null
             : ChatParticipant.fromJson(json["chat_participant"]),
+        chat: (json["channel"] == null || json["channel"] == {})
+            ? null
+            : Chat.fromJson(json["channel"]),
       );
 
   Map<String, dynamic> toJson() => {
         "recipient": recipient?.toJson(),
         "chat_participant": chatParticipant?.toJson(),
+        "channel": chat?.toJson(),
       };
 }
 

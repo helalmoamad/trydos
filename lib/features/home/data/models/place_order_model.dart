@@ -1,3 +1,5 @@
+import 'package:trydos/features/home/data/models/get_orders_model.dart';
+
 class OrdersGroupModel {
   final bool? isSuccessful;
   final bool? hasContent;
@@ -5,11 +7,13 @@ class OrdersGroupModel {
   final String? message;
   final dynamic detailedError;
   final List<OrdersGroupDataModel>? data;
+  final List<OrderListModel>? orders;
 
   OrdersGroupModel({
     required this.isSuccessful,
     required this.hasContent,
     required this.code,
+    this.orders,
     required this.message,
     required this.detailedError,
     required this.data,
@@ -18,6 +22,7 @@ class OrdersGroupModel {
   OrdersGroupModel copyWith({
     bool? isSuccessful,
     bool? hasContent,
+    List<OrderListModel>? orders,
     int? code,
     String? message,
     dynamic detailedError,
@@ -27,6 +32,7 @@ class OrdersGroupModel {
         isSuccessful: isSuccessful ?? this.isSuccessful,
         hasContent: hasContent ?? this.hasContent,
         code: code ?? this.code,
+        orders: orders ?? this.orders,
         message: message ?? this.message,
         detailedError: detailedError ?? this.detailedError,
         data: data ?? this.data,
@@ -41,12 +47,19 @@ class OrdersGroupModel {
         detailedError: json["detailed_error"],
         data: List<OrdersGroupDataModel>.from(
             json["data"].map((x) => OrdersGroupDataModel.fromJson(x))),
+        orders: json["data"] == null
+            ? []
+            : List<OrderListModel>.from(
+                json["data"]!.map((x) => OrderListModel.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
         "isSuccessful": isSuccessful,
         "hasContent": hasContent,
         "code": code,
+        "orders": orders == null
+            ? []
+            : List<dynamic>.from(orders!.map((x) => x.toJson())),
         "message": message,
         "detailed_error": detailedError,
         "data": List<dynamic>.from(data!.map((x) => x.toJson())),

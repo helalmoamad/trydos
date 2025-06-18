@@ -1508,9 +1508,43 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             height: 100.h,
                           ));
                     }
+
                     return ProductDetailsBottomSheet(
-                      initOfferPrice: (productItem?.offerPrice ?? 0).toString(),
-                      initPrice: (productItem?.price ?? 0).toString(),
+                      initOfferPrice: (state
+                                          .cachedProductWithoutRelatedProductsModel[
+                                      productItem?.productId.toString()] !=
+                                  null
+                              ? state
+                                          .cachedProductWithoutRelatedProductsModel[
+                                              productItem?.productId
+                                                  .toString()]!
+                                          .product !=
+                                      null
+                                  ? state
+                                      .cachedProductWithoutRelatedProductsModel[
+                                          productItem?.productId.toString()]!
+                                      .product!
+                                      .offerPrice
+                                  : 0
+                              : 0)
+                          .toString(),
+                      initPrice: (state.cachedProductWithoutRelatedProductsModel[
+                                      productItem?.productId.toString()] !=
+                                  null
+                              ? state
+                                          .cachedProductWithoutRelatedProductsModel[
+                                              productItem?.productId
+                                                  .toString()]!
+                                          .product !=
+                                      null
+                                  ? state
+                                      .cachedProductWithoutRelatedProductsModel[
+                                          productItem?.productId.toString()]!
+                                      .product!
+                                      .price
+                                  : 0
+                              : 0)
+                          .toString(),
                       isGetFullProductDetails: widget.productItem == null,
                       currentSelectedColorAfterChangeVariant:
                           currentSelectedColorAfterChangeVariant,

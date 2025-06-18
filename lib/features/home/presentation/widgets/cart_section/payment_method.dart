@@ -47,7 +47,7 @@ PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
 class _PaymentMethodState extends State<PaymentMethod> {
   @override
   void initState() {
-    if (widget.amount > 0 &&
+    if ((widget.amount > 0 && !widget.fromSuccessOrder) &&
         !widget.paymentMethods.value.contains(PaymentMethods.trydosWallet)) {
       _addItemToPaymentMethods(
         widget.paymentMethods,

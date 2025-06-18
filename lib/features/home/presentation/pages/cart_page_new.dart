@@ -80,6 +80,9 @@ class _CartPageState extends State<CartPage> {
     boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
     orderBloc.add(GetCustomerAddressesEvent(setDefault: true));
     homeBloc.add(GetCartItemEvent());
+
+    authBloc.add(GetCustomerInfoEvent());
+
     fromForGroundNotification =
         appBloc.state.isFromForGroundNotification ?? false;
 
@@ -154,13 +157,17 @@ class _CartPageState extends State<CartPage> {
                             .currency!.symbol ??
                         "";
                     ////////////////////////////////
-                    HelperFunctions.slidingNavigation(
-                      context,
-                      CartDelivaryAddress(
-                        maxShippingDay: maxShippingDay.toString(),
-                        cartImages: cartImages,
-                        cartGroupId: cartGroupId,
-                        currencySympole: priceSymbol,
+                    orderBloc.add(GetCustomerWalletEvent(limit: 10, offset: 1));
+                    Future.delayed(
+                      Duration(milliseconds: 600),
+                      () => HelperFunctions.slidingNavigation(
+                        context,
+                        CartDelivaryAddress(
+                          maxShippingDay: maxShippingDay.toString(),
+                          cartImages: cartImages,
+                          cartGroupId: cartGroupId,
+                          currencySympole: priceSymbol,
+                        ),
                       ),
                     );
                   } else {

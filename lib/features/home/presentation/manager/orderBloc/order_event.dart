@@ -42,6 +42,15 @@ class GetOrdersByOrderGroupIDEvent extends OrderEvent {
   List<Object?> get props => [orderGroupId];
 }
 
+class ChangeOrderByGroupStatus extends OrderEvent {
+  final bool loading;
+  ChangeOrderByGroupStatus({this.loading = false});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [loading];
+}
+
 class GetOrdersByCartGroupIDEvent extends OrderEvent {
   final String cartGroupId;
 

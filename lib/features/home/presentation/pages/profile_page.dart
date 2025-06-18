@@ -675,8 +675,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                           child: Container(
                             height: 16,
                             child: Text(
-                              prefsRepository.myPhoneNumber == "0" ||
-                                      prefsRepository.myPhoneNumber == "+0"
+                              (prefsRepository.myPhoneNumber?.length ?? 0) < 4
                                   ? ""
                                   : (prefsRepository.myPhoneNumber ?? "")
                                           .startsWith("+")
