@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 GetHomeBoutiquesModel getHomeBoutiquesModelFromJson(String str) =>
     GetHomeBoutiquesModel.fromJson(json.decode(str));
 
@@ -203,7 +205,9 @@ class BunnerBoutique {
       );
 
   factory BunnerBoutique.fromJson(Map<String, dynamic> json) => BunnerBoutique(
-        filePath: json["file_path"],
+        filePath: json["file_path"]?.contains("cloudinary")
+            ? json["file_path"]
+            : ("${dotenv.env['Images_Url']}" + (json["file_path"])),
         originalWidth:
             json["original_width"].replaceAll(RegExp(r'[^0-9.]'), ''),
         originalHeight:

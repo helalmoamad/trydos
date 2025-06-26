@@ -513,8 +513,8 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
       },
       child: BlocBuilder<OrderBloc, OrderState>(
         buildWhen: (previous, current) =>
-            previous.getOrdersModel[""]?.paginationStatus !=
-            current.getOrdersModel[""]?.paginationStatus,
+            previous.getOrdersModel?[""]?.paginationStatus !=
+            current.getOrdersModel?[""]?.paginationStatus,
         builder: (context, state) {
           return Container(
             padding: EdgeInsets.all(10),
@@ -538,7 +538,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                       fontSize: 14,
                       height: 1.3),
                 ),
-                state.getOrdersModel[""]?.paginationStatus ==
+                state.getOrdersModel?[""]?.paginationStatus ==
                         PaginationStatus.loading
                     ? Container(
                         alignment: Alignment.center,

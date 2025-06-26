@@ -13,6 +13,7 @@ import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/pages/featued_products_page.dart';
+import 'package:trydos/features/home/presentation/pages/flash_deal_products_page.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:tuple/tuple.dart';
@@ -28,10 +29,13 @@ import 'package:trydos/features/home/presentation/widgets/product_listing/produc
 
 import '../../../../core/domin/repositories/prefs_repository.dart';
 
-class FeatureProductsWidget extends StatelessWidget {
+class FlashDealProductsWidget extends StatelessWidget {
   final ValueNotifier<int> tapIndexToAddProductToCart;
-  const FeatureProductsWidget(
-      {Key? key, required this.tapIndexToAddProductToCart})
+  final ValueNotifier<bool> productIsFlashDeal;
+  const FlashDealProductsWidget(
+      {Key? key,
+      required this.tapIndexToAddProductToCart,
+      required this.productIsFlashDeal})
       : super(key: key);
 
   @override
@@ -51,20 +55,20 @@ class FeatureProductsWidget extends StatelessWidget {
         buildWhen: (previous, current) =>
             previous
                 .getProductListingWithFiltersPaginationModels[
-                    "*featured*withoutFilter"]
+                    "*flashDeal*withoutFilter"]
                 ?.paginationStatus !=
             current
                 .getProductListingWithFiltersPaginationModels[
-                    "*featured*withoutFilter"]
+                    "*flashDeal*withoutFilter"]
                 ?.paginationStatus,
         builder: (context, state) {
           products = state.getProductListingWithFiltersPaginationModels[
-                      "*featured*withoutFilter"] ==
+                      "*flashDeal*withoutFilter"] ==
                   null
               ? []
               : state
                   .getProductListingWithFiltersPaginationModels[
-                      "*featured*withoutFilter"]!
+                      "*flashDeal*withoutFilter"]!
                   .items;
           return products.isNullOrEmpty
               ? SizedBox.shrink()
@@ -79,11 +83,11 @@ class FeatureProductsWidget extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           SvgPicture.asset(
-                            AppAssets.productFeaturesSvg,
+                            AppAssets.flashDealSvg,
                             height: 18,
                           ),
                           MyTextWidget(
-                            " ${LocaleKeys.feature_product.tr()}",
+                            " ${LocaleKeys.flash_deal.tr()}",
                             style: TextStyle(color: Colors.black, fontSize: 14),
                           ),
                         ],
@@ -114,7 +118,7 @@ class FeatureProductsWidget extends StatelessWidget {
                                                       cashedOrginalBoutique:
                                                           true,
                                                       boutiqueSlug:
-                                                          "*featured*",
+                                                          "*flashDeal*",
                                                       getWithPagination: false,
                                                       offset: 1));
                                               Future.delayed(
@@ -123,20 +127,23 @@ class FeatureProductsWidget extends StatelessWidget {
                                                           .push(
                                                         MaterialPageRoute(
                                                           builder: (ctx) =>
-                                                              FeaturedProductsPage(),
+                                                              FlashDealProductsPage(),
                                                         ),
                                                       ));
                                             },
                                             child: Stack(
                                               children: [
                                                 ProductItem(
+                                                  fromFlashDeal: true,
                                                   fromHomePage: true,
+                                                  productIsFlashDeal:
+                                                      productIsFlashDeal,
                                                   displayImageColors: true,
                                                   tapIndexToAddProductToCart:
                                                       tapIndexToAddProductToCart,
                                                   key: TestVariables.kTestMode
                                                       ? Key(
-                                                          'featuresProduct${products[index].slug}')
+                                                          '*flashDeal*Product${products[index].slug}')
                                                       : null,
                                                   slidingModeItem: slidingMode,
                                                   productItem: products[index],
@@ -207,13 +214,16 @@ class FeatureProductsWidget extends StatelessWidget {
                                                     ));
                                           },
                                           child: ProductItem(
+                                            fromFlashDeal: true,
                                             fromHomePage: true,
                                             displayImageColors: true,
+                                            productIsFlashDeal:
+                                                productIsFlashDeal,
                                             tapIndexToAddProductToCart:
                                                 tapIndexToAddProductToCart,
                                             key: TestVariables.kTestMode
                                                 ? Key(
-                                                    '"featuresPtoduct"${products[index].slug}')
+                                                    '*flashDeal*Product${products[index].slug}')
                                                 : null,
                                             slidingModeItem: slidingMode,
                                             productItem: products[index],

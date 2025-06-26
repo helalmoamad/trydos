@@ -39,6 +39,7 @@ class GetProductsWithFiltersParams {
   final int? limit;
   final String? scroll_id;
   final String? boutiqueSlug;
+  final bool? flashDeal;
   final List<String>? boutiqueSlugs;
 
   final List<String>? categorySlugs;
@@ -50,6 +51,7 @@ class GetProductsWithFiltersParams {
       this.attributes,
       this.categories,
       this.colors,
+      this.flashDeal = false,
       this.scroll_id,
       //required this.fromMarket,
       this.boutiqueSlug,
@@ -65,6 +67,7 @@ class GetProductsWithFiltersParams {
         "category": category,
         "price": prices.toString(),
         "brands": brands.toString(),
+        "flash-deal": flashDeal.toString(),
         "attributes": "${attributes}",
         "tags_names":
             ((GetIt.I<PrefsRepository>().getTagsInUrlToFilter.isNullOrEmpty)

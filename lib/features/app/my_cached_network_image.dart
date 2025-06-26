@@ -139,7 +139,7 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage>
           width: widget.width,
           color: widget.imageColor,
           useOldImageOnUrlChange: true,
-          //  cacheManager: CustomCacheManagers(),
+          // cacheManager: CustomCacheManagers._instance,
           height: widget.height,
           //   memCacheHeight: widget.height.round() * pixelRatio,
           //  memCacheWidth: widget.width.round() * pixelRatio,
@@ -251,7 +251,7 @@ class CustomCacheManagers extends CacheManager {
 
   CustomCacheManagers._internal()
       : super(Config(key,
-            maxNrOfCacheObjects: 300, stalePeriod: const Duration(days: 7)));
+            maxNrOfCacheObjects: 500, stalePeriod: const Duration(days: 21)));
 }
 
 /*class CustomCacheManagers extends DefaultCacheManager {
@@ -298,14 +298,14 @@ String addSuitableWidthAndHeightToImage({
       ordinalWidth != 0) {
     url = ordinalWidth >= ordinalHeight
         ? list[0] +
-            'upload/f_auto,q_auto,c_scale,h_${fHeight != 0 ? fHeight : fWidth}' +
+            'upload/c_pad,so_0,f_auto,q_auto:good,fl_lossy,c_scale,h_${fHeight != 0 ? fHeight : fWidth}' +
             list[1]
         : list[0] +
-            'upload/f_auto,q_auto,c_scale,w_${fWidth != 0 ? fWidth : fHeight}' +
+            'upload/c_pad,so_0,f_auto,q_auto:good,fl_lossy,c_scale,w_${fWidth != 0 ? fWidth : fHeight}' +
             list[1];
   } else {
     url = list[0] +
-        'upload/f_auto,q_auto,c_scale,h_${fHeight != 0 ? fHeight : fWidth}' +
+        'upload/c_pad,so_0,f_auto,q_auto:good,fl_lossy,c_scale,h_${fHeight != 0 ? fHeight : fWidth}' +
         list[1];
   }
   return url;

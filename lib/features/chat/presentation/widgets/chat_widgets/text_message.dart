@@ -133,7 +133,8 @@ class _TextMessageState extends ThemeState<TextMessage> {
         }
       },
       builder: (context, state) {
-        print("object////////////////////////////////////////");
+        print(
+            "object///////////////////////////////////////${widget.userMessagePhoto}/");
         print(state.currentMessage.contains(widget.messageId));
         return Column(
           key: key,
@@ -450,13 +451,13 @@ class _TextMessageState extends ThemeState<TextMessage> {
                                         widget.userMessagePhoto != null
                                             ? MyCachedNetworkImage(
                                                 imageUrl: (widget
-                                                            .userMessagePhoto
-                                                            .toString()
-                                                            .contains(
-                                                                "cloudinary")
-                                                        ? ""
-                                                        : "${dotenv.env['Profile_Images_Url']}") +
-                                                    widget.userMessagePhoto!,
+                                                        .userMessagePhoto
+                                                        .toString()
+                                                        .contains("cloudinary")
+                                                    ? widget.userMessagePhoto!
+                                                    : ("${dotenv.env['Images_Url']}") +
+                                                        widget
+                                                            .userMessagePhoto!),
                                                 imageFit: BoxFit.cover,
                                                 radius: 8,
                                                 progressIndicatorBuilderWidget:

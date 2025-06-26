@@ -121,7 +121,7 @@ class _AnswerCallState extends State<AnswerCall> {
                                               .toString()
                                               .contains("cloudinary")
                                           ? ""
-                                          : "${dotenv.env['Profile_Images_Url']}") +
+                                          : "${dotenv.env['Images_Url']}") +
                                       widget.callerPhoto!,
                                   imageFit: BoxFit.cover,
                                   progressIndicatorBuilderWidget:

@@ -187,7 +187,6 @@ abstract class LocaleKeys {
   static const click_to_show_all_discount = 'click_to_show_all_discount';
   static const back_to_home = 'back_to_home';
   static const confirm = 'confirm';
-  static const other = 'other';
   static const you_must_wait_for_some_seconds_before_try_again =
       'you_must_wait_for_some_seconds_before_try_again';
   static const it_has_been_along_time_since_your_account =
@@ -331,7 +330,7 @@ abstract class LocaleKeys {
   static const enter_alternative_recipient_phone =
       'enter_alternative_recipient_phone';
   static const add_save = 'add_save';
-  static const the_field_must_not_be_empty = 'the_field_must_not_be_empty.';
+  static const the_field_must_not_be_empty = 'the_field_must_not_be_empty';
   static const select = 'select';
   static const show_address_list = 'show_address_list';
   static const shipment_will_be_sent_to_the_address_below =
@@ -533,4 +532,76 @@ abstract class LocaleKeys {
   static const i_agree_cancel = 'i_agree_cancel';
   static const i_disagree = 'i_disagree';
   static const modify_close = 'modify_close';
+  static const action_about_product = 'action_about_product';
+  static const change_product_request = 'change_product_request';
+  static const change_size_color_other = 'change_size_color_other';
+  static const return_this_product = 'return_this_product';
+  static const return_this_product_in_24_hours_and_back_your_money =
+      'return_this_product_in_24_hours_and_back_your_money';
+  static const report_this_product = 'report_this_product';
+  static const delivery_time_delivery_man_delivery_car =
+      'delivery_time_delivery_man_delivery_car';
+  static const hide_this_product = 'hide_this_product';
+  static const hide_this_product_from_list = 'hide_this_product_from_list';
+  static const you_can_return_product_without_conditions =
+      'you_can_return_product_without_conditions';
+  static const return_policy_get_full_refund = 'return_policy_get_full_refund';
+  static const to_your_account = 'to_your_account';
+  static const why_was_product_return = 'why_was_product_return';
+  static const i_didnt_like = 'i_didnt_like';
+  static const bad_quality = 'bad_quality';
+  static const it_arrived_damaged = 'it_arrived_damaged';
+  static const i_received_different_product = 'i_received_different_product';
+  static const different_color = 'different_color';
+  static const differen_sizes = 'differen_sizes';
+  static const completely_different = 'completely_different';
+  static const return_request = 'return_request';
+  static const add_photo = 'add_photo';
+  static const please_add_photos_of_product_received =
+      'please_add_photos_of_product_received';
+  static const about_return_your_product = 'about_return_your_product ';
+  static const you_will_not_be_charged_any_fees =
+      'you_will_not_be_charged_any_fees';
+  static const return_requested = 'return_requested';
+  static const product_return_has_been_requested =
+      'product_return_has_been_requested';
+  static const product_return_request_approve =
+      'product_return_request_approve';
+  static const waiting = 'waiting';
+  static const cancel_return_request_get = 'cancel_return_request_get';
+  static const product_collection_within = 'product_collection_within';
+  static const back_your_money = 'back_your_money';
+  static const product_has_been_returned_successfully =
+      'product_has_been_returned_successfully';
+  static const back_to_your_wallet = 'back_to_your_wallet';
+  static const not_delivery = 'not_delivery';
+  static const you_can_cancel_product_without_condition =
+      'you_can_cancel_product_without_condition';
+  static const cancel_policy_refund = 'cancel_policy_refund';
+  static const you_can_change_delivery_address =
+      'you_can_change_delivery_address';
+  static const you_can_change_delivery_address_delivery_note =
+      'you_can_change_delivery_address_delivery_note';
+  static const delivery_address = 'delivery_address';
+  static const delivery_note = 'delivery_note';
+  static const change_selected_address = 'change_selected_address';
+  static const change_request = 'change_request';
+  static const about_change_request_address = 'about_change_request_address';
+  static const terms_of_change_address_terms = 'terms_of_change_address_terms';
+  static const i_agree_change = 'i_agree_change';
+  static const you_can_change_variant_product_without_conditions =
+      'you_can_change_variant_product_without_conditions';
+  static const change_color = 'change_color';
+  static const change_size = 'change_size';
+  static const change_qty = 'change_qty';
+  static const change_from = 'change_from';
+  static const qty = 'qty';
+  static const other = 'other';
+  static const change_terms = 'change_terms';
+  static const cancel_this_order = 'cancel_this_order';
+  static const about_cancel_product = 'about_cancel_product';
+  static const action_about_order = 'action_about_order';
+  static const cancel_request = 'cancel_request';
+  static const why_was_product_cancel = 'why_was_product_cancel';
+  static const flash_deal = 'flash_deal';
 }

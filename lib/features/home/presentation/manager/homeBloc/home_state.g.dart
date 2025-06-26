@@ -45,6 +45,9 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
           json['isChangedColorBeforeOpenPanel'] as bool?,
       updateProfileStatus: $enumDecodeNullable(
           _$UpdateProfileStatusEnumMap, json['updateProfileStatus']),
+      getAllowedCountriesStatus: $enumDecodeNullable(
+          _$GetAllowedCountriesStatusEnumMap,
+          json['getAllowedCountriesStatus']),
       getProductDetailWithoutSimilarRelatedProductsStatus: $enumDecodeNullable(
               _$GetProductDetailWithoutSimilarRelatedProductsStatusEnumMap,
               json['getProductDetailWithoutSimilarRelatedProductsStatus']) ??
@@ -339,6 +342,8 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
           instance.firebaseSettingForNotificationModel?.toJson(),
       'updateProfileStatus':
           _$UpdateProfileStatusEnumMap[instance.updateProfileStatus],
+      'getAllowedCountriesStatus': _$GetAllowedCountriesStatusEnumMap[
+          instance.getAllowedCountriesStatus],
       'getStartingSettingsStatus': _$GetStartingSettingsStatusEnumMap[
           instance.getStartingSettingsStatus]!,
       'currentSelectedColorForEveryProduct':
@@ -540,6 +545,13 @@ const _$UpdateProfileStatusEnumMap = {
   UpdateProfileStatus.loading: 'loading',
   UpdateProfileStatus.success: 'success',
   UpdateProfileStatus.failure: 'failure',
+};
+
+const _$GetAllowedCountriesStatusEnumMap = {
+  GetAllowedCountriesStatus.init: 'init',
+  GetAllowedCountriesStatus.loading: 'loading',
+  GetAllowedCountriesStatus.success: 'success',
+  GetAllowedCountriesStatus.failure: 'failure',
 };
 
 const _$GetProductDetailWithoutSimilarRelatedProductsStatusEnumMap = {

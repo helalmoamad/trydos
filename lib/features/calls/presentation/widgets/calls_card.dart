@@ -271,7 +271,7 @@ class _CallsCardState extends ThemeState<CallsCard> {
                                         .toString()
                                         .contains("cloudinary")
                                     ? ""
-                                    : "${dotenv.env['Profile_Images_Url']}") +
+                                    : "${dotenv.env['Images_Url']}") +
                                 widget.photoPath,
                             imageFit: BoxFit.cover,
                             progressIndicatorBuilderWidget: TrydosLoader(),

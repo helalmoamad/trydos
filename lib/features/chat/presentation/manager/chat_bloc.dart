@@ -1154,6 +1154,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
         isFailedTheFirstTime.add('UpdateProfileInChatEvent');
       }
     }, (r) {
+      _prefsRepository.setMyChatName(event.name);
+      _prefsRepository.setMyChatPhoto(event.photo);
       isFailedTheFirstTime.remove('UpdateProfileInChatEvent');
     });
   }

@@ -104,11 +104,11 @@ class CallMessage extends StatelessWidget {
                       userMessagePhoto != null
                           ? MyCachedNetworkImage(
                               imageUrl: (userMessagePhoto
-                                          .toString()
-                                          .contains("cloudinary")
-                                      ? ""
-                                      : "${dotenv.env['Profile_Images_Url']}") +
-                                  userMessagePhoto!,
+                                      .toString()
+                                      .contains("cloudinary")
+                                  ? userMessagePhoto!
+                                  : ("${dotenv.env['Images_Url']}") +
+                                      userMessagePhoto!),
                               progressIndicatorBuilderWidget: TrydosLoader(),
                               imageFit: BoxFit.cover,
                               radius: 8,

@@ -290,11 +290,19 @@ class PrefsRepositoryImpl extends PrefsRepository {
       _preferences.setString(PrefsKey.marketName, name);
 
   @override
-  String? get myChatPhoto => _preferences.getString(PrefsKey.chatPhoto);
+  String? get myChatPhoto {
+    String? photo = _preferences.getString(PrefsKey.chatPhoto);
+    if (photo == "" || photo == null) {
+      return null;
+    }
+    return photo.contains("cloudinary")
+        ? photo
+        : ("${dotenv.env['Images_Url']}" + photo);
+  }
 
   @override
   Future<bool> setMyChatPhoto(String? photo) =>
-      _preferences.setString(PrefsKey.chatPhoto, photo ?? 'null');
+      _preferences.setString(PrefsKey.chatPhoto, photo ?? "");
 
   @override
   Future<bool> addFcmToken(String fcmToken) {
@@ -752,7 +760,8 @@ class PrefsRepositoryImpl extends PrefsRepository {
     } else {
       if (list.length > 10) {
         for (var i = 10; i < list.length; i++) {
-          if (!(list[i].contains("*featured*"))) {
+          if (!(list[i].contains("*featured*") ||
+              list[i].contains("*flashDeal*"))) {
             _preferences.remove(list[i]);
             newList.remove(list[i]);
           }
@@ -846,7 +855,7 @@ class PrefsRepositoryImpl extends PrefsRepository {
     photo = _preferences.getString(PrefsKey.profilePhoto) ?? "";
     photo = (photo.contains("cloudinary")
         ? photo
-        : ("${dotenv.env['Profile_Images_Url']}" + photo));
+        : ("${dotenv.env['Images_Url']}" + photo));
     print(photo);
     return photo;
   }

@@ -186,7 +186,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                     .toString()
                                                     .contains("cloudinary")
                                                 ? ""
-                                                : "${dotenv.env['Profile_Images_Url']}") +
+                                                : "${dotenv.env['Images_Url']}") +
                                             widget.senderUserImage!,
                                         imageFit: BoxFit.cover,
                                         progressIndicatorBuilderWidget:
@@ -287,7 +287,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                         .toString()
                                                         .contains("cloudinary")
                                                     ? ""
-                                                    : "${dotenv.env['Profile_Images_Url']}") +
+                                                    : "${dotenv.env['Images_Url']}") +
                                                 widget.senderUserImage!,
                                             imageFit: BoxFit.cover,
                                             progressIndicatorBuilderWidget:
@@ -366,7 +366,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                             .contains(
                                                                 "cloudinary")
                                                         ? ""
-                                                        : "${dotenv.env['Profile_Images_Url']}") +
+                                                        : "${dotenv.env['Images_Url']}") +
                                                     widget.senderUserImage!,
                                                 imageFit: BoxFit.cover,
                                                 progressIndicatorBuilderWidget:
@@ -447,7 +447,7 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                                 .contains(
                                                                     "cloudinary")
                                                             ? ""
-                                                            : "${dotenv.env['Profile_Images_Url']}") +
+                                                            : "${dotenv.env['Images_Url']}") +
                                                         widget.senderUserImage!,
                                                     imageFit: BoxFit.cover,
                                                     withImageShadow: true,
@@ -524,8 +524,9 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                                 .toString()
                                                                 .contains(
                                                                     "cloudinary")
-                                                            ? ""
-                                                            : "${dotenv.env['Profile_Images_Url']}") +
+                                                            ? widget
+                                                                .senderUserImage!
+                                                            : "${dotenv.env['Images_Url']}") +
                                                         widget.senderUserImage!,
                                                     imageFit: BoxFit.cover,
                                                     radius: 8,

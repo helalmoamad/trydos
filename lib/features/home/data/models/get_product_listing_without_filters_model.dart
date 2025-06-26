@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:trydos/features/home/data/models/get_product_detail_without_related_products_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart';
 
@@ -114,6 +115,8 @@ class Products {
   final List<Thumbnail>? images;
   final List<Category>? categories;
   final Category? category;
+  final List<String>? labelNames;
+  final String? flashDealEndDate;
   final int? collectedAfterOrdering;
   final Brand? brand;
   final List<Color>? colors;
@@ -186,6 +189,8 @@ class Products {
     this.offerPriceFormatted,
     this.isFavourite,
     this.isActive,
+    this.labelNames,
+    this.flashDealEndDate,
     this.rating,
     this.flashDealDetails,
     this.flashDealMaxAllowedQuantity,
@@ -260,6 +265,8 @@ class Products {
     List<Variation>? variation,
     List<ChoiceOption>? choiceOptions,
     bool? hasDiscount,
+    List<String>? labelNames,
+    String? flashDealEndDate,
     bool? hasTax,
     String? deliveryAt,
     String? tax,
@@ -320,6 +327,8 @@ class Products {
         hasDiscount: hasDiscount ?? this.hasDiscount,
         hasTax: hasTax ?? this.hasTax,
         deliveryAt: deliveryAt ?? this.deliveryAt,
+        labelNames: labelNames ?? this.labelNames,
+        flashDealEndDate: flashDealEndDate ?? this.flashDealEndDate,
         tax: tax ?? this.tax,
         unitPrice: unitPrice ?? this.unitPrice,
         countryIsRestricted: countryIsRestricted ?? this.countryIsRestricted,
@@ -391,6 +400,10 @@ class Products {
       collectedAfterOrdering: json["collected_after_ordering"],
       isFavourite: json["is_favourite"],
       isActive: json["is_active"],
+      labelNames: json["label_names"] == null
+          ? []
+          : List<String>.from(json["label_names"]!.map((x) => x)),
+      flashDealEndDate: json["flash_deal_end_date"],
       rating: json["rating"] == null ? null : Rating.fromJson(json["rating"]),
       flashDealDetails: json["flash_deal_details"],
       flashDealMaxAllowedQuantity: json["flash_deal_max_allowed_quantity"],
@@ -432,9 +445,8 @@ class Products {
       hasWholeSale: json["has_whole_sale"],
       wholeSaleLink: json["whole_sale_link"],
       // viewsCount: json["views_count"],
-      descriptors: json["descriptors"] == null
-          ? []
-          : List<DataDescriptor>.from(json["descriptors"]!.map((x) => DataDescriptor.fromJson(x))),
+      descriptors:
+          json["descriptors"] == null ? [] : List<DataDescriptor>.from(json["descriptors"]!.map((x) => DataDescriptor.fromJson(x))),
       labels: json["labels"] == null ? [] : List<Label>.from(json["labels"]!.map((x) => Label.fromJson(x))),
       isProductNotifiedForUser: json['is_product_notify_for_user'] ?? false);
 
@@ -469,6 +481,11 @@ class Products {
         "is_favourite": isFavourite,
         "is_active": isActive,
         "rating": rating?.toJson(),
+        "label_names": labelNames == null
+            ? []
+            : List<dynamic>.from(labelNames!.map((x) => x)),
+
+        "flash_deal_end_date": flashDealEndDate,
         "shipping_cost_multiply_with_quantity":
             shippingCostMultiplyWithQuantity,
         "shipping_cost": shippingCost?.toDouble(),
@@ -586,7 +603,9 @@ class Thumbnail {
       );
 
   factory Thumbnail.fromJson(Map<String, dynamic> json) => Thumbnail(
-        filePath: json["file_path"],
+        filePath: json["file_path"]?.contains("cloudinary")
+            ? json["file_path"]
+            : ("${dotenv.env['Images_Url']}" + (json["file_path"])),
         originalWidth:
             json["original_width"].replaceAll(RegExp(r'[^0-9.]'), ''),
         originalHeight:

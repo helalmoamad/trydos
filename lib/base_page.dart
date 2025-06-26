@@ -764,6 +764,14 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                             boutiqueSlug: "*featured*",
                                             category: null,
                                             searchText: null));
+                                    GetIt.I<BoutiqueBloc>().add(
+                                        GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                            categorySlugs: [],
+                                            cashedOrginalBoutique: true,
+                                            fromHomePageSearch: false,
+                                            boutiqueSlug: "*flashDeal*",
+                                            category: null,
+                                            searchText: null));
                                     /* if (prefsRepository.marketToken != null) {
                                       homeBloc
                                           .add(GetCurrencyForCountryEvent());

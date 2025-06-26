@@ -4,6 +4,7 @@
 
 import 'dart:convert';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart';
 
 GetProductDetailWithoutRelatedProductsModel
@@ -56,7 +57,8 @@ class Product {
   final bool? hasDiscount;
 
   final String? deliveryAt;
-
+  final List<String>? labelNames;
+  final String? flashDealEndDate;
   final String? slug;
   final int? availableQuantity;
   final int? leftStock;
@@ -72,7 +74,7 @@ class Product {
   final int? countOfLikes;
   final int? collectedAfterOrdering;
   final int? countOfPieces;
-
+  final bool? isFeatured;
   final int? viewsCount;
   final List<DataDescriptor>? descriptors;
   final List<Label>? labels;
@@ -109,7 +111,10 @@ class Product {
     this.boutique,
     this.availableQuantity,
     this.leftStock,
+    this.labelNames,
+    this.flashDealEndDate,
     this.shippingDays,
+    this.isFeatured,
     this.reviewsCount,
     this.viewsCount,
     this.labels,
@@ -117,52 +122,54 @@ class Product {
     this.countryIsRestricted,
   });
 
-  Product copyWith({
-    int? id,
-    dynamic description,
-    dynamic model,
-    dynamic features,
-    String? slug,
-    bool? isActive,
-    List<Color>? colors,
-    List<Thumbnail>? images,
-    List<SyncColorImage>? syncColorImages,
-    List<Variation>? variation,
-    List<ChoiceOption>? choiceOptions,
-    bool? hasDiscount,
-    bool? hasTax,
-    String? priceFormatted,
-    double? price,
-    double? offerPrice,
-    String? offerPriceFormatted,
-    String? deliveryAt,
-    int? collectedAfterOrdering,
-    String? tax,
-    int? countOfPieces,
-    String? unitPrice,
-    int? availableQuantity,
-    int? leftStock,
-    int? reviewsCount,
-    dynamic sellerId,
-    int? shippingDays,
-    BoutiqueForCart? boutique,
-    bool? isLiked,
-    int? countOfLikes,
-    Seller? seller,
-    Shop? shop,
-    bool? isFavSeller,
-    bool? shippingCostMultiplyWithQuantity,
-    double? shippingCost,
-    List<dynamic>? reviews,
-    bool? hasWholeSale,
-    dynamic wholeSaleLink,
-    int? viewsCount,
-    String? maxAllowedQty,
-    List<DataDescriptor>? descriptors,
-    List<Label>? labels,
-    bool? isProductNotifiedForUser,
-    bool? countryIsRestricted,
-  }) =>
+  Product copyWith(
+          {int? id,
+          dynamic description,
+          dynamic model,
+          dynamic features,
+          String? slug,
+          bool? isActive,
+          List<Color>? colors,
+          List<Thumbnail>? images,
+          List<SyncColorImage>? syncColorImages,
+          List<Variation>? variation,
+          List<ChoiceOption>? choiceOptions,
+          bool? hasDiscount,
+          bool? hasTax,
+          String? priceFormatted,
+          double? price,
+          double? offerPrice,
+          String? offerPriceFormatted,
+          String? deliveryAt,
+          int? collectedAfterOrdering,
+          String? tax,
+          List<String>? labelNames,
+          String? flashDealEndDate,
+          int? countOfPieces,
+          String? unitPrice,
+          int? availableQuantity,
+          int? leftStock,
+          int? reviewsCount,
+          dynamic sellerId,
+          int? shippingDays,
+          BoutiqueForCart? boutique,
+          bool? isLiked,
+          int? countOfLikes,
+          Seller? seller,
+          Shop? shop,
+          bool? isFavSeller,
+          bool? shippingCostMultiplyWithQuantity,
+          double? shippingCost,
+          List<dynamic>? reviews,
+          bool? hasWholeSale,
+          dynamic wholeSaleLink,
+          int? viewsCount,
+          String? maxAllowedQty,
+          List<DataDescriptor>? descriptors,
+          List<Label>? labels,
+          bool? isProductNotifiedForUser,
+          bool? countryIsRestricted,
+          bool? isFeatured}) =>
       Product(
         id: id ?? this.id,
         description: description ?? this.description,
@@ -185,6 +192,8 @@ class Product {
         shippingCost: shippingCost ?? this.shippingCost,
         price: price ?? this.price,
         priceFormatted: priceFormatted ?? this.priceFormatted,
+        labelNames: labelNames ?? this.labelNames,
+        flashDealEndDate: flashDealEndDate ?? this.flashDealEndDate,
         offerPrice: offerPrice ?? this.offerPrice,
         offerPriceFormatted: offerPriceFormatted ?? this.offerPriceFormatted,
         collectedAfterOrdering:
@@ -199,6 +208,7 @@ class Product {
         countryIsRestricted: countryIsRestricted ?? this.countryIsRestricted,
         isProductNotifiedForUser:
             isProductNotifiedForUser ?? this.isProductNotifiedForUser,
+        isFeatured: isFeatured ?? this.isFeatured,
       );
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
@@ -225,6 +235,10 @@ class Product {
           : BoutiqueForCart.fromJson(json["boutique"]),
       collectedAfterOrdering: json["collected_after_ordering"],
       price: (json["price"] ?? 0).toDouble(),
+      labelNames: json["label_names"] == null
+          ? []
+          : List<String>.from(json["label_names"]!.map((x) => x)),
+      flashDealEndDate: json["flash_deal_end_date"],
       priceFormatted: json["price_formatted"] ?? "",
       offerPriceFormatted: json["offer_price_formatted"] ?? "",
       offerPrice: (json["offer_price"] ?? 0).toDouble(),
@@ -247,6 +261,7 @@ class Product {
       leftStock: json["Left_stock"],
       // reviewsCount: json["reviews_count"],
       shippingDays: json["shipping_days"],
+      isFeatured: json["is_featured"],
 
       // viewsCount: json["views_count"],
       descriptors: json["descriptors"] == null
@@ -270,6 +285,11 @@ class Product {
             ? []
             : List<dynamic>.from(choiceOptions!.map((x) => x.toJson())),
         "has_discount": hasDiscount,
+        "label_names": labelNames == null
+            ? []
+            : List<dynamic>.from(labelNames!.map((x) => x)),
+
+        "flash_deal_end_date": flashDealEndDate,
         "collected_after_ordering": collectedAfterOrdering,
         "delivery_at": deliveryAt,
         "slug": slug,
@@ -298,6 +318,7 @@ class Product {
 
         "shipping_cost": shippingCost?.toDouble(),
         "max_allowed_qty": maxAllowedQty,
+        "is_featured": isFeatured,
 
         // "views_count": viewsCount,
         "descriptors": descriptors == null
@@ -373,7 +394,9 @@ class Icon {
       );
 
   factory Icon.fromJson(Map<String, dynamic> json) => Icon(
-        filePath: json["file_path"],
+        filePath: json["file_path"]?.contains("cloudinary")
+            ? json["file_path"]
+            : ("${dotenv.env['Images_Url']}" + (json["file_path"])),
         originalWidth: json["original_width"],
         originalHeight: json["original_height"],
       );

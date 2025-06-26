@@ -103,7 +103,7 @@ class OrderListModel {
   final int? customerId;
   final String? paymentStatus;
   final OrderStatus? orderStatus;
-  final bool? statusIsOutForDelivary;
+
   final OrderStatus? orderGroupStatus;
   final OrderStatus? paymentMethod;
   final String? transactionRef;
@@ -153,7 +153,6 @@ class OrderListModel {
     this.orderGroupId,
     this.verificationCode,
     this.orderNote,
-    this.statusIsOutForDelivary,
     this.sellerId,
     this.createdAt,
     this.orderCanReturn,
@@ -177,7 +176,6 @@ class OrderListModel {
     double? partialPaymentByWallet,
     double? discountAmount,
     double? shippingCost,
-    bool? statusIsOutForDelivary,
     int? shippingAddress,
     ShippingAddressData? shippingAddressData,
     dynamic billingAddress,
@@ -217,8 +215,6 @@ class OrderListModel {
         billingAddressData: billingAddressData ?? this.billingAddressData,
         discountType: discountType ?? this.discountType,
         couponCode: couponCode ?? this.couponCode,
-        statusIsOutForDelivary:
-            statusIsOutForDelivary ?? this.statusIsOutForDelivary,
         shippingMethodId: shippingMethodId ?? this.shippingMethodId,
         orderGroupId: orderGroupId ?? this.orderGroupId,
         verificationCode: verificationCode ?? this.verificationCode,
@@ -330,7 +326,7 @@ class OrderListDetailModel {
   final OrderProductDetailsModel? productDetails;
   final double? qty;
   final double? price;
-  OrderStatus? orderProductStatus;
+
   final double? discount;
   final double? priceAfterDiscount;
   final double? tax;
@@ -359,7 +355,6 @@ class OrderListDetailModel {
     this.discount,
     this.priceAfterDiscount,
     this.tax,
-    this.orderProductStatus,
     this.deliveryStatus,
     this.paymentStatus,
     this.shippingMethodId,
@@ -384,7 +379,6 @@ class OrderListDetailModel {
     double? qty,
     double? price,
     double? discount,
-    OrderStatus? orderProductStatus,
     double? priceAfterDiscount,
     double? tax,
     String? deliveryStatus,
@@ -425,7 +419,6 @@ class OrderListDetailModel {
         refundRequestStatus: refundRequestStatus ?? this.refundRequestStatus,
         isOdooProduct: isOdooProduct ?? this.isOdooProduct,
         odooId: odooId ?? this.odooId,
-        orderProductStatus: orderProductStatus ?? this.orderProductStatus,
         odooOrderId: odooOrderId ?? this.odooOrderId,
         image: image ?? this.image,
       );

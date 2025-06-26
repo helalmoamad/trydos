@@ -45,10 +45,12 @@ OrderState _$OrderStateFromJson(Map<String, dynamic> json) => OrderState(
       getOrdersModel: (json['getOrdersModel'] as Map<String, dynamic>?)?.map(
             (k, e) => MapEntry(
                 k,
-                PaginationModel<OrderListModel>.fromJson(
+                PaginationModel<List<OrderListModel>>.fromJson(
                     e as Map<String, dynamic>,
-                    (value) => OrderListModel.fromJson(
-                        value as Map<String, dynamic>))),
+                    (value) => (value as List<dynamic>)
+                        .map((e) =>
+                            OrderListModel.fromJson(e as Map<String, dynamic>))
+                        .toList())),
           ) ??
           const {},
       orderTotalSize: (json['orderTotalSize'] as num?)?.toInt() ?? 0,
@@ -119,10 +121,10 @@ Map<String, dynamic> _$OrderStateToJson(OrderState instance) =>
       'customerWalletModel': instance.customerWalletModel?.toJson(),
       'getCustomerWalletStatus':
           _$GetCustomerWalletStatusEnumMap[instance.getCustomerWalletStatus],
-      'getOrdersModel': instance.getOrdersModel.map((k, e) => MapEntry(
+      'getOrdersModel': instance.getOrdersModel?.map((k, e) => MapEntry(
           k,
           e.toJson(
-            (value) => value.toJson(),
+            (value) => value.map((e) => e.toJson()).toList(),
           ))),
       'getOrdersByCartGroupIDModel':
           instance.getOrdersByCartGroupIDModel?.toJson(),

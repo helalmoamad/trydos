@@ -73,7 +73,7 @@ class OrderState extends Equatable {
   final GetOrdersByOrderGroupIDStatus? getOrdersByOrderGroupIDStatus;
   final CustomerWalletModel? customerWalletModel;
   final GetCustomerWalletStatus? getCustomerWalletStatus;
-  final Map<String, PaginationModel<OrderListModel>> getOrdersModel;
+  final Map<String, PaginationModel<List<OrderListModel>>>? getOrdersModel;
   // final PaginationModel<OrderListModel>? getOrdersModel;
   final OrdersGroupModel? getOrdersByCartGroupIDModel;
   final GetOrdersByCartGroupIDStatus? getOrdersByCartGroupIDStatus;
@@ -132,7 +132,7 @@ class OrderState extends Equatable {
     final GetOrdersByCartGroupIDStatus? getOrdersByCartGroupIDStatus,
     final CustomerWalletModel? customerWalletModel,
     final GetCustomerWalletStatus? getCustomerWalletStatus,
-    final Map<String, PaginationModel<OrderListModel>>? getOrdersModel,
+    final Map<String, PaginationModel<List<OrderListModel>>>? getOrdersModel,
     final SetCustomerAddressDefaultStatus? setCustomerAddressDefaultStatus,
     final GetCustomerAddressesStatus? getCustomerAddressesStatus,
     final int? currentAddressChoosed,

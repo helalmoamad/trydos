@@ -390,12 +390,12 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     GetOrdersEvent event,
     Emitter<OrderState> emit,
   ) async {
-    Map<String, PaginationModel<OrderListModel>> getOrdersModel =
-        !event.getWithPagination ? {} : Map.of(state.getOrdersModel);
+    Map<String, PaginationModel<List<OrderListModel>>>? getOrdersModel =
+        !event.getWithPagination ? {} : Map.of(state.getOrdersModel ?? {});
 
     if (getOrdersModel[event.status] == null) {
       getOrdersModel[event.status] =
-          const PaginationModel<OrderListModel>.init(page: 1);
+          const PaginationModel<List<OrderListModel>>.init(page: 1);
     }
     if (event.getWithPagination &&
         (getOrdersModel[event.status]!.hasReachedMax ||
@@ -440,7 +440,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
         }
 
         emit(
-          state.copyWith(getOrdersModel: getOrdersModel.map(
+          state.copyWith(getOrdersModel: getOrdersModel?.map(
             (key, value) {
               if (key == event.status)
                 return MapEntry(key,
@@ -455,15 +455,16 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
 
         isFailedTheFirstTime.remove('GetOrdersEvent');
 
-        List<OrderListModel> orders = [];
-        if (getOrdersModel[event.status] != null &&
-            ((getOrdersModel[event.status]?.items.length ?? 0) > 0)) {
-          orders = List.of(getOrdersModel[event.status]!.items);
+        List<List<OrderListModel>> oldOrders = [];
+        if (getOrdersModel?[event.status] != null &&
+            ((getOrdersModel?[event.status]?.items.length ?? 0) > 0)) {
+          oldOrders = getOrdersModel![event.status]!.items;
         }
 
         List<OrderListModel> ordersFromApi = List.of(r.data?.orders ?? []);
-        ordersFromApi.forEach((elements) => elements.details?.forEach(
-            (element) => element.orderProductStatus = elements.orderStatus));
+        List<List<OrderListModel>> newOrders = [];
+        /*ordersFromApi.forEach((elements) => elements.details?.forEach(
+            (element) => element.orderProductStatus = elements.orderStatus));*/
         final seen = <String>{};
         final List<String> duplicatesOrderGroupIds = [];
 
@@ -472,16 +473,43 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
             duplicatesOrderGroupIds.add(item.orderGroupId ?? '');
           }
         }
+        final List<String> orderNewAdded = [];
+        ordersFromApi.forEach(
+          (element) {
+            if (!(duplicatesOrderGroupIds.contains(element.orderGroupId))) {
+              newOrders.add(ordersFromApi.where(
+                (elements) {
+                  return elements.orderGroupId == element.orderGroupId;
+                },
+              ).toList());
+            }
+            if (duplicatesOrderGroupIds.contains(element.orderGroupId) &&
+                (!(orderNewAdded.contains(element.orderGroupId)))) {
+              orderNewAdded.add(element.orderGroupId ?? "");
+              newOrders.add(ordersFromApi.where(
+                (elements) {
+                  return elements.orderGroupId == element.orderGroupId;
+                },
+              ).toList());
+            }
+          },
+        );
 
-        for (var duplicateId in duplicatesOrderGroupIds) {
+        /*  for (var duplicateId in duplicatesOrderGroupIds) {
           List<OrderListModel> ordersWithSameId = ordersFromApi.where(
             (element) {
               return element.orderGroupId == duplicateId;
             },
           ).toList();
-
+          ordersFromApi.forEach(
+            (element) {
+              if (ordersWithSameId.contains(element)&&newOrders.contains(element)) {
+                newOrders.insert(0, ordersWithSameId);
+              }
+            },
+          );
           ///////////////////////////
-          OrderListModel firstOrder = ordersWithSameId[0];
+          /*    OrderListModel firstOrder = ordersWithSameId[0];
           int firstOrderIndex = ordersFromApi.indexOf(firstOrder);
           ////////////////////
           ordersWithSameId.remove(firstOrder);
@@ -524,16 +552,16 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           ordersFromApi.removeWhere(
             (element) => element.orderGroupId == duplicateId,
           );
-          // ordersFromApi.add(aggregatedOrder);
+          // ordersFromApi.add(aggregatedOrder);*/
 
-          ordersFromApi.insert(firstOrderIndex, aggregatedOrder);
-        }
+          //   ordersFromApi.insert(firstOrderIndex, aggregatedOrder);
+        }*/
 
         ////////////////////////////
         emit(
           state.copyWith(
             orderTotalSize: r.data?.total ?? 0,
-            getOrdersModel: getOrdersModel.map(
+            getOrdersModel: getOrdersModel?.map(
               (key, value) {
                 if (key == event.status) {
                   return MapEntry(
@@ -543,11 +571,11 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
                           (r.data!.orders?.length ?? kPageSize) < kPageSize,
                       paginationStatus: PaginationStatus.success,
                       page: event.getWithPagination
-                          ? getOrdersModel[event.status]!.page + 1
+                          ? getOrdersModel![event.status]!.page + 1
                           : 2,
                       items: !event.getWithPagination
-                          ? [...ordersFromApi]
-                          : [...orders, ...ordersFromApi],
+                          ? [...newOrders]
+                          : [...oldOrders, ...newOrders],
                     ),
                   );
                 } else {

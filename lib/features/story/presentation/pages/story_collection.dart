@@ -618,7 +618,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                                   .toString()
                                                   .contains("cloudinary"))
                                               ? ""
-                                              : "${dotenv.env['Profile_Images_Url']}") +
+                                              : "${dotenv.env['Images_Url']}") +
                                           state.storiesCollections[widget.collectionIndex].photoPath),
                             ),
                             Padding(

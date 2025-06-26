@@ -203,6 +203,8 @@ class _ChatCardState extends ThemeState<ChatCard> {
                 //     ..pop()
                 //     ..pop();
                 // }
+                print(
+                    "object///////////////////////////////////////#${_prefsRepository.myChatPhoto}}");
                 chatBloc.add(ChangeGlobalUsedVariablesInBloc(
                     currentOpenedChatId: widget.chat.id));
                 widget.onSendForwardMessage?.call(
@@ -343,8 +345,8 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                           imageUrl: ((receiver?.photoPath ?? "")
                                                       .toString()
                                                       .contains("cloudinary")
-                                                  ? ""
-                                                  : "${dotenv.env['Profile_Images_Url']}") +
+                                                  ? receiver?.photoPath
+                                                  : "${dotenv.env['Images_Url']}") +
                                               receiver?.photoPath,
                                           imageFit: BoxFit.cover,
                                           height: 80.h,

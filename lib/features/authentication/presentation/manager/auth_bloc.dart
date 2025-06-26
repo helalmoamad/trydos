@@ -186,15 +186,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         final name = r.data!.name;
         final photo = r.data!.photoPath;
         final checkToken = token?.isNotEmpty ?? false;
-
+        GetIt.I<ChatBloc>().add(UpdateProfileInChatEvent(
+            userId: _prefsRepository.myMarketId.toString(),
+            name: _prefsRepository.myMarketName ?? "",
+            photo: _prefsRepository.myProfilePhoto ?? "",
+            phone: r.data?.mobilePhone ?? ""));
         if (checkToken) {
           _prefsRepository.setChatToken(token!);
           _prefsRepository.setMyChatId(id!);
           _prefsRepository.setMyChatName(name ?? 'No Name');
           _prefsRepository.setMyChatPhoto(photo);
         }
-
-        print("ddddddddddddd ${checkToken}8888 ${token}.");
 
         add(
           StoreFcmTokenEvent(

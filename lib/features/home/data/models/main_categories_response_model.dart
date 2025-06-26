@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 MainCategoriesResponseModel mainCategoriesResponseModelFromJson(String str) =>
     MainCategoriesResponseModel.fromJson(json.decode(str));
 
@@ -94,7 +96,9 @@ class FlatPhotoPath {
       );
 
   factory FlatPhotoPath.fromJson(Map<String, dynamic> json) => FlatPhotoPath(
-        filePath: json["file_path"],
+        filePath: json["file_path"]?.contains("cloudinary")
+            ? json["file_path"]
+            : ("${dotenv.env['Images_Url']}" + (json["file_path"])),
         originalHeight: json["original_height"],
         originalWidth: json["original_width"],
       );

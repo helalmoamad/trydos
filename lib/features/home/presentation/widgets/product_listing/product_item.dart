@@ -1,13 +1,21 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:trydos/common/constant/design/assets_provider.dart';
+import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 
 import 'package:trydos/features/home/data/models/get_product_listing_without_filters_model.dart'
     as productListingModel;
+import 'package:trydos/features/home/presentation/widgets/product_listing/falsh_deal_counter.dart';
 import 'dart:ui' as ui;
 
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_3d_slider.dart';
+import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/service/language_service.dart';
 import 'package:tuple/tuple.dart';
 
 class ProductItem extends StatefulWidget {
@@ -16,7 +24,9 @@ class ProductItem extends StatefulWidget {
       required this.setThisEnabled,
       required this.slidingModeItem,
       required this.itemIndex,
+      this.productIsFlashDeal,
       this.fromHomePage = false,
+      this.fromFlashDeal,
       required this.displayImageColors,
       required this.tapIndexToAddProductToCart,
       required this.productItem});
@@ -24,7 +34,9 @@ class ProductItem extends StatefulWidget {
   final void Function(int, int) setThisEnabled;
   final ValueNotifier<int> tapIndexToAddProductToCart;
   final bool displayImageColors;
+  final bool? fromFlashDeal;
   final bool fromHomePage;
+  final ValueNotifier<bool>? productIsFlashDeal;
   final Tuple2<int, int> slidingModeItem;
   final productListingModel.Products productItem;
   final int itemIndex;
@@ -184,6 +196,7 @@ class _ProductItemState extends State<ProductItem> {
             ),
           ),
           ProductListing3DSlider(
+              fromFlashDeal: widget.fromFlashDeal,
               fromHomePage: widget.fromHomePage,
               displayImageColors: widget.displayImageColors,
               productItem: widget.productItem,
@@ -192,6 +205,129 @@ class _ProductItemState extends State<ProductItem> {
               currentChosenColor: currentChosenColor,
               itemIndex: widget.itemIndex,
               setThisEnabled: widget.setThisEnabled),
+          Positioned(
+              left: LanguageService.languageCode != "ar" ? null : 5,
+              right: LanguageService.languageCode == "ar" ? null : 5,
+              top: (widget.productItem.flashDealEndDate != null) ? 55 : 10,
+              child: Column(
+                children: [
+                  ...List.generate(
+                      (widget.productItem.labelNames?.length ?? 0) > 3
+                          ? 3
+                          : (widget.productItem.labelNames?.length ?? 0),
+                      (index) => Container(
+                            margin: EdgeInsets.symmetric(vertical: 2),
+                            alignment: Alignment.center,
+                            padding: EdgeInsets.symmetric(horizontal: 5),
+                            height: 30,
+                            constraints: BoxConstraints(maxWidth: 160),
+                            decoration: BoxDecoration(
+                              gradient: ((index % 2) == 0)
+                                  ? LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                          Color.fromARGB(255, 255, 119, 40),
+                                          Color.fromARGB(162, 255, 119, 40)
+                                        ])
+                                  : LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                          Color.fromARGB(255, 79, 40, 255),
+                                          Color.fromARGB(106, 79, 40, 255)
+                                        ]),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(12)),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SvgPicture.asset(
+                                  AppAssets.lableSvg,
+                                  height: 16,
+                                  color: Colors.white,
+                                ),
+                                SizedBox(
+                                  width: 2,
+                                ),
+                                Text(
+                                  widget.productItem.labelNames?[index] ?? "",
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style:
+                                      context.textTheme.bodyMedium?.rr.copyWith(
+                                    color: Colors.white,
+                                    letterSpacing: 0.18,
+                                    fontSize: 14,
+                                    height: 1.3,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ))
+                ],
+              )),
+          (widget.productItem.flashDealEndDate == null ||
+                  widget.productItem.flashDealEndDate == "")
+              ? SizedBox.shrink()
+              : Positioned(
+                  left: LanguageService.languageCode == "ar" ? null : 5,
+                  right: LanguageService.languageCode != "ar" ? null : 0,
+                  top: (widget.productItem.flashDealEndDate != null) ? 10 : 0,
+                  child: Container(
+                    margin: EdgeInsets.symmetric(vertical: 2),
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.symmetric(horizontal: 5),
+                    height: 50,
+                    width: 110,
+                    constraints: BoxConstraints(maxWidth: 150),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Color.fromARGB(234, 255, 65, 40),
+                            Color.fromARGB(255, 255, 119, 40)
+                          ]),
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment:
+                              LanguageService.languageCode == "ar"
+                                  ? MainAxisAlignment.end
+                                  : MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              "${LocaleKeys.flash_deal.tr()}",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: context.textTheme.bodyMedium?.rr.copyWith(
+                                color: Colors.white,
+                                letterSpacing: 0.18,
+                                fontSize: 14,
+                                height: 1.3,
+                              ),
+                            ),
+                            SvgPicture.asset(
+                              AppAssets.flashDealSvg,
+                              height: 16,
+                              color: Colors.white,
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 2),
+                        FlashDealCountdownTimerWidget(
+                          endDateString:
+                              widget.productItem.flashDealEndDate ?? "",
+                        )
+                      ],
+                    ),
+                  ))
         ]);
   }
 }

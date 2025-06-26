@@ -4,6 +4,7 @@
 
 import 'dart:convert';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/home/data/models/get_category_model.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
@@ -213,7 +214,9 @@ class CategoryBanner {
       );
 
   factory CategoryBanner.fromJson(Map<String, dynamic> json) => CategoryBanner(
-        filePath: json["file_path"],
+        filePath: json["file_path"]?.contains("cloudinary")
+            ? json["file_path"]
+            : ("${dotenv.env['Images_Url']}" + (json["file_path"])),
         originalWidth:
             json["original_width"].replaceAll(RegExp(r'[^0-9.]'), ''),
         originalHeight:
@@ -381,7 +384,9 @@ class Thumbnail {
       );
 
   factory Thumbnail.fromJson(Map<String, dynamic> json) => Thumbnail(
-        filePath: json["file_path"],
+        filePath: json["file_path"]?.contains("cloudinary")
+            ? json["file_path"]
+            : ("${dotenv.env['Images_Url']}" + (json["file_path"])),
         originalWidth:
             json["original_width"].replaceAll(RegExp(r'[^0-9.]'), ''),
         originalHeight:

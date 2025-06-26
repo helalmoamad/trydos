@@ -139,7 +139,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                           .toString()
                                           .contains("cloudinary")
                                       ? ""
-                                      : "${dotenv.env['Profile_Images_Url']}") +
+                                      : "${dotenv.env['Images_Url']}") +
                                   widget.receiverPhoto!,
                               imageFit: BoxFit.cover,
                               progressIndicatorBuilderWidget: TrydosLoader(),

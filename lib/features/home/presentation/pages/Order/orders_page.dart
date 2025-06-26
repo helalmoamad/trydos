@@ -160,14 +160,9 @@ class _OrdersPageState extends State<OrdersPage> {
 
                     if (state.getOrdersByOrderGroupIDModel?.orders?.first !=
                         null) {
-                      OrderListModel order =
-                          state.getOrdersByOrderGroupIDModel!.orders!.first;
-                      order.details?.forEach((element) => element.copyWith(
-                            orderProductStatus: order.orderStatus,
-                          ));
-                      order = order.copyWith(
-                          statusIsOutForDelivary:
-                              order.orderStatus?.value == "out_for_delivery");
+                      List<OrderListModel> order =
+                          state.getOrdersByOrderGroupIDModel!.orders ?? [];
+
                       Future.delayed(
                           Duration(milliseconds: 50),
                           () => Navigator.of(context).push(PageRouteBuilder(
@@ -177,39 +172,41 @@ class _OrdersPageState extends State<OrdersPage> {
                                           orderIdFormNotification:
                                               widget.orderIdFormNotification,
                                           fromNotification: true,
-                                          order: order))));
+                                          orders: order))));
                     }
                   }
                 },
                 child: BlocBuilder<OrderBloc, OrderState>(
                   buildWhen: (p, c) =>
-                      p.getOrdersModel[currentStatus.value]?.paginationStatus !=
-                          c.getOrdersModel[currentStatus.value]
+                      p.getOrdersModel?[currentStatus.value]
+                              ?.paginationStatus !=
+                          c.getOrdersModel?[currentStatus.value]
                               ?.paginationStatus ||
                       p.getOrdersByOrderGroupIDStatus !=
                           c.getOrdersByOrderGroupIDStatus,
                   builder: (context, state) {
                     int itemsCount =
-                        state.getOrdersModel[currentStatus.value] == null
+                        state.getOrdersModel?[currentStatus.value] == null
                             ? 0
-                            : state.getOrdersModel[currentStatus.value]!.items
+                            : state.getOrdersModel![currentStatus.value]!.items
                                 .length;
-                    List<OrderListModel> items =
-                        state.getOrdersModel[currentStatus.value]?.items ?? [];
-                    return (state.getOrdersModel[currentStatus.value] == null ||
+                    List<List<OrderListModel>> items =
+                        state.getOrdersModel?[currentStatus.value]?.items ?? [];
+                    return (state.getOrdersModel?[currentStatus.value] ==
+                                null ||
                             state.getOrdersByCartGroupIDStatus ==
                                 GetOrdersByOrderGroupIDStatus.loading ||
-                            state.getOrdersModel[currentStatus.value]
+                            state.getOrdersModel?[currentStatus.value]
                                     ?.paginationStatus ==
                                 PaginationStatus.failure ||
-                            ((state.getOrdersModel[currentStatus.value]
+                            ((state.getOrdersModel?[currentStatus.value]
                                             ?.paginationStatus ==
                                         PaginationStatus.loading ||
-                                    state.getOrdersModel[currentStatus.value]
+                                    state.getOrdersModel?[currentStatus.value]
                                             ?.paginationStatus ==
                                         PaginationStatus.initial) &&
-                                state.getOrdersModel[currentStatus.value]?.items
-                                        .length ==
+                                state.getOrdersModel?[currentStatus.value]
+                                        ?.items.length ==
                                     0))
                         ? Center(
                             child: TrydosLoader(),
@@ -248,11 +245,11 @@ class _OrdersPageState extends State<OrdersPage> {
                                                                     "out_for_delivery")) {
                                                           return;
                                                         }*/
+
                                             HelperFunctions.slidingNavigation(
                                               context,
                                               OrderDetails1(
-                                                order: items[index],
-                                              ),
+                                                  orders: items[index]),
                                             );
                                           },
                                           child: buildOrderItemWidget(
@@ -267,7 +264,7 @@ class _OrdersPageState extends State<OrdersPage> {
                                             padding: const EdgeInsets.symmetric(
                                                 vertical: 10),
                                             child: state
-                                                    .getOrdersModel[
+                                                    .getOrdersModel![
                                                         currentStatus.value]!
                                                     .hasReachedMax
                                                 ? Center(
@@ -314,9 +311,11 @@ class _OrdersPageState extends State<OrdersPage> {
 
   Widget buildOrderItemWidget({
     required BuildContext context,
-    required OrderListModel item,
+    required List<OrderListModel> item,
     required int index,
   }) {
+    List<OrderListDetailModel> details = [];
+    item.forEach((element) => details.addAll(element.details ?? []));
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Container(
@@ -329,13 +328,13 @@ class _OrdersPageState extends State<OrdersPage> {
           children: [
             buildInfoWidget(
               isSecondInfo: false,
-              orderGroupId: item.orderGroupId.toString(),
+              orderGroupId: item[0].orderGroupId.toString(),
               isTextSpan: false,
               context: context,
               text1: HelperFunctions.orderFormatDate(
-                DateTime.parse(item.createdAt ?? ''),
+                DateTime.parse(item[0].createdAt ?? ''),
               ),
-              text2: item.orderGroupId ?? '',
+              text2: item[0].orderGroupId ?? '',
               svgIcon1: AppAssets.orderClockSvg,
               svgIcon2: AppAssets.orderBag1Svg,
               amount: '',
@@ -355,31 +354,33 @@ class _OrdersPageState extends State<OrdersPage> {
                 String currencySymbol =
                     state.getCurrencyForCountryModel!.data!.currency!.symbol ??
                         "";
-                String orderAmount = (item.orderAmount! *
+                double orderAmount = 0;
+                item.forEach((element) => orderAmount = orderAmount +
+                    (element.orderAmount! *
                         state.getCurrencyForCountryModel!.data!.currency!
-                            .exchangeRate!)
-                    .toStringAsFixed(
-                        state.startingSetting?.decimalPointSettings ?? 0);
-                ;
+                            .exchangeRate!));
+
                 return buildInfoWidget(
                   isSecondInfo: true,
-                  orderGroupId: item.orderGroupId.toString(),
+                  orderGroupId: item[0].orderGroupId.toString(),
                   context: context,
                   isTextSpan: true,
-                  text1: item.orderGroupStatus!.label ?? '',
+                  text1: item[0].orderGroupStatus!.label ?? '',
                   text2: '',
                   svgIcon1: AppAssets.preparingBagSvg,
                   svgIcon2: AppAssets.orderInvoice2Svg,
-                  secondInfoSvgIcon: item.orderGroupStatus?.label == 'Shipped'
-                      ? AppAssets.shippedBlackSvg
-                      : item.orderGroupStatus?.label == 'Delivered'
-                          ? AppAssets.deliveredBlackSvg
-                          : item.orderGroupStatus?.label == 'Pending'
-                              ? AppAssets.pendeingBlackCheck
-                              : AppAssets.orderPreparingSvg,
-                  amount: orderAmount.toString(),
+                  secondInfoSvgIcon:
+                      item[0].orderGroupStatus?.label == 'Shipped'
+                          ? AppAssets.shippedBlackSvg
+                          : item[0].orderGroupStatus?.label == 'Delivered'
+                              ? AppAssets.deliveredBlackSvg
+                              : item[0].orderGroupStatus?.label == 'Pending'
+                                  ? AppAssets.pendeingBlackCheck
+                                  : AppAssets.orderPreparingSvg,
+                  amount: orderAmount.toStringAsFixed(
+                      state.startingSetting?.decimalPointSettings ?? 0),
                   currency: currencySymbol,
-                  itemsCount: item.details?.length.toString() ?? '0',
+                  itemsCount: details.length.toString(),
                 );
               },
             ),
@@ -393,15 +394,17 @@ class _OrdersPageState extends State<OrdersPage> {
               height: 125,
               width: double.infinity,
               child: ListView.separated(
-                itemCount: item.details?.length ?? 0,
+                itemCount: details.length,
                 scrollDirection: Axis.horizontal,
                 itemBuilder: (context, index) {
+                  print(
+                      "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII${details[index].image}");
                   return ClipRRect(
                     borderRadius: BorderRadius.circular(15),
                     child: Container(
                       color: Colors.white,
                       child: MyCachedNetworkImage(
-                        imageUrl: item.details?[index].image ?? '',
+                        imageUrl: details[index].image ?? '',
                         imageFit: BoxFit.contain,
                         width: 90,
                         height: 125,

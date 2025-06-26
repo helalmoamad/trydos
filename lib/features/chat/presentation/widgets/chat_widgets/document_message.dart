@@ -429,11 +429,11 @@ class _DocumentMessageState extends State<DocumentMessage> {
                                     widget.userMessagePhoto != null
                                         ? MyCachedNetworkImage(
                                             imageUrl: (widget.userMessagePhoto
-                                                        .toString()
-                                                        .contains("cloudinary")
-                                                    ? ""
-                                                    : "${dotenv.env['Profile_Images_Url']}") +
-                                                widget.userMessagePhoto!,
+                                                    .toString()
+                                                    .contains("cloudinary")
+                                                ? widget.userMessagePhoto!
+                                                : ("${dotenv.env['Images_Url']}") +
+                                                    widget.userMessagePhoto!),
                                             progressIndicatorBuilderWidget:
                                                 TrydosLoader(),
                                             imageFit: BoxFit.cover,

@@ -39,6 +39,8 @@ class ProductListing3DSlider extends StatefulWidget {
       this.fromHomePage = false,
       required this.tapIndexToAddProductToCart,
       required this.productItem,
+      this.productIsFlashDeal,
+      this.fromFlashDeal,
       required this.displayImageColors,
       required this.currentChosenColor});
 
@@ -48,8 +50,10 @@ class ProductListing3DSlider extends StatefulWidget {
   final int itemIndex;
   final bool displayImageColors;
   final bool fromHomePage;
+  final bool? fromFlashDeal;
   final productListingModel.Products productItem;
   final ValueNotifier<int> currentChosenColor;
+  final ValueNotifier<bool>? productIsFlashDeal;
 
   @override
   State<ProductListing3DSlider> createState() => _ProductListing3DSliderState();
@@ -1037,6 +1041,8 @@ class _ProductListing3DSliderState extends ThemeState<ProductListing3DSlider> {
                                       homeBloc.add(
                                           ChangeStatusOFGetProductsDetailsToSuccessEvent(
                                               isStatusInitaial: true));
+                                      widget.productIsFlashDeal?.value =
+                                          widget.fromFlashDeal ?? false;
 
                                       Future.delayed(
                                           Duration(milliseconds: 600),

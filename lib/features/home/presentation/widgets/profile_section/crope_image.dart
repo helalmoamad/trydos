@@ -15,17 +15,21 @@ import 'package:trydos/generated/locale_keys.g.dart';
 
 class CopperImage extends StatefulWidget {
   File image;
+  final bool? fromOrder;
   final ValueNotifier<bool> visiblecamera;
-  final ValueNotifier<bool> visibleSave;
-  final ValueNotifier<File?> visiblePersonPhoto;
-  final ValueNotifier<bool> visibleNewImage;
+  final ValueNotifier<bool>? visibleSave;
+  final ValueNotifier<File?>? visiblePersonPhoto;
+  final ValueNotifier<List<File?>>? orderPhotos;
+  final ValueNotifier<bool>? visibleNewImage;
   CopperImage(
       {Key? key,
       required this.image,
-      required this.visiblePersonPhoto,
-      required this.visibleNewImage,
+      this.fromOrder = false,
+      this.orderPhotos,
+      this.visiblePersonPhoto,
+      this.visibleNewImage,
       required this.visiblecamera,
-      required this.visibleSave})
+      this.visibleSave})
       : super(key: key);
 
   @override
@@ -76,17 +80,23 @@ class _CopperImageState extends State<CopperImage> {
         child: Icon(Icons.crop),
         onPressed: () async {
           Image? image = await cropKey.currentState?.cropImage();
-          if (image != null) {
-            final ui.Image uiImage =
-                await convertImageProviderToUiImage(image.image);
-            final File file = await convertImageToFile(uiImage);
 
-            Navigator.pop(context);
-            widget.visibleNewImage.value = true;
-            widget.visiblePersonPhoto.value = file;
+          final ui.Image uiImage =
+              await convertImageProviderToUiImage(image?.image ?? _image);
+          final File file = await convertImageToFile(uiImage);
+
+          Navigator.pop(context);
+          if (widget.fromOrder ?? false) {
+            List<File?> files = widget.orderPhotos?.value ?? [];
+            files.add(file);
+            widget.orderPhotos?.value = [...files];
             widget.visiblecamera.value = false;
-            widget.visibleSave.value = true;
+            return;
           }
+          widget.visibleNewImage?.value = true;
+          widget.visiblePersonPhoto?.value = file;
+          widget.visiblecamera.value = false;
+          widget.visibleSave?.value = true;
         },
       ),
       body: Stack(

@@ -963,6 +963,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                               ],
                             ),
                             ProductDetailsTitle(
+                              flashDealTime:
+                                  productItem!.flashDealEndDate ?? "",
+                              lableNames: productItem!.labelNames ?? [],
                               productId: productItem!.productId.toString(),
                               orginalHeight: double.parse(
                                   productItem!.thumbnail!.originalHeight!),
@@ -1780,7 +1783,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                 AddCurrentColorSizeEvent(choice_1: (currentVariation!.type))));
       }
     } else {
-      if (currentVariation!.type!.contains("-")) {
+      if ((currentVariation?.type ?? "").contains("-")) {
         await Future.delayed(
             Duration(milliseconds: 300),
             () => homeBloc.add(AddCurrentColorSizeEvent(

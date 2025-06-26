@@ -374,18 +374,15 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                                       ),
                                     ),
                                     ////////////////////////////
-                                    (orderState.listOfAddressInfoClassToSave
-                                            .isNullOrEmpty)
-                                        ? SizedBox.shrink()
-                                        : buildShippingButton(
-                                            orderState,
-                                            homeState,
-                                            _indexTap,
-                                            walletBalance,
-                                            totalPrice,
-                                            totalCashed,
-                                            availablePaymentMethod,
-                                          ),
+                                    buildShippingButton(
+                                      orderState,
+                                      homeState,
+                                      _indexTap,
+                                      walletBalance,
+                                      totalPrice,
+                                      totalCashed,
+                                      availablePaymentMethod,
+                                    ),
                                   ],
                                 ),
                                 //////////////////////////////
@@ -508,6 +505,9 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
               check = true;
             }
           } else {
+            check = false;
+          }
+          if ((orderState.listOfAddressInfoClassToSave.isNullOrEmpty)) {
             check = false;
           }
           return (orderState.applyCouponStatus == ApplyCouponStatus.loading ||

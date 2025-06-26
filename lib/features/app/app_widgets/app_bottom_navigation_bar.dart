@@ -264,10 +264,13 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                             LoginToChatStatus.loading) {
                           return;
                         }
+
                         if (prefsRepository.isVerifiedPhone != true ||
                             (prefsRepository.isLogInToChat ?? false) != true ||
                             (prefsRepository.chatToken?.length ?? 0) < 7) {
-                          widget.isShowPanelForVerified.value = true;
+                          appBloc.add(ChangeBasePage(0));
+                          Future.delayed(Duration(milliseconds: 300),
+                              () => widget.isShowPanelForVerified.value = true);
                         } else if ((prefsRepository.myMarketName?.length ?? 0) <
                             3) {
                           showDialog(
