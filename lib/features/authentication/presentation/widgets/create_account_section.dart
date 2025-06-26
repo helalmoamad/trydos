@@ -10,7 +10,8 @@ import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../common/helper/helper_functions.dart';
@@ -21,11 +22,36 @@ import '../../../../service/firebase_analytics_service/firebase_analytics_servic
 import '../../../app/my_text_widget.dart';
 import '../manager/auth_bloc.dart';
 
-class CreateAccountSection extends StatelessWidget {
+class CreateAccountSection extends StatefulWidget {
   CreateAccountSection({Key? key, required this.moveToNextStep})
       : super(key: key);
-  final ValueNotifier<int> clickButton = ValueNotifier(-1);
   final void Function() moveToNextStep;
+
+  @override
+  State<CreateAccountSection> createState() => _CreateAccountSectionState();
+}
+
+class _CreateAccountSectionState extends State<CreateAccountSection> {
+  final ValueNotifier<int> clickButton = ValueNotifier(-1);
+
+  bool _eventLogged = false;
+  @override
+  void didChangeDependencies() {
+    if (!_eventLogged) {
+      FirebaseAnalyticsService.logEventForSession(
+        eventName: AnalyticsEventsConst.SCREEN_VIEW,
+        extraParams: {
+          'screen_name': AuthScreenConst.AGREE_TERMS_SCREEN,
+          'screen_path': '',
+          'platform': GlobalPlatform.MOBILE,
+        },
+      );
+
+      _eventLogged = true;
+    }
+
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -118,14 +144,17 @@ class CreateAccountSection extends StatelessWidget {
                 Duration(milliseconds: 100),
                 () {
                   clickButton.value = -1;
-                  moveToNextStep.call();
+                  widget.moveToNextStep.call();
                 },
               );
               /////////////////////////////////////
+
               FirebaseAnalyticsService.logEventForSession(
-                eventName: AnalyticsEventsConst.buttonClicked,
-                executedEventName:
-                    AnalyticsExecutedEventNameConst.agreeContinueButton,
+                eventName: AnalyticsEventsConst.CLICK,
+                extraParams: {
+                  'button_name':
+                      AnalyticsButtonsEventNameConst.AGREE_CONTINUE_BUTTON,
+                },
               );
             },
             child: ValueListenableBuilder<int>(
@@ -195,10 +224,13 @@ class CreateAccountSection extends StatelessWidget {
             );
 
             /////////////////////////////////////
+
             FirebaseAnalyticsService.logEventForSession(
-              eventName: AnalyticsEventsConst.buttonClicked,
-              executedEventName:
-                  AnalyticsExecutedEventNameConst.laterTakeLookButton,
+              eventName: AnalyticsEventsConst.CANCEL_SIGNUP,
+              extraParams: {
+                'button_name':
+                    AnalyticsButtonsEventNameConst.LATER_TAKE_LOOK_BUTTON,
+              },
             );
           },
           child: Padding(

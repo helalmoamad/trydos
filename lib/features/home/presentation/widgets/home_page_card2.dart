@@ -23,7 +23,7 @@ import 'package:trydos/features/home/presentation/pages/product_listing_page.dar
 import 'package:trydos/generated/locale_keys.g.dart';
 
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/my_text_widget.dart';
 import '../../../app/svg_network_widget.dart';
@@ -122,20 +122,20 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
             );
 
             ////////////////////////////////////
-            FirebaseAnalyticsService.logEventForSession(
-              eventName: AnalyticsEventsConst.buttonClicked,
-              executedEventName:
-                  AnalyticsExecutedEventNameConst.chooseBoutiqueButton,
-            );
+            // FirebaseAnalyticsService.logEventForSession(
+            //   eventName: AnalyticsEventsConst.buttonClicked,
+            //   executedEventName:
+            //       AnalyticsButtonsEventNameConst.chooseBoutiqueButton,
+            // );
             ////////////////////////////////////
             Future.delayed(
               Duration(milliseconds: 100),
               () {
-                FirebaseAnalyticsService.logEventForViewedBoutique(
-                  eventName: AnalyticsEventsConst.viewedBoutique,
-                  boutiqueId: widget.boutique.id.toString(),
-                  boutiqueName: widget.boutique.name.toString(),
-                );
+                // FirebaseAnalyticsService.logEventForViewedBoutique(
+                //   eventName: AnalyticsEventsConst.viewedBoutique,
+                //   boutiqueId: widget.boutique.id.toString(),
+                //   boutiqueName: widget.boutique.name.toString(),
+                // );
               },
             );
           },

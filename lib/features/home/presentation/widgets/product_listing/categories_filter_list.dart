@@ -14,7 +14,7 @@ import 'package:trydos/features/home/presentation/widgets/product_listing/produc
 import '../../../../../common/test_utils/test_var.dart';
 import '../../../../../common/test_utils/widgets_keys.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../data/models/get_product_filters_model.dart';
 import '../../../data/models/get_product_listing_with_filters_model.dart';
@@ -273,14 +273,14 @@ class CategoriesFilterList extends StatelessWidget {
                                                   []);
 
                                           if (add) {
-                                            FirebaseAnalyticsService
-                                                .logEventForSession(
-                                              eventName: AnalyticsEventsConst
-                                                  .buttonClicked,
-                                              executedEventName:
-                                                  AnalyticsExecutedEventNameConst
-                                                      .addFilterButton,
-                                            );
+                                            // FirebaseAnalyticsService
+                                            //     .logEventForSession(
+                                            //   eventName: AnalyticsEventsConst
+                                            //       .buttonClicked,
+                                            //   executedEventName:
+                                            //       AnalyticsButtonsEventNameConst
+                                            //           .addFilterButton,
+                                            // );
                                             //////////////////////////////
                                             // expandingFiltersStack.value =
                                             //   innerIndex;
@@ -336,14 +336,14 @@ class CategoriesFilterList extends StatelessWidget {
                                                                 category
                                                               ]);
                                           } else {
-                                            FirebaseAnalyticsService
-                                                .logEventForSession(
-                                              eventName: AnalyticsEventsConst
-                                                  .buttonClicked,
-                                              executedEventName:
-                                                  AnalyticsExecutedEventNameConst
-                                                      .resetByTapOnFilterButton,
-                                            );
+                                            // FirebaseAnalyticsService
+                                            //     .logEventForSession(
+                                            //   eventName: AnalyticsEventsConst
+                                            //       .buttonClicked,
+                                            //   executedEventName:
+                                            //       AnalyticsButtonsEventNameConst
+                                            //           .resetByTapOnFilterButton,
+                                            // );
                                             //////////////////////////////
                                             categories.removeWhere(((element) =>
                                                 element.id ==
@@ -499,14 +499,14 @@ class CategoriesFilterList extends StatelessWidget {
                                                   []);
 
                                           if (add) {
-                                            FirebaseAnalyticsService
-                                                .logEventForSession(
-                                              eventName: AnalyticsEventsConst
-                                                  .buttonClicked,
-                                              executedEventName:
-                                                  AnalyticsExecutedEventNameConst
-                                                      .addFilterButton,
-                                            );
+                                            // FirebaseAnalyticsService
+                                            //     .logEventForSession(
+                                            //   eventName: AnalyticsEventsConst
+                                            //       .buttonClicked,
+                                            //   executedEventName:
+                                            //       AnalyticsButtonsEventNameConst
+                                            //           .addFilterButton,
+                                            // );
                                             //////////////////////////////
                                             Category category =
                                                 filters.categories![index];
@@ -541,14 +541,14 @@ class CategoriesFilterList extends StatelessWidget {
                                                                     category
                                                                   ]);
                                           } else {
-                                            FirebaseAnalyticsService
-                                                .logEventForSession(
-                                              eventName: AnalyticsEventsConst
-                                                  .buttonClicked,
-                                              executedEventName:
-                                                  AnalyticsExecutedEventNameConst
-                                                      .resetByTapOnFilterButton,
-                                            );
+                                            // FirebaseAnalyticsService
+                                            //     .logEventForSession(
+                                            //   eventName: AnalyticsEventsConst
+                                            //       .buttonClicked,
+                                            //   executedEventName:
+                                            //       AnalyticsButtonsEventNameConst
+                                            //           .resetByTapOnFilterButton,
+                                            // );
                                             ///////////////////////////////////////
                                             expandingFiltersStack.value = -1;
                                             categories.removeWhere(((element) =>
@@ -652,11 +652,11 @@ class CategoriesFilterList extends StatelessWidget {
                             prevChoosedOrAppliedFilterToAddToIt?.categories ??
                                 []);
                         if (add) {
-                          FirebaseAnalyticsService.logEventForSession(
-                            eventName: AnalyticsEventsConst.buttonClicked,
-                            executedEventName:
-                                AnalyticsExecutedEventNameConst.addFilterButton,
-                          );
+                          // FirebaseAnalyticsService.logEventForSession(
+                          //   eventName: AnalyticsEventsConst.buttonClicked,
+                          //   executedEventName:
+                          //       AnalyticsButtonsEventNameConst.addFilterButton,
+                          // );
                           //////////////////////////////
                           Category category = filters.categories![index];
                           if (prevChoosedOrAppliedFilterToAddToIt == null) {
@@ -683,11 +683,11 @@ class CategoriesFilterList extends StatelessWidget {
                                                   category
                                                 ]);
                         } else {
-                          FirebaseAnalyticsService.logEventForSession(
-                            eventName: AnalyticsEventsConst.buttonClicked,
-                            executedEventName: AnalyticsExecutedEventNameConst
-                                .resetByTapOnFilterButton,
-                          );
+                          // FirebaseAnalyticsService.logEventForSession(
+                          //   eventName: AnalyticsEventsConst.buttonClicked,
+                          //   executedEventName: AnalyticsButtonsEventNameConst
+                          //       .resetByTapOnFilterButton,
+                          // );
                           ////////////////////////////
                           categories.removeWhere(((element) =>
                               element.id == filters.categories![index].id));

@@ -24,7 +24,7 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.da
 import 'package:trydos/generated/locale_keys.g.dart';
 
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../../core/utils/responsive_padding.dart';
 import '../../../../app/my_text_widget.dart';
@@ -112,13 +112,13 @@ class ProductDetailsSheetCommentsContent extends StatelessWidget {
                                           comment: addCommentController.text));
 
                                   //////////////////////////////////////////////////////////
-                                  FirebaseAnalyticsService.logEventForSession(
-                                    eventName:
-                                        AnalyticsEventsConst.buttonClicked,
-                                    executedEventName:
-                                        AnalyticsExecutedEventNameConst
-                                            .confirmCommentButton,
-                                  );
+                                  // FirebaseAnalyticsService.logEventForSession(
+                                  //   eventName:
+                                  //       AnalyticsEventsConst.buttonClicked,
+                                  //   executedEventName:
+                                  //       AnalyticsButtonsEventNameConst
+                                  //           .confirmCommentButton,
+                                  // );
 
                                   //   addCommentButtonToggleNotifier.value = false;
 
@@ -153,14 +153,14 @@ class ProductDetailsSheetCommentsContent extends StatelessWidget {
                                                   addCommentController.text));
 
                                       //////////////////////////////////////////////////////////
-                                      FirebaseAnalyticsService
-                                          .logEventForSession(
-                                        eventName:
-                                            AnalyticsEventsConst.buttonClicked,
-                                        executedEventName:
-                                            AnalyticsExecutedEventNameConst
-                                                .confirmCommentButton,
-                                      );
+                                      // FirebaseAnalyticsService
+                                      //     .logEventForSession(
+                                      //   eventName:
+                                      //       AnalyticsEventsConst.buttonClicked,
+                                      //   executedEventName:
+                                      //       AnalyticsButtonsEventNameConst
+                                      //           .confirmCommentButton,
+                                      // );
                                       Future.delayed(Duration(seconds: 2), () {
                                         addCommentController.clear();
                                         cupertino.FocusScope.of(context)

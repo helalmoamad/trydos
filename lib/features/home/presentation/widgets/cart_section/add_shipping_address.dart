@@ -411,9 +411,9 @@ class _AddShippingAdressState extends State<AddShippingAdress>
 
   @override
   void didChangeDependencies() {
-    FirebaseAnalyticsService.logScreen(
-      screen: AnalyticsScreensConst.cartScreen,
-    );
+    // FirebaseAnalyticsService.logScreen(
+    //   screen: AnalyticsScreensConst.cartScreen,
+    // );
     super.didChangeDependencies();
   }
 

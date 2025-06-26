@@ -33,6 +33,7 @@ import 'package:trydos/features/home/presentation/widgets/cart_section/cart_shee
 import 'package:trydos/features/home/presentation/widgets/cart_section/product_collection_in_cart_page1.dart';
 import 'package:trydos/features/story/presentation/widget/try_again.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/language_service.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
@@ -86,11 +87,21 @@ class _CartPageState extends State<CartPage> {
     super.initState();
   }
 
+  bool _eventLogged = false;
   @override
   void didChangeDependencies() {
-    FirebaseAnalyticsService.logScreen(
-      screen: AnalyticsScreensConst.cartScreen,
-    );
+    if (!_eventLogged) {
+      FirebaseAnalyticsService.logEventForSession(
+        eventName: AnalyticsEventsConst.SCREEN_VIEW,
+        extraParams: {
+          'screen_name': GlobalScreenConst.CART_SCREEN,
+          'screen_path': '',
+          'platform': GlobalPlatform.MOBILE,
+        },
+      );
+      _eventLogged = true;
+    }
+
     super.didChangeDependencies();
   }
 
@@ -1496,6 +1507,7 @@ class _CartPageState extends State<CartPage> {
                                                                                         ),
                                                                                         VerificationMethods(
                                                                                           phoneNumber: phoneNumber,
+                                                                                          isFromLogin: true,
                                                                                           onChooseWhatsapp: () {
                                                                                             isVisWhatsApp = 1;
                                                                                             pageController.animateToPage(2, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);

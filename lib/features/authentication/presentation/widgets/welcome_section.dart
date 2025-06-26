@@ -9,7 +9,7 @@ import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 import 'dart:ui' as ui;
 import '../../../../common/test_utils/widgets_keys.dart';
@@ -36,11 +36,20 @@ class WelcomeSection extends StatefulWidget {
 }
 
 class _WelcomeSectionState extends State<WelcomeSection> {
+  bool _eventLogged = false;
   @override
   void didChangeDependencies() async {
-    FirebaseAnalyticsService.logScreen(
-      screen: AnalyticsScreensConst.welcomeScreen,
-    );
+    if (!_eventLogged) {
+      FirebaseAnalyticsService.logEventForSession(
+        eventName: AnalyticsEventsConst.SCREEN_VIEW,
+        extraParams: {
+          'screen_name': AuthScreenConst.SELECT_AUTHINTCTION_METHOD_SCREEN,
+          'screen_path': '',
+          'platform': GlobalPlatform.MOBILE,
+        },
+      );
+      _eventLogged = true;
+    }
 
     super.didChangeDependencies();
   }
@@ -108,9 +117,12 @@ class _WelcomeSectionState extends State<WelcomeSection> {
                 widget.goToLoginSection.call();
               });
               FirebaseAnalyticsService.logEventForSession(
-                eventName: AnalyticsEventsConst.buttonClicked,
-                executedEventName:
-                    AnalyticsExecutedEventNameConst.haveAlreadyAccountButton,
+                eventName: AnalyticsEventsConst.LOGIN_START,
+                extraParams: {
+                  'button_name': AnalyticsButtonsEventNameConst
+                      .I_HAVE_ALREADY_ACCOUNT_BUTTON,
+                  'method': 'phone',
+                },
               );
             },
             child: ValueListenableBuilder<int>(
@@ -170,9 +182,12 @@ class _WelcomeSectionState extends State<WelcomeSection> {
                 widget.goToCreateAccount.call();
               });
               FirebaseAnalyticsService.logEventForSession(
-                eventName: AnalyticsEventsConst.buttonClicked,
-                executedEventName:
-                    AnalyticsExecutedEventNameConst.createNewAccountButton,
+                eventName: AnalyticsEventsConst.SIGNUP_START,
+                extraParams: {
+                  'button_name':
+                      AnalyticsButtonsEventNameConst.CREATE_NEW_ACCOUNT_BUTTON,
+                  'method': 'phone',
+                },
               );
             },
             child: ValueListenableBuilder<int>(
@@ -249,9 +264,13 @@ class _WelcomeSectionState extends State<WelcomeSection> {
               );
               //////////////////////////
               FirebaseAnalyticsService.logEventForSession(
-                eventName: AnalyticsEventsConst.buttonClicked,
-                executedEventName:
-                    AnalyticsExecutedEventNameConst.laterTakeLookButton,
+                eventName: AnalyticsEventsConst.LATER_TAKE_LOOK_CLICKED,
+                extraParams: {
+                  'button_name':
+                      AnalyticsButtonsEventNameConst.LATER_TAKE_LOOK_BUTTON,
+                  'screen_name':
+                      AuthScreenConst.SELECT_AUTHINTCTION_METHOD_SCREEN,
+                },
               );
               //////////////////////////
             },

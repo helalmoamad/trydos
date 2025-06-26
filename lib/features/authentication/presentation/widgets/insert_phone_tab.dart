@@ -11,7 +11,7 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/form_utils.dart';
 import 'package:trydos/features/authentication/presentation/widgets/phone_form_fields.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 
 import '../../../../common/constant/countries.dart';
@@ -51,6 +51,8 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
     super.initState();
   }
 
+  bool _eventLogged = false;
+
   @override
   void didChangeDependencies() {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -59,9 +61,19 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
       statusBarIconBrightness: Brightness.dark,
     ));
     ///////////////////
-    FirebaseAnalyticsService.logScreen(
-      screen: AnalyticsScreensConst.insertPhoneScreen,
-    );
+    if (!_eventLogged) {
+      FirebaseAnalyticsService.logEventForSession(
+        eventName: AnalyticsEventsConst.SCREEN_VIEW,
+        extraParams: {
+          'screen_name': AuthScreenConst.PHONE_NUMBER_INPUT_SCREEN,
+          'screen_path': '',
+          'platform': GlobalPlatform.MOBILE,
+        },
+      );
+
+      _eventLogged = true;
+    }
+
     ///////////////////
     super.didChangeDependencies();
   }
@@ -195,9 +207,15 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                               .call('${form.controllers[0].text}');
                           //////////////////////////
                           FirebaseAnalyticsService.logEventForSession(
-                            eventName: AnalyticsEventsConst.buttonClicked,
-                            executedEventName: AnalyticsExecutedEventNameConst
-                                .confirmPhoneNumberButton,
+                            eventName:
+                                AnalyticsEventsConst.CONFIRM_PHONE_NUMBER,
+                            extraParams: {
+                              'button_name': AnalyticsButtonsEventNameConst
+                                  .CONFIRM_PHONE_NUMBER_BUTTON,
+                              'input_valid': 'true',
+                              'mission_name':
+                                  widget.fromLogin ? 'login' : 'signup',
+                            },
                           );
                         }
                       },
@@ -295,11 +313,16 @@ class _InsertPhoneTabState extends State<InsertPhoneTab> with FormStateMinxin {
                                       .call('${form.controllers[0].text}');
                                   //////////////////////////
                                   FirebaseAnalyticsService.logEventForSession(
-                                    eventName:
-                                        AnalyticsEventsConst.buttonClicked,
-                                    executedEventName:
-                                        AnalyticsExecutedEventNameConst
-                                            .confirmPhoneNumberButton,
+                                    eventName: AnalyticsEventsConst
+                                        .CONFIRM_PHONE_NUMBER,
+                                    extraParams: {
+                                      'button_name':
+                                          AnalyticsButtonsEventNameConst
+                                              .CONFIRM_PHONE_NUMBER_BUTTON,
+                                      'input_valid': 'true',
+                                      'mission_name':
+                                          widget.fromLogin ? 'login' : 'signup',
+                                    },
                                   );
                                 },
                                 child: Row(

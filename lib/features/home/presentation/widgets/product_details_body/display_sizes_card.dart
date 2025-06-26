@@ -24,7 +24,7 @@ import 'package:trydos/features/home/data/models/get_product_detail_without_rela
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/language_service.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../data/models/get_product_listing_without_filters_model.dart'
     as product;
@@ -578,15 +578,15 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                                     HapticFeedback
                                                                         .lightImpact();
                                                                     //////////////////////////////
-                                                                    FirebaseAnalyticsService
-                                                                        .logEventForSession(
-                                                                      eventName:
-                                                                          AnalyticsEventsConst
-                                                                              .buttonClicked,
-                                                                      executedEventName:
-                                                                          AnalyticsExecutedEventNameConst
-                                                                              .chooseAvailableSizeButton,
-                                                                    );
+                                                                    // FirebaseAnalyticsService
+                                                                    //     .logEventForSession(
+                                                                    //   eventName:
+                                                                    //       AnalyticsEventsConst
+                                                                    //           .buttonClicked,
+                                                                    //   executedEventName:
+                                                                    //       AnalyticsButtonsEventNameConst
+                                                                    //           .chooseAvailableSizeButton,
+                                                                    // );
                                                                   },
                                                                   child: AnimatedContainer(
                                                                       duration: Duration(milliseconds: 300),

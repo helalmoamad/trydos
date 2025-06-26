@@ -15,7 +15,7 @@ import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../enums/status_code_type.dart';
 import '../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../domin/repositories/prefs_repository.dart';
 import 'api.dart';
 
@@ -88,16 +88,16 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
     }
     /////////
     String apiPath = response.requestOptions.path;
-    FirebaseAnalyticsService.logEventForSession(
-      eventName: AnalyticsEventsConst.programmingEvent,
-      executedEventName: AnalyticsExecutedEventNameConst.apiResponseEvent,
-      isForApi: true,
-      extraParams: {
-        'api_url':
-            apiPath.length > 100 ? '${apiPath.substring(0, 96)}...' : apiPath,
-        'api_status': apiStatus,
-      },
-    );
+    // FirebaseAnalyticsService.logEventForSession(
+    //   eventName: AnalyticsEventsConst.programmingEvent,
+    //   executedEventName: AnalyticsButtonsEventNameConst.apiResponseEvent,
+    //   isForApi: true,
+    //   extraParams: {
+    //     'api_url':
+    //         apiPath.length > 100 ? '${apiPath.substring(0, 96)}...' : apiPath,
+    //     'api_status': apiStatus,
+    //   },
+    // );
     /////////////////////////////////////////////////////
     handler.next(response);
   }
@@ -226,16 +226,16 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
     // });
 
     String apiPath = err.requestOptions.path;
-    FirebaseAnalyticsService.logEventForSession(
-      eventName: AnalyticsEventsConst.programmingEvent,
-      executedEventName: AnalyticsExecutedEventNameConst.apiResponseEvent,
-      isForApi: true,
-      extraParams: {
-        'api_url':
-            apiPath.length > 100 ? '${apiPath.substring(0, 96)}...' : apiPath,
-        'api_status': 'Failed',
-      },
-    );
+    // FirebaseAnalyticsService.logEventForSession(
+    //   eventName: AnalyticsEventsConst.programmingEvent,
+    //   executedEventName: AnalyticsButtonsEventNameConst.apiResponseEvent,
+    //   isForApi: true,
+    //   extraParams: {
+    //     'api_url':
+    //         apiPath.length > 100 ? '${apiPath.substring(0, 96)}...' : apiPath,
+    //     'api_status': 'Failed',
+    //   },
+    // );
 
     handler.next(err);
   }

@@ -19,6 +19,7 @@ import 'package:trydos/features/home/presentation/widgets/cart_section/payment_m
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_image_widget.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/routes/router.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/language_service.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
@@ -68,11 +69,22 @@ class _SuccessfullOrderState extends State<SuccessfullOrder> {
     super.initState();
   }
 
+  bool _eventLogged = false;
   @override
   void didChangeDependencies() {
-    FirebaseAnalyticsService.logScreen(
-      screen: AnalyticsScreensConst.cartScreen,
-    );
+    if (!_eventLogged) {
+      FirebaseAnalyticsService.logEventForSession(
+        eventName: GlobalScreenConst.ORDER_SUCCESS_SCREEN,
+        extraParams: {
+          'screen_name': GlobalScreenConst.ORDER_SUCCESS_SCREEN,
+          'screen_path': '',
+          'platform': GlobalPlatform.MOBILE,
+        },
+      );
+
+      _eventLogged = true;
+    }
+
     super.didChangeDependencies();
   }
 

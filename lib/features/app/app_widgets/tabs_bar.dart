@@ -34,7 +34,7 @@ import '../../../common/constant/design/constant_design.dart';
 import '../../../common/test_utils/widgets_keys.dart';
 import '../../../core/utils/responsive_padding.dart';
 import '../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../home/data/models/get_product_filters_model.dart';
 import '../../home/presentation/manager/homeBloc/home_bloc.dart';
@@ -448,13 +448,13 @@ class _TabsBarState extends State<TabsBar> {
                                       false;
                                   widget.appearTrendingAndHistory.value = true;
                                   ///////////////////////////
-                                  FirebaseAnalyticsService.logEventForSession(
-                                    eventName:
-                                        AnalyticsEventsConst.buttonClicked,
-                                    executedEventName:
-                                        AnalyticsExecutedEventNameConst
-                                            .resetCloseIconButton,
-                                  );
+                                  // FirebaseAnalyticsService.logEventForSession(
+                                  //   eventName:
+                                  //       AnalyticsEventsConst.buttonClicked,
+                                  //   executedEventName:
+                                  //       AnalyticsButtonsEventNameConst
+                                  //           .resetCloseIconButton,
+                                  // );
                                   return true;
                                 } else {
                                   appBloc.add(ChangeBasePage(0));
@@ -463,13 +463,13 @@ class _TabsBarState extends State<TabsBar> {
                                   appBloc.add(HideBottomNavigationBar(false));
 
                                   ///////////////////////////
-                                  FirebaseAnalyticsService.logEventForSession(
-                                    eventName:
-                                        AnalyticsEventsConst.buttonClicked,
-                                    executedEventName:
-                                        AnalyticsExecutedEventNameConst
-                                            .searchCloseIconButton,
-                                  );
+                                  // FirebaseAnalyticsService.logEventForSession(
+                                  //   eventName:
+                                  //       AnalyticsEventsConst.buttonClicked,
+                                  //   executedEventName:
+                                  //       AnalyticsButtonsEventNameConst
+                                  //           .searchCloseIconButton,
+                                  // );
                                 }
                                 return false;
                               },
@@ -485,12 +485,12 @@ class _TabsBarState extends State<TabsBar> {
                                   appBloc.add(HideBottomNavigationBar(true));
                                 });
                                 ////////////////////////////////
-                                FirebaseAnalyticsService.logEventForSession(
-                                  eventName: AnalyticsEventsConst.buttonClicked,
-                                  executedEventName:
-                                      AnalyticsExecutedEventNameConst
-                                          .homeSearchButton,
-                                );
+                                // FirebaseAnalyticsService.logEventForSession(
+                                //   eventName: AnalyticsEventsConst.buttonClicked,
+                                //   executedEventName:
+                                //       AnalyticsButtonsEventNameConst
+                                //           .homeSearchButton,
+                                // );
                               },
                               suffixWidget: Center(
                                 key: TestVariables.kTestMode
@@ -642,14 +642,14 @@ class _TabsBarState extends State<TabsBar> {
                                                   fromSearch: true,
                                                   context: context);
                                           /////////////////////////////
-                                          FirebaseAnalyticsService
-                                              .logEventForSession(
-                                            eventName: AnalyticsEventsConst
-                                                .buttonClicked,
-                                            executedEventName:
-                                                AnalyticsExecutedEventNameConst
-                                                    .searchWithImageButton,
-                                          );
+                                          // FirebaseAnalyticsService
+                                          //     .logEventForSession(
+                                          //   eventName: AnalyticsEventsConst
+                                          //       .buttonClicked,
+                                          //   executedEventName:
+                                          //       AnalyticsButtonsEventNameConst
+                                          //           .searchWithImageButton,
+                                          // );
                                         },
                                         child: homeState
                                                     .sendRequestToGeminiStatus ==
@@ -686,15 +686,15 @@ class _TabsBarState extends State<TabsBar> {
                                                   .isNotListening) {
                                                 _startListening();
                                                 /////////////////////////////
-                                                FirebaseAnalyticsService
-                                                    .logEventForSession(
-                                                  eventName:
-                                                      AnalyticsEventsConst
-                                                          .buttonClicked,
-                                                  executedEventName:
-                                                      AnalyticsExecutedEventNameConst
-                                                          .searchWithVoiceButton,
-                                                );
+                                                // FirebaseAnalyticsService
+                                                //     .logEventForSession(
+                                                //   eventName:
+                                                //       AnalyticsEventsConst
+                                                //           .buttonClicked,
+                                                //   executedEventName:
+                                                //       AnalyticsButtonsEventNameConst
+                                                //           .searchWithVoiceButton,
+                                                // );
                                               } else {
                                                 _stopListening();
                                               }
@@ -967,15 +967,15 @@ class _TabsBarState extends State<TabsBar> {
                                                     ),
                                                   );
                                                   ///////////////////////////
-                                                  FirebaseAnalyticsService
-                                                      .logEventForSession(
-                                                    eventName:
-                                                        AnalyticsEventsConst
-                                                            .buttonClicked,
-                                                    executedEventName:
-                                                        AnalyticsExecutedEventNameConst
-                                                            .chooseCategoryButton,
-                                                  );
+                                                  // FirebaseAnalyticsService
+                                                  //     .logEventForSession(
+                                                  //   eventName:
+                                                  //       AnalyticsEventsConst
+                                                  //           .buttonClicked,
+                                                  //   executedEventName:
+                                                  //       AnalyticsButtonsEventNameConst
+                                                  //           .chooseCategoryButton,
+                                                  // );
                                                 } else {
                                                   appBloc.add(ChangeTab(-1));
                                                   categoryBloc.add(

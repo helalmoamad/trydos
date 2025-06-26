@@ -30,7 +30,7 @@ import 'package:trydos/features/home/presentation/manager/categoryBloc/category_
 import 'package:trydos/features/home/presentation/manager/categoryBloc/category_event.dart';
 import 'package:trydos/main.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 
 import '../../../../../core/domin/repositories/prefs_repository.dart';
@@ -1495,45 +1495,45 @@ class BoutiqueBloc extends Bloc<BoutiqueEvent, BoutiqueState> {
         appliedFilters[key] =
             filters_model.GetProductFiltersModel(filters: filters);
         ///////////////////////////////
-        Future.delayed(
-          Duration(milliseconds: 100),
-          () => FirebaseAnalyticsService.logEventForSession(
-            eventName: AnalyticsEventsConst.programmingEvent,
-            executedEventName:
-                AnalyticsExecutedEventNameConst.appliedFiltersEvent,
-            extraParams: {
-              'brands': json.encode(brandsForAnalytics ?? []),
-              'categories': json.encode(categoriesForAnalytics ?? []),
-              'boutiques': json.encode(boutiquesForAnalytics ?? []),
-              'colors': json.encode(colorsForAnalytics ?? []),
-              'prices': json.encode(pricesForAnalytics ?? []),
-              'options': json.encode(optionsForAnalytics ?? []),
-              'searchText': json.encode(searchTextForAnalytics ?? ''),
-            },
-          ),
-        );
+        // Future.delayed(
+        //   Duration(milliseconds: 100),
+        //   () => FirebaseAnalyticsService.logEventForSession(
+        //     eventName: AnalyticsEventsConst.programmingEvent,
+        //     executedEventName:
+        //         AnalyticsButtonsEventNameConst.appliedFiltersEvent,
+        //     extraParams: {
+        //       'brands': json.encode(brandsForAnalytics ?? []),
+        //       'categories': json.encode(categoriesForAnalytics ?? []),
+        //       'boutiques': json.encode(boutiquesForAnalytics ?? []),
+        //       'colors': json.encode(colorsForAnalytics ?? []),
+        //       'prices': json.encode(pricesForAnalytics ?? []),
+        //       'options': json.encode(optionsForAnalytics ?? []),
+        //       'searchText': json.encode(searchTextForAnalytics ?? ''),
+        //     },
+        //   ),
+        // );
       }
     } else {
-      if (!checkForFilter) {
-        ///////////////////////////////
-        Future.delayed(
-          Duration(milliseconds: 100),
-          () => FirebaseAnalyticsService.logEventForSession(
-            eventName: AnalyticsEventsConst.programmingEvent,
-            executedEventName:
-                AnalyticsExecutedEventNameConst.appliedFiltersEvent,
-            extraParams: {
-              'brands': json.encode(brandsForAnalytics ?? []),
-              'categories': json.encode(categoriesForAnalytics ?? []),
-              'boutiques': json.encode(boutiquesForAnalytics ?? []),
-              'colors': json.encode(colorsForAnalytics ?? []),
-              'prices': json.encode(pricesForAnalytics ?? []),
-              'options': json.encode(optionsForAnalytics ?? []),
-              'searchText': json.encode(searchTextForAnalytics ?? ''),
-            },
-          ),
-        );
-      }
+      // if (!checkForFilter) {
+      //   ///////////////////////////////
+      //   Future.delayed(
+      //     Duration(milliseconds: 100),
+      //     () => FirebaseAnalyticsService.logEventForSession(
+      //       eventName: AnalyticsEventsConst.programmingEvent,
+      //       executedEventName:
+      //           AnalyticsButtonsEventNameConst.appliedFiltersEvent,
+      //       extraParams: {
+      //         'brands': json.encode(brandsForAnalytics ?? []),
+      //         'categories': json.encode(categoriesForAnalytics ?? []),
+      //         'boutiques': json.encode(boutiquesForAnalytics ?? []),
+      //         'colors': json.encode(colorsForAnalytics ?? []),
+      //         'prices': json.encode(pricesForAnalytics ?? []),
+      //         'options': json.encode(optionsForAnalytics ?? []),
+      //         'searchText': json.encode(searchTextForAnalytics ?? ''),
+      //       },
+      //     ),
+      //   );
+      // }
     }
     print(
         "FFFFFFFFFFFFFFFFFFFFFFFFFFFF99999999999999999999999999999666666666666FFFFFFF${event.boutiqueSlug}");

@@ -10,6 +10,7 @@ import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/routes/router.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 import 'core/domin/repositories/prefs_repository.dart';
 import 'features/app/blocs/app_bloc/app_event.dart';
@@ -50,10 +51,23 @@ class _SplashPageState extends State<SplashPage> {
     super.initState();
   }
 
+  bool _eventLogged = false;
+
   @override
   void didChangeDependencies() async {
-    FirebaseAnalyticsService.logScreen(
-        screen: AnalyticsScreensConst.splashScreen);
+    if (!_eventLogged) {
+      FirebaseAnalyticsService.logEventForSession(
+        eventName: AnalyticsEventsConst.SCREEN_VIEW,
+        extraParams: {
+          'screen_name': AuthScreenConst.WELCOME_SCREEN,
+          'screen_path': '',
+          'platform': GlobalPlatform.MOBILE,
+        },
+      );
+      //////////
+      _eventLogged = true;
+    }
+
     super.didChangeDependencies();
   }
 

@@ -26,7 +26,7 @@ import '../../../../common/test_utils/test_var.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/utils/theme_state.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
@@ -80,11 +80,21 @@ class _SearchPageState extends ThemeState<SearchPage> {
     super.initState();
   }
 
+  bool _eventLogged = false;
   @override
   void didChangeDependencies() async {
-    FirebaseAnalyticsService.logScreen(
-      screen: AnalyticsScreensConst.homeSearchScreen,
-    );
+    if (!_eventLogged) {
+      FirebaseAnalyticsService.logEventForSession(
+        eventName: AnalyticsEventsConst.SCREEN_VIEW,
+        extraParams: {
+          'screen_name': GlobalScreenConst.SEARCH_SCREEN,
+          'screen_path': '',
+          'platform': GlobalPlatform.MOBILE,
+        },
+      );
+
+      _eventLogged = true;
+    }
 
     super.didChangeDependencies();
   }
@@ -129,10 +139,10 @@ class _SearchPageState extends ThemeState<SearchPage> {
         boutiqueBloc.add(ResetAllSelectedAppliedFilterEvent());
         appBloc.add(HideBottomNavigationBar(false));
         ///////////////////////////////
-        FirebaseAnalyticsService.logEventForSession(
-          eventName: AnalyticsEventsConst.buttonClicked,
-          executedEventName: AnalyticsExecutedEventNameConst.backAppButton,
-        );
+        // FirebaseAnalyticsService.logEventForSession(
+        //   eventName: AnalyticsEventsConst.buttonClicked,
+        //   executedEventName: AnalyticsButtonsEventNameConst.backAppButton,
+        // );
       },
       child: Scaffold(
         backgroundColor: colorScheme.white,
@@ -468,14 +478,14 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                           ),
                                         );
                                         /////////////////////////////////
-                                        FirebaseAnalyticsService
-                                            .logEventForSession(
-                                          eventName: AnalyticsEventsConst
-                                              .buttonClicked,
-                                          executedEventName:
-                                              AnalyticsExecutedEventNameConst
-                                                  .applyHomeSearchResultButton,
-                                        );
+                                        // FirebaseAnalyticsService
+                                        //     .logEventForSession(
+                                        //   eventName: AnalyticsEventsConst
+                                        //       .buttonClicked,
+                                        //   executedEventName:
+                                        //       AnalyticsButtonsEventNameConst
+                                        //           .applyHomeSearchResultButton,
+                                        // );
                                       },
                                       child: Container(
                                         height: 65,
@@ -552,14 +562,14 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                         ));
                                         widget.controller.clear();
                                         /////////////////////////////////
-                                        FirebaseAnalyticsService
-                                            .logEventForSession(
-                                          eventName: AnalyticsEventsConst
-                                              .buttonClicked,
-                                          executedEventName:
-                                              AnalyticsExecutedEventNameConst
-                                                  .resetHomeSearchButton,
-                                        );
+                                        // FirebaseAnalyticsService
+                                        //     .logEventForSession(
+                                        //   eventName: AnalyticsEventsConst
+                                        //       .buttonClicked,
+                                        //   executedEventName:
+                                        //       AnalyticsButtonsEventNameConst
+                                        //           .resetHomeSearchButton,
+                                        // );
                                       },
                                       child: Container(
                                         height: 65,

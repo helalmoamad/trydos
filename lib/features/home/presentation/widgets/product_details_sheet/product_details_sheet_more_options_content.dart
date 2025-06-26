@@ -26,7 +26,7 @@ import '../../../../../core/utils/responsive_padding.dart';
 import '../../../../../core/utils/theme_state.dart';
 import '../../../../../generated/locale_keys.g.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../app/my_text_widget.dart';
 

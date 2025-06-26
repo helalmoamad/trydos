@@ -897,12 +897,14 @@ class _ProductCollectionInCartPage1State
                                                                   ? cartCollection[index].variations![0].color ??
                                                                       ""
                                                                   : "",
-                                                              productId:
-                                                                  cartCollection[index]
-                                                                      .productId
-                                                                      .toString(),
-                                                              totalQuantity:
-                                                                  (cartCollection[index].quantity ?? 0) - 1,
+                                                              productId: cartCollection[index]
+                                                                  .productId
+                                                                  .toString(),
+                                                              productName: cartCollection[index]
+                                                                  .name
+                                                                  .toString(),
+                                                              productPrice: cartCollection[index].price.toString(),
+                                                              totalQuantity: (cartCollection[index].quantity ?? 0) - 1,
                                                               image: cartCollection[index].image ?? "",
                                                               cartId: cartCollection[index].id.toString(),
                                                               boutiqueId: cartCollection[index].boutique!.id.toString()))
@@ -985,8 +987,7 @@ class _ProductCollectionInCartPage1State
                                                     GetIt.I<HomeBloc>().add(UpdateItemInCartEvent(
                                                         newQuantity: 1,
                                                         maxAllowed: double.tryParse(
-                                                            cartCollection![index]
-                                                                    .maxAllowedQty ??
+                                                            cartCollection![index].maxAllowedQty ??
                                                                 "0"),
                                                         currentSize: !cartCollection[index]
                                                                 .variations
@@ -1003,8 +1004,12 @@ class _ProductCollectionInCartPage1State
                                                         productId: cartCollection[index]
                                                             .productId
                                                             .toString(),
-                                                        totalQuantity:
-                                                            (cartCollection[index].quantity ?? 0) + 1,
+                                                        productName:
+                                                            cartCollection[index]
+                                                                .name
+                                                                .toString(),
+                                                        productPrice: cartCollection[index].price.toString(),
+                                                        totalQuantity: (cartCollection[index].quantity ?? 0) + 1,
                                                         image: cartCollection[index].image ?? "",
                                                         cartId: cartCollection[index].id.toString(),
                                                         boutiqueId: cartCollection[index].boutique!.id.toString()));

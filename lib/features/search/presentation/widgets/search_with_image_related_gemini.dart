@@ -14,7 +14,7 @@ import 'package:trydos/service/language_service.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 
 class SearchWithImageRelatedGemini {
@@ -41,17 +41,17 @@ class SearchWithImageRelatedGemini {
                   textColor: Colors.white,
                 );
                 /////////////////////////////
-                FirebaseAnalyticsService.logEventForSession(
-                  eventName: AnalyticsEventsConst.programmingEvent,
-                  executedEventName:
-                      AnalyticsExecutedEventNameConst.videoNotSupported,
-                );
+                // FirebaseAnalyticsService.logEventForSession(
+                //   eventName: AnalyticsEventsConst.programmingEvent,
+                //   executedEventName:
+                //       AnalyticsButtonsEventNameConst.videoNotSupported,
+                // );
               } else {
-                FirebaseAnalyticsService.logEventForSession(
-                  eventName: AnalyticsEventsConst.buttonClicked,
-                  executedEventName: AnalyticsExecutedEventNameConst
-                      .confirmUploadSearchImageButton,
-                );
+                // FirebaseAnalyticsService.logEventForSession(
+                //   eventName: AnalyticsEventsConst.buttonClicked,
+                //   executedEventName: AnalyticsButtonsEventNameConst
+                //       .confirmUploadSearchImageButton,
+                // );
               }
               final Uint8List imageBytes = file.readAsBytesSync();
               final geminis.Gemini gemini = geminis.Gemini.instance;
@@ -74,11 +74,11 @@ class SearchWithImageRelatedGemini {
                             value?.content?.parts?[0].text ??
                             ""));
 
-                FirebaseAnalyticsService.logEventForSession(
-                  eventName: AnalyticsEventsConst.programmingEvent,
-                  executedEventName:
-                      AnalyticsExecutedEventNameConst.uploadSearchImageSuccess,
-                );
+                // FirebaseAnalyticsService.logEventForSession(
+                //   eventName: AnalyticsEventsConst.programmingEvent,
+                //   executedEventName:
+                //       AnalyticsButtonsEventNameConst.uploadSearchImageSuccess,
+                // );
               }).onError(
                 (error, stackTrace) {
                   GetIt.I<CategoryBloc>().add(ReplyFromGeminiEvent(
@@ -121,11 +121,11 @@ class SearchWithImageRelatedGemini {
                       fontSize: 18,
                       timeInSecForIosWeb: 3);
 
-                  FirebaseAnalyticsService.logEventForSession(
-                    eventName: AnalyticsEventsConst.programmingEvent,
-                    executedEventName:
-                        AnalyticsExecutedEventNameConst.uploadSearchImageFailed,
-                  );
+                  // FirebaseAnalyticsService.logEventForSession(
+                  //   eventName: AnalyticsEventsConst.programmingEvent,
+                  //   executedEventName:
+                  //       AnalyticsButtonsEventNameConst.uploadSearchImageFailed,
+                  // );
                 },
               ).timeout(
                 Duration(
@@ -141,11 +141,11 @@ class SearchWithImageRelatedGemini {
                         theReplyFromGemini: ""),
                   );
                   /////////////////////////////
-                  FirebaseAnalyticsService.logEventForSession(
-                    eventName: AnalyticsEventsConst.programmingEvent,
-                    executedEventName:
-                        AnalyticsExecutedEventNameConst.uploadSearchImageFailed,
-                  );
+                  // FirebaseAnalyticsService.logEventForSession(
+                  //   eventName: AnalyticsEventsConst.programmingEvent,
+                  //   executedEventName:
+                  //       AnalyticsButtonsEventNameConst.uploadSearchImageFailed,
+                  // );
                 },
               );
             }
@@ -165,17 +165,17 @@ class SearchWithImageRelatedGemini {
                   textColor: Colors.white,
                 );
                 /////////////////////////////
-                FirebaseAnalyticsService.logEventForSession(
-                  eventName: AnalyticsEventsConst.programmingEvent,
-                  executedEventName:
-                      AnalyticsExecutedEventNameConst.videoNotSupported,
-                );
+                // FirebaseAnalyticsService.logEventForSession(
+                //   eventName: AnalyticsEventsConst.programmingEvent,
+                //   executedEventName:
+                //       AnalyticsButtonsEventNameConst.videoNotSupported,
+                // );
               } else {
-                FirebaseAnalyticsService.logEventForSession(
-                  eventName: AnalyticsEventsConst.buttonClicked,
-                  executedEventName: AnalyticsExecutedEventNameConst
-                      .confirmUploadSearchImageButton,
-                );
+                // FirebaseAnalyticsService.logEventForSession(
+                //   eventName: AnalyticsEventsConst.buttonClicked,
+                //   executedEventName: AnalyticsButtonsEventNameConst
+                //       .confirmUploadSearchImageButton,
+                // );
               }
               final Uint8List imageBytes = file.readAsBytesSync();
               final geminis.Gemini gemini = geminis.Gemini.instance;
@@ -202,11 +202,11 @@ class SearchWithImageRelatedGemini {
                               ""),
                 );
                 /////////////////////////////
-                FirebaseAnalyticsService.logEventForSession(
-                  eventName: AnalyticsEventsConst.programmingEvent,
-                  executedEventName:
-                      AnalyticsExecutedEventNameConst.uploadSearchImageSuccess,
-                );
+                // FirebaseAnalyticsService.logEventForSession(
+                //   eventName: AnalyticsEventsConst.programmingEvent,
+                //   executedEventName:
+                //       AnalyticsButtonsEventNameConst.uploadSearchImageSuccess,
+                // );
               }).onError(
                 (error, stackTrace) {
                   print(
@@ -251,11 +251,11 @@ class SearchWithImageRelatedGemini {
                       backgroundColor: const Color.fromARGB(255, 0, 0, 0),
                       textColor: Colors.white);
                   //////////////////////////////////////
-                  FirebaseAnalyticsService.logEventForSession(
-                    eventName: AnalyticsEventsConst.programmingEvent,
-                    executedEventName:
-                        AnalyticsExecutedEventNameConst.uploadSearchImageFailed,
-                  );
+                  // FirebaseAnalyticsService.logEventForSession(
+                  //   eventName: AnalyticsEventsConst.programmingEvent,
+                  //   executedEventName:
+                  //       AnalyticsButtonsEventNameConst.uploadSearchImageFailed,
+                  // );
                 },
               ).timeout(
                 Duration(
@@ -271,11 +271,11 @@ class SearchWithImageRelatedGemini {
                         theReplyFromGemini: ""),
                   );
                   //////////////////////////////////////
-                  FirebaseAnalyticsService.logEventForSession(
-                    eventName: AnalyticsEventsConst.programmingEvent,
-                    executedEventName:
-                        AnalyticsExecutedEventNameConst.uploadSearchImageFailed,
-                  );
+                  // FirebaseAnalyticsService.logEventForSession(
+                  //   eventName: AnalyticsEventsConst.programmingEvent,
+                  //   executedEventName:
+                  //       AnalyticsButtonsEventNameConst.uploadSearchImageFailed,
+                  // );
                 },
               );
             }

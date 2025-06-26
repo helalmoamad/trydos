@@ -6,7 +6,7 @@ import 'package:trydos/features/home/presentation/widgets/share_products_with_so
 import 'package:trydos/service/language_service.dart';
 
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 
 Widget buildSocialButtons(
@@ -38,11 +38,11 @@ Widget buildSocialButtons(
               productId: productId,
             );
             //////////////////////////////
-            FirebaseAnalyticsService.logEventForSession(
-              eventName: AnalyticsEventsConst.buttonClicked,
-              executedEventName:
-                  AnalyticsExecutedEventNameConst.shareWithFacebookButton,
-            );
+            // FirebaseAnalyticsService.logEventForSession(
+            //   eventName: AnalyticsEventsConst.buttonClicked,
+            //   executedEventName:
+            //       AnalyticsButtonsEventNameConst.shareWithFacebookButton,
+            // );
           },
         ),
         buildSocialButton(
@@ -59,11 +59,11 @@ Widget buildSocialButtons(
               productId: productId,
             );
             //////////////////////////////
-            FirebaseAnalyticsService.logEventForSession(
-              eventName: AnalyticsEventsConst.buttonClicked,
-              executedEventName:
-                  AnalyticsExecutedEventNameConst.shareWithWhatsappButton,
-            );
+            // FirebaseAnalyticsService.logEventForSession(
+            //   eventName: AnalyticsEventsConst.buttonClicked,
+            //   executedEventName:
+            //       AnalyticsButtonsEventNameConst.shareWithWhatsappButton,
+            // );
           },
         ),
         /* buildSocialButton(
@@ -87,11 +87,11 @@ Widget buildSocialButtons(
               productId: productId,
             );
             //////////////////////////////
-            FirebaseAnalyticsService.logEventForSession(
-              eventName: AnalyticsEventsConst.buttonClicked,
-              executedEventName:
-                  AnalyticsExecutedEventNameConst.shareWithTelegramButton,
-            );
+            // FirebaseAnalyticsService.logEventForSession(
+            //   eventName: AnalyticsEventsConst.buttonClicked,
+            //   executedEventName:
+            //       AnalyticsButtonsEventNameConst.shareWithTelegramButton,
+            // );
           },
         ),
         buildSocialButton(
@@ -108,11 +108,11 @@ Widget buildSocialButtons(
               productId: productId,
             );
             //////////////////////////////
-            FirebaseAnalyticsService.logEventForSession(
-              eventName: AnalyticsEventsConst.buttonClicked,
-              executedEventName:
-                  AnalyticsExecutedEventNameConst.shareWithTelegramButton,
-            );
+            // FirebaseAnalyticsService.logEventForSession(
+            //   eventName: AnalyticsEventsConst.buttonClicked,
+            //   executedEventName:
+            //       AnalyticsButtonsEventNameConst.shareWithTelegramButton,
+            // );
           },
         ),
         buildSocialButton(
@@ -129,11 +129,11 @@ Widget buildSocialButtons(
               productId: productId,
             );
             //////////////////////////////
-            FirebaseAnalyticsService.logEventForSession(
-              eventName: AnalyticsEventsConst.buttonClicked,
-              executedEventName:
-                  AnalyticsExecutedEventNameConst.shareWithTelegramButton,
-            );
+            // FirebaseAnalyticsService.logEventForSession(
+            //   eventName: AnalyticsEventsConst.buttonClicked,
+            //   executedEventName:
+            //       AnalyticsButtonsEventNameConst.shareWithTelegramButton,
+            // );
           },
         ),
         /*  buildSocialButton(

@@ -39,6 +39,9 @@ import 'package:trydos/features/home/presentation/widgets/profile_section/langua
 import 'package:trydos/features/home/presentation/widgets/profile_section/profile_country_page.dart';
 import 'package:trydos/features/home/presentation/widgets/profile_section/user_information_page.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
+import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 import 'package:trydos/service/language_service.dart';
 
 import '../../../../common/helper/helper_functions.dart';
@@ -80,6 +83,25 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
     homeBloc.add(UpdateProfileEvent(changeStatusToInit: true));
     // TODO: implement initState
     super.initState();
+  }
+
+  bool _eventLogged = false;
+  @override
+  void didChangeDependencies() {
+    if (!_eventLogged) {
+      FirebaseAnalyticsService.logEventForSession(
+        eventName: AnalyticsEventsConst.SCREEN_VIEW,
+        extraParams: {
+          'screen_name': GlobalScreenConst.SETTINGS_SCREEN,
+          'screen_path': '',
+          'platform': GlobalPlatform.MOBILE,
+        },
+      );
+
+      _eventLogged = true;
+    }
+
+    super.didChangeDependencies();
   }
 
   @override
@@ -245,6 +267,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                     ),
                     VerificationMethods(
                       phoneNumber: phoneNumber,
+                      isFromLogin: true,
                       onChooseWhatsapp: () {
                         isVisWhatsApp = 1;
                         print("###################33333#${isVisWhatsApp}");

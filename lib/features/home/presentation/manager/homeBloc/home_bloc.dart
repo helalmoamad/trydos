@@ -68,15 +68,15 @@ import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_
 import 'package:trydos/features/home/presentation/widgets/product_details_sheet/product_details_sheet_bottom_bar.dart';
 import 'package:trydos/features/story/domain/useCases/get_width_and_height_usecase.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
+import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/notification_process.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../../common/helper/helper_functions.dart';
 import '../../../../../core/data/model/pagination_model.dart';
 import '../../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../../main.dart';
-import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
-import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../chat/presentation/manager/chat_bloc.dart';
 import '../../../../chat/presentation/manager/chat_event.dart';
 import '../../../data/models/get_user_notifications_model.dart';
@@ -1526,6 +1526,34 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           cartCollection: List.of(cartCollection),
           getCartItemsStatus: GetCartItemsStatus.success));
 
+////////////////////   ///////////////////
+      List<Map<String, String>> analyticsCartList = [];
+      cartCollection.forEach((element) {
+        Map<String, String> item = {
+          'item_id': element.productId.toString(),
+          'item_name': element.name.toString(),
+          'price': element.price.toString(),
+          'quantity': element.quantity.toString(),
+          'brand': element.brand!.name.toString(),
+          'category': '',
+          'item_variant': element.variant.toString(),
+        };
+
+        analyticsCartList.add(item);
+      });
+
+      /////////////////////////////////
+      FirebaseAnalyticsService.logEventForSession(
+        eventName: AnalyticsEventsConst.viewCart,
+        extraParams: {
+          'currency': state.getCurrencyForCountryModel!.data!.currency!.symbol
+              .toString(),
+          'value': state.getCartShippingItemsModel!.data!.total.toString(),
+          'items': analyticsCartList.toString(),
+          'screen_name': GlobalScreenConst.CART_SCREEN,
+        },
+      );
+      //////////////////////////////////
       // add(AddItemToCartEvent());
       add(GetOldCartItemEvent());
     });
@@ -1743,7 +1771,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   }
 
   FutureOr<void> _onAddItemToCartEvent(
-      AddItemToCartEvent event, Emitter<HomeState> emit) async {
+    AddItemToCartEvent event,
+    Emitter<HomeState> emit,
+  ) async {
     String currentSize = event.choice_1!;
     Map<String, List<int>> currentQuantity =
         Map.of(state.currentQuantityForCart ?? {});
@@ -1800,14 +1830,15 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     }
 
     CartBrand brand = CartBrand(
-        icon: CartIcon(
-            originalHeight: "50",
-            filePath: event.products.brand != null
-                ? event.products.brand!.icon != null
-                    ? event.products.brand!.icon!.filePath
-                    : ""
-                : "",
-            originalWidth: "50"));
+      icon: CartIcon(
+          originalHeight: "50",
+          filePath: event.products.brand != null
+              ? event.products.brand!.icon != null
+                  ? event.products.brand!.icon!.filePath
+                  : ""
+              : "",
+          originalWidth: "50"),
+    );
     VariationCart variation =
         VariationCart(color: event.colorName, size: event.choice_1);
     String currentUuid = const Uuid().v4();
@@ -2158,6 +2189,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   FutureOr<void> _onRemoveItemToCartEvent(
       RemoveItemFormCartEvent event, Emitter<HomeState> emit) async {
     emit(state.copyWith(deleteItemInCartStatus: DeleteItemInCartStatus.init));
+    print('/////////////  RemoveItemToCartEvent ////////////////////');
     Cart cart = state.cartCollection!
         .firstWhere((element) => element.id.toString() == event.itemId);
     List<Cart>? cartCollection = List.of(state.cartCollection!);
@@ -2477,6 +2509,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
   FutureOr<void> _onUpdateItemInCartEvent(
       UpdateItemInCartEvent event, Emitter<HomeState> emit) async {
+    print('//////////////  update_print /////////////');
     if (event.totalQuantity == 0) {
       add(RemoveItemFormCartEvent(
           image: event.image,
@@ -2719,6 +2752,23 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       }
 
       isFailedTheFirstTime.remove('UpdateCartItemEvent');
+      ////////////////////////
+      if (event.totalQuantity == 0 || event.newQuantity == -1) {
+        FirebaseAnalyticsService.logEventForSession(
+          eventName: AnalyticsEventsConst.removeFromCart,
+          extraParams: {
+            'items': [
+              {
+                'item_id': event.productId.toString(),
+                'item_name': event.productName.toString(),
+                'price': event.productPrice.toString(),
+                'quantity': event.totalQuantity.toString(),
+                'item_variant': '${event.colorName}-${event.currentSize}',
+              }
+            ].toString(),
+          },
+        );
+      }
     });
   }
 
@@ -2957,17 +3007,27 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           boutiqueId: event.boutiqueId,
           choice_1: listitemForAddToCart[i].size,
           quantity: listitemForAddToCart[i].quantity));
-      //////////////////////////////
+      /////////////////////////////////
       FirebaseAnalyticsService.logEventForSession(
-        eventName: AnalyticsEventsConst.programmingEvent,
-        executedEventName: AnalyticsExecutedEventNameConst.addedProductEvent,
+        eventName: AnalyticsEventsConst.addToCart,
         extraParams: {
-          'product_id': event.id.toString(),
-          'max_allowed': event.maxAllowed.toString(),
-          'count_of_piece': listitemForAddToCart[i].countOfPieces.toString(),
-          'quantity': listitemForAddToCart[i].quantity.toString(),
-          'color': listitemForAddToCart[i].colorNum.toString(),
-          'choice_1': listitemForAddToCart[i].size.toString(),
+          'currency': state.getCurrencyForCountryModel!.data!.currency!.symbol
+              .toString(),
+          'value': state.getCartShippingItemsModel!.data!.total.toString(),
+          'items': [
+            {
+              'item_id': event.id.toString(),
+              'item_name': event.products.name.toString(),
+              'price': event.products.price.toString(),
+              'quantity': listitemForAddToCart[i].quantity.toString(),
+              'brand': event.products.brand?.name.toString(),
+              'category': event.products.category?.name.toString(),
+              'count_likes': event.products.countOfLikes.toString(),
+              'review_count': event.products.reviewsCount.toString(),
+              'item_variant':
+                  '${listitemForAddToCart[i].colorName}-${listitemForAddToCart[i].size}',
+            }
+          ].toString(),
         },
       );
     }
@@ -3046,6 +3106,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         ...listitemForAddToCart,
         newImageToAddToCart!
       ]));
+      ////////////////////
+      print(
+          '//////////////////////////////////   increase //////////////////////////////////');
     } else {
       if (listitemForAddToCart.last.isDuplicate == true) {
         ImageForAddToCart itemLast = listitemForAddToCart.last;

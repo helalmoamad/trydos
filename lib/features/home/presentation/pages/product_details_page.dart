@@ -43,7 +43,7 @@ import 'package:trydos/routes/router.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../generated/locale_keys.g.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../service/language_service.dart';
@@ -146,6 +146,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     super.initState();
   }
 
+  bool _eventLogged = false;
   @override
   void didChangeDependencies() {
     // context.go(GRouter.config.kRootRoute);
@@ -155,10 +156,19 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       statusBarBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.dark,
     ));
+    if (!_eventLogged) {
+      FirebaseAnalyticsService.logEventForSession(
+        eventName: AnalyticsEventsConst.SCREEN_VIEW,
+        extraParams: {
+          'screen_name': GlobalScreenConst.PRODUCT_SCREEN,
+          'screen_path': '',
+          'platform': GlobalPlatform.MOBILE,
+        },
+      );
 
-    FirebaseAnalyticsService.logScreen(
-      screen: AnalyticsScreensConst.productDetailsScreen,
-    );
+      _eventLogged = true;
+    }
+
     super.didChangeDependencies();
   }
 
@@ -401,13 +411,13 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                       ),
                                     );
                                     //////////////////////////////
-                                    FirebaseAnalyticsService.logEventForSession(
-                                      eventName:
-                                          AnalyticsEventsConst.buttonClicked,
-                                      executedEventName:
-                                          AnalyticsExecutedEventNameConst
-                                              .showShoppingBagButton,
-                                    );
+                                    // FirebaseAnalyticsService.logEventForSession(
+                                    //   eventName:
+                                    //       AnalyticsEventsConst.buttonClicked,
+                                    //   executedEventName:
+                                    //       AnalyticsButtonsEventNameConst
+                                    //           .showShoppingBagButton,
+                                    // );
                                   },
                                   child: Stack(children: [
                                     Positioned(
@@ -900,14 +910,14 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                               ),
                                             );
                                             //////////////////////////////
-                                            FirebaseAnalyticsService
-                                                .logEventForSession(
-                                              eventName: AnalyticsEventsConst
-                                                  .buttonClicked,
-                                              executedEventName:
-                                                  AnalyticsExecutedEventNameConst
-                                                      .showProductPhotosButton,
-                                            );
+                                            // FirebaseAnalyticsService
+                                            //     .logEventForSession(
+                                            //   eventName: AnalyticsEventsConst
+                                            //       .buttonClicked,
+                                            //   executedEventName:
+                                            //       AnalyticsButtonsEventNameConst
+                                            //           .showProductPhotosButton,
+                                            // );
                                           },
                                           child: ProductDetailsImageWidget(
                                             height: 464,

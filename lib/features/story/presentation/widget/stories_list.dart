@@ -30,7 +30,7 @@ import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/my_text_widget.dart';
 import '../../data/models/get_stories_model.dart';
@@ -75,11 +75,11 @@ class _StoriesListState extends State<StoriesList> {
             debugPrint(listViewController.position.pixels.toString());
             _lastScrollPosition = currentPosition;
             /////////////////////////////
-            FirebaseAnalyticsService.logEventForSession(
-              eventName: AnalyticsEventsConst.buttonClicked,
-              executedEventName:
-                  AnalyticsExecutedEventNameConst.scrollStoriesInHomeEvent,
-            );
+            // FirebaseAnalyticsService.logEventForSession(
+            //   eventName: AnalyticsEventsConst.buttonClicked,
+            //   executedEventName:
+            //       AnalyticsButtonsEventNameConst.scrollStoriesInHomeEvent,
+            // );
           }
         });
       },
@@ -267,13 +267,13 @@ class _StoriesListState extends State<StoriesList> {
                                                                           },
                                                                         );
                                                                       } else {
-                                                                        FirebaseAnalyticsService
-                                                                            .logEventForSession(
-                                                                          eventName:
-                                                                              AnalyticsEventsConst.buttonClicked,
-                                                                          executedEventName:
-                                                                              AnalyticsExecutedEventNameConst.uploadStoryButton,
-                                                                        );
+                                                                        // FirebaseAnalyticsService
+                                                                        //     .logEventForSession(
+                                                                        //   eventName:
+                                                                        //       AnalyticsEventsConst.buttonClicked,
+                                                                        //   executedEventName:
+                                                                        //       AnalyticsButtonsEventNameConst.uploadStoryButton,
+                                                                        // );
                                                                         //////////////////////////////////////
                                                                         showDialog(
                                                                           context:
@@ -299,10 +299,10 @@ class _StoriesListState extends State<StoriesList> {
                                                                                   //
                                                                                   //   CloudinaryFile.fromFile(
                                                                                   ///////////////////////////////////////////
-                                                                                  FirebaseAnalyticsService.logEventForSession(
-                                                                                    eventName: AnalyticsEventsConst.buttonClicked,
-                                                                                    executedEventName: AnalyticsExecutedEventNameConst.confirmUploadStoryButton,
-                                                                                  );
+                                                                                  // FirebaseAnalyticsService.logEventForSession(
+                                                                                  //   eventName: AnalyticsEventsConst.buttonClicked,
+                                                                                  //   executedEventName: AnalyticsButtonsEventNameConst.confirmUploadStoryButton,
+                                                                                  // );
                                                                                 }
                                                                               },
                                                                               onChooseFileFromGalleryAction: (AssetEntity? assetEntity) async {
@@ -521,15 +521,15 @@ class _StoriesListState extends State<StoriesList> {
                                                                         true);
                                                                 disableResizing();
                                                                 //////////////////////////////
-                                                                FirebaseAnalyticsService
-                                                                    .logEventForSession(
-                                                                  eventName:
-                                                                      AnalyticsEventsConst
-                                                                          .buttonClicked,
-                                                                  executedEventName:
-                                                                      AnalyticsExecutedEventNameConst
-                                                                          .viewStoryButton,
-                                                                );
+                                                                // FirebaseAnalyticsService
+                                                                //     .logEventForSession(
+                                                                //   eventName:
+                                                                //       AnalyticsEventsConst
+                                                                //           .buttonClicked,
+                                                                //   executedEventName:
+                                                                //       AnalyticsButtonsEventNameConst
+                                                                //           .viewStoryButton,
+                                                                // );
                                                               },
                                                               onTapOnUserImage:
                                                                   () {
@@ -580,15 +580,15 @@ class _StoriesListState extends State<StoriesList> {
                                                                         true);
                                                                 // Navigator.push(context, MaterialPageRoute(builder: (_)=> StoryCollection(index ,   key: UniqueKey()),));
                                                                 //////////////////////////////
-                                                                FirebaseAnalyticsService
-                                                                    .logEventForSession(
-                                                                  eventName:
-                                                                      AnalyticsEventsConst
-                                                                          .buttonClicked,
-                                                                  executedEventName:
-                                                                      AnalyticsExecutedEventNameConst
-                                                                          .viewStoryButton,
-                                                                );
+                                                                // FirebaseAnalyticsService
+                                                                //     .logEventForSession(
+                                                                //   eventName:
+                                                                //       AnalyticsEventsConst
+                                                                //           .buttonClicked,
+                                                                //   executedEventName:
+                                                                //       AnalyticsButtonsEventNameConst
+                                                                //           .viewStoryButton,
+                                                                // );
                                                               },
                                                               onTapOnUserImage:
                                                                   () {

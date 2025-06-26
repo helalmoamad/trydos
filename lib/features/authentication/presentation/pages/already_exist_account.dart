@@ -23,7 +23,7 @@ import '../../../../core/utils/responsive_padding.dart';
 import '../../../../core/utils/theme_state.dart';
 import '../../../../routes/router.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/my_text_widget.dart';
 import '../manager/auth_bloc.dart';
@@ -39,6 +39,8 @@ class AlreadyExistAccount extends StatefulWidget {
 class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
 
+  bool _eventLogged = false;
+
   @override
   void didChangeDependencies() {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -47,9 +49,18 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
       statusBarIconBrightness: Brightness.dark,
     ));
 
-    FirebaseAnalyticsService.logScreen(
-      screen: AnalyticsScreensConst.userExistsScreen,
-    );
+    if (!_eventLogged) {
+      FirebaseAnalyticsService.logEventForSession(
+        eventName: AnalyticsEventsConst.SCREEN_VIEW,
+        extraParams: {
+          'screen_name': AuthScreenConst.USER_ALREADY_EXISTS_SCREEN,
+          'screen_path': '',
+          'platform': GlobalPlatform.MOBILE,
+        },
+      );
+
+      _eventLogged = true;
+    }
 
     super.didChangeDependencies();
   }
@@ -166,9 +177,11 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                         verifiedBySignIn = true;
                         ////////////////////
                         FirebaseAnalyticsService.logEventForSession(
-                          eventName: AnalyticsEventsConst.buttonClicked,
-                          executedEventName: AnalyticsExecutedEventNameConst
-                              .loginContinueButton,
+                          eventName: AnalyticsEventsConst.CLICK,
+                          extraParams: {
+                            'button_name': AnalyticsButtonsEventNameConst
+                                .LOGIN_CONTINUE_BUTTON,
+                          },
                         );
                         //////////////////////
                         debugPrint(
@@ -239,10 +252,15 @@ class _AlreadyExistAccountState extends ThemeState<AlreadyExistAccount> {
                     );
 
                     ////////////////////
+
                     FirebaseAnalyticsService.logEventForSession(
-                      eventName: AnalyticsEventsConst.buttonClicked,
-                      executedEventName:
-                          AnalyticsExecutedEventNameConst.laterTakeLookButton,
+                      eventName: AnalyticsEventsConst.LATER_TAKE_LOOK_CLICKED,
+                      extraParams: {
+                        'button_name': AnalyticsButtonsEventNameConst
+                            .LATER_TAKE_LOOK_BUTTON,
+                        'screen_name':
+                            AuthScreenConst.USER_ALREADY_EXISTS_SCREEN,
+                      },
                     );
                   },
                   child: Padding(

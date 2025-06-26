@@ -26,7 +26,7 @@ import 'package:trydos/features/story/domain/useCases/upload_story_usecase.dart'
 import 'package:trydos/features/story/presentation/bloc/story_state.dart';
 import 'package:trydos/main.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../data/models/get_stories_model.dart';
 import '../../domain/useCases/add_story_to_our_server_usecase.dart';
@@ -117,10 +117,10 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
           GetIt.I<StoryBloc>().add(UploadStoryCloudinaryEvent(event.file));
         }
         ///////////////////////////
-        FirebaseAnalyticsService.logEventForSession(
-          eventName: AnalyticsEventsConst.programmingEvent,
-          executedEventName: AnalyticsExecutedEventNameConst.uploadStoryFailed,
-        );
+        // FirebaseAnalyticsService.logEventForSession(
+        //   eventName: AnalyticsEventsConst.programmingEvent,
+        //   executedEventName: AnalyticsButtonsEventNameConst.uploadStoryFailed,
+        // );
         // Fluttertoast.showToast(
         //     msg: l.message,
         //     textColor: Colors.white,
@@ -150,10 +150,10 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
         // });
 
         ///////////////////////////
-        FirebaseAnalyticsService.logEventForSession(
-          eventName: AnalyticsEventsConst.programmingEvent,
-          executedEventName: AnalyticsExecutedEventNameConst.uploadStorySuccess,
-        );
+        // FirebaseAnalyticsService.logEventForSession(
+        //   eventName: AnalyticsEventsConst.programmingEvent,
+        //   executedEventName: AnalyticsButtonsEventNameConst.uploadStorySuccess,
+        // );
       },
     );
   }

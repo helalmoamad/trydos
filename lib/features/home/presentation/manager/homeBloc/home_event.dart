@@ -481,16 +481,16 @@ class AddMultiItemsToCartEvent extends HomeEvent {
   final String productSlugForTopic;
   final int? boutiqueId;
   final String? maxAllowed;
-
   final Products products;
 
-  AddMultiItemsToCartEvent(
-      {this.id,
-      this.boutiqueIcon,
-      required this.maxAllowed,
-      required this.productSlugForTopic,
-      this.boutiqueId,
-      required this.products});
+  AddMultiItemsToCartEvent({
+    this.id,
+    this.boutiqueIcon,
+    required this.maxAllowed,
+    required this.productSlugForTopic,
+    this.boutiqueId,
+    required this.products,
+  });
 
   @override
   List<Object?> get props => [];
@@ -555,6 +555,8 @@ class UpdateItemInCartEvent extends HomeEvent {
   final String colorName;
   final String image;
   final String boutiqueId;
+  final String? productName;
+  final String? productPrice;
 
   final double? maxAllowed;
 
@@ -569,6 +571,8 @@ class UpdateItemInCartEvent extends HomeEvent {
     required this.currentSize,
     required this.productId,
     required this.boutiqueId,
+    this.productName,
+    this.productPrice,
   });
 
   @override

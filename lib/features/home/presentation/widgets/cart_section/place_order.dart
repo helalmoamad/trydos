@@ -77,9 +77,6 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
   @override
   void didChangeDependencies() {
-    FirebaseAnalyticsService.logScreen(
-      screen: AnalyticsScreensConst.cartScreen,
-    );
     super.didChangeDependencies();
   }
 

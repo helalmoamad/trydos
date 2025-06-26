@@ -18,7 +18,7 @@ import '../../../../../common/helper/helper_functions.dart';
 import '../../../../../core/utils/responsive_padding.dart';
 import '../../../../../generated/locale_keys.g.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../app/app_widgets/app_text_field.dart';
 import '../../../../app/my_cached_network_image.dart';
@@ -220,14 +220,14 @@ class _ProductDetailsSheetShareContentState
                                                       .id
                                                       .toString());
                                               //////////////////////////////
-                                              FirebaseAnalyticsService
-                                                  .logEventForSession(
-                                                eventName: AnalyticsEventsConst
-                                                    .buttonClicked,
-                                                executedEventName:
-                                                    AnalyticsExecutedEventNameConst
-                                                        .shareWithChatButton,
-                                              );
+                                              // FirebaseAnalyticsService
+                                              //     .logEventForSession(
+                                              //   eventName: AnalyticsEventsConst
+                                              //       .buttonClicked,
+                                              //   executedEventName:
+                                              //       AnalyticsButtonsEventNameConst
+                                              //           .shareWithChatButton,
+                                              // );
                                             } else {
                                               widget.idsOfChatCardsToShare.value
                                                   .remove(displayedChats[index]

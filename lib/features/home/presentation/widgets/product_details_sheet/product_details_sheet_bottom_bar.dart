@@ -45,7 +45,7 @@ import 'package:trydos/routes/router.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../../core/utils/responsive_padding.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 
 class ProductDetailsSheetBottomBar extends StatefulWidget {
@@ -328,10 +328,10 @@ class _ProductDetailsSheetBottomBarState
                                                                                   widget.currentActiveTab.value = 3;
                                                                                 }
                                                                                 //////////////////////////////
-                                                                                FirebaseAnalyticsService.logEventForSession(
-                                                                                  eventName: AnalyticsEventsConst.buttonClicked,
-                                                                                  executedEventName: AnalyticsExecutedEventNameConst.addToBagButton,
-                                                                                );
+                                                                                // FirebaseAnalyticsService.logEventForSession(
+                                                                                //   eventName: AnalyticsEventsConst.buttonClicked,
+                                                                                //   executedEventName: AnalyticsButtonsEventNameConst.addToBagButton,
+                                                                                // );
                                                                               } else {
                                                                                 HapticFeedback.lightImpact();
                                                                                 if (itemCount > 0) {
@@ -373,10 +373,10 @@ class _ProductDetailsSheetBottomBarState
                                                                                     ),
                                                                                   );
                                                                                   //////////////////////////////
-                                                                                  FirebaseAnalyticsService.logEventForSession(
-                                                                                    eventName: AnalyticsEventsConst.buttonClicked,
-                                                                                    executedEventName: AnalyticsExecutedEventNameConst.increaseQtyButton,
-                                                                                  );
+                                                                                  // FirebaseAnalyticsService.logEventForSession(
+                                                                                  //   eventName: AnalyticsEventsConst.buttonClicked,
+                                                                                  //   executedEventName: AnalyticsButtonsEventNameConst.increaseQtyButton,
+                                                                                  // );
                                                                                   //  }
                                                                                   /*     else {
                                                                           animationController
@@ -443,10 +443,10 @@ class _ProductDetailsSheetBottomBarState
                                                                                     ),
                                                                                   );
                                                                                   //////////////////////////////
-                                                                                  FirebaseAnalyticsService.logEventForSession(
-                                                                                    eventName: AnalyticsEventsConst.buttonClicked,
-                                                                                    executedEventName: AnalyticsExecutedEventNameConst.increaseQtyButton,
-                                                                                  );
+                                                                                  // FirebaseAnalyticsService.logEventForSession(
+                                                                                  //   eventName: AnalyticsEventsConst.buttonClicked,
+                                                                                  //   executedEventName: AnalyticsButtonsEventNameConst.increaseQtyButton,
+                                                                                  // );
                                                                                 }
                                                                               }
                                                                             },

@@ -13,24 +13,26 @@ import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
-import '../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/my_text_widget.dart';
 
 class VerificationMethods extends StatefulWidget {
-  VerificationMethods(
-      {Key? key,
-      required this.phoneNumber,
-      required this.goBackToPhone,
-      required this.onChooseWhatsapp,
-      required this.onChooseSms})
-      : super(key: key);
+  VerificationMethods({
+    Key? key,
+    required this.phoneNumber,
+    required this.goBackToPhone,
+    required this.onChooseWhatsapp,
+    required this.onChooseSms,
+    required this.isFromLogin,
+  }) : super(key: key);
   final String phoneNumber;
   final void Function() onChooseWhatsapp;
   final void Function() onChooseSms;
   final void Function() goBackToPhone;
+  final bool isFromLogin;
 
   @override
   State<VerificationMethods> createState() => _VerificationMethodsState();
@@ -38,11 +40,22 @@ class VerificationMethods extends StatefulWidget {
 
 class _VerificationMethodsState extends State<VerificationMethods> {
   final ValueNotifier<int> clickButton = ValueNotifier(-1);
+
+  bool _eventLogged = false;
   @override
   void didChangeDependencies() async {
-    FirebaseAnalyticsService.logScreen(
-      screen: AnalyticsScreensConst.verificationMethodsScreen,
-    );
+    if (!_eventLogged) {
+      FirebaseAnalyticsService.logEventForSession(
+        eventName: AnalyticsEventsConst.SCREEN_VIEW,
+        extraParams: {
+          'screen_name': AuthScreenConst.OTP_RECEIVING_METHOD_SCREEN,
+          'screen_path': '',
+          'platform': GlobalPlatform.MOBILE,
+        },
+      );
+
+      _eventLogged = true;
+    }
 
     super.didChangeDependencies();
   }
@@ -158,10 +171,16 @@ class _VerificationMethodsState extends State<VerificationMethods> {
                         },
                       );
                       ////////////////
+
                       FirebaseAnalyticsService.logEventForSession(
-                        eventName: AnalyticsEventsConst.buttonClicked,
-                        executedEventName: AnalyticsExecutedEventNameConst
-                            .chooseWhatsappButton,
+                        eventName: AnalyticsEventsConst.SEND_OTP,
+                        extraParams: {
+                          'button_name': AnalyticsButtonsEventNameConst
+                              .CHOOSE_WHATSAPP_BUTTON,
+                          'method': 'whatsapp',
+                          'mission_name':
+                              widget.isFromLogin ? 'login' : 'signup',
+                        },
                       );
                     },
                     child: ValueListenableBuilder<int>(
@@ -221,10 +240,16 @@ class _VerificationMethodsState extends State<VerificationMethods> {
                         },
                       );
                       ///////////////////
+
                       FirebaseAnalyticsService.logEventForSession(
-                        eventName: AnalyticsEventsConst.buttonClicked,
-                        executedEventName:
-                            AnalyticsExecutedEventNameConst.chooseSmsButton,
+                        eventName: AnalyticsEventsConst.SEND_OTP,
+                        extraParams: {
+                          'button_name':
+                              AnalyticsButtonsEventNameConst.CHOOSE_SMS_BUTTON,
+                          'method': 'sms',
+                          'mission_name':
+                              widget.isFromLogin ? 'login' : 'signup',
+                        },
                       );
                     },
                     child: ValueListenableBuilder<int>(

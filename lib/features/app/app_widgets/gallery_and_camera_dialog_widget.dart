@@ -10,7 +10,7 @@ import '../../../common/helper/camera_screen.dart';
 import '../../../common/helper/helper_functions.dart';
 import '../../../generated/locale_keys.g.dart';
 import '../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../my_text_widget.dart';
 
@@ -57,11 +57,11 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
                 onChooseFileFromCameraAction.call(selectedFile);
                 Navigator.of(context).pop();
                 /////////////////////////////////
-                FirebaseAnalyticsService.logEventForSession(
-                  eventName: AnalyticsEventsConst.buttonClicked,
-                  executedEventName:
-                      AnalyticsExecutedEventNameConst.uploadCameraButton,
-                );
+                // FirebaseAnalyticsService.logEventForSession(
+                //   eventName: AnalyticsEventsConst.buttonClicked,
+                //   executedEventName:
+                //       AnalyticsButtonsEventNameConst.uploadCameraButton,
+                // );
               },
               child: MyTextWidget(LocaleKeys.camera.tr()),
             ),
@@ -100,11 +100,11 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
                   }
                   //    Navigator.of(context).pop();
                   /////////////////////////////////
-                  FirebaseAnalyticsService.logEventForSession(
-                    eventName: AnalyticsEventsConst.buttonClicked,
-                    executedEventName:
-                        AnalyticsExecutedEventNameConst.uploadGalleryButton,
-                  );
+                  // FirebaseAnalyticsService.logEventForSession(
+                  //   eventName: AnalyticsEventsConst.buttonClicked,
+                  //   executedEventName:
+                  //       AnalyticsButtonsEventNameConst.uploadGalleryButton,
+                  // );
                 },
                 child: MyTextWidget(LocaleKeys.gallery.tr()),
               );

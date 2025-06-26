@@ -6,7 +6,7 @@ import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import '../../../common/constant/design/assets_provider.dart';
 import '../../../common/test_utils/widgets_keys.dart';
 import '../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../blocs/app_bloc/app_state.dart';
 
@@ -342,14 +342,14 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar>
                                   Future.delayed(
                                     Duration(milliseconds: 300),
                                     () {
-                                      FirebaseAnalyticsService
-                                          .logEventForSession(
-                                        eventName:
-                                            AnalyticsEventsConst.buttonClicked,
-                                        executedEventName:
-                                            AnalyticsExecutedEventNameConst
-                                                .openSearchFieldButton,
-                                      );
+                                      // FirebaseAnalyticsService
+                                      //     .logEventForSession(
+                                      //   eventName:
+                                      //       AnalyticsEventsConst.buttonClicked,
+                                      //   executedEventName:
+                                      //       AnalyticsButtonsEventNameConst
+                                      //           .openSearchFieldButton,
+                                      // );
                                     },
                                   );
                                 } else {

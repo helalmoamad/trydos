@@ -33,9 +33,9 @@ class _ProductDetailsDisplayPicturesPageState
     extends State<ProductDetailsDisplayPicturesPage> {
   @override
   void didChangeDependencies() {
-    FirebaseAnalyticsService.logScreen(
-      screen: AnalyticsScreensConst.productPhotosScreen,
-    );
+    // FirebaseAnalyticsService.logScreen(
+    //   screen: AnalyticsScreensConst.productPhotosScreen,
+    // );
     super.didChangeDependencies();
   }
 
