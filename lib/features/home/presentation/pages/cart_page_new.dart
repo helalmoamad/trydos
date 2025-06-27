@@ -164,7 +164,40 @@ class _CartPageState extends State<CartPage> {
                     String priceSymbol = state.getCurrencyForCountryModel!.data!
                             .currency!.symbol ??
                         "";
-                    ////////////////////////////////
+                    /////////////////////////////////
+                    List<Map<String, String>> analyticsCartList = [];
+                    if (state.cartCollection.isNullOrEmpty) {
+                      state.cartCollection!.forEach((element) {
+                        Map<String, String> item = {
+                          'item_id': element.productId.toString(),
+                          'item_name': element.name.toString(),
+                          'price': element.price.toString(),
+                          'quantity': element.quantity.toString(),
+                          'brand': element.brand!.name.toString(),
+                          'category': '',
+                          'item_variant': element.variant.toString(),
+                        };
+
+                        analyticsCartList.add(item);
+                      });
+                    }
+                    /////////////////////////////////
+                    Future.delayed(
+                      Duration(milliseconds: 300),
+                      () {
+                        FirebaseAnalyticsService.logEventForSession(
+                          eventName: AnalyticsEventsConst.beginCheckout,
+                          extraParams: {
+                            'currency': priceSymbol.toString(),
+                            'value': state
+                                .getCartShippingItemsModel!.data!.total
+                                .toString(),
+                            'items': analyticsCartList.toString(),
+                          },
+                        );
+                      },
+                    );
+                    //////////////////////////////////
                     HelperFunctions.slidingNavigation(
                       context,
                       CartDelivaryAddress(

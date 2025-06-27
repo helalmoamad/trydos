@@ -30,8 +30,8 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dar
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/language_service.dart';
-import '../../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../manager/orderBloc/order_bloc.dart';
 import '../../manager/orderBloc/order_event.dart';
@@ -2201,60 +2201,106 @@ class _AddShippingAdressState extends State<AddShippingAdress>
                                                                   if (!(widget
                                                                           .fromEdid ??
                                                                       false)) {
-                                                                    orderBloc.add(
-                                                                        AddAddressInfoClassEvent(
-                                                                            addressInfoClassToSave:
-                                                                                address.CustomerAddressesInfo(
-                                                                      addressDetail:
-                                                                          detailsAddressController
-                                                                              .text,
-                                                                      contactInfo:
-                                                                          address
-                                                                              .ContactInfo(
-                                                                        alternativePhone:
-                                                                            alternativePhoneController.text,
-                                                                        name: reciptionNameController
-                                                                            .text,
-                                                                        phone: contactPhoneController
-                                                                            .text,
-                                                                      ),
-                                                                      address:
-                                                                          addressTitleController
-                                                                              .text,
-                                                                      location: address.Location(
-                                                                          latitude: ((_currentLocation?.latitude ?? _locationFromSearch?.latitude) ?? "")
+                                                                    //////////////////////////////////////////
+
+                                                                    List<Map<String, String>>
+                                                                        analyticsCartList =
+                                                                        [];
+                                                                    if (homeBloc
+                                                                            .state
+                                                                            .cartCollection !=
+                                                                        null) {
+                                                                      homeBloc
+                                                                          .state
+                                                                          .cartCollection!
+                                                                          .forEach(
+                                                                              (element) {
+                                                                        Map<String,
+                                                                                String>
+                                                                            item =
+                                                                            {
+                                                                          'item_id': element
+                                                                              .productId
                                                                               .toString(),
-                                                                          longitude:
-                                                                              ((_currentLocation?.longitude ?? _locationFromSearch?.longitude) ?? "").toString()),
-                                                                      regionDetails:
-                                                                          address
-                                                                              .RegionDetails(
-                                                                        zip: finishSelectedByUser.length >
-                                                                                0
-                                                                            ? finishSelectedByUser[0].zip
-                                                                            : "",
-                                                                        building: finishSelectedByUser.length >
-                                                                                0
-                                                                            ? finishSelectedByUser[0].building
-                                                                            : "",
-                                                                        city: finishSelectedByUser.length >
-                                                                                0
-                                                                            ? finishSelectedByUser[0].city
-                                                                            : "",
-                                                                        country:
-                                                                            "${country?.name}",
-                                                                        province:
-                                                                            finishSelectedByUser[0].province,
-                                                                        street: finishSelectedByUser.length >
-                                                                                0
-                                                                            ? finishSelectedByUser[0].street
-                                                                            : "",
-                                                                        town: finishSelectedByUser.length >
-                                                                                0
-                                                                            ? finishSelectedByUser[0].town
-                                                                            : "",
+                                                                          'item_name': element
+                                                                              .name
+                                                                              .toString(),
+                                                                          'quantity': element
+                                                                              .quantity
+                                                                              .toString(),
+                                                                        };
+
+                                                                        analyticsCartList
+                                                                            .add(item);
+                                                                      });
+                                                                    }
+                                                                    /////////////////////////////////
+                                                                    Future
+                                                                        .delayed(
+                                                                      Duration(
+                                                                          milliseconds:
+                                                                              300),
+                                                                      () {
+                                                                        FirebaseAnalyticsService
+                                                                            .logEventForSession(
+                                                                          eventName:
+                                                                              AnalyticsEventsConst.addShippingInfo,
+                                                                          extraParams: {
+                                                                            'shipping_tier':
+                                                                                '',
+                                                                            'items':
+                                                                                analyticsCartList.toString(),
+                                                                          },
+                                                                        );
+                                                                      },
+                                                                    );
+                                                                    //////////////////////////////////////////
+                                                                    orderBloc
+                                                                        .add(
+                                                                      AddAddressInfoClassEvent(
+                                                                        addressInfoClassToSave:
+                                                                            address.CustomerAddressesInfo(
+                                                                          addressDetail:
+                                                                              detailsAddressController.text,
+                                                                          contactInfo:
+                                                                              address.ContactInfo(
+                                                                            alternativePhone:
+                                                                                alternativePhoneController.text,
+                                                                            name:
+                                                                                reciptionNameController.text,
+                                                                            phone:
+                                                                                contactPhoneController.text,
+                                                                          ),
+                                                                          address:
+                                                                              addressTitleController.text,
+                                                                          location: address.Location(
+                                                                              latitude: ((_currentLocation?.latitude ?? _locationFromSearch?.latitude) ?? "").toString(),
+                                                                              longitude: ((_currentLocation?.longitude ?? _locationFromSearch?.longitude) ?? "").toString()),
+                                                                          regionDetails:
+                                                                              address.RegionDetails(
+                                                                            zip: finishSelectedByUser.length > 0
+                                                                                ? finishSelectedByUser[0].zip
+                                                                                : "",
+                                                                            building: finishSelectedByUser.length > 0
+                                                                                ? finishSelectedByUser[0].building
+                                                                                : "",
+                                                                            city: finishSelectedByUser.length > 0
+                                                                                ? finishSelectedByUser[0].city
+                                                                                : "",
+                                                                            country:
+                                                                                "${country?.name}",
+                                                                            province:
+                                                                                finishSelectedByUser[0].province,
+                                                                            street: finishSelectedByUser.length > 0
+                                                                                ? finishSelectedByUser[0].street
+                                                                                : "",
+                                                                            town: finishSelectedByUser.length > 0
+                                                                                ? finishSelectedByUser[0].town
+                                                                                : "",
+                                                                          ),
+                                                                        ),
                                                                       ),
-                                                                    )));
+                                                                    );
                                                                     Navigator.of(
                                                                             context)
                                                                         .pop();

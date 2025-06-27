@@ -43,3 +43,10 @@ class GlobalPlatform {
   static const WEB = "web";
   static const MOBILE = "mobile";
 }
+
+class GA_PAYMENTS {
+  static const WALLET = "wallet";
+  static const CRYPTO = "crypto";
+  static const CREDIT = "credit";
+  static const COD = "cash_on_delivery";
+}

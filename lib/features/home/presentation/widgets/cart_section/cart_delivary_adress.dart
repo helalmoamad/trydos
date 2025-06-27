@@ -615,6 +615,51 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                       return;
                     }
                     if (check) {
+                      /////////////////////////////////
+                      String analyticsPayMethods = '';
+                      int index = 0;
+                      paymentMethods.value.forEach((e) {
+                        if (e == PaymentMethods.trydosWallet) {
+                          analyticsPayMethods += GA_PAYMENTS.WALLET;
+                        } else if (e == PaymentMethods.cod) {
+                          analyticsPayMethods += GA_PAYMENTS.COD;
+                        } else if (e == PaymentMethods.card) {
+                          analyticsPayMethods += GA_PAYMENTS.CREDIT;
+                        } else if (e == PaymentMethods.crypto) {
+                          analyticsPayMethods += GA_PAYMENTS.CRYPTO;
+                        }
+                        if (index != paymentMethods.value.length - 1) {
+                          analyticsPayMethods += '-';
+                        }
+                        index++;
+                      });
+                      ////////////////////////////////////////////
+                      List<Map<String, String>> analyticsCartList = [];
+                      if (homeBloc.state.cartCollection != null) {
+                        homeBloc.state.cartCollection!.forEach((element) {
+                          Map<String, String> item = {
+                            'item_id': element.productId.toString(),
+                            'item_name': element.name.toString(),
+                            'quantity': element.quantity.toString(),
+                          };
+
+                          analyticsCartList.add(item);
+                        });
+                      }
+                      ////////////////////////////////////////////
+                      Future.delayed(
+                        Duration(milliseconds: 300),
+                        () {
+                          FirebaseAnalyticsService.logEventForSession(
+                            eventName: AnalyticsEventsConst.viewCart,
+                            extraParams: {
+                              'payment_type': analyticsPayMethods,
+                              'items': analyticsCartList.toString(),
+                            },
+                          );
+                        },
+                      );
+                      //////////////////////////////////
                       HelperFunctions.slidingNavigation(
                         context,
                         PlaceOrder(

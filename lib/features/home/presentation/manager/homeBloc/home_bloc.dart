@@ -1543,16 +1543,23 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       });
 
       /////////////////////////////////
-      FirebaseAnalyticsService.logEventForSession(
-        eventName: AnalyticsEventsConst.viewCart,
-        extraParams: {
-          'currency': state.getCurrencyForCountryModel!.data!.currency!.symbol
-              .toString(),
-          'value': state.getCartShippingItemsModel!.data!.total.toString(),
-          'items': analyticsCartList.toString(),
-          'screen_name': GlobalScreenConst.CART_SCREEN,
+      Future.delayed(
+        Duration(milliseconds: 300),
+        () {
+          FirebaseAnalyticsService.logEventForSession(
+            eventName: AnalyticsEventsConst.viewCart,
+            extraParams: {
+              'currency': state
+                  .getCurrencyForCountryModel!.data!.currency!.symbol
+                  .toString(),
+              'value': state.getCartShippingItemsModel!.data!.total.toString(),
+              'items': analyticsCartList.toString(),
+              'screen_name': GlobalScreenConst.CART_SCREEN,
+            },
+          );
         },
       );
+
       //////////////////////////////////
       // add(AddItemToCartEvent());
       add(GetOldCartItemEvent());
@@ -2754,18 +2761,23 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       isFailedTheFirstTime.remove('UpdateCartItemEvent');
       ////////////////////////
       if (event.totalQuantity == 0 || event.newQuantity == -1) {
-        FirebaseAnalyticsService.logEventForSession(
-          eventName: AnalyticsEventsConst.removeFromCart,
-          extraParams: {
-            'items': [
-              {
-                'item_id': event.productId.toString(),
-                'item_name': event.productName.toString(),
-                'price': event.productPrice.toString(),
-                'quantity': event.totalQuantity.toString(),
-                'item_variant': '${event.colorName}-${event.currentSize}',
-              }
-            ].toString(),
+        Future.delayed(
+          Duration(milliseconds: 300),
+          () {
+            FirebaseAnalyticsService.logEventForSession(
+              eventName: AnalyticsEventsConst.removeFromCart,
+              extraParams: {
+                'items': [
+                  {
+                    'item_id': event.productId.toString(),
+                    'item_name': event.productName.toString(),
+                    'price': event.productPrice.toString(),
+                    'quantity': event.totalQuantity.toString(),
+                    'item_variant': '${event.colorName}-${event.currentSize}',
+                  }
+                ].toString(),
+              },
+            );
           },
         );
       }
@@ -3008,26 +3020,32 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           choice_1: listitemForAddToCart[i].size,
           quantity: listitemForAddToCart[i].quantity));
       /////////////////////////////////
-      FirebaseAnalyticsService.logEventForSession(
-        eventName: AnalyticsEventsConst.addToCart,
-        extraParams: {
-          'currency': state.getCurrencyForCountryModel!.data!.currency!.symbol
-              .toString(),
-          'value': state.getCartShippingItemsModel!.data!.total.toString(),
-          'items': [
-            {
-              'item_id': event.id.toString(),
-              'item_name': event.products.name.toString(),
-              'price': event.products.price.toString(),
-              'quantity': listitemForAddToCart[i].quantity.toString(),
-              'brand': event.products.brand?.name.toString(),
-              'category': event.products.category?.name.toString(),
-              'count_likes': event.products.countOfLikes.toString(),
-              'review_count': event.products.reviewsCount.toString(),
-              'item_variant':
-                  '${listitemForAddToCart[i].colorName}-${listitemForAddToCart[i].size}',
-            }
-          ].toString(),
+      Future.delayed(
+        Duration(milliseconds: 300),
+        () {
+          FirebaseAnalyticsService.logEventForSession(
+            eventName: AnalyticsEventsConst.addToCart,
+            extraParams: {
+              'currency': state
+                  .getCurrencyForCountryModel!.data!.currency!.symbol
+                  .toString(),
+              'value': state.getCartShippingItemsModel!.data!.total.toString(),
+              'items': [
+                {
+                  'item_id': event.id.toString(),
+                  'item_name': event.products.name.toString(),
+                  'price': event.products.price.toString(),
+                  'quantity': listitemForAddToCart[i].quantity.toString(),
+                  'brand': event.products.brand?.name.toString(),
+                  'category': event.products.category?.name.toString(),
+                  'count_likes': event.products.countOfLikes.toString(),
+                  'review_count': event.products.reviewsCount.toString(),
+                  'item_variant':
+                      '${listitemForAddToCart[i].colorName}-${listitemForAddToCart[i].size}',
+                }
+              ].toString(),
+            },
+          );
         },
       );
     }
