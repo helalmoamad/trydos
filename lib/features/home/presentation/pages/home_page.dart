@@ -786,6 +786,7 @@ class _HomePageState extends State<HomePage> {
                                           .getHomeBoutiquesPaginationObjectByMainCategory[
                                               currentSlug]!
                                           .items[index],
+                                      index: index,
                                     )
 
                               //HomePageCard(showWhite: index % 2 == 0),

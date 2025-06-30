@@ -587,6 +587,39 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                                     //       AnalyticsButtonsEventNameConst
                                                                     //           .chooseAvailableSizeButton,
                                                                     // );
+
+                                                                    FirebaseAnalyticsService
+                                                                        .logEventForSession(
+                                                                      eventName:
+                                                                          AnalyticsEventsConst
+                                                                              .itemVariantExchange,
+                                                                      extraParams: {
+                                                                        'item_id': widget
+                                                                            .productItem
+                                                                            .productId
+                                                                            .toString(),
+                                                                        'item_name': widget
+                                                                            .productItem
+                                                                            .name
+                                                                            .toString(),
+                                                                        'brand': widget
+                                                                            .productItem
+                                                                            .brand!
+                                                                            .name
+                                                                            .toString(),
+                                                                        'category': widget
+                                                                            .productItem
+                                                                            .categories!
+                                                                            .map(
+                                                                              (e) => e.name,
+                                                                            )
+                                                                            .toList()
+                                                                            .toString(),
+                                                                        'item_variant':
+                                                                            sizes?[index] ??
+                                                                                ''
+                                                                      },
+                                                                    );
                                                                   },
                                                                   child: AnimatedContainer(
                                                                       duration: Duration(milliseconds: 300),

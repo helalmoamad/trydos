@@ -1249,6 +1249,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                       ));
                                                                                     }
                                                                                   });
+                                                                                  /////////////////////////////////
+                                                                                  FirebaseAnalyticsService.logEventForSession(
+                                                                                    eventName: AnalyticsEventsConst.search,
+                                                                                    extraParams: {
+                                                                                      'search_keyword': text,
+                                                                                      'screen_name': GlobalScreenConst.PRODUCT_SCREEN,
+                                                                                    },
+                                                                                  );
                                                                                 },
                                                                               ),
                                                                             ),
@@ -2082,18 +2090,47 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                     //       )
                                                                     //       .toList(),
                                                                     // );
+                                                                    FirebaseAnalyticsService
+                                                                        .logEventForSession(
+                                                                      eventName:
+                                                                          AnalyticsEventsConst
+                                                                              .viewItem,
+                                                                      extraParams: {
+                                                                        'item_id': products[index]
+                                                                            .productId
+                                                                            .toString(),
+                                                                        'item_name': products[index]
+                                                                            .name
+                                                                            .toString(),
+                                                                        'price': products[index]
+                                                                            .price
+                                                                            .toString(),
+                                                                        'brand': products[index]
+                                                                            .brand!
+                                                                            .name
+                                                                            .toString(),
+                                                                        'category': products[index]
+                                                                            .categories!
+                                                                            .map(
+                                                                              (e) => e.id.toString(),
+                                                                            )
+                                                                            .toList()
+                                                                            .toString(),
+                                                                        'count_likes': products[index]
+                                                                            .countOfLikes
+                                                                            .toString(),
+                                                                        'review_count': products[index]
+                                                                            .reviewsCount
+                                                                            .toString(),
+                                                                        'interaction_type':
+                                                                            'view',
+                                                                        'screen_name':
+                                                                            GlobalScreenConst.PRODUCT_SCREEN,
+                                                                      },
+                                                                    );
                                                                   },
                                                                 );
                                                                 ////////////////////////////
-                                                                // FirebaseAnalyticsService
-                                                                //     .logEventForSession(
-                                                                //   eventName:
-                                                                //       AnalyticsEventsConst
-                                                                //           .buttonClicked,
-                                                                //   executedEventName:
-                                                                //       AnalyticsButtonsEventNameConst
-                                                                //           .chooseProductButton,
-                                                                // );
 
                                                                 // pushOverscrollRoute(
                                                                 //     context: context,
@@ -2399,29 +2436,53 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                         100),
                                                               ).then(
                                                                 (value) {
-                                                                  // FirebaseAnalyticsService
-                                                                  //     .logEventForViewedProduct(
-                                                                  //   eventName:
-                                                                  //       AnalyticsEventsConst
-                                                                  //           .viewedProduct,
-                                                                  //   productId: products[
-                                                                  //           index]
-                                                                  //       .productId
-                                                                  //       .toString(),
-                                                                  //   productName:
-                                                                  //       products[index]
-                                                                  //           .name
-                                                                  //           .toString(),
-                                                                  //   productCategoriesId: products[
-                                                                  //           index]
-                                                                  //       .categories
-                                                                  //       ?.map(
-                                                                  //         (e) => e
-                                                                  //             .id
-                                                                  //             .toString(),
-                                                                  //       )
-                                                                  //       .toList(),
-                                                                  // );
+                                                                  FirebaseAnalyticsService
+                                                                      .logEventForSession(
+                                                                    eventName:
+                                                                        AnalyticsEventsConst
+                                                                            .viewItem,
+                                                                    extraParams: {
+                                                                      'item_id': products[
+                                                                              index]
+                                                                          .productId
+                                                                          .toString(),
+                                                                      'item_name': products[
+                                                                              index]
+                                                                          .name
+                                                                          .toString(),
+                                                                      'price': products[
+                                                                              index]
+                                                                          .price
+                                                                          .toString(),
+                                                                      'brand': products[
+                                                                              index]
+                                                                          .brand!
+                                                                          .name
+                                                                          .toString(),
+                                                                      'category': products[
+                                                                              index]
+                                                                          .categories!
+                                                                          .map(
+                                                                            (e) =>
+                                                                                e.id.toString(),
+                                                                          )
+                                                                          .toList()
+                                                                          .toString(),
+                                                                      'count_likes': products[
+                                                                              index]
+                                                                          .countOfLikes
+                                                                          .toString(),
+                                                                      'review_count': products[
+                                                                              index]
+                                                                          .reviewsCount
+                                                                          .toString(),
+                                                                      'interaction_type':
+                                                                          'view',
+                                                                      'screen_name':
+                                                                          GlobalScreenConst
+                                                                              .PRODUCT_SCREEN,
+                                                                    },
+                                                                  );
                                                                 },
                                                               );
                                                               ////////////////////////////
@@ -3263,17 +3324,26 @@ class _ProductListingPageState extends State<ProductListingPage> {
                   Duration(milliseconds: 100),
                 ).then(
                   (value) {
-                    // FirebaseAnalyticsService.logEventForViewedProduct(
-                    //   eventName: AnalyticsEventsConst.viewedProduct,
-                    //   productId: products[index].productId.toString(),
-                    //   productName: products[index].name.toString(),
-                    //   productCategoriesId: products[index]
-                    //       .categories
-                    //       ?.map(
-                    //         (e) => e.id.toString(),
-                    //       )
-                    //       .toList(),
-                    // );
+                    FirebaseAnalyticsService.logEventForSession(
+                      eventName: AnalyticsEventsConst.viewItem,
+                      extraParams: {
+                        'item_id': products[index].productId.toString(),
+                        'item_name': products[index].name.toString(),
+                        'price': products[index].price.toString(),
+                        'brand': products[index].brand!.name.toString(),
+                        'category': products[index]
+                            .categories!
+                            .map(
+                              (e) => e.id.toString(),
+                            )
+                            .toList()
+                            .toString(),
+                        'count_likes': products[index].countOfLikes.toString(),
+                        'review_count': products[index].reviewsCount.toString(),
+                        'interaction_type': 'view',
+                        'screen_name': GlobalScreenConst.PRODUCT_SCREEN,
+                      },
+                    );
                   },
                 );
                 ////////////////////////////

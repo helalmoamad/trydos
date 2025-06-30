@@ -44,7 +44,7 @@ class Data {
   final int? total;
   final int? limit;
   final String? offset;
-  final List<Boutique>? boutiques;
+  final List<HomeBoutiques>? boutiques;
 
   Data({
     this.total,
@@ -57,7 +57,7 @@ class Data {
     int? total,
     int? limit,
     String? offset,
-    List<Boutique>? boutiques,
+    List<HomeBoutiques>? boutiques,
   }) =>
       Data(
         total: total ?? this.total,
@@ -72,8 +72,8 @@ class Data {
         offset: json["offset"].toString(),
         boutiques: json["boutiques"] == null
             ? []
-            : List<Boutique>.from(
-                json["boutiques"]!.map((x) => Boutique.fromJson(x))),
+            : List<HomeBoutiques>.from(
+                json["boutiques"]!.map((x) => HomeBoutiques.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -86,7 +86,7 @@ class Data {
       };
 }
 
-class Boutique {
+class HomeBoutiques {
   final int? id;
   final String? name;
   final BunnerBoutique? icon;
@@ -97,7 +97,7 @@ class Boutique {
   final List<MainCategoriesForProductId>? mainCategoriesForProductIds;
   final List<ChildCategoriesForProductId>? childCategoriesForProductIds;
 
-  Boutique({
+  HomeBoutiques({
     this.id,
     this.name,
     this.icon,
@@ -109,7 +109,7 @@ class Boutique {
     this.childCategoriesForProductIds,
   });
 
-  Boutique copyWith({
+  HomeBoutiques copyWith({
     int? id,
     String? name,
     BunnerBoutique? icon,
@@ -120,7 +120,7 @@ class Boutique {
     List<MainCategoriesForProductId>? mainCategoriesForProductIds,
     List<ChildCategoriesForProductId>? childCategoriesForProductIds,
   }) =>
-      Boutique(
+      HomeBoutiques(
         id: id ?? this.id,
         name: name ?? this.name,
         icon: icon ?? this.icon,
@@ -134,7 +134,7 @@ class Boutique {
             childCategoriesForProductIds ?? this.childCategoriesForProductIds,
       );
 
-  factory Boutique.fromJson(Map<String, dynamic> json) => Boutique(
+  factory HomeBoutiques.fromJson(Map<String, dynamic> json) => HomeBoutiques(
         id: json["id"],
         name: json["name"],
         icon:

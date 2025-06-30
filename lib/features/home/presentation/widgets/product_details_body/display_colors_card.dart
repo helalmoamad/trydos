@@ -688,6 +688,41 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                         //       AnalyticsButtonsEventNameConst
                                                         //           .chooseAvailableColorButton,
                                                         // );
+                                                        FirebaseAnalyticsService
+                                                            .logEventForSession(
+                                                          eventName:
+                                                              AnalyticsEventsConst
+                                                                  .itemVariantExchange,
+                                                          extraParams: {
+                                                            'item_id': widget
+                                                                .productItem
+                                                                .productId
+                                                                .toString(),
+                                                            'item_name': widget
+                                                                .productItem
+                                                                .name
+                                                                .toString(),
+                                                            'brand': widget
+                                                                .productItem
+                                                                .brand!
+                                                                .name
+                                                                .toString(),
+                                                            'category': widget
+                                                                .productItem
+                                                                .categories!
+                                                                .map(
+                                                                  (e) => e.name,
+                                                                )
+                                                                .toList()
+                                                                .toString(),
+                                                            'item_variant':
+                                                                widget
+                                                                    .productItem
+                                                                    .colors![
+                                                                        index]
+                                                                    .toString(),
+                                                          },
+                                                        );
                                                       },
                                                       child: Column(
                                                         crossAxisAlignment:

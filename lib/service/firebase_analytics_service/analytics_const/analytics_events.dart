@@ -37,6 +37,19 @@ class AnalyticsEventsConst {
   static const purchase = "purchase";
   static const refund = "refund";
   static const postPurchaseRating = "post_purchase_rating";
+  /////////////////////////////// home  //////////////////////////////////////
+  static const viewBoutique = "view_boutique";
+  static const viewCategory = "view_category";
+  static const viewItemList = "view_item_list";
+  static const viewItem = "view_item";
+  static const itemVariantExchange = "item_variant_exchange";
+  static const search = "search";
+  static const viewPromotion = "view_promotion";
+  static const viewStory = "view_story";
+  static const customEventWithPreviousButton =
+      "custom_event_with_previous_button";
+  static const likeItem = "like_item";
+  static const shareContent = "share_content";
 }
 
 class GlobalPlatform {

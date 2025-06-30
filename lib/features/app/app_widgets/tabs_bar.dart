@@ -13,11 +13,13 @@ import 'package:mime/mime.dart';
 import 'package:trydos/common/test_utils/test_var.dart';
 import 'package:trydos/config/theme/my_color_scheme.dart';
 import 'package:trydos/config/theme/typography.dart';
+import 'package:trydos/core/data/model/pagination_model.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/state_ext.dart';
 import 'package:trydos/features/app/app_widgets/gallery_and_camera_dialog_widget.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/app/svg_network_widget.dart';
+import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/data/models/main_categories_response_model.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
@@ -27,6 +29,7 @@ import 'package:trydos/features/home/presentation/manager/categoryBloc/category_
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_filter_list.dart';
 import 'package:trydos/features/search/presentation/widgets/search_with_image_related_gemini.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import 'package:trydos/service/language_service.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../../common/constant/design/assets_provider.dart';
@@ -967,15 +970,75 @@ class _TabsBarState extends State<TabsBar> {
                                                     ),
                                                   );
                                                   ///////////////////////////
-                                                  // FirebaseAnalyticsService
-                                                  //     .logEventForSession(
-                                                  //   eventName:
-                                                  //       AnalyticsEventsConst
-                                                  //           .buttonClicked,
-                                                  //   executedEventName:
-                                                  //       AnalyticsButtonsEventNameConst
-                                                  //           .chooseCategoryButton,
-                                                  // );
+                                                  Future.delayed(
+                                                    Duration(milliseconds: 500),
+                                                    () {
+                                                      Map<
+                                                              String,
+                                                              PaginationModel<
+                                                                  HomeBoutiques>>
+                                                          getHomeBoutiquesPaginationObjectByMainCategory =
+                                                          Map.of(categoryBloc
+                                                              .state
+                                                              .getHomeBoutiquesPaginationObjectByMainCategory);
+
+                                                      List<HomeBoutiques>
+                                                          boutiques =
+                                                          List.of(getHomeBoutiquesPaginationObjectByMainCategory[homeState
+                                                                  .mainCategoriesResponseModel!
+                                                                  .data!
+                                                                  .mainCategories![
+                                                                      index]
+                                                                  .slug!]!
+                                                              .items);
+                                                      ////////////////////////
+                                                      List<Map<String, String>>
+                                                          analyticsBoutiques =
+                                                          [];
+
+                                                      boutiques.forEach(
+                                                        (element) {
+                                                          analyticsBoutiques
+                                                              .add({
+                                                            'item_id': element
+                                                                .id
+                                                                .toString(),
+                                                            'item_name': element
+                                                                .name
+                                                                .toString(),
+                                                          });
+                                                        },
+                                                      );
+                                                      ///////////////////////////
+                                                      FirebaseAnalyticsService
+                                                          .logEventForSession(
+                                                        eventName:
+                                                            AnalyticsEventsConst
+                                                                .viewCategory,
+                                                        extraParams: {
+                                                          'category_id': homeState
+                                                              .mainCategoriesResponseModel!
+                                                              .data!
+                                                              .mainCategories![
+                                                                  index]
+                                                              .id
+                                                              .toString(),
+                                                          'category': homeState
+                                                              .mainCategoriesResponseModel!
+                                                              .data!
+                                                              .mainCategories![
+                                                                  index]
+                                                              .name
+                                                              .toString(),
+                                                          'items': boutiques
+                                                              .toString(),
+                                                          'screen_name':
+                                                              GlobalScreenConst
+                                                                  .HOME_SCREEN,
+                                                        },
+                                                      );
+                                                    },
+                                                  );
                                                 } else {
                                                   appBloc.add(ChangeTab(-1));
                                                   categoryBloc.add(

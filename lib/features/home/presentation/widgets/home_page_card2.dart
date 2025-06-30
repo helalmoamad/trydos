@@ -21,9 +21,8 @@ import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_
 
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/my_text_widget.dart';
 import '../../../app/svg_network_widget.dart';
@@ -33,11 +32,13 @@ class HomePageCard2 extends cupertino.StatefulWidget {
       {super.key,
       this.withSlidingImages = false,
       required this.boutique,
+      required this.index,
       required this.category_Slug,
       required this.isShowPanelForVerified});
   final String category_Slug;
+  final int index;
   final bool withSlidingImages;
-  final Boutique boutique;
+  final HomeBoutiques boutique;
   final ValueNotifier<bool> isShowPanelForVerified;
   @override
   cupertino.State<HomePageCard2> createState() => _HomePageCard2State();
@@ -120,22 +121,18 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                 reverseTransitionDuration: Duration.zero, // عودة فورية
               ),
             );
-
-            ////////////////////////////////////
-            // FirebaseAnalyticsService.logEventForSession(
-            //   eventName: AnalyticsEventsConst.buttonClicked,
-            //   executedEventName:
-            //       AnalyticsButtonsEventNameConst.chooseBoutiqueButton,
-            // );
             ////////////////////////////////////
             Future.delayed(
               Duration(milliseconds: 100),
               () {
-                // FirebaseAnalyticsService.logEventForViewedBoutique(
-                //   eventName: AnalyticsEventsConst.viewedBoutique,
-                //   boutiqueId: widget.boutique.id.toString(),
-                //   boutiqueName: widget.boutique.name.toString(),
-                // );
+                FirebaseAnalyticsService.logEventForSession(
+                  eventName: AnalyticsEventsConst.viewItemList,
+                  extraParams: {
+                    'item_list_id': widget.boutique.id.toString(),
+                    'item_list_name': widget.boutique.name.toString(),
+                    'screen_name': GlobalScreenConst.HOME_SCREEN,
+                  },
+                );
               },
             );
           },
