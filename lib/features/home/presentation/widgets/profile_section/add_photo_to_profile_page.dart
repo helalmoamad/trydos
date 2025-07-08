@@ -297,7 +297,7 @@ class _AddPhotoProfilePageState extends State<AddPhotoProfilePage> {
         assetEntity = await HelperFunctions.getAssetFromGallery(context);
         if (assetEntity != null) {
           if (assetEntity.type == AssetType.video) {
-            showMessage('only photo', showInRelease: true);
+            showWarningMessage(context, 'only photo');
           } else {
             File? file = await assetEntity.originFile;
             if (file != null) {

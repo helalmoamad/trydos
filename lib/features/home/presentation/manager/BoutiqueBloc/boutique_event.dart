@@ -216,6 +216,43 @@ class GetProductsWithFiltersEvent extends BoutiqueEvent {
       [category, searchText, offset, limit, getWithPagination, boutiqueSlug];
 }
 
+class GetProductsWithFiltersWithPaginationEvent extends BoutiqueEvent {
+  final String? category;
+  final String? searchText;
+  final int offset;
+  final bool getWithoutFilter;
+  final int? limit;
+  final String boutiqueSlug;
+  final bool cashedOrginalBoutique;
+  final bool? fromSearch;
+  final BuildContext? context;
+  final bool? fromNotification;
+  final bool? fromChoosed;
+  final bool resetChoosedFilters;
+
+  final bool getWithPagination;
+
+  GetProductsWithFiltersWithPaginationEvent(
+      {required this.boutiqueSlug,
+      this.getWithoutFilter = false,
+      this.context = null,
+      this.resetChoosedFilters = true,
+      this.searchText,
+      this.fromNotification = false,
+      this.cashedOrginalBoutique = false,
+      this.getWithPagination = false,
+      this.fromChoosed = false,
+      this.fromSearch,
+      required this.offset,
+      this.limit,
+      this.category});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props =>
+      [category, searchText, offset, limit, getWithPagination, boutiqueSlug];
+}
+
 class GetProductsWithFiltersUsingPaginationEvent extends BoutiqueEvent {
   final String? category;
   final String? searchText;
@@ -308,7 +345,7 @@ class AddIsExpandedForListingPageEvent extends BoutiqueEvent {
   List<Object?> get props => [];
 }
 
-class GetProductsWithFiltersWithPrefetchForFiveFiltersEvent
+/*class GetProductsWithFiltersWithPrefetchForFiveFiltersEvent
     extends BoutiqueEvent {
   final String? category;
   final String filterSlug;
@@ -326,4 +363,4 @@ class GetProductsWithFiltersWithPrefetchForFiveFiltersEvent
   @override
   // TODO: implement props
   List<Object?> get props => [category, boutiqueSlug, filterSlug];
-}
+}*/

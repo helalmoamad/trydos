@@ -16,9 +16,11 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/string.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/widgets/chat_widgets/text_message.dart';
+import 'package:easy_localization/easy_localization.dart' as tr;
 import '../../../../../common/helper/file_saving.dart';
 import '../../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../../core/utils/responsive_padding.dart';
+import '../../../../../generated/locale_keys.g.dart';
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../app/blocs/app_bloc/app_bloc.dart';
 import '../../../../app/blocs/app_bloc/app_event.dart';
@@ -75,15 +77,48 @@ class ImageMessage extends StatefulWidget {
   State<ImageMessage> createState() => _ImageMessageState();
 }
 
-class _ImageMessageState extends State<ImageMessage> {
+class _ImageMessageState extends State<ImageMessage>
+    with AutomaticKeepAliveClientMixin {
   int? width;
   bool timer = false;
   int? height;
   late ChatBloc chatBloc;
   final ValueNotifier<int> _loadingImage = ValueNotifier(0);
 
+  // إضافة متغيرات لحفظ حالة الصورة
+  bool _isImageLoaded = false;
+  bool _isDownloading = false;
+  String? _cachedImageUrl;
+  File? _cachedImageFile; // ✅ حفظ مرجع للصورة المحملة
+  bool _isFullScreenActive = false; // ✅ تتبع حالة FullScreen
+
+  @override
+  bool get wantKeepAlive => true; // ✅ الحفاظ على حالة Widget
+
   @override
   void initState() {
+    debugPrint(
+        "🎯 ImageMessage initState - imageFile: ${widget.imageFile?.path ?? 'null'}, imageUrl: '${widget.imageUrl ?? 'null'}'");
+
+    // ✅ تحديد حالة الصورة الأولية بدقة
+    if (widget.imageFile != null && widget.imageFile!.existsSync()) {
+      debugPrint("📁 Image already exists as file");
+      _cachedImageFile = widget.imageFile; // ✅ حفظ نسخة احتياطية
+      _isImageLoaded = true;
+      _loadingImage.value = 2; // تم التحميل بالفعل
+    } else if (widget.imageUrl.isNullOrEmpty ||
+        widget.imageUrl!.trim().isEmpty) {
+      debugPrint("❌ No valid imageUrl - setting error state");
+      _loadingImage.value = -1; // خطأ مباشرة - لا يوجد URL صالح
+      _isImageLoaded = false;
+    } else {
+      debugPrint(
+          "🔗 Image URL available, ready to download: '${widget.imageUrl}'");
+      _loadingImage.value = 0; // جاهز للتحميل
+    }
+
+    _cachedImageUrl = widget.imageUrl;
+
     if (widget.isSent) {
       // FileSaving().downloadFileToLocalStorage(
       //   widget.imageUrl ??
@@ -99,11 +134,123 @@ class _ImageMessageState extends State<ImageMessage> {
         });
       }
     });
+
+    // ✅ بدء تحميل الصورة فقط إذا لم تكن محملة ولديها URL صالح
+    if (!_isImageLoaded &&
+        !widget.imageUrl.isNullOrEmpty &&
+        widget.imageUrl!.trim().isNotEmpty) {
+      debugPrint("🚀 Starting image initialization");
+      _initializeImage();
+    }
+
     super.initState();
+  }
+
+  // دالة لتهيئة الصورة مرة واحدة فقط
+  void _initializeImage() {
+    debugPrint(
+        "🔄 _initializeImage called - isDownloading: $_isDownloading, isLoaded: $_isImageLoaded, imageUrl: '${widget.imageUrl ?? 'null'}'");
+
+    // ✅ فحص URL فارغ أو null أولاً
+    if (widget.imageUrl.isNullOrEmpty || widget.imageUrl!.trim().isEmpty) {
+      debugPrint("❌ Invalid imageUrl - setting error state");
+      _isImageLoaded = false;
+      _loadingImage.value = -1; // خطأ - URL غير صالح
+      if (mounted) setState(() {});
+      return;
+    }
+
+    // ✅ فحوصات قوية لمنع التحميل المتكرر
+    if (_isDownloading || _isImageLoaded) {
+      debugPrint("⏭️ Skipping download - already downloading or loaded");
+      return;
+    }
+
+    // ✅ التحقق من وجود صورة محفوظة مسبقاً
+    if (_cachedImageFile != null && _cachedImageFile!.existsSync()) {
+      debugPrint("📁 Using cached image file");
+      widget.imageFile = _cachedImageFile;
+      _isImageLoaded = true;
+      _loadingImage.value = 2;
+      if (mounted) setState(() {});
+      return;
+    }
+
+    debugPrint("⬇️ Starting download from URL: ${widget.imageUrl}");
+    _isDownloading = true;
+    _loadingImage.value = 1; // حالة التحميل
+
+    // ✅ إضافة timeout للتحميل (30 ثانية)
+    Timer(Duration(seconds: 30), () {
+      if (_isDownloading && _loadingImage.value == 1) {
+        debugPrint("⏰ Download timeout - switching to error state");
+        _isDownloading = false;
+        _isImageLoaded = false;
+        _loadingImage.value = -1;
+        if (mounted) setState(() {});
+      }
+    });
+
+    FileSaving().downloadFileToLocalStorage(widget.imageUrl!, widget.channelId,
+        action: (File? file) {
+      debugPrint("✅ Download completed - file: ${file?.path}");
+
+      // ✅ إعادة تعيين حالة التحميل دائماً أولاً
+      _isDownloading = false;
+
+      if (file != null && file.existsSync()) {
+        debugPrint("✅ File exists and is valid");
+        widget.imageFile = file;
+        _cachedImageFile = file; // ✅ حفظ نسخة احتياطية
+        _isImageLoaded = true;
+        _loadingImage.value = 2; // تم التحميل بنجاح
+        if (mounted) setState(() {});
+      } else {
+        debugPrint("❌ Download failed - file is null or doesn't exist");
+        // ✅ التأكد من إعادة تعيين جميع الحالات عند الفشل
+        _isImageLoaded = false;
+        _cachedImageFile = null; // مسح أي كاش معطل
+        _loadingImage.value = -1; // فشل التحميل
+        if (mounted) {
+          setState(() {}); // ✅ إجبار إعادة بناء UI لإظهار زر إعادة المحاولة
+        }
+      }
+    });
+  }
+
+  @override
+  void didUpdateWidget(ImageMessage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // إعادة تحميل الصورة فقط إذا تغير URL
+    if (oldWidget.imageUrl != widget.imageUrl) {
+      _cachedImageUrl = widget.imageUrl;
+      _isImageLoaded = false;
+      _isDownloading = false;
+      _loadingImage.value = 0;
+      _initializeImage();
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // ✅ إعادة تعيين حالة FullScreen عند تغيير التبعيات
+    if (_isFullScreenActive) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          setState(() {
+            _isFullScreenActive = false;
+          });
+        }
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // ✅ مطلوب لـ AutomaticKeepAliveClientMixin
+
     debugPrint(widget.imageFile.toString());
     FlutterError.onError = (FlutterErrorDetails error) {
       GetIt.I<PrefsRepository>().saveRequestsData(
@@ -194,216 +341,8 @@ class _ImageMessageState extends State<ImageMessage> {
                           ? Alignment.centerRight
                           : Alignment.centerLeft,
                       children: [
-                        if (widget.imageFile == null) ...{
-                          Container(
-                              width: 200.w,
-                              height: 400,
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade200,
-                                borderRadius: BorderRadius.circular(12.0),
-                                border: Border.all(
-                                  width: 3.0,
-                                  color: widget.isSent
-                                      ? const Color(0xffFFF9B4)
-                                      : const Color(0xffB4FFD9),
-                                ),
-                              ),
-                              child: Center(
-                                  child: ValueListenableBuilder<int>(
-                                      valueListenable: _loadingImage,
-                                      builder: (context, status, _) {
-                                        if (!widget.imageUrl.isNullOrEmpty) {
-                                          FileSaving()
-                                              .downloadFileToLocalStorage(
-                                                  widget.imageUrl ?? "",
-                                                  widget.channelId,
-                                                  action: (File? file) {
-                                            // _loadingImage.value = 2;
-                                            if (file != null) {
-                                              widget.imageFile = file;
-                                              if (mounted) {
-                                                setState(() {});
-                                              }
-                                            }
-                                          });
-                                        }
-
-                                        return CircularProgressIndicator(
-                                          backgroundColor: Colors.grey.shade100,
-                                          color: const Color(0xff388CFF),
-                                        );
-                                      }))),
-                        } else ...{
-                          // FutureBuilder(
-                          //   future: loadWidthAndHeightForImage(
-                          //       ImageFile: widget.imageFile!),
-                          //   builder: (context, snapshot) {
-                          //     if (snapshot.connectionState ==
-                          //         ConnectionState.done)
-                          //       return
-                          Stack(
-                            alignment: Alignment.bottomCenter,
-                            children: [
-                              FullScreenWidget(
-                                backgroundColor: widget.isSent
-                                    ? const Color(0xffFFF9B4)
-                                    : const Color(0xffB4FFD9),
-                                child: Hero(
-                                  tag: "hero${DateTime.now()}",
-                                  child: Container(
-                                    width: 200.w
-                                    // (snapshot.data!.width.w < 200.w)
-                                    //     ? snapshot.data!.width.toDouble()
-                                    //     : 200.w
-
-                                    // (snapshot.data!.width.w / 3 >
-                                    //             200.w)
-                                    //         ? 200.w.toDouble()
-                                    //         : snapshot.data!.width / 3
-                                    ,
-                                    height: 400
-                                    // (snapshot.data!.height.h <
-                                    //         200.h)
-                                    //     ? snapshot.data!.height.toDouble()
-                                    //     : 200.h
-
-                                    // snapshot.data!.height / 3
-
-                                    ,
-                                    decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                        image: FileImage(widget.imageFile!),
-                                        fit: BoxFit.fill,
-                                      ),
-                                      borderRadius: BorderRadius.circular(12.0),
-                                      border: Border.all(
-                                        width: 3.0,
-                                        color: widget.isSent
-                                            ? const Color(0xffFFF9B4)
-                                            : const Color(0xffB4FFD9),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Transform.translate(
-                                offset: const Offset(0, -3),
-                                child: Container(
-                                  height: 40.h,
-                                  width: 200.w,
-                                  // (snapshot.data!.width.w < 200.w)
-                                  //     ? snapshot.data!.width.toDouble()
-                                  //     : 200.w,
-                                  decoration: BoxDecoration(
-                                    gradient: const LinearGradient(
-                                      begin: Alignment(0.0, 0),
-                                      end: Alignment(0.0, 1.0),
-                                      colors: [
-                                        Color(0x00000000),
-                                        Color(0xb2000000)
-                                      ],
-                                      stops: [0.0, 1.0],
-                                    ),
-                                    borderRadius: BorderRadius.circular(12.0),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 5, horizontal: 20),
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
-                                      children: [
-                                        MyTextWidget(
-                                          !widget.createAt!.isUtc
-                                              ? HelperFunctions.getDateInFormat(
-                                                  widget.createAt!)
-                                              : HelperFunctions
-                                                  .getZonedDateInFormat(
-                                                      widget.createAt!),
-                                          style: context
-                                              .textTheme.titleSmall?.rr
-                                              .copyWith(
-                                                  color: context
-                                                      .colorScheme.white),
-                                        ),
-                                        if (widget.isSent) ...{
-                                          10.horizontalSpace,
-                                          (state.currentFailedMessage
-                                                  .contains(widget.messageId))
-                                              ? Row(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  children: [
-                                                    InkWell(
-                                                        onTap: () {
-                                                          chatBloc.add(ResendMessageEvent(
-                                                              messageType:
-                                                                  "image",
-                                                              channelId: widget
-                                                                  .channelId,
-                                                              messageId: widget
-                                                                  .messageId));
-                                                        },
-                                                        child: Icon(
-                                                          Icons.refresh,
-                                                          size: 27.w,
-                                                        )),
-                                                    Container(
-                                                      margin: EdgeInsets.only(
-                                                          left: 5.w),
-                                                      child: SvgPicture.asset(
-                                                        AppAssets
-                                                            .messageFailedSvg,
-                                                        width: 10.sp,
-                                                        height: 10.sp,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                )
-                                              : SvgPicture.asset(
-                                                  widget.isRead
-                                                      ? AppAssets
-                                                          .messageReadArrowSvg
-                                                      : widget.isReceived
-                                                          ? AppAssets
-                                                              .messageDeliveredArrowSvg
-                                                          : (state.currentMessage
-                                                                  .contains(widget
-                                                                      .messageId))
-                                                              ? timer
-                                                                  ? (state.currentMessage.contains(
-                                                                          widget
-                                                                              .messageId))
-                                                                      ? AppAssets
-                                                                          .sandClockSvg
-                                                                      : AppAssets
-                                                                          .messageSentArrowSvg
-                                                                  : ""
-                                                              : AppAssets
-                                                                  .messageSentArrowSvg,
-                                                  width: 10.sp,
-                                                  height: 10.sp,
-                                                )
-                                        },
-                                        if (widget.isForwarded) ...{
-                                          10.horizontalSpace,
-                                          SvgPicture.asset(
-                                            AppAssets.forwardedSvg,
-                                            width: 10.sp,
-                                            height: 10.sp,
-                                          )
-                                        }
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                            //     );
-                            //   return CircularProgressIndicator();
-                            // },
-                          ),
-                        },
+                        // ✅ منطق بسيط وواضح لعرض الصورة
+                        _buildImageWidget(),
                         //todo until i solve the translate
                         widget.isFirstMessage
                             ? Transform.translate(
@@ -470,9 +409,6 @@ class _ImageMessageState extends State<ImageMessage> {
                                             radius: 8,
                                             name: widget.userMessageName),
                                   ],
-                                  //     );
-                                  //   return CircularProgressIndicator();
-                                  // },
                                 ),
                               )
                             : const SizedBox.shrink(),
@@ -501,6 +437,12 @@ class _ImageMessageState extends State<ImageMessage> {
         },
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _loadingImage.dispose(); // ✅ تنظيف ValueNotifier
+    super.dispose();
   }
 
   Future<ChatImageDetail> loadWidthAndHeightForImage(
@@ -534,5 +476,238 @@ class _ImageMessageState extends State<ImageMessage> {
       // GetIt.I<StoryBloc>().add(LoadFailureEvent());
     }
     return completer.future;
+  }
+
+  // ✅ دالة للتحقق من وجود صورة صالحة للعرض
+  bool _hasValidImage() {
+    return (widget.imageFile != null && widget.imageFile!.existsSync()) ||
+        (_cachedImageFile != null && _cachedImageFile!.existsSync());
+  }
+
+  // ✅ دالة للحصول على الصورة المتاحة للعرض
+  File? _getDisplayImage() {
+    if (widget.imageFile != null && widget.imageFile!.existsSync()) {
+      return widget.imageFile;
+    }
+    if (_cachedImageFile != null && _cachedImageFile!.existsSync()) {
+      return _cachedImageFile;
+    }
+    return null;
+  }
+
+  // ✅ دالة لبناء widget الصورة بمنطق مبسط
+  Widget _buildImageWidget() {
+    // تحديد الصورة المتاحة
+    final hasImageFile =
+        widget.imageFile != null && widget.imageFile!.existsSync();
+    final hasCachedFile =
+        _cachedImageFile != null && _cachedImageFile!.existsSync();
+
+    if (hasImageFile || hasCachedFile) {
+      final displayFile = widget.imageFile ?? _cachedImageFile!;
+      return _buildLoadedImage(displayFile);
+    } else {
+      return _buildLoadingOrError();
+    }
+  }
+
+  // ✅ دالة لبناء الصورة المحملة
+  Widget _buildLoadedImage(File imageFile) {
+    return Stack(
+      alignment: Alignment.bottomCenter,
+      children: [
+        FullScreenWidget(
+          backgroundColor:
+              widget.isSent ? const Color(0xffFFF9B4) : const Color(0xffB4FFD9),
+          disposeLevel: DisposeLevel.High, // ✅ حماية أقوى من الاختفاء
+          child: Hero(
+            tag: "hero_${widget.messageId}",
+            child: Container(
+              key: ValueKey("image_${widget.messageId}"),
+              width: 200.w,
+              height: 400,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: FileImage(imageFile),
+                  fit: BoxFit.fill,
+                  onError: (exception, stackTrace) {
+                    // ✅ في حالة الخطأ، log فقط - لا تغيير للحالة
+                    debugPrint("Image display error: $exception");
+                  },
+                ),
+                borderRadius: BorderRadius.circular(12.0),
+                border: Border.all(
+                  width: 3.0,
+                  color: widget.isSent
+                      ? const Color(0xffFFF9B4)
+                      : const Color(0xffB4FFD9),
+                ),
+              ),
+            ),
+          ),
+        ),
+        _buildImageOverlay(),
+      ],
+    );
+  }
+
+  // ✅ دالة لبناء حالة التحميل أو الخطأ
+  Widget _buildLoadingOrError() {
+    return Container(
+      width: 200.w,
+      height: 400,
+      decoration: BoxDecoration(
+        color: Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(12.0),
+        border: Border.all(
+          width: 3.0,
+          color:
+              widget.isSent ? const Color(0xffFFF9B4) : const Color(0xffB4FFD9),
+        ),
+      ),
+      child: Center(
+        child: ValueListenableBuilder<int>(
+          valueListenable: _loadingImage,
+          builder: (context, status, _) {
+            // ✅ فحص URL فارغ أو null أولاً
+            if (widget.imageUrl.isNullOrEmpty ||
+                widget.imageUrl!.trim().isEmpty) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.broken_image_outlined,
+                      size: 50, color: Colors.red.shade400),
+                  SizedBox(height: 10),
+                  MyTextWidget(
+                    LocaleKeys.invalid_image_url.tr(),
+                    style: context.textTheme.bodyMedium?.copyWith(
+                      color: Colors.red.shade400,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              );
+            }
+
+            // ✅ بدء التحميل مرة واحدة فقط - بدون تكرار
+            if (status == 0 &&
+                !_isDownloading &&
+                !_isImageLoaded &&
+                !widget.imageUrl.isNullOrEmpty) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted && _loadingImage.value == 0) {
+                  _initializeImage();
+                }
+              });
+            }
+
+            // عرض حالة التحميل
+            if (status == 1) {
+              return CircularProgressIndicator(
+                backgroundColor: Colors.grey.shade100,
+                color: const Color(0xff388CFF),
+              );
+            }
+
+            // عرض خطأ مع زر إعادة المحاولة
+            if (status == -1) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.error_outline,
+                      size: 50, color: Colors.red.shade400),
+                  SizedBox(height: 10),
+                  MyTextWidget(
+                    LocaleKeys.image_load_failed.tr(),
+                    style: context.textTheme.bodyMedium?.copyWith(
+                      color: Colors.red.shade400,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: () {
+                      debugPrint("🔄 Retry button pressed");
+                      // ✅ إعادة تعيين جميع الحالات بشكل صحيح
+                      setState(() {
+                        _loadingImage.value = 0; // جاهز للتحميل
+                        _isDownloading = false; // ليس في حالة تحميل
+                        _isImageLoaded = false; // لم يتم التحميل بعد
+                        _cachedImageFile = null; // مسح الكاش المعطل
+                      });
+                      // بدء التحميل مرة أخرى
+                      _initializeImage();
+                    },
+                    child: Text(LocaleKeys.retry_download.tr()),
+                  ),
+                ],
+              );
+            }
+
+            // حالة افتراضية - لا يجب الوصول إليها
+            return CircularProgressIndicator(
+              backgroundColor: Colors.grey.shade100,
+              color: const Color(0xff388CFF),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  // ✅ دالة لبناء overlay الصورة (الوقت والحالة)
+  Widget _buildImageOverlay() {
+    return Transform.translate(
+      offset: const Offset(0, -3),
+      child: Container(
+        height: 40.h,
+        width: 200.w,
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment(0.0, 0),
+            end: Alignment(0.0, 1.0),
+            colors: [Color(0x00000000), Color(0xb2000000)],
+            stops: [0.0, 1.0],
+          ),
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              MyTextWidget(
+                !widget.createAt!.isUtc
+                    ? HelperFunctions.getDateInFormat(widget.createAt!)
+                    : HelperFunctions.getZonedDateInFormat(widget.createAt!),
+                style: context.textTheme.titleSmall?.rr.copyWith(
+                  color: context.colorScheme.white,
+                ),
+              ),
+              if (widget.isSent) ...{
+                10.horizontalSpace,
+                SvgPicture.asset(
+                  widget.isRead
+                      ? AppAssets.messageReadArrowSvg
+                      : widget.isReceived
+                          ? AppAssets.messageDeliveredArrowSvg
+                          : AppAssets.messageSentArrowSvg,
+                  width: 10.sp,
+                  height: 10.sp,
+                ),
+              },
+              if (widget.isForwarded) ...{
+                10.horizontalSpace,
+                SvgPicture.asset(
+                  AppAssets.forwardedSvg,
+                  width: 10.sp,
+                  height: 10.sp,
+                ),
+              }
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

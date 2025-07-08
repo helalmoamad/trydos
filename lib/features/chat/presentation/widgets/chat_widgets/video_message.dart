@@ -28,6 +28,7 @@ import '../../manager/chat_event.dart';
 import '../../manager/chat_state.dart';
 import 'no_image_widget.dart';
 import 'text_message.dart';
+import 'package:flutter/foundation.dart';
 
 class VideoMessage extends StatefulWidget {
   VideoMessage(
@@ -71,19 +72,29 @@ class VideoMessage extends StatefulWidget {
   State<VideoMessage> createState() => _VideoMessageState();
 }
 
-class _VideoMessageState extends State<VideoMessage> {
+class _VideoMessageState extends State<VideoMessage>
+    with AutomaticKeepAliveClientMixin {
   late bool isRead;
   late bool isReceived;
   bool timer = false;
   late ChatBloc chatBloc;
+
+  // ✅ إدارة حالة التحميل
+  bool _isVideoDownloaded = false;
+  bool _isDownloading = false;
+  String? _cachedVideoUrl;
+
+  @override
+  bool get wantKeepAlive => true; // ✅ الحفاظ على حالة Widget
+
   @override
   void initState() {
-    if (widget.isSent) {
-      FileSaving().downloadFileToLocalStorage(
-        widget.videoUrl ?? widget.videoFile!.path,
-        widget.channelId,
-      );
+    // ✅ تحديد حالة الفيديو الأولية
+    if (widget.videoFile != null) {
+      _isVideoDownloaded = true;
     }
+    _cachedVideoUrl = widget.videoUrl;
+
     chatBloc = BlocProvider.of<ChatBloc>(context);
     Timer(Duration(seconds: 4), () {
       if (mounted) {
@@ -94,11 +105,57 @@ class _VideoMessageState extends State<VideoMessage> {
     });
     isRead = widget.isRead;
     isReceived = widget.isReceived;
+
+    // ✅ بدء تحميل الفيديو إذا لم يكن محملاً
+    _initializeVideo();
+
     super.initState();
+  }
+
+  // ✅ دالة لتهيئة الفيديو مرة واحدة فقط
+  void _initializeVideo() {
+    if (widget.isSent &&
+        !_isVideoDownloaded &&
+        !_isDownloading &&
+        (widget.videoUrl != null || widget.videoFile != null)) {
+      _isDownloading = true;
+
+      FileSaving()
+          .downloadFileToLocalStorage(
+        widget.videoUrl ?? widget.videoFile!.path,
+        widget.channelId,
+      )
+          .then((_) {
+        _isDownloading = false;
+        _isVideoDownloaded = true;
+        if (mounted) {
+          setState(() {});
+        }
+      }).catchError((error) {
+        _isDownloading = false;
+        if (mounted) {
+          setState(() {});
+        }
+      });
+    }
+  }
+
+  @override
+  void didUpdateWidget(VideoMessage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // ✅ إعادة تحميل الفيديو فقط إذا تغير URL
+    if (oldWidget.videoUrl != widget.videoUrl) {
+      _cachedVideoUrl = widget.videoUrl;
+      _isVideoDownloaded = false;
+      _isDownloading = false;
+      _initializeVideo();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // ✅ مطلوب لـ AutomaticKeepAliveClientMixin
     FlutterError.onError = (FlutterErrorDetails error) {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
@@ -408,5 +465,11 @@ class _VideoMessageState extends State<VideoMessage> {
         },
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    // ✅ تنظيف الموارد إذا لزم الأمر
+    super.dispose();
   }
 }

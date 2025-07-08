@@ -209,105 +209,107 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
         PageView(
             physics: NeverScrollableScrollPhysics(),
             controller: pageController,
-            children: (prefsRepository.isVerifiedPhonePeforeExpiredToken ??
-                    false)
-                ? [
-                    VerifyOtp(
-                        fromProfile: false,
-                        navigateToProfile: () {},
-                        fromExpired: true,
-                        isVisWhatsApp: 1,
-                        navigateToAddName: () {},
-                        navigateTocartOrProfile: () {
-                          isVerified.value = true;
-                        },
-                        fromLogin: false,
-                        onLoginFailed: () {
-                          //   pageController.animateToPage(3, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-                        },
-                        goBack: () {
-                          // pageController.animateToPage(1, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-                        },
-                        methodIcon: AppAssets.whatsappSvg,
-                        phoneNumber: prefsRepository.myPhoneNumber!),
-                  ]
-                : [
-                    InsertPhoneTab(
-                      fromLogin: false,
-                      focusNode: focusNode,
-                      moveToNextStep: (String phoneNumber) {
-                        this.phoneNumber = phoneNumber.replaceAll(' ', '');
-                        pageController.animateToPage(1,
-                            duration: Duration(milliseconds: 500),
-                            curve: Curves.easeInOut);
-                        setState(() {});
-                      },
-                    ),
-                    VerificationMethods(
-                      phoneNumber: phoneNumber,
-                      onChooseWhatsapp: () {
-                        isVisWhatsApp = 1;
-                        print("###################33333#${isVisWhatsApp}");
-                        pageController.animateToPage(2,
-                            duration: Duration(milliseconds: 500),
-                            curve: Curves.easeInOut);
+            children:
+                (prefsRepository.isVerifiedPhonePeforeExpiredToken ?? false)
+                    ? [
+                        VerifyOtp(
+                            fromProfile: false,
+                            navigateToProfile: () {},
+                            fromExpired: true,
+                            isVisWhatsApp: 1,
+                            navigateToAddName: () {},
+                            navigateTocartOrProfile: () {
+                              isVerified.value = true;
+                            },
+                            fromLogin: false,
+                            onLoginFailed: () {
+                              //   pageController.animateToPage(3, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+                            },
+                            goBack: () {
+                              // pageController.animateToPage(1, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+                            },
+                            methodIcon: AppAssets.whatsappSvg,
+                            phoneNumber: prefsRepository.myPhoneNumber!),
+                      ]
+                    : [
+                        InsertPhoneTab(
+                          fromLogin: false,
+                          focusNode: focusNode,
+                          moveToNextStep: (String phoneNumber) {
+                            this.phoneNumber = phoneNumber.replaceAll(' ', '');
+                            pageController.animateToPage(1,
+                                duration: Duration(milliseconds: 500),
+                                curve: Curves.easeInOut);
+                            setState(() {});
+                          },
+                        ),
+                        VerificationMethods(
+                          phoneNumber: phoneNumber,
+                          onChooseWhatsapp: () {
+                            isVisWhatsApp = 1;
+                            print("###################33333#${isVisWhatsApp}");
+                            pageController.animateToPage(2,
+                                duration: Duration(milliseconds: 500),
+                                curve: Curves.easeInOut);
 
-                        if (prefsRepository.isTimerForOtpRunning ?? false) {
-                          showMessage(
-                              '${LocaleKeys.you_must_wait_for_some_seconds_before_try_again.tr()}');
-                          return;
-                        }
-                        authBloc.add(
-                            SendOtpEvent(phone: phoneNumber, isViaWhatsApp: 1));
-                      },
-                      goBackToPhone: () {
-                        pageController.animateToPage(0,
-                            duration: Duration(milliseconds: 500),
-                            curve: Curves.easeInOut);
-                      },
-                      onChooseSms: () {
-                        isVisWhatsApp = 0;
-                        pageController.animateToPage(3,
-                            duration: Duration(milliseconds: 500),
-                            curve: Curves.easeInOut);
-                        authBloc.add(
-                            SendOtpEvent(phone: phoneNumber, isViaWhatsApp: 0));
-                      },
-                    ),
-                    VerifyOtp(
-                        fromProfile: false,
-                        navigateToProfile: () {},
-                        fromExpired: true,
-                        isVisWhatsApp: isVisWhatsApp,
-                        navigateToAddName: () {},
-                        navigateTocartOrProfile: () {
-                          isVerified.value = true;
-                          orderBloc.add(
-                            GetCustomerWalletEvent(limit: 10, offset: 1),
-                          );
-                          orderBloc.add(
-                            GetOrdersEvent(
-                              status: "",
-                              getWithPagination: false,
-                            ),
-                          );
-                        },
-                        fromLogin: false,
-                        onLoginFailed: () {
-                          pageController.animateToPage(3,
-                              duration: Duration(milliseconds: 500),
-                              curve: Curves.easeInOut);
-                        },
-                        goBack: () {
-                          pageController.animateToPage(1,
-                              duration: Duration(milliseconds: 500),
-                              curve: Curves.easeInOut);
-                        },
-                        methodIcon: isVisWhatsApp == 1
-                            ? AppAssets.whatsappSvg
-                            : AppAssets.smsSvg,
-                        phoneNumber: phoneNumber),
-                  ]),
+                            if (prefsRepository.isTimerForOtpRunning ?? false) {
+                              showWarningMessage(
+                                context,
+                                '${LocaleKeys.you_must_wait_for_some_seconds_before_try_again.tr()}',
+                              );
+                              return;
+                            }
+                            /*   authBloc.add(
+                            SendOtpEvent(phone: phoneNumber, isViaWhatsApp: 1));*/
+                          },
+                          goBackToPhone: () {
+                            pageController.animateToPage(0,
+                                duration: Duration(milliseconds: 500),
+                                curve: Curves.easeInOut);
+                          },
+                          onChooseSms: () {
+                            isVisWhatsApp = 0;
+                            pageController.animateToPage(3,
+                                duration: Duration(milliseconds: 500),
+                                curve: Curves.easeInOut);
+                            /* authBloc.add(
+                            SendOtpEvent(phone: phoneNumber, isViaWhatsApp: 0));*/
+                          },
+                        ),
+                        VerifyOtp(
+                            fromProfile: false,
+                            navigateToProfile: () {},
+                            fromExpired: true,
+                            isVisWhatsApp: isVisWhatsApp,
+                            navigateToAddName: () {},
+                            navigateTocartOrProfile: () {
+                              isVerified.value = true;
+                              orderBloc.add(
+                                GetCustomerWalletEvent(limit: 10, offset: 1),
+                              );
+                              orderBloc.add(
+                                GetOrdersEvent(
+                                  status: "",
+                                  getWithPagination: false,
+                                ),
+                              );
+                            },
+                            fromLogin: false,
+                            onLoginFailed: () {
+                              pageController.animateToPage(3,
+                                  duration: Duration(milliseconds: 500),
+                                  curve: Curves.easeInOut);
+                            },
+                            goBack: () {
+                              pageController.animateToPage(1,
+                                  duration: Duration(milliseconds: 500),
+                                  curve: Curves.easeInOut);
+                            },
+                            methodIcon: isVisWhatsApp == 1
+                                ? AppAssets.whatsappSvg
+                                : AppAssets.smsSvg,
+                            phoneNumber: phoneNumber),
+                      ]),
         Positioned(
           top: 0,
           left: LanguageService.languageCode != "ar" ? null : 0,

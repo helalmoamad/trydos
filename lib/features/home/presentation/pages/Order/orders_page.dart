@@ -169,6 +169,7 @@ class _OrdersPageState extends State<OrdersPage> {
                               pageBuilder:
                                   (context, animation, secondaryAnimation) =>
                                       OrderDetails1(
+                                          currentStatus: currentStatus.value,
                                           orderIdFormNotification:
                                               widget.orderIdFormNotification,
                                           fromNotification: true,
@@ -249,6 +250,8 @@ class _OrdersPageState extends State<OrdersPage> {
                                             HelperFunctions.slidingNavigation(
                                               context,
                                               OrderDetails1(
+                                                  currentStatus:
+                                                      currentStatus.value,
                                                   orders: items[index]),
                                             );
                                           },
@@ -563,6 +566,8 @@ class _OrdersPageState extends State<OrdersPage> {
     return ValueListenableBuilder<String>(
       valueListenable: currentStatus,
       builder: (context, _currentStatus, _) {
+        orderBloc.add(
+            SaveCurrentOrederStatusEvent(currentOrederStatus: _currentStatus));
         return BlocBuilder<HomeBloc, HomeState>(
           buildWhen: (previous, current) =>
               previous.getStartingSettingsStatus !=

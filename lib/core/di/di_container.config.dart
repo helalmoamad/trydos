@@ -577,6 +577,14 @@ Future<_i174.GetIt> $initGetIt(
       () => _i711.RejectCallUseCase(gh<_i1032.CallsRepository>()));
   gh.factory<_i961.WatchMissedCallUseCase>(
       () => _i961.WatchMissedCallUseCase(gh<_i1032.CallsRepository>()));
+  gh.lazySingleton<_i536.StoryBloc>(() => _i536.StoryBloc(
+        gh<_i1043.UploadFileCloudinaryUseCase>(),
+        gh<_i804.GetStoryUseCase>(),
+        gh<_i912.GetWidthAndHeightUseCase>(),
+        gh<_i290.UploadStoryUseCase>(),
+        gh<_i4.IncreaseViewersUseCase>(),
+        gh<_i737.AddStoryToOurServerUseCase>(),
+      ));
   gh.lazySingleton<_i903.HomeBloc>(() => _i903.HomeBloc(
         gh<_i533.GetStoryForProductUseCase>(),
         gh<_i687.RemoveItemToCartUseCase>(),
@@ -613,20 +621,11 @@ Future<_i174.GetIt> $initGetIt(
         gh<_i922.GetAndAddCountViewOfProductUsecase>(),
         gh<_i78.SendErrorToMobileErrorLogUseCase>(),
         gh<_i397.GetProductsWithoutFiltersUseCase>(),
-        gh<_i247.GetColorsAndSizesForSearchUseCase>(),
         gh<_i68.AddCommentUseCase>(),
         gh<_i715.RequestForNotificationWhenProductBecameAvailableUseCase>(),
         gh<_i812.CheckAvailabilityProductCartUsecase>(),
         gh<_i675.GetCartOverviewUseCase>(),
         gh<_i1021.GetUserNotificationUseCase>(),
-      ));
-  gh.lazySingleton<_i536.StoryBloc>(() => _i536.StoryBloc(
-        gh<_i1043.UploadFileCloudinaryUseCase>(),
-        gh<_i804.GetStoryUseCase>(),
-        gh<_i912.GetWidthAndHeightUseCase>(),
-        gh<_i290.UploadStoryUseCase>(),
-        gh<_i4.IncreaseViewersUseCase>(),
-        gh<_i737.AddStoryToOurServerUseCase>(),
       ));
   gh.lazySingleton<_i547.CallsBloc>(() => _i547.CallsBloc(
         gh<_i711.RejectCallUseCase>(),

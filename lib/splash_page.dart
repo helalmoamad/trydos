@@ -4,10 +4,15 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trydos/base_page.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/core/utils/extensions/string.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/authentication/presentation/manager/auth_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
+import 'package:trydos/features/home/presentation/manager/categoryBloc/category_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/categoryBloc/category_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/routes/router.dart';
 import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
@@ -30,16 +35,82 @@ class _SplashPageState extends State<SplashPage> {
   late HomeBloc homeBloc;
   late AuthBloc authBloc;
   late AppBloc appBloc;
+  late BoutiqueBloc boutiqueBloc;
+  late CategoryBloc categoryBloc;
+
   @override
   void initState() {
     appBloc = BlocProvider.of<AppBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
     authBloc = BlocProvider.of<AuthBloc>(context);
+    boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
+    categoryBloc = BlocProvider.of<CategoryBloc>(context);
 
     appBloc.add(ChangeTab(-1));
     GetIt.I<HomeBloc>().add(GetAllowedCountriesEvent());
     BlocProvider.of<StoryBloc>(context)
         .add(GetStoryEvent(withPaginition: false));
+    if ((prefsRepository.isFoundDataCashed ?? false)) {
+      boutiqueBloc.add(GetProductsWithFiltersEvent(
+          boutiqueSlug: "search",
+          cashedOrginalBoutique: true,
+          fromSearch: true,
+          getWithPagination: false,
+          offset: 1));
+      boutiqueBloc.add(ChangeAppliedFiltersEvent(
+          boutiqueSlug: 'search',
+          filtersAppliedByUser: null,
+          resetAppliedFilters: true));
+      boutiqueBloc.add(ChangeSelectedFiltersEvent(
+        resetChoosedFilters: true,
+        requestToUpdateFilters: true,
+        fromHomePageSearch: true,
+        boutiqueSlug: 'search',
+        filtersChoosedByUser: null,
+      ));
+      if ((prefsRepository.chatToken?.length ?? 0) > 10 &&
+          (prefsRepository.myChatName != prefsRepository.myMarketName &&
+              !(prefsRepository.myMarketName.isNullOrEmpty))) {
+        authBloc.add(
+            UpdateChatUserNameEvent(name: prefsRepository.myMarketName ?? ""));
+      }
+      if ((prefsRepository.storiesToken?.length ?? 0) > 10 &&
+          (prefsRepository.myStoriesName != prefsRepository.myMarketName &&
+              !(prefsRepository.myMarketName.isNullOrEmpty))) {
+        authBloc.add(
+            UpdateStoriesUserEvent(name: prefsRepository.myMarketName ?? ""));
+      }
+      categoryBloc
+          .add(GetMainCategoriesEvent(getWithPrefech: true, context: context));
+      GetIt.I<BoutiqueBloc>().add(
+          GetProductWithFiltersWithoutCancelingPreviousEvents(
+              categorySlugs: [],
+              cashedOrginalBoutique: true,
+              fromHomePageSearch: false,
+              boutiqueSlug: "*featured*",
+              category: null,
+              searchText: null));
+      GetIt.I<BoutiqueBloc>().add(
+          GetProductWithFiltersWithoutCancelingPreviousEvents(
+              categorySlugs: [],
+              cashedOrginalBoutique: true,
+              fromHomePageSearch: false,
+              boutiqueSlug: "*flashDeal*",
+              category: null,
+              searchText: null));
+      homeBloc.add(GetCurrencyForCountryEvent());
+      Future.delayed(Duration(seconds: 1), () {
+        //  homeBloc.add(GeColorsAndSizesForSearchEvent());
+        if ((prefsRepository.marketToken?.length ?? 0) > 10) {
+          homeBloc.add(GetProductsListInCartEvent());
+          homeBloc.add(GetCartItemEvent());
+
+          homeBloc.add(GetNotificationTypeProductEvent());
+          homeBloc.add(GetFirebaseSettingForNotificationEvent());
+          homeBloc.add(GetPopularSearchItemEvent());
+        }
+      });
+    }
 
     checkAndNavigationCallingPage(context, fromTerminated: true,
         whereToNavigationAfterCheck: () {

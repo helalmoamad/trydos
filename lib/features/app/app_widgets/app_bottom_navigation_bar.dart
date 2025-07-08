@@ -286,9 +286,11 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                           if (settings.authorizationStatus ==
                               AuthorizationStatus.denied) {
                             openAppSettings();
-                            showMessage(LocaleKeys
-                                .please_enable_send_notification_for_this_app
-                                .tr());
+                            showWarningMessage(
+                                context,
+                                LocaleKeys
+                                    .please_enable_send_notification_for_this_app
+                                    .tr());
                           } else {
                             if (context.canPop()) {
                               Navigator.of(context).pop();
@@ -473,6 +475,10 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                                                                 context)
                                                             .add(
                                                                 ClearAllAppCashEvent());
+                                                        clearCustomCashe();
+                                                        prefsRepository
+                                                            .setIsFoundDataCashed(
+                                                                false);
                                                         BlocProvider.of<
                                                                     AppBloc>(
                                                                 context)

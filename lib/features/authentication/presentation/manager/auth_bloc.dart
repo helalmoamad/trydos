@@ -172,6 +172,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(state.copyWith(loginToChatStatus: LoginToChatStatus.failure));
         showMessage("fail to log in to chat",
             foreGroundColor: Colors.white,
+            hasError: true,
             backGroundColor: Colors.black,
             showInRelease: true,
             timeShowing: Toast.LENGTH_LONG);
@@ -298,7 +299,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           phone: r.data?.user?.phone,
         ));
       } catch (error) {
-        showMessage(error.toString());
+        showMessage(
+          error.toString(),
+          hasError: true,
+        );
       }
       debugPrint(
           'login _prefsRepository.chatToken${_prefsRepository.chatToken}');
@@ -428,7 +432,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           phone: r.data!.user!.phone,
         ));
       } catch (error) {
-        showMessage(error.toString());
+        showMessage(
+          error.toString(),
+          hasError: true,
+        );
       }
       debugPrint(
           'login _prefsRepository.chatToken${_prefsRepository.chatToken}');

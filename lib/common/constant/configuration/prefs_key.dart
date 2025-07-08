@@ -75,4 +75,5 @@ abstract class PrefsKey {
   static const imagesUrls = r'__$__imagesUrls_$__';
   static const coupon = r'__$__coupon__$__';
   static const tagsFilters = r'__$tagsFilters$__';
+  static const foundDataCashed = r'__$IsFoundDataCashed$__';
 }

@@ -62,7 +62,7 @@ class _SearchPageState extends ThemeState<SearchPage> {
 
   late final AppBloc appBloc;
   late final BoutiqueBloc boutiqueBloc;
-
+  late final HomeBloc homeBloc;
   @override
   void initState() {
     BlocProvider.of<BoutiqueBloc>(context).add(ChangeSelectedFiltersEvent(
@@ -75,7 +75,10 @@ class _SearchPageState extends ThemeState<SearchPage> {
         hideAppleyResetButtom.value = false;
       }
     });
+
     appBloc = BlocProvider.of<AppBloc>(context);
+
+    homeBloc = BlocProvider.of<HomeBloc>(context);
     boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
     super.initState();
   }
@@ -454,19 +457,39 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                           searchText:
                                               (text.length) > 2 ? text : null,
                                         ));
-                                        HelperFunctions.slidingNavigation(
-                                          context,
-                                          ProductListingPage(
-                                            isShowPanelForVerified:
-                                                widget.isShowPanelForVerified,
-                                            controllerFormSearchPage:
-                                                widget.controller,
-                                            boutiqueIcon: "",
-                                            fromSearch: true,
-                                            withSlidingImages: false,
-                                            boutiqueSlug: key,
-                                          ),
-                                        );
+                                        homeBloc.add(
+                                            IsChangedVariationWhenQtyZeroEvent(
+                                                isChangedVariationWhenQtyZero:
+                                                    false));
+                                        homeBloc.add(
+                                            IsChangedVariationWhenQtyZeroEvent(
+                                                isChangedVariationWhenQtyZero:
+                                                    false));
+
+                                        boutiqueBloc.add(
+                                            AddSizeAndColorFilterinTextToSearchEvent(
+                                                sizeAndColorFilterinTextToSearch: {}));
+                                        appBloc.add(
+                                            HideBottomNavigationBar(false));
+                                        appBloc.add(ShowOrHideBars(true));
+                                        appBloc.add(ChangeIndexForSearch(1));
+
+                                        Future.delayed(
+                                            Duration(milliseconds: 600),
+                                            () => HelperFunctions
+                                                    .slidingNavigation(
+                                                  context,
+                                                  ProductListingPage(
+                                                    isShowPanelForVerified: widget
+                                                        .isShowPanelForVerified,
+                                                    controllerFormSearchPage:
+                                                        widget.controller,
+                                                    boutiqueIcon: "",
+                                                    fromSearch: true,
+                                                    withSlidingImages: false,
+                                                    boutiqueSlug: key,
+                                                  ),
+                                                ));
                                         /////////////////////////////////
                                         FirebaseAnalyticsService
                                             .logEventForSession(

@@ -1101,7 +1101,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     final response = await readAllMessagesUseCase(
         ReadAllMessagesParams(channelId: id ?? ""));
     response.fold((l) {
-      showMessage('This Channel was deleted', showInRelease: true);
+      showMessage('This Channel was deleted',
+          hasError: true, showInRelease: true);
       if (!isFailedTheFirstTime.contains('ReadAllMessagesEvent')) {
         add(ReadAllMessagesEvent(event.channelId));
         isFailedTheFirstTime.add('ReadAllMessagesEvent');

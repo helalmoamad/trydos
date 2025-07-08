@@ -196,7 +196,7 @@ class HomeState extends Equatable {
       this.currentSelectedColorForEveryProduct = const {},
       this.notificationTypeForProductModel,
       this.getNotificationTypeProductStatus,
-      this.geColorsAndSizesForSearchModel,
+      // this.geColorsAndSizesForSearchModel,
       this.currentIndexForUpdateCart,
       this.getCountryBoundaryByIsoStatus,
       this.userInfo,
@@ -234,7 +234,7 @@ class HomeState extends Equatable {
   final Map<String, GetAndAddCountViewOfProductStatus>
       getAndAddCountViewOfProductStatus;
   final List<PopularSearchTerm>? popularSearchTerm;
-  final GeColorsAndSizesForSearchModel? geColorsAndSizesForSearchModel;
+  // final GeColorsAndSizesForSearchModel? geColorsAndSizesForSearchModel;
   final PaginationModel<NotificationItemModel>? getUserNotificationModel;
 
   final GetCartOverviewStatus? getCartOverviewStatus;
@@ -408,7 +408,7 @@ class HomeState extends Equatable {
         cachedProductWithoutRelatedProductsModel,
         addOrRemoveLikeOfProductStatus,
         getAllowedCountriesStatus,
-        geColorsAndSizesForSearchModel
+        //   geColorsAndSizesForSearchModel
       ];
 
   HomeState copyWith(
@@ -428,7 +428,7 @@ class HomeState extends Equatable {
       final UploadUserPhotoCloudinaryStatus? uploadUserPhotoCloudinaryStatus,
       final PaginationModel<NotificationItemModel>? getUserNotificationModel,
       final GetCartOverviewStatus? getCartOverviewStatus,
-      final GeColorsAndSizesForSearchModel? geColorsAndSizesForSearchModel,
+      // final GeColorsAndSizesForSearchModel? geColorsAndSizesForSearchModel,
       final CurrentSelectedColorForEveryProductStatus?
           currentSelectedColorForEveryProductStatus,
       final Map<String, Map<String, String>>? addVariationToCartId,
@@ -530,8 +530,8 @@ class HomeState extends Equatable {
           hideItemInOldCartStatus ?? this.hideItemInOldCartStatus,
       getAllowedCountriesStatus:
           getAllowedCountriesStatus ?? this.getAllowedCountriesStatus,
-      geColorsAndSizesForSearchModel:
-          geColorsAndSizesForSearchModel ?? this.geColorsAndSizesForSearchModel,
+      //  geColorsAndSizesForSearchModel:
+      //      geColorsAndSizesForSearchModel ?? this.geColorsAndSizesForSearchModel,
       getCommentForProductModel:
           getCommentForProductModel ?? this.getCommentForProductModel,
       getFirebaseSettingForNotificationStatus:

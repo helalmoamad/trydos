@@ -9,12 +9,15 @@ import 'package:trydos/base_page.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
+import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
+import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/home/data/models/get_product_filters_model.dart';
 import 'package:trydos/features/home/data/models/get_product_listing_with_filters_model.dart'
     as filter;
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
+import 'package:trydos/features/home/presentation/manager/categoryBloc/category_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
@@ -71,9 +74,17 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
 
   LongPressDownDetails details = LongPressDownDetails();
   var init;
+  late AppBloc appBloc;
+  late HomeBloc homeBloc;
+  late BoutiqueBloc boutiqueBloc;
+  late CategoryBloc categoryBloc;
   bool fromBoutiqueListing = false;
   @override
   void initState() {
+    appBloc = BlocProvider.of<AppBloc>(context);
+    categoryBloc = BlocProvider.of<CategoryBloc>(context);
+    homeBloc = BlocProvider.of<HomeBloc>(context);
+    boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
     debugPrint('initState ${widget.collectionIndex}');
     GetIt.I<StoryBloc>().add(StorySelectedEvent(
         collectionIndex: widget.collectionIndex,
@@ -831,6 +842,17 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
         listener: (context, boutiqueState) async {
           if (boutiqueState.getFiltersForNavigatorFromLinkToListingPageStatus ==
               GetFiltersForNavigatorFromLinkToListingPageStatus.success) {
+            homeBloc.add(homeEvent.IsChangedVariationWhenQtyZeroEvent(
+                isChangedVariationWhenQtyZero: false));
+            homeBloc.add(homeEvent.IsChangedVariationWhenQtyZeroEvent(
+                isChangedVariationWhenQtyZero: false));
+
+            boutiqueBloc.add(AddSizeAndColorFilterinTextToSearchEvent(
+                sizeAndColorFilterinTextToSearch: {}));
+            appBloc.add(HideBottomNavigationBar(false));
+            appBloc.add(ShowOrHideBars(true));
+            appBloc.add(ChangeIndexForSearch(1));
+
             if (fromBoutiqueListing) {
               BlocProvider.of<BoutiqueBloc>(context)
                   .add(ChangeAppliedFiltersEvent(
@@ -856,6 +878,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                       context: context,
                       searchText: null,
                       offset: 1));
+
               await Future.delayed(
                 Duration(milliseconds: 300),
                 () => Navigator.of(context).push(PageRouteBuilder(

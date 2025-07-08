@@ -931,6 +931,15 @@ class PrefsRepositoryImpl extends PrefsRepository {
   Future<bool> setTagsInUrlToFilter(List<String> tags) {
     return _preferences.setStringList(PrefsKey.tagsFilters, tags);
   }
+
+  @override
+  // TODO: implement isFoundDataCashed
+  bool? get isFoundDataCashed => _preferences.getBool(PrefsKey.foundDataCashed);
+
+  @override
+  Future<bool> setIsFoundDataCashed(bool isFoundDataCashed) {
+    return _preferences.setBool(PrefsKey.foundDataCashed, isFoundDataCashed);
+  }
 // @override
 
 // List<Map<String,dynamic>> get localMessages {

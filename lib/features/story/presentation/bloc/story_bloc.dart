@@ -355,10 +355,7 @@ class StoryBloc extends HydratedBloc<StoryEvent, StoryState> {
           uploadStoryCloudinaryStatus: UploadStoryCloudinaryStatus.success));
 
       showMessage("Faild To Add Your Story",
-          foreGroundColor: Colors.white,
-          backGroundColor: Colors.black,
-          showInRelease: true,
-          timeShowing: Toast.LENGTH_LONG);
+          hasError: true, showInRelease: true);
       if (isFailedTheFirstTime.contains('AddStoryToOurServerEvent')) {
       } else {
         isFailedTheFirstTime.insert(0, 'AddStoryToOurServerEvent');

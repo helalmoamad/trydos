@@ -244,7 +244,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                       text: LocaleKeys.delete.tr(),
                       onTap: () {
                         if (double.tryParse(widget.chat.id!) == null) {
-                          showMessage(
+                          showWarningMessage(context,
                               'You Can\'t remove this Chat at This Time');
                           return;
                         }
@@ -295,9 +295,8 @@ class _ChatCardState extends ThemeState<ChatCard> {
                       onTap: () {
                         if (chatBloc.state.pinnedChats.length == 3 &&
                             me?.pin == 0) {
-                          showMessage(
-                              LocaleKeys.you_can_have_at_most_3_pinned.tr(),
-                              showInRelease: true);
+                          showWarningMessage(context,
+                              LocaleKeys.you_can_have_at_most_3_pinned.tr());
                           return;
                         }
                         chatBloc.add(ChangeChatPropertyEvent(
@@ -342,12 +341,12 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                             BorderRadius.circular(12.0),
                                       ),
                                       child: MyCachedNetworkImage(
-                                          imageUrl: ((receiver?.photoPath ?? "")
-                                                      .toString()
-                                                      .contains("cloudinary")
-                                                  ? receiver?.photoPath
-                                                  : "${dotenv.env['Images_Url']}") +
-                                              receiver?.photoPath,
+                                          imageUrl: (receiver?.photoPath ?? "")
+                                                  .toString()
+                                                  .contains("cloudinary")
+                                              ? receiver?.photoPath
+                                              : ("${dotenv.env['Images_Url']}" +
+                                                  receiver?.photoPath),
                                           imageFit: BoxFit.cover,
                                           height: 80.h,
                                           width: 60.w),

@@ -1,4 +1,6 @@
 {
+  "information_securely": "معلومات بأمان",
+  "alert": "تنبيه",
   "typing": "يكتب...",
   "recording": "يسجل مقطع صوتي...",
   "sending_file": "يرسل ملف...",
@@ -532,5 +534,11 @@
   "action_about_order": "إجراء بشأن طلبك",
   "cancel_request": "إلغاء الطلب",
   "why_was_product_cancel": "لماذا تم إلغاء المنتج؟",
-  "flash_deal": "عروض سريعة"
+  "flash_deal": "عروض سريعة",
+  "invalid_image_url": "رابط الصورة غير صالح",
+  "image_url_empty": "رابط الصورة فارغ",
+  "image_load_failed": "فشل في تحميل الصورة",
+  "download_timeout": "انتهت مهلة التحميل",
+  "retry_download": "إعادة المحاولة",
+  "image_not_available": "الصورة غير متوفرة"
 }

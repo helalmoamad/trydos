@@ -127,6 +127,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
           showMessage(messageDecode["phone"][0],
               foreGroundColor: Colors.white,
               backGroundColor: Colors.black,
+              hasError: true,
               showInRelease: true,
               timeShowing: Toast.LENGTH_LONG);
         } catch (e) {}
@@ -138,6 +139,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
           showMessage(massageJson,
               foreGroundColor: Colors.white,
               backGroundColor: Colors.black,
+              hasError: true,
               showInRelease: true,
               timeShowing: Toast.LENGTH_LONG);
         } catch (e) {}

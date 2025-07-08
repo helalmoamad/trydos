@@ -219,7 +219,8 @@ class _ProfilePageState extends State<ProfilePage> {
                               }
                             } else if (microphone.isDenied ||
                                 status2.isDenied) {
-                              showMessage(LocaleKeys.permission_denied.tr());
+                              showWarningMessage(
+                                  context, LocaleKeys.permission_denied.tr());
                               openAppSettings();
                             }
                           } catch (e, st) {
@@ -276,7 +277,8 @@ class _ProfilePageState extends State<ProfilePage> {
                           } else if (microphone.isDenied ||
                               status2.isDenied ||
                               camera.isDenied) {
-                            showMessage(LocaleKeys.permission_denied.tr());
+                            showWarningMessage(
+                                context, LocaleKeys.permission_denied.tr());
                             openAppSettings();
                           }
                         },

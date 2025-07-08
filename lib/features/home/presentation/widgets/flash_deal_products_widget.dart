@@ -9,10 +9,11 @@ import 'package:trydos/common/constant/design/assets_provider.dart';
 
 import 'package:trydos/core/utils/extensions/list.dart';
 import 'package:trydos/features/app/my_text_widget.dart';
+import 'package:trydos/features/app/memory_management_helper.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
-import 'package:trydos/features/home/presentation/pages/featued_products_page.dart';
+
 import 'package:trydos/features/home/presentation/pages/flash_deal_products_page.dart';
 import 'package:trydos/features/home/presentation/pages/product_details_page.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
@@ -32,25 +33,17 @@ import '../../../../core/domin/repositories/prefs_repository.dart';
 class FlashDealProductsWidget extends StatelessWidget {
   final ValueNotifier<int> tapIndexToAddProductToCart;
   final ValueNotifier<bool> productIsFlashDeal;
-  const FlashDealProductsWidget(
-      {Key? key,
-      required this.tapIndexToAddProductToCart,
-      required this.productIsFlashDeal})
-      : super(key: key);
+
+  const FlashDealProductsWidget({
+    Key? key,
+    required this.tapIndexToAddProductToCart,
+    required this.productIsFlashDeal,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    ScrollController scrollController =
-        ScrollController(initialScrollOffset: 75.w);
-    final ValueNotifier<Tuple2<int, int>> setThisEnabledNotifier =
-        ValueNotifier(Tuple2(-1, -1));
     List<filter.Products> products = [];
-    FlutterError.onError = (FlutterErrorDetails error) {
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
-      print(error.toString());
-    };
+
     return BlocBuilder<BoutiqueBloc, BoutiqueState>(
         buildWhen: (previous, current) =>
             previous
@@ -62,14 +55,20 @@ class FlashDealProductsWidget extends StatelessWidget {
                     "*flashDeal*withoutFilter"]
                 ?.paginationStatus,
         builder: (context, state) {
-          products = state.getProductListingWithFiltersPaginationModels[
-                      "*flashDeal*withoutFilter"] ==
-                  null
-              ? []
-              : state
-                  .getProductListingWithFiltersPaginationModels[
-                      "*flashDeal*withoutFilter"]!
-                  .items;
+          try {
+            products = state.getProductListingWithFiltersPaginationModels[
+                        "*flashDeal*withoutFilter"] ==
+                    null
+                ? []
+                : state
+                    .getProductListingWithFiltersPaginationModels[
+                        "*flashDeal*withoutFilter"]!
+                    .items;
+          } catch (e) {
+            debugPrint('❌ Error getting flash deal products: $e');
+            products = [];
+          }
+
           return products.isNullOrEmpty
               ? SizedBox.shrink()
               : Column(
@@ -97,161 +96,134 @@ class FlashDealProductsWidget extends StatelessWidget {
                       margin: EdgeInsets.only(bottom: 5),
                       width: 1.sw,
                       height: 320,
-                      child: ScrollConfiguration(
-                          behavior: const CupertinoScrollBehavior(),
-                          child: ValueListenableBuilder<Tuple2<int, int>>(
-                              valueListenable: setThisEnabledNotifier,
-                              builder: (context, slidingMode, _) {
-                                return Directionality(
-                                  textDirection: ui.TextDirection.ltr,
-                                  child: ListView.separated(
-                                      controller: scrollController,
-                                      itemBuilder: (context, index) {
-                                        if (index == 5) {
-                                          return InkWell(
-                                            onTap: () {
-                                              GetIt.I<BoutiqueBloc>().add(
-                                                  GetProductsWithFiltersEvent(
-                                                      context: context,
-                                                      fromNotification: false,
-                                                      limit: 10,
-                                                      cashedOrginalBoutique:
-                                                          true,
-                                                      boutiqueSlug:
-                                                          "*flashDeal*",
-                                                      getWithPagination: false,
-                                                      offset: 1));
-                                              Future.delayed(
-                                                  Duration(milliseconds: 300),
-                                                  () => Navigator.of(context)
-                                                          .push(
-                                                        MaterialPageRoute(
-                                                          builder: (ctx) =>
-                                                              FlashDealProductsPage(),
-                                                        ),
-                                                      ));
-                                            },
-                                            child: Stack(
-                                              children: [
-                                                ProductItem(
-                                                  fromFlashDeal: true,
-                                                  fromHomePage: true,
-                                                  productIsFlashDeal:
-                                                      productIsFlashDeal,
-                                                  displayImageColors: true,
-                                                  tapIndexToAddProductToCart:
-                                                      tapIndexToAddProductToCart,
-                                                  key: TestVariables.kTestMode
-                                                      ? Key(
-                                                          '*flashDeal*Product${products[index].slug}')
-                                                      : null,
-                                                  slidingModeItem: slidingMode,
-                                                  productItem: products[index],
-                                                  itemIndex: index,
-                                                  setThisEnabled: (int index,
-                                                      int slideMode) {
-                                                    setThisEnabledNotifier
-                                                            .value =
-                                                        Tuple2(
-                                                            index, slideMode);
-                                                  },
-                                                ),
-                                                Container(
-                                                  decoration: BoxDecoration(
-                                                      color: Color.fromRGBO(
-                                                          0, 0, 0, 0.4),
-                                                      borderRadius:
-                                                          BorderRadius.all(
-                                                              Radius.circular(
-                                                                  12))),
-                                                  width: 200,
-                                                  height: 320,
-                                                ),
-                                                Positioned(
-                                                  top: 100,
-                                                  left: 75,
-                                                  child: Container(
-                                                    alignment: Alignment.center,
-                                                    decoration: BoxDecoration(
-                                                        color: Colors.white,
-                                                        borderRadius:
-                                                            BorderRadius.all(
-                                                                Radius.circular(
-                                                                    30))),
-                                                    width: 60,
-                                                    height: 60,
-                                                    child: MyTextWidget(
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      "${LocaleKeys.more.tr()}",
-                                                      style: TextStyle(
-                                                          color: Colors.black,
-                                                          fontSize: 18),
-                                                    ),
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                          );
-                                        }
-                                        return InkWell(
-                                          onTap: () {
-                                            GetIt.I<HomeBloc>().add(
-                                                ChangeStatusOFGetProductsDetailsToSuccessEvent(
-                                                    isStatusInitaial: true));
+                      child: ListView.separated(
+                          itemBuilder: (context, index) {
+                            // التحقق من صحة الفهرس
+                            if (index >= products.length) {
+                              return SizedBox.shrink();
+                            }
 
-                                            Future.delayed(
-                                                Duration(milliseconds: 300),
-                                                () =>
-                                                    Navigator.of(context).push(
-                                                      MaterialPageRoute(
-                                                        builder: (ctx) =>
-                                                            ProductDetailsPage(
-                                                          productItem:
-                                                              products[index],
-                                                        ),
-                                                      ),
-                                                    ));
-                                          },
-                                          child: ProductItem(
-                                            fromFlashDeal: true,
-                                            fromHomePage: true,
-                                            displayImageColors: true,
-                                            productIsFlashDeal:
-                                                productIsFlashDeal,
-                                            tapIndexToAddProductToCart:
-                                                tapIndexToAddProductToCart,
-                                            key: TestVariables.kTestMode
-                                                ? Key(
-                                                    '*flashDeal*Product${products[index].slug}')
-                                                : null,
-                                            slidingModeItem: slidingMode,
-                                            productItem: products[index],
-                                            itemIndex: index,
-                                            setThisEnabled:
-                                                (int index, int slideMode) {
-                                              setThisEnabledNotifier.value =
-                                                  Tuple2(index, slideMode);
-                                            },
-                                          ),
-                                        );
-                                      },
-                                      physics: const ClampingScrollPhysics(),
-                                      padding: EdgeInsetsDirectional.symmetric(
-                                          horizontal: 10),
-                                      scrollDirection: Axis.horizontal,
-                                      separatorBuilder: (context, index) =>
-                                          SizedBox(
-                                            width: 15,
-                                          ),
-                                      itemCount: products.length > 6
-                                          ? 6
-                                          : products.length),
-                                );
-                              })),
-                    ),
+                            if (index == 5 && products.length > 5) {
+                              return _buildMoreButton(context, products, index);
+                            }
+                            return _buildProductItem(context, products, index);
+                          },
+                          physics: const BouncingScrollPhysics(
+                            parent: ClampingScrollPhysics(),
+                          ),
+                          padding:
+                              EdgeInsetsDirectional.symmetric(horizontal: 10),
+                          scrollDirection: Axis.horizontal,
+                          separatorBuilder: (context, index) =>
+                              SizedBox(width: 15),
+                          itemCount: products.length > 6 ? 6 : products.length),
+                    )
                   ],
                 );
         });
+  }
+
+  Widget _buildMoreButton(
+      BuildContext context, List<filter.Products> products, int index) {
+    return InkWell(
+      onTap: () {
+        try {
+          GetIt.I<BoutiqueBloc>().add(GetProductsWithFiltersEvent(
+              context: context,
+              fromNotification: false,
+              limit: 10,
+              cashedOrginalBoutique: true,
+              boutiqueSlug: "*flashDeal*",
+              getWithPagination: false,
+              offset: 1));
+          Future.delayed(
+              Duration(milliseconds: 300),
+              () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (ctx) => FlashDealProductsPage(),
+                    ),
+                  ));
+        } catch (e) {
+          debugPrint('❌ Error navigating to flash deal products: $e');
+        }
+      },
+      child: Stack(
+        children: [
+          ProductItem(
+            fromFlashDeal: true,
+            fromHomePage: true,
+            imageSource: 'flash_deal_products_widget',
+            productIsFlashDeal: productIsFlashDeal,
+            tapIndexToAddProductToCart: tapIndexToAddProductToCart,
+            key: TestVariables.kTestMode
+                ? Key('*flashDeal*Product${products[index].slug}')
+                : null,
+            productItem: products[index],
+            itemIndex: index,
+          ),
+          Container(
+            decoration: BoxDecoration(
+                color: Color.fromRGBO(0, 0, 0, 0.4),
+                borderRadius: BorderRadius.all(Radius.circular(12))),
+            width: 200,
+            height: 320,
+          ),
+          Positioned(
+            top: 100,
+            left: 75,
+            child: Container(
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(Radius.circular(30))),
+              width: 60,
+              height: 60,
+              child: MyTextWidget(
+                textAlign: TextAlign.center,
+                "${LocaleKeys.more.tr()}",
+                style: TextStyle(color: Colors.black, fontSize: 18),
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProductItem(
+      BuildContext context, List<filter.Products> products, int index) {
+    return InkWell(
+      onTap: () {
+        try {
+          GetIt.I<HomeBloc>().add(
+              ChangeStatusOFGetProductsDetailsToSuccessEvent(
+                  isStatusInitaial: true));
+
+          Future.delayed(
+              Duration(milliseconds: 300),
+              () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (ctx) => ProductDetailsPage(
+                        productItem: products[index],
+                      ),
+                    ),
+                  ));
+        } catch (e) {
+          debugPrint('❌ Error navigating to product details: $e');
+        }
+      },
+      child: ProductItem(
+        fromFlashDeal: true,
+        fromHomePage: true,
+        imageSource: 'flash_deal_products_widget',
+        productIsFlashDeal: productIsFlashDeal,
+        tapIndexToAddProductToCart: tapIndexToAddProductToCart,
+        key: TestVariables.kTestMode
+            ? Key('*flashDeal*Product${products[index].slug}')
+            : null,
+        productItem: products[index],
+        itemIndex: index,
+      ),
+    );
   }
 }

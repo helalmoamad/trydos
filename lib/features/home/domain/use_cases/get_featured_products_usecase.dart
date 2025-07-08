@@ -31,6 +31,6 @@ class GetFeaturedProductsParams {
 
   Map<String, dynamic> get map => {
         "offset": offset.toString(),
-        "limit": "10",
+        "limit": "20",
       }..removeWhere((key, value) => value == null);
 }

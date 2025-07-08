@@ -80,7 +80,7 @@ class GetProductsFiltersParams {
         // "scroll_id": scroll_id,
         "with_products": '${false}',
         //  "fromMarket": "$fromMarket",
-        "limit": "10",
+        "limit": "20",
         "boutique_slug": boutiqueSlug,
         "boutique_slugs": boutiqueSlugs.toString(),
         "category_slugs": categorySlugs.toString(),

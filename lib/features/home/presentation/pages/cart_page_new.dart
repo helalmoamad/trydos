@@ -172,12 +172,9 @@ class _CartPageState extends State<CartPage> {
                     );
                   } else {
                     //////////////////////////
-                    showMessage(
-                      " ${LocaleKeys.you_have_to_delete_all_unavailable_products.tr()}",
-                      foreGroundColor: Colors.white,
-                      backGroundColor: Colors.black,
-                      showInRelease: true,
-                      timeShowing: Toast.LENGTH_LONG,
+                    showWarningMessage(
+                      context,
+                      "${LocaleKeys.you_have_to_delete_all_unavailable_products.tr()}",
                     );
                   }
                 }
@@ -1508,10 +1505,10 @@ class _CartPageState extends State<CartPage> {
                                                                                             pageController.animateToPage(2, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
 
                                                                                             if (prefsRepository.isTimerForOtpRunning ?? false) {
-                                                                                              showMessage('${LocaleKeys.you_must_wait_for_some_seconds_before_try_again.tr()}');
+                                                                                              showWarningMessage(context, '${LocaleKeys.you_must_wait_for_some_seconds_before_try_again.tr()}');
                                                                                               return;
                                                                                             }
-                                                                                            authBloc.add(SendOtpEvent(phone: phoneNumber, isViaWhatsApp: 1));
+                                                                                            /* authBloc.add(SendOtpEvent(phone: phoneNumber, isViaWhatsApp: 1));*/
                                                                                           },
                                                                                           goBackToPhone: () {
                                                                                             pageController.animateToPage(0, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
@@ -1519,7 +1516,7 @@ class _CartPageState extends State<CartPage> {
                                                                                           onChooseSms: () {
                                                                                             isVisWhatsApp = 0;
                                                                                             pageController.animateToPage(3, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-                                                                                            authBloc.add(SendOtpEvent(phone: phoneNumber, isViaWhatsApp: 0));
+                                                                                            /*authBloc.add(SendOtpEvent(phone: phoneNumber, isViaWhatsApp: 0));*/
                                                                                           },
                                                                                         ),
                                                                                         VerifyOtp(
@@ -1695,12 +1692,9 @@ class _CartPageState extends State<CartPage> {
                                                                                       } else if (state.cartCollection!.any(
                                                                                         (element) => (element.isActive == false || element.isCountryRestricted == true || element.checkAvailability == false),
                                                                                       )) {
-                                                                                        showMessage(
-                                                                                          " ${LocaleKeys.you_have_to_delete_all_unavailable_products.tr()}",
-                                                                                          foreGroundColor: Colors.white,
-                                                                                          backGroundColor: Colors.black,
-                                                                                          showInRelease: true,
-                                                                                          timeShowing: Toast.LENGTH_LONG,
+                                                                                        showWarningMessage(
+                                                                                          context,
+                                                                                          "${LocaleKeys.you_have_to_delete_all_unavailable_products.tr()}",
                                                                                         );
                                                                                         return;
                                                                                       } else {

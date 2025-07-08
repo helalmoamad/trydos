@@ -654,6 +654,7 @@ class _CameraScreenState extends State<CameraScreenStory>
                                         if (lengthMoreThan60) {
                                           showMessage(
                                               'Video length must not be longer than 59 seconds',
+                                              hasError: true,
                                               showInRelease: true);
                                         }
                                       }

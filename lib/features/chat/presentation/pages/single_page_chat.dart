@@ -234,6 +234,15 @@ class _SinglePageChatState extends State<SinglePageChat> {
     });
     return WillPopScope(
       onWillPop: () {
+        // Check if keyboard is open
+        bool isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
+
+        if (isKeyboardOpen) {
+          // Close keyboard on first back press
+          FocusScope.of(context).unfocus();
+          return Future.value(false);
+        }
+
         if (controller.text.length > 0) {
           controller.clear();
           try {
@@ -249,6 +258,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
       },
       child: Scaffold(
           backgroundColor: const Color(0xffEBFFF8),
+          resizeToAvoidBottomInset: true,
           appBar: TrydosAppBar(
             heightAppBar: (widget.fromSearch ?? false) ? 120 : 56,
             appBarParams: AppBarParams(
@@ -589,7 +599,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                       } else if (microphone.isDenied ||
                                           status2.isDenied ||
                                           camera.isDenied) {
-                                        showMessage(
+                                        showWarningMessage(context,
                                             LocaleKeys.permission_denied.tr());
                                         openAppSettings();
                                       }
@@ -656,7 +666,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
                                         }
                                       } else if (microphone.isDenied ||
                                           status2.isDenied) {
-                                        showMessage(
+                                        showWarningMessage(context,
                                             LocaleKeys.permission_denied.tr());
                                         openAppSettings();
                                       }

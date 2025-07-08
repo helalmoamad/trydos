@@ -72,10 +72,10 @@ class _TabsBarState extends State<TabsBar> {
   SpeechToText _speechToText = SpeechToText();
   final ValueNotifier<bool> isRecordeForSearchWithMic = ValueNotifier(false);
   bool _speechEnabled = false;
-  List<String> sizesForSearch = [];
-  List<String> colorsCodeForSearch = [];
-  List<String> colorsNameForSearch = [];
-  List<String> constWordToRemoveItFromSearch = [
+  //List<String> sizesForSearch = [];
+  // List<String> colorsCodeForSearch = [];
+  // List<String> colorsNameForSearch = [];
+  /* List<String> constWordToRemoveItFromSearch = [
     "قياس",
     "حجم",
     "لون",
@@ -85,7 +85,7 @@ class _TabsBarState extends State<TabsBar> {
     "Size",
     "Color",
     "Colors"
-  ];
+  ];*/
   void _startListening() async {
     if (!_speechEnabled) {
       _speechEnabled = await _speechToText.initialize();
@@ -97,33 +97,33 @@ class _TabsBarState extends State<TabsBar> {
         if (result.recognizedWords.replaceAll(" ", "").length > 2) {
           resetSearchAfterSearchingWhileRemoveSearch = true;
           widget.controller.text = result.recognizedWords;
-          List<String>? colorsFilter = [];
-          List<String> listSearchTextWithoutConstWord =
-              result.recognizedWords.split(" ").toList();
-          String searchText = "";
-          List<String>? sizesFilter = [];
+          //List<String>? colorsFilter = [];
+          //List<String> listSearchTextWithoutConstWord =
+          //    result.recognizedWords.split(" ").toList();
+          String searchText = result.recognizedWords;
+          //   List<String>? sizesFilter = [];
 
-          List<String> listOfSearchText =
-              result.recognizedWords.split(" ").toList();
-          for (var i = 0; i < colorsNameForSearch.length; i++) {
+          //  List<String> listOfSearchText =
+          //   result.recognizedWords.split(" ").toList();
+          /*for (var i = 0; i < colorsNameForSearch.length; i++) {
             if (listOfSearchText.contains(colorsNameForSearch[i])) {
               colorsFilter.add(colorsCodeForSearch[i]);
               listSearchTextWithoutConstWord.remove(colorsNameForSearch[i]);
             }
-          }
+          }*/
 
-          for (var i = 0; i < sizesForSearch.length; i++) {
+          /* for (var i = 0; i < sizesForSearch.length; i++) {
             if (listOfSearchText.contains(sizesForSearch[i])) {
               sizesFilter.add(sizesForSearch[i]);
               listSearchTextWithoutConstWord.remove(sizesForSearch[i]);
             }
-          }
-          for (var i = 0; i < constWordToRemoveItFromSearch.length; i++) {
+          }*/
+          /*for (var i = 0; i < constWordToRemoveItFromSearch.length; i++) {
             listSearchTextWithoutConstWord
                 .remove(constWordToRemoveItFromSearch[i]);
-          }
-          listSearchTextWithoutConstWord
-              .forEach((element) => searchText = searchText + " " + element);
+          }*/
+          // listSearchTextWithoutConstWord
+          //  .forEach((element) => searchText = searchText + " " + element);
           Filter filters = BlocProvider.of<BoutiqueBloc>(context)
                   .state
                   .choosedFiltersByUser['search']
@@ -136,10 +136,6 @@ class _TabsBarState extends State<TabsBar> {
                 filtersChoosedByUser: GetProductFiltersModel(
                   filters: filters.copyWithSaveOtherField(
                     prices: filters.prices,
-                    attributes: sizesFilter.isEmpty
-                        ? []
-                        : [Attribute(name: "Size", options: sizesFilter)],
-                    colors: colorsFilter,
                     searchText: searchText,
                   ),
                 )),
@@ -149,10 +145,6 @@ class _TabsBarState extends State<TabsBar> {
             filtersAppliedByUser: GetProductFiltersModel(
                 filters: filters.copyWithSaveOtherField(
               prices: filters.prices,
-              attributes: sizesFilter.isEmpty
-                  ? []
-                  : [Attribute(name: "Size", options: sizesFilter)],
-              colors: colorsFilter,
               searchText: searchText,
             )),
           ));
@@ -188,16 +180,16 @@ class _TabsBarState extends State<TabsBar> {
     boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
     gemini = geminis.Gemini.instance;
-    homeBloc.state.geColorsAndSizesForSearchModel?.data?.colors
+    /* homeBloc.state.geColorsAndSizesForSearchModel?.data?.colors
         ?.forEach((element) {
       colorsCodeForSearch.add(element.code ?? "");
       colorsNameForSearch.add(element.name ?? "");
-    });
+    });*/
 
-    homeBloc.state.geColorsAndSizesForSearchModel?.data?.sizes
+    /*homeBloc.state.geColorsAndSizesForSearchModel?.data?.sizes
         ?.forEach((element) {
       sizesForSearch.add(element);
-    });
+    });*/
     widget.controller.clear();
     List<String>? categorySlugs = [];
     categoryBloc.state.mainCategoriesResponseModel?.data?.mainCategories
@@ -276,22 +268,22 @@ class _TabsBarState extends State<TabsBar> {
             builder: (context, homeState) {
               if ((homeState.theReplyFromGemini ?? '') != "" &&
                   homeState.fromSearchForSearchWithGemini == true) {
-                List<String>? colorsFilter = [];
-                List<String> listSearchTextWithoutConstWord =
-                    homeState.theReplyFromGemini!.split(" ").toList();
-                String searchText = "";
-                List<String>? sizesFilter = [];
+                // List<String>? colorsFilter = [];
+                //// List<String> listSearchTextWithoutConstWord =
+                //   homeState.theReplyFromGemini!.split(" ").toList();
+                String searchText = homeState.theReplyFromGemini!;
+                /* List<String>? sizesFilter = [];
                 List<String> listOfSearchText =
-                    homeState.theReplyFromGemini!.split(" ").toList();
-                for (var i = 0; i < colorsNameForSearch.length; i++) {
+                    homeState.theReplyFromGemini!.split(" ").toList();*/
+                /* for (var i = 0; i < colorsNameForSearch.length; i++) {
                   if (listOfSearchText.contains(colorsNameForSearch[i])) {
                     colorsFilter.add(colorsCodeForSearch[i]);
                     listSearchTextWithoutConstWord
                         .remove(colorsNameForSearch[i]);
                   }
-                }
+                }*/
 
-                for (var i = 0; i < sizesForSearch.length; i++) {
+                /* for (var i = 0; i < sizesForSearch.length; i++) {
                   if (listOfSearchText.contains(sizesForSearch[i])) {
                     sizesFilter.add(sizesForSearch[i]);
                     listSearchTextWithoutConstWord.remove(sizesForSearch[i]);
@@ -300,9 +292,9 @@ class _TabsBarState extends State<TabsBar> {
                 for (var i = 0; i < constWordToRemoveItFromSearch.length; i++) {
                   listSearchTextWithoutConstWord
                       .remove(constWordToRemoveItFromSearch[i]);
-                }
-                listSearchTextWithoutConstWord.forEach(
-                    (element) => searchText = searchText + " " + element);
+                }*/
+                //listSearchTextWithoutConstWord.forEach(
+                //   (element) => searchText = searchText + " " + element);
                 widget.controller.text = homeState.theReplyFromGemini ?? "";
                 Filter filters = BlocProvider.of<BoutiqueBloc>(context)
                         .state
@@ -315,10 +307,6 @@ class _TabsBarState extends State<TabsBar> {
                         fromHomePageSearch: true,
                         filtersChoosedByUser: GetProductFiltersModel(
                             filters: filters.copyWithSaveOtherField(
-                          attributes: sizesFilter.isEmpty
-                              ? []
-                              : [Attribute(name: "Size", options: sizesFilter)],
-                          colors: colorsFilter,
                           prices: filters.prices,
                           searchText: searchText,
                         ))));
@@ -327,10 +315,6 @@ class _TabsBarState extends State<TabsBar> {
                   boutiqueSlug: 'search',
                   filtersAppliedByUser: GetProductFiltersModel(
                       filters: filters.copyWithSaveOtherField(
-                    attributes: sizesFilter.isEmpty
-                        ? []
-                        : [Attribute(name: "Size", options: sizesFilter)],
-                    colors: colorsFilter,
                     prices: filters.prices,
                     searchText: searchText,
                   )),
@@ -728,14 +712,14 @@ class _TabsBarState extends State<TabsBar> {
                                   debounce!.cancel();
                                 }
                                 debounce = Timer(Duration(seconds: 1), () {
-                                  List<String>? colorsFilter = [];
-                                  List<String> listSearchTextWithoutConstWord =
-                                      text.split(" ").toList();
-                                  String searchText = "";
-                                  List<String>? sizesFilter = [];
+                                  //  List<String>? colorsFilter = [];
+                                  //  List<String> listSearchTextWithoutConstWord =
+                                  //    text.split(" ").toList();
+                                  String searchText = text;
+                                  //   List<String>? sizesFilter = [];
 
                                   if (text.length > 2) {
-                                    List<String> listOfSearchText =
+                                    /* List<String> listOfSearchText =
                                         text.split(" ").toList();
                                     for (var i = 0;
                                         i < colorsNameForSearch.length;
@@ -747,9 +731,9 @@ class _TabsBarState extends State<TabsBar> {
                                         listSearchTextWithoutConstWord
                                             .remove(colorsNameForSearch[i]);
                                       }
-                                    }
+                                    }*/
 
-                                    for (var i = 0;
+                                    /*  for (var i = 0;
                                         i < sizesForSearch.length;
                                         i++) {
                                       if (listOfSearchText
@@ -758,8 +742,8 @@ class _TabsBarState extends State<TabsBar> {
                                         listSearchTextWithoutConstWord
                                             .remove(sizesForSearch[i]);
                                       }
-                                    }
-                                    for (var i = 0;
+                                    }*/
+                                    /*  for (var i = 0;
                                         i <
                                             constWordToRemoveItFromSearch
                                                 .length;
@@ -769,7 +753,7 @@ class _TabsBarState extends State<TabsBar> {
                                     }
                                     listSearchTextWithoutConstWord.forEach(
                                         (element) => searchText =
-                                            searchText + " " + element);
+                                            searchText + " " + element);*/
 
                                     resetSearchAfterSearchingWhileRemoveSearch =
                                         true;
@@ -778,7 +762,7 @@ class _TabsBarState extends State<TabsBar> {
                                             .choosedFiltersByUser['search']
                                             ?.filters ??
                                         Filter();
-                                    print(sizesFilter.isEmpty);
+                                    //   print(sizesFilter.isEmpty);
                                     boutiqueBloc.add(ChangeSelectedFiltersEvent(
                                       boutiqueSlug: 'search',
                                       requestToUpdateFilters: true,
@@ -787,14 +771,6 @@ class _TabsBarState extends State<TabsBar> {
                                           GetProductFiltersModel(
                                               filters: filters
                                                   .copyWithSaveOtherField(
-                                        attributes: sizesFilter.isEmpty
-                                            ? []
-                                            : [
-                                                Attribute(
-                                                    name: "Size",
-                                                    options: sizesFilter)
-                                              ],
-                                        colors: colorsFilter,
                                         prices: filters.prices,
                                         searchText: searchText,
                                       )),
@@ -871,14 +847,6 @@ class _TabsBarState extends State<TabsBar> {
                                           GetProductFiltersModel(
                                               filters: filters
                                                   .copyWithSaveOtherField(
-                                        attributes: sizesFilter.isEmpty
-                                            ? []
-                                            : [
-                                                Attribute(
-                                                    name: "Size",
-                                                    options: sizesFilter)
-                                              ],
-                                        colors: colorsFilter,
                                         prices: filters.prices,
                                         searchText: null,
                                       )),

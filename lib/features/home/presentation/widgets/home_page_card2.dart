@@ -4,20 +4,24 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart' as cupertino;
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter/services.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_html/flutter_html.dart';
+
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get_it/get_it.dart';
-import 'package:scroll_to_index/scroll_to_index.dart';
 
 import 'package:trydos/config/theme/typography.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
+
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
+import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/home/data/models/get_home_boutiqes_model.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_event.dart';
+import 'package:trydos/features/home/presentation/manager/categoryBloc/category_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
@@ -27,52 +31,46 @@ import '../../../../service/firebase_analytics_service/analytics_const/analytics
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/my_text_widget.dart';
 import '../../../app/svg_network_widget.dart';
+import 'package:trydos/features/app/trydos_shimmer_loading_stateless.dart';
 
-class HomePageCard2 extends cupertino.StatefulWidget {
-  const HomePageCard2(
-      {super.key,
-      this.withSlidingImages = false,
-      required this.boutique,
-      required this.category_Slug,
-      required this.isShowPanelForVerified});
+class HomePageCard2 extends cupertino.StatelessWidget {
+  HomePageCard2({
+    super.key,
+    this.withSlidingImages = false,
+    required this.boutique,
+    required this.category_Slug,
+    required this.isShowPanelForVerified,
+  });
   final String category_Slug;
   final bool withSlidingImages;
   final Boutique boutique;
   final ValueNotifier<bool> isShowPanelForVerified;
-  @override
-  cupertino.State<HomePageCard2> createState() => _HomePageCard2State();
-}
 
-class _HomePageCard2State extends cupertino.State<HomePageCard2> {
   final ValueNotifier<int> resizeItems = ValueNotifier(-1);
-  final ValueNotifier<int> changeBackgroundBlurImage = ValueNotifier(0);
+  // final ValueNotifier<int> changeBackgroundBlurImage = ValueNotifier(0);
+  //final Map<String, bool> _loadedImages = {}; // تتبع الصور المحملة
   // final PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
   // late AutoScrollController autoScrollController;
   //late ScrollController scrollController;
-  late BoutiqueBloc boutiqueBloc;
-  @override
-  void initState() {
-    boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
-    // autoScrollController = AutoScrollController();
-    super.initState();
-  }
+
+  /// تسجيل صور البوتيك للحماية
+
+  /// تسجيل نجاح تحميل الصورة
 
   @override
   Widget build(BuildContext context) {
-    /*  FlutterError.onError = (FlutterErrorDetails error) {
-      try {
-        BlocProvider.of<HomeBloc>(context).add((SendErrorToMobileErrorLogEvent(
-            errorExption: error.exceptionAsString().toString(),
-            errorPath: error.stack.toString().split("#")[1],
-            urlBackend: "Front Error",
-            messageFromeBackend: "Front Error")));
-      } catch (e) {}
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
-    };*/
+    return _buildCardContent(context);
+  }
+
+  Widget _buildCardContent(BuildContext context) {
+    BoutiqueBloc boutiqueBloc = BlocProvider.of<BoutiqueBloc>(context);
+
+    AppBloc appBloc = BlocProvider.of<AppBloc>(context);
+
+    HomeBloc homeBloc = BlocProvider.of<HomeBloc>(context);
+
     return Stack(
-      key: cupertino.ValueKey(widget.boutique.slug),
+      key: cupertino.ValueKey(boutique.slug),
       alignment: Alignment.bottomCenter,
       children: [
         InkWell(
@@ -80,14 +78,15 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
           highlightColor: Colors.transparent,
           onTap: () {
             boutiqueBloc.add(ChangeAppliedFiltersEvent(
-              boutiqueSlug: widget.boutique.slug!,
+              boutiqueSlug: boutique.slug!,
               category: null,
               filtersAppliedByUser: null,
               resetAppliedFilters: true,
             ));
             boutiqueBloc.add(ChangeSelectedFiltersEvent(
+              requestToUpdateFilters: false,
               fromHomePageSearch: false,
-              boutiqueSlug: widget.boutique.slug!,
+              boutiqueSlug: boutique.slug!,
               category: null,
               filtersChoosedByUser: null,
             ));
@@ -95,32 +94,43 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
             boutiqueBloc.add(GetProductsWithFiltersEvent(
                 getWithoutFilter: true,
                 cashedOrginalBoutique: true,
-                boutiqueSlug: widget.boutique.slug!,
+                boutiqueSlug: boutique.slug!,
                 fromSearch: false,
                 category: null,
                 context: context,
                 searchText: null,
                 offset: 1));
+            homeBloc.add(IsChangedVariationWhenQtyZeroEvent(
+                isChangedVariationWhenQtyZero: false));
+            homeBloc.add(IsChangedVariationWhenQtyZeroEvent(
+                isChangedVariationWhenQtyZero: false));
 
-            Navigator.push(
-              context,
-              PageRouteBuilder(
-                pageBuilder: (_, __, ___) => ProductListingPage(
-                  isShowPanelForVerified: widget.isShowPanelForVerified,
-                  banner: widget.boutique.banners,
-                  withSlidingImages: widget.withSlidingImages,
-                  boutiqueSlug: widget.boutique.slug!,
-                  boutiqueName: widget.boutique.name,
-                  boutiqueFirstBanner: widget.boutique.banners![0].filePath!,
-                  boutiqueIcon: widget.boutique.icon?.filePath ?? "",
-                ),
-                transitionsBuilder: (_, __, ___, child) =>
-                    child, // بدون أي حركة
-                transitionDuration: Duration.zero, // انتقال فوري
-                reverseTransitionDuration: Duration.zero, // عودة فورية
-              ),
-            );
+            boutiqueBloc.add(AddSizeAndColorFilterinTextToSearchEvent(
+                sizeAndColorFilterinTextToSearch: {}));
+            appBloc.add(HideBottomNavigationBar(false));
+            appBloc.add(ShowOrHideBars(true));
+            appBloc.add(ChangeIndexForSearch(1));
 
+            Future.delayed(
+                Duration(milliseconds: 300),
+                () => Navigator.push(
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder: (_, __, ___) => ProductListingPage(
+                          isShowPanelForVerified: isShowPanelForVerified,
+                          banner: boutique.banners,
+                          withSlidingImages: withSlidingImages,
+                          boutiqueSlug: boutique.slug!,
+                          boutiqueName: boutique.name,
+                          boutiqueFirstBanner: boutique.banners![0].filePath!,
+                          boutiqueIcon: boutique.icon?.filePath ?? "",
+                        ),
+                        transitionsBuilder: (_, __, ___, child) =>
+                            child, // بدون أي حركة
+                        transitionDuration: Duration.zero, // انتقال فوري
+                        reverseTransitionDuration: Duration.zero, // عودة فورية
+                      ),
+                    ));
             ////////////////////////////////////
             FirebaseAnalyticsService.logEventForSession(
               eventName: AnalyticsEventsConst.buttonClicked,
@@ -133,8 +143,8 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
               () {
                 FirebaseAnalyticsService.logEventForViewedBoutique(
                   eventName: AnalyticsEventsConst.viewedBoutique,
-                  boutiqueId: widget.boutique.id.toString(),
-                  boutiqueName: widget.boutique.name.toString(),
+                  boutiqueId: boutique.id.toString(),
+                  boutiqueName: boutique.name.toString(),
                 );
               },
             );
@@ -211,9 +221,9 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        widget.boutique.icon?.filePath != null
+                        boutique.icon?.filePath != null
                             ? SvgNetworkWidget(
-                                svgUrl: widget.boutique.icon!.filePath!,
+                                svgUrl: boutique.icon!.filePath!,
                                 height: 20,
                                 width: 40,
                               )
@@ -222,7 +232,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                           height: 5,
                         ),
                         MyTextWidget(
-                          widget.boutique.name!,
+                          boutique.name!,
                           style: context.textTheme.titleMedium?.rd.copyWith(
                             fontSize: 16,
                             color: ui.Color.fromARGB(255, 15, 15, 15),
@@ -239,7 +249,7 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                             ),
                           },
                         ),*/
-                        if (!widget.withSlidingImages)
+                        if (!withSlidingImages)
                           SizedBox(
                             height: 10,
                           ),
@@ -248,14 +258,20 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                   ),
                   Padding(
                     padding: EdgeInsets.only(
-                        left: widget.withSlidingImages ? 0 : 10,
-                        right: widget.withSlidingImages ? 0 : 10),
-                    child: widget.withSlidingImages
+                        left: withSlidingImages ? 0 : 10,
+                        right: withSlidingImages ? 0 : 10),
+                    child: withSlidingImages
                         ? cupertino.Container(
                             color: Colors.white,
                             child: CarouselSlider.builder(
-                                itemCount: widget.boutique.banners!.length,
+                                itemCount: boutique.banners!.length,
                                 itemBuilder: (context, index, _) {
+                                  // 🔧 إضافة lazy loading للصور
+                                  bool isVisible =
+                                      index <= 2; // عرض أول 3 صور فقط
+
+                                  print(
+                                      "🖼️ Banner $index URL: ${boutique.banners?[index].filePath ?? 'null'}");
                                   return Padding(
                                     padding: EdgeInsetsDirectional.only(
                                         start: index == 0 ? 0 : 10,
@@ -280,33 +296,16 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                               ),
                                             ],
                                           ),
-                                          child: widget.boutique
-                                                      .banners?[index] !=
-                                                  null
-                                              ? ClipRRect(
-                                                  key: cupertino.ValueKey(widget
-                                                          .boutique
-                                                          .banners![index]
-                                                          .filePath ??
-                                                      ""),
-                                                  borderRadius:
-                                                      BorderRadius.circular(15),
-                                                  child: MyCachedNetworkImage(
-                                                    imageColor: Colors.white,
-                                                    //      progressIndicatorBuilderWidget:
-                                                    //          cupertino.SizedBox
-                                                    //              .shrink(),
-                                                    imageUrl: widget
-                                                        .boutique
-                                                        .banners![index]
-                                                        .filePath!,
-                                                    imageFit: BoxFit.cover,
-                                                    width: 1.sw,
-                                                    innerShadowYOffset: 3,
-                                                    withInnerShadow: true,
-                                                    height: 155,
-                                                  ))
-                                              : cupertino.SizedBox.shrink(),
+                                          child: MyCachedNetworkImage(
+                                            imageUrl: boutique
+                                                .banners![index].filePath!,
+                                            imageFit: BoxFit.contain,
+                                            width: 1.sw,
+                                            innerShadowYOffset: 3,
+                                            withInnerShadow: false,
+                                            height: 155,
+                                            imageSource: 'home_page_card2',
+                                          ),
                                         ),
                                         Container(
                                           height: 155,
@@ -329,17 +328,25 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                   );
                                 },
                                 options: CarouselOptions(
-                                  autoPlay: true,
-                                  autoPlayInterval: Duration(seconds: 15),
+                                  autoPlay: false,
+                                  autoPlayInterval: Duration(seconds: 30),
                                   autoPlayAnimationDuration:
-                                      Duration(seconds: 1),
+                                      Duration(milliseconds: 300),
                                   initialPage: 0,
-                                  onPageChanged: (int index, _) {
-                                    changeBackgroundBlurImage.value = index;
-                                  },
+                                  /*  onPageChanged: (int index, _) {
+                                    Future.delayed(Duration(milliseconds: 100),
+                                        () {
+                                      if (mounted) {
+                                        changeBackgroundBlurImage.value = index;
+                                      }
+                                    });
+                                  },*/
                                   height: 155,
                                   enableInfiniteScroll: false,
-                                  viewportFraction: 0.90,
+                                  viewportFraction: 1.0,
+                                  pauseAutoPlayOnTouch: true,
+                                  pauseAutoPlayOnManualNavigate: true,
+                                  pauseAutoPlayInFiniteScroll: true,
                                 )))
                         : Stack(
                             children: [
@@ -361,15 +368,13 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                 ),
                                 child: ClipRRect(
                                     borderRadius: BorderRadius.circular(15),
-                                    child: ((widget.boutique.banners?.length ??
-                                                0) ==
+                                    child: ((boutique.banners?.length ?? 0) ==
                                             0)
                                         ? cupertino.SizedBox.shrink()
                                         : MyCachedNetworkImage(
-                                            //     progressIndicatorBuilderWidget:
-                                            //         cupertino.SizedBox.shrink(),
-                                            imageUrl: widget
-                                                .boutique.banners![0].filePath!,
+                                            imageSource: 'home_page_card2',
+                                            imageUrl:
+                                                boutique.banners![0].filePath!,
                                             imageFit: BoxFit.cover,
                                             width: 1.sw,
                                             withInnerShadow: true,
@@ -407,72 +412,81 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                       return InkWell(
                           onTap: () {
                             boutiqueBloc.add(ChangeAppliedFiltersEvent(
-                              boutiqueSlug: widget.boutique.slug!,
+                              boutiqueSlug: boutique.slug!,
                               category: null,
                               filtersAppliedByUser: null,
                               resetAppliedFilters: true,
                             ));
                             boutiqueBloc.add(ChangeSelectedFiltersEvent(
                               fromHomePageSearch: false,
-                              boutiqueSlug: widget.boutique.slug!,
+                              boutiqueSlug: boutique.slug!,
                               category: null,
                             ));
 
                             boutiqueBloc.add(GetProductsWithFiltersEvent(
                                 getWithoutFilter: true,
                                 cashedOrginalBoutique: true,
-                                boutiqueSlug: widget.boutique.slug!,
+                                boutiqueSlug: boutique.slug!,
                                 fromSearch: false,
                                 category: null,
                                 context: context,
                                 searchText: null,
                                 offset: 1));
+                            homeBloc.add(IsChangedVariationWhenQtyZeroEvent(
+                                isChangedVariationWhenQtyZero: false));
+                            homeBloc.add(IsChangedVariationWhenQtyZeroEvent(
+                                isChangedVariationWhenQtyZero: false));
 
-                            Navigator.push(
-                              context,
-                              PageRouteBuilder(
-                                pageBuilder: (_, __, ___) => ProductListingPage(
-                                  isShowPanelForVerified:
-                                      widget.isShowPanelForVerified,
-                                  banner: widget.boutique.banners,
-                                  withSlidingImages: widget.withSlidingImages,
-                                  boutiqueSlug: widget.boutique.slug!,
-                                  category: null,
-                                  boutiqueName: widget.boutique.name,
-                                  boutiqueFirstBanner:
-                                      widget.boutique.banners![0].filePath!,
-                                  boutiqueIcon: widget.boutique.icon!.filePath!,
-                                ),
-                                transitionsBuilder: (_, __, ___, child) =>
-                                    child, // بدون أي حركة
-                                transitionDuration:
-                                    Duration.zero, // انتقال فوري
-                                reverseTransitionDuration:
-                                    Duration.zero, // عودة فورية
-                              ),
-                            );
+                            boutiqueBloc.add(
+                                AddSizeAndColorFilterinTextToSearchEvent(
+                                    sizeAndColorFilterinTextToSearch: {}));
+                            appBloc.add(HideBottomNavigationBar(false));
+                            appBloc.add(ShowOrHideBars(true));
+                            appBloc.add(ChangeIndexForSearch(1));
+
+                            Future.delayed(
+                                Duration(milliseconds: 300),
+                                () => Navigator.push(
+                                      context,
+                                      PageRouteBuilder(
+                                        pageBuilder: (_, __, ___) =>
+                                            ProductListingPage(
+                                          isShowPanelForVerified:
+                                              isShowPanelForVerified,
+                                          banner: boutique.banners,
+                                          withSlidingImages: withSlidingImages,
+                                          boutiqueSlug: boutique.slug!,
+                                          category: null,
+                                          boutiqueName: boutique.name,
+                                          boutiqueFirstBanner:
+                                              boutique.banners![0].filePath!,
+                                          boutiqueIcon:
+                                              boutique.icon!.filePath!,
+                                        ),
+                                        transitionsBuilder:
+                                            (_, __, ___, child) =>
+                                                child, // بدون أي حركة
+                                        transitionDuration:
+                                            Duration.zero, // انتقال فوري
+                                        reverseTransitionDuration:
+                                            Duration.zero, // عودة فورية
+                                      ),
+                                    ));
                           },
                           child: SvgNetworkWidget(
-                            svgUrl: widget
-                                        .boutique
-                                        .mainCategoriesForProductIds![index]
+                            svgUrl: boutique.mainCategoriesForProductIds![index]
                                         .flatPhotoPath !=
                                     null
-                                ? widget
-                                    .boutique
-                                    .mainCategoriesForProductIds![index]
-                                    .flatPhotoPath!
-                                    .filePath!
+                                ? boutique.mainCategoriesForProductIds![index]
+                                    .flatPhotoPath!.filePath!
                                 : "",
                             width: 12,
                             height: 12,
                           ));
                     },
-                    itemCount:
-                        widget.boutique.mainCategoriesForProductIds!.length > 5
-                            ? 5
-                            : widget
-                                .boutique.mainCategoriesForProductIds!.length,
+                    itemCount: boutique.mainCategoriesForProductIds!.length > 5
+                        ? 5
+                        : boutique.mainCategoriesForProductIds!.length,
                   ),
                 ),
 
@@ -511,15 +525,11 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                     resizeItems.value = (details.globalPosition.dx -
                             40 -
                             (8 -
-                                    (widget
-                                                .boutique
-                                                .childCategoriesForProductIds!
+                                    (boutique.childCategoriesForProductIds!
                                                 .length >
                                             8
                                         ? 8
-                                        : widget
-                                            .boutique
-                                            .childCategoriesForProductIds!
+                                        : boutique.childCategoriesForProductIds!
                                             .length)) /
                                 //childCategoriesForProductIds!.length) /
                                 2 *
@@ -537,15 +547,11 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                     resizeItems.value = (details.globalPosition.dx -
                             40 -
                             (8 -
-                                    (widget
-                                                .boutique
-                                                .childCategoriesForProductIds!
+                                    (boutique.childCategoriesForProductIds!
                                                 .length >
                                             8
                                         ? 8
-                                        : widget
-                                            .boutique
-                                            .childCategoriesForProductIds!
+                                        : boutique.childCategoriesForProductIds!
                                             .length)) /
                                 2 *
                                 (40.w - 5.w)) ~/
@@ -568,24 +574,19 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                           child: Stack(
                               alignment: Alignment.bottomCenter,
                               children: List.generate(
-                                  (widget.boutique.childCategoriesForProductIds!
+                                  (boutique.childCategoriesForProductIds!
                                               .length) >
                                           8
                                       ? 8
-                                      : (widget
-                                          .boutique
-                                          .childCategoriesForProductIds!
+                                      : (boutique.childCategoriesForProductIds!
                                           .length),
                                   (index) => AnimatedPositioned(
                                         left: (8 -
-                                                    (widget
-                                                                .boutique
-                                                                .childCategoriesForProductIds!
+                                                    (boutique.childCategoriesForProductIds!
                                                                 .length >
                                                             8
                                                         ? 8
-                                                        : widget
-                                                            .boutique
+                                                        : boutique
                                                             .childCategoriesForProductIds!
                                                             .length)) /
                                                 2 *
@@ -609,31 +610,16 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                           onTap: () {
                                             boutiqueBloc
                                                 .add(ChangeAppliedFiltersEvent(
-                                              boutiqueSlug:
-                                                  widget.boutique.slug!,
-                                              category: index == 7
-                                                  ? null
-                                                  : widget
-                                                      .boutique
-                                                      .childCategoriesForProductIds![
-                                                          index]
-                                                      .categorySlug,
+                                              boutiqueSlug: boutique.slug!,
+                                              category: null,
                                               filtersAppliedByUser: null,
                                               resetAppliedFilters: true,
                                             ));
                                             boutiqueBloc
                                                 .add(ChangeSelectedFiltersEvent(
                                               fromHomePageSearch: false,
-                                              boutiqueSlug:
-                                                  widget.boutique.slug!,
-                                              category: index == 7
-                                                  ? null
-                                                  : widget
-                                                      .boutique
-                                                      .childCategoriesForProductIds![
-                                                          index]
-                                                      .categorySlug,
-                                              filtersChoosedByUser: null,
+                                              boutiqueSlug: boutique.slug!,
+                                              category: null,
                                             ));
 
                                             boutiqueBloc.add(
@@ -641,79 +627,93 @@ class _HomePageCard2State extends cupertino.State<HomePageCard2> {
                                                     getWithoutFilter: true,
                                                     cashedOrginalBoutique: true,
                                                     boutiqueSlug:
-                                                        widget.boutique.slug!,
+                                                        boutique.slug!,
                                                     fromSearch: false,
-                                                    category: index == 7
-                                                        ? null
-                                                        : widget
-                                                            .boutique
-                                                            .childCategoriesForProductIds![
-                                                                index]
-                                                            .categorySlug,
+                                                    category: null,
                                                     context: context,
                                                     searchText: null,
                                                     offset: 1));
+                                            homeBloc.add(
+                                                IsChangedVariationWhenQtyZeroEvent(
+                                                    isChangedVariationWhenQtyZero:
+                                                        false));
+                                            homeBloc.add(
+                                                IsChangedVariationWhenQtyZeroEvent(
+                                                    isChangedVariationWhenQtyZero:
+                                                        false));
 
-                                            Navigator.push(
-                                              context,
-                                              PageRouteBuilder(
-                                                pageBuilder: (_, __, ___) =>
-                                                    ProductListingPage(
-                                                  isShowPanelForVerified: widget
-                                                      .isShowPanelForVerified,
-                                                  banner:
-                                                      widget.boutique.banners,
-                                                  withSlidingImages:
-                                                      widget.withSlidingImages,
-                                                  boutiqueSlug:
-                                                      widget.boutique.slug!,
-                                                  category: index == 7
-                                                      ? null
-                                                      : widget
-                                                          .boutique
-                                                          .childCategoriesForProductIds![
-                                                              index]
-                                                          .categorySlug,
-                                                  boutiqueName:
-                                                      widget.boutique.name,
-                                                  boutiqueFirstBanner: widget
-                                                      .boutique
-                                                      .banners![0]
-                                                      .filePath!,
-                                                  boutiqueIcon: widget.boutique
-                                                          .icon?.filePath ??
-                                                      "",
-                                                ),
-                                                transitionsBuilder:
-                                                    (_, __, ___, child) =>
-                                                        child, // بدون أي حركة
-                                                transitionDuration: Duration
-                                                    .zero, // انتقال فوري
-                                                reverseTransitionDuration:
-                                                    Duration.zero, // عودة فورية
-                                              ),
-                                            );
+                                            boutiqueBloc.add(
+                                                AddSizeAndColorFilterinTextToSearchEvent(
+                                                    sizeAndColorFilterinTextToSearch: {}));
+                                            appBloc.add(
+                                                HideBottomNavigationBar(false));
+                                            appBloc.add(ShowOrHideBars(true));
+                                            appBloc
+                                                .add(ChangeIndexForSearch(1));
+
+                                            Future.delayed(
+                                                Duration(milliseconds: 300),
+                                                () => Navigator.push(
+                                                      context,
+                                                      PageRouteBuilder(
+                                                        pageBuilder: (_, __,
+                                                                ___) =>
+                                                            ProductListingPage(
+                                                          isShowPanelForVerified:
+                                                              isShowPanelForVerified,
+                                                          banner:
+                                                              boutique.banners,
+                                                          withSlidingImages:
+                                                              withSlidingImages,
+                                                          boutiqueSlug:
+                                                              boutique.slug!,
+                                                          category: index == 7
+                                                              ? null
+                                                              : boutique
+                                                                  .childCategoriesForProductIds![
+                                                                      index]
+                                                                  .categorySlug,
+                                                          boutiqueName:
+                                                              boutique.name,
+                                                          boutiqueFirstBanner:
+                                                              boutique
+                                                                  .banners![0]
+                                                                  .filePath!,
+                                                          boutiqueIcon: boutique
+                                                                  .icon
+                                                                  ?.filePath ??
+                                                              "",
+                                                        ),
+                                                        transitionsBuilder: (_,
+                                                                __,
+                                                                ___,
+                                                                child) =>
+                                                            child, // بدون أي حركة
+                                                        transitionDuration: Duration
+                                                            .zero, // انتقال فوري
+                                                        reverseTransitionDuration:
+                                                            Duration
+                                                                .zero, // عودة فورية
+                                                      ),
+                                                    ));
                                           },
                                           child: ProductItemCircle(
                                             index: index,
                                             isFocused: focused == index,
-                                            imageUrl: widget
-                                                    .boutique
+                                            imageUrl: boutique
                                                     .childCategoriesForProductIds![
                                                         //  .childCategoriesForProductIds![
                                                         index]
                                                     .mostViewedProductThumbnail!
                                                     .filePath ??
                                                 "",
-                                            name: widget
-                                                    .boutique
+                                            name: boutique
                                                     .childCategoriesForProductIds![
                                                         //.childCategoriesForProductIds![
                                                         index]
                                                     .categoryName ??
                                                 "",
-                                            countProducts: (widget
-                                                        .boutique
+                                            countProducts: (boutique
                                                         .childCategoriesForProductIds![
                                                             //.childCategoriesForProductIds![
                                                             index]
@@ -815,8 +815,9 @@ class ProductItemCircle extends StatelessWidget {
                   child: ClipRRect(
                       borderRadius: BorderRadius.circular(180),
                       child: MyCachedNetworkImage(
-                          //  progressIndicatorBuilderWidget:
-                          //   cupertino.SizedBox.shrink(),
+                          imageSource: 'home_page_card2',
+                          //   progressIndicatorBuilderWidget:
+                          //       cupertino.SizedBox.shrink(),
                           imageUrl: imageUrl,
                           width: 40.w,
                           imageFit: cupertino.BoxFit.contain,

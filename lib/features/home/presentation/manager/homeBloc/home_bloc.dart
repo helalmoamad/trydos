@@ -140,7 +140,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     this.getAndAddCountViewOfProductUsecase,
     this.sendErrorToMobileErrorLogUseCase,
     this.getProductsWithoutFiltersUseCase,
-    this.getColorsAndSizesForSearchUseCase,
+    //  this.getColorsAndSizesForSearchUseCase,
     this.addCommentUseCase,
     this.requestForNotificationWhenProductBecameAvailableUseCase,
     this.checkAvailabilityProductCartUsecase,
@@ -326,9 +326,9 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     on<GetCommentForProductEvent>(
       _onGetCommentForProductEvent,
     );
-    on<GeColorsAndSizesForSearchEvent>(
+    /* on<GeColorsAndSizesForSearchEvent>(
       _onGeColorsAndSizesForSearchEvent,
-    );
+    );*/
 
     on<RemoveItemsFromCartAfterOrderSuccessEvent>(
       _onRemoveItemsFromCartAfterOrderSuccessEvent,
@@ -391,7 +391,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   final HideItemsInOldCartUseCase hideItemsInOldCartUseCase;
   final GetAllowedCountryUseCase getAllowedCountryUseCase;
   final GetFullProductDetailsUseCase getFullProductDetailsUseCase;
-  final GetColorsAndSizesForSearchUseCase getColorsAndSizesForSearchUseCase;
+  // final GetColorsAndSizesForSearchUseCase getColorsAndSizesForSearchUseCase;
   final CheckAvailabilityProductCartUsecase checkAvailabilityProductCartUsecase;
 
   final SubscribeTopicFornotificationUseCase
@@ -537,6 +537,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       showMessage(l.message,
           foreGroundColor: Colors.white,
           backGroundColor: Colors.black,
+          hasError: true,
           showInRelease: true,
           timeShowing: Toast.LENGTH_LONG);
     }, (r) async {
@@ -653,7 +654,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
     });
   }
 
-  FutureOr<void> _onGeColorsAndSizesForSearchEvent(
+/*  FutureOr<void> _onGeColorsAndSizesForSearchEvent(
       GeColorsAndSizesForSearchEvent event, Emitter<HomeState> emit) async {
     final response = await getColorsAndSizesForSearchUseCase(NoParams());
 
@@ -667,7 +668,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       isFailedTheFirstTime.remove('GeColorsAndSizesForSearchEvent');
       emit(state.copyWith(geColorsAndSizesForSearchModel: r));
     });
-  }
+  }*/
 
   FutureOr<void> _onGetFirebaseSettingForNotificationEvent(
       GetFirebaseSettingForNotificationEvent event,
@@ -1764,6 +1765,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             "${LocaleKeys.you_reach_the_max_allowed_quantity.tr()} \n (${double.tryParse(event.maxAllowed ?? "0")?.round()} ${LocaleKeys.item.tr()}) ${LocaleKeys.of_this_product.tr()} \n ${LocaleKeys.you_can_add_only.tr()} ${((double.tryParse(event.maxAllowed ?? "0") ?? 0) - (currentQuantity.isEmpty ? 0 : currentQuantity[key]![0])).round()} ${LocaleKeys.item.tr()}",
             foreGroundColor: Colors.white,
             backGroundColor: Colors.black,
+            hasError: true,
             showInRelease: true,
             timeShowing: Toast.LENGTH_LONG);
         return;
@@ -1794,6 +1796,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
             "${LocaleKeys.you_reach_the_max_allowed_quantity.tr()} \n (${double.tryParse(event.maxAllowed ?? "0")?.round()} ${LocaleKeys.item.tr()}) ${LocaleKeys.of_this_product.tr()} \n ${LocaleKeys.you_can_add_only.tr()} ${((double.tryParse(event.maxAllowed ?? "0") ?? 0) - (currentQuantity.isEmpty ? 0 : currentQuantity[key]![0])).round()} ${LocaleKeys.item.tr()}",
             foreGroundColor: Colors.white,
             backGroundColor: Colors.black,
+            hasError: true,
             showInRelease: true,
             timeShowing: Toast.LENGTH_LONG);
         return;
@@ -1930,6 +1933,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
 
       showMessage(
         l.message,
+        hasError: true,
         foreGroundColor: Colors.white,
         backGroundColor: Colors.black,
       );
@@ -2210,6 +2214,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       showMessage(
         "${LocaleKeys.your_request_faild.tr()}",
         foreGroundColor: Colors.white,
+        hasError: true,
         backGroundColor: Colors.black,
       );
     }, (r) {
@@ -2325,6 +2330,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         "${LocaleKeys.your_request_faild.tr()}",
         foreGroundColor: Colors.white,
         backGroundColor: Colors.black,
+        hasError: true,
       );
     }, (r) {
       add(GetOldCartItemEvent());
@@ -2495,6 +2501,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           foreGroundColor: Colors.white,
           backGroundColor: Colors.black,
           showInRelease: true,
+          hasError: true,
           timeShowing: Toast.LENGTH_LONG);
       return;
     }
@@ -2530,6 +2537,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       showMessage(
         l.message,
         foreGroundColor: Colors.white,
+        hasError: true,
         backGroundColor: Colors.black,
       );
       emit(state.copyWith(
@@ -2780,6 +2788,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
           foreGroundColor: Colors.white,
           backGroundColor: Colors.black,
           showInRelease: true,
+          hasError: true,
           timeShowing: Toast.LENGTH_LONG);
       emit(state.copyWith(
           convertItemFromcartToOldCartStatus:
@@ -3698,6 +3707,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
       showMessage('${LocaleKeys.your_request_faild.tr()}',
           foreGroundColor: Colors.white,
           backGroundColor: Colors.black,
+          hasError: true,
           showInRelease: true,
           timeShowing: Toast.LENGTH_LONG);
       return;
@@ -3710,6 +3720,7 @@ class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
         .catchError((e) {
       showMessage('${LocaleKeys.your_request_faild.tr()}',
           foreGroundColor: Colors.white,
+          hasError: true,
           backGroundColor: Colors.black,
           showInRelease: true,
           timeShowing: Toast.LENGTH_LONG);

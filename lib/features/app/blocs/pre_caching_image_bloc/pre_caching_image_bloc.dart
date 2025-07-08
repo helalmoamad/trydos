@@ -41,7 +41,7 @@ class PreCachingImageBloc
 
   /*FutureOr<void> _onCacheSvgEvent(
       CacheSvgEvent event, Emitter<PreCachingImageState> emit) async {
-    if (await CustomCacheManager().getFileFromCache(event.svgUrl) != null) {
+    if (await CustomCacheManagers().getFileFromCache(event.svgUrl) != null) {
       return;
     }
     if (state.cachehSvgs[event.svgUrl] == true) return;
@@ -54,7 +54,7 @@ class PreCachingImageBloc
               event.svgUrl,
               width: event.width,
               height: event.height,
-              cacheManager: CustomCacheManager(),
+              cacheManager: CustomCacheManagers(),
             ),
             event.context)
         .then(
@@ -71,7 +71,7 @@ class PreCachingImageBloc
 
   FutureOr<void> _onCacheImageEvent(
       CacheImageEvent event, Emitter<PreCachingImageState> emit) async {
-    if (await CustomCacheManager().getFileFromCache(event.imageUrl) != null) {
+    if (await CustomCacheManagers().getFileFromCache(event.imageUrl) != null) {
       return;
     }
     if (state.cachedImages[event.imageUrl] == true) return;
@@ -97,7 +97,7 @@ class PreCachingImageBloc
         "qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqSSSSSSSSSSSSSSSSSSSSSSqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq${event.type}");
     await precacheImage(
             CachedNetworkImageProvider(event.imageUrl,
-                cacheManager: CustomCacheManager()),
+                cacheManager: CustomCacheManagers()),
             event.context)
         .then(
       (value) {
@@ -145,7 +145,7 @@ class PreCachingImageBloc
   ) async {
     /*
   // 1. التحقق من وجود الملف في الكاش مسبقًا
-  final cachedFile = await CustomCacheManager().getFileFromCache(event.svgUrl);
+  final cachedFile = await CustomCacheManagers().getFileFromCache(event.svgUrl);
   if (cachedFile != null) {
     return; // الملف موجود مسبقًا، لا حاجة لإعادة التحميل
   }
@@ -167,7 +167,7 @@ class PreCachingImageBloc
     // 5. تحميل وتخزين SVG باستخدام CachedNetworkSVGImage.preCache
     await SvgNetworkWidget(
       event.svgUrl,
-      cacheManager: CustomCacheManager(),
+      cacheManager: CustomCacheManagers(),
       width: event.width,
       height: event.height,
     );
@@ -196,57 +196,67 @@ class PreCachingImageBloc
     if (!event.imageUrl.contains("cloudinary")) {
       return;
     }
-    // final updatedCachedImages = Map<String, bool>.from(state.cachedImages);
-    // updatedCachedImages[event.imageUrl] = false;
 
-    // if (state.cachedImages[event.imageUrl] == true) return;
-    // 1. التحقق من وجود الصورة في الكاش مسبقًا
-    /*  final cachedFile =
-        await CustomCacheManagers().getFileFromCache(event.imageUrl);
-    if (cachedFile != null) {
-      return; // الصورة موجودة مسبقًا، لا حاجة لإعادة التحميل
-    }*/
+    // منع التحميل إذا كانت الذاكرة ممتلئة أكثر من 90%
 
-    // 2. التحقق من عدم وجود تحميل جارٍ للصورة
+    // التحقق من وجود الصورة في الكاش مسبقاً
+    try {
+      final cachedFile =
+          await CustomCacheManagers().getFileFromCache(event.imageUrl);
+      if (cachedFile != null) {
+        return; // الصورة موجودة مسبقاً
+      }
+    } catch (e) {
+      // في حالة فشل فحص الكاش، نكمل التحميل
+    }
 
-    // 3. تحديث الحالة لإظهار أن التحميل جارٍ
-    // emit(PreCachingImageState(cachedImages: updatedCachedImages));
-
-    // 4. اختيار Semaphore المناسب حسب نوع الصورة
-    final semaphore = _getSemaphoreForType(event.type);
+    // اختيار Semaphore المناسب حسب نوع الصورة
+    //final semaphore = _getSemaphoreForType(event.type);
 
     try {
-      await semaphore.acquire();
+      // await semaphore.acquire();
 
-      precacheImage(
-        CachedNetworkImageProvider(event.imageUrl,
+      // ⚡ تحميل غير متزامن مع تجنب blocking الـ UI thread
+      _precacheImageSafely(event);
+    } catch (e) {
+      //  semaphore.release();
+      debugPrint("Error starting image cache: $e");
+    }
+  }
+
+  /// تحميل آمن للصور بدون تأثير على UI thread
+  void _precacheImageSafely(CacheImageEvent event) async {
+    try {
+      // ⚡ استخدام Future.microtask لنقل العملية خارج UI thread
+      await Future.microtask(() async {
+        await precacheImage(
+          CachedNetworkImageProvider(
+            event.imageUrl,
             headers: {
               'User-Agent': (kDebugMode ? "developer" : "users") +
                   'device OS:' +
                   (Platform.isAndroid ? 'Android' : 'IOS') +
-                  ' '
-                      ', application version: 1.0.0',
+                  ' , application version: 1.0.0',
               "Referer": (kDebugMode ? "developer" : "users") +
                   'device OS:' +
                   (Platform.isAndroid ? 'Android' : 'IOS')
             },
-            cacheManager: CustomCacheManagers()),
-        event.context,
-      ).whenComplete(() => semaphore.release());
+            cacheManager: CustomCacheManagers(),
+          ),
+          event.context,
+        );
+      });
 
-      //final successCachedImages = Map<String, bool>.from(updatedCachedImages);
-
-      // successCachedImages[event.imageUrl] = true;
-
-      //  emit(PreCachingImageState(cachedImages: successCachedImages));
+      debugPrint('✅ Successfully cached: ${event.type}');
     } catch (e) {
-      semaphore.release();
-      print("Error caching image: $e");
+      debugPrint("Error caching image: $e");
+    } finally {
+      //  semaphore.release();
     }
   }
 
 // دالة اختيار Semaphore حسب نوع الصورة (كما لديك)
-  Semaphore _getSemaphoreForType(String type) {
+  /* Semaphore _getSemaphoreForType(String type) {
     switch (type) {
       case "banner":
         return imageBanner;
@@ -264,7 +274,7 @@ class PreCachingImageBloc
         throw Exception("Unknown image type");
     }
   }
-
+*/
 // ج) معاملات العزل
 
 // د) الدالة المعزولة

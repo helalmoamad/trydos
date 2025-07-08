@@ -20,8 +20,8 @@ enum GetFiltersForNavigatorFromLinkToListingPageStatus {
 class BoutiqueState extends Equatable {
   const BoutiqueState({
     this.sizeAndColorFilterinTextToSearch = const {},
-    this.getProductListingWithFiltersPaginationWithPrefetchModels = const {},
-    this.getProductFiltersWithPrefetchModel = const {},
+    // this.getProductListingWithFiltersPaginationWithPrefetchModels = const {},
+    //this.getProductFiltersWithPrefetchModel = const {},
     this.searchWithFilterOffset,
     this.getProductFiltersStatus = const {},
     this.isGettingProductListingWithPaginationForAppearProduct = false,
@@ -40,8 +40,9 @@ class BoutiqueState extends Equatable {
     this.countOfProductExpectedByFiltering,
   });
   final Map<String, List<String>> sizeAndColorFilterinTextToSearch;
-  final Map<String, PaginationModel<product.Products>?>
-      getProductListingWithFiltersPaginationWithPrefetchModels;
+
+  ///final Map<String, PaginationModel<product.Products>?>
+//getProductListingWithFiltersPaginationWithPrefetchModels;
   final Map<String, int>? countOfProductExpectedByFiltering;
   final get_filters.Filter? prefAppliedFilterForExtendFilter;
   final Map<String, bool> boutiquesThatDidPrefetch;
@@ -54,12 +55,13 @@ class BoutiqueState extends Equatable {
 
   final bool finishGetAllFilter;
   final bool isGettingProductListingWithPagination;
+
   final bool? isExpandedForListingPage;
   final Map<String, PaginationModel<product.Products>?>
       getProductListingWithFiltersPaginationModels;
   final bool isGettingProductListingWithPaginationForAppearProduct;
-  final Map<String, get_filters.GetProductFiltersModel?>
-      getProductFiltersWithPrefetchModel;
+  // final Map<String, get_filters.GetProductFiltersModel?>
+  //   getProductFiltersWithPrefetchModel;
   final int? filterOffset;
   final Map<String, List<double>>? searchWithFilterOffset;
   final Map<String, get_filters.GetProductFiltersModel?> getProductFiltersModel;
@@ -68,7 +70,7 @@ class BoutiqueState extends Equatable {
   List<Object?> get props => [
         sizeAndColorFilterinTextToSearch,
         countOfProductExpectedByFiltering,
-        getProductFiltersWithPrefetchModel,
+        //   getProductFiltersWithPrefetchModel,
         prefAppliedFilterForExtendFilter,
         cashedOrginalBoutique,
         isExpandedForListingPage,
@@ -83,13 +85,13 @@ class BoutiqueState extends Equatable {
         isGettingProductListingWithPagination,
         appliedFiltersByUser,
         choosedFiltersByUser,
-        getProductListingWithFiltersPaginationWithPrefetchModels,
+        //   getProductListingWithFiltersPaginationWithPrefetchModels,
       ];
 
   BoutiqueState copyWith({
     final Map<String, List<String>>? sizeAndColorFilterinTextToSearch,
-    final Map<String, PaginationModel<product.Products>?>?
-        getProductListingWithFiltersPaginationWithPrefetchModels,
+    //final Map<String, PaginationModel<product.Products>?>?
+    //    getProductListingWithFiltersPaginationWithPrefetchModels,
     final Map<String, GetProductFiltersStatus>? getProductFiltersStatus,
     Map<String, int>? countOfProductExpectedByFiltering,
     final Map<String, get_filters.GetProductFiltersModel?>?
@@ -110,16 +112,16 @@ class BoutiqueState extends Equatable {
     bool? cashedOrginalBoutique,
     final bool? finishGetAllFilter,
     final int? filterOffset,
-    final Map<String, get_filters.GetProductFiltersModel?>?
-        getProductFiltersWithPrefetchModel,
+    //  final Map<String, get_filters.GetProductFiltersModel?>?
+    //  getProductFiltersWithPrefetchModel,
     final Map<String, List<double>>? searchWithFilterOffset,
   }) {
     return BoutiqueState(
         sizeAndColorFilterinTextToSearch: sizeAndColorFilterinTextToSearch ??
             this.sizeAndColorFilterinTextToSearch,
-        getProductListingWithFiltersPaginationWithPrefetchModels:
-            getProductListingWithFiltersPaginationWithPrefetchModels ??
-                this.getProductListingWithFiltersPaginationWithPrefetchModels,
+        //  getProductListingWithFiltersPaginationWithPrefetchModels:
+        //    getProductListingWithFiltersPaginationWithPrefetchModels ??
+        //      this.getProductListingWithFiltersPaginationWithPrefetchModels,
         getProductFiltersModel:
             getProductFiltersModel ?? this.getProductFiltersModel,
         prefAppliedFilterForExtendFilter: prefAppliedFilterForExtendFilter ??
@@ -145,9 +147,9 @@ class BoutiqueState extends Equatable {
             cashedOrginalBoutique ?? this.cashedOrginalBoutique,
         getProductFiltersStatus:
             getProductFiltersStatus ?? this.getProductFiltersStatus,
-        getProductFiltersWithPrefetchModel:
-            getProductFiltersWithPrefetchModel ??
-                this.getProductFiltersWithPrefetchModel,
+        // getProductFiltersWithPrefetchModel:
+//getProductFiltersWithPrefetchModel ??
+        //        this.getProductFiltersWithPrefetchModel,
         getProductListingWithFiltersPaginationModels:
             getProductListingWithFiltersPaginationModels ??
                 this.getProductListingWithFiltersPaginationModels,

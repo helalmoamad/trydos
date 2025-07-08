@@ -104,6 +104,34 @@ class HandlingMarketNotifications {
         GetIt.I<HomeBloc>().add(GetOldCartItemEvent());
         GetIt.I<HomeBloc>().add(GetCartItemEvent());
       }
+      if (data?["type"] ==
+              typeOfNotificationForMarket[
+                  TypeOfNotificationForMarketEnum.order_placed] ||
+          data?["type"] ==
+              typeOfNotificationForMarket[
+                  TypeOfNotificationForMarketEnum.seller_order_added] ||
+          data?["type"] ==
+              typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                  .seller_order_status_changed] ||
+          data?["type"] ==
+              typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                  .order_status_changed_to_delivered] ||
+          data?["type"] ==
+              typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                  .order_status_changed_to_pending] ||
+          data?["type"] ==
+              typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                  .order_status_changed_to_preparing] ||
+          data?["type"] ==
+              typeOfNotificationForMarket[TypeOfNotificationForMarketEnum
+                  .order_status_changed_to_shipped]) {
+        GetIt.I<OrderBloc>().add(
+          GetOrdersEvent(
+            status: GetIt.I<OrderBloc>().state.currentOrederStatus ?? "",
+            getWithPagination: false,
+          ),
+        );
+      }
 
       return true;
     }

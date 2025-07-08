@@ -1,4 +1,6 @@
 {
+  "information_securely": "Güvenli Bilgi",
+  "alert": "Uyarı",
   "typing": "Yazıyor...",
   "recording": "Kaydediyor...",
   "sending_file": "dosya gönderiliyor...",
@@ -531,5 +533,11 @@
   "action_about_order": "Siparişinizle İlgili İşlem",
   "cancel_request": "İsteği İptal Et",
   "why_was_product_cancel": "Ürün Neden İptal Edildi?",
-  "flash_deal": "Flaş Fırsat"
+  "flash_deal": "Flaş Fırsat",
+  "invalid_image_url": "Geçersiz resim URL'si",
+  "image_url_empty": "Resim URL'si boş",
+  "image_load_failed": "Resim yükleme başarısız",
+  "download_timeout": "İndirme zaman aşımı",
+  "retry_download": "İndirmeyi yeniden dene",
+  "image_not_available": "Resim mevcut değil"
 }

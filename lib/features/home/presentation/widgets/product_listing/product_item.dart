@@ -14,6 +14,8 @@ import 'package:trydos/features/home/presentation/widgets/product_listing/falsh_
 import 'dart:ui' as ui;
 
 import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_3d_slider.dart';
+import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_3d_slider_optimized.dart';
+import 'package:trydos/features/home/presentation/widgets/product_listing/product_listing_simple_slider.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/language_service.dart';
 import 'package:tuple/tuple.dart';
@@ -21,23 +23,25 @@ import 'package:tuple/tuple.dart';
 class ProductItem extends StatefulWidget {
   const ProductItem(
       {super.key,
-      required this.setThisEnabled,
-      required this.slidingModeItem,
+      this.setThisEnabled,
+      this.slidingModeItem,
       required this.itemIndex,
       this.productIsFlashDeal,
       this.fromHomePage = false,
       this.fromFlashDeal,
-      required this.displayImageColors,
+      this.imageSource,
+      this.displayImageColors,
       required this.tapIndexToAddProductToCart,
       required this.productItem});
 
-  final void Function(int, int) setThisEnabled;
+  final void Function(int, int)? setThisEnabled;
   final ValueNotifier<int> tapIndexToAddProductToCart;
-  final bool displayImageColors;
+  final bool? displayImageColors;
   final bool? fromFlashDeal;
   final bool fromHomePage;
+  final String? imageSource;
   final ValueNotifier<bool>? productIsFlashDeal;
-  final Tuple2<int, int> slidingModeItem;
+  final Tuple2<int, int>? slidingModeItem;
   final productListingModel.Products productItem;
   final int itemIndex;
 
@@ -168,7 +172,7 @@ class _ProductItemState extends State<ProductItem> {
                                   );
                           })),
                 ),*/
-          Positioned.fill(
+          /*  Positioned.fill(
             child: ClipRRect(
               borderRadius: BorderRadius.circular(15.0),
               child: BackdropFilter(
@@ -179,8 +183,8 @@ class _ProductItemState extends State<ProductItem> {
                 ),
               ),
             ),
-          ),
-          Positioned.fill(
+          ),*/
+          /* Positioned.fill(
             child: ClipRRect(
               borderRadius: BorderRadius.circular(15.0),
               child: BackdropFilter(
@@ -194,17 +198,15 @@ class _ProductItemState extends State<ProductItem> {
                 ),
               ),
             ),
+          ),*/
+          ProductListing3DSliderOptimized(
+            fromFlashDeal: widget.fromFlashDeal,
+            fromHomePage: widget.fromHomePage,
+            imageSource: widget.imageSource,
+            productItem: widget.productItem,
+            tapIndexToAddProductToCart: widget.tapIndexToAddProductToCart,
+            itemIndex: widget.itemIndex,
           ),
-          ProductListing3DSlider(
-              fromFlashDeal: widget.fromFlashDeal,
-              fromHomePage: widget.fromHomePage,
-              displayImageColors: widget.displayImageColors,
-              productItem: widget.productItem,
-              slidingModeItem: widget.slidingModeItem,
-              tapIndexToAddProductToCart: widget.tapIndexToAddProductToCart,
-              currentChosenColor: currentChosenColor,
-              itemIndex: widget.itemIndex,
-              setThisEnabled: widget.setThisEnabled),
           Positioned(
               left: LanguageService.languageCode != "ar" ? null : 5,
               right: LanguageService.languageCode == "ar" ? null : 5,

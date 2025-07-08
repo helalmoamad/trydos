@@ -68,9 +68,9 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
           p.updateNameStatus != c.updateNameStatus,
       listener: (context, state) {
         if (state.verifyOtpSignUpStatus == VerifyOtpSignUpStatus.failure) {
-          showMessage(
+          showWarningMessage(
+            context,
             state.signUpErrorMessage ?? LocaleKeys.no_error_message.tr(),
-            showInRelease: true,
           );
           return;
         }
@@ -87,9 +87,9 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
         listenWhen: (p, c) => p.updateNameStatus != c.updateNameStatus,
         listener: (context, state) {
           if (state.updateNameStatus == UpdateNameStatus.failure) {
-            showMessage(
+            showWarningMessage(
+              context,
               LocaleKeys.failed_to_save_name.tr(),
-              showInRelease: true,
             );
             return;
           }

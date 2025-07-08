@@ -290,13 +290,15 @@ class _RegistrationPageState extends State<RegistrationPage>
                                       if (prefsRepository
                                               .isTimerForOtpRunning ??
                                           false) {
-                                        showMessage(
-                                            'you must wait for some seconds before try again');
+                                        showWarningMessage(
+                                          context,
+                                          'you must wait for some seconds before try again',
+                                        );
                                         return;
                                       }
-                                      authBloc.add(SendOtpEvent(
+                                      /*   authBloc.add(SendOtpEvent(
                                           phone: phoneNumber,
-                                          isViaWhatsApp: 1));
+                                          isViaWhatsApp: 1));*/
                                     },
                                     goBackToPhone: () {
                                       pageController.animateToPage(2,
@@ -310,9 +312,9 @@ class _RegistrationPageState extends State<RegistrationPage>
                                           duration: Duration(milliseconds: 500),
                                           curve: Curves.easeInOut);
                                       pageContent.value = 5;
-                                      authBloc.add(SendOtpEvent(
+                                      /*   authBloc.add(SendOtpEvent(
                                           phone: phoneNumber,
-                                          isViaWhatsApp: 0));
+                                          isViaWhatsApp: 0));*/
                                     },
                                   ),
                                   VerifyOtp(

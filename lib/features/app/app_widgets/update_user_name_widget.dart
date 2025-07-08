@@ -20,7 +20,9 @@ import '../../authentication/presentation/widgets/name_from_field.dart';
 import '../my_text_widget.dart';
 
 class UpdateUserNameWidget extends StatelessWidget {
-  UpdateUserNameWidget({super.key,});
+  UpdateUserNameWidget({
+    super.key,
+  });
 
   final ValueNotifier<bool> displaySubmit = ValueNotifier(false);
   final TextEditingController controller = TextEditingController();
@@ -33,24 +35,19 @@ class UpdateUserNameWidget extends StatelessWidget {
         listener: (ctx, state) {
           if (context.canPop()) {
             Navigator.pop(context);
-            showMessage('Name Saved Successfully',
-                showInRelease: true, foreGroundColor: Colors.green);
+            showSuccessMessage(context, 'Name Saved Successfully');
           }
         },
         listenWhen: (p, c) =>
-            (
-                p.updateStoriesUserStatus != c.updateStoriesUserStatus &&
+            (p.updateStoriesUserStatus != c.updateStoriesUserStatus &&
                 c.updateStoriesUserStatus == UpdateStoriesUserStatus.success),
         buildWhen: (p, c) {
-          return (
-              p.updateStoriesUserStatus != c.updateStoriesUserStatus);
+          return (p.updateStoriesUserStatus != c.updateStoriesUserStatus);
         },
         builder: (context, state) {
           if (state.updateStoriesUserStatus ==
               UpdateStoriesUserStatus.loading) {
-            return SizedBox(
-                height: 50,
-                child: Center(child: TrydosLoader()));
+            return SizedBox(height: 50, child: Center(child: TrydosLoader()));
           }
           return Stack(
             alignment: Alignment.topRight,

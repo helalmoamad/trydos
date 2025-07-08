@@ -74,9 +74,8 @@ class GalleryAndCameraDialogWidget extends StatelessWidget {
                   if (assetEntity != null) {
                     if (assetEntity.type == AssetType.video &&
                         assetEntity.duration > 59) {
-                      showMessage(
-                          'Video length must not be longer than 59 seconds',
-                          showInRelease: true);
+                      showWarningMessage(context,
+                          'Video length must not be longer than 59 seconds');
                     } else {
                       if (fromStory ?? false) {
                         File? gallaryFile = await assetEntity.file;

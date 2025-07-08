@@ -153,12 +153,9 @@ class _PlaceOrderState extends State<PlaceOrder> {
                 );
               } else {
                 //////////////////////////
-                showMessage(
-                  " ${LocaleKeys.you_have_to_delete_all_unavailable_products.tr()}",
-                  foreGroundColor: Colors.white,
-                  backGroundColor: Colors.black,
-                  showInRelease: true,
-                  timeShowing: Toast.LENGTH_LONG,
+                showWarningMessage(
+                  context,
+                  "${LocaleKeys.you_have_to_delete_all_unavailable_products.tr()}",
                 );
                 ////////////////////////
                 Navigator.of(context).pop();
@@ -181,12 +178,9 @@ class _PlaceOrderState extends State<PlaceOrder> {
                   );
 
                   ////////////////////////////
-                  showMessage(
-                    " ${LocaleKeys.you_have_to_delete_all_unavailable_products.tr()}",
-                    foreGroundColor: Colors.white,
-                    backGroundColor: Colors.black,
-                    showInRelease: true,
-                    timeShowing: Toast.LENGTH_LONG,
+                  showWarningMessage(
+                    context,
+                    "${LocaleKeys.you_have_to_delete_all_unavailable_products.tr()}",
                   );
                   ////////////////////////
                   Navigator.of(context).pop();

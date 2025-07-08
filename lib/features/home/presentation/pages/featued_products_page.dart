@@ -311,6 +311,8 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                         textDirection: ui.TextDirection.ltr,
                                         child: LayoutBuilder(
                                           builder: (context, constraints) {
+                                            print(
+                                                "DDDDDDDDDDDDDD................${products.length}");
                                             // حساب عرض العنصر مع مراعاة المسافات (مثلاً 16 بكسل)
                                             final double spacing = 5;
                                             final int crossAxisCount = 2;
@@ -326,7 +328,12 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                               children: [
                                                 Expanded(
                                                   child: GridView.builder(
-                                                    shrinkWrap: true,
+                                                    addRepaintBoundaries: false,
+                                                    addAutomaticKeepAlives:
+                                                        false,
+                                                    addSemanticIndexes: false,
+                                                    shrinkWrap: false,
+                                                    cacheExtent: 0,
                                                     controller:
                                                         scrollController,
                                                     gridDelegate:
@@ -371,8 +378,6 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                                         },
                                                         child: ProductItem(
                                                           fromHomePage: false,
-                                                          displayImageColors:
-                                                              true,
                                                           tapIndexToAddProductToCart:
                                                               tapIndexToAddProductToCart,
                                                           key: TestVariables
@@ -380,19 +385,9 @@ class _FeaturedProductsPageState extends State<FeaturedProductsPage> {
                                                               ? Key(
                                                                   '"featuresPtoduct"$index')
                                                               : null,
-                                                          slidingModeItem:
-                                                              slidingMode,
                                                           productItem:
                                                               products[index],
                                                           itemIndex: index,
-                                                          setThisEnabled: (int
-                                                                  index,
-                                                              int slideMode) {
-                                                            setThisEnabledNotifier
-                                                                    .value =
-                                                                Tuple2(index,
-                                                                    slideMode);
-                                                          },
                                                         ),
                                                       );
                                                     },

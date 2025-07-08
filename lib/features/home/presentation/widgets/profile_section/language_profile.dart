@@ -21,6 +21,7 @@ import 'package:trydos/features/app/app_widgets/trydos_app_bar/app_bar_params.da
 import 'package:trydos/features/app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
+import 'package:trydos/features/app/my_cached_network_image.dart';
 import 'package:trydos/features/home/data/models/starting_settings_response_model.dart';
 
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
@@ -106,7 +107,8 @@ class _ProfileLanguagePageState extends State<ProfileLanguagePage>
                               onTap: () {
                                 BlocProvider.of<HomeBloc>(context)
                                     .add(ClearAllAppCashEvent());
-
+                                clearCustomCashe();
+                                prefsRepository.setIsFoundDataCashed(false);
                                 BlocProvider.of<HomeBloc>(context).add(
                                     ChangeCountryLanguageForNotificationEvent(
                                         country: GetIt.I<PrefsRepository>()

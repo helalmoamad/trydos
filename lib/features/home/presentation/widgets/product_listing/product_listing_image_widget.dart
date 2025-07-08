@@ -73,8 +73,8 @@ class ProductListingImageWidget extends StatelessWidget {
                   ? Image.asset(imageUrl,
                       width: width!, fit: BoxFit.cover, height: height!)
                   : MyCachedNetworkImage(
-
-                      //    progressIndicatorBuilderWidget: SizedBox.shrink(),
+                      //       progressIndicatorBuilderWidget:
+                      //           ((width ?? 0) > 50) ? null : SizedBox.shrink(),
                       imageUrl: imageUrl,
                       width: width!,
                       ordinalwidth: orginalWidth,

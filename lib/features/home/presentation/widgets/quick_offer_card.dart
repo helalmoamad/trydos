@@ -190,7 +190,7 @@ class _quickOfferCardState extends ThemeState<quickOfferCard> {
             ),
           ],
         )),
-        ValueListenableBuilder<int>(
+        /*  ValueListenableBuilder<int>(
             valueListenable: resizeItems,
             builder: (context, focused, _) {
               return Positioned(
@@ -261,7 +261,7 @@ class _quickOfferCardState extends ThemeState<quickOfferCard> {
                       ),
                     ),
                   ));
-            }),
+            }),*/
         Positioned(
           child: Row(
             children: [

@@ -95,7 +95,8 @@ class _CallsPageContentState extends ThemeState<CallsPageContent> {
                   fullReceiverName: state
                       .callRegister![index].channel!.channelName
                       .toString(),
-                  photoPath: state.callRegister![index].channel!.photoPath,
+                  photoPath:
+                      state.callRegister![index].channel?.photoPath ?? "",
                   chatId: state.callRegister![index].channelId.toString(),
                   duration: state.callRegister![index].durationInSeconds == null
                       ? 0

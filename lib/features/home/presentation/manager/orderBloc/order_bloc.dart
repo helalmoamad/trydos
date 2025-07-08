@@ -78,6 +78,10 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     on<GetOrdersByCartGroupIDEvent>(
       _onGetOrdersByCartGroupIDEvent,
     );
+
+    on<SaveCurrentOrederStatusEvent>(
+      _onSaveCurrentOrederStatusEvent,
+    );
     on<GetCustomerWalletEvent>(
       _onGetCustomerWalletEvent,
     );
@@ -367,6 +371,18 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
     emit(
       state.copyWith(
         lastAdressInfoClassToSave: event.lastAddress,
+      ),
+    );
+  }
+
+  FutureOr<void> _onSaveCurrentOrederStatusEvent(
+    SaveCurrentOrederStatusEvent event,
+    Emitter<OrderState> emit,
+  ) async {
+    ///////////////////////////
+    emit(
+      state.copyWith(
+        currentOrederStatus: event.currentOrederStatus,
       ),
     );
   }
@@ -686,6 +702,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
       }
       showMessage(l.message,
           foreGroundColor: Colors.white,
+          hasError: true,
           backGroundColor: Colors.black,
           showInRelease: true,
           timeShowing: Toast.LENGTH_LONG);
@@ -754,6 +771,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
       }
       showMessage(l.message,
           foreGroundColor: Colors.white,
+          hasError: true,
           backGroundColor: Colors.black,
           showInRelease: true,
           timeShowing: Toast.LENGTH_LONG);
@@ -832,6 +850,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
         showMessage(l.message,
             foreGroundColor: Colors.white,
             backGroundColor: Colors.black,
+            hasError: true,
             showInRelease: true,
             timeShowing: Toast.LENGTH_LONG);
         isFailedTheFirstTime.add('updateCustomerAddress');

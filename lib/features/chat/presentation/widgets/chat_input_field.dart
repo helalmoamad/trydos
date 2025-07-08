@@ -114,7 +114,13 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
       builder: (context, state) {
         debugPrint('imageUrl:  ${state.imageUrl}');
 
-        return Stack(
+        return SafeArea(
+          child: Container(
+            // Add bottom padding to account for keyboard
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: Stack(
           alignment: Alignment.bottomCenter,
           children: [
             state.thereIsReply
@@ -155,7 +161,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                   splashColor: Colors.transparent,
                                   onTap: () {
                                     BlocProvider.of<AppBloc>(context).add(
-                                        RefreshChatInputField(false, '', false,
+                                            RefreshChatInputField(
+                                                false, '', false,
                                             messageId: null,
                                             message: null,
                                             senderParentMessageId: null,
@@ -172,7 +179,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                 Expanded(
                                   child: MyTextWidget(
                                     state.message.toString(),
-                                    style: textTheme.titleMedium?.lr.copyWith(
+                                        style: textTheme.titleMedium?.lr
+                                            .copyWith(
                                         color: colorScheme.grey200,
                                         height: 1.66),
                                     maxLines: 2,
@@ -200,7 +208,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         textStyle: context
                                             .textTheme.titleMedium?.br
                                             .copyWith(
-                                                color: const Color(0xff6638FF),
+                                                    color:
+                                                        const Color(0xff6638FF),
                                                 letterSpacing: 0.18,
                                                 height: 1.33),
                                         radius: 8,
@@ -210,8 +219,10 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                             )
                           : state.replyType == 'image'
                               ? Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
                                   children: [
                                     20.horizontalSpace,
                                     SvgPicture.asset(
@@ -224,8 +235,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                       focusColor: Colors.transparent,
                                       splashColor: Colors.transparent,
                                       onTap: () {
-                                        BlocProvider.of<AppBloc>(context).add(
-                                            RefreshChatInputField(
+                                            BlocProvider.of<AppBloc>(context)
+                                                .add(RefreshChatInputField(
                                                 false, '', false));
                                       },
                                       child: SvgPicture.asset(
@@ -235,7 +246,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                       ),
                                     ),
                                     20.horizontalSpace,
-                                    state.imageUrl?.contains('cloudinary') ??
+                                        state.imageUrl
+                                                    ?.contains('cloudinary') ??
                                             false
                                         ? MyCachedNetworkImage(
                                             height: 40.sp,
@@ -255,17 +267,19 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                 fit: BoxFit.cover,
                                               ),
                                               borderRadius:
-                                                  BorderRadius.circular(12.0),
+                                                      BorderRadius.circular(
+                                                          12.0),
                                               boxShadow: [
                                                 BoxShadow(
-                                                  color:
-                                                      Color.fromARGB(1, 0, 0, 0)
+                                                      color: Color.fromARGB(
+                                                          1, 0, 0, 0)
 //                                                  context
 //                                                      .colorScheme.black
 //                                                      .withOpacity(0.05)
 
                                                   ,
-                                                  offset: const Offset(0, 3),
+                                                      offset:
+                                                          const Offset(0, 3),
                                                   blurRadius: 6,
                                                 ),
                                               ],
@@ -274,7 +288,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                     10.horizontalSpace,
                                     MyTextWidget(
                                       LocaleKeys.photo.tr(),
-                                      style: textTheme.titleMedium?.lr.copyWith(
+                                          style: textTheme.titleMedium?.lr
+                                              .copyWith(
                                           color: colorScheme.grey200,
                                           height: 1.66),
                                       maxLines: 1,
@@ -283,9 +298,11 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                     const Spacer(),
                                     widget.senderUserImage != null
                                         ? MyCachedNetworkImage(
-                                            imageUrl: (widget.senderUserImage
+                                                imageUrl: (widget
+                                                            .senderUserImage
                                                         .toString()
-                                                        .contains("cloudinary")
+                                                            .contains(
+                                                                "cloudinary")
                                                     ? ""
                                                     : "${dotenv.env['Images_Url']}") +
                                                 widget.senderUserImage!,
@@ -301,8 +318,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             textStyle: context
                                                 .textTheme.titleMedium?.br
                                                 .copyWith(
-                                                    color:
-                                                        const Color(0xff6638FF),
+                                                        color: const Color(
+                                                            0xff6638FF),
                                                     letterSpacing: 0.18,
                                                     height: 1.33),
                                             radius: 8,
@@ -328,7 +345,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                           focusColor: Colors.transparent,
                                           splashColor: Colors.transparent,
                                           onTap: () {
-                                            BlocProvider.of<AppBloc>(context)
+                                                BlocProvider.of<AppBloc>(
+                                                        context)
                                                 .add(RefreshChatInputField(
                                                     false, '', false));
                                           },
@@ -351,7 +369,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             state.message.toString(),
                                             style: textTheme.titleMedium?.lr
                                                 .copyWith(
-                                                    color: colorScheme.grey200,
+                                                        color:
+                                                            colorScheme.grey200,
                                                     height: 1.66),
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
@@ -377,8 +396,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             : NoImageWidget(
                                                 width: 30.sp,
                                                 height: 30.sp,
-                                                textStyle: context
-                                                    .textTheme.titleMedium?.br
+                                                    textStyle: context.textTheme
+                                                        .titleMedium?.br
                                                     .copyWith(
                                                         color: const Color(
                                                             0xff6638FF),
@@ -404,13 +423,18 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             ),
                                             15.horizontalSpace,
                                             InkWell(
-                                              focusColor: Colors.transparent,
-                                              splashColor: Colors.transparent,
+                                                  focusColor:
+                                                      Colors.transparent,
+                                                  splashColor:
+                                                      Colors.transparent,
                                               onTap: () {
                                                 BlocProvider.of<AppBloc>(
                                                         context)
-                                                    .add(RefreshChatInputField(
-                                                        false, '', false));
+                                                        .add(
+                                                            RefreshChatInputField(
+                                                                false,
+                                                                '',
+                                                                false));
                                               },
                                               child: SvgPicture.asset(
                                                 AppAssets.closeSvg,
@@ -429,13 +453,15 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                               width: 200.w,
                                               child: MyTextWidget(
                                                 state.message.toString(),
-                                                style: textTheme.titleMedium?.lr
+                                                    style: textTheme
+                                                        .titleMedium?.lr
                                                     .copyWith(
-                                                        color:
-                                                            colorScheme.grey200,
+                                                            color: colorScheme
+                                                                .grey200,
                                                         height: 1.66),
                                                 maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
                                               ),
                                             ),
                                             const Spacer(),
@@ -448,7 +474,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                                     "cloudinary")
                                                             ? ""
                                                             : "${dotenv.env['Images_Url']}") +
-                                                        widget.senderUserImage!,
+                                                            widget
+                                                                .senderUserImage!,
                                                     imageFit: BoxFit.cover,
                                                     withImageShadow: true,
                                                     progressIndicatorBuilderWidget:
@@ -459,15 +486,19 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                 : NoImageWidget(
                                                     width: 30.sp,
                                                     height: 30.sp,
-                                                    textStyle: context.textTheme
-                                                        .titleMedium?.br
+                                                        textStyle: context
+                                                            .textTheme
+                                                            .titleMedium
+                                                            ?.br
                                                         .copyWith(
                                                             color: const Color(
                                                                 0xff6638FF),
-                                                            letterSpacing: 0.18,
+                                                                letterSpacing:
+                                                                    0.18,
                                                             height: 1.33),
                                                     radius: 8,
-                                                    name: widget.senderName),
+                                                        name:
+                                                            widget.senderName),
                                             20.horizontalSpace,
                                           ],
                                         )
@@ -485,13 +516,18 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             ),
                                             15.horizontalSpace,
                                             InkWell(
-                                              focusColor: Colors.transparent,
-                                              splashColor: Colors.transparent,
+                                                  focusColor:
+                                                      Colors.transparent,
+                                                  splashColor:
+                                                      Colors.transparent,
                                               onTap: () {
                                                 BlocProvider.of<AppBloc>(
                                                         context)
-                                                    .add(RefreshChatInputField(
-                                                        false, '', false));
+                                                        .add(
+                                                            RefreshChatInputField(
+                                                                false,
+                                                                '',
+                                                                false));
                                               },
                                               child: SvgPicture.asset(
                                                 AppAssets.closeSvg,
@@ -508,13 +544,15 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                             10.horizontalSpace,
                                             MyTextWidget(
                                               LocaleKeys.voice.tr(),
-                                              style: textTheme.titleMedium?.lr
+                                                  style: textTheme
+                                                      .titleMedium?.lr
                                                   .copyWith(
-                                                      color:
-                                                          colorScheme.grey200,
+                                                          color: colorScheme
+                                                              .grey200,
                                                       height: 1.66),
                                               maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                             ),
                                             const Spacer(),
                                             widget.senderUserImage != null
@@ -527,7 +565,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                             ? widget
                                                                 .senderUserImage!
                                                             : "${dotenv.env['Images_Url']}") +
-                                                        widget.senderUserImage!,
+                                                            widget
+                                                                .senderUserImage!,
                                                     imageFit: BoxFit.cover,
                                                     radius: 8,
                                                     progressIndicatorBuilderWidget:
@@ -537,15 +576,19 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                 : NoImageWidget(
                                                     width: 30.sp,
                                                     height: 30.sp,
-                                                    textStyle: context.textTheme
-                                                        .titleMedium?.br
+                                                        textStyle: context
+                                                            .textTheme
+                                                            .titleMedium
+                                                            ?.br
                                                         .copyWith(
                                                             color: const Color(
                                                                 0xff6638FF),
-                                                            letterSpacing: 0.18,
+                                                                letterSpacing:
+                                                                    0.18,
                                                             height: 1.33),
                                                     radius: 8,
-                                                    name: widget.senderName),
+                                                        name:
+                                                            widget.senderName),
                                             20.horizontalSpace,
                                           ],
                                         ),
@@ -583,15 +626,17 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                               .remainder(60)
                                               .toString();
                                           final String seconds =
-                                              HelperFunctions.twoDigits(duration
-                                                  .inSeconds
+                                                  HelperFunctions.twoDigits(
+                                                      duration.inSeconds
                                                   .remainder(60));
 
                                           return MyTextWidget(
                                               '$minutes:$seconds',
-                                              style: textTheme.bodyMedium?.rr
+                                                  style: textTheme
+                                                      .bodyMedium?.rr
                                                   .copyWith(
-                                                color: const Color(0xff404040),
+                                                    color:
+                                                        const Color(0xff404040),
                                                 letterSpacing: 0.18,
                                                 height: 1.11,
                                               ));
@@ -609,21 +654,24 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                           if (!isInitialized) return;
                                         }
                                         recordingNotifier.value = false;
-                                        FirebasePresence.deleteUserTransaction(
+                                            FirebasePresence
+                                                .deleteUserTransaction(
                                           channelId: widget.channelId,
                                         );
-                                        final String path =
-                                            (await recorder.stopRecorder())!;
-                                        recorder.deleteRecord(fileName: path);
+                                            final String path = (await recorder
+                                                .stopRecorder())!;
+                                            recorder.deleteRecord(
+                                                fileName: path);
                                       },
                                       child: MyTextWidget(
                                           LocaleKeys.cansel.tr(),
                                           style: textTheme.titleLarge?.rr
                                               .copyWith(
                                                   letterSpacing: 0.14,
-                                                  height: 1.4285714285714286,
-                                                  color:
-                                                      const Color(0xff404040))),
+                                                      height:
+                                                          1.4285714285714286,
+                                                      color: const Color(
+                                                          0xff404040))),
                                     ),
                                     const Spacer(),
                                     InkWell(
@@ -633,10 +681,12 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         final path =
                                             await recorder.stopRecorder();
                                         final audioFile = File(path!);
-                                        FirebasePresence.deleteUserTransaction(
+                                            FirebasePresence
+                                                .deleteUserTransaction(
                                           channelId: widget.channelId,
                                         );
-                                        widget.onSendFile(audioFile, 'voice');
+                                            widget.onSendFile(
+                                                audioFile, 'voice');
                                         recordingNotifier.value = false;
                                       },
                                       child: Padding(
@@ -658,14 +708,16 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                       focusColor: Colors.transparent,
                                       splashColor: Colors.transparent,
                                       onTap: () async {
-                                        FirebasePresence.sendUserTransaction(
+                                            FirebasePresence
+                                                .sendUserTransaction(
                                           channelId: widget.channelId,
                                           description:
                                               LocaleKeys.sending_file.tr(),
                                         );
                                         File? file = await HelperFunctions
                                             .pickDocumentFile();
-                                        FirebasePresence.deleteUserTransaction(
+                                            FirebasePresence
+                                                .deleteUserTransaction(
                                           channelId: widget.channelId,
                                         );
                                         if (file != null) {
@@ -708,7 +760,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                               debugPrint(e.toString());
                                             }
                                             _typingTimer = Timer(
-                                                const Duration(seconds: 1), () {
+                                                    const Duration(seconds: 1),
+                                                    () {
                                               FirebasePresence
                                                   .deleteUserTransaction(
                                                 channelId: widget.channelId,
@@ -728,14 +781,17 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                         focusColor: Colors.transparent,
                                         splashColor: Colors.transparent,
                                         onTap: () async {
-                                          FirebasePresence.sendUserTransaction(
+                                              FirebasePresence
+                                                  .sendUserTransaction(
                                             channelId: widget.channelId,
-                                            description:
-                                                LocaleKeys.sending_file.tr(),
+                                                description: LocaleKeys
+                                                    .sending_file
+                                                    .tr(),
                                           );
                                           showDialog(
                                               context: context,
-                                              builder: (BuildContext context) {
+                                                  builder:
+                                                      (BuildContext context) {
                                                 return GalleryAndCameraDialogWidget(
                                                     onChooseFileFromGalleryAction:
                                                         (AssetEntity?
@@ -751,14 +807,17 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                             '';
                                                     var fileType =
                                                         mimeStr.split('/');
-                                                    log(fileType.toString());
+                                                        log(fileType
+                                                            .toString());
                                                     if (fileType[0] ==
                                                         'image') {
                                                       widget.onSendFile
-                                                          .call(file, 'image');
+                                                              .call(file,
+                                                                  'image');
                                                     } else {
                                                       widget.onSendFile
-                                                          .call(file, 'video');
+                                                              .call(file,
+                                                                  'video');
                                                     }
                                                   }
                                                 }, onChooseFileFromCameraAction:
@@ -771,14 +830,17 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                                             '';
                                                     var fileType =
                                                         mimeStr.split('/');
-                                                    log(fileType.toString());
+                                                        log(fileType
+                                                            .toString());
                                                     if (fileType[0] ==
                                                         'image') {
                                                       widget.onSendFile
-                                                          .call(file, 'image');
+                                                              .call(file,
+                                                                  'image');
                                                     } else {
                                                       widget.onSendFile
-                                                          .call(file, 'video');
+                                                              .call(file,
+                                                                  'video');
                                                     }
                                                   }
                                                 });
@@ -808,7 +870,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                           if (recorder.isRecording) {
                                             return;
                                           }
-                                          FirebasePresence.sendUserTransaction(
+                                              FirebasePresence
+                                                  .sendUserTransaction(
                                             channelId: widget.channelId,
                                             description:
                                                 LocaleKeys.recording.tr(),
@@ -839,7 +902,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                                           String message =
                                               form.controllers[0].text;
                                           form.controllers[0].text = '';
-                                          widget.onSendMessage.call(message);
+                                              widget.onSendMessage
+                                                  .call(message);
                                         },
                                         child: SvgPicture.asset(
                                           AppAssets.sendMessageSvg,
@@ -855,6 +919,8 @@ class _ChatInputFieldState extends ThemeState<ChatInputField>
                       });
                 })
           ],
+            ),
+          ),
         );
       },
     );

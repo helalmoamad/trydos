@@ -407,18 +407,21 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
     homeBloc = BlocProvider.of<HomeBloc>(context);
     appBloc = BlocProvider.of<AppBloc>(context);
     categoryBloc = BlocProvider.of<CategoryBloc>(context);
-    homeBloc.add(GetCurrencyForCountryEvent());
-    Future.delayed(Duration(seconds: 3), () {
-      homeBloc.add(GeColorsAndSizesForSearchEvent());
-      if ((prefsRepository.marketToken?.length ?? 0) > 10) {
-        homeBloc.add(GetProductsListInCartEvent());
-        homeBloc.add(GetCartItemEvent());
+    if (!(prefsRepository.isFoundDataCashed ?? false)) {
+      homeBloc.add(GetCurrencyForCountryEvent());
+      Future.delayed(Duration(seconds: 1), () {
+        //  homeBloc.add(GeColorsAndSizesForSearchEvent());
+        if ((prefsRepository.marketToken?.length ?? 0) > 10) {
+          homeBloc.add(GetProductsListInCartEvent());
+          homeBloc.add(GetCartItemEvent());
 
-        homeBloc.add(GetNotificationTypeProductEvent());
-        homeBloc.add(GetFirebaseSettingForNotificationEvent());
-        homeBloc.add(GetPopularSearchItemEvent());
-      }
-    });
+          homeBloc.add(GetNotificationTypeProductEvent());
+          homeBloc.add(GetFirebaseSettingForNotificationEvent());
+          homeBloc.add(GetPopularSearchItemEvent());
+        }
+      });
+    }
+
     callsBloc = BlocProvider.of<CallsBloc>(context);
     //  homeBloc.add(GetAllowedCountriesEvent());
     prefsRepository.setRequestNotificationPermission(false);
@@ -753,25 +756,29 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                     //     offset: "1",
                                     //     context: context,
                                     //     getWithPagination: false));
-                                    categoryBloc.add(GetMainCategoriesEvent(
-                                        getWithPrefech: true,
-                                        context: context));
-                                    GetIt.I<BoutiqueBloc>().add(
-                                        GetProductWithFiltersWithoutCancelingPreviousEvents(
-                                            categorySlugs: [],
-                                            cashedOrginalBoutique: true,
-                                            fromHomePageSearch: false,
-                                            boutiqueSlug: "*featured*",
-                                            category: null,
-                                            searchText: null));
-                                    GetIt.I<BoutiqueBloc>().add(
-                                        GetProductWithFiltersWithoutCancelingPreviousEvents(
-                                            categorySlugs: [],
-                                            cashedOrginalBoutique: true,
-                                            fromHomePageSearch: false,
-                                            boutiqueSlug: "*flashDeal*",
-                                            category: null,
-                                            searchText: null));
+                                    if (!(prefsRepository.isFoundDataCashed ??
+                                        false)) {
+                                      categoryBloc.add(GetMainCategoriesEvent(
+                                          getWithPrefech: true,
+                                          context: context));
+                                      GetIt.I<BoutiqueBloc>().add(
+                                          GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                              categorySlugs: [],
+                                              cashedOrginalBoutique: true,
+                                              fromHomePageSearch: false,
+                                              boutiqueSlug: "*featured*",
+                                              category: null,
+                                              searchText: null));
+                                      GetIt.I<BoutiqueBloc>().add(
+                                          GetProductWithFiltersWithoutCancelingPreviousEvents(
+                                              categorySlugs: [],
+                                              cashedOrginalBoutique: true,
+                                              fromHomePageSearch: false,
+                                              boutiqueSlug: "*flashDeal*",
+                                              category: null,
+                                              searchText: null));
+                                    }
+
                                     /* if (prefsRepository.marketToken != null) {
                                       homeBloc
                                           .add(GetCurrencyForCountryEvent());

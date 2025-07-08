@@ -8,8 +8,10 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart'
     show PanelController, SlidingUpPanel;
+import 'package:trydos/core/data/model/pagination_model.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
+import 'package:trydos/core/utils/responsive_padding.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
@@ -39,12 +41,14 @@ class OrderDetails1 extends StatefulWidget {
   OrderDetails1(
       {super.key,
       this.fromNotification = false,
+      this.currentStatus = "",
       this.orderIdFormNotification,
       required this.orders});
 
   final List<OrderListModel> orders;
   bool fromNotification;
   String? orderIdFormNotification;
+  String? currentStatus;
   @override
   State<OrderDetails1> createState() => _OrderDetails1State();
 }
@@ -101,489 +105,563 @@ class _OrderDetails1State extends State<OrderDetails1> {
 
   @override
   Widget build(BuildContext context) {
+    bool _isLoading = false;
+
+    Future<void> _refreshData() async {
+      setState(() {
+        _isLoading = true; // بدء التحميل
+      });
+      GetIt.I<OrderBloc>().add(
+        GetOrdersEvent(
+          status: GetIt.I<OrderBloc>().state.currentOrederStatus ?? "",
+          getWithPagination: false,
+        ),
+      );
+
+      // 🚀 إزالة التأخير المصطنع - دع البيانات تحدد سرعة التحميل!
+      await Future.delayed(Duration(seconds: 3)); // ❌ تم حذف التأخير المصطنع
+
+      setState(() {
+        _isLoading = false; // إنهاء التحميل
+      });
+    }
+
     final addressString = addressParts
         .where((part) => part != null && part != 'null' && part.isNotEmpty)
         .join(' | ');
 
     return WillPopScope(
-      onWillPop: () async {
-        // didCallOnWillPop = true;
-        orderBloc.add(ChangeOrderByGroupStatus());
-        try {
-          if (panelController.isPanelOpen) {
-            agreeToPolicies.value = false;
-            panelController.close();
-            showPanel.value = false;
-            optionModifyPanel.value = null;
-            optionCanselOrReturn.value = [];
-            enableChangeAddress.value = false;
-            showShadowForPanel.value = false;
-            showShadowForChangeAddress.value = false;
-            showShadowForCanselOrder.value = false;
+        onWillPop: () async {
+          // didCallOnWillPop = true;
+          orderBloc.add(ChangeOrderByGroupStatus());
+          try {
+            if (panelController.isPanelOpen) {
+              agreeToPolicies.value = false;
+              panelController.close();
+              showPanel.value = false;
+              optionModifyPanel.value = null;
+              optionCanselOrReturn.value = [];
+              enableChangeAddress.value = false;
+              showShadowForPanel.value = false;
+              showShadowForChangeAddress.value = false;
+              showShadowForCanselOrder.value = false;
 
-            return false;
+              return false;
+            }
+          } catch (e) {
+            return true;
           }
-        } catch (e) {
           return true;
-        }
-        return true;
-      },
-      child: ValueListenableBuilder<int>(
-          valueListenable: indexTapPackage,
-          builder: (context, _indexTapPackage, _) {
-            addressParts = [
-              orders[_indexTapPackage].shippingAddressData?.country,
-              orders[_indexTapPackage].shippingAddressData?.province,
-              orders[_indexTapPackage].shippingAddressData?.city,
-              orders[_indexTapPackage].shippingAddressData?.town,
-              orders[_indexTapPackage].shippingAddressData?.street,
-              orders[_indexTapPackage].shippingAddressData?.building,
-            ];
-            return Container(
-              color: const Color(0xffFFFFFF),
-              child: Material(
-                child: Stack(
-                  children: [
-                    Scaffold(
-                      resizeToAvoidBottomInset: true,
-                      backgroundColor: const Color(0xffF8F8F8),
-                      appBar: TrydosAppBar(
-                        appBarParams: AppBarParams(
-                          backgroundColor: const Color(0xffFFFFFF),
-                          scrolledUnderElevation: 0,
-                          backIconColor: Colors.black,
-                          withShadow: false,
-                          action: [
-                            Spacer(),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SizedBox(
-                                  width: 12,
-                                ),
-                                SvgPicture.asset(
-                                  AppAssets.bagsSvg,
-                                  width: 23,
-                                ),
-                                ///////////////////////////
-                                SizedBox(
-                                  width: 4,
-                                ),
-                                ///////////////////////////
-                                Text(
-                                  LocaleKeys.order_details.tr(),
-                                  style:
-                                      context.textTheme.bodyMedium?.mq.copyWith(
-                                    color: const Color(0xff1D1D1D),
-                                    letterSpacing: 0.18,
-                                    fontSize: 14,
-                                    height: 1.3,
-                                  ),
-                                ),
-                                ///////////////////////////
-                                SizedBox(
-                                  width: 15,
-                                ),
-                                ///////////////////////////
-                              ],
-                            ),
-                            Spacer(),
-                            ////////////
-                            InkWell(
-                              onTap: () {
-                                optionModifyPanel.value = "All_Order";
-                                showPanel.value = true;
-                                panelController.open();
-                                showShadowForPanel.value = true;
-                              },
-                              child: Container(
-                                width: 40,
-                                height: 20,
-                                child: SvgPicture.asset(
-                                  AppAssets.orderMenuSvg,
-                                  width: 20,
+        },
+        child: BlocBuilder<OrderBloc, OrderState>(
+            buildWhen: (p, c) =>
+                p.getOrdersModel?[widget.currentStatus]?.paginationStatus !=
+                    c.getOrdersModel?[widget.currentStatus]?.paginationStatus ||
+                p.getOrdersByOrderGroupIDStatus !=
+                    c.getOrdersByOrderGroupIDStatus,
+            builder: (context, state) {
+              if (state.getOrdersModel?[widget.currentStatus]
+                      ?.paginationStatus ==
+                  PaginationStatus.success) {
+                List<List<OrderListModel>> items =
+                    state.getOrdersModel?[widget.currentStatus]?.items ?? [];
+                orders = items.firstWhere((element) =>
+                    element[0].orderGroupId == widget.orders[0].orderGroupId);
+              }
+
+              return ValueListenableBuilder<int>(
+                  valueListenable: indexTapPackage,
+                  builder: (context, _indexTapPackage, _) {
+                    addressParts = [
+                      orders[_indexTapPackage].shippingAddressData?.country,
+                      orders[_indexTapPackage].shippingAddressData?.province,
+                      orders[_indexTapPackage].shippingAddressData?.city,
+                      orders[_indexTapPackage].shippingAddressData?.town,
+                      orders[_indexTapPackage].shippingAddressData?.street,
+                      orders[_indexTapPackage].shippingAddressData?.building,
+                    ];
+                    return Container(
+                      color: const Color(0xffFFFFFF),
+                      child: Material(
+                        child: Stack(
+                          children: [
+                            Scaffold(
+                              resizeToAvoidBottomInset: true,
+                              backgroundColor: const Color(0xffF8F8F8),
+                              appBar: TrydosAppBar(
+                                appBarParams: AppBarParams(
+                                  backgroundColor: const Color(0xffFFFFFF),
+                                  scrolledUnderElevation: 0,
+                                  backIconColor: Colors.black,
+                                  withShadow: false,
+                                  action: [
+                                    Spacer(),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        SizedBox(
+                                          width: 12,
+                                        ),
+                                        SvgPicture.asset(
+                                          AppAssets.bagsSvg,
+                                          width: 23,
+                                        ),
+                                        ///////////////////////////
+                                        SizedBox(
+                                          width: 4,
+                                        ),
+                                        ///////////////////////////
+                                        Text(
+                                          LocaleKeys.order_details.tr(),
+                                          style: context
+                                              .textTheme.bodyMedium?.mq
+                                              .copyWith(
+                                            color: const Color(0xff1D1D1D),
+                                            letterSpacing: 0.18,
+                                            fontSize: 14,
+                                            height: 1.3,
+                                          ),
+                                        ),
+                                        ///////////////////////////
+                                        SizedBox(
+                                          width: 15,
+                                        ),
+                                        ///////////////////////////
+                                      ],
+                                    ),
+                                    Spacer(),
+                                    ////////////
+                                    InkWell(
+                                      onTap: () {
+                                        optionModifyPanel.value = "All_Order";
+                                        showPanel.value = true;
+                                        panelController.open();
+                                        showShadowForPanel.value = true;
+                                      },
+                                      child: Container(
+                                        width: 40,
+                                        height: 20,
+                                        child: SvgPicture.asset(
+                                          AppAssets.orderMenuSvg,
+                                          width: 20,
+                                        ),
+                                      ),
+                                    ),
+                                    ///////////////////////////
+                                    SizedBox(
+                                      width: 12,
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ),
-                            ///////////////////////////
-                            SizedBox(
-                              width: 12,
-                            ),
-                          ],
-                        ),
-                      ),
-                      body: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            SizedBox(
-                              height: 11.h,
-                            ),
-                            ///////////////////
-                            BlocBuilder<HomeBloc, HomeState>(
-                              buildWhen: (previous, current) =>
-                                  (previous.getCurrencyForCountryModel !=
-                                      current.getCurrencyForCountryModel),
-                              builder: (context, state) {
-                                String currencySymbol = state
-                                        .getCurrencyForCountryModel!
-                                        .data!
-                                        .currency!
-                                        .symbol ??
-                                    "";
-                                double orderAmount = 0;
-                                orders.forEach((element) => orderAmount =
-                                    orderAmount +
-                                        (element.orderAmount! *
-                                            state
-                                                .getCurrencyForCountryModel!
-                                                .data!
-                                                .currency!
-                                                .exchangeRate!));
-
-                                return SizedBox(
-                                  height: 95,
-                                  child: buildFirstSection(
-                                    context: context,
-                                    orderNumber:
-                                        orders[_indexTapPackage].orderGroupId ??
-                                            '',
-                                    orderDate: HelperFunctions.orderFormatDate(
-                                      DateTime.tryParse(orders[_indexTapPackage]
-                                                  .createdAt ??
-                                              '') ??
-                                          DateTime.now(),
-                                    ),
-                                    orderAmount: orderAmount.toStringAsFixed(
-                                        state.startingSetting
-                                                ?.decimalPointSettings ??
-                                            0),
-                                    orderCurrency: currencySymbol,
-                                  ),
-                                );
-                              },
-                            ),
-                            SizedBox(
-                              height: 8.h,
-                            ),
-                            ///////////////////////
-                            SizedBox(
-                              height: 85,
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 10),
-                                child: buildDetailsMainInfoWidget(
-                                  context: context,
-                                  firstItem: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.end,
+                              body: RefreshIndicator(
+                                backgroundColor: Colors.white,
+                                color: Colors.black,
+                                onRefresh: _refreshData,
+                                child: SingleChildScrollView(
+                                  child: Column(
                                     children: [
-                                      orders[_indexTapPackage]
-                                                  .orderGroupStatus
-                                                  ?.label ==
-                                              'Pending'
-                                          ? SvgPicture.asset(
-                                              AppAssets.pendingBagSvg,
-                                              width: 20,
-                                            )
-                                          : SvgPicture.asset(
-                                              AppAssets.pendingBagSvg,
-                                              width: 15,
+                                      SizedBox(
+                                        height: 11.h,
+                                      ),
+                                      ///////////////////
+                                      BlocBuilder<HomeBloc, HomeState>(
+                                        buildWhen: (previous, current) => (previous
+                                                .getCurrencyForCountryModel !=
+                                            current.getCurrencyForCountryModel),
+                                        builder: (context, state) {
+                                          String currencySymbol = state
+                                                  .getCurrencyForCountryModel!
+                                                  .data!
+                                                  .currency!
+                                                  .symbol ??
+                                              "";
+                                          double orderAmount = 0;
+                                          orders.forEach((element) =>
+                                              orderAmount = orderAmount +
+                                                  (element.orderAmount! *
+                                                      state
+                                                          .getCurrencyForCountryModel!
+                                                          .data!
+                                                          .currency!
+                                                          .exchangeRate!));
+
+                                          return SizedBox(
+                                            height: 95,
+                                            child: buildFirstSection(
+                                              context: context,
+                                              orderNumber:
+                                                  orders[_indexTapPackage]
+                                                          .orderGroupId ??
+                                                      '',
+                                              orderDate: HelperFunctions
+                                                  .orderFormatDate(
+                                                DateTime.tryParse(
+                                                        orders[_indexTapPackage]
+                                                                .createdAt ??
+                                                            '') ??
+                                                    DateTime.now(),
+                                              ),
+                                              orderAmount: orderAmount
+                                                  .toStringAsFixed(state
+                                                          .startingSetting
+                                                          ?.decimalPointSettings ??
+                                                      0),
+                                              orderCurrency: currencySymbol,
                                             ),
-                                      ////////////////////
-                                      const SizedBox(
-                                        width: 3,
+                                          );
+                                        },
                                       ),
-                                      ///////////////////
-                                      orders[_indexTapPackage]
-                                                  .orderGroupStatus
-                                                  ?.label ==
-                                              'Pending'
-                                          ? SvgPicture.asset(
-                                              AppAssets.whiteBagSvg,
-                                              width: 15,
-                                            )
-                                          : orders[_indexTapPackage]
-                                                      .orderGroupStatus
-                                                      ?.label ==
-                                                  'Preparing'
-                                              ? SvgPicture.asset(
-                                                  AppAssets.preparingBagSvg,
-                                                  width: 20,
-                                                )
-                                              : SvgPicture.asset(
-                                                  AppAssets.preparingBagSvg,
-                                                  width: 15,
+                                      SizedBox(
+                                        height: 8.h,
+                                      ),
+                                      ///////////////////////
+                                      SizedBox(
+                                        height: 85,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 10),
+                                          child: buildDetailsMainInfoWidget(
+                                            context: context,
+                                            firstItem: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.end,
+                                              children: [
+                                                orders[_indexTapPackage]
+                                                            .orderGroupStatus
+                                                            ?.label ==
+                                                        'Pending'
+                                                    ? SvgPicture.asset(
+                                                        AppAssets.pendingBagSvg,
+                                                        width: 20,
+                                                      )
+                                                    : SvgPicture.asset(
+                                                        AppAssets.pendingBagSvg,
+                                                        width: 15,
+                                                      ),
+                                                ////////////////////
+                                                const SizedBox(
+                                                  width: 3,
                                                 ),
-                                      ////////////////////
-                                      const SizedBox(
-                                        width: 3,
+                                                ///////////////////
+                                                orders[_indexTapPackage]
+                                                            .orderGroupStatus
+                                                            ?.label ==
+                                                        'Pending'
+                                                    ? SvgPicture.asset(
+                                                        AppAssets.whiteBagSvg,
+                                                        width: 15,
+                                                      )
+                                                    : orders[_indexTapPackage]
+                                                                .orderGroupStatus
+                                                                ?.label ==
+                                                            'Preparing'
+                                                        ? SvgPicture.asset(
+                                                            AppAssets
+                                                                .preparingBagSvg,
+                                                            width: 20,
+                                                          )
+                                                        : SvgPicture.asset(
+                                                            AppAssets
+                                                                .preparingBagSvg,
+                                                            width: 15,
+                                                          ),
+                                                ////////////////////
+                                                const SizedBox(
+                                                  width: 3,
+                                                ),
+                                                ///////////////////
+                                                orders[_indexTapPackage]
+                                                            .orderGroupStatus
+                                                            ?.label ==
+                                                        'Pending'
+                                                    ? SvgPicture.asset(
+                                                        AppAssets.whiteBagSvg,
+                                                        width: 15,
+                                                      )
+                                                    : orders[_indexTapPackage]
+                                                                .orderGroupStatus
+                                                                ?.label ==
+                                                            'Preparing'
+                                                        ? SvgPicture.asset(
+                                                            AppAssets
+                                                                .whiteBagSvg,
+                                                            width: 15,
+                                                          )
+                                                        : orders[_indexTapPackage]
+                                                                    .orderGroupStatus
+                                                                    ?.label ==
+                                                                'Shipped'
+                                                            ? SvgPicture.asset(
+                                                                AppAssets
+                                                                    .shippedAndOutOfDeliveryBagSvg,
+                                                                width: 20,
+                                                              )
+                                                            : SvgPicture.asset(
+                                                                AppAssets
+                                                                    .shippedAndOutOfDeliveryBagSvg,
+                                                                width: 15,
+                                                              ),
+                                                ////////////////////
+                                                const SizedBox(
+                                                  width: 3,
+                                                ),
+                                                ///////////////////
+                                                orders[_indexTapPackage]
+                                                            .orderGroupStatus
+                                                            ?.label ==
+                                                        'Pending'
+                                                    ? SvgPicture.asset(
+                                                        AppAssets.whiteBagSvg,
+                                                        width: 15,
+                                                      )
+                                                    : orders[_indexTapPackage]
+                                                                .orderGroupStatus
+                                                                ?.label ==
+                                                            'Preparing'
+                                                        ? SvgPicture.asset(
+                                                            AppAssets
+                                                                .whiteBagSvg,
+                                                            width: 15,
+                                                          )
+                                                        : orders[_indexTapPackage]
+                                                                    .orderGroupStatus
+                                                                    ?.label ==
+                                                                'Shipped'
+                                                            ? SvgPicture.asset(
+                                                                AppAssets
+                                                                    .whiteBagSvg,
+                                                                width: 15,
+                                                              )
+                                                            : orders[_indexTapPackage]
+                                                                        .orderGroupStatus
+                                                                        ?.label ==
+                                                                    'Delivered'
+                                                                ? SvgPicture
+                                                                    .asset(
+                                                                    AppAssets
+                                                                        .delivered_bagSvg,
+                                                                    width: 20,
+                                                                  )
+                                                                : SvgPicture
+                                                                    .asset(
+                                                                    AppAssets
+                                                                        .delivered_bagSvg,
+                                                                    width: 15,
+                                                                  ),
+                                              ],
+                                            ),
+                                            title: LocaleKeys.order_status.tr(),
+                                            value: orders[_indexTapPackage]
+                                                        .orderGroupStatus
+                                                        ?.label ==
+                                                    'Delivered'
+                                                ? '${orders[_indexTapPackage].orderGroupStatus?.label} ${LocaleKeys.to.tr()} ${orders[_indexTapPackage].shippingAddressData?.contactPersonName ?? ''}'
+                                                : orders[_indexTapPackage]
+                                                        .orderGroupStatus
+                                                        ?.label ??
+                                                    "",
+                                            amount: '',
+                                            isTextSpan: false,
+                                            titleIcons: buildTitleIcons(
+                                                status: orders[_indexTapPackage]
+                                                        .orderGroupStatus
+                                                        ?.label ??
+                                                    ""),
+                                            valueIcons: buildValueIcons(
+                                                status: orders[_indexTapPackage]
+                                                        .orderGroupStatus
+                                                        ?.label ??
+                                                    ""),
+                                            currency: '',
+                                          ),
+                                        ),
                                       ),
-                                      ///////////////////
-                                      orders[_indexTapPackage]
-                                                  .orderGroupStatus
-                                                  ?.label ==
-                                              'Pending'
-                                          ? SvgPicture.asset(
-                                              AppAssets.whiteBagSvg,
-                                              width: 15,
-                                            )
-                                          : orders[_indexTapPackage]
-                                                      .orderGroupStatus
-                                                      ?.label ==
-                                                  'Preparing'
-                                              ? SvgPicture.asset(
-                                                  AppAssets.whiteBagSvg,
-                                                  width: 15,
-                                                )
-                                              : orders[_indexTapPackage]
-                                                          .orderGroupStatus
-                                                          ?.label ==
-                                                      'Shipped'
-                                                  ? SvgPicture.asset(
-                                                      AppAssets
-                                                          .shippedAndOutOfDeliveryBagSvg,
-                                                      width: 20,
-                                                    )
-                                                  : SvgPicture.asset(
-                                                      AppAssets
-                                                          .shippedAndOutOfDeliveryBagSvg,
-                                                      width: 15,
-                                                    ),
-                                      ////////////////////
-                                      const SizedBox(
-                                        width: 3,
+                                      SizedBox(
+                                        height: 8.h,
                                       ),
-                                      ///////////////////
-                                      orders[_indexTapPackage]
-                                                  .orderGroupStatus
-                                                  ?.label ==
-                                              'Pending'
-                                          ? SvgPicture.asset(
-                                              AppAssets.whiteBagSvg,
-                                              width: 15,
-                                            )
-                                          : orders[_indexTapPackage]
-                                                      .orderGroupStatus
-                                                      ?.label ==
-                                                  'Preparing'
-                                              ? SvgPicture.asset(
-                                                  AppAssets.whiteBagSvg,
-                                                  width: 15,
-                                                )
-                                              : orders[_indexTapPackage]
-                                                          .orderGroupStatus
-                                                          ?.label ==
-                                                      'Shipped'
-                                                  ? SvgPicture.asset(
-                                                      AppAssets.whiteBagSvg,
-                                                      width: 15,
-                                                    )
-                                                  : orders[_indexTapPackage]
-                                                              .orderGroupStatus
-                                                              ?.label ==
-                                                          'Delivered'
-                                                      ? SvgPicture.asset(
-                                                          AppAssets
-                                                              .delivered_bagSvg,
-                                                          width: 20,
-                                                        )
-                                                      : SvgPicture.asset(
-                                                          AppAssets
-                                                              .delivered_bagSvg,
-                                                          width: 15,
+                                      Container(
+                                        margin: EdgeInsets.symmetric(
+                                            horizontal: 10),
+                                        decoration: BoxDecoration(
+                                            color: Color(0xffF4F4F4),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(15))),
+                                        child: Row(
+                                          children: [
+                                            ...List.generate(
+                                                orders.length,
+                                                (index) => InkWell(
+                                                      onTap: () =>
+                                                          indexTapPackage
+                                                              .value = index,
+                                                      child: Container(
+                                                        height: 30,
+                                                        width: (1.sw - 40) /
+                                                            (orders.length),
+                                                        decoration: BoxDecoration(
+                                                            border: index !=
+                                                                    _indexTapPackage
+                                                                ? null
+                                                                : Border.all(
+                                                                    color: Color(
+                                                                        0xff402CDD)),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .all(Radius
+                                                                        .circular(
+                                                                            15))),
+                                                        alignment:
+                                                            Alignment.center,
+                                                        child: Text(
+                                                          "Pack ${index + 1}",
+                                                          style: index !=
+                                                                  _indexTapPackage
+                                                              ? context
+                                                                  .textTheme
+                                                                  .bodyMedium
+                                                                  ?.rr
+                                                                  .copyWith(
+                                                                  color: Color(
+                                                                      0xff5D5C5D),
+                                                                  letterSpacing:
+                                                                      0.18,
+                                                                  fontSize: 12,
+                                                                  height: 1.3,
+                                                                )
+                                                              : context
+                                                                  .textTheme
+                                                                  .bodyMedium
+                                                                  ?.mr
+                                                                  .copyWith(
+                                                                  color: Color(
+                                                                      0xff1D1D1D),
+                                                                  letterSpacing:
+                                                                      0.18,
+                                                                  fontSize: 12,
+                                                                  height: 1.3,
+                                                                ),
                                                         ),
+                                                      ),
+                                                    ))
+                                          ],
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceAround,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: 8.h,
+                                      ),
+                                      ///////////////////
+                                      SizedBox(
+                                        height: 85,
+                                        child: buildSecondSection(
+                                          context: context,
+                                          expectedDeliveryDate:
+                                              'Monday 2.Jun | 3 Work Days',
+                                          orderStatus: orders[_indexTapPackage]
+                                                  .orderStatus
+                                                  ?.label ??
+                                              '',
+                                          deliverdTo: orders[_indexTapPackage]
+                                                  .shippingAddressData
+                                                  ?.contactPersonName ??
+                                              '',
+                                        ),
+                                      ),
+                                      ///////////////////
+                                      SizedBox(
+                                        height: 8.h,
+                                      ),
+                                      ///////////////////
+                                      buildThirdSection(
+                                        context: context,
+                                        contactInfo: orders[_indexTapPackage]
+                                                .shippingAddressData
+                                                ?.phone ??
+                                            '',
+                                        recipientName: orders[_indexTapPackage]
+                                                .shippingAddressData
+                                                ?.contactPersonName ??
+                                            '',
+                                        shippingDeliveryAddress: addressString,
+                                      ),
+                                      ///////////////////
+                                      SizedBox(
+                                        height: 8.h,
+                                      ),
+                                      ///////////////////
+                                      GestureDetector(
+                                        onTapUp: (details) {
+                                          final double dx =
+                                              details.localPosition.dx;
+                                          print(dx);
+
+                                          if ((dx > (1.sw - 75) &&
+                                              orders[_indexTapPackage]
+                                                      .orderStatus
+                                                      ?.value ==
+                                                  "out_for_delivery")) {
+                                            return;
+                                          }
+
+                                          HelperFunctions.slidingNavigation(
+                                            context,
+                                            OrderDetails2(
+                                              indexPackage: _indexTapPackage,
+                                              fromNotification:
+                                                  widget.fromNotification,
+                                              order: orders[_indexTapPackage],
+                                            ),
+                                          );
+                                        },
+                                        child: buildFourthSection(
+                                            context: context,
+                                            itemsCount: orders[_indexTapPackage]
+                                                .details!
+                                                .length
+                                                .toString()),
+                                      ),
+                                      ///////////////////
+                                      SizedBox(
+                                        height: 8.h,
+                                      ),
+                                      ///////////////////
+                                      buildFifthSection(
+                                          details:
+                                              orders[_indexTapPackage].details,
+                                          orderStatus: orders[_indexTapPackage]
+                                                  .orderStatus
+                                                  ?.label ??
+                                              ""),
+                                      ///////////////////
+                                      SizedBox(
+                                        height: 8.h,
+                                      ),
+                                      ///////////////////
                                     ],
                                   ),
-                                  title: LocaleKeys.order_status.tr(),
-                                  value: orders[_indexTapPackage]
-                                              .orderGroupStatus
-                                              ?.label ==
-                                          'Delivered'
-                                      ? '${orders[_indexTapPackage].orderGroupStatus?.label} ${LocaleKeys.to.tr()} ${orders[_indexTapPackage].shippingAddressData?.contactPersonName ?? ''}'
-                                      : orders[_indexTapPackage]
-                                              .orderGroupStatus
-                                              ?.label ??
-                                          "",
-                                  amount: '',
-                                  isTextSpan: false,
-                                  titleIcons: buildTitleIcons(
-                                      status: orders[_indexTapPackage]
-                                              .orderGroupStatus
-                                              ?.label ??
-                                          ""),
-                                  valueIcons: buildValueIcons(
-                                      status: orders[_indexTapPackage]
-                                              .orderGroupStatus
-                                              ?.label ??
-                                          ""),
-                                  currency: '',
                                 ),
                               ),
                             ),
-                            SizedBox(
-                              height: 8.h,
-                            ),
-                            Container(
-                              margin: EdgeInsets.symmetric(horizontal: 10),
-                              decoration: BoxDecoration(
-                                  color: Color(0xffF4F4F4),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(15))),
-                              child: Row(
-                                children: [
-                                  ...List.generate(
-                                      orders.length,
-                                      (index) => InkWell(
-                                            onTap: () =>
-                                                indexTapPackage.value = index,
-                                            child: Container(
-                                              height: 30,
-                                              width:
-                                                  (1.sw - 40) / (orders.length),
-                                              decoration: BoxDecoration(
-                                                  border:
-                                                      index != _indexTapPackage
-                                                          ? null
-                                                          : Border.all(
-                                                              color: Color(
-                                                                  0xff402CDD)),
-                                                  borderRadius:
-                                                      BorderRadius.all(
-                                                          Radius.circular(15))),
-                                              alignment: Alignment.center,
-                                              child: Text(
-                                                "Pack ${index + 1}",
-                                                style: index != _indexTapPackage
-                                                    ? context.textTheme
-                                                        .bodyMedium?.rr
-                                                        .copyWith(
-                                                        color:
-                                                            Color(0xff5D5C5D),
-                                                        letterSpacing: 0.18,
-                                                        fontSize: 12,
-                                                        height: 1.3,
-                                                      )
-                                                    : context.textTheme
-                                                        .bodyMedium?.mr
-                                                        .copyWith(
-                                                        color:
-                                                            Color(0xff1D1D1D),
-                                                        letterSpacing: 0.18,
-                                                        fontSize: 12,
-                                                        height: 1.3,
-                                                      ),
-                                              ),
-                                            ),
-                                          ))
-                                ],
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 8.h,
-                            ),
-                            ///////////////////
-                            SizedBox(
-                              height: 85,
-                              child: buildSecondSection(
-                                context: context,
-                                expectedDeliveryDate:
-                                    'Monday 2.Jun | 3 Work Days',
-                                orderStatus: orders[_indexTapPackage]
-                                        .orderStatus
-                                        ?.label ??
-                                    '',
-                                deliverdTo: orders[_indexTapPackage]
-                                        .shippingAddressData
-                                        ?.contactPersonName ??
-                                    '',
-                              ),
-                            ),
-                            ///////////////////
-                            SizedBox(
-                              height: 8.h,
-                            ),
-                            ///////////////////
-                            buildThirdSection(
-                              context: context,
-                              contactInfo: orders[_indexTapPackage]
-                                      .shippingAddressData
-                                      ?.phone ??
-                                  '',
-                              recipientName: orders[_indexTapPackage]
-                                      .shippingAddressData
-                                      ?.contactPersonName ??
-                                  '',
-                              shippingDeliveryAddress: addressString,
-                            ),
-                            ///////////////////
-                            SizedBox(
-                              height: 8.h,
-                            ),
-                            ///////////////////
-                            GestureDetector(
-                              onTapUp: (details) {
-                                final double dx = details.localPosition.dx;
-                                print(dx);
-
-                                if ((dx > (1.sw - 75) &&
-                                    orders[_indexTapPackage]
-                                            .orderStatus
-                                            ?.value ==
-                                        "out_for_delivery")) {
-                                  return;
-                                }
-
-                                HelperFunctions.slidingNavigation(
-                                  context,
-                                  OrderDetails2(
-                                    fromNotification: widget.fromNotification,
-                                    order: orders[_indexTapPackage],
-                                  ),
-                                );
-                              },
-                              child: buildFourthSection(
-                                  context: context,
-                                  itemsCount: orders[_indexTapPackage]
-                                      .details!
-                                      .length
-                                      .toString()),
-                            ),
-                            ///////////////////
-                            SizedBox(
-                              height: 8.h,
-                            ),
-                            ///////////////////
-                            buildFifthSection(
-                                details: orders[_indexTapPackage].details,
-                                orderStatus: orders[_indexTapPackage]
-                                        .orderStatus
-                                        ?.label ??
-                                    ""),
-                            ///////////////////
-                            SizedBox(
-                              height: 8.h,
-                            ),
-                            ///////////////////
+                            shadowForPanel(),
+                            panelWidget(),
+                            ValueListenableBuilder<int>(
+                                valueListenable: indexTapAddress,
+                                builder: (context, _indexTap, _) {
+                                  return shadowForChangeAddressContent(
+                                      _indexTap);
+                                }),
+                            shadowForCanselOrRutuenOrder(false)
                           ],
                         ),
                       ),
-                    ),
-                    shadowForPanel(),
-                    panelWidget(),
-                    ValueListenableBuilder<int>(
-                        valueListenable: indexTapAddress,
-                        builder: (context, _indexTap, _) {
-                          return shadowForChangeAddressContent(_indexTap);
-                        }),
-                    shadowForCanselOrRutuenOrder(false)
-                  ],
-                ),
-              ),
-            );
-          }),
-    );
+                    );
+                  });
+            }));
   }
 
   Widget shadowForCanselOrRutuenOrder(bool isReturn) {

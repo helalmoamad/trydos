@@ -147,9 +147,8 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
               c.makeCallStatus == MakeCallStatus.failure,
           listener: (context, state) {
             Navigator.pop(context);
-            showMessage(
-                '${state.receiverCallName ?? LocaleKeys.user.tr()} ${LocaleKeys.in_another_call.tr()}',
-                showInRelease: true);
+            showWarningMessage(context,
+                '${state.receiverCallName ?? LocaleKeys.user.tr()} ${LocaleKeys.in_another_call.tr()}');
           },
           child: BlocListener<CallsBloc, CallsState>(
             listenWhen: (p, c) =>

@@ -33,6 +33,7 @@ abstract class PrefsRepository {
   bool? get isTimerForOtpRunning;
 
   bool? get isVerifiedPhone;
+  bool? get isFoundDataCashed;
   bool? get isVerifiedPhonePeforeExpiredToken;
   bool? get isTokenExpired;
   bool? get isRequestNotificationPermission;
@@ -70,6 +71,7 @@ abstract class PrefsRepository {
   Future<bool> setPrefechOfBoutiquesForEachMainCategoryInHomePage(
       String key, String value);
   Future<bool> removeMainCategoryHasPerfechedWhenOpenApp(bool allCategory);
+  Future<bool> setIsFoundDataCashed(bool isFoundDataCashed);
   Future<bool> setMainCategoryHasPerfechedToRemoveItWhenOpenApp(String key);
   String? getPrefechOfProductsForEachBoutiqueInHomePage(String key);
   Future<bool> setPrefechOfProductsForEachBoutiqueInHomePage(

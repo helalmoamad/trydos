@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:easy_localization/easy_localization.dart' as trans;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
@@ -113,7 +113,7 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
           p.sendOtpStatus != c.sendOtpStatus &&
           c.sendOtpStatus == SendOtpStatus.failure,
       listener: (context, state) {
-        showMessage(state.sendOtpError.toString());
+        showWarningMessage(context, state.sendOtpError.toString());
       },
       child: BlocListener<AuthBloc, AuthState>(
         listenWhen: (p, c) =>
@@ -302,15 +302,18 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                               height: 10),
                                         ),
                                         5.horizontalSpace,
-                                        MyTextWidget(
-                                          widget.phoneNumber,
-                                          textAlign: TextAlign.start,
-                                          style: context
-                                              .textTheme.titleMedium?.ra
-                                              .copyWith(
-                                                  color: Color(0xffC4C2C2),
-                                                  height: 1.25),
-                                        ),
+                                        Directionality(
+                                          textDirection: TextDirection.ltr,
+                                          child: MyTextWidget(
+                                            widget.phoneNumber,
+                                            textAlign: TextAlign.start,
+                                            style: context
+                                                .textTheme.titleMedium?.ra
+                                                .copyWith(
+                                                    color: Color(0xffC4C2C2),
+                                                    height: 1.25),
+                                          ),
+                                        )
                                       ],
                                     ),
                                     5.verticalSpace,
@@ -737,9 +740,12 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                 } else {
                                                   debugPrint(
                                                       '/// verificationId is null //////');
-                                                  showMessage(LocaleKeys
-                                                      .please_wait_5_seconds
-                                                      .tr());
+                                                  showWarningMessage(
+                                                    context,
+                                                    LocaleKeys
+                                                        .please_wait_5_seconds
+                                                        .tr(),
+                                                  );
                                                   pasteOtpCode('');
                                                   //widget.checkOtp.value = 2;
                                                   /////////////////////////////////////

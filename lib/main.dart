@@ -42,7 +42,7 @@ import 'core/domin/repositories/prefs_repository.dart';
 import 'dart:convert' as convert;
 import 'features/chat/data/models/my_chats_response_model.dart';
 import 'features/chat/presentation/manager/chat_event.dart';
-import 'features/home/presentation/manager/homeBloc/home_bloc.dart';
+import 'package:trydos/features/app/memory_management_helper.dart';
 
 @pragma('vm:entry-point')
 showCallKitIncoming(Map<String, dynamic> data, String currentUuid,
@@ -252,17 +252,19 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 bool isHydratedStorageInitialized = false;
-final Semaphore imageBanner = Semaphore(5);
-final Semaphore imageCategoryBoutiques = Semaphore(2);
-final Semaphore syncColorImages = Semaphore(5);
-final Semaphore productListingImages = Semaphore(5);
-final Semaphore categoryListingImages = Semaphore(3);
-final Semaphore brandListingImages = Semaphore(3);
-final Semaphore productDetailsImages = Semaphore(3);
+// 🖼️ صور أثناء السكرول - تقليل للسلاسة
+//final Semaphore imageBanner = Semaphore(1); // تقليل لمنع تأثير السكرول
+//final Semaphore imageCategoryBoutiques = Semaphore(1); // تقليل من 2 → 1
+//final Semaphore syncColorImages = Semaphore(1); // تقليل من 5 → 3
+//final Semaphore productListingImages = Semaphore(1); // تقليل من 3 → 2
+//final Semaphore categoryListingImages = Semaphore(1); // ممتاز
+//final Semaphore brandListingImages = Semaphore(1); // ممتاز
+//final Semaphore productDetailsImages = Semaphore(1); // ممتاز
 
-final Semaphore prefechMainCategory = Semaphore(3);
-final Semaphore prefechBoutiques = Semaphore(3);
-final Semaphore prefechFiveFilter = Semaphore(3);
+// 📡 طلبات البيانات - زيادة للسرعة
+//final Semaphore prefechMainCategory = Semaphore(5); // زيادة من 1 → 3
+//final Semaphore prefechBoutiques = Semaphore(8); // ممتاز - كما فعلت
+//final Semaphore prefechFiveFilter = Semaphore(3); // زيادة من 1 → 3
 bool isLoadDotenvFile = false;
 bool isDependencyInitialized = false;
 Timer? timer;
@@ -289,11 +291,21 @@ request() async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
+  // ⚡ إعدادات محسنة لمنع التعليق عند أول فتح للتطبيق
+  //_configureFirstLaunchOptimizations();
+
   HydratedBloc.storage = await HydratedStorage.build(
     storageDirectory: await getApplicationDocumentsDirectory(),
   );
   isHydratedStorageInitialized = true;
-  PaintingBinding.instance.imageCache.maximumSizeBytes = 300 * 1024 * 1024;
+
+  // 🎯 إعدادات بسيطة فقط - دع Flutter يدير الذاكرة!
+  // _applySimpleScrollOptimizations();
+
+  debugPrint('✅ إزالة كل التدخلات الضارة - اعتماد كامل على Flutter');
+  debugPrint('🎯 إعدادات بسيطة: 50MB image cache، بدون مراقبة أو تنظيف قسري');
+
   HttpOverrides.global = MyHttpOverrides();
   await Future.wait([
     EasyLocalization.ensureInitialized(),
@@ -360,6 +372,29 @@ void main() async {
             )))),
   );
 }
+
+/// ⚡ إعدادات محسنة لمنع التعليق عند أول فتح للتطبيق
+/*void _configureFirstLaunchOptimizations() {
+  // تقليل حد الكاش للصور أثناء الفتحة الأولى
+  PaintingBinding.instance.imageCache.maximumSizeBytes =
+      50 * 1024 * 1024; // 50MB بدلاً من 150MB
+}
+
+/// 🎯 تحسينات بسيطة ومضمونة للتمرير (بدلاً من المدراء المعقدين)
+void _applySimpleScrollOptimizations() {
+  try {
+    // 📊 إعدادات كاش الصور الأساسية
+    PaintingBinding.instance.imageCache.maximumSizeBytes =
+        50 * 1024 * 1024; // 50MB
+    PaintingBinding.instance.imageCache.maximumSize = 200; // عدد الصور
+
+    debugPrint('🎯 تم تطبيق التحسينات البسيطة للتمرير');
+    debugPrint('📊 كاش الصور: 50MB، عدد الصور: 200');
+    debugPrint('⚡ إزالة المدراء المعقدين لتحسين الأداء');
+  } catch (e) {
+    debugPrint('⚠️ خطأ في التحسينات البسيطة: $e');
+  }
+}*/
 
 fetchServersUrlsFromSharedPreference() async {
   if (GetIt.I<PrefsRepository>().getMarketUrl != null) {

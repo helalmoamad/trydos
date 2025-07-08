@@ -78,12 +78,16 @@ class SharedProductMessage extends StatefulWidget {
   State<SharedProductMessage> createState() => _SharedProductMessageState();
 }
 
-class _SharedProductMessageState extends State<SharedProductMessage> {
+class _SharedProductMessageState extends State<SharedProductMessage>
+    with AutomaticKeepAliveClientMixin {
   int? width;
   bool timer = false;
   int? height;
   late ChatBloc chatBloc;
   // final ValueNotifier<int> _loadingImage = ValueNotifier(0);
+
+  @override
+  bool get wantKeepAlive => true; // ✅ الحفاظ على حالة Widget
 
   @override
   void initState() {
@@ -102,6 +106,8 @@ class _SharedProductMessageState extends State<SharedProductMessage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // ✅ مطلوب لـ AutomaticKeepAliveClientMixin
+
     FlutterError.onError = (FlutterErrorDetails error) {
       GetIt.I<PrefsRepository>().saveRequestsData(
           null, null, null, null, null, null, null,
@@ -547,6 +553,12 @@ class _SharedProductMessageState extends State<SharedProductMessage> {
         },
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    // ✅ تنظيف الموارد إذا لزم الأمر
+    super.dispose();
   }
 
   Future<ChatImageDetail> loadWidthAndHeightForImage(

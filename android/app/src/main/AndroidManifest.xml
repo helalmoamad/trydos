@@ -89,7 +89,7 @@
  
         <meta-data
             android:name="io.flutter.embedding.android.EnableImpeller"
-            android:value="false"/>
+            android:value="true"/>
 <!--           <service android:name="io.wazo.callkeep.VoiceConnectionService"-->
 <!--               android:label="Wazo"-->
 <!--               android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE">-->

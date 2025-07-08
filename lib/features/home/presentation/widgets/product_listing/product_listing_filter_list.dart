@@ -292,11 +292,11 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
               state.appliedFiltersByUser[key] == null)) {
             return SizedBox.shrink();
           }
-          GetProductFiltersModel? appliedFiltersByUser =
-              state.appliedFiltersByUser[key];
-          String? currentAppliedFilterSllug = "Empty";
+          //GetProductFiltersModel? appliedFiltersByUser =
+          // state.appliedFiltersByUser[key];
+          //String? currentAppliedFilterSllug = "Empty";
 
-          if (!isExpanded &&
+          /*   if (!isExpanded &&
               (appliedFiltersByUser?.filters?.searchText?.length ?? 0) < 3) {
             if ((appliedFiltersByUser?.filters?.categories?.length ?? 0) > 0) {
               currentAppliedFilterSllug =
@@ -325,8 +325,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
             } else {
               currentAppliedFilterSllug = "Empty";
             }
-          }
-          if ((appliedFiltersByUser?.filters?.searchText?.length ?? 0) < 3 &&
+          }*/
+          /*  if ((appliedFiltersByUser?.filters?.searchText?.length ?? 0) < 3 &&
               !isExpanded &&
               (((appliedFiltersByUser?.filters?.categories?.length ?? 0) +
                               (appliedFiltersByUser?.filters?.brands?.length ??
@@ -370,12 +370,25 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                 '${(widget.category ?? '')}']
                         ?.filters ??
                     filter_model.Filter();
-          } else if (((!widget.fromSearch &&
+          } else*/
+          /*   if (((!widget.fromSearch &&
                   !isExpanded &&
                   (appliedFiltersByUser?.filters?.prices?.minPrice == null))) &&
               currentAppliedFilterSllug == "Empty" &&
-              state.getProductFiltersWithPrefetchModel['${widget.boutiqueSlug}' + 'Empty' + '${(widget.category ?? '')}']?.filters != null &&
-              (state.getProductListingWithFiltersPaginationWithPrefetchModels["${widget.boutiqueSlug}" + "Empty" + "${widget.category ?? ""}"]?.paginationStatus == PaginationStatus.success)) {
+              state
+                      .getProductFiltersWithPrefetchModel[
+                          '${widget.boutiqueSlug}' +
+                              'Empty' +
+                              '${(widget.category ?? '')}']
+                      ?.filters !=
+                  null &&
+              (state
+                      .getProductListingWithFiltersPaginationWithPrefetchModels[
+                          "${widget.boutiqueSlug}" +
+                              "Empty" +
+                              "${widget.category ?? ""}"]
+                      ?.paginationStatus ==
+                  PaginationStatus.success)) {
             if ((appliedFiltersByUser?.filters?.searchText?.length ?? 0) < 3) {
               filters = (state
                               .getProductListingWithFiltersPaginationWithPrefetchModels[
@@ -393,13 +406,12 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                               'Empty' +
                               '${(widget.category ?? '')}']
                       ?.filters;
-            } else {
+            }*/ /* if {
               filters = (state
-                              .getProductListingWithFiltersPaginationWithPrefetchModels[
-                                  '${widget.boutiqueSlug}' +
-                                      '${(widget.category ?? '')}']
-                              ?.items
-                              .length ??
+                              .getProductFiltersModel['${widget.boutiqueSlug}' +
+                                  '${(widget.category ?? '')}']
+                              ?.filters
+                              ?.totalSize ??
                           0) ==
                       1
                   ? filter_model.Filter()
@@ -408,7 +420,8 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                           '${(widget.category ?? '')}']
                       ?.filters;
             }
-          } else {
+          }*/
+          else {
             filters = (state
                                 .getProductListingWithFiltersPaginationModels[
                                     '${widget.boutiqueSlug}' +
@@ -1615,6 +1628,8 @@ Widget choosedOrAppliedFiltersWidget({
       if (filters == null &&
           (!fromSearch && lowerAndUpperPrices == null) &&
           GetIt.I<PrefsRepository>().getTagsInUrlToFilter.isNullOrEmpty) {
+        boutiqueBloc
+            .add(IscashedOreiginBotiqueEvent(iscashedOreiginBotique: true));
         return SizedBox.shrink();
       }
       if ((filters?.brands.isNullOrEmpty ?? true) &&
@@ -1626,7 +1641,9 @@ Widget choosedOrAppliedFiltersWidget({
           (filters?.attributes.isNullOrEmpty ?? true) &&
           GetIt.I<PrefsRepository>().getTagsInUrlToFilter.isNullOrEmpty) {
         if ((!fromSearch && lowerAndUpperPrices == null && choosedFilter))
-          return SizedBox.shrink();
+          boutiqueBloc
+              .add(IscashedOreiginBotiqueEvent(iscashedOreiginBotique: true));
+        return SizedBox.shrink();
       }
       if ((filters?.brands.isNullOrEmpty ?? true) &&
           (filters?.categories.isNullOrEmpty ?? true) &&
@@ -1637,6 +1654,8 @@ Widget choosedOrAppliedFiltersWidget({
           (filters?.boutiques.isNullOrEmpty ?? true) &&
           (filters?.attributes.isNullOrEmpty ?? true) &&
           GetIt.I<PrefsRepository>().getTagsInUrlToFilter.isNullOrEmpty) {
+        boutiqueBloc
+            .add(IscashedOreiginBotiqueEvent(iscashedOreiginBotique: true));
         return SizedBox.shrink();
       }
       double exchangeRate = BlocProvider.of<HomeBloc>(context)
@@ -2012,6 +2031,8 @@ Widget choosedOrAppliedFiltersWidget({
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               MyCachedNetworkImage(
+                                //                  progressIndicatorBuilderWidget:
+//const SizedBox.shrink(),
                                 imageUrl: filters!
                                     .boutiques![index].banner!.filePath!,
                                 imageFit: BoxFit.cover,
@@ -2660,6 +2681,8 @@ class FilterImage extends StatelessWidget {
                       ? Image.asset(imageUrl,
                           width: width, fit: BoxFit.cover, height: height)
                       : MyCachedNetworkImage(
+                          //     progressIndicatorBuilderWidget:
+                          //           const SizedBox.shrink(),
                           imageUrl: imageUrl,
                           width: width,
                           imageFit: BoxFit.contain,

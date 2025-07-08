@@ -42,6 +42,17 @@ class GetOrdersByOrderGroupIDEvent extends OrderEvent {
   List<Object?> get props => [orderGroupId];
 }
 
+class SaveCurrentOrederStatusEvent extends OrderEvent {
+  final String currentOrederStatus;
+
+  SaveCurrentOrederStatusEvent({
+    required this.currentOrederStatus,
+  });
+  @override
+  // TODO: implement props
+  List<Object?> get props => [currentOrederStatus];
+}
+
 class ChangeOrderByGroupStatus extends OrderEvent {
   final bool loading;
   ChangeOrderByGroupStatus({this.loading = false});

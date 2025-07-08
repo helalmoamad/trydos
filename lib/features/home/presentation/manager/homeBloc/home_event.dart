@@ -186,13 +186,13 @@ class GetProductsListInCartEvent extends HomeEvent {
   List<Object?> get props => [];
 }
 
-class GeColorsAndSizesForSearchEvent extends HomeEvent {
+/*class GeColorsAndSizesForSearchEvent extends HomeEvent {
   const GeColorsAndSizesForSearchEvent();
 
   @override
   // TODO: implement props
   List<Object?> get props => [];
-}
+}*/
 
 class StoreFcmTokenOfMarketEvent extends HomeEvent {
   final int userId;

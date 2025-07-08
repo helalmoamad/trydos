@@ -84,7 +84,7 @@ class GetProductsWithFiltersParams {
         "search_text":
             searchText == "" || searchText == null ? null : '"${searchText}"',
         "offset": offset.toString(),
-        "limit": "10",
+        "limit": "20",
         // "scroll_id": scroll_id,
         "boutique_slug": boutiqueSlug,
         "boutique_slugs": boutiqueSlugs.toString(),

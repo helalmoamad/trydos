@@ -12,7 +12,8 @@ part 'sensitive_connectivity_event.dart';
 part 'sensitive_connectivity_state.dart';
 
 @injectable
-class SensitiveConnectivityBloc extends Bloc<SensitiveConnectivityEvent, SensitiveConnectivityState>
+class SensitiveConnectivityBloc
+    extends Bloc<SensitiveConnectivityEvent, SensitiveConnectivityState>
     with HandlingExceptionRequest {
   SensitiveConnectivityBloc() : super(ConnectivityOfflineState()) {
     on<ChangeConnectivityEvent>(_onCheckConnectivity);
@@ -22,17 +23,18 @@ class SensitiveConnectivityBloc extends Bloc<SensitiveConnectivityEvent, Sensiti
     ChangeConnectivityEvent event,
     Emitter<SensitiveConnectivityState> emit,
   ) async {
-
-    prettyPrinterI("***|| 🌐 ${event.connectivityResult.name.toUpperCase()} 🌐 ||***");
+    prettyPrinterI(
+        "***|| 🌐 ${event.connectivityResult.name.toUpperCase()} 🌐 ||***");
 
     if (event.connectivityResult == ConnectivityResult.mobile) {
-      showMessage('Internet connected',foreGroundColor: Colors.green,showInRelease: true,timeShowing: Toast.LENGTH_SHORT);
+      showMessage('Internet connected', hasError: false, showInRelease: true);
       emit(ConnectivityCellularState());
     } else if (event.connectivityResult == ConnectivityResult.wifi) {
-      showMessage('Internet connected',foreGroundColor: Colors.green,showInRelease: true,timeShowing: Toast.LENGTH_SHORT);
+      showMessage('Internet connected', hasError: false, showInRelease: true);
       emit(ConnectivityWifiState());
-    } else if(event.connectivityResult == ConnectivityResult.none){
-      showMessage('No Internet connection.',showInRelease: true,timeShowing: Toast.LENGTH_LONG);
+    } else if (event.connectivityResult == ConnectivityResult.none) {
+      showMessage('No Internet connection.',
+          hasError: true, showInRelease: true);
       emit(ConnectivityOfflineState());
     }
   }

@@ -604,4 +604,10 @@ abstract class LocaleKeys {
   static const cancel_request = 'cancel_request';
   static const why_was_product_cancel = 'why_was_product_cancel';
   static const flash_deal = 'flash_deal';
+  static const invalid_image_url = 'invalid_image_url';
+  static const image_url_empty = 'image_url_empty';
+  static const image_load_failed = 'image_load_failed';
+  static const download_timeout = 'download_timeout';
+  static const retry_download = 'retry_download';
+  static const image_not_available = 'image_not_available';
 }

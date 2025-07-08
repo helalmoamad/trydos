@@ -181,9 +181,9 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
             Map.of(boutiquesForEveryMainCategoryThatDidPrefetch),
       ));
     }
-    if (event.withSemaphore ?? false) {
+    /*if (event.withSemaphore ?? false) {
       await prefechMainCategory.acquire();
-    }
+    }*/
     final response = await getHomeBoutiqesUseCase(GetHomeBoutiqesParams(
         page: event.getWithPagination
             ? (getHomeBoutiquesPaginationObjectByMainCategory[
@@ -196,9 +196,9 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
             event.categorySlug == "Empty" ? null : event.categorySlug));
 
     response.fold((l) {
-      if (event.withSemaphore ?? false) {
+      /*  if (event.withSemaphore ?? false) {
         prefechMainCategory.release();
-      }
+      }*/
 
       if (!event.getWithPrefetchToStoreInMemory) {
         Map<String, PaginationModel<Boutique>>
@@ -238,16 +238,16 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
         );
       }
     }, (r) {
-      if (event.withSemaphore ?? false) {
+      /* if (event.withSemaphore ?? false) {
         prefechMainCategory.release();
-      }
+      }*/
       if (!event.getWithPagination) {
         prefsRepository.setPrefechOfBoutiquesForEachMainCategoryInHomePage(
             event.categorySlug, jsonEncode(r));
       }
 
       if (!event.getWithPrefetchToStoreInMemory) {
-        String url = '';
+        /* String url = '';
         int numOfBanners = -1;
         r.data?.boutiques?.forEach((boutique) {
           // boutique images
@@ -269,7 +269,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
                 height: 40.w);
             prefetchImages(url, event.context, "categoryBoutique", 40, 40);
           });
-        });
+        });*/
 
         isFailedTheFirstTime.remove('GetHomeBoutiqesEvent');
 
@@ -472,7 +472,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
         categorySlugs.add(r.data!.mainCategories![i].slug ?? "");
       }
       if (event.getWithPrefech) {
-        Future.delayed(Duration(seconds: 5), () {
+        Future.delayed(Duration(seconds: 10), () {
           for (var i = 0;
               i < min(categorySlugs.length, (1.sw - 55) ~/ 40);
               i++) {

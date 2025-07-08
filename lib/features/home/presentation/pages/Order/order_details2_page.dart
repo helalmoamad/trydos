@@ -11,6 +11,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:trydos/common/helper/helper_functions.dart';
 import 'package:trydos/common/helper/show_message.dart';
+import 'package:trydos/core/data/model/pagination_model.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/config/theme/typography.dart';
@@ -40,13 +41,16 @@ import '../../manager/homeBloc/home_bloc.dart';
 import '../../manager/homeBloc/home_state.dart';
 
 class OrderDetails2 extends StatefulWidget {
-  OrderDetails2({
+  const OrderDetails2({
     super.key,
     required this.order,
+    required this.indexPackage,
+    this.currentStatus = "",
     this.fromNotification = false,
   });
-
+  final String? currentStatus;
   final bool fromNotification;
+  final int indexPackage;
   final OrderListModel order;
 
   @override
@@ -79,9 +83,10 @@ class _OrderDetails2 extends State<OrderDetails2> {
   bool allOrder = false;
   late OrderBloc orderBloc;
   late HomeBloc homeBloc;
-
+  OrderListModel? order;
   @override
   void initState() {
+    order = widget.order;
     sizeIndexTap.value = 3;
     orderBloc = BlocProvider.of<OrderBloc>(context);
     homeBloc = BlocProvider.of<HomeBloc>(context);
@@ -91,6 +96,27 @@ class _OrderDetails2 extends State<OrderDetails2> {
 
   @override
   Widget build(BuildContext context) {
+    bool _isLoading = false;
+
+    Future<void> _refreshData() async {
+      setState(() {
+        _isLoading = true; // بدء التحميل
+      });
+      GetIt.I<OrderBloc>().add(
+        GetOrdersEvent(
+          status: GetIt.I<OrderBloc>().state.currentOrederStatus ?? "",
+          getWithPagination: false,
+        ),
+      );
+
+      // 🚀 إزالة التأخير المصطنع - دع البيانات تحدد سرعة التحميل!
+      await Future.delayed(Duration(seconds: 3)); // ❌ تم حذف التأخير المصطنع
+
+      setState(() {
+        _isLoading = false; // إنهاء التحميل
+      });
+    }
+
     return WillPopScope(
       onWillPop: () async {
         // didCallOnWillPop = true;
@@ -114,522 +140,571 @@ class _OrderDetails2 extends State<OrderDetails2> {
         }
         return true;
       },
-      child: Container(
-        color: const Color(0xffFFFFFF),
-        child: Material(
-          child: Stack(
-            children: [
-              Scaffold(
-                backgroundColor: const Color(0xffF8F8F8),
-                resizeToAvoidBottomInset: true,
-                appBar: TrydosAppBar(
-                  appBarParams: AppBarParams(
-                    backgroundColor: const Color(0xffFFFFFF),
-                    scrolledUnderElevation: 0,
-                    backIconColor: Colors.black,
-                    withShadow: false,
-                    action: [
-                      Spacer(),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            width: 12,
-                          ),
-                          SvgPicture.asset(
-                            AppAssets.bagsSvg,
-                            width: 23,
-                          ),
-                          ///////////////////////////
-                          SizedBox(
-                            width: 4,
-                          ),
-                          ///////////////////////////
-                          Text(
-                            LocaleKeys.order_details.tr(),
-                            style: context.textTheme.bodyMedium?.mq.copyWith(
-                              color: const Color(0xff1D1D1D),
-                              letterSpacing: 0.18,
-                              fontSize: 14,
-                              height: 1.3,
+      child: BlocBuilder<OrderBloc, OrderState>(
+          buildWhen: (p, c) =>
+              p.getOrdersModel?[widget.currentStatus]?.paginationStatus !=
+                  c.getOrdersModel?[widget.currentStatus]?.paginationStatus ||
+              p.getOrdersByOrderGroupIDStatus !=
+                  c.getOrdersByOrderGroupIDStatus,
+          builder: (context, state) {
+            if (state.getOrdersModel?[widget.currentStatus]?.paginationStatus ==
+                PaginationStatus.success) {
+              List<List<OrderListModel>> items =
+                  state.getOrdersModel?[widget.currentStatus]?.items ?? [];
+              order = (items.firstWhere((element) =>
+                  element[0].orderGroupId ==
+                  widget.order.orderGroupId))[widget.indexPackage];
+            }
+            return Container(
+              color: const Color(0xffFFFFFF),
+              child: Material(
+                child: Stack(
+                  children: [
+                    Scaffold(
+                      backgroundColor: const Color(0xffF8F8F8),
+                      resizeToAvoidBottomInset: true,
+                      appBar: TrydosAppBar(
+                        appBarParams: AppBarParams(
+                          backgroundColor: const Color(0xffFFFFFF),
+                          scrolledUnderElevation: 0,
+                          backIconColor: Colors.black,
+                          withShadow: false,
+                          action: [
+                            Spacer(),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  width: 12,
+                                ),
+                                SvgPicture.asset(
+                                  AppAssets.bagsSvg,
+                                  width: 23,
+                                ),
+                                ///////////////////////////
+                                SizedBox(
+                                  width: 4,
+                                ),
+                                ///////////////////////////
+                                Text(
+                                  LocaleKeys.order_details.tr(),
+                                  style:
+                                      context.textTheme.bodyMedium?.mq.copyWith(
+                                    color: const Color(0xff1D1D1D),
+                                    letterSpacing: 0.18,
+                                    fontSize: 14,
+                                    height: 1.3,
+                                  ),
+                                ),
+                                ///////////////////////////
+                                SizedBox(
+                                  width: 15,
+                                ),
+                                ///////////////////////////
+                              ],
                             ),
-                          ),
-                          ///////////////////////////
-                          SizedBox(
-                            width: 15,
-                          ),
-                          ///////////////////////////
-                        ],
-                      ),
-                      Spacer(),
-                      ////////////
-                      InkWell(
-                        onTap: () {
-                          allOrder = true;
-                          optionModifyPanel.value = "All_Order";
-                          showPanel.value = true;
-                          panelController.open();
-                          showShadowForPanel.value = true;
-                        },
-                        child: Container(
-                          width: 40,
-                          height: 20,
-                          child: SvgPicture.asset(
-                            AppAssets.orderMenuSvg,
-                            width: 20,
-                          ),
+                            Spacer(),
+                            ////////////
+                            InkWell(
+                              onTap: () {
+                                allOrder = true;
+                                optionModifyPanel.value = "All_Order";
+                                showPanel.value = true;
+                                panelController.open();
+                                showShadowForPanel.value = true;
+                              },
+                              child: Container(
+                                width: 40,
+                                height: 20,
+                                child: SvgPicture.asset(
+                                  AppAssets.orderMenuSvg,
+                                  width: 20,
+                                ),
+                              ),
+                            ),
+                            ///////////////////////////
+                            SizedBox(
+                              width: 12,
+                            ),
+                          ],
                         ),
                       ),
-                      ///////////////////////////
-                      SizedBox(
-                        width: 12,
-                      ),
-                    ],
-                  ),
-                ),
-                body: Column(
-                  children: [
-                    SizedBox(
-                      height: 11.h,
-                    ),
-                    ///////////////////
-                    buildFirstSection(
-                        context, widget.order.details!.length.toString()),
-                    ///////////////////
-                    SizedBox(
-                      height: 10.h,
-                    ),
-                    ///////////////////
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 10),
-                        child: Container(
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: const Color.fromARGB(255, 255, 255, 255),
-                            borderRadius: BorderRadius.circular(15),
+                      body: Column(
+                        children: [
+                          SizedBox(
+                            height: 11.h,
                           ),
-                          padding: const EdgeInsets.all(8),
-                          child: SingleChildScrollView(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  height: 10,
-                                  width: 60,
-                                  color: Colors.black,
+                          ///////////////////
+                          buildFirstSection(
+                              context, order!.details!.length.toString()),
+                          ///////////////////
+                          SizedBox(
+                            height: 10.h,
+                          ),
+                          ///////////////////
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 10),
+                              child: Container(
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color:
+                                      const Color.fromARGB(255, 255, 255, 255),
+                                  borderRadius: BorderRadius.circular(15),
                                 ),
-                                ///////////////////
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                ///////////////////
-                                BlocBuilder<HomeBloc, HomeState>(
-                                  buildWhen: (previous, current) =>
-                                      (previous.getCurrencyForCountryModel !=
-                                          current.getCurrencyForCountryModel),
-                                  builder: (context, state) {
-                                    String currencySymbol = state
-                                            .getCurrencyForCountryModel!
-                                            .data!
-                                            .currency!
-                                            .symbol ??
-                                        "";
-                                    String orderAmount =
-                                        (widget.order.orderAmount! *
-                                                state
+                                padding: const EdgeInsets.all(8),
+                                child: SingleChildScrollView(
+                                  child: RefreshIndicator(
+                                    backgroundColor: Colors.white,
+                                    color: Colors.black,
+                                    onRefresh: _refreshData,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          height: 10,
+                                          width: 60,
+                                          color: Colors.black,
+                                        ),
+                                        ///////////////////
+                                        const SizedBox(
+                                          height: 5,
+                                        ),
+                                        ///////////////////
+                                        BlocBuilder<HomeBloc, HomeState>(
+                                          buildWhen: (previous, current) => (previous
+                                                  .getCurrencyForCountryModel !=
+                                              current
+                                                  .getCurrencyForCountryModel),
+                                          builder: (context, state) {
+                                            String currencySymbol = state
                                                     .getCurrencyForCountryModel!
                                                     .data!
                                                     .currency!
-                                                    .exchangeRate!)
-                                            .toStringAsFixed(state
-                                                    .startingSetting
-                                                    ?.decimalPointSettings ??
-                                                0);
+                                                    .symbol ??
+                                                "";
+                                            String orderAmount = (order!
+                                                        .orderAmount! *
+                                                    state
+                                                        .getCurrencyForCountryModel!
+                                                        .data!
+                                                        .currency!
+                                                        .exchangeRate!)
+                                                .toStringAsFixed(state
+                                                        .startingSetting
+                                                        ?.decimalPointSettings ??
+                                                    0);
 
-                                    return RichText(
-                                      overflow: TextOverflow.ellipsis,
-                                      text: TextSpan(
-                                        style: context.textTheme.bodyMedium?.rq
-                                            .copyWith(
-                                          color: const Color(0xff505050),
-                                          letterSpacing: 0.18,
-                                          fontSize: 12,
-                                          height: 1.3,
+                                            return RichText(
+                                              overflow: TextOverflow.ellipsis,
+                                              text: TextSpan(
+                                                style: context
+                                                    .textTheme.bodyMedium?.rq
+                                                    .copyWith(
+                                                  color:
+                                                      const Color(0xff505050),
+                                                  letterSpacing: 0.18,
+                                                  fontSize: 12,
+                                                  height: 1.3,
+                                                ),
+                                                children: [
+                                                  TextSpan(
+                                                      text:
+                                                          '${LocaleKeys.buying.tr()} '),
+                                                  /////////////////////////
+                                                  TextSpan(
+                                                    text:
+                                                        '${order!.details?.length ?? 0}',
+                                                    style: context.textTheme
+                                                        .bodyMedium?.bq
+                                                        .copyWith(
+                                                      color: const Color(
+                                                          0xff1D1D1D),
+                                                      letterSpacing: 0.18,
+                                                      fontSize: 12,
+                                                      height: 1.3,
+                                                    ),
+                                                  ),
+                                                  /////////////////////////
+                                                  TextSpan(
+                                                      text:
+                                                          ' ${LocaleKeys.item.tr()} . '),
+                                                  /////////////////////////
+                                                  TextSpan(
+                                                    text: '${orderAmount}',
+                                                    style: context.textTheme
+                                                        .bodyMedium?.bq
+                                                        .copyWith(
+                                                      color: const Color(
+                                                          0xff1D1D1D),
+                                                      letterSpacing: 0.18,
+                                                      fontSize: 12,
+                                                      height: 1.3,
+                                                    ),
+                                                  ),
+                                                  /////////////////////////
+                                                  TextSpan(
+                                                      text: ' $currencySymbol'),
+                                                  /////////////////////////
+                                                ],
+                                              ),
+                                            );
+                                          },
                                         ),
-                                        children: [
-                                          TextSpan(
-                                              text:
-                                                  '${LocaleKeys.buying.tr()} '),
-                                          /////////////////////////
-                                          TextSpan(
-                                            text:
-                                                '${widget.order.details?.length ?? 0}',
-                                            style: context
-                                                .textTheme.bodyMedium?.bq
-                                                .copyWith(
-                                              color: const Color(0xff1D1D1D),
-                                              letterSpacing: 0.18,
-                                              fontSize: 12,
-                                              height: 1.3,
-                                            ),
-                                          ),
-                                          /////////////////////////
-                                          TextSpan(
-                                              text:
-                                                  ' ${LocaleKeys.item.tr()} . '),
-                                          /////////////////////////
-                                          TextSpan(
-                                            text: '${orderAmount}',
-                                            style: context
-                                                .textTheme.bodyMedium?.bq
-                                                .copyWith(
-                                              color: const Color(0xff1D1D1D),
-                                              letterSpacing: 0.18,
-                                              fontSize: 12,
-                                              height: 1.3,
-                                            ),
-                                          ),
-                                          /////////////////////////
-                                          TextSpan(text: ' $currencySymbol'),
-                                          /////////////////////////
-                                        ],
-                                      ),
-                                    );
-                                  },
-                                ),
-                                ///////////////////
-                                SizedBox(
-                                  height: 5.h,
-                                ),
-                                ///////////////////
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          SvgPicture.asset(
-                                            AppAssets.orderAddressSvg,
-                                            width: 20,
-                                          ),
-                                          ///////////////////
-                                          SizedBox(
-                                            height: 5,
-                                          ),
-                                          ///////////////////
-                                          Text(
-                                            LocaleKeys.expected_delivery_date
-                                                .tr(),
-                                            overflow: TextOverflow.ellipsis,
-                                            style: context
-                                                .textTheme.bodyMedium?.rq
-                                                .copyWith(
-                                              color: const Color(0xff8D8D8D),
-                                              letterSpacing: 0.18,
-                                              fontSize: 10,
-                                              height: 1.3,
-                                            ),
-                                          ),
-                                          ///////////////////
-                                          SizedBox(
-                                            height: 5,
-                                          ),
-                                          ///////////////////
-                                          Text(
-                                            'Monday 2.Jun | 3 Work Days',
-                                            overflow: TextOverflow.ellipsis,
-                                            style: context
-                                                .textTheme.bodyMedium?.rq
-                                                .copyWith(
-                                              color: const Color(0xff1D1D1D),
-                                              letterSpacing: 0.18,
-                                              fontSize: 12,
-                                              height: 1.3,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    /////////////
-                                    Expanded(
-                                      child: Container(
-                                        color: Colors.white,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.end,
+                                        ///////////////////
+                                        SizedBox(
+                                          height: 5.h,
+                                        ),
+                                        ///////////////////
+                                        Row(
                                           children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.end,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.end,
-                                              children: [
-                                                widget.order.orderGroupStatus
-                                                            ?.label ==
-                                                        'Pending'
-                                                    ? SvgPicture.asset(
-                                                        AppAssets.pendingBagSvg,
-                                                        width: 20,
-                                                      )
-                                                    : SvgPicture.asset(
-                                                        AppAssets.pendingBagSvg,
-                                                        width: 15,
-                                                      ),
-                                                ////////////////////
-                                                const SizedBox(
-                                                  width: 3,
-                                                ),
-                                                ///////////////////
-                                                widget.order.orderGroupStatus
-                                                            ?.label ==
-                                                        'Pending'
-                                                    ? SvgPicture.asset(
-                                                        AppAssets.whiteBagSvg,
-                                                        width: 15,
-                                                      )
-                                                    : widget
-                                                                .order
-                                                                .orderGroupStatus
-                                                                ?.label ==
-                                                            'Preparing'
-                                                        ? SvgPicture.asset(
-                                                            AppAssets
-                                                                .preparingBagSvg,
-                                                            width: 20,
-                                                          )
-                                                        : SvgPicture.asset(
-                                                            AppAssets
-                                                                .preparingBagSvg,
-                                                            width: 15,
-                                                          ),
-                                                ////////////////////
-                                                const SizedBox(
-                                                  width: 3,
-                                                ),
-                                                ///////////////////
-                                                widget.order.orderGroupStatus
-                                                            ?.label ==
-                                                        'Pending'
-                                                    ? SvgPicture.asset(
-                                                        AppAssets.whiteBagSvg,
-                                                        width: 15,
-                                                      )
-                                                    : widget
-                                                                .order
-                                                                .orderGroupStatus
-                                                                ?.label ==
-                                                            'Preparing'
-                                                        ? SvgPicture.asset(
-                                                            AppAssets
-                                                                .whiteBagSvg,
-                                                            width: 15,
-                                                          )
-                                                        : widget
-                                                                    .order
-                                                                    .orderGroupStatus
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  SvgPicture.asset(
+                                                    AppAssets.orderAddressSvg,
+                                                    width: 20,
+                                                  ),
+                                                  ///////////////////
+                                                  SizedBox(
+                                                    height: 5,
+                                                  ),
+                                                  ///////////////////
+                                                  Text(
+                                                    LocaleKeys
+                                                        .expected_delivery_date
+                                                        .tr(),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: context.textTheme
+                                                        .bodyMedium?.rq
+                                                        .copyWith(
+                                                      color: const Color(
+                                                          0xff8D8D8D),
+                                                      letterSpacing: 0.18,
+                                                      fontSize: 10,
+                                                      height: 1.3,
+                                                    ),
+                                                  ),
+                                                  ///////////////////
+                                                  SizedBox(
+                                                    height: 5,
+                                                  ),
+                                                  ///////////////////
+                                                  Text(
+                                                    'Monday 2.Jun | 3 Work Days',
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: context.textTheme
+                                                        .bodyMedium?.rq
+                                                        .copyWith(
+                                                      color: const Color(
+                                                          0xff1D1D1D),
+                                                      letterSpacing: 0.18,
+                                                      fontSize: 12,
+                                                      height: 1.3,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            /////////////
+                                            Expanded(
+                                              child: Container(
+                                                color: Colors.white,
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.end,
+                                                  children: [
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment.end,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .end,
+                                                      children: [
+                                                        order!.orderGroupStatus
                                                                     ?.label ==
-                                                                'Shipped'
+                                                                'Pending'
                                                             ? SvgPicture.asset(
                                                                 AppAssets
-                                                                    .shippedAndOutOfDeliveryBagSvg,
+                                                                    .pendingBagSvg,
                                                                 width: 20,
                                                               )
                                                             : SvgPicture.asset(
                                                                 AppAssets
-                                                                    .shippedAndOutOfDeliveryBagSvg,
+                                                                    .pendingBagSvg,
                                                                 width: 15,
                                                               ),
-                                                ////////////////////
-                                                const SizedBox(
-                                                  width: 3,
-                                                ),
-                                                ///////////////////
-                                                widget.order.orderGroupStatus
-                                                            ?.label ==
-                                                        'Pending'
-                                                    ? SvgPicture.asset(
-                                                        AppAssets.whiteBagSvg,
-                                                        width: 15,
-                                                      )
-                                                    : widget
-                                                                .order
-                                                                .orderGroupStatus
-                                                                ?.label ==
-                                                            'Preparing'
-                                                        ? SvgPicture.asset(
-                                                            AppAssets
-                                                                .whiteBagSvg,
-                                                            width: 15,
-                                                          )
-                                                        : widget
-                                                                    .order
-                                                                    .orderGroupStatus
+                                                        ////////////////////
+                                                        const SizedBox(
+                                                          width: 3,
+                                                        ),
+                                                        ///////////////////
+                                                        order!.orderGroupStatus
                                                                     ?.label ==
-                                                                'Shipped'
+                                                                'Pending'
                                                             ? SvgPicture.asset(
                                                                 AppAssets
                                                                     .whiteBagSvg,
                                                                 width: 15,
                                                               )
-                                                            : widget
-                                                                        .order
-                                                                        .orderGroupStatus
+                                                            : order!.orderGroupStatus
                                                                         ?.label ==
-                                                                    'Delivered'
+                                                                    'Preparing'
                                                                 ? SvgPicture
                                                                     .asset(
                                                                     AppAssets
-                                                                        .delivered_bagSvg,
+                                                                        .preparingBagSvg,
                                                                     width: 20,
                                                                   )
                                                                 : SvgPicture
                                                                     .asset(
                                                                     AppAssets
-                                                                        .delivered_bagSvg,
+                                                                        .preparingBagSvg,
                                                                     width: 15,
                                                                   ),
-                                                ///////////////////////
-                                              ],
-                                            ),
-                                            ///////////////////
-                                            SizedBox(
-                                              height: 5,
-                                            ),
-                                            ///////////////////
-                                            Row(
-                                              children: [
-                                                Spacer(),
-                                                Text(
-                                                  LocaleKeys.order_status.tr(),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: context
-                                                      .textTheme.bodyMedium?.rq
-                                                      .copyWith(
-                                                    color:
-                                                        const Color(0xff8D8D8D),
-                                                    letterSpacing: 0.18,
-                                                    fontSize: 10,
-                                                    height: 1.3,
-                                                  ),
+                                                        ////////////////////
+                                                        const SizedBox(
+                                                          width: 3,
+                                                        ),
+                                                        ///////////////////
+                                                        order!.orderGroupStatus
+                                                                    ?.label ==
+                                                                'Pending'
+                                                            ? SvgPicture.asset(
+                                                                AppAssets
+                                                                    .whiteBagSvg,
+                                                                width: 15,
+                                                              )
+                                                            : order!.orderGroupStatus
+                                                                        ?.label ==
+                                                                    'Preparing'
+                                                                ? SvgPicture
+                                                                    .asset(
+                                                                    AppAssets
+                                                                        .whiteBagSvg,
+                                                                    width: 15,
+                                                                  )
+                                                                : order!.orderGroupStatus
+                                                                            ?.label ==
+                                                                        'Shipped'
+                                                                    ? SvgPicture
+                                                                        .asset(
+                                                                        AppAssets
+                                                                            .shippedAndOutOfDeliveryBagSvg,
+                                                                        width:
+                                                                            20,
+                                                                      )
+                                                                    : SvgPicture
+                                                                        .asset(
+                                                                        AppAssets
+                                                                            .shippedAndOutOfDeliveryBagSvg,
+                                                                        width:
+                                                                            15,
+                                                                      ),
+                                                        ////////////////////
+                                                        const SizedBox(
+                                                          width: 3,
+                                                        ),
+                                                        ///////////////////
+                                                        order!.orderGroupStatus
+                                                                    ?.label ==
+                                                                'Pending'
+                                                            ? SvgPicture.asset(
+                                                                AppAssets
+                                                                    .whiteBagSvg,
+                                                                width: 15,
+                                                              )
+                                                            : order!.orderGroupStatus
+                                                                        ?.label ==
+                                                                    'Preparing'
+                                                                ? SvgPicture
+                                                                    .asset(
+                                                                    AppAssets
+                                                                        .whiteBagSvg,
+                                                                    width: 15,
+                                                                  )
+                                                                : order!.orderGroupStatus
+                                                                            ?.label ==
+                                                                        'Shipped'
+                                                                    ? SvgPicture
+                                                                        .asset(
+                                                                        AppAssets
+                                                                            .whiteBagSvg,
+                                                                        width:
+                                                                            15,
+                                                                      )
+                                                                    : order!.orderGroupStatus?.label ==
+                                                                            'Delivered'
+                                                                        ? SvgPicture
+                                                                            .asset(
+                                                                            AppAssets.delivered_bagSvg,
+                                                                            width:
+                                                                                20,
+                                                                          )
+                                                                        : SvgPicture
+                                                                            .asset(
+                                                                            AppAssets.delivered_bagSvg,
+                                                                            width:
+                                                                                15,
+                                                                          ),
+                                                        ///////////////////////
+                                                      ],
+                                                    ),
+                                                    ///////////////////
+                                                    SizedBox(
+                                                      height: 5,
+                                                    ),
+                                                    ///////////////////
+                                                    Row(
+                                                      children: [
+                                                        Spacer(),
+                                                        Text(
+                                                          LocaleKeys
+                                                              .order_status
+                                                              .tr(),
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          style: context
+                                                              .textTheme
+                                                              .bodyMedium
+                                                              ?.rq
+                                                              .copyWith(
+                                                            color: const Color(
+                                                                0xff8D8D8D),
+                                                            letterSpacing: 0.18,
+                                                            fontSize: 10,
+                                                            height: 1.3,
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          width: 12,
+                                                        )
+                                                      ],
+                                                    ),
+                                                    ///////////////////
+                                                    SizedBox(
+                                                      height: 5,
+                                                    ),
+                                                    ///////////////////
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment.end,
+                                                      children: [
+                                                        Text(
+                                                          order!.orderGroupStatus
+                                                                  ?.label ??
+                                                              '',
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          style: context
+                                                              .textTheme
+                                                              .bodyMedium
+                                                              ?.rq
+                                                              .copyWith(
+                                                            color: const Color(
+                                                                0xff1D1D1D),
+                                                            letterSpacing: 0.18,
+                                                            fontSize: 12,
+                                                            height: 1.3,
+                                                          ),
+                                                        ),
+                                                        ///////////////////
+                                                        SizedBox(
+                                                          width: 10,
+                                                        ),
+                                                        ///////////////////
+                                                        SvgPicture.asset(
+                                                          AppAssets
+                                                              .orderPreparingSvg,
+                                                          width: 15,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
                                                 ),
-                                                SizedBox(
-                                                  width: 12,
-                                                )
-                                              ],
-                                            ),
-                                            ///////////////////
-                                            SizedBox(
-                                              height: 5,
-                                            ),
-                                            ///////////////////
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.end,
-                                              children: [
-                                                Text(
-                                                  widget.order.orderGroupStatus
-                                                          ?.label ??
-                                                      '',
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: context
-                                                      .textTheme.bodyMedium?.rq
-                                                      .copyWith(
-                                                    color:
-                                                        const Color(0xff1D1D1D),
-                                                    letterSpacing: 0.18,
-                                                    fontSize: 12,
-                                                    height: 1.3,
-                                                  ),
-                                                ),
-                                                ///////////////////
-                                                SizedBox(
-                                                  width: 10,
-                                                ),
-                                                ///////////////////
-                                                SvgPicture.asset(
-                                                  AppAssets.orderPreparingSvg,
-                                                  width: 15,
-                                                ),
-                                              ],
-                                            ),
+                                              ),
+                                            )
                                           ],
                                         ),
-                                      ),
-                                    )
-                                  ],
+                                        ///////////////////
+                                        SizedBox(
+                                          height: 12,
+                                        ),
+                                        ///////////////////
+                                        Container(
+                                          width: double.infinity,
+                                          height: 1,
+                                          color: const Color(0xffC4C2C2),
+                                        ),
+                                        ///////////////////
+                                        SizedBox(
+                                          height: 12,
+                                        ),
+                                        ///////////////////
+                                        ListView.separated(
+                                          itemCount:
+                                              order!.details?.length ?? 0,
+                                          shrinkWrap: true,
+                                          physics:
+                                              NeverScrollableScrollPhysics(),
+                                          itemBuilder: (context, index) {
+                                            return productWidget(
+                                                order!.details![index], index);
+                                          },
+                                          separatorBuilder: (context, index) {
+                                            return Container(
+                                              width: double.infinity,
+                                              height: 1,
+                                              color: const Color(0xffC4C2C2),
+                                              margin:
+                                                  const EdgeInsets.symmetric(
+                                                horizontal: 10,
+                                                vertical: 12,
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
-                                ///////////////////
-                                SizedBox(
-                                  height: 12,
-                                ),
-                                ///////////////////
-                                Container(
-                                  width: double.infinity,
-                                  height: 1,
-                                  color: const Color(0xffC4C2C2),
-                                ),
-                                ///////////////////
-                                SizedBox(
-                                  height: 12,
-                                ),
-                                ///////////////////
-                                ListView.separated(
-                                  itemCount: widget.order.details?.length ?? 0,
-                                  shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
-                                  itemBuilder: (context, index) {
-                                    return productWidget(
-                                        widget.order.details![index], index);
-                                  },
-                                  separatorBuilder: (context, index) {
-                                    return Container(
-                                      width: double.infinity,
-                                      height: 1,
-                                      color: const Color(0xffC4C2C2),
-                                      margin: const EdgeInsets.symmetric(
-                                        horizontal: 10,
-                                        vertical: 12,
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ],
+                              ),
                             ),
-                          ),
-                        ),
+                          )
+                        ],
                       ),
-                    )
+                    ),
+                    shadowForPanel(),
+                    panelWidget(),
+                    ValueListenableBuilder<int>(
+                        valueListenable: indexTapAddress,
+                        builder: (context, _indexTap, _) {
+                          return shadowForChangeAddressContent(_indexTap);
+                        }),
+                    ValueListenableBuilder<int>(
+                        valueListenable: indexTap,
+                        builder: (context, _indexTap, _) {
+                          return shadowForChangeOrderVariant(_indexTap);
+                        }),
+                    ValueListenableBuilder<int>(
+                        valueListenable: indexTap,
+                        builder: (context, _indexTap, _) {
+                          return shadowForCanselOrRutuenOrder(_indexTap,
+                              optionModifyPanel.value == "Return_This_Product");
+                        })
                   ],
                 ),
               ),
-              shadowForPanel(),
-              panelWidget(),
-              ValueListenableBuilder<int>(
-                  valueListenable: indexTapAddress,
-                  builder: (context, _indexTap, _) {
-                    return shadowForChangeAddressContent(_indexTap);
-                  }),
-              ValueListenableBuilder<int>(
-                  valueListenable: indexTap,
-                  builder: (context, _indexTap, _) {
-                    return shadowForChangeOrderVariant(_indexTap);
-                  }),
-              ValueListenableBuilder<int>(
-                  valueListenable: indexTap,
-                  builder: (context, _indexTap, _) {
-                    return shadowForCanselOrRutuenOrder(_indexTap,
-                        optionModifyPanel.value == "Return_This_Product");
-                  })
-            ],
-          ),
-        ),
-      ),
+            );
+          }),
     );
   }
 
@@ -685,7 +760,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     ),
                     Text(
                       HelperFunctions.orderFormatDate(
-                        DateTime.tryParse(widget.order.createdAt ?? '') ??
+                        DateTime.tryParse(order!.createdAt ?? '') ??
                             DateTime.now(),
                       ),
                       style: context.textTheme.bodyMedium?.rr.copyWith(
@@ -704,7 +779,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       width: 5,
                     ),
                     Text(
-                      widget.order.orderGroupId ?? "",
+                      order!.orderGroupId ?? "",
                       style: context.textTheme.bodyMedium?.mr.copyWith(
                         color: const Color(0xff1D1D1D),
                         letterSpacing: 0.18,
@@ -738,7 +813,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       width: 5,
                     ),
                     Text(
-                      widget.order.orderGroupStatus?.label ?? "",
+                      order!.orderGroupStatus?.label ?? "",
                       style: context.textTheme.bodyMedium?.rr.copyWith(
                         color: const Color(0xff1D1D1D),
                         letterSpacing: 0.18,
@@ -762,7 +837,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       width: 5,
                     ),
                     Text(
-                      (widget.order.details?.length ?? "").toString(),
+                      (order!.details?.length ?? "").toString(),
                       style: context.textTheme.bodyMedium?.br.copyWith(
                         color: const Color(0xff1D1D1D),
                         letterSpacing: 0.18,
@@ -786,7 +861,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       width: 5,
                     ),
                     Text(
-                      (widget.order.orderAmount! *
+                      (order!.orderAmount! *
                               homeBloc.state.getCurrencyForCountryModel!.data!
                                   .currency!.exchangeRate!)
                           .toStringAsFixed(homeBloc.state.startingSetting
@@ -828,7 +903,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     left: LanguageService.languageCode == "ar" ? 0 : 10,
                     right: LanguageService.languageCode != "ar" ? 0 : 10),
                 child: ListView.builder(
-                  itemCount: widget.order.details?.length,
+                  itemCount: order!.details?.length,
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (context, index) {
                     return Container(
@@ -839,7 +914,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.all(Radius.circular(15)),
                         child: MyCachedNetworkImage(
-                            imageUrl: widget.order.details?[index].image ?? "",
+                            imageUrl: order!.details?[index].image ?? "",
                             width: 92,
                             imageFit: BoxFit.contain,
                             height: 125.h),
@@ -1212,9 +1287,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                         ),
                                         ////////////////////////////
                                         TextSpan(
-                                          text:
-                                              widget.order.orderStatus?.label ??
-                                                  "",
+                                          text: order!.orderStatus?.label ?? "",
                                           style: context
                                               .textTheme.bodyMedium?.mq
                                               .copyWith(
@@ -1238,12 +1311,11 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                 ),
                                 ///////////////////
                                 SvgPicture.asset(
-                                  widget.order.orderStatus?.label == 'Shipped'
+                                  order!.orderStatus?.label == 'Shipped'
                                       ? AppAssets.shippedBlackSvg
-                                      : widget.order.orderStatus?.label ==
-                                              'Delivered'
+                                      : order!.orderStatus?.label == 'Delivered'
                                           ? AppAssets.deliveredBlackSvg
-                                          : widget.order.orderStatus?.label ==
+                                          : order!.orderStatus?.label ==
                                                   'Pending'
                                               ? AppAssets.pendeingBlackCheck
                                               : AppAssets.orderPreparingSvg,
@@ -1807,7 +1879,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
               ],
             ),
             Spacer(),
-            widget.order.orderStatus?.value != "out_for_delivery"
+            order!.orderStatus?.value != "out_for_delivery"
                 ? SizedBox.shrink()
                 : Container(
                     width: 30,
@@ -1882,7 +1954,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                               GetIt.I<PrefsRepository>()
                                                   .myMarketId
                                                   .toString(),
-                                          orderId: widget.order.id.toString()));
+                                          orderId: order!.id.toString()));
                                 },
                                 child: SvgPicture.asset(
                                   AppAssets.chatMarkActiveSvg,
@@ -3568,8 +3640,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               ),
                               Text(
                                 HelperFunctions.orderFormatDate(
-                                  DateTime.tryParse(
-                                          widget.order.createdAt ?? '') ??
+                                  DateTime.tryParse(order!.createdAt ?? '') ??
                                       DateTime.now(),
                                 ),
                                 style:
@@ -3589,7 +3660,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                 width: 5,
                               ),
                               Text(
-                                widget.order.orderGroupId ?? "",
+                                order!.orderGroupId ?? "",
                                 style:
                                     context.textTheme.bodyMedium?.mr.copyWith(
                                   color: const Color(0xff1D1D1D),
@@ -3624,7 +3695,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                 width: 5,
                               ),
                               Text(
-                                widget.order.orderGroupStatus?.label ?? "",
+                                order!.orderGroupStatus?.label ?? "",
                                 style:
                                     context.textTheme.bodyMedium?.rr.copyWith(
                                   color: const Color(0xff1D1D1D),
@@ -3649,7 +3720,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                 width: 5,
                               ),
                               Text(
-                                (widget.order.details?.length ?? "").toString(),
+                                (order!.details?.length ?? "").toString(),
                                 style:
                                     context.textTheme.bodyMedium?.br.copyWith(
                                   color: const Color(0xff1D1D1D),
@@ -3675,7 +3746,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                 width: 5,
                               ),
                               Text(
-                                (widget.order.orderAmount! *
+                                (order!.orderAmount! *
                                         homeBloc
                                             .state
                                             .getCurrencyForCountryModel!
@@ -3728,7 +3799,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                   ? 0
                                   : 10),
                           child: ListView.builder(
-                            itemCount: widget.order.details?.length,
+                            itemCount: order!.details?.length,
                             scrollDirection: Axis.horizontal,
                             itemBuilder: (context, index) {
                               return Container(
@@ -3742,8 +3813,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                       BorderRadius.all(Radius.circular(15)),
                                   child: MyCachedNetworkImage(
                                       imageUrl:
-                                          widget.order.details?[index].image ??
-                                              "",
+                                          order!.details?[index].image ?? "",
                                       width: 92,
                                       imageFit: BoxFit.contain,
                                       height: 125.h),
@@ -4326,7 +4396,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
               ],
             ),
           ),
-          (index == ((widget.order.details?.length ?? 0) - 1))
+          (index == ((order.details?.length ?? 0) - 1))
               ? Container(
                   margin: EdgeInsets.only(top: 8),
                   height: 0.5,
@@ -4858,8 +4928,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         withInnerShadow: true,
                         withImageShadow: true,
                         radius: 15,
-                        imageUrl:
-                            widget.order.details?[indexTap.value].image ?? "",
+                        imageUrl: order!.details?[indexTap.value].image ?? "",
                         imageFit: BoxFit.contain,
                         width: 100,
                         height: 150,
@@ -4897,7 +4966,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       optionModifyPanel.value = "Change_Product_Request";
                     },
                     svg: AppAssets.changeProductRequestSvg,
-                    image2: widget.order.details?[indexTap.value].image ?? "",
+                    image2: order!.details?[indexTap.value].image ?? "",
                     tiltle: "${LocaleKeys.change_product_request.tr()}",
                     body: "${LocaleKeys.change_size_color_other.tr()}"),
               ),
@@ -5024,8 +5093,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                             ),
                             Text(
                               HelperFunctions.orderFormatDate(
-                                DateTime.tryParse(
-                                        widget.order.createdAt ?? '') ??
+                                DateTime.tryParse(order!.createdAt ?? '') ??
                                     DateTime.now(),
                               ),
                               style: context.textTheme.bodyMedium?.rr.copyWith(
@@ -5044,7 +5112,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               width: 5,
                             ),
                             Text(
-                              widget.order.orderGroupId ?? "",
+                              order!.orderGroupId ?? "",
                               style: context.textTheme.bodyMedium?.mr.copyWith(
                                 color: const Color(0xff1D1D1D),
                                 letterSpacing: 0.18,
@@ -5078,7 +5146,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               width: 5,
                             ),
                             Text(
-                              widget.order.orderGroupStatus?.label ?? "",
+                              order!.orderGroupStatus?.label ?? "",
                               style: context.textTheme.bodyMedium?.rr.copyWith(
                                 color: const Color(0xff1D1D1D),
                                 letterSpacing: 0.18,
@@ -5102,7 +5170,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               width: 5,
                             ),
                             Text(
-                              (widget.order.details?.length ?? "").toString(),
+                              (order!.details?.length ?? "").toString(),
                               style: context.textTheme.bodyMedium?.br.copyWith(
                                 color: const Color(0xff1D1D1D),
                                 letterSpacing: 0.18,
@@ -5126,7 +5194,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                               width: 5,
                             ),
                             Text(
-                              (widget.order.orderAmount! *
+                              (order!.orderAmount! *
                                       homeBloc.state.getCurrencyForCountryModel!
                                           .data!.currency!.exchangeRate!)
                                   .toStringAsFixed(homeBloc
@@ -5171,7 +5239,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                             right:
                                 LanguageService.languageCode != "ar" ? 0 : 10),
                         child: ListView.builder(
-                          itemCount: widget.order.details?.length,
+                          itemCount: order!.details?.length,
                           scrollDirection: Axis.horizontal,
                           itemBuilder: (context, index) {
                             return Container(
@@ -5185,8 +5253,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                     BorderRadius.all(Radius.circular(15)),
                                 child: MyCachedNetworkImage(
                                     imageUrl:
-                                        widget.order.details?[index].image ??
-                                            "",
+                                        order!.details?[index].image ?? "",
                                     width: 92,
                                     imageFit: BoxFit.contain,
                                     height: 125.h),
@@ -5214,8 +5281,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                         withInnerShadow: true,
                         withImageShadow: true,
                         radius: 15,
-                        imageUrl:
-                            widget.order.details?[indexTap.value].image ?? "",
+                        imageUrl: order!.details?[indexTap.value].image ?? "",
                         imageFit: BoxFit.contain,
                         width: 100,
                         height: 140,
@@ -5356,7 +5422,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     withInnerShadow: true,
                     withImageShadow: true,
                     radius: 15,
-                    imageUrl: widget.order.details?[indexTap.value].image ?? "",
+                    imageUrl: order!.details?[indexTap.value].image ?? "",
                     imageFit: BoxFit.contain,
                     width: 100,
                     height: 140,
@@ -5378,7 +5444,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                 borderRadius: BorderRadius.all(Radius.circular(15)),
                 child: MyCachedNetworkImage(
                   radius: 15,
-                  imageUrl: widget.order.details?[indexTap.value].image ?? "",
+                  imageUrl: order!.details?[indexTap.value].image ?? "",
                   imageFit: BoxFit.fill,
                   width: 20,
                   height: 20,
@@ -5596,8 +5662,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                       withInnerShadow: true,
                       withImageShadow: true,
                       radius: 15,
-                      imageUrl:
-                          widget.order.details?[indexTap.value].image ?? "",
+                      imageUrl: order!.details?[indexTap.value].image ?? "",
                       imageFit: BoxFit.fill,
                       width: 70,
                       height: 70,
@@ -5694,8 +5759,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                               withInnerShadow: true,
                                               withImageShadow: true,
                                               radius: 40,
-                                              imageUrl: widget
-                                                      .order
+                                              imageUrl: order!
                                                       .details?[indexTap.value]
                                                       .image ??
                                                   "",
@@ -5772,8 +5836,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                       withInnerShadow: true,
                                                       withImageShadow: true,
                                                       radius: 40,
-                                                      imageUrl: widget
-                                                              .order
+                                                      imageUrl: order!
                                                               .details?[indexTap
                                                                   .value]
                                                               .image ??
@@ -5843,7 +5906,7 @@ class _OrderDetails2 extends State<OrderDetails2> {
                     withInnerShadow: true,
                     withImageShadow: true,
                     radius: 15,
-                    imageUrl: widget.order.details?[indexTap.value].image ?? "",
+                    imageUrl: order?.details?[indexTap.value].image ?? "",
                     imageFit: BoxFit.contain,
                     width: 100,
                     height: 140,
@@ -6176,8 +6239,10 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                               if (assetEntity != null) {
                                                 if (assetEntity.type ==
                                                     AssetType.video) {
-                                                  showMessage('only photo',
-                                                      showInRelease: true);
+                                                  showWarningMessage(
+                                                    context,
+                                                    'only photo',
+                                                  );
                                                 } else {
                                                   File? file = await assetEntity
                                                       .originFile;
@@ -6225,8 +6290,10 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                         if (assetEntity != null) {
                                           if (assetEntity.type ==
                                               AssetType.video) {
-                                            showMessage('only photo',
-                                                showInRelease: true);
+                                            showWarningMessage(
+                                              context,
+                                              'only photo',
+                                            );
                                           } else {
                                             File? file =
                                                 await assetEntity.originFile;
@@ -6235,7 +6302,6 @@ class _OrderDetails2 extends State<OrderDetails2> {
                                                   MaterialPageRoute(
                                                       builder: (context) =>
                                                           CopperImage(
-                                                            fromOrder: true,
                                                             orderPhotos:
                                                                 orderPhotos,
                                                             image: file,

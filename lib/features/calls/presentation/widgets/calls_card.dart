@@ -188,7 +188,7 @@ class _CallsCardState extends ThemeState<CallsCard> {
                   //todo we have the id of the chat so we can move to the call immediately
                 }
               } else if (microphone.isDenied || status2.isDenied) {
-                showMessage(LocaleKeys.permission_denied.tr());
+                showWarningMessage(context, LocaleKeys.permission_denied.tr());
                 openAppSettings();
               }
               ;
@@ -227,7 +227,7 @@ class _CallsCardState extends ThemeState<CallsCard> {
                   //todo we have the id of the chat so we can move to the call immediately
                 }
               } else if (microphone.isDenied || status2.isDenied) {
-                showMessage(LocaleKeys.permission_denied.tr());
+                showWarningMessage(context, LocaleKeys.permission_denied.tr());
                 openAppSettings();
               }
             }

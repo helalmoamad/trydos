@@ -326,7 +326,12 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                                               children: [
                                                 Expanded(
                                                   child: GridView.builder(
-                                                    shrinkWrap: true,
+                                                    shrinkWrap: false,
+                                                    addRepaintBoundaries: false,
+                                                    addAutomaticKeepAlives:
+                                                        false,
+                                                    addSemanticIndexes: false,
+                                                    cacheExtent: 0,
                                                     controller:
                                                         scrollController,
                                                     gridDelegate:
@@ -341,7 +346,7 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                                                     ),
                                                     itemCount: products.length,
                                                     physics:
-                                                        const ClampingScrollPhysics(),
+                                                        const AlwaysScrollableScrollPhysics(),
                                                     itemBuilder:
                                                         (context, index) {
                                                       return InkWell(
@@ -371,8 +376,7 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                                                         },
                                                         child: ProductItem(
                                                           fromHomePage: false,
-                                                          displayImageColors:
-                                                              true,
+                                                          fromFlashDeal: true,
                                                           tapIndexToAddProductToCart:
                                                               tapIndexToAddProductToCart,
                                                           key: TestVariables
@@ -380,19 +384,9 @@ class _FlashDealProductsPageState extends State<FlashDealProductsPage> {
                                                               ? Key(
                                                                   '"featuresPtoduct"$index')
                                                               : null,
-                                                          slidingModeItem:
-                                                              slidingMode,
                                                           productItem:
                                                               products[index],
                                                           itemIndex: index,
-                                                          setThisEnabled: (int
-                                                                  index,
-                                                              int slideMode) {
-                                                            setThisEnabledNotifier
-                                                                    .value =
-                                                                Tuple2(index,
-                                                                    slideMode);
-                                                          },
                                                         ),
                                                       );
                                                     },

@@ -293,11 +293,6 @@ HomeState _$HomeStateFromJson(Map<String, dynamic> json) => HomeState(
       getNotificationTypeProductStatus: $enumDecodeNullable(
           _$GetNotificationTypeProductStatusEnumMap,
           json['getNotificationTypeProductStatus']),
-      geColorsAndSizesForSearchModel: json['geColorsAndSizesForSearchModel'] ==
-              null
-          ? null
-          : GeColorsAndSizesForSearchModel.fromJson(
-              json['geColorsAndSizesForSearchModel'] as Map<String, dynamic>),
       currentIndexForUpdateCart:
           (json['currentIndexForUpdateCart'] as num?)?.toInt(),
       getCountryBoundaryByIsoStatus: $enumDecodeNullable(
@@ -379,8 +374,6 @@ Map<String, dynamic> _$HomeStateToJson(HomeState instance) => <String, dynamic>{
               MapEntry(k, _$GetAndAddCountViewOfProductStatusEnumMap[e]!)),
       'popularSearchTerm':
           instance.popularSearchTerm?.map((e) => e.toJson()).toList(),
-      'geColorsAndSizesForSearchModel':
-          instance.geColorsAndSizesForSearchModel?.toJson(),
       'getUserNotificationModel': instance.getUserNotificationModel?.toJson(
         (value) => value.toJson(),
       ),
