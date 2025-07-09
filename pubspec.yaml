@@ -37,7 +37,7 @@ dependencies:
   go_router: ^12.0.0
   simple_shadow: ^0.3.1
   country_flags: ^2.1.1
-  intl: ^0.19.0
+  intl: ^0.20.2
   carousel_slider: ^5.0.0
   cached_network_image: ^3.2.3
   flutter_inset_box_shadow:
@@ -124,7 +124,7 @@ dependencies:
   flutter_inappwebview: 6.1.5
   hydrated_bloc: ^9.1.5
   http_mock_adapter: ^0.5.0
-  flutter_smartlook: ^4.1.24
+  flutter_smartlook: ^4.1.26
   speech_to_text: ^7.0.0
 
   # The following adds the Cupertino Icons font to your application.

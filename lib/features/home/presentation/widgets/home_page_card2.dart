@@ -622,6 +622,31 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                                               category: null,
                                             ));
 
+                                            boutiqueBloc
+                                                .add(ChangeAppliedFiltersEvent(
+                                              boutiqueSlug: boutique.slug!,
+                                              category: index == 7
+                                                  ? null
+                                                  : boutique
+                                                      .childCategoriesForProductIds![
+                                                          index]
+                                                      .categorySlug,
+                                              filtersAppliedByUser: null,
+                                              resetAppliedFilters: true,
+                                            ));
+                                            boutiqueBloc
+                                                .add(ChangeSelectedFiltersEvent(
+                                              fromHomePageSearch: false,
+                                              boutiqueSlug: boutique.slug!,
+                                              category: index == 7
+                                                  ? null
+                                                  : boutique
+                                                      .childCategoriesForProductIds![
+                                                          index]
+                                                      .categorySlug,
+                                              filtersChoosedByUser: null,
+                                            ));
+
                                             boutiqueBloc.add(
                                                 GetProductsWithFiltersEvent(
                                                     getWithoutFilter: true,
@@ -629,10 +654,16 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                                                     boutiqueSlug:
                                                         boutique.slug!,
                                                     fromSearch: false,
-                                                    category: null,
+                                                    category: index == 7
+                                                        ? null
+                                                        : boutique
+                                                            .childCategoriesForProductIds![
+                                                                index]
+                                                            .categorySlug,
                                                     context: context,
                                                     searchText: null,
                                                     offset: 1));
+
                                             homeBloc.add(
                                                 IsChangedVariationWhenQtyZeroEvent(
                                                     isChangedVariationWhenQtyZero:
@@ -684,6 +715,7 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                                                                   ?.filePath ??
                                                               "",
                                                         ),
+
                                                         transitionsBuilder: (_,
                                                                 __,
                                                                 ___,
