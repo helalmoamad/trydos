@@ -24,7 +24,7 @@ import 'package:trydos/features/home/data/models/get_product_detail_without_rela
 import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:trydos/service/language_service.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../data/models/get_product_listing_without_filters_model.dart'
     as product;
@@ -578,14 +578,50 @@ class _DisplaySizesCardState extends ThemeState<DisplaySizesCard> {
                                                                     HapticFeedback
                                                                         .lightImpact();
                                                                     //////////////////////////////
+                                                                    // FirebaseAnalyticsService
+                                                                    //     .logEventForSession(
+                                                                    //   eventName:
+                                                                    //       AnalyticsEventsConst
+                                                                    //           .buttonClicked,
+                                                                    //   executedEventName:
+                                                                    //       AnalyticsButtonsEventNameConst
+                                                                    //           .chooseAvailableSizeButton,
+                                                                    // );
+
                                                                     FirebaseAnalyticsService
                                                                         .logEventForSession(
+                                                                      executedEventName:
+                                                                          AnalyticsButtonsEventNameConst
+                                                                              .SIZE_SLIDE,
                                                                       eventName:
                                                                           AnalyticsEventsConst
-                                                                              .buttonClicked,
-                                                                      executedEventName:
-                                                                          AnalyticsExecutedEventNameConst
-                                                                              .chooseAvailableSizeButton,
+                                                                              .itemVariantExchange,
+                                                                      extraParams: {
+                                                                        'item_id': widget
+                                                                            .productItem
+                                                                            .productId
+                                                                            .toString(),
+                                                                        'item_name': widget
+                                                                            .productItem
+                                                                            .name
+                                                                            .toString(),
+                                                                        'brand': widget
+                                                                            .productItem
+                                                                            .brand!
+                                                                            .name
+                                                                            .toString(),
+                                                                        'category': widget
+                                                                            .productItem
+                                                                            .categories!
+                                                                            .map(
+                                                                              (e) => e.name,
+                                                                            )
+                                                                            .toList()
+                                                                            .toString(),
+                                                                        'item_variant':
+                                                                            sizes?[index] ??
+                                                                                ''
+                                                                      },
                                                                     );
                                                                   },
                                                                   child: AnimatedContainer(

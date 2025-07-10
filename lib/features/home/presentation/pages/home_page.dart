@@ -50,6 +50,7 @@ import 'package:trydos/features/home/presentation/widgets/product_details_sheet/
 import 'package:trydos/features/home/presentation/widgets/sliver_list_seprated.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/language_service.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/handling_market_notifications.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/request_permission_notification.dart';
@@ -321,11 +322,22 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
+  bool _eventLogged = false;
   @override
   void didChangeDependencies() async {
-    FirebaseAnalyticsService.logScreen(
-      screen: AnalyticsScreensConst.homeScreen,
-    );
+    if (!_eventLogged) {
+      FirebaseAnalyticsService.logEventForSession(
+        executedEventName: GlobalScreenConst.HOME_SCREEN,
+        eventName: AnalyticsEventsConst.SCREEN_VIEW,
+        extraParams: {
+          'screen_name': GlobalScreenConst.HOME_SCREEN,
+          'screen_path': '',
+          'platform': GlobalPlatform.MOBILE,
+        },
+      );
+
+      _eventLogged = true;
+    }
 
     super.didChangeDependencies();
   }
@@ -789,6 +801,7 @@ class _HomePageState extends State<HomePage> {
                                           .getHomeBoutiquesPaginationObjectByMainCategory[
                                               currentSlug]!
                                           .items[index],
+                                      index: index,
                                     )
 
                               //HomePageCard(showWhite: index % 2 == 0),
@@ -963,6 +976,7 @@ class _HomePageState extends State<HomePage> {
                                                 ),
                                                 VerificationMethods(
                                                   phoneNumber: phoneNumber,
+                                                  isFromLogin: true,
                                                   onChooseWhatsapp: () {
                                                     isVisWhatsApp = 1;
                                                     pageController

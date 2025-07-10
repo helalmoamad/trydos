@@ -21,6 +21,8 @@ import 'package:trydos/features/home/presentation/widgets/cart_section/payment_m
 import 'package:trydos/features/home/presentation/widgets/cart_section/successful_order.dart';
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_image_widget.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/language_service.dart';
 import '../../../../../common/constant/payment_methods.dart';
 import '../../../../../common/helper/show_message.dart';
@@ -77,9 +79,6 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
   @override
   void didChangeDependencies() {
-    FirebaseAnalyticsService.logScreen(
-      screen: AnalyticsScreensConst.cartScreen,
-    );
     super.didChangeDependencies();
   }
 
@@ -203,6 +202,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                     );
                   } else {
                     List<Map<String, String>> cartImages = [];
+                    List<Map<String, String>> analyticsItems = [];
                     double orderAmount = 0;
                     double partialPaymentByWallet = 0;
                     /////////////////////////////////////////////////
@@ -223,6 +223,16 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                   "color": element.variation == null
                                       ? ""
                                       : element.variation?.color ?? ""
+                                },
+                              );
+                              ////////////////////////////
+                              analyticsItems.add(
+                                {
+                                  "item_id": element.productId.toString(),
+                                  "item_name":
+                                      element.productDetails!.name.toString(),
+                                  "item_variant":
+                                      '${element.variation?.color}-${element.variation?.size}',
                                 },
                               );
                             }
@@ -285,6 +295,27 @@ class _PlaceOrderState extends State<PlaceOrder> {
                           List.from(widget.paymentMethods.value)
                             ..add(PaymentMethods.trydosWallet);
                     }
+
+                    /////////////////////////
+                    Future.delayed(
+                      Duration(milliseconds: 300),
+                      () {
+                        FirebaseAnalyticsService.logEventForSession(
+                          executedEventName: 'PlaceOrderScreen',
+                          eventName: AnalyticsEventsConst.purchase,
+                          extraParams: {
+                            'transaction_id': data[0].transactionRef.toString(),
+                            'value': orderAmount.toString(),
+                            'currency': widget.currencySympole.toString(),
+                            'shipping': data[0].shippingCost.toString(),
+                            'coupon': data[0].couponCode.toString(),
+                            'interaction_type': 'purchase',
+                            'screen_name': 'PlaceOrderScreen',
+                            'items': analyticsItems.toString(),
+                          },
+                        );
+                      },
+                    );
 
                     /////////////////////////
                     HelperFunctions.slidingNavigation(

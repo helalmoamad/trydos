@@ -39,6 +39,9 @@ import 'package:trydos/features/home/presentation/widgets/profile_section/langua
 import 'package:trydos/features/home/presentation/widgets/profile_section/profile_country_page.dart';
 import 'package:trydos/features/home/presentation/widgets/profile_section/user_information_page.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
+import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 import 'package:trydos/service/language_service.dart';
 
 import '../../../../common/helper/helper_functions.dart';
@@ -244,6 +247,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                           },
                         ),
                         VerificationMethods(
+                          isFromLogin: false,
                           phoneNumber: phoneNumber,
                           onChooseWhatsapp: () {
                             isVisWhatsApp = 1;

@@ -2,6 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
+import 'package:trydos/service/firebase_analytics_service/firebase_analytics_service.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/handling_market_notifications.dart';
 import '../../../../core/data/model/pagination_model.dart';
 import '../../../app/my_cached_network_image.dart';
@@ -39,6 +42,25 @@ class _NotificationsPageState extends State<NotificationsPage> {
     });
 
     super.initState();
+  }
+
+  bool _eventLogged = false;
+  @override
+  void didChangeDependencies() {
+    if (!_eventLogged) {
+      FirebaseAnalyticsService.logEventForSession(
+        executedEventName: GlobalScreenConst.NOTIFICATIONS_SCREEN,
+        eventName: AnalyticsEventsConst.SCREEN_VIEW,
+        extraParams: {
+          'screen_name': GlobalScreenConst.NOTIFICATIONS_SCREEN,
+          'screen_path': '',
+          'platform': GlobalPlatform.MOBILE,
+        },
+      );
+      _eventLogged = true;
+    }
+
+    super.didChangeDependencies();
   }
 
   @override

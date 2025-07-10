@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
@@ -10,8 +10,6 @@ import 'package:injectable/injectable.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:trydos/core/use_case/use_case.dart';
 import 'package:trydos/features/authentication/domain/use_cases/verify_otp_in_profile_usecase.dart';
-import 'package:trydos/features/home/data/models/get_allowed_country_model.dart';
-import 'package:trydos/features/home/domain/use_cases/get_allowed_country_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/get_user_country_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/register_guest_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/send_otp_usecase.dart';
@@ -21,11 +19,9 @@ import 'package:trydos/features/authentication/domain/use_cases/update_name_usec
 import 'package:trydos/features/authentication/domain/use_cases/update_stories_user_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/verify_guest_phone_usecase.dart';
 import 'package:trydos/features/authentication/domain/use_cases/verify_otp_signin_usecase.dart';
-import 'package:trydos/features/calls/data/models/agora_token_remote_response_model.dart';
 import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
-import '../../../../common/constant/countries.dart';
 import '../../../../common/helper/show_message.dart';
 import '../../../../core/api/methods/detect_server.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
@@ -37,7 +33,6 @@ import '../../data/models/verify_otp_sign_up_and_in_response_model.dart';
 import '../../domain/use_cases/create_user_usecase.dart';
 import '../../domain/use_cases/get_customer_info_usecase.dart';
 import '../../domain/use_cases/login_to_chat_usecase.dart';
-import '../../domain/use_cases/login_to_market_usecase.dart';
 import '../../domain/use_cases/login_to_stories_usecase.dart';
 import '../../domain/use_cases/verify_otp_signup_usecase.dart';
 
@@ -425,6 +420,25 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         _prefsRepository.setPhoneNumber((r.data!.user?.phone).toString());
         _prefsRepository
             .setMyProfilePhoto((r.data?.user?.image ?? "").toString());
+        ////////////////////////
+        await FirebaseAnalytics.instance.setUserId(
+          id: r.data!.user!.id.toString(),
+        );
+
+        await FirebaseAnalytics.instance.setUserId(
+          id: "12345",
+        );
+
+        await FirebaseAnalytics.instance.setUserProperty(
+          name: 'gender',
+          value: r.data!.user!.gender.toString(),
+        );
+
+        await FirebaseAnalytics.instance.setUserProperty(
+          name: 'user_type',
+          value: 'registered',
+        );
+        ///////////////////////
         add(LoginToStoriesEvent(
           originalUserId: r.data!.user!.id!.toString(),
           otpIdToken: r.data!.idToken!,
@@ -488,6 +502,25 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       _prefsRepository.setOtpCode(event.otp);
       _prefsRepository.setMarketToken(r.data!.token!);
       _prefsRepository.setTokenExpired(false);
+
+      //////////////////////////////////////
+      await FirebaseAnalytics.instance.setUserId(
+        id: r.data!.user!.id.toString(),
+      );
+      await FirebaseAnalytics.instance.setUserId(
+        id: "12345",
+      );
+
+      await FirebaseAnalytics.instance.setUserProperty(
+        name: 'gender',
+        value: r.data!.user!.gender.toString(),
+      );
+
+      await FirebaseAnalytics.instance.setUserProperty(
+        name: 'user_type',
+        value: 'new',
+      );
+      /////////////////////////////////////
       GetIt.I<HomeBloc>().add(GetCurrencyForCountryEvent());
       GetIt.I<HomeBloc>().add(GetCartItemEvent());
       GetIt.I<HomeBloc>().add(GetOldCartItemEvent());
@@ -552,7 +585,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         isFailedTheFirstTime.add('RegisterGuestEvent');
       }
       emit(state.copyWith(registerGuestStatus: RegisterGuestStatus.failure));
-    }, (r) {
+    }, (r) async {
+      emit(state.copyWith(
+          registerGuestStatus: RegisterGuestStatus.success,
+          marketUser: r.data!.user));
       Future.delayed(
         Duration(minutes: 2),
         () {
@@ -565,6 +601,26 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           .setMyProfilePhoto((r.data?.user?.image ?? "").toString());
       _prefsRepository.setMyMarketName(r.data!.user!.name ?? "guest");
 
+      //////////////////////////////////////
+      await FirebaseAnalytics.instance.setUserId(
+        id: r.data!.user!.id.toString(),
+      );
+
+      await FirebaseAnalytics.instance.setUserId(
+        id: "12345",
+      );
+
+      await FirebaseAnalytics.instance.setUserProperty(
+        name: 'gender',
+        value: r.data!.user!.gender.toString(),
+      );
+
+      await FirebaseAnalytics.instance.setUserProperty(
+        name: 'user_type',
+        value: 'guest',
+      );
+      /////////////////////////////////////
+
       GetIt.I<HomeBloc>()
           .add(SaveUserInfoFromAuthEvent(userInfo: r.data!.user!));
       _prefsRepository.setMyMarketId(r.data!.user!.id.toString());
@@ -575,9 +631,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       GetIt.I<HomeBloc>().add(GetOldCartItemEvent());
       GetIt.I<HomeBloc>().add(GetProductsListInCartEvent());
       NotificationProcess().fcmToken();
-      emit(state.copyWith(
-          registerGuestStatus: RegisterGuestStatus.success,
-          marketUser: r.data!.user));
     });
   }
 

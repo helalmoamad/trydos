@@ -36,6 +36,7 @@ import 'package:video_player/video_player.dart';
 import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../app/my_cached_network_image.dart';
+import 'package:flutter/material.dart' as positioned;
 import '../../../app/my_text_widget.dart';
 import '../../../app/trydos_shimmer_loading.dart';
 import '../../../home/data/models/get_home_boutiqes_model.dart' as banner;
@@ -412,7 +413,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                         .oneLink ==
                                     null
                                 ? SizedBox.shrink()
-                                : Positioned(
+                                : positioned.Positioned(
                                     bottom: 0,
                                     child: _handleWithUrlWidget((state
                                             .storiesCollections[
@@ -511,7 +512,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                                                 .oneLink ==
                                             null
                                         ? SizedBox.shrink()
-                                        : Positioned(
+                                        : positioned.Positioned(
                                             bottom: 0,
                                             child: _handleWithUrlWidget(state
                                                     .storiesCollections[
@@ -565,7 +566,7 @@ class _StoryCollectionState extends ThemeState<StoryCollection> {
                       .stories!.length,
                 ),
               ),
-              Positioned(
+              positioned.Positioned(
                   top: 40.0,
                   left: 10.0,
                   right: 10.0,

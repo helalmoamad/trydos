@@ -25,9 +25,8 @@ import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.da
 
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/my_text_widget.dart';
 import '../../../app/svg_network_widget.dart';
@@ -40,10 +39,12 @@ class HomePageCard2 extends cupertino.StatelessWidget {
     required this.boutique,
     required this.category_Slug,
     required this.isShowPanelForVerified,
+    required this.index,
   });
   final String category_Slug;
+  final int index;
   final bool withSlidingImages;
-  final Boutique boutique;
+  final HomeBoutiques boutique;
   final ValueNotifier<bool> isShowPanelForVerified;
 
   final ValueNotifier<int> resizeItems = ValueNotifier(-1);
@@ -132,7 +133,7 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                       ),
                     ));
             ////////////////////////////////////
-            FirebaseAnalyticsService.logEventForSession(
+            /* FirebaseAnalyticsService.logEventForSession(
               eventName: AnalyticsEventsConst.buttonClicked,
               executedEventName:
                   AnalyticsExecutedEventNameConst.chooseBoutiqueButton,
@@ -147,7 +148,7 @@ class HomePageCard2 extends cupertino.StatelessWidget {
                   boutiqueName: boutique.name.toString(),
                 );
               },
-            );
+            );*/
           },
           child: Stack(
             alignment: Alignment.bottomCenter,

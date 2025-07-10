@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/cupertino.dart' as cupertino;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,7 +17,8 @@ import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_
 import 'package:trydos/features/home/presentation/manager/BoutiqueBloc/boutique_state.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
-import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
+import 'package:trydos/features/home/presentation/pages/product_listing_page.dart'
+    as listing_page;
 import 'package:trydos/features/search/presentation/widgets/search_Circle_boutique.dart';
 import 'package:trydos/features/search/presentation/widgets/search_circle_brand.dart';
 import 'package:trydos/features/search/presentation/widgets/search_circle_category.dart';
@@ -26,7 +28,7 @@ import '../../../../common/test_utils/test_var.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/utils/theme_state.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/blocs/app_bloc/app_bloc.dart';
@@ -83,11 +85,22 @@ class _SearchPageState extends ThemeState<SearchPage> {
     super.initState();
   }
 
+  bool _eventLogged = false;
   @override
   void didChangeDependencies() async {
-    FirebaseAnalyticsService.logScreen(
-      screen: AnalyticsScreensConst.homeSearchScreen,
-    );
+    if (!_eventLogged) {
+      FirebaseAnalyticsService.logEventForSession(
+        executedEventName: AnalyticsButtonsEventNameConst.HOME_SEARCH_BUTTON,
+        eventName: AnalyticsEventsConst.SCREEN_VIEW,
+        extraParams: {
+          'screen_name': GlobalScreenConst.SEARCH_SCREEN,
+          'screen_path': '',
+          'platform': GlobalPlatform.MOBILE,
+        },
+      );
+
+      _eventLogged = true;
+    }
 
     super.didChangeDependencies();
   }
@@ -132,10 +145,10 @@ class _SearchPageState extends ThemeState<SearchPage> {
         boutiqueBloc.add(ResetAllSelectedAppliedFilterEvent());
         appBloc.add(HideBottomNavigationBar(false));
         ///////////////////////////////
-        FirebaseAnalyticsService.logEventForSession(
-          eventName: AnalyticsEventsConst.buttonClicked,
-          executedEventName: AnalyticsExecutedEventNameConst.backAppButton,
-        );
+        // FirebaseAnalyticsService.logEventForSession(
+        //   eventName: AnalyticsEventsConst.buttonClicked,
+        //   executedEventName: AnalyticsButtonsEventNameConst.backAppButton,
+        // );
       },
       child: Scaffold(
         backgroundColor: colorScheme.white,
@@ -479,7 +492,8 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                             () => HelperFunctions
                                                     .slidingNavigation(
                                                   context,
-                                                  ProductListingPage(
+                                                  listing_page
+                                                      .ProductListingPage(
                                                     isShowPanelForVerified: widget
                                                         .isShowPanelForVerified,
                                                     controllerFormSearchPage:
@@ -491,14 +505,14 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                                   ),
                                                 ));
                                         /////////////////////////////////
-                                        FirebaseAnalyticsService
-                                            .logEventForSession(
-                                          eventName: AnalyticsEventsConst
-                                              .buttonClicked,
-                                          executedEventName:
-                                              AnalyticsExecutedEventNameConst
-                                                  .applyHomeSearchResultButton,
-                                        );
+                                        // FirebaseAnalyticsService
+                                        //     .logEventForSession(
+                                        //   eventName: AnalyticsEventsConst
+                                        //       .buttonClicked,
+                                        //   executedEventName:
+                                        //       AnalyticsButtonsEventNameConst
+                                        //           .applyHomeSearchResultButton,
+                                        // );
                                       },
                                       child: Container(
                                         height: 65,
@@ -575,14 +589,14 @@ class _SearchPageState extends ThemeState<SearchPage> {
                                         ));
                                         widget.controller.clear();
                                         /////////////////////////////////
-                                        FirebaseAnalyticsService
-                                            .logEventForSession(
-                                          eventName: AnalyticsEventsConst
-                                              .buttonClicked,
-                                          executedEventName:
-                                              AnalyticsExecutedEventNameConst
-                                                  .resetHomeSearchButton,
-                                        );
+                                        // FirebaseAnalyticsService
+                                        //     .logEventForSession(
+                                        //   eventName: AnalyticsEventsConst
+                                        //       .buttonClicked,
+                                        //   executedEventName:
+                                        //       AnalyticsButtonsEventNameConst
+                                        //           .resetHomeSearchButton,
+                                        // );
                                       },
                                       child: Container(
                                         height: 65,

@@ -24,7 +24,7 @@ import 'package:trydos/service/language_service.dart';
 
 import '../../../../../core/utils/theme_state.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../data/models/get_product_listing_without_filters_model.dart'
     as productListingModel;
@@ -679,14 +679,52 @@ class _DisplayColorsCardState extends ThemeState<DisplayColorsCard> {
                                                                     .toString()));
 
                                                         //////////////////////////////
+                                                        // FirebaseAnalyticsService
+                                                        //     .logEventForSession(
+                                                        //   eventName:
+                                                        //       AnalyticsEventsConst
+                                                        //           .buttonClicked,
+                                                        //   executedEventName:
+                                                        //       AnalyticsButtonsEventNameConst
+                                                        //           .chooseAvailableColorButton,
+                                                        // );
                                                         FirebaseAnalyticsService
                                                             .logEventForSession(
+                                                          executedEventName:
+                                                              AnalyticsButtonsEventNameConst
+                                                                  .COLOR_SLIDE,
                                                           eventName:
                                                               AnalyticsEventsConst
-                                                                  .buttonClicked,
-                                                          executedEventName:
-                                                              AnalyticsExecutedEventNameConst
-                                                                  .chooseAvailableColorButton,
+                                                                  .itemVariantExchange,
+                                                          extraParams: {
+                                                            'item_id': widget
+                                                                .productItem
+                                                                .productId
+                                                                .toString(),
+                                                            'item_name': widget
+                                                                .productItem
+                                                                .name
+                                                                .toString(),
+                                                            'brand': widget
+                                                                .productItem
+                                                                .brand!
+                                                                .name
+                                                                .toString(),
+                                                            'category': widget
+                                                                .productItem
+                                                                .categories!
+                                                                .map(
+                                                                  (e) => e.name,
+                                                                )
+                                                                .toList()
+                                                                .toString(),
+                                                            'item_variant':
+                                                                widget
+                                                                    .productItem
+                                                                    .colors![
+                                                                        index]
+                                                                    .toString(),
+                                                          },
                                                         );
                                                       },
                                                       child: Column(

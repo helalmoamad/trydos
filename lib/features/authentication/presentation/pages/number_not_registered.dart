@@ -22,7 +22,7 @@ import '../../../../common/helper/helper_functions.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../core/utils/theme_state.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/my_text_widget.dart';
@@ -38,6 +38,7 @@ class NumberNotRegistered extends StatefulWidget {
 }
 
 class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
+  bool _eventLogged = false;
   @override
   void didChangeDependencies() async {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -45,10 +46,19 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
       statusBarBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.dark,
     ));
+    if (!_eventLogged) {
+      FirebaseAnalyticsService.logEventForSession(
+        executedEventName: "later_take_look_button",
+        eventName: AnalyticsEventsConst.SCREEN_VIEW,
+        extraParams: {
+          'screen_name': AuthScreenConst.USER_NOT_FOUND_SCREEN,
+          'screen_path': '',
+          'platform': GlobalPlatform.MOBILE,
+        },
+      );
 
-    FirebaseAnalyticsService.logScreen(
-      screen: AnalyticsScreensConst.numberNotRegisteredScreen,
-    );
+      _eventLogged = true;
+    }
 
     super.didChangeDependencies();
   }
@@ -179,11 +189,16 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                     duration: Duration(milliseconds: 500),
                                     curve: Curves.easeInOut);
                                 ///////////////////
+
                                 FirebaseAnalyticsService.logEventForSession(
-                                  eventName: AnalyticsEventsConst.buttonClicked,
+                                  eventName: AnalyticsEventsConst.CLICK,
                                   executedEventName:
-                                      AnalyticsExecutedEventNameConst
-                                          .createNewAccountContinueButton,
+                                      "CREATE_NEW_ACCOUNT_CONTINUE_BUTTON",
+                                  extraParams: {
+                                    'button_name':
+                                        AnalyticsButtonsEventNameConst
+                                            .CREATE_NEW_ACCOUNT_CONTINUE_BUTTON,
+                                  },
                                 );
                               },
                               child: Container(
@@ -249,11 +264,18 @@ class _NumberNotRegisteredState extends ThemeState<NumberNotRegistered> {
                                 );
 
                                 ///////////////////
+
                                 FirebaseAnalyticsService.logEventForSession(
-                                  eventName: AnalyticsEventsConst.buttonClicked,
-                                  executedEventName:
-                                      AnalyticsExecutedEventNameConst
-                                          .laterTakeLookButton,
+                                  executedEventName: "LATER_TAKE_LOOK_BUTTON",
+                                  eventName: AnalyticsEventsConst
+                                      .LATER_TAKE_LOOK_CLICKED,
+                                  extraParams: {
+                                    'button_name':
+                                        AnalyticsButtonsEventNameConst
+                                            .LATER_TAKE_LOOK_BUTTON,
+                                    'screen_name':
+                                        AuthScreenConst.USER_NOT_FOUND_SCREEN,
+                                  },
                                 );
                               },
                               child: Padding(

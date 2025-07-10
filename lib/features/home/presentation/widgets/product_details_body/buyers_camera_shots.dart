@@ -16,7 +16,7 @@ import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
 import '../../../../../common/helper/helper_functions.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../app/my_text_widget.dart';
 import '../../../data/models/get_product_listing_without_filters_model.dart'
@@ -120,11 +120,11 @@ class _BuyersCameraShotsState extends State<BuyersCameraShots> {
                 HelperFunctions.showDescriptionForProductDetails(
                     context: context);
                 //////////////////////////////
-                FirebaseAnalyticsService.logEventForSession(
-                  eventName: AnalyticsEventsConst.buttonClicked,
-                  executedEventName:
-                      AnalyticsExecutedEventNameConst.showBuyersCameraButton,
-                );
+                // FirebaseAnalyticsService.logEventForSession(
+                //   eventName: AnalyticsEventsConst.buttonClicked,
+                //   executedEventName:
+                //       AnalyticsButtonsEventNameConst.showBuyersCameraButton,
+                // );
               },
               child: Row(
                 mainAxisSize: MainAxisSize.min,

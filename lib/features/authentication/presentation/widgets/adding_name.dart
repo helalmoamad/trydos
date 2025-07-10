@@ -14,7 +14,7 @@ import 'package:trydos/core/utils/form_utils.dart';
 import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
 import 'package:trydos/features/authentication/presentation/widgets/name_from_field.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
-import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
@@ -39,6 +39,8 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
   final ValueNotifier<bool> displaySubmit = ValueNotifier(false);
   PrefsRepository prefsRepository = GetIt.I<PrefsRepository>();
 
+  bool _eventLogged = false;
+
   @override
   void didChangeDependencies() {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -46,10 +48,20 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
       statusBarBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.dark,
     ));
+    if (!_eventLogged) {
+      FirebaseAnalyticsService.logEventForSession(
+        executedEventName: AuthScreenConst.USER_NAME_INPUT_SCREEN,
+        eventName: AnalyticsEventsConst.SCREEN_VIEW,
+        extraParams: {
+          'screen_name': AuthScreenConst.USER_NAME_INPUT_SCREEN,
+          'screen_path': '',
+          'platform': GlobalPlatform.MOBILE,
+        },
+      );
 
-    FirebaseAnalyticsService.logScreen(
-      screen: AnalyticsScreensConst.addNameScreen,
-    );
+      _eventLogged = true;
+    }
+
     super.didChangeDependencies();
   }
 
@@ -190,12 +202,12 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
                                 ));
                               }
                               ////////////////
-                              FirebaseAnalyticsService.logEventForSession(
-                                eventName: AnalyticsEventsConst.buttonClicked,
-                                executedEventName:
-                                    AnalyticsExecutedEventNameConst
-                                        .confirmNameButton,
-                              );
+                              // FirebaseAnalyticsService.logEventForSession(
+                              //   eventName: AnalyticsEventsConst.buttonClicked,
+                              //   executedEventName:
+                              //       AnalyticsButtonsEventNameConst
+                              //           .confirmNameButton,
+                              // );
                             }
                           },
                           key: TestVariables.kTestMode
@@ -247,14 +259,14 @@ class _AddingNameState extends State<AddingName> with FormStateMinxin {
                                         ));
                                       }
                                       ////////////////
-                                      FirebaseAnalyticsService
-                                          .logEventForSession(
-                                        eventName:
-                                            AnalyticsEventsConst.buttonClicked,
-                                        executedEventName:
-                                            AnalyticsExecutedEventNameConst
-                                                .confirmNameButton,
-                                      );
+                                      // FirebaseAnalyticsService
+                                      //     .logEventForSession(
+                                      //   eventName:
+                                      //       AnalyticsEventsConst.buttonClicked,
+                                      //   executedEventName:
+                                      //       AnalyticsButtonsEventNameConst
+                                      //           .confirmNameButton,
+                                      // );
                                     },
                                     child: Row(
                                         mainAxisSize: MainAxisSize.min,

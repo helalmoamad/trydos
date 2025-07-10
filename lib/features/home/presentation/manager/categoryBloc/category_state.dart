@@ -26,7 +26,7 @@ class CategoryState extends Equatable {
     this.fromSearchForSearchWithGemini = false,
   });
   final Map<String, bool> boutiquesForEveryMainCategoryThatDidPrefetch;
-  final Map<String, PaginationModel<boutiques_model.Boutique>>
+  final Map<String, PaginationModel<boutiques_model.HomeBoutiques>>
       getHomeBoutiquesPaginationObjectByMainCategory;
 
   final GetMainCategoriesStatus getMainCategoriesStatus;
@@ -50,7 +50,7 @@ class CategoryState extends Equatable {
 
   CategoryState copyWith({
     final Map<String, bool>? boutiquesForEveryMainCategoryThatDidPrefetch,
-    final Map<String, PaginationModel<boutiques_model.Boutique>>?
+    final Map<String, PaginationModel<boutiques_model.HomeBoutiques>>?
         getHomeBoutiquesPaginationObjectByMainCategory,
     final SendRequestToGeminiStatus? sendRequestToGeminiStatus,
     final GetMainCategoriesStatus? getMainCategoriesStatus,

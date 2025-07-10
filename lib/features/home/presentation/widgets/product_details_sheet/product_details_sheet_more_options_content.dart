@@ -1,33 +1,29 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
+
 import 'package:shimmer/shimmer.dart';
-import 'package:trydos/common/helper/show_message.dart';
+
 import 'package:trydos/config/theme/typography.dart';
 import 'package:trydos/core/domin/repositories/prefs_repository.dart';
 import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:flutter/cupertino.dart' as cupertino;
-import 'package:trydos/features/app/app_widgets/app_text_field.dart';
-import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
+
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
 import 'package:trydos/features/home/presentation/manager/homeBloc/home_state.dart';
 import 'package:trydos/features/home/presentation/pages/product_listing_page.dart';
-import 'package:trydos/routes/router.dart';
-import 'package:trydos/service/language_service.dart';
+
 import 'package:trydos/service/notification_service/notification_service/handle_notification/handling_market_notifications.dart';
 import '../../../../../common/constant/design/assets_provider.dart';
-import '../../../../../core/utils/responsive_padding.dart';
+
 import '../../../../../core/utils/theme_state.dart';
 import '../../../../../generated/locale_keys.g.dart';
-import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
-import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
+
 import '../../../../app/my_text_widget.dart';
 
 class ProductDetailsSheetMoreOptionsContent extends StatefulWidget {

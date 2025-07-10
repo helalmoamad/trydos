@@ -200,6 +200,7 @@ class _ProductItemState extends State<ProductItem> {
             ),
           ),*/
           ProductListing3DSliderOptimized(
+            productIsFlashDeal: widget.productIsFlashDeal,
             fromFlashDeal: widget.fromFlashDeal,
             fromHomePage: widget.fromHomePage,
             imageSource: widget.imageSource,

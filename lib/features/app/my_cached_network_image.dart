@@ -222,18 +222,42 @@ class _MyCachedNetworkImageState extends State<MyCachedNetworkImage> {
           errorWidget: (context, url, error) {
             if (_isDisposed) return const SizedBox.shrink();
 
-            return Container(
-              width: widget.width,
-              height: widget.height,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(widget.radius),
-                color: Colors.grey[300],
-              ),
-              child: Center(
-                child: Icon(
-                  Icons.image_not_supported,
-                  color: Colors.grey[600],
-                  size: min(30, widget.height * 0.5),
+            // 🔄 Widget to allow retrying the image download when it fails
+            return GestureDetector(
+              onTap: () async {
+                try {
+                  // Remove the possibly corrupted file from the cache so that it is fetched again
+                  await CustomCacheManagers().removeFile(url);
+                } catch (_) {}
+                // Trigger a new download by changing the URL key slightly (cache-buster)
+                if (mounted) {
+                  setState(() {
+                    currentUrl = widget.imageUrl +
+                        '?retry=${DateTime.now().millisecondsSinceEpoch}';
+                  });
+                }
+              },
+              child: Container(
+                width: widget.width,
+                height: widget.height,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(widget.radius),
+                  color: Colors.grey[300],
+                ),
+                child: Center(
+                  child: Container(
+                    width: min(32.0, widget.height * 0.4),
+                    height: min(32.0, widget.height * 0.4),
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.red,
+                    ),
+                    child: const Icon(
+                      Icons.refresh,
+                      color: Colors.white,
+                      size: 16,
+                    ),
+                  ),
                 ),
               ),
             );

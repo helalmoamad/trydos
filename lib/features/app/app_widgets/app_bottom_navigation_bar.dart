@@ -40,7 +40,7 @@ import '../../../core/domin/repositories/prefs_repository.dart';
 import '../../../core/utils/theme_state.dart';
 import '../../../routes/router.dart';
 import '../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../feed_back/presentation/pages/edit_urls_page.dart';
 import '../../home/presentation/pages/notifications_page.dart';
@@ -123,11 +123,11 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                     appBloc.add(ChangeBasePage(0));
                     boutiqueBloc.add(ResetAllSelectedAppliedFilterEvent());
                     /////////////////////////
-                    FirebaseAnalyticsService.logEventForSession(
-                      eventName: AnalyticsEventsConst.buttonClicked,
-                      executedEventName:
-                          AnalyticsExecutedEventNameConst.homeNavBarButton,
-                    );
+                    // FirebaseAnalyticsService.logEventForSession(
+                    //   eventName: AnalyticsEventsConst.buttonClicked,
+                    //   executedEventName:
+                    //       AnalyticsButtonsEventNameConst.homeNavBarButton,
+                    // );
                   },
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -163,11 +163,11 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                     }
                     appBloc.add(ChangeBasePage(1));
                     /////////////////////////
-                    FirebaseAnalyticsService.logEventForSession(
-                      eventName: AnalyticsEventsConst.buttonClicked,
-                      executedEventName:
-                          AnalyticsExecutedEventNameConst.cartNavBarButton,
-                    );
+                    // FirebaseAnalyticsService.logEventForSession(
+                    //   eventName: AnalyticsEventsConst.buttonClicked,
+                    //   executedEventName:
+                    //       AnalyticsButtonsEventNameConst.cartNavBarButton,
+                    // );
                   },
                   child: BlocBuilder<HomeBloc, HomeState>(
                     buildWhen: (previous, current) {
@@ -299,11 +299,11 @@ class _AppBottomNavBarState extends ThemeState<AppBottomNavBar> {
                           }
                         }
                         /////////////////////////
-                        FirebaseAnalyticsService.logEventForSession(
-                          eventName: AnalyticsEventsConst.buttonClicked,
-                          executedEventName:
-                              AnalyticsExecutedEventNameConst.chatNavBarButton,
-                        );
+                        // FirebaseAnalyticsService.logEventForSession(
+                        //   eventName: AnalyticsEventsConst.buttonClicked,
+                        //   executedEventName:
+                        //       AnalyticsButtonsEventNameConst.chatNavBarButton,
+                        // );
                       },
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,

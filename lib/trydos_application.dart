@@ -49,7 +49,7 @@ class _TrydosApplicationState extends State<TrydosApplication>
     GetIt.I<ChatBloc>().add(GetDateTimeEvent());
     WidgetsBinding.instance.addObserver(this);
     /////////////////////
-    FirebaseAnalyticsService.startAnalyticsSession();
+    // FirebaseAnalyticsService.startAnalyticsSession();
     /////////////////////
     super.initState();
     // FirebasePresence.sendUserStatus("online");

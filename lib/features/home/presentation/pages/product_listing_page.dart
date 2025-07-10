@@ -55,7 +55,6 @@ import 'package:tuple/tuple.dart';
 import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/data/model/pagination_model.dart';
-import '../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../app/app_widgets/app_bottom_navigation_bar.dart';
@@ -135,6 +134,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
   final GlobalKey htmlDescriptionKey = GlobalKey();
   final ValueNotifier<double> htmlDescriptionHeight = ValueNotifier(0);
   final ScrollController scrollController = ScrollController();
+  final ScrollController scrollControllerFilter = ScrollController();
   final ValueNotifier<int> addToBagButtonShapeNotifier = ValueNotifier(0);
   // final ValueNotifier<Tuple2<int, int>> setThisEnabledNotifier =
   //   ValueNotifier(Tuple2(-1, -1));
@@ -395,11 +395,21 @@ class _ProductListingPageState extends State<ProductListingPage> {
     ///scrollController.addListener(_listenToScroll);
   }
 
+  bool _eventLogged = false;
   @override
   void didChangeDependencies() async {
-    FirebaseAnalyticsService.logScreen(
-      screen: AnalyticsScreensConst.productListingScreen,
-    );
+    if (!_eventLogged) {
+      FirebaseAnalyticsService.logEventForSession(
+        eventName: AnalyticsEventsConst.SCREEN_VIEW,
+        executedEventName: "productListingPage",
+        extraParams: {
+          'screen_name': GlobalScreenConst.BOUTIQUE_SCREEN,
+          'screen_path': '',
+          'platform': GlobalPlatform.MOBILE,
+        },
+      );
+      _eventLogged = true;
+    }
 
     super.didChangeDependencies();
   }
@@ -532,10 +542,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
               AddIsExpandedForLidtingPageEvent(isExpandedForLidting: false));
 
           ////////////////////////////////////
-          FirebaseAnalyticsService.logEventForSession(
+          /*  FirebaseAnalyticsService.logEventForSession(
             eventName: AnalyticsEventsConst.buttonClicked,
             executedEventName: AnalyticsExecutedEventNameConst.backAppButton,
-          );
+          );*/
           return Future.value(false);
         } else {
           Navigator.of(context).pop();
@@ -560,10 +570,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
           }
 
           ////////////////////////////////////
-          FirebaseAnalyticsService.logEventForSession(
+          /*   FirebaseAnalyticsService.logEventForSession(
             eventName: AnalyticsEventsConst.buttonClicked,
             executedEventName: AnalyticsExecutedEventNameConst.backAppButton,
-          );
+          );*/
         }
 
         return Future.value(false);
@@ -762,10 +772,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                         ),
                                                                                       );
                                                                                       //////////////////////////////
-                                                                                      FirebaseAnalyticsService.logEventForSession(
+                                                                                      /* FirebaseAnalyticsService.logEventForSession(
                                                                                         eventName: AnalyticsEventsConst.buttonClicked,
                                                                                         executedEventName: AnalyticsExecutedEventNameConst.showShoppingBagButton,
-                                                                                      );
+                                                                                      );*/
                                                                                     },
                                                                                     child: Stack(children: [
                                                                                       Positioned(
@@ -929,10 +939,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                               controller.clear();
                                                                               appBloc.add(HideBottomNavigationBar(false));
                                                                               ///////////////////////////
-                                                                              FirebaseAnalyticsService.logEventForSession(
+                                                                              /* FirebaseAnalyticsService.logEventForSession(
                                                                                 eventName: AnalyticsEventsConst.buttonClicked,
                                                                                 executedEventName: AnalyticsExecutedEventNameConst.resetCloseIconButton,
-                                                                              );
+                                                                              );*/
                                                                               return false;
                                                                             },
                                                                             textController:
@@ -964,10 +974,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                     onTap: () async {
                                                                                       SearchWithImageRelatedGemini.SelecteImageForSearch(fromSearch: false, context: context);
                                                                                       /////////////////////////////
-                                                                                      FirebaseAnalyticsService.logEventForSession(
+                                                                                      /*  FirebaseAnalyticsService.logEventForSession(
                                                                                         eventName: AnalyticsEventsConst.buttonClicked,
                                                                                         executedEventName: AnalyticsExecutedEventNameConst.searchWithImageButton,
-                                                                                      );
+                                                                                      );*/
                                                                                     },
                                                                                     child: state.sendRequestToGeminiStatus == SendRequestToGeminiStatus.loading
                                                                                         ? TrydosLoader(
@@ -991,10 +1001,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                           if (_speechToText.isNotListening) {
                                                                                             _startListening();
                                                                                             /////////////////////////////
-                                                                                            FirebaseAnalyticsService.logEventForSession(
+                                                                                            /*  FirebaseAnalyticsService.logEventForSession(
                                                                                               eventName: AnalyticsEventsConst.buttonClicked,
                                                                                               executedEventName: AnalyticsExecutedEventNameConst.searchWithVoiceButton,
-                                                                                            );
+                                                                                            );*/
                                                                                           } else {
                                                                                             _stopListening();
                                                                                           }
@@ -1057,10 +1067,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                       onTap: () async {
                                                                                         SearchWithImageRelatedGemini.SelecteImageForSearch(fromSearch: false, context: context);
                                                                                         /////////////////////////////
-                                                                                        FirebaseAnalyticsService.logEventForSession(
+                                                                                        /*   FirebaseAnalyticsService.logEventForSession(
                                                                                           eventName: AnalyticsEventsConst.buttonClicked,
                                                                                           executedEventName: AnalyticsExecutedEventNameConst.searchWithImageButton,
-                                                                                        );
+                                                                                        );*/
                                                                                       },
                                                                                       child: state.sendRequestToGeminiStatus == SendRequestToGeminiStatus.loading
                                                                                           ? TrydosLoader(
@@ -1087,10 +1097,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                             if (_speechToText.isNotListening) {
                                                                                               _startListening();
                                                                                               /////////////////////////////
-                                                                                              FirebaseAnalyticsService.logEventForSession(
+                                                                                              /*FirebaseAnalyticsService.logEventForSession(
                                                                                                 eventName: AnalyticsEventsConst.buttonClicked,
                                                                                                 executedEventName: AnalyticsExecutedEventNameConst.searchWithVoiceButton,
-                                                                                              );
+                                                                                              );*/
                                                                                             } else {
                                                                                               _stopListening();
                                                                                             }
@@ -1132,6 +1142,15 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                   return;
                                                                                 }
                                                                                 if (text.length > 2) {
+                                                                                  FirebaseAnalyticsService.logEventForSession(
+                                                                                    eventName: AnalyticsEventsConst.search,
+                                                                                    executedEventName: "search",
+                                                                                    extraParams: {
+                                                                                      'search_keyword': text,
+                                                                                      'screen_name': GlobalScreenConst.PRODUCT_SCREEN,
+                                                                                    },
+                                                                                  );
+
                                                                                   resetSearchAfterSearchingWhileRemoveSearch = true;
                                                                                   Filter filters = boutiqueBloc.state.appliedFiltersByUser[key]?.filters ?? Filter();
 
@@ -1229,14 +1248,14 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                             //     AddIsExpandedForLidtingPageEvent(
                                                                                             //         isExpandedForLidting: true));
                                                                                             /////////////////////////////////////////
-                                                                                            FirebaseAnalyticsService.logEventForSession(
+                                                                                            /*FirebaseAnalyticsService.logEventForSession(
                                                                                               eventName: AnalyticsEventsConst.buttonClicked,
                                                                                               executedEventName: AnalyticsExecutedEventNameConst.productListingFilterIconButton,
-                                                                                            );
+                                                                                            );*/
                                                                                             /////////////////////////////////////////
-                                                                                            FirebaseAnalyticsService.logScreen(
+                                                                                            /* FirebaseAnalyticsService.logScreen(
                                                                                               screen: AnalyticsScreensConst.productListingFilterScreen,
-                                                                                            );
+                                                                                            );*/
                                                                                           }
                                                                                         },
                                                                                         child: SvgPicture.asset(
@@ -1273,10 +1292,10 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                                                         ),
                                                                                       );
                                                                                       //////////////////////////////////
-                                                                                      FirebaseAnalyticsService.logEventForSession(
+                                                                                      /* FirebaseAnalyticsService.logEventForSession(
                                                                                         eventName: AnalyticsEventsConst.buttonClicked,
                                                                                         executedEventName: AnalyticsExecutedEventNameConst.filterCloseIconButton,
-                                                                                      );
+                                                                                      );*/
                                                                                     }
                                                                                     // تم جعل الصفحة not expanded باستخدام الأحداث السابقة لتجنب البناء المتكرر
                                                                                     // homeBloc.add(
@@ -1739,7 +1758,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                               PaginationStatus.success,
                                                   category: widget.category,
                                                   boutiqueSlug: widget.boutiqueSlug,
-                                                  controller: isExpanded ? scrollController : null,
+                                                  controller: isExpanded ? scrollControllerFilter : null,
                                                   onMoveToAnotherFiltersSection: (title) {
                                                     timerForDisplayFilterSectionTitle
                                                         ?.cancel();
@@ -2316,32 +2335,61 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                       ).then(
                                                         (value) {
                                                           FirebaseAnalyticsService
-                                                              .logEventForViewedProduct(
+                                                              .logEventForSession(
+                                                            executedEventName:
+                                                                "viewItem",
                                                             eventName:
                                                                 AnalyticsEventsConst
-                                                                    .viewedProduct,
-                                                            productId:
-                                                                products[index]
-                                                                    .productId
-                                                                    .toString(),
-                                                            productName:
-                                                                products[index]
-                                                                    .name
-                                                                    .toString(),
-                                                            productCategoriesId:
-                                                                products[index]
-                                                                    .categories
-                                                                    ?.map(
-                                                                      (e) => e
-                                                                          .id
-                                                                          .toString(),
-                                                                    )
-                                                                    .toList(),
+                                                                    .viewItem,
+                                                            extraParams: {
+                                                              'item_id': products[
+                                                                      index]
+                                                                  .productId
+                                                                  .toString(),
+                                                              'item_name':
+                                                                  products[
+                                                                          index]
+                                                                      .name
+                                                                      .toString(),
+                                                              'price': products[
+                                                                      index]
+                                                                  .price
+                                                                  .toString(),
+                                                              'brand': products[
+                                                                      index]
+                                                                  .brand!
+                                                                  .name
+                                                                  .toString(),
+                                                              'category': products[
+                                                                      index]
+                                                                  .categories!
+                                                                  .map(
+                                                                    (e) => e.id
+                                                                        .toString(),
+                                                                  )
+                                                                  .toList()
+                                                                  .toString(),
+                                                              'count_likes':
+                                                                  products[
+                                                                          index]
+                                                                      .countOfLikes
+                                                                      .toString(),
+                                                              'review_count':
+                                                                  products[
+                                                                          index]
+                                                                      .reviewsCount
+                                                                      .toString(),
+                                                              'interaction_type':
+                                                                  'view',
+                                                              'screen_name':
+                                                                  GlobalScreenConst
+                                                                      .PRODUCT_SCREEN,
+                                                            },
                                                           );
                                                         },
                                                       );
                                                       ////////////////////////////
-                                                      FirebaseAnalyticsService
+                                                      /* FirebaseAnalyticsService
                                                           .logEventForSession(
                                                         eventName:
                                                             AnalyticsEventsConst
@@ -2349,7 +2397,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                         executedEventName:
                                                             AnalyticsExecutedEventNameConst
                                                                 .chooseProductButton,
-                                                      );
+                                                      );*/
 
                                                       // pushOverscrollRoute(
                                                       //     context: context,
@@ -3178,25 +3226,35 @@ class _ProductListingPageState extends State<ProductListingPage> {
                   Duration(milliseconds: 100),
                 ).then(
                   (value) {
-                    FirebaseAnalyticsService.logEventForViewedProduct(
-                      eventName: AnalyticsEventsConst.viewedProduct,
-                      productId: products[index].productId.toString(),
-                      productName: products[index].name.toString(),
-                      productCategoriesId: products[index]
-                          .categories
-                          ?.map(
-                            (e) => e.id.toString(),
-                          )
-                          .toList(),
+                    FirebaseAnalyticsService.logEventForSession(
+                      executedEventName: "viewItem",
+                      eventName: AnalyticsEventsConst.viewItem,
+                      extraParams: {
+                        'item_id': products[index].productId.toString(),
+                        'item_name': products[index].name.toString(),
+                        'price': products[index].price.toString(),
+                        'brand': products[index].brand!.name.toString(),
+                        'category': products[index]
+                            .categories!
+                            .map(
+                              (e) => e.id.toString(),
+                            )
+                            .toList()
+                            .toString(),
+                        'count_likes': products[index].countOfLikes.toString(),
+                        'review_count': products[index].reviewsCount.toString(),
+                        'interaction_type': 'view',
+                        'screen_name': GlobalScreenConst.PRODUCT_SCREEN,
+                      },
                     );
                   },
                 );
                 ////////////////////////////
-                FirebaseAnalyticsService.logEventForSession(
+                /*    FirebaseAnalyticsService.logEventForSession(
                   eventName: AnalyticsEventsConst.buttonClicked,
                   executedEventName:
                       AnalyticsExecutedEventNameConst.chooseProductButton,
-                );
+                );*/
 
                 homeBloc.add(ChangeStatusOFGetProductsDetailsToSuccessEvent(
                     isStatusInitaial: true));

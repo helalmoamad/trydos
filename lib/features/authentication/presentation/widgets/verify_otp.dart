@@ -21,7 +21,7 @@ import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/utils/form_state_mixin.dart';
 import '../../../../core/utils/responsive_padding.dart';
 import '../../../../routes/router.dart';
-import '../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
@@ -67,22 +67,41 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
   int endTime = (DateTime.now().millisecondsSinceEpoch + 1000 * 120);
   late final ValueNotifier<bool> enabledResendNotifier;
   late final ValueNotifier<int> checkOtp;
+
+  int attempt = 1;
+
   void onEnd() {
     prefsRepository.setTimerForOtpRunning(false);
     checkOtp.value = 0;
     enabledResendNotifier.value = true;
     ///////////////////////////
     FirebaseAnalyticsService.logEventForSession(
-      eventName: AnalyticsEventsConst.programmingEvent,
-      executedEventName: AnalyticsExecutedEventNameConst.timerHasExpiredEvent,
+      executedEventName: AuthScreenConst.OTP_INPUT_SCREEN,
+      eventName: AnalyticsEventsConst.TIMER_EXPIRED,
+      extraParams: {
+        'mission_name': widget.fromLogin ? 'login' : 'signup',
+        'method': widget.isVisWhatsApp == 1 ? 'whatsapp' : 'sms',
+      },
     );
   }
 
+  bool _eventLogged = false;
+
   @override
   void didChangeDependencies() async {
-    FirebaseAnalyticsService.logScreen(
-      screen: AnalyticsScreensConst.verifyOtpScreen,
-    );
+    if (!_eventLogged) {
+      FirebaseAnalyticsService.logEventForSession(
+        executedEventName: AuthScreenConst.OTP_INPUT_SCREEN,
+        eventName: AnalyticsEventsConst.SCREEN_VIEW,
+        extraParams: {
+          'screen_name': AuthScreenConst.OTP_INPUT_SCREEN,
+          'screen_path': '',
+          'platform': GlobalPlatform.MOBILE,
+        },
+      );
+
+      _eventLogged = true;
+    }
 
     super.didChangeDependencies();
   }
@@ -168,17 +187,27 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                         extra: widget.onLoginFailed,
                       );
                       /////////////////////////////////////////////
+
                       FirebaseAnalyticsService.logEventForSession(
-                        eventName: AnalyticsEventsConst.programmingEvent,
-                        executedEventName: AnalyticsExecutedEventNameConst
-                            .phoneNumberNotRegisteredEvent,
+                        executedEventName: AuthScreenConst.OTP_INPUT_SCREEN,
+                        eventName: AnalyticsEventsConst.EXCEPTION,
+                        extraParams: {
+                          'description': 'phone Number Not Registered',
+                          'context': widget.fromLogin ? 'login' : 'signup',
+                          'mission_name': widget.fromLogin ? 'login' : 'signup',
+                        },
                       );
+
                       return;
                     } else {
                       FirebaseAnalyticsService.logEventForSession(
-                        eventName: AnalyticsEventsConst.programmingEvent,
-                        executedEventName:
-                            AnalyticsExecutedEventNameConst.otpFailedEvent,
+                        executedEventName: AuthScreenConst.OTP_INPUT_SCREEN,
+                        eventName: AnalyticsEventsConst.EXCEPTION,
+                        extraParams: {
+                          'description': 'otp Failed',
+                          'context': widget.fromLogin ? 'login' : 'signup',
+                          'mission_name': widget.fromLogin ? 'login' : 'signup',
+                        },
                       );
                     }
                   }
@@ -194,10 +223,16 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                     },
                   );
                   /////////////////////////////////
+
                   FirebaseAnalyticsService.logEventForSession(
-                    eventName: AnalyticsEventsConst.programmingEvent,
-                    executedEventName: AnalyticsExecutedEventNameConst
-                        .verifyOtpSignInSuccessEvent,
+                    executedEventName: AuthScreenConst.OTP_INPUT_SCREEN,
+                    eventName: AnalyticsEventsConst.VERIFY_OTP,
+                    extraParams: {
+                      'status': 'success',
+                      'attempt': attempt.toString(),
+                      'mission_name': widget.fromLogin ? 'login' : 'signup',
+                      'method': widget.isVisWhatsApp == 1 ? 'whatsapp' : 'sms',
+                    },
                   );
                 }
               },
@@ -214,17 +249,26 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                             '?phoneNumber=${widget.phoneNumber}',
                       );
                       /////////////////////////
+
                       FirebaseAnalyticsService.logEventForSession(
-                        eventName: AnalyticsEventsConst.programmingEvent,
-                        executedEventName: AnalyticsExecutedEventNameConst
-                            .userAlreadyExistsEvent,
+                        executedEventName: AuthScreenConst.OTP_INPUT_SCREEN,
+                        eventName: AnalyticsEventsConst.EXCEPTION,
+                        extraParams: {
+                          'description': 'user Already Exists',
+                          'context': widget.fromLogin ? 'login' : 'signup',
+                          'mission_name': widget.fromLogin ? 'login' : 'signup',
+                        },
                       );
                       return;
                     } else {
                       FirebaseAnalyticsService.logEventForSession(
-                        eventName: AnalyticsEventsConst.programmingEvent,
-                        executedEventName:
-                            AnalyticsExecutedEventNameConst.otpFailedEvent,
+                        executedEventName: AuthScreenConst.OTP_INPUT_SCREEN,
+                        eventName: AnalyticsEventsConst.EXCEPTION,
+                        extraParams: {
+                          'description': 'otp Failed',
+                          'context': widget.fromLogin ? 'login' : 'signup',
+                          'mission_name': widget.fromLogin ? 'login' : 'signup',
+                        },
                       );
                     }
 
@@ -240,10 +284,17 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                       },
                     );
                     /////////////////////////
+
                     FirebaseAnalyticsService.logEventForSession(
-                      eventName: AnalyticsEventsConst.programmingEvent,
-                      executedEventName: AnalyticsExecutedEventNameConst
-                          .verifyOtpSignUpSuccessEvent,
+                      executedEventName: AuthScreenConst.OTP_INPUT_SCREEN,
+                      eventName: AnalyticsEventsConst.VERIFY_OTP,
+                      extraParams: {
+                        'status': 'success',
+                        'attempt': attempt.toString(),
+                        'mission_name': widget.fromLogin ? 'login' : 'signup',
+                        'method':
+                            widget.isVisWhatsApp == 1 ? 'whatsapp' : 'sms',
+                      },
                     );
                   }
                 },
@@ -707,14 +758,26 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                                 .phoneNumber));
 
                                                     /////////////////////////////////////
+
                                                     FirebaseAnalyticsService
                                                         .logEventForSession(
+                                                      executedEventName:
+                                                          AuthScreenConst
+                                                              .OTP_INPUT_SCREEN,
                                                       eventName:
                                                           AnalyticsEventsConst
-                                                              .programmingEvent,
-                                                      executedEventName:
-                                                          AnalyticsExecutedEventNameConst
-                                                              .verifyOtpSignInEvent,
+                                                              .VERIFY_OTP_SIGNIN,
+                                                      extraParams: {
+                                                        'mission_name':
+                                                            widget.fromLogin
+                                                                ? 'login'
+                                                                : 'signup',
+                                                        'method':
+                                                            widget.isVisWhatsApp ==
+                                                                    1
+                                                                ? 'whatsapp'
+                                                                : 'sms',
+                                                      },
                                                     );
                                                   } else {
                                                     authBloc.add(
@@ -729,12 +792,23 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                     /////////////////////////////////////
                                                     FirebaseAnalyticsService
                                                         .logEventForSession(
+                                                      executedEventName:
+                                                          AuthScreenConst
+                                                              .OTP_INPUT_SCREEN,
                                                       eventName:
                                                           AnalyticsEventsConst
-                                                              .programmingEvent,
-                                                      executedEventName:
-                                                          AnalyticsExecutedEventNameConst
-                                                              .verifyOtpSignUpEvent,
+                                                              .VERIFY_OTP_SIGNUP,
+                                                      extraParams: {
+                                                        'mission_name':
+                                                            widget.fromLogin
+                                                                ? 'login'
+                                                                : 'signup',
+                                                        'method':
+                                                            widget.isVisWhatsApp ==
+                                                                    1
+                                                                ? 'whatsapp'
+                                                                : 'sms',
+                                                      },
                                                     );
                                                   }
                                                 } else {
@@ -749,14 +823,27 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
                                                   pasteOtpCode('');
                                                   //widget.checkOtp.value = 2;
                                                   /////////////////////////////////////
+
                                                   FirebaseAnalyticsService
                                                       .logEventForSession(
+                                                    executedEventName:
+                                                        AuthScreenConst
+                                                            .OTP_INPUT_SCREEN,
                                                     eventName:
                                                         AnalyticsEventsConst
-                                                            .programmingEvent,
-                                                    executedEventName:
-                                                        AnalyticsExecutedEventNameConst
-                                                            .pleaseWait5SecondsEvent,
+                                                            .EXCEPTION,
+                                                    extraParams: {
+                                                      'description':
+                                                          'please Wait 5 Seconds',
+                                                      'context':
+                                                          widget.fromLogin
+                                                              ? 'login'
+                                                              : 'signup',
+                                                      'mission_name':
+                                                          widget.fromLogin
+                                                              ? 'login'
+                                                              : 'signup',
+                                                    },
                                                   );
                                                 }
                                               },
@@ -841,6 +928,8 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
   }
 
   void _onResendSucceed() {
+    attempt = attempt + 1;
+
     endTime = DateTime.now().millisecondsSinceEpoch + 1000 * 120;
     countdownTimerController =
         CountdownTimerController(endTime: endTime, onEnd: onEnd);
@@ -849,9 +938,16 @@ class _VerifyOtpState extends State<VerifyOtp> with FormStateMinxin {
     authBloc.add(SendOtpEvent(
         phone: widget.phoneNumber, isViaWhatsApp: widget.isVisWhatsApp));
     ////////////////////
+
     FirebaseAnalyticsService.logEventForSession(
-      eventName: AnalyticsEventsConst.buttonClicked,
-      executedEventName: AnalyticsExecutedEventNameConst.resendOtpButton,
+      executedEventName: AuthScreenConst.OTP_INPUT_SCREEN,
+      eventName: AnalyticsEventsConst.RESEND_OTP,
+      extraParams: {
+        'mission_name': widget.fromLogin ? 'login' : 'signup',
+        'method': widget.isVisWhatsApp == 1 ? 'whatsapp' : 'sms',
+        'button_name': AnalyticsButtonsEventNameConst.RESEND_OTP_BUTTON,
+        'attempt': attempt.toString(),
+      },
     );
   }
 

@@ -12,8 +12,9 @@ import 'package:trydos/core/utils/extensions/build_context.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
 import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
 import 'package:trydos/features/authentication/presentation/widgets/create_account_section.dart';
-import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../common/helper/show_message.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
@@ -206,11 +207,16 @@ class _RegistrationPageState extends State<RegistrationPage>
                                         .config.applicationRoutes.kBasePage));
                               }
                               //////////////////////////
+
                               FirebaseAnalyticsService.logEventForSession(
-                                eventName: AnalyticsEventsConst.buttonClicked,
-                                executedEventName:
-                                    AnalyticsExecutedEventNameConst
-                                        .registerCancelButton,
+                                executedEventName: "register_cancel_button",
+                                eventName: fromLogin
+                                    ? AnalyticsEventsConst.CANCEL_LOGIN
+                                    : AnalyticsEventsConst.CANCEL_SIGNUP,
+                                extraParams: {
+                                  'button_name': AnalyticsButtonsEventNameConst
+                                      .register_cancel_button,
+                                },
                               );
                             },
                             child: Padding(
@@ -280,6 +286,7 @@ class _RegistrationPageState extends State<RegistrationPage>
                                   ),
                                   VerificationMethods(
                                     phoneNumber: phoneNumber,
+                                    isFromLogin: fromLogin,
                                     onChooseWhatsapp: () {
                                       isVisWhatsApp = 1;
                                       pageContent.value = 4;

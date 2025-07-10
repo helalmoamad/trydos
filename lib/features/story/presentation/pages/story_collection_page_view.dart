@@ -5,8 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:overscroll_pop/overscroll_pop.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import 'package:flutter_carousel_slider/carousel_slider.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../presentation/pages/story_collection.dart';
 import '../bloc/story_state.dart';
@@ -33,6 +34,25 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
     prevPageNumber = widget.initialPage;
     pageController = PageController(initialPage: prevPageNumber);
     super.initState();
+  }
+
+  bool _eventLogged = false;
+  @override
+  void didChangeDependencies() async {
+    if (!_eventLogged) {
+      FirebaseAnalyticsService.logEventForSession(
+        executedEventName: AnalyticsButtonsEventNameConst.VIEW_STORY_BUTTON,
+        eventName: AnalyticsEventsConst.SCREEN_VIEW,
+        extraParams: {
+          'screen_name': GlobalScreenConst.STORY_SCREEN,
+          'screen_path': '',
+          'platform': GlobalPlatform.MOBILE,
+        },
+      );
+      _eventLogged = true;
+    }
+
+    super.didChangeDependencies();
   }
 
   late PageController pageController;
@@ -108,11 +128,11 @@ class _StoryCollectionPageViewState extends State<StoryCollectionPageView>
                                 index: state.storiesCollections.length - 1);
                           }
                           ///////////////////////////
-                          FirebaseAnalyticsService.logEventForSession(
-                            eventName: AnalyticsEventsConst.buttonClicked,
-                            executedEventName: AnalyticsExecutedEventNameConst
-                                .changeStoryInStroyScreenEvent,
-                          );
+                          // FirebaseAnalyticsService.logEventForSession(
+                          //   eventName: AnalyticsEventsConst.buttonClicked,
+                          //   executedEventName: AnalyticsButtonsEventNameConst
+                          //       .changeStoryInStroyScreenEvent,
+                          // );
                         },
                         slideBuilder: (int index) {
                           currentPage = widget.initialPage;

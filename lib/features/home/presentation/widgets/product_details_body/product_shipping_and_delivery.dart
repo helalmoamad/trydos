@@ -19,7 +19,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../../authentication/presentation/manager/auth_bloc.dart';
@@ -166,11 +166,11 @@ class ProductShippingAndDelivery extends StatelessWidget {
                           onTap: () {
                             isExpanded.value = !isExpanded.value;
                             //////////////////////////////
-                            FirebaseAnalyticsService.logEventForSession(
-                              eventName: AnalyticsEventsConst.buttonClicked,
-                              executedEventName: AnalyticsExecutedEventNameConst
-                                  .atYourAddressButton,
-                            );
+                            // FirebaseAnalyticsService.logEventForSession(
+                            //   eventName: AnalyticsEventsConst.buttonClicked,
+                            //   executedEventName: AnalyticsButtonsEventNameConst
+                            //       .atYourAddressButton,
+                            // );
                           },
                           child: Container(
                             decoration: BoxDecoration(

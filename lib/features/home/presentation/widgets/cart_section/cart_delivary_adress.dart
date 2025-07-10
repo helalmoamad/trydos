@@ -28,6 +28,8 @@ import 'package:trydos/features/home/presentation/widgets/cart_section/place_ord
 import 'package:trydos/features/home/presentation/widgets/product_details_body/product_details_image_widget.dart';
 import 'package:trydos/features/story/presentation/widget/try_again.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/language_service.dart';
 import '../../../../../common/constant/payment_methods.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
@@ -94,11 +96,23 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
     super.initState();
   }
 
+  bool _eventLogged = false;
   @override
   void didChangeDependencies() {
-    FirebaseAnalyticsService.logScreen(
-      screen: AnalyticsScreensConst.cartScreen,
-    );
+    /*  if (!_eventLogged) {
+      FirebaseAnalyticsService.logEventForSession(
+        executedEventName: AnalyticsButtonsEventNameConst.CHECKOUT_BUTTON
+        ,
+        eventName: AnalyticsEventsConst.SCREEN_VIEW,
+        extraParams: {
+          'screen_name': GlobalScreenConst.CHECKOUT_SCREEN,
+          'screen_path': '',
+          'platform': GlobalPlatform.MOBILE,
+        },
+      );
+      _eventLogged = true;
+    }*/
+
     super.didChangeDependencies();
   }
 
@@ -603,6 +617,52 @@ class _CartDelivaryAddressState extends State<CartDelivaryAddress> {
                       return;
                     }
                     if (check) {
+                      /////////////////////////////////
+                      String analyticsPayMethods = '';
+                      int index = 0;
+                      paymentMethods.value.forEach((e) {
+                        if (e == PaymentMethods.trydosWallet) {
+                          analyticsPayMethods += GA_PAYMENTS.WALLET;
+                        } else if (e == PaymentMethods.cod) {
+                          analyticsPayMethods += GA_PAYMENTS.COD;
+                        } else if (e == PaymentMethods.card) {
+                          analyticsPayMethods += GA_PAYMENTS.CREDIT;
+                        } else if (e == PaymentMethods.crypto) {
+                          analyticsPayMethods += GA_PAYMENTS.CRYPTO;
+                        }
+                        if (index != paymentMethods.value.length - 1) {
+                          analyticsPayMethods += '-';
+                        }
+                        index++;
+                      });
+                      ////////////////////////////////////////////
+                      List<Map<String, String>> analyticsCartList = [];
+                      if (homeBloc.state.cartCollection != null) {
+                        homeBloc.state.cartCollection!.forEach((element) {
+                          Map<String, String> item = {
+                            'item_id': element.productId.toString(),
+                            'item_name': element.name.toString(),
+                            'quantity': element.quantity.toString(),
+                          };
+
+                          analyticsCartList.add(item);
+                        });
+                      }
+                      ////////////////////////////////////////////
+                      /* Future.delayed(
+                        Duration(milliseconds: 300),
+                        () {
+                          FirebaseAnalyticsService.logEventForSession(
+                            executedEventName: AnalyticsButtonsEventNameConst.Orde,
+                            eventName: AnalyticsEventsConst.viewCart,
+                            extraParams: {
+                              'payment_type': analyticsPayMethods,
+                              'items': analyticsCartList.toString(),
+                            },
+                          );
+                        },
+                      );*/
+                      //////////////////////////////////
                       HelperFunctions.slidingNavigation(
                         context,
                         PlaceOrder(

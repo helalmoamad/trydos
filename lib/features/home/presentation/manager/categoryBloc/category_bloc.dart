@@ -72,12 +72,13 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   final GetMainCategoriesUseCase getMainCategoriesUseCase;
 
   final GetHomeBoutiqesUseCase getHomeBoutiqesUseCase;
+
   FutureOr<void> _onGetHomeBoutiquesEvent(
     GetHomeBoutiqesEvent event,
     Emitter<CategoryState> emit,
   ) async {
     print(event.categorySlug);
-    Map<String, PaginationModel<Boutique>>
+    Map<String, PaginationModel<HomeBoutiques>>
         getHomeBoutiquesPaginationObjectByMainCategory =
         !event.getWithPagination
             ? {}
@@ -108,7 +109,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
               : GetHomeBoutiquesModel.fromJson(responseFromSharedPrefrence);
         } catch (e) {}
         getHomeBoutiquesPaginationObjectByMainCategory.addAll({
-          event.categorySlug: PaginationModel<Boutique>(
+          event.categorySlug: PaginationModel<HomeBoutiques>(
               hasReachedMax:
                   (getHomeBoutiquesModel.data?.boutiques?.length ?? 0) < 10,
               items: getHomeBoutiquesModel.data?.boutiques ?? [],
@@ -121,7 +122,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       if (getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug] ==
           null) {
         getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug] =
-            const PaginationModel<Boutique>.init();
+            const PaginationModel<HomeBoutiques>.init();
       }
 
       if (event.getWithPagination &&
@@ -201,7 +202,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       }*/
 
       if (!event.getWithPrefetchToStoreInMemory) {
-        Map<String, PaginationModel<Boutique>>
+        Map<String, PaginationModel<HomeBoutiques>>
             getHomeBoutiquesPaginationObjectByMainCategory =
             Map.of(state.getHomeBoutiquesPaginationObjectByMainCategory);
 
@@ -276,9 +277,10 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
         getHomeBoutiquesPaginationObjectByMainCategory =
             Map.of(state.getHomeBoutiquesPaginationObjectByMainCategory);
 
-        List<Boutique> boutiques = List.of(
+        List<HomeBoutiques> boutiques = List.of(
             getHomeBoutiquesPaginationObjectByMainCategory[event.categorySlug]!
                 .items);
+
         emit(
           state.copyWith(
             getHomeBoutiquesPaginationObjectByMainCategory:

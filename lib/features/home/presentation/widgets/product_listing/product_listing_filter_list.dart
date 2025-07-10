@@ -33,7 +33,7 @@ import 'package:tuple/tuple.dart';
 import '../../../../../common/test_utils/test_var.dart';
 import '../../../../../common/test_utils/widgets_keys.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../../service/language_service.dart';
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
@@ -1349,14 +1349,14 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                                   prices:
                                                                       prices))));
                                           //////////////////////////////////////////
-                                          FirebaseAnalyticsService
-                                              .logEventForSession(
-                                            eventName: AnalyticsEventsConst
-                                                .buttonClicked,
-                                            executedEventName:
-                                                AnalyticsExecutedEventNameConst
-                                                    .applyFilterButton,
-                                          );
+                                          // FirebaseAnalyticsService
+                                          //     .logEventForSession(
+                                          //   eventName: AnalyticsEventsConst
+                                          //       .buttonClicked,
+                                          //   executedEventName:
+                                          //       AnalyticsButtonsEventNameConst
+                                          //           .applyFilterButton,
+                                          // );
 
                                           //////////////////////////
                                           boutiqueBloc.add(
@@ -1500,15 +1500,15 @@ class _StackedFiltersListState extends State<StackedFiltersList> {
                                                     offset: 1,
                                                   ));
                                                   //////////////////////////////////////////
-                                                  FirebaseAnalyticsService
-                                                      .logEventForSession(
-                                                    eventName:
-                                                        AnalyticsEventsConst
-                                                            .buttonClicked,
-                                                    executedEventName:
-                                                        AnalyticsExecutedEventNameConst
-                                                            .resetButton,
-                                                  );
+                                                  // FirebaseAnalyticsService
+                                                  //     .logEventForSession(
+                                                  //   eventName:
+                                                  //       AnalyticsEventsConst
+                                                  //           .buttonClicked,
+                                                  //   executedEventName:
+                                                  //       AnalyticsButtonsEventNameConst
+                                                  //           .resetButton,
+                                                  // );
                                                 },
                                                 child: Stack(
                                                   children: [
@@ -1717,11 +1717,11 @@ Widget choosedOrAppliedFiltersWidget({
                       category: fromSearch ? null : category,
                     ));
                     ///////////////////////////////
-                    FirebaseAnalyticsService.logEventForSession(
-                      eventName: AnalyticsEventsConst.buttonClicked,
-                      executedEventName:
-                          AnalyticsExecutedEventNameConst.resetCloseIconButton,
-                    );
+                    // FirebaseAnalyticsService.logEventForSession(
+                    //   eventName: AnalyticsEventsConst.buttonClicked,
+                    //   executedEventName:
+                    //       AnalyticsButtonsEventNameConst.resetCloseIconButton,
+                    // );
                   },
                   child: Center(
                     child: Row(
@@ -1774,11 +1774,11 @@ Widget choosedOrAppliedFiltersWidget({
                       ),
                     );
                     ///////////////////////////////
-                    FirebaseAnalyticsService.logEventForSession(
-                      eventName: AnalyticsEventsConst.buttonClicked,
-                      executedEventName:
-                          AnalyticsExecutedEventNameConst.resetCloseIconButton,
-                    );
+                    // FirebaseAnalyticsService.logEventForSession(
+                    //   eventName: AnalyticsEventsConst.buttonClicked,
+                    //   executedEventName:
+                    //       AnalyticsButtonsEventNameConst.resetCloseIconButton,
+                    // );
                   },
                   child: Center(
                     child: Row(

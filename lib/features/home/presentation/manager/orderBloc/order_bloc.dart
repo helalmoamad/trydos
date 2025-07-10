@@ -181,7 +181,7 @@ class OrderBloc extends HydratedBloc<OrderEvent, OrderState> {
           } catch (e) {}
         });
         prefsRepository.removeNotificationIdsToRemoveAfterplaceOrder();
-        ////////////////////////////
+        ////////////////////////////////////////////
         emit(
           state.copyWith(
             placeOrderStatus: PlaceOrderStatus.success,

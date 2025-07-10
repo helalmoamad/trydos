@@ -25,7 +25,7 @@ import 'package:trydos/generated/locale_keys.g.dart';
 import '../../../../../common/test_utils/test_var.dart';
 import '../../../../../common/test_utils/widgets_keys.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../data/models/get_product_filters_model.dart';
@@ -214,12 +214,12 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                                           ?.attributes ??
                                       []);
                               if (!isSelected) {
-                                FirebaseAnalyticsService.logEventForSession(
-                                  eventName: AnalyticsEventsConst.buttonClicked,
-                                  executedEventName:
-                                      AnalyticsExecutedEventNameConst
-                                          .addFilterButton,
-                                );
+                                // FirebaseAnalyticsService.logEventForSession(
+                                //   eventName: AnalyticsEventsConst.buttonClicked,
+                                //   executedEventName:
+                                //       AnalyticsButtonsEventNameConst
+                                //           .addFilterButton,
+                                // );
                                 //////////////////////////////
                                 String size = widget.attribute.options![index];
                                 if (prevChoosedOrAppliedFilterToAddToIt ==
@@ -258,12 +258,12 @@ class _SizesFiltersListState extends State<SizesFiltersList> {
                                 );
                               } else {
                                 print('reset size');
-                                FirebaseAnalyticsService.logEventForSession(
-                                  eventName: AnalyticsEventsConst.buttonClicked,
-                                  executedEventName:
-                                      AnalyticsExecutedEventNameConst
-                                          .resetByTapOnFilterButton,
-                                );
+                                // FirebaseAnalyticsService.logEventForSession(
+                                //   eventName: AnalyticsEventsConst.buttonClicked,
+                                //   executedEventName:
+                                //       AnalyticsButtonsEventNameConst
+                                //           .resetByTapOnFilterButton,
+                                // );
                                 ////////////////////////////////////
                                 List<String> options =
                                     List.of(sizes[0].options ?? []);

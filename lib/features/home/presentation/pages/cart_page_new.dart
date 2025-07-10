@@ -33,6 +33,7 @@ import 'package:trydos/features/home/presentation/widgets/cart_section/cart_shee
 import 'package:trydos/features/home/presentation/widgets/cart_section/product_collection_in_cart_page1.dart';
 import 'package:trydos/features/story/presentation/widget/try_again.dart';
 import 'package:trydos/generated/locale_keys.g.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import 'package:trydos/service/language_service.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
@@ -89,11 +90,22 @@ class _CartPageState extends State<CartPage> {
     super.initState();
   }
 
+  bool _eventLogged = false;
   @override
   void didChangeDependencies() {
-    FirebaseAnalyticsService.logScreen(
-      screen: AnalyticsScreensConst.cartScreen,
-    );
+    if (!_eventLogged) {
+      FirebaseAnalyticsService.logEventForSession(
+        executedEventName: GlobalScreenConst.CART_SCREEN,
+        eventName: AnalyticsEventsConst.SCREEN_VIEW,
+        extraParams: {
+          'screen_name': GlobalScreenConst.CART_SCREEN,
+          'screen_path': '',
+          'platform': GlobalPlatform.MOBILE,
+        },
+      );
+      _eventLogged = true;
+    }
+
     super.didChangeDependencies();
   }
 
@@ -156,7 +168,39 @@ class _CartPageState extends State<CartPage> {
                     String priceSymbol = state.getCurrencyForCountryModel!.data!
                             .currency!.symbol ??
                         "";
-                    ////////////////////////////////
+                    List<Map<String, String>> analyticsCartList = [];
+                    if (state.cartCollection.isNullOrEmpty) {
+                      state.cartCollection!.forEach((element) {
+                        Map<String, String> item = {
+                          'item_id': element.productId.toString(),
+                          'item_name': element.name.toString(),
+                          'price': element.price.toString(),
+                          'quantity': element.quantity.toString(),
+                          'brand': element.brand!.name.toString(),
+                          'category': '',
+                          'item_variant': element.variant.toString(),
+                        };
+
+                        analyticsCartList.add(item);
+                      });
+                    }
+                    /////////////////////////////////
+                    Future.delayed(
+                      Duration(milliseconds: 300),
+                      () {
+                        FirebaseAnalyticsService.logEventForSession(
+                          executedEventName: GlobalScreenConst.CART_SCREEN,
+                          eventName: AnalyticsEventsConst.beginCheckout,
+                          extraParams: {
+                            'currency': priceSymbol.toString(),
+                            'value': state
+                                .getCartShippingItemsModel!.data!.total
+                                .toString(),
+                            'items': analyticsCartList.toString(),
+                          },
+                        );
+                      },
+                    ); ////////////////////////////////
                     orderBloc.add(GetCustomerWalletEvent(limit: 10, offset: 1));
                     Future.delayed(
                       Duration(milliseconds: 600),
@@ -1500,6 +1544,7 @@ class _CartPageState extends State<CartPage> {
                                                                                         ),
                                                                                         VerificationMethods(
                                                                                           phoneNumber: phoneNumber,
+                                                                                          isFromLogin: true,
                                                                                           onChooseWhatsapp: () {
                                                                                             isVisWhatsApp = 1;
                                                                                             pageController.animateToPage(2, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);

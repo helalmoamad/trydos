@@ -27,7 +27,7 @@ import 'package:trydos/features/search/presentation/pages/search_page.dart';
 import 'package:trydos/features/story/presentation/bloc/story_bloc.dart';
 import 'package:trydos/features/story/presentation/widget/try_again.dart';
 import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import 'package:trydos/service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import 'package:trydos/service/language_service.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/handling_market_notifications.dart';
 import 'package:trydos/service/notification_service/notification_service/handle_notification/local_notification_service.dart';
@@ -854,14 +854,20 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                           .setUserCountryIsAvailable(
                                                               1);
                                                       ///////////////////
+
                                                       FirebaseAnalyticsService
                                                           .logEventForSession(
+                                                        executedEventName:
+                                                            AnalyticsButtonsEventNameConst
+                                                                .chooseCountryAndContinueButton,
                                                         eventName:
                                                             AnalyticsEventsConst
-                                                                .buttonClicked,
-                                                        executedEventName:
-                                                            AnalyticsExecutedEventNameConst
-                                                                .chooseCountryAndContinueButton,
+                                                                .CLICK,
+                                                        extraParams: {
+                                                          'button_name':
+                                                              AnalyticsButtonsEventNameConst
+                                                                  .chooseCountryAndContinueButton,
+                                                        },
                                                       );
                                                     } else {
                                                       showMessage(
@@ -974,10 +980,10 @@ class _BasePageState extends State<BasePage> with WidgetsBindingObserver {
                                                                                 ),
                                                                               );
                                                                               //////////////////////////////
-                                                                              FirebaseAnalyticsService.logEventForSession(
-                                                                                eventName: AnalyticsEventsConst.buttonClicked,
-                                                                                executedEventName: AnalyticsExecutedEventNameConst.showShoppingBagButton,
-                                                                              );
+                                                                              // FirebaseAnalyticsService.logEventForSession(
+                                                                              //   eventName: AnalyticsEventsConst.buttonClicked,
+                                                                              //   executedEventName: AnalyticsButtonsEventNameConst.showShoppingBagButton,
+                                                                              // );
                                                                             },
                                                                             child: Stack(children: [
                                                                               Positioned(

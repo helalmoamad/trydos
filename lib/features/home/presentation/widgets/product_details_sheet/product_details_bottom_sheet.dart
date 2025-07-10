@@ -37,7 +37,7 @@ import 'package:trydos/routes/router.dart';
 import 'package:trydos/service/language_service.dart';
 import '../../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../../trydos_application.dart';
 import '../../manager/homeBloc/home_bloc.dart';
@@ -1239,24 +1239,24 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                       },
                                     );
                                     //////////////////////////////
-                                    FirebaseAnalyticsService.logEventForSession(
-                                      eventName:
-                                          AnalyticsEventsConst.buttonClicked,
-                                      executedEventName:
-                                          AnalyticsExecutedEventNameConst
-                                              .showCommentsButton,
-                                    );
+                                    // FirebaseAnalyticsService.logEventForSession(
+                                    //   eventName:
+                                    //       AnalyticsEventsConst.buttonClicked,
+                                    //   executedEventName:
+                                    //       AnalyticsButtonsEventNameConst
+                                    //           .showCommentsButton,
+                                    // );
                                   },
                                   clickOnFavorite: () {
                                     widget.currentActiveTab.value = -1;
                                     //////////////////////////////
-                                    FirebaseAnalyticsService.logEventForSession(
-                                      eventName:
-                                          AnalyticsEventsConst.buttonClicked,
-                                      executedEventName:
-                                          AnalyticsExecutedEventNameConst
-                                              .likeProductButton,
-                                    );
+                                    // FirebaseAnalyticsService.logEventForSession(
+                                    //   eventName:
+                                    //       AnalyticsEventsConst.buttonClicked,
+                                    //   executedEventName:
+                                    //       AnalyticsButtonsEventNameConst
+                                    //           .likeProductButton,
+                                    // );
                                   },
                                   clickOnMoreOptions: () {
                                     widget.panelController.open();
@@ -1268,13 +1268,13 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                       },
                                     );
                                     //////////////////////////////
-                                    FirebaseAnalyticsService.logEventForSession(
-                                      eventName:
-                                          AnalyticsEventsConst.buttonClicked,
-                                      executedEventName:
-                                          AnalyticsExecutedEventNameConst
-                                              .moreOptionsButton,
-                                    );
+                                    // FirebaseAnalyticsService.logEventForSession(
+                                    //   eventName:
+                                    //       AnalyticsEventsConst.buttonClicked,
+                                    //   executedEventName:
+                                    //       AnalyticsButtonsEventNameConst
+                                    //           .moreOptionsButton,
+                                    // );
                                   },
                                   clickOnShare: () {
                                     widget.panelController.open();
@@ -1293,13 +1293,13 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                                           .add(SaveContactsEvent());
                                     }
                                     //////////////////////////////
-                                    FirebaseAnalyticsService.logEventForSession(
-                                      eventName:
-                                          AnalyticsEventsConst.buttonClicked,
-                                      executedEventName:
-                                          AnalyticsExecutedEventNameConst
-                                              .shareProductButton,
-                                    );
+                                    // FirebaseAnalyticsService.logEventForSession(
+                                    //   eventName:
+                                    //       AnalyticsEventsConst.buttonClicked,
+                                    //   executedEventName:
+                                    //       AnalyticsButtonsEventNameConst
+                                    //           .shareProductButton,
+                                    // );
                                   },
                                   currentActiveTab: widget.currentActiveTab,
                                   sizeIsNotAvailableNotifier:
@@ -1341,12 +1341,12 @@ class _ProductDetailsBottomSheetState extends State<ProductDetailsBottomSheet> {
                               idsOfChatCardsToShare.value = [];
                               widget.currentActiveTab.value = -1;
                               //////////////////////////////
-                              FirebaseAnalyticsService.logEventForSession(
-                                eventName: AnalyticsEventsConst.buttonClicked,
-                                executedEventName:
-                                    AnalyticsExecutedEventNameConst
-                                        .sendProductToChatButton,
-                              );
+                              // FirebaseAnalyticsService.logEventForSession(
+                              //   eventName: AnalyticsEventsConst.buttonClicked,
+                              //   executedEventName:
+                              //       AnalyticsButtonsEventNameConst
+                              //           .sendProductToChatButton,
+                              // );
                             },
                           );
                   }),

@@ -19,7 +19,7 @@ import 'package:trydos/generated/locale_keys.g.dart';
 
 import '../../../../../common/test_utils/test_var.dart';
 import '../../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
-import '../../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
 import '../../../../app/app_widgets/loading_indicator/trydos_loader.dart';
 import '../../../data/models/get_product_filters_model.dart';
@@ -190,12 +190,12 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                                 prevChoosedOrAppliedFilterToAddToIt?.colors ??
                                     []);
                             if (!isSelected) {
-                              FirebaseAnalyticsService.logEventForSession(
-                                eventName: AnalyticsEventsConst.buttonClicked,
-                                executedEventName:
-                                    AnalyticsExecutedEventNameConst
-                                        .addFilterButton,
-                              );
+                              // FirebaseAnalyticsService.logEventForSession(
+                              //   eventName: AnalyticsEventsConst.buttonClicked,
+                              //   executedEventName:
+                              //       AnalyticsButtonsEventNameConst
+                              //           .addFilterButton,
+                              // );
                               //////////////////////////////
                               if (prevChoosedOrAppliedFilterToAddToIt == null) {
                                 prevChoosedOrAppliedFilterToAddToIt = Filter();
@@ -217,12 +217,12 @@ class _ColorsListFilterState extends State<ColorsListFilter> {
                                                       color
                                                     ]);
                             } else {
-                              FirebaseAnalyticsService.logEventForSession(
-                                eventName: AnalyticsEventsConst.buttonClicked,
-                                executedEventName:
-                                    AnalyticsExecutedEventNameConst
-                                        .resetByTapOnFilterButton,
-                              );
+                              // FirebaseAnalyticsService.logEventForSession(
+                              //   eventName: AnalyticsEventsConst.buttonClicked,
+                              //   executedEventName:
+                              //       AnalyticsButtonsEventNameConst
+                              //           .resetByTapOnFilterButton,
+                              // );
                               ////////////////////////////////
                               colors.removeWhere(((element) =>
                                   element == widget.colors[index]));

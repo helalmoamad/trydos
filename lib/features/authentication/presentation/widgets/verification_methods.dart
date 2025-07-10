@@ -15,7 +15,7 @@ import '../../../../common/constant/design/assets_provider.dart';
 import '../../../../common/test_utils/widgets_keys.dart';
 import '../../../../core/domin/repositories/prefs_repository.dart';
 import '../../../../core/utils/responsive_padding.dart';
-import '../../../../service/firebase_analytics_service/analytics_const/analytics_executed_event_name.dart';
+import '../../../../service/firebase_analytics_service/analytics_const/analytics_buttons_event_name.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_events.dart';
 import '../../../../service/firebase_analytics_service/analytics_const/analytics_screens.dart';
 import '../../../../service/firebase_analytics_service/firebase_analytics_service.dart';
@@ -23,17 +23,19 @@ import '../../../app/my_text_widget.dart';
 import '../manager/auth_bloc.dart';
 
 class VerificationMethods extends StatefulWidget {
-  VerificationMethods(
-      {Key? key,
-      required this.phoneNumber,
-      required this.goBackToPhone,
-      required this.onChooseWhatsapp,
-      required this.onChooseSms})
-      : super(key: key);
+  VerificationMethods({
+    Key? key,
+    required this.phoneNumber,
+    required this.goBackToPhone,
+    required this.onChooseWhatsapp,
+    required this.onChooseSms,
+    required this.isFromLogin,
+  }) : super(key: key);
   final String phoneNumber;
   final void Function() onChooseWhatsapp;
   final void Function() onChooseSms;
   final void Function() goBackToPhone;
+  final bool isFromLogin;
 
   @override
   State<VerificationMethods> createState() => _VerificationMethodsState();
@@ -41,6 +43,7 @@ class VerificationMethods extends StatefulWidget {
 
 class _VerificationMethodsState extends State<VerificationMethods> {
   final ValueNotifier<int> clickButton = ValueNotifier(-1);
+
   Timer? retryTimer;
   int remainingSeconds = 60;
   String? lastSelectedMethod;
@@ -69,11 +72,23 @@ class _VerificationMethodsState extends State<VerificationMethods> {
     lastSelectedMethod = null;
   }
 
+  bool _eventLogged = false;
+
   @override
   void didChangeDependencies() async {
-    FirebaseAnalyticsService.logScreen(
-      screen: AnalyticsScreensConst.verificationMethodsScreen,
-    );
+    if (!_eventLogged) {
+      FirebaseAnalyticsService.logEventForSession(
+        executedEventName: AuthScreenConst.OTP_RECEIVING_METHOD_SCREEN,
+        eventName: AnalyticsEventsConst.SCREEN_VIEW,
+        extraParams: {
+          'screen_name': AuthScreenConst.OTP_RECEIVING_METHOD_SCREEN,
+          'screen_path': '',
+          'platform': GlobalPlatform.MOBILE,
+        },
+      );
+
+      _eventLogged = true;
+    }
 
     // Additional safety check when dependencies change (like when returning to page)
     // Reset timer state if it's still running from previous session
@@ -216,106 +231,106 @@ class _VerificationMethodsState extends State<VerificationMethods> {
       child: BlocBuilder<AuthBloc, AuthState>(
         bloc: authBloc,
         builder: (context, state) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Padding(
-          padding: HWEdgeInsets.symmetric(horizontal: 40.0),
-          child: Column(children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: HWEdgeInsets.symmetric(horizontal: 40.0),
+                child: Column(children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       SvgPicture.asset(AppAssets.phoneOtpSvg,
                           width: 15, height: 15),
-                10.horizontalSpace,
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    MyTextWidget(
-                      LocaleKeys.we_will_send_code.tr(),
+                      10.horizontalSpace,
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          MyTextWidget(
+                            LocaleKeys.we_will_send_code.tr(),
                             style: context.textTheme.titleMedium?.ra.copyWith(
                                 color: Color(0xff5D5C5D), height: 1.42),
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: HWEdgeInsets.only(top: 3.0),
-                          child: SvgPicture.asset(AppAssets.phoneCallSvg,
-                              width: 10, height: 10),
-                        ),
-                        5.horizontalSpace,
-                        MyTextWidget(
-                          widget.phoneNumber,
-                          textAlign: TextAlign.start,
-                          style: context.textTheme.titleMedium?.ra
+                          ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Padding(
+                                padding: HWEdgeInsets.only(top: 3.0),
+                                child: SvgPicture.asset(AppAssets.phoneCallSvg,
+                                    width: 10, height: 10),
+                              ),
+                              5.horizontalSpace,
+                              MyTextWidget(
+                                widget.phoneNumber,
+                                textAlign: TextAlign.start,
+                                style: context.textTheme.titleMedium?.ra
                                     .copyWith(
                                         color: Color(0xffC4C2C2), height: 1.25),
-                        ),
-                        InkWell(
-                          onTap: widget.goBackToPhone,
-                          child: Row(
-                            children: [
-                              SizedBox(
-                                width: 4,
                               ),
-                              SvgPicture.asset(AppAssets.editPenSvg,
-                                  width: 10, height: 10),
-                              SizedBox(
-                                width: 10,
+                              InkWell(
+                                onTap: widget.goBackToPhone,
+                                child: Row(
+                                  children: [
+                                    SizedBox(
+                                      width: 4,
+                                    ),
+                                    SvgPicture.asset(AppAssets.editPenSvg,
+                                        width: 10, height: 10),
+                                    SizedBox(
+                                      width: 10,
+                                    )
+                                  ],
+                                ),
                               )
                             ],
                           ),
-                        )
-                      ],
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        SvgPicture.asset(AppAssets.registerInfoSvg,
-                            width: 10, height: 10),
-                        5.horizontalSpace,
-                        MyTextWidget(
-                          LocaleKeys.choose_verification.tr(),
-                          style: context.textTheme.titleMedium?.ra
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              SvgPicture.asset(AppAssets.registerInfoSvg,
+                                  width: 10, height: 10),
+                              5.horizontalSpace,
+                              MyTextWidget(
+                                LocaleKeys.choose_verification.tr(),
+                                style: context.textTheme.titleMedium?.ra
                                     .copyWith(
                                         color: Color(0xffC4C2C2), height: 1.25),
-                        )
-                      ],
-                    ),
-                    SizedBox(
-                      height: 3,
-                    ),
-                  ],
-                )
-              ],
-            ),
-          ]),
-        ),
-        SizedBox(
+                              )
+                            ],
+                          ),
+                          SizedBox(
+                            height: 3,
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                ]),
+              ),
+              SizedBox(
                 height: 30,
               ),
               buildLoadingOrTimer(state.sendOtpStatus),
               SizedBox(
                 height: 15,
-        ),
-        Padding(
-            padding: HWEdgeInsets.symmetric(horizontal: 20.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: InkWell(
-                    key: TestVariables.kTestMode
-                        ? Key(WidgetsKeys.chooseWhatsappButtonKey)
-                        : null,
-                    highlightColor: Colors.transparent,
-                    splashColor: Colors.transparent,
+              ),
+              Padding(
+                  padding: HWEdgeInsets.symmetric(horizontal: 20.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: InkWell(
+                          key: TestVariables.kTestMode
+                              ? Key(WidgetsKeys.chooseWhatsappButtonKey)
+                              : null,
+                          highlightColor: Colors.transparent,
+                          splashColor: Colors.transparent,
                           onTap: (state.sendOtpStatus ==
                                       SendOtpStatus.loading ||
                                   (state.sendOtpStatus ==
@@ -323,26 +338,34 @@ class _VerificationMethodsState extends State<VerificationMethods> {
                                       remainingSeconds > 0))
                               ? null
                               : () {
-                      clickButton.value = 0;
-                      Future.delayed(
-                        Duration(milliseconds: 100),
-                        () {
-                          clickButton.value = -1;
+                                  clickButton.value = 0;
+                                  Future.delayed(
+                                    Duration(milliseconds: 100),
+                                    () {
+                                      clickButton.value = -1;
                                       sendOtp('whatsapp');
-                        },
-                      );
-                      ////////////////
-                      FirebaseAnalyticsService.logEventForSession(
-                                    eventName:
-                                        AnalyticsEventsConst.buttonClicked,
-                                    executedEventName:
-                                        AnalyticsExecutedEventNameConst
-                            .chooseWhatsappButton,
-                      );
-                    },
-                    child: ValueListenableBuilder<int>(
-                        valueListenable: clickButton,
-                        builder: (context, index, _) {
+                                    },
+                                  );
+                                  ////////////////
+
+                                  FirebaseAnalyticsService.logEventForSession(
+                                    executedEventName: AuthScreenConst
+                                        .OTP_RECEIVING_METHOD_SCREEN,
+                                    eventName: AnalyticsEventsConst.SEND_OTP,
+                                    extraParams: {
+                                      'button_name':
+                                          AnalyticsButtonsEventNameConst
+                                              .CHOOSE_WHATSAPP_BUTTON,
+                                      'method': 'whatsapp',
+                                      'mission_name': widget.isFromLogin
+                                          ? 'login'
+                                          : 'signup',
+                                    },
+                                  );
+                                },
+                          child: ValueListenableBuilder<int>(
+                              valueListenable: clickButton,
+                              builder: (context, index, _) {
                                 bool isDisabled = state.sendOtpStatus ==
                                         SendOtpStatus.loading ||
                                     (state.sendOtpStatus ==
@@ -351,55 +374,55 @@ class _VerificationMethodsState extends State<VerificationMethods> {
                                 return Opacity(
                                   opacity: isDisabled ? 0.5 : 1.0,
                                   child: DottedBorder(
-                            borderPadding: EdgeInsets.zero,
-                            padding: EdgeInsets.zero,
-                            borderType: BorderType.RRect,
-                            strokeCap: StrokeCap.round,
-                            strokeWidth: 0.5,
-                            dashPattern: [3, 3],
-                            radius: Radius.circular(20.0),
-                            color: index == 0
-                                ? const Color(0xff388cff)
-                                : const Color(0xffF5F5F5),
-                            child: Container(
-                              height: 60,
-                              decoration: BoxDecoration(
-                                color: index == 0
-                                    ? const Color(0xffffffff)
-                                    : const Color(0xffF5F5F5),
+                                    borderPadding: EdgeInsets.zero,
+                                    padding: EdgeInsets.zero,
+                                    borderType: BorderType.RRect,
+                                    strokeCap: StrokeCap.round,
+                                    strokeWidth: 0.5,
+                                    dashPattern: [3, 3],
+                                    radius: Radius.circular(20.0),
+                                    color: index == 0
+                                        ? const Color(0xff388cff)
+                                        : const Color(0xffF5F5F5),
+                                    child: Container(
+                                      height: 60,
+                                      decoration: BoxDecoration(
+                                        color: index == 0
+                                            ? const Color(0xffffffff)
+                                            : const Color(0xffF5F5F5),
                                         borderRadius:
                                             BorderRadius.circular(20.0),
-                              ),
-                              child: Row(
+                                      ),
+                                      child: Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
-                                children: [
+                                        children: [
                                           SvgPicture.asset(
                                               AppAssets.whatsappSvg,
                                               width: 20,
                                               height: 20),
-                                  10.horizontalSpace,
-                                  MyTextWidget(
-                                    LocaleKeys.whatsApp.tr(),
+                                          10.horizontalSpace,
+                                          MyTextWidget(
+                                            LocaleKeys.whatsApp.tr(),
                                             style: context
                                                 .textTheme.titleLarge?.ra
-                                        .copyWith(
-                                            color: Color(0xff5D5C5D),
-                                            height: 1.42),
-                                  ),
-                                ],
+                                                .copyWith(
+                                                    color: Color(0xff5D5C5D),
+                                                    height: 1.42),
+                                          ),
+                                        ],
                                       ),
-                              ),
-                            ),
-                          );
-                        }),
-                  ),
-                ),
-                4.horizontalSpace,
-                Expanded(
-                  child: InkWell(
-                    highlightColor: Colors.transparent,
-                    splashColor: Colors.transparent,
+                                    ),
+                                  ),
+                                );
+                              }),
+                        ),
+                      ),
+                      4.horizontalSpace,
+                      Expanded(
+                        child: InkWell(
+                          highlightColor: Colors.transparent,
+                          splashColor: Colors.transparent,
                           onTap: (state.sendOtpStatus ==
                                       SendOtpStatus.loading ||
                                   (state.sendOtpStatus ==
@@ -407,26 +430,34 @@ class _VerificationMethodsState extends State<VerificationMethods> {
                                       remainingSeconds > 0))
                               ? null
                               : () {
-                      clickButton.value = 1;
-                      Future.delayed(
-                        Duration(milliseconds: 100),
-                        () {
-                          clickButton.value = -1;
+                                  clickButton.value = 1;
+                                  Future.delayed(
+                                    Duration(milliseconds: 100),
+                                    () {
+                                      clickButton.value = -1;
                                       sendOtp('sms');
-                        },
-                      );
-                      ///////////////////
-                      FirebaseAnalyticsService.logEventForSession(
-                                    eventName:
-                                        AnalyticsEventsConst.buttonClicked,
-                        executedEventName:
-                                        AnalyticsExecutedEventNameConst
-                                            .chooseSmsButton,
-                      );
-                    },
-                    child: ValueListenableBuilder<int>(
-                        valueListenable: clickButton,
-                        builder: (context, index, _) {
+                                    },
+                                  );
+                                  ///////////////////
+
+                                  FirebaseAnalyticsService.logEventForSession(
+                                    executedEventName: AuthScreenConst
+                                        .OTP_RECEIVING_METHOD_SCREEN,
+                                    eventName: AnalyticsEventsConst.SEND_OTP,
+                                    extraParams: {
+                                      'button_name':
+                                          AnalyticsButtonsEventNameConst
+                                              .CHOOSE_SMS_BUTTON,
+                                      'method': 'sms',
+                                      'mission_name': widget.isFromLogin
+                                          ? 'login'
+                                          : 'signup',
+                                    },
+                                  );
+                                },
+                          child: ValueListenableBuilder<int>(
+                              valueListenable: clickButton,
+                              builder: (context, index, _) {
                                 bool isDisabled = state.sendOtpStatus ==
                                         SendOtpStatus.loading ||
                                     (state.sendOtpStatus ==
@@ -435,52 +466,52 @@ class _VerificationMethodsState extends State<VerificationMethods> {
                                 return Opacity(
                                   opacity: isDisabled ? 0.5 : 1.0,
                                   child: DottedBorder(
-                            borderPadding: EdgeInsets.zero,
-                            padding: EdgeInsets.zero,
-                            borderType: BorderType.RRect,
-                            strokeCap: StrokeCap.round,
-                            strokeWidth: 0.5,
-                            dashPattern: [3, 3],
-                            radius: Radius.circular(20.0),
-                            color: index == 1
-                                ? const Color(0xff388cff)
-                                : const Color(0xffF5F5F5),
-                            child: Container(
-                              height: 60,
-                              decoration: BoxDecoration(
-                                color: index == 1
-                                    ? const Color(0xffffffff)
-                                    : const Color(0xffF5F5F5),
+                                    borderPadding: EdgeInsets.zero,
+                                    padding: EdgeInsets.zero,
+                                    borderType: BorderType.RRect,
+                                    strokeCap: StrokeCap.round,
+                                    strokeWidth: 0.5,
+                                    dashPattern: [3, 3],
+                                    radius: Radius.circular(20.0),
+                                    color: index == 1
+                                        ? const Color(0xff388cff)
+                                        : const Color(0xffF5F5F5),
+                                    child: Container(
+                                      height: 60,
+                                      decoration: BoxDecoration(
+                                        color: index == 1
+                                            ? const Color(0xffffffff)
+                                            : const Color(0xffF5F5F5),
                                         borderRadius:
                                             BorderRadius.circular(20.0),
-                              ),
-                              child: Row(
+                                      ),
+                                      child: Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
-                                children: [
-                                  SvgPicture.asset(AppAssets.smsSvg,
-                                      width: 20, height: 20),
-                                  10.horizontalSpace,
-                                  MyTextWidget(
-                                    LocaleKeys.sms.tr(),
+                                        children: [
+                                          SvgPicture.asset(AppAssets.smsSvg,
+                                              width: 20, height: 20),
+                                          10.horizontalSpace,
+                                          MyTextWidget(
+                                            LocaleKeys.sms.tr(),
                                             style: context
                                                 .textTheme.titleLarge?.ra
-                                        .copyWith(
-                                            color: Color(0xff5D5C5D),
-                                            height: 1.42),
-                                  ),
-                                ],
+                                                .copyWith(
+                                                    color: Color(0xff5D5C5D),
+                                                    height: 1.42),
+                                          ),
+                                        ],
                                       ),
-                              ),
-                            ),
-                          );
-                        }),
-                  ),
-                ),
-              ],
-            )),
-        10.verticalSpace,
-      ],
+                                    ),
+                                  ),
+                                );
+                              }),
+                        ),
+                      ),
+                    ],
+                  )),
+              10.verticalSpace,
+            ],
           );
         },
       ),
